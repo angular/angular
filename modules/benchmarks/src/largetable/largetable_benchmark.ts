@@ -1,9 +1,4 @@
-import {bootstrap} from 'angular2/angular2';
-
-// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
-// add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {bootstrap, Component, Directive, View} from 'angular2/angular2';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
@@ -11,7 +6,11 @@ import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/facade/browser';
-import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {
+  getIntParameter,
+  getStringParameter,
+  bindAction
+} from 'angular2/src/test_lib/benchmark_util';
 
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
@@ -27,7 +26,8 @@ export const LARGETABLE_COLS = 'LargetableComponent.cols';
 
 function _createBindings() {
   return [
-    bind(BENCHMARK_TYPE).toValue(getStringParameter('benchmarkType')),
+    bind(BENCHMARK_TYPE)
+        .toValue(getStringParameter('benchmarkType')),
     bind(LARGETABLE_ROWS).toValue(getIntParameter('rows')),
     bind(LARGETABLE_COLS).toValue(getIntParameter('columns'))
   ];
@@ -55,8 +55,7 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   var totalRows = getIntParameter('rows');
   var totalColumns = getIntParameter('columns');
-  BASELINE_LARGETABLE_TEMPLATE = DOM.createTemplate(
-      '<table></table>');
+  BASELINE_LARGETABLE_TEMPLATE = DOM.createTemplate('<table></table>');
 
   setupReflector();
 
@@ -77,7 +76,7 @@ export function main() {
       window.console.profile(name + ' w GC');
       var duration = 0;
       var count = 0;
-      while(count++ < 150) {
+      while (count++ < 150) {
         gc();
         var start = window.performance.now();
         create();
@@ -90,7 +89,7 @@ export function main() {
       window.console.profile(name + ' w/o GC');
       duration = 0;
       count = 0;
-      while(count++ < 150) {
+      while (count++ < 150) {
         var start = window.performance.now();
         create();
         duration += window.performance.now() - start;
@@ -104,10 +103,10 @@ export function main() {
   function ng2CreateDom() {
     var data = ListWrapper.createFixedSize(totalRows);
 
-    for (var i=0; i<totalRows; i++) {
+    for (var i = 0; i < totalRows; i++) {
       data[i] = ListWrapper.createFixedSize(totalColumns);
-      for (var j=0; j<totalColumns; j++) {
-        data[i][j] = new CellData(i,j);
+      for (var j = 0; j < totalColumns; j++) {
+        data[i][j] = new CellData(i, j);
       }
     }
     app.data = data;
@@ -118,27 +117,25 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, _createBindings()).then((ref) => {
-      var injector = ref.injector;
-      app = injector.get(AppComponent);
-      lifecycle = injector.get(LifeCycle);
-      bindAction('#ng2DestroyDom', ng2DestroyDom);
-      bindAction('#ng2CreateDom', ng2CreateDom);
-      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-    });
+    bootstrap(AppComponent, _createBindings())
+        .then((ref) => {
+          var injector = ref.injector;
+          app = injector.get(AppComponent);
+          lifecycle = injector.get(LifeCycle);
+          bindAction('#ng2DestroyDom', ng2DestroyDom);
+          bindAction('#ng2CreateDom', ng2CreateDom);
+          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+        });
   }
 
-  function baselineDestroyDom() {
-    baselineRootLargetableComponent.update(buildTable(0, 0));
-  }
+  function baselineDestroyDom() { baselineRootLargetableComponent.update(buildTable(0, 0)); }
 
   function baselineCreateDom() {
     baselineRootLargetableComponent.update(buildTable(totalRows, totalColumns));
   }
 
   function initBaseline() {
-
     baselineRootLargetableComponent = new BaseLineLargetableComponent(
         DOM.querySelector(document, 'baseline'), getStringParameter('benchmarkType'),
         getIntParameter('rows'), getIntParameter('columns'));
@@ -147,7 +144,8 @@ export function main() {
     bindAction('#baselineCreateDom', baselineCreateDom);
 
     bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
-    bindAction('#baselineCreateDomProfile', profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+    bindAction('#baselineCreateDomProfile',
+               profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
@@ -157,7 +155,7 @@ export function main() {
 function buildTable(rows, columns) {
   var tbody = DOM.createElement('tbody');
   var template = DOM.createElement('span');
-  var i,j,row,cell;
+  var i, j, row, cell;
   DOM.appendChild(template, DOM.createElement('span'));
   DOM.appendChild(template, DOM.createTextNode(':'));
   DOM.appendChild(template, DOM.createElement('span'));
@@ -180,17 +178,16 @@ function buildTable(rows, columns) {
 class BaseLineLargetableComponent {
   element;
   table;
-  benchmarkType:string;
-  rows:number;
-  columns:number;
-  constructor(element,benchmarkType,rows:number,columns:number) {
+  benchmarkType: string;
+  rows: number;
+  columns: number;
+  constructor(element, benchmarkType, rows: number, columns: number) {
     this.element = element;
     this.benchmarkType = benchmarkType;
     this.rows = rows;
     this.columns = columns;
     this.table = DOM.clone(BASELINE_LARGETABLE_TEMPLATE.content.firstChild);
-    var shadowRoot = DOM.createShadowRoot(this.element)
-    DOM.appendChild(shadowRoot, this.table);
+    var shadowRoot = DOM.createShadowRoot(this.element) DOM.appendChild(shadowRoot, this.table);
   }
   update(tbody) {
     var oldBody = DOM.querySelector(this.table, 'tbody');
@@ -203,41 +200,29 @@ class BaseLineLargetableComponent {
 }
 
 class CellData {
-  i:number;
-  j:number;
-  constructor(i,j) {
+  i: number;
+  j: number;
+  constructor(i, j) {
     this.i = i;
     this.j = j;
   }
 
-  jFn () {
-    return this.j;
-  }
+  jFn() { return this.j; }
 
-  iFn () {
-    return this.i;
-  }
+  iFn() { return this.i; }
 }
 
-@Component({
-  selector: 'app'
-})
+@Component({selector: 'app'})
 @View({
   directives: [LargetableComponent],
   template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
 })
 class AppComponent {
   data;
-  benchmarkType:string;
+  benchmarkType: string;
 }
 
-@Component({
-  selector: 'largetable',
-  properties: [
-      'data',
-      'benchmarkType'
-  ]
-})
+@Component({selector: 'largetable', properties: ['data', 'benchmarkType']})
 @View({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `
@@ -274,16 +259,13 @@ class AppComponent {
 })
 class LargetableComponent {
   data;
-  benchmarkType:string;
-  rows:number;
-  columns:number;
-  constructor(
-      @Inject(BENCHMARK_TYPE) benchmarkType,
-      @Inject(LARGETABLE_ROWS) rows,
-      @Inject(LARGETABLE_COLS) columns) {
+  benchmarkType: string;
+  rows: number;
+  columns: number;
+  constructor(@Inject(BENCHMARK_TYPE) benchmarkType: BENCHMARK_TYPE,
+              @Inject(LARGETABLE_ROWS) rows: LARGETABLE_ROWS, @Inject(LARGETABLE_COLS) columns) {
     this.benchmarkType = benchmarkType;
     this.rows = rows;
     this.columns = columns;
   }
 }
-
