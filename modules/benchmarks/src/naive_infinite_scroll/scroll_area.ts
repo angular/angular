@@ -1,13 +1,17 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Math} from 'angular2/src/facade/math';
 
-// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
-// add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {Component, Directive, View} from 'angular2/angular2';
 
-import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT,
-    ROW_WIDTH, HEIGHT} from './common';
+import {
+  Offering,
+  ITEMS,
+  ITEM_HEIGHT,
+  VISIBLE_ITEMS,
+  VIEW_PORT_HEIGHT,
+  ROW_WIDTH,
+  HEIGHT
+} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
 import {NgFor} from 'angular2/directives';
@@ -33,8 +37,8 @@ import {NgFor} from 'angular2/directives';
     </div>`
 })
 export class ScrollAreaComponent {
-  _fullList:List<Offering>;
-  visibleItems:List<Offering>;
+  _fullList: List<Offering>;
+  visibleItems: List<Offering>;
 
   scrollDivStyle;
   paddingDiv;

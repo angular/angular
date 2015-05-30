@@ -1,17 +1,17 @@
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DateWrapper, Type, print} from 'angular2/src/facade/lang';
-import {NativeShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
+import {
+  NativeShadowDomStrategy
+} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
 import {Parser, Lexer, DynamicChangeDetection} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
-import {Component} from 'angular2/src/core/annotations_impl/annotations';
-import {Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {Component, Directive, View} from 'angular2/angular2';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -37,26 +37,18 @@ export function main() {
   var urlResolver = new UrlResolver();
   var styleUrlResolver = new StyleUrlResolver(urlResolver);
   var shadowDomStrategy = new NativeShadowDomStrategy(styleUrlResolver);
-  var renderCompiler = new rc.DefaultDomCompiler(
-    new Parser(new Lexer()), shadowDomStrategy, new TemplateLoader(null, urlResolver)
-  );
-  var compiler = new Compiler(
-    reader,
-    cache,
-    templateResolver,
-    new ComponentUrlMapper(),
-    urlResolver,
-    renderCompiler,
-    new ProtoViewFactory(new DynamicChangeDetection(null))
-  );
+  var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
+                                                 new TemplateLoader(null, urlResolver));
+  var compiler =
+      new Compiler(reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver,
+                   renderCompiler, new ProtoViewFactory(new DynamicChangeDetection(null)));
 
   function measureWrapper(func, desc) {
     return function() {
       var begin = DateWrapper.now();
       print(`[${desc}] Begin...`);
       var onSuccess = function(_) {
-        var elapsedMs = DateWrapper.toMillis(
-            DateWrapper.now()) - DateWrapper.toMillis(begin);
+        var elapsedMs = DateWrapper.toMillis(DateWrapper.now()) - DateWrapper.toMillis(begin);
         print(`[${desc}] ...done, took ${elapsedMs} ms`);
       };
       PromiseWrapper.then(func(), onSuccess, null);
@@ -73,65 +65,39 @@ export function main() {
     return compiler.compile(BenchmarkComponentWithBindings);
   }
 
-  bindAction('#compileNoBindings',
-      measureWrapper(compileNoBindings, 'No Bindings'));
-  bindAction('#compileWithBindings',
-      measureWrapper(compileWithBindings, 'With Bindings'));
+  bindAction('#compileNoBindings', measureWrapper(compileNoBindings, 'No Bindings'));
+  bindAction('#compileWithBindings', measureWrapper(compileWithBindings, 'With Bindings'));
 }
 
-@Directive({
-  selector: '[dir0]',
-  properties: [
-    'prop: attr0'
-  ]
-})
-class Dir0 {}
+@Directive({selector: '[dir0]', properties: ['prop: attr0']})
+class Dir0 {
+}
 
-@Directive({
-  selector: '[dir1]',
-  properties: [
-    'prop: attr1'
-  ]
-})
+@Directive({selector: '[dir1]', properties: ['prop: attr1']})
 class Dir1 {
-  constructor(dir0:Dir0) {}
+  constructor(dir0: Dir0) {}
 }
 
-@Directive({
-  selector: '[dir2]',
-  properties: [
-    'prop: attr2'
-  ]
-})
+@Directive({selector: '[dir2]', properties: ['prop: attr2']})
 class Dir2 {
-  constructor(dir1:Dir1) {}
+  constructor(dir1: Dir1) {}
 }
 
-@Directive({
-  selector: '[dir3]',
-  properties: [
-    'prop: attr3'
-  ]
-})
+@Directive({selector: '[dir3]', properties: ['prop: attr3']})
 class Dir3 {
-  constructor(dir2:Dir2) {}
+  constructor(dir2: Dir2) {}
 }
 
-@Directive({
-  selector: '[dir4]',
-  properties: [
-    'prop: attr4'
-  ]
-})
+@Directive({selector: '[dir4]', properties: ['prop: attr4']})
 class Dir4 {
-  constructor(dir3:Dir3) {}
+  constructor(dir3: Dir3) {}
 }
 
 class MultipleTemplateResolver extends TemplateResolver {
-  _multiple: num;
-  _cache: Map;
+  _multiple: number;
+  _cache: Map<any, any>;
 
-  constructor(multiple: num, components: List) {
+  constructor(multiple: number, components: List<Type>) {
     super();
     this._multiple = multiple;
     this._cache = MapWrapper.create();
@@ -149,10 +115,8 @@ class MultipleTemplateResolver extends TemplateResolver {
 
   resolve(component: Type): View {
     var view = super.resolve(component);
-    var myView = new View({
-      template: MapWrapper.get(this._cache, component),
-      directives: view.directives
-    });
+    var myView =
+        new View({template: MapWrapper.get(this._cache, component), directives: view.directives});
     return myView;
   }
 }
@@ -172,7 +136,8 @@ class MultipleTemplateResolver extends TemplateResolver {
   </div>
 </div>`
 })
-class BenchmarkComponentNoBindings {}
+class BenchmarkComponentNoBindings {
+}
 
 @Component()
 @View({
@@ -194,4 +159,5 @@ class BenchmarkComponentNoBindings {}
   </div>
 </div>`
 })
-class BenchmarkComponentWithBindings {}
+class BenchmarkComponentWithBindings {
+}

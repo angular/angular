@@ -20,19 +20,13 @@ export function main() {
 
   var D_KEY = Key.get(D);
   var E_KEY = Key.get(E);
-  var childInjector = injector.
-    resolveAndCreateChild([]).
-    resolveAndCreateChild([]).
-    resolveAndCreateChild([]).
-    resolveAndCreateChild([]).
-    resolveAndCreateChild([]);
+  var childInjector = injector.resolveAndCreateChild([])
+                          .resolveAndCreateChild([])
+                          .resolveAndCreateChild([])
+                          .resolveAndCreateChild([])
+                          .resolveAndCreateChild([]);
 
-  var variousBindings = [
-    A,
-    bind(B).toClass(C),
-    [D, [E]],
-    bind(F).toValue(6)
-  ];
+  var variousBindings = [A, bind(B).toClass(C), [D, [E]], bind(F).toValue(6)];
 
   var variousBindingsResolved = Injector.resolve(variousBindings);
 
@@ -81,72 +75,43 @@ export function main() {
     }
   }
 
-  bindAction(
-    '#getByToken',
-    () => microBenchmark('injectAvg', iterations, getByToken)
-  );
-  bindAction(
-    '#getByKey',
-    () => microBenchmark('injectAvg', iterations, getByKey)
-  );
-  bindAction(
-    '#getChild',
-    () => microBenchmark('injectAvg', iterations, getChild)
-  );
-  bindAction(
-    '#instantiate',
-    () => microBenchmark('injectAvg', iterations, instantiate)
-  );
-  bindAction(
-    '#createVariety',
-    () => microBenchmark('injectAvg', iterations, createVariety)
-  );
-  bindAction(
-    '#createVarietyResolved',
-    () => microBenchmark('injectAvg', iterations, createVarietyResolved)
-  );
+  bindAction('#getByToken', () => microBenchmark('injectAvg', iterations, getByToken));
+  bindAction('#getByKey', () => microBenchmark('injectAvg', iterations, getByKey));
+  bindAction('#getChild', () => microBenchmark('injectAvg', iterations, getChild));
+  bindAction('#instantiate', () => microBenchmark('injectAvg', iterations, instantiate));
+  bindAction('#createVariety', () => microBenchmark('injectAvg', iterations, createVariety));
+  bindAction('#createVarietyResolved',
+             () => microBenchmark('injectAvg', iterations, createVarietyResolved));
 }
 
 
 
 @Injectable()
 class A {
-  constructor() {
-    count++;
-  }
+  constructor() { count++; }
 }
 
 @Injectable()
 class B {
-  constructor(a:A) {
-    count++;
-  }
+  constructor(a: A) { count++; }
 }
 
 @Injectable()
 class C {
-  constructor(b:B) {
-    count++;
-  }
+  constructor(b: B) { count++; }
 }
 
 @Injectable()
 class D {
-  constructor(c:C, b:B) {
-    count++;
-  }
+  constructor(c: C, b: B) { count++; }
 }
 
 @Injectable()
 class E {
-  constructor(d:D, c:C) {
-    count++;
-  }
+  constructor(d: D, c: C) { count++; }
 }
 
 @Injectable()
 class F {
-  constructor(e:E, d:D) {
-    count++;
-  }
+  constructor(e: E, d: D) { count++; }
 }

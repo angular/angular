@@ -12,20 +12,20 @@ export function main() {
   var fixedMatcher;
   var fixedSelectorStrings = [];
   var fixedSelectors = [];
-  for (var i=0; i<count; i++) {
+  for (var i = 0; i < count; i++) {
     ListWrapper.push(fixedSelectorStrings, randomSelector());
   }
-  for (var i=0; i<count; i++) {
+  for (var i = 0; i < count; i++) {
     ListWrapper.push(fixedSelectors, CssSelector.parse(fixedSelectorStrings[i]));
   }
   fixedMatcher = new SelectorMatcher();
-  for (var i=0; i<count; i++) {
+  for (var i = 0; i < count; i++) {
     fixedMatcher.addSelectables(fixedSelectors[i], i);
   }
 
   function parse() {
     var result = [];
-    for (var i=0; i<count; i++) {
+    for (var i = 0; i < count; i++) {
       ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
     }
     return result;
@@ -33,7 +33,7 @@ export function main() {
 
   function addSelectable() {
     var matcher = new SelectorMatcher();
-    for (var i=0; i<count; i++) {
+    for (var i = 0; i < count; i++) {
       matcher.addSelectables(fixedSelectors[i], i);
     }
     return matcher;
@@ -41,10 +41,8 @@ export function main() {
 
   function match() {
     var matchCount = 0;
-    for (var i=0; i<count; i++) {
-      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => {
-        matchCount += selected;
-      });
+    for (var i = 0; i < count; i++) {
+      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => { matchCount += selected; });
     }
     return matchCount;
   }
@@ -56,16 +54,16 @@ export function main() {
 
 function randomSelector() {
   var res = randomStr(5);
-  for (var i=0; i<3; i++) {
-    res += '.'+randomStr(5);
+  for (var i = 0; i < 3; i++) {
+    res += '.' + randomStr(5);
   }
-  for (var i=0; i<3; i++) {
-    res += '['+randomStr(3)+'='+randomStr(6)+']';
+  for (var i = 0; i < 3; i++) {
+    res += '[' + randomStr(3) + '=' + randomStr(6) + ']';
   }
   return res;
 }
 
-function randomStr(len){
+function randomStr(len) {
   var s = '';
   while (s.length < len) {
     s += randomChar();
@@ -73,11 +71,11 @@ function randomStr(len){
   return s;
 }
 
-function randomChar(){
+function randomChar() {
   var n = randomNum(62);
-  if(n<10) return n.toString(); //1-10
-  if(n<36) return StringWrapper.fromCharCode(n+55); //A-Z
-  return StringWrapper.fromCharCode(n+61); //a-z
+  if (n < 10) return n.toString();                        // 1-10
+  if (n < 36) return StringWrapper.fromCharCode(n + 55);  // A-Z
+  return StringWrapper.fromCharCode(n + 61);              // a-z
 }
 
 function randomNum(max) {

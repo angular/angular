@@ -1,9 +1,4 @@
-import {bootstrap, ViewContainerRef, Compiler} from 'angular2/angular2';
-
-// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
-// add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {bootstrap, Compiler, Component, Directive, View, ViewContainerRef} from 'angular2/angular2';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -12,17 +7,19 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import {window, document, gc} from 'angular2/src/facade/browser';
-import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {
+  getIntParameter,
+  getStringParameter,
+  bindAction
+} from 'angular2/src/test_lib/benchmark_util';
 import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind} from 'angular2/di';
 
-function createBindings():List {
+function createBindings(): List {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
-  return [
-    bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)
-  ];
+  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
 }
 
 function setupReflector() {
@@ -39,9 +36,8 @@ export function main() {
   setupReflector();
 
   BASELINE_TREE_TEMPLATE = DOM.createTemplate(
-    '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
-  BASELINE_IF_TEMPLATE = DOM.createTemplate(
-    '<span template="if"><tree></tree></span>');
+      '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
+  BASELINE_IF_TEMPLATE = DOM.createTemplate('<span template="if"><tree></tree></span>');
 
   var app;
   var lifeCycle;
@@ -60,7 +56,7 @@ export function main() {
       window.console.profile(name + ' w GC');
       var duration = 0;
       var count = 0;
-      while(count++ < 150) {
+      while (count++ < 150) {
         gc();
         var start = window.performance.now();
         create();
@@ -73,7 +69,7 @@ export function main() {
       window.console.profile(name + ' w/o GC');
       duration = 0;
       count = 0;
-      while(count++ < 150) {
+      while (count++ < 150) {
         var start = window.performance.now();
         create();
         duration += window.performance.now() - start;
@@ -85,9 +81,8 @@ export function main() {
   }
 
   function ng2CreateDom() {
-    var values = count++ % 2 == 0 ?
-      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
-      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+    var values = count++ % 2 == 0 ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+                                    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
     app.initData = buildTree(maxDepth, values, 0);
     lifeCycle.tick();
@@ -96,26 +91,24 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, createBindings()).then((ref) => {
-      var injector = ref.injector;
-      lifeCycle = injector.get(LifeCycle);
+    bootstrap(AppComponent, createBindings())
+        .then((ref) => {
+          var injector = ref.injector;
+          lifeCycle = injector.get(LifeCycle);
 
-      app = injector.get(AppComponent);
-      bindAction('#ng2DestroyDom', ng2DestroyDom);
-      bindAction('#ng2CreateDom', ng2CreateDom);
-      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-    });
+          app = injector.get(AppComponent);
+          bindAction('#ng2DestroyDom', ng2DestroyDom);
+          bindAction('#ng2CreateDom', ng2CreateDom);
+          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+        });
   }
 
-  function baselineDestroyDom() {
-    baselineRootTreeComponent.update(new TreeNode('', null, null));
-  }
+  function baselineDestroyDom() { baselineRootTreeComponent.update(new TreeNode('', null, null)); }
 
   function baselineCreateDom() {
-    var values = count++ % 2 == 0 ?
-      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
-      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+    var values = count++ % 2 == 0 ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+                                    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
     baselineRootTreeComponent.update(buildTree(maxDepth, values, 0));
   }
@@ -129,7 +122,8 @@ export function main() {
     bindAction('#baselineCreateDom', baselineCreateDom);
 
     bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
-    bindAction('#baselineCreateDomProfile', profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+    bindAction('#baselineCreateDomProfile',
+               profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
@@ -137,9 +131,9 @@ export function main() {
 }
 
 class TreeNode {
-  value:string;
-  left:TreeNode;
-  right:TreeNode;
+  value: string;
+  left: TreeNode;
+  right: TreeNode;
   constructor(value, left, right) {
     this.value = value;
     this.left = left;
@@ -149,19 +143,17 @@ class TreeNode {
 
 function buildTree(maxDepth, values, curDepth) {
   if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(
-      values[curDepth],
-      buildTree(maxDepth, values, curDepth+1),
-      buildTree(maxDepth, values, curDepth+1));
+  return new TreeNode(values[curDepth], buildTree(maxDepth, values, curDepth + 1),
+                      buildTree(maxDepth, values, curDepth + 1));
 }
 
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
   element;
-  value:BaseLineInterpolation;
-  left:BaseLineIf;
-  right:BaseLineIf;
+  value: BaseLineInterpolation;
+  left: BaseLineIf;
+  right: BaseLineIf;
   constructor(element) {
     this.element = element;
     var clone = DOM.clone(BASELINE_TREE_TEMPLATE.content.firstChild);
@@ -175,7 +167,7 @@ class BaseLineTreeComponent {
     child = DOM.nextSibling(child);
     this.right = new BaseLineIf(child);
   }
-  update(value:TreeNode) {
+  update(value: TreeNode) {
     this.value.update(value.value);
     this.left.update(value.left);
     this.right.update(value.right);
@@ -183,13 +175,13 @@ class BaseLineTreeComponent {
 }
 
 class BaseLineInterpolation {
-  value:string;
+  value: string;
   textNode;
   constructor(textNode) {
     this.value = null;
     this.textNode = textNode;
   }
-  update(value:string) {
+  update(value: string) {
     if (this.value !== value) {
       this.value = value;
       DOM.setText(this.textNode, value + ' ');
@@ -198,15 +190,15 @@ class BaseLineInterpolation {
 }
 
 class BaseLineIf {
-  condition:boolean;
-  component:BaseLineTreeComponent;
+  condition: boolean;
+  component: BaseLineTreeComponent;
   anchor;
   constructor(anchor) {
     this.anchor = anchor;
     this.condition = false;
     this.component = null;
   }
-  update(value:TreeNode) {
+  update(value: TreeNode) {
     var newCondition = isPresent(value);
     if (this.condition !== newCondition) {
       this.condition = newCondition;
@@ -227,12 +219,9 @@ class BaseLineIf {
 }
 
 @Component({selector: 'app'})
-@View({
-  directives: [TreeComponent],
-  template: `<tree [data]='initData'></tree>`
-})
+@View({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
 class AppComponent {
-  initData:TreeNode;
+  initData: TreeNode;
   constructor() {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
@@ -240,15 +229,12 @@ class AppComponent {
   }
 }
 
-@Component({
-  selector: 'tree',
-  properties: ['data']
-})
+@Component({selector: 'tree', properties: ['data']})
 @View({
   directives: [TreeComponent, NgIf],
-  template: `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
+  template:
+      `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
 })
 class TreeComponent {
-  data:TreeNode;
+  data: TreeNode;
 }
-

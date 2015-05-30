@@ -22,47 +22,35 @@ export function main() {
   var proto = ProtoElementInjector.create(null, 0, bindings, false, 0);
   var elementInjector = proto.instantiate(null);
 
-  function instantiate () {
+  function instantiate() {
     for (var i = 0; i < iterations; ++i) {
       var ei = proto.instantiate(null);
       ei.hydrate(appInjector, null, null);
     }
   }
 
-  function hydrate () {
+  function hydrate() {
     for (var i = 0; i < iterations; ++i) {
       elementInjector.dehydrate();
       elementInjector.hydrate(appInjector, null, null);
     }
   }
 
-  bindAction(
-    '#instantiate',
-    () => microBenchmark('instantiateAvg', iterations, instantiate)
-  );
-  bindAction(
-    '#hydrate',
-    () => microBenchmark('instantiateAvg', iterations, hydrate)
-  );
+  bindAction('#instantiate', () => microBenchmark('instantiateAvg', iterations, instantiate));
+  bindAction('#hydrate', () => microBenchmark('instantiateAvg', iterations, hydrate));
 }
 
 @Injectable()
 class A {
-  constructor() {
-    count++;
-  }
+  constructor() { count++; }
 }
 
 @Injectable()
 class B {
-  constructor() {
-    count++;
-  }
+  constructor() { count++; }
 }
 
 @Injectable()
 class C {
-  constructor(a:A, b:B) {
-    count++;
-  }
+  constructor(a: A, b: B) { count++; }
 }

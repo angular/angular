@@ -1,6 +1,6 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-import {bootstrap}  from 'angular2/angular2';
+import {bootstrap} from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
@@ -14,7 +14,7 @@ export function main() {
   bootstrap(App, createBindings());
 }
 
-function createBindings():List {
+function createBindings(): List {
   return [bind(APP_VIEW_POOL_CAPACITY).toValue(100000)];
 }
 
@@ -23,19 +23,19 @@ export function setupReflector() {
 
   // TODO(kegluneq): Generate this.
   reflector.registerSetters({
-    'style': (o, m) => {
-      // HACK
-      MapWrapper.forEach(m, function(v, k) {
-        o.style.setProperty(k, v);
-      });
-    }
+    'style': (o, m) =>
+             {
+               // HACK
+               MapWrapper.forEach(m, function(v, k) { o.style.setProperty(k, v); });
+             }
   });
 
   reflector.registerMethods({
-    'onScroll': (o, args) => {
-      // HACK
-      o.onScroll(args[0]);
-    },
+    'onScroll': (o, args) =>
+                {
+                  // HACK
+                  o.onScroll(args[0]);
+                },
     'setStage': (o, args) => o.setStage(args[0])
   });
 }
