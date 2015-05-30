@@ -129,7 +129,7 @@ function _dequeueTimer(id: number): Function {
 }
 
 function _assertInFakeAsyncZone(): void {
-  if (!(<FakeAsyncZone>global.zone)._inFakeAsyncZone) {
+  if (!global.zone || !(<FakeAsyncZone>global.zone)._inFakeAsyncZone) {
     throw new Error('The code should be running in the fakeAsync zone to call this function');
   }
 }
