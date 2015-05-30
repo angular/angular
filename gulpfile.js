@@ -439,6 +439,8 @@ gulp.task('test.unit.dart', function (done) {
 
       watch('modules/angular2/**', { ignoreInitial: true, log: watchLog }, [
         '!build/tree.dart',
+        '!build/pubget.angular2.dart',
+        '!build/change_detect.dart',
         '!test.unit.dart/karma-run'
       ]);
     }
