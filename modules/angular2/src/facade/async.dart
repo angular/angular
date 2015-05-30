@@ -9,9 +9,12 @@ class PromiseWrapper {
   static Future reject(obj, stackTrace) => new Future.error(obj,
       stackTrace != null ? stackTrace : obj is Error ? obj.stackTrace : null);
 
-  static Future<List> all(List<Future> promises) => Future.wait(promises);
+  static Future<List> all(List<dynamic> promises) {
+    return Future
+        .wait(promises.map((p) => p is Future ? p : new Future.value(p)));
+  }
 
-  static Future then(Future promise, success(value), Function onError) {
+  static Future then(Future promise, success(value), [Function onError]) {
     if (success == null) return promise.catchError(onError);
     return promise.then(success, onError: onError);
   }

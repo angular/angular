@@ -18,13 +18,13 @@ export class PromiseWrapper {
     return promise.catch(onError);
   }
 
-  static all(promises: List<Promise<any>>): Promise<any> {
+  static all(promises: List<any>): Promise<any> {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }
 
   static then<T>(promise: Promise<T>, success: (value: any) => T | Thenable<T>,
-                 rejection: (error: any, stack?: any) => T | Thenable<T>): Promise<T> {
+                 rejection?: (error: any, stack?: any) => T | Thenable<T>): Promise<T> {
     return promise.then(success, rejection);
   }
 
