@@ -427,6 +427,8 @@ gulp.task('!test.unit.js/karma-run', function(done) {
 gulp.task('test.unit.dart', function (done) {
   runSequence(
     'build/tree.dart',
+    '!build/pubget.angular2.dart',
+    '!build/change_detect.dart',
     '!test.unit.dart/karma-server',
     '!test.unit.dart/karma-run',
     function(error) {
