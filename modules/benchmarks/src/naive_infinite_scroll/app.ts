@@ -1,16 +1,14 @@
-import {int, isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {TimerWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';
 import {NgIf, NgFor} from 'angular2/directives';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {document} from 'angular2/src/facade/browser';
 
-// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
-// add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {Component, Directive, View} from 'angular2/angular2';
+
 
 @Component({selector: 'scroll-app'})
 @View({
@@ -27,9 +25,9 @@ import {View} from 'angular2/src/core/annotations_impl/view';
   </div>`
 })
 export class App {
-  scrollAreas:List<int>;
-  iterationCount:int;
-  scrollIncrement:int;
+  scrollAreas: List<int>;
+  iterationCount: int;
+  scrollIncrement: int;
 
   constructor() {
     var appSize = getIntParameter('appSize');
@@ -40,9 +38,7 @@ export class App {
     for (var i = 0; i < appSize; i++) {
       ListWrapper.push(this.scrollAreas, i);
     }
-    bindAction('#run-btn', () => {
-      this.runBenchmark();
-    });
+    bindAction('#run-btn', () => { this.runBenchmark(); });
     bindAction('#reset-btn', () => {
       this._getScrollDiv().scrollTop = 0;
       var existingMarker = this._locateFinishedMarker();
@@ -54,7 +50,7 @@ export class App {
 
   runBenchmark() {
     var scrollDiv = this._getScrollDiv();
-    var n:int = this.iterationCount;
+    var n: int = this.iterationCount;
     var scheduleScroll;
     scheduleScroll = () => {
       TimerWrapper.setTimeout(() => {
@@ -66,7 +62,7 @@ export class App {
           this._scheduleFinishedMarker();
         }
       }, 0);
-    }
+    };
     scheduleScroll();
   }
 
@@ -85,11 +81,7 @@ export class App {
     }, 0);
   }
 
-  _locateFinishedMarker() {
-    return DOM.querySelector(document.body, '#done');
-  }
+  _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
 
-  _getScrollDiv() {
-    return DOM.query('body /deep/ #testArea /deep/ #scrollDiv');
-  }
+  _getScrollDiv() { return DOM.query('body /deep/ #testArea /deep/ #scrollDiv'); }
 }
