@@ -1,14 +1,10 @@
-/// <reference path="../../angular2/typings/node/node.d.ts" />
-/// <reference path="../../angular2/typings/angular-protractor/angular-protractor.d.ts" />
-import {afterEach, describe, expect, it} from 'angular2/test_lib';
-
-var testUtil = require('angular2/src/test_lib/e2e_util');
+import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 
 describe('ng2 naive infinite scroll benchmark', function() {
 
   var URL = 'benchmarks/src/naive_infinite_scroll/index.html?appSize=3';
 
-  afterEach(testUtil.verifyNoBrowserErrors);
+  afterEach(verifyNoBrowserErrors);
 
   it('should not throw errors', function() {
     browser.get(URL);
@@ -20,7 +16,8 @@ describe('ng2 naive infinite scroll benchmark', function() {
 
     var count =
         function(selector) {
-          return browser.executeScript(`return document.querySelectorAll("${ selector }").length;`);
+          return browser.executeScript(`return ` +
+                                       `document.querySelectorAll("${ selector }").length;`);
         }
 
     var clickFirstOf =
@@ -30,24 +27,25 @@ describe('ng2 naive infinite scroll benchmark', function() {
 
     var firstTextOf =
         function(selector) {
-          return browser.executeScript(`return document.querySelector("${ selector }").innerText;`);
+          return browser.executeScript(`return ` +
+                                       `document.querySelector("${ selector }").innerText;`);
         }
 
         // Make sure rows are rendered
         count(allScrollItems)
-            .then(function(c) { expect(c).toBe(expectedRowCount); });
+            .then(function(c) { expect(c).toEqual(expectedRowCount); });
 
     // Make sure cells are rendered
-    count(cells).then(function(c) { expect(c).toBe(expectedRowCount * expectedCellsPerRow); });
+    count(cells).then(function(c) { expect(c).toEqual(expectedRowCount * expectedCellsPerRow); });
 
     // Click on first enabled button and verify stage changes
     firstTextOf(`${ stageButtons }:enabled`)
         .then(function(text) {
-          expect(text).toBe('Pitched');
+          expect(text).toEqual('Pitched');
           clickFirstOf(`${ stageButtons }:enabled`)
               .then(function() {
                 firstTextOf(`${ stageButtons }:enabled`)
-                    .then(function(text) { expect(text).toBe('Won'); })
+                    .then(function(text) { expect(text).toEqual('Won'); })
               });
         })
 

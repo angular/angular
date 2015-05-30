@@ -10,14 +10,16 @@ import {window, document, gc} from 'angular2/src/facade/browser';
 import {
   getIntParameter,
   getStringParameter,
-  bindAction
+  bindAction,
+  windowProfile,
+  windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
 import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {bind} from 'angular2/di';
+import {bind, Binding} from 'angular2/di';
 
-function createBindings(): List {
+function createBindings(): List<Binding> {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
 }
@@ -53,7 +55,7 @@ export function main() {
 
   function profile(create, destroy, name) {
     return function() {
-      window.console.profile(name + ' w GC');
+      windowProfile(name + ' w GC');
       var duration = 0;
       var count = 0;
       while (count++ < 150) {
@@ -63,10 +65,10 @@ export function main() {
         duration += window.performance.now() - start;
         destroy();
       }
-      window.console.profileEnd(name + ' w GC');
+      windowProfileEnd(name + ' w GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
 
-      window.console.profile(name + ' w/o GC');
+      windowProfile(name + ' w/o GC');
       duration = 0;
       count = 0;
       while (count++ < 150) {
@@ -75,7 +77,7 @@ export function main() {
         duration += window.performance.now() - start;
         destroy();
       }
-      window.console.profileEnd(name + ' w/o GC');
+      windowProfileEnd(name + ' w/o GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
     };
   }
@@ -218,6 +220,16 @@ class BaseLineIf {
   }
 }
 
+@Component({selector: 'tree', properties: ['data']})
+@View({
+  directives: [TreeComponent, NgIf],
+  template:
+      `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
+})
+class TreeComponent {
+  data: TreeNode;
+}
+
 @Component({selector: 'app'})
 @View({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
 class AppComponent {
@@ -227,14 +239,4 @@ class AppComponent {
     // --> this should be already caught in change detection!
     this.initData = new TreeNode('', null, null);
   }
-}
-
-@Component({selector: 'tree', properties: ['data']})
-@View({
-  directives: [TreeComponent, NgIf],
-  template:
-      `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
-})
-class TreeComponent {
-  data: TreeNode;
 }

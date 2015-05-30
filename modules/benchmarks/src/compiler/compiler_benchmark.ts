@@ -11,6 +11,7 @@ import {Parser, Lexer, DynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
+import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
@@ -113,10 +114,10 @@ class MultipleTemplateResolver extends TemplateResolver {
     MapWrapper.set(this._cache, component, ListWrapper.join(multiplier, ''));
   }
 
-  resolve(component: Type): View {
+  resolve(component: Type): viewModule.View {
     var view = super.resolve(component);
-    var myView =
-        new View({template: MapWrapper.get(this._cache, component), directives: view.directives});
+    var myView = new viewModule.View(
+        {template:<string>MapWrapper.get(this._cache, component), directives: view.directives});
     return myView;
   }
 }

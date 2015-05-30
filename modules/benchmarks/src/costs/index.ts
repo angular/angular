@@ -51,6 +51,23 @@ export function main() {
       });
 }
 
+
+@Component({selector: 'dummy'})
+@View({template: `<div></div>`})
+class DummyComponent {
+}
+
+@Directive({selector: '[dummy-decorator]'})
+class DummyDirective {
+}
+
+@Component({selector: 'dynamic-dummy'})
+class DynamicDummy {
+  constructor(loader: DynamicComponentLoader, location: ElementRef) {
+    loader.loadIntoExistingLocation(DummyComponent, location);
+  }
+}
+
 @Component({selector: 'app'})
 @View({
   directives: [NgIf, NgFor, DummyComponent, DummyDirective, DynamicDummy],
@@ -60,7 +77,7 @@ export function main() {
     </div>
 
     <div *ng-if="testingWithDirectives">
-      <dummy dummy-decorator *ng-for="#i of list"></dummy>
+      <dummy [dummy-decorator] *ng-for="#i of list"></dummy>
     </div>
 
     <div *ng-if="testingDynamicComponents">
@@ -69,7 +86,7 @@ export function main() {
   `
 })
 class AppComponent {
-  list: List;
+  list: List<any>;
   testingPlainComponents: boolean;
   testingWithDirectives: boolean;
   testingDynamicComponents: boolean;
@@ -96,21 +113,5 @@ class AppComponent {
   createDynamicComponents(): void {
     this.list = testList;
     this.testingDynamicComponents = true;
-  }
-}
-
-@Component({selector: 'dummy'})
-@View({template: `<div></div>`})
-class DummyComponent {
-}
-
-@Directive({selector: '[dummy-decorator]'})
-class DummyDirective {
-}
-
-@Component({selector: 'dynamic-dummy'})
-class DynamicDummy {
-  constructor(loader: DynamicComponentLoader, location: ElementRef) {
-    loader.loadIntoExistingLocation(DummyComponent, location);
   }
 }

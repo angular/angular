@@ -1,13 +1,10 @@
-/// <reference path="../../angular2/typings/node/node.d.ts" />
-import {afterEach, describe, it} from 'angular2/test_lib';
-
-var perfUtil = require('angular2/src/test_lib/perf_util');
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
 
 describe('ng2 largetable benchmark', function() {
 
   var URL = 'benchmarks/src/largetable/largetable_benchmark.html';
 
-  afterEach(perfUtil.verifyNoBrowserErrors);
+  afterEach(verifyNoBrowserErrors);
 
   // Not yet implemented:
   // 'ngBind',
@@ -19,33 +16,31 @@ describe('ng2 largetable benchmark', function() {
   ['interpolation', 'interpolationAttr', 'interpolationFn'].forEach(function(benchmarkType) {
     it('should log the ng stats with: ' + benchmarkType, function(done) {
       console.log('executing for type', benchmarkType);
-      perfUtil.runClickBenchmark({
-                url: URL,
-                buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-                id: 'ng2.largetable.' + benchmarkType,
-                params: [
-                  {name: 'rows', value: 20, scale: 'sqrt'},
-                  {name: 'columns', value: 20, scale: 'sqrt'},
-                  {name: 'benchmarkType', value: benchmarkType}
-                ]
-              })
-          .then(done, done.fail);
+      runClickBenchmark({
+        url: URL,
+        buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
+        id: 'ng2.largetable.' + benchmarkType,
+        params: [
+          {name: 'rows', value: 20, scale: 'sqrt'},
+          {name: 'columns', value: 20, scale: 'sqrt'},
+          {name: 'benchmarkType', value: benchmarkType}
+        ]
+      }).then(done, done.fail);
     });
   });
 
 
   it('should log the baseline stats', function(done) {
-    perfUtil.runClickBenchmark({
-              url: URL,
-              buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-              id: 'baseline.largetable',
-              params: [
-                {name: 'rows', value: 100, scale: 'sqrt'},
-                {name: 'columns', value: 20, scale: 'sqrt'},
-                {name: 'benchmarkType', value: 'baseline'}
-              ]
-            })
-        .then(done, done.fail);
+    runClickBenchmark({
+      url: URL,
+      buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
+      id: 'baseline.largetable',
+      params: [
+        {name: 'rows', value: 100, scale: 'sqrt'},
+        {name: 'columns', value: 20, scale: 'sqrt'},
+        {name: 'benchmarkType', value: 'baseline'}
+      ]
+    }).then(done, done.fail);
     ;
   });
 
