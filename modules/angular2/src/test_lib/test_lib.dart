@@ -114,6 +114,7 @@ class NotExpect extends gns.NotExpect {
 
   void toEqual(expected) => toHaveSameProps(expected);
   void toBePromise() => _expect(actual is Future, equals(false));
+  void toBeNull() => _expect(actual == null, equals(false));
   Function get _expect => gns.guinness.matchers.expect;
 }
 
