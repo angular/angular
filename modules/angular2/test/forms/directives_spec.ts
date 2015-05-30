@@ -1,6 +1,8 @@
 import {
   ddescribe,
   describe,
+  fakeAsync,
+  flushMicrotasks,
   it,
   iit,
   xit,
@@ -11,24 +13,176 @@ import {
   AsyncTestCompleter,
   inject
 } from 'angular2/test_lib';
-import {ControlGroup, ControlDirective, ControlGroupDirective} from 'angular2/forms';
+import {
+  ControlGroup,
+  Control,
+  ControlNameDirective,
+  ControlGroupDirective,
+  FormModelDirective,
+  ControlValueAccessor,
+  Validators,
+  TemplateDrivenFormDirective,
+  FormControlDirective
+} from 'angular2/forms';
+
+class DummyControlValueAccessor implements ControlValueAccessor {
+  writtenValue;
+
+  registerOnChange(fn) {}
+
+  writeValue(obj: any): void { this.writtenValue = obj; }
+}
 
 export function main() {
   describe("Form Directives", () => {
-    describe("Control", () => {
-      it("should throw when the group is not found and the control is not set", () => {
-        var c = new ControlDirective(null);
-        expect(() => { c.controlOrName = 'login'; })
-            .toThrowError(new RegExp('No control group found for "login"'));
+    describe("FormModelDirective", () => {
+      var form;
+      var formModel;
+      var loginControlDir;
+
+      beforeEach(() => {
+        form = new FormModelDirective();
+        formModel = new ControlGroup({"login": new Control(null)});
+        form.form = formModel;
+
+        loginControlDir = new ControlNameDirective(form);
+        loginControlDir.name = "login";
+        loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
-      it("should throw when cannot find the control in the group", () => {
-        var emptyGroup = new ControlGroupDirective(null);
-        emptyGroup.controlOrName = new ControlGroup({});
+      describe("addControl", () => {
+        it("should throw when no control found", () => {
+          var dir = new ControlNameDirective(form);
+          dir.name = "invalidName";
 
-        var c = new ControlDirective(emptyGroup);
-        expect(() => { c.controlOrName = 'login'; })
-            .toThrowError(new RegExp('Cannot find control "login"'));
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp("Cannot find control 'invalidName'"));
+        });
+
+        it("should throw when no value accessor", () => {
+          var dir = new ControlNameDirective(form);
+          dir.name = "login";
+
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp("No value accessor for 'login'"));
+        });
+
+        it("should set up validator", () => {
+          loginControlDir.validator = Validators.required;
+
+          expect(formModel.find(["login"]).valid).toBe(true);
+
+          // this will add the required validator and recalculate the validity
+          form.addControl(loginControlDir);
+
+          expect(formModel.find(["login"]).valid).toBe(false);
+        });
+
+        it("should write value to the DOM", () => {
+          formModel.find(["login"]).value = "initValue";
+
+          form.addControl(loginControlDir);
+
+          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual("initValue");
+        });
+
+        it("should add the directive to the list of directives included in the form", () => {
+          form.addControl(loginControlDir);
+          expect(form.directives).toEqual([loginControlDir]);
+        });
+      });
+
+      describe("removeControl", () => {
+        it("should remove the directive to the list of directives included in the form", () => {
+          form.addControl(loginControlDir);
+          form.removeControl(loginControlDir);
+          expect(form.directives).toEqual([]);
+        });
+      });
+
+      describe("onChange", () => {
+        it("should update dom values of all the directives", () => {
+          form.addControl(loginControlDir);
+
+          formModel.find(["login"]).value = "new value";
+
+          form.onChange(null);
+
+          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual("new value");
+        });
+      });
+    });
+
+    describe("TemplateDrivenFormDirective", () => {
+      var form;
+      var formModel;
+      var loginControlDir;
+      var personControlGroupDir;
+
+      beforeEach(() => {
+        form = new TemplateDrivenFormDirective();
+        formModel = form.form;
+
+        personControlGroupDir = new ControlGroupDirective(form);
+        personControlGroupDir.name = "person";
+
+        loginControlDir = new ControlNameDirective(personControlGroupDir);
+        loginControlDir.name = "login";
+        loginControlDir.valueAccessor = new DummyControlValueAccessor();
+      });
+
+      describe("addControl & addControlGroup", () => {
+        it("should create a control with the given name", fakeAsync(() => {
+             form.addControlGroup(personControlGroupDir);
+             form.addControl(loginControlDir);
+
+             flushMicrotasks();
+
+             expect(formModel.find(["person", "login"])).not.toBeNull;
+           }));
+
+        // should update the form's value and validity
+      });
+
+      describe("removeControl & removeControlGroup", () => {
+        it("should remove control", fakeAsync(() => {
+             form.addControlGroup(personControlGroupDir);
+             form.addControl(loginControlDir);
+
+             form.removeControlGroup(personControlGroupDir);
+             form.removeControl(loginControlDir);
+
+             flushMicrotasks();
+
+             expect(formModel.find(["person"])).toBeNull();
+             expect(formModel.find(["person", "login"])).toBeNull();
+           }));
+
+        // should update the form's value and validity
+      });
+    });
+
+    describe("FormControlDirective", () => {
+      var controlDir;
+      var control;
+
+      beforeEach(() => {
+        controlDir = new FormControlDirective();
+        controlDir.valueAccessor = new DummyControlValueAccessor();
+
+        control = new Control(null);
+        controlDir.control = control;
+      });
+
+      it("should set up validator", () => {
+        controlDir.validator = Validators.required;
+
+        expect(control.valid).toBe(true);
+
+        // this will add the required validator and recalculate the validity
+        controlDir.onChange(null);
+
+        expect(control.valid).toBe(false);
       });
     });
   });

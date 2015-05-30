@@ -1,4 +1,4 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {Validators} from './validators';
@@ -42,6 +42,8 @@ export class AbstractControl {
 
   get value(): any { return this._value; }
 
+  set value(v) { this._value = v; }
+
   get status(): string { return this._status; }
 
   get valid(): boolean { return this._status === VALID; }
@@ -59,6 +61,14 @@ export class AbstractControl {
   _updateParent() {
     if (isPresent(this._parent)) {
       this._parent._updateValue();
+    }
+  }
+
+  updateValidity() {
+    this._errors = this.validator(this);
+    this._status = isPresent(this._errors) ? INVALID : VALID;
+    if (isPresent(this._parent)) {
+      this._parent.updateValidity();
     }
   }
 }
@@ -129,6 +139,10 @@ export class ControlGroup extends AbstractControl {
     this._setValueErrorsStatus();
   }
 
+  addControl(name: string, c: AbstractControl) { this.controls[name] = c; }
+
+  removeControl(name: string) { StringMapWrapper.delete(this.controls, name); }
+
   include(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, true);
     this._updateValue();
@@ -142,6 +156,18 @@ export class ControlGroup extends AbstractControl {
   contains(controlName: string): boolean {
     var c = StringMapWrapper.contains(this.controls, controlName);
     return c && this._included(controlName);
+  }
+
+  find(path: string | List<string>): AbstractControl {
+    if (!(path instanceof List)) {
+      path = StringWrapper.split(<string>path, new RegExp("/"));
+    }
+
+    return ListWrapper.reduce(
+        <List<string>>path, (v, name) => v instanceof ControlGroup && isPresent(v.controls[name]) ?
+                                                          v.controls[name] :
+                                                          null,
+                                                      this);
   }
 
   _setParentForControls() {

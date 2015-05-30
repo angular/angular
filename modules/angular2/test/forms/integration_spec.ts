@@ -1,3 +1,4 @@
+import {Component, Directive, View} from 'angular2/angular2';
 import {
   afterEach,
   AsyncTestCompleter,
@@ -5,6 +6,8 @@ import {
   ddescribe,
   describe,
   dispatchEvent,
+  fakeAsync,
+  flushMicrotasks,
   el,
   expect,
   iit,
@@ -12,16 +15,19 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Component, Directive, View} from 'angular2/angular2';
+
 import {TestBed} from 'angular2/src/test_lib/test_bed';
+import {NgIf} from 'angular2/directives';
+
 import {
   Control,
   ControlGroup,
-  ControlDirective,
   RequiredValidatorDirective,
+  TemplateDrivenFormDirective,
+  formDirectives,
   Validators,
-  formDirectives
+  ControlDirective,
+  ControlValueAccessor
 } from 'angular2/forms';
 
 export function main() {
@@ -30,13 +36,14 @@ export function main() {
        inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var ctx = MyComp.create({form: new ControlGroup({"login": new Control("loginValue")})});
 
-         var t = `<div [control-group]="form">
+         var t = `<div [form-model]="form">
                 <input type="text" control="login">
                </div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
              .then((view) => {
                view.detectChanges();
+
                var input = view.querySelector("input");
                expect(input.value).toEqual("loginValue");
                async.done();
@@ -48,7 +55,7 @@ export function main() {
          var form = new ControlGroup({"login": new Control("oldValue")});
          var ctx = MyComp.create({form: form});
 
-         var t = `<div [control-group]="form">
+         var t = `<div [form-model]="form">
                 <input type="text" control="login">
               </div>`;
 
@@ -69,7 +76,7 @@ export function main() {
          var control = new Control("loginValue");
          var ctx = MyComp.create({form: control});
 
-         var t = `<div><input type="text" [control]="form"></div>`;
+         var t = `<div><input type="text" [form-control]="form"></div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
              .then((view) => {
@@ -90,9 +97,9 @@ export function main() {
          var form = new ControlGroup({"login": new Control("oldValue")});
          var ctx = MyComp.create({form: form});
 
-         var t = `<div [control-group]="form">
-              <input type="text" control="login">
-            </div>`;
+         var t = `<div [form-model]="form">
+                <input type="text" control="login">
+               </div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
              .then((view) => {
@@ -106,36 +113,11 @@ export function main() {
              });
        }));
 
-    it("should update DOM element when rebinding the control name",
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
-         var ctx = MyComp.create({
-           form: new ControlGroup({"one": new Control("one"), "two": new Control("two")}),
-           name: "one"
-         });
-
-         var t = `<div [control-group]="form">
-              <input type="text" [control]="name">
-            </div>`;
-
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
-               var input = view.querySelector("input");
-               expect(input.value).toEqual("one");
-
-               ctx.name = "two";
-               view.detectChanges();
-
-               expect(input.value).toEqual("two");
-               async.done();
-             });
-       }));
-
     describe("different control types", () => {
       it("should support <input type=text>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <input type="text" control="text">
                 </div>`;
 
@@ -157,7 +139,7 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <input control="text">
                 </div>`;
 
@@ -178,7 +160,7 @@ export function main() {
       it("should support <textarea>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control('old')})});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <textarea control="text"></textarea>
                 </div>`;
 
@@ -199,7 +181,7 @@ export function main() {
       it("should support <type=checkbox>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"checkbox": new Control(true)})});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <input type="checkbox" control="checkbox">
                 </div>`;
 
@@ -220,7 +202,7 @@ export function main() {
       it("should support <select>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"city": new Control("SF")})});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                     <select control="city">
                       <option value="SF"></option>
                       <option value="NYC"></option>
@@ -233,17 +215,13 @@ export function main() {
                  var select = view.querySelector("select");
                  var sfOption = view.querySelector("option");
                  expect(select.value).toEqual('SF');
-                 if (DOM.supportsDOMEvents()) {
-                   expect(sfOption.selected).toBe(true);
-                 }
+                 expect(sfOption.selected).toBe(true);
 
                  select.value = 'NYC';
                  dispatchEvent(select, "change");
 
                  expect(ctx.form.value).toEqual({"city": 'NYC'});
-                 if (DOM.supportsDOMEvents()) {
-                   expect(sfOption.selected).toBe(false);
-                 }
+                 expect(sfOption.selected).toBe(false);
                  async.done();
                });
          }));
@@ -252,7 +230,7 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"name": new Control("aa")})});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <input type="text" control="name" wrapped-value>
                 </div>`;
 
@@ -277,7 +255,7 @@ export function main() {
            var form = new ControlGroup({"login": new Control("aa")});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <input type="text" control="login" required>
                  </div>`;
 
@@ -301,7 +279,7 @@ export function main() {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <input type="text" control="login">
                  </div>`;
 
@@ -328,7 +306,7 @@ export function main() {
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                   <div control-group="nested">
                     <input type="text" control="login">
                   </div>
@@ -349,7 +327,7 @@ export function main() {
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [control-group]="form">
+           var t = `<div [form-model]="form">
                     <div control-group="nested">
                       <input type="text" control="login">
                     </div>
@@ -358,15 +336,100 @@ export function main() {
            tb.createView(MyComp, {context: ctx, html: t})
                .then((view) => {
                  view.detectChanges();
-                 var input = view.querySelector("input")
+                 var input = view.querySelector("input");
 
-                                 input.value = "updatedValue";
+                 input.value = "updatedValue";
                  dispatchEvent(input, "change");
 
                  expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
                  async.done();
                });
          }));
+    });
+
+    describe("template-driven forms", () => {
+      it("should add new controls and control groups",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: null});
+
+                  var t = `<div form>
+                     <div control-group="user">
+                      <input type="text" control="login">
+                     </div>
+               </div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+                        var form =
+                            view.rawView.elementInjectors[0].get(TemplateDrivenFormDirective);
+                        expect(form.controls['user']).not.toBeDefined();
+
+                        flushMicrotasks();
+
+                        expect(form.controls['user']).toBeDefined();
+                        expect(form.controls['user'].controls['login']).toBeDefined();
+                      });
+                  flushMicrotasks();
+                })));
+
+      it("should remove controls", inject([TestBed], fakeAsync(tb => {
+                                            var ctx = MyComp.create({name: 'show'});
+
+                                            var t = `<div form>
+                    <div *ng-if="name == 'show'">
+                      <input type="text" control="login">
+                    </div>
+                  </div>`;
+
+                                            tb.createView(MyComp, {context: ctx, html: t})
+                                                .then((view) => {
+                                                  view.detectChanges();
+                                                  var form = view.rawView.elementInjectors[0].get(
+                                                      TemplateDrivenFormDirective);
+
+                                                  flushMicrotasks();
+
+                                                  expect(form.controls['login']).toBeDefined();
+
+                                                  ctx.name = 'hide';
+                                                  view.detectChanges();
+                                                  flushMicrotasks();
+
+                                                  expect(form.controls['login']).not.toBeDefined();
+                                                });
+                                            flushMicrotasks();
+                                          })));
+
+      it("should remove control groups",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: 'show'});
+
+
+                  var t = `<div form>
+                     <div *ng-if="name=='show'" control-group="user">
+                      <input type="text" control="login">
+                     </div>
+               </div>`;
+
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+                        var form =
+                            view.rawView.elementInjectors[0].get(TemplateDrivenFormDirective);
+                        flushMicrotasks();
+
+                        expect(form.controls['user']).toBeDefined();
+
+                        ctx.name = 'hide';
+                        view.detectChanges();
+                        flushMicrotasks();
+
+                        expect(form.controls['user']).not.toBeDefined();
+                      });
+                  flushMicrotasks();
+                })));
     });
   });
 }
@@ -376,7 +439,7 @@ export function main() {
   hostListeners: {'change': 'handleOnChange($event.target.value)'},
   hostProperties: {'value': 'value'}
 })
-class WrappedValue {
+class WrappedValue implements ControlValueAccessor {
   value;
   onChange: Function;
 
@@ -384,16 +447,18 @@ class WrappedValue {
 
   writeValue(value) { this.value = `!${value}!`; }
 
+  registerOnChange(fn) { this.onChange = fn; }
+
   handleOnChange(value) { this.onChange(value.substring(1, value.length - 1)); }
 }
 
 @Component({selector: "my-comp"})
-@View({directives: [WrappedValue, formDirectives, RequiredValidatorDirective]})
+@View({directives: [formDirectives, WrappedValue, RequiredValidatorDirective, NgIf]})
 class MyComp {
   form: any;
   name: string;
 
-  static create({form, name}: {form?, name?}) {
+  static create({form, name}: {form?: any, name?: any}) {
     var mc = new MyComp();
     mc.form = form;
     mc.name = name;

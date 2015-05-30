@@ -113,6 +113,28 @@ export function main() {
         });
       });
 
+      describe("find", () => {
+        var g;
+        beforeEach(() => {
+          g = new ControlGroup({
+            "one": new Control("111"),
+            "nested": new ControlGroup({"two": new Control("222")})
+          });
+        });
+
+        it("should return a control if it is present", () => {
+          expect(g.find(["nested", "two"]).value).toEqual("222");
+          expect(g.find(["one"]).value).toEqual("111");
+          expect(g.find("nested/two").value).toEqual("222");
+          expect(g.find("one").value).toEqual("111");
+        });
+
+        it("should return null otherwise", () => {
+          expect(g.find("invalid")).toBeNull();
+          expect(g.find("one/invalid")).toBeNull();
+        });
+      });
+
       describe("validator", () => {
         it("should run the validator with the initial value (valid)", () => {
           var g = new ControlGroup({"one": new Control('value', Validators.required)});

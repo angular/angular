@@ -1,5 +1,4 @@
-import {Directive} from 'angular2/src/core/annotations/decorators';
-
+import {Directive} from 'angular2/angular2';
 import {Validators} from './validators';
 import {ControlDirective} from './directives';
 
