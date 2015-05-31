@@ -15,7 +15,8 @@ import {ControlValueAccessor} from './control_value_accessor';
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: 'input[type=checkbox][control],input[type=checkbox][form-control]',
+  selector:
+      'input[type=checkbox][control],input[type=checkbox][form-control],input[type=checkbox][ng-model]',
   hostListeners: {'change': 'onChange($event.target.checked)'},
   hostProperties: {'checked': 'checked'}
 })

@@ -17,7 +17,7 @@ import {ControlValueAccessor} from './control_value_accessor';
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: 'select[control],select[form-control]',
+  selector: 'select[control],select[form-control],select[ng-model]',
   hostListeners:
       {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
   hostProperties: {'value': 'value'}
