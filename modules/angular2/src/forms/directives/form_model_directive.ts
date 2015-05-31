@@ -6,12 +6,53 @@ import {ControlDirective} from './control_directive';
 import {ControlGroupDirective} from './control_group_directive';
 import {ControlContainerDirective} from './control_container_directive';
 import {FormDirective} from './form_directive';
-import {ControlGroup} from '../model';
+import {Control, ControlGroup} from '../model';
 import {setUpControl} from './shared';
 
 const formDirectiveBinding = CONST_EXPR(
     new Binding(ControlContainerDirective, {toAlias: FORWARD_REF(() => FormModelDirective)}));
 
+/**
+ * Binds a control group to a DOM element.
+ *
+ * # Example
+ *
+ * In this example, we bind the control group to the form element, and we bind the login and
+ * password controls to the
+ * login and password elements.
+ *
+ * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
+ * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ *
+ *  ```
+ * @Component({selector: "login-comp"})
+ * @View({
+ *      directives: [formDirectives],
+ *      template: "<form [form-model]='loginForm'>" +
+ *              "Login <input type='text' control='login'>" +
+ *              "Password <input type='password' control='password'>" +
+ *              "<button (click)="onLogin()">Login</button>" +
+ *              "</form>"
+ *      })
+ * class LoginComp {
+ *  loginForm:ControlGroup;
+ *
+ *  constructor() {
+ *    this.loginForm = new ControlGroup({
+ *      login: new Control(""),
+ *      password: new Control("")
+ *    });
+ *  }
+ *
+ *  onLogin() {
+ *    // this.loginForm.value
+ *  }
+ * }
+ *
+ *  ```
+ *
+ * @exportedAs angular2/forms
+ */
 @Directive({
   selector: '[form-model]',
   hostInjector: [formDirectiveBinding],
@@ -45,6 +86,12 @@ export class FormModelDirective extends ControlContainerDirective implements For
   addControlGroup(dir: ControlGroupDirective) {}
 
   removeControlGroup(dir: ControlGroupDirective) {}
+
+  updateModel(dir: ControlDirective, value: any): void {
+    var c  = <Control>this.form.find(dir.path);
+    c.value = value;
+    dir.valueAccessor.writeValue(value);
+  }
 
   _updateDomValue() {
     ListWrapper.forEach(this.directives, dir => {
