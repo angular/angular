@@ -184,6 +184,13 @@ export function main() {
       expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4]);
     });
 
+    it('should match with multiple :not selectors', () => {
+      matcher.addSelectables(s1 = CssSelector.parse('div:not([a]):not([b])'), 1);
+      expect(matcher.match(CssSelector.parse('div[a]')[0], selectableCollector)).toBe(false);
+      expect(matcher.match(CssSelector.parse('div[b]')[0], selectableCollector)).toBe(false);
+      expect(matcher.match(CssSelector.parse('div[c]')[0], selectableCollector)).toBe(true);
+    });
+
     it('should select with one match in a list', () => {
       matcher.addSelectables(s1 = CssSelector.parse('input[type=text], textbox'), 1);
 
@@ -256,7 +263,7 @@ export function main() {
       expect(cssSelector.attrs.length).toEqual(0);
       expect(cssSelector.classNames.length).toEqual(0);
 
-      var notSelector = cssSelector.notSelector;
+      var notSelector = cssSelector.notSelectors[0];
       expect(notSelector.element).toEqual(null);
       expect(notSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(notSelector.classNames).toEqual(['someclass']);
@@ -268,7 +275,7 @@ export function main() {
       var cssSelector = CssSelector.parse(':not([attrname=attrvalue].someclass)')[0];
       expect(cssSelector.element).toEqual("*");
 
-      var notSelector = cssSelector.notSelector;
+      var notSelector = cssSelector.notSelectors[0];
       expect(notSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(notSelector.classNames).toEqual(['someclass']);
 
@@ -278,6 +285,11 @@ export function main() {
     it('should throw when nested :not', () => {
       expect(() => { CssSelector.parse('sometag:not(:not([attrname=attrvalue].someclass))')[0]; })
           .toThrowError('Nesting :not is not allowed in a selector');
+    });
+
+    it('should throw when multiple selectors in :not', () => {
+      expect(() => { CssSelector.parse('sometag:not(a,b)'); })
+          .toThrowError('Multiple selectors in :not are not supported');
     });
 
     it('should detect lists of selectors', () => {
@@ -298,10 +310,10 @@ export function main() {
       expect(cssSelectors[0].attrs).toEqual(['type', 'text']);
 
       expect(cssSelectors[1].element).toEqual('*');
-      expect(cssSelectors[1].notSelector.element).toEqual('textarea');
+      expect(cssSelectors[1].notSelectors[0].element).toEqual('textarea');
 
       expect(cssSelectors[2].element).toEqual('textbox');
-      expect(cssSelectors[2].notSelector.classNames).toEqual(['special']);
+      expect(cssSelectors[2].notSelectors[0].classNames).toEqual(['special']);
     });
   });
 }

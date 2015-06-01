@@ -17,7 +17,7 @@ var _SELECTOR_REGEXP = RegExpWrapper.create(
     '([-\\w]+)|' +                            // "tag"
     '(?:\\.([-\\w]+))|' +                     // ".class"
     '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]" or "[name*=value]"
-    '(?:\\))|' +                              // ")"
+    '(\\))|' +                                // ")"
     '(\\s*,\\s*)');                           // ","
 
 /**
@@ -29,11 +29,11 @@ export class CssSelector {
   element: string;
   classNames: List<string>;
   attrs: List<string>;
-  notSelector: CssSelector;
+  notSelectors: List<CssSelector>;
   static parse(selector: string): List<CssSelector> {
     var results = ListWrapper.create();
     var _addResult = (res, cssSel) => {
-      if (isPresent(cssSel.notSelector) && isBlank(cssSel.element) &&
+      if (cssSel.notSelectors.length > 0 && isBlank(cssSel.element) &&
           ListWrapper.isEmpty(cssSel.classNames) && ListWrapper.isEmpty(cssSel.attrs)) {
         cssSel.element = "*";
       }
@@ -43,13 +43,15 @@ export class CssSelector {
     var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
     var match;
     var current = cssSelector;
+    var inNot = false;
     while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
       if (isPresent(match[1])) {
-        if (isPresent(cssSelector.notSelector)) {
+        if (inNot) {
           throw new BaseException('Nesting :not is not allowed in a selector');
         }
-        current.notSelector = new CssSelector();
-        current = current.notSelector;
+        inNot = true;
+        current = new CssSelector();
+        ListWrapper.push(cssSelector.notSelectors, current);
       }
       if (isPresent(match[2])) {
         current.setElement(match[2]);
@@ -61,6 +63,13 @@ export class CssSelector {
         current.addAttribute(match[4], match[5]);
       }
       if (isPresent(match[6])) {
+        inNot = false;
+        current = cssSelector;
+      }
+      if (isPresent(match[7])) {
+        if (inNot) {
+          throw new BaseException('Multiple selectors in :not are not supported');
+        }
         _addResult(results, cssSelector);
         cssSelector = current = new CssSelector();
       }
@@ -73,12 +82,12 @@ export class CssSelector {
     this.element = null;
     this.classNames = ListWrapper.create();
     this.attrs = ListWrapper.create();
-    this.notSelector = null;
+    this.notSelectors = ListWrapper.create();
   }
 
   isElementSelector(): boolean {
     return isPresent(this.element) && ListWrapper.isEmpty(this.classNames) &&
-           ListWrapper.isEmpty(this.attrs) && isBlank(this.notSelector);
+           ListWrapper.isEmpty(this.attrs) && this.notSelectors.length === 0;
   }
 
   setElement(element: string = null) {
@@ -121,9 +130,8 @@ export class CssSelector {
         res += ']';
       }
     }
-    if (isPresent(this.notSelector)) {
-      res += ":not(" + this.notSelector.toString() + ")";
-    }
+    ListWrapper.forEach(this.notSelectors,
+                        (notSelector) => { res += ":not(" + notSelector.toString() + ")"; });
     return res;
   }
 }
@@ -133,9 +141,9 @@ export class CssSelector {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
-  static createNotMatcher(notSelector: CssSelector) {
+  static createNotMatcher(notSelectors: List<CssSelector>) {
     var notMatcher = new SelectorMatcher();
-    notMatcher._addSelectable(notSelector, null, null);
+    notMatcher.addSelectables(notSelectors, null);
     return notMatcher;
   }
 
@@ -357,22 +365,22 @@ class SelectorListContext {
 // Store context to pass back selector and context when a selector is matched
 class SelectorContext {
   selector: CssSelector;
-  notSelector: CssSelector;
+  notSelectors: List<CssSelector>;
   cbContext;  // callback context
   listContext: SelectorListContext;
 
   constructor(selector: CssSelector, cbContext: any, listContext: SelectorListContext) {
     this.selector = selector;
-    this.notSelector = selector.notSelector;
+    this.notSelectors = selector.notSelectors;
     this.cbContext = cbContext;
     this.listContext = listContext;
   }
 
   finalize(cssSelector: CssSelector, callback /*: (CssSelector, any) => void*/) {
     var result = true;
-    if (isPresent(this.notSelector) &&
+    if (this.notSelectors.length > 0 &&
         (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {
-      var notMatcher = SelectorMatcher.createNotMatcher(this.notSelector);
+      var notMatcher = SelectorMatcher.createNotMatcher(this.notSelectors);
       result = !notMatcher.match(cssSelector, null);
     }
     if (result && isPresent(callback) &&
