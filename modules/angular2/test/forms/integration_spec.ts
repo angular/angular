@@ -427,11 +427,11 @@ export function main() {
          inject([TestBed], fakeAsync(tb => {
                   var ctx = MyComp.create({name: null});
 
-                  var t = `<div form>
+                  var t = `<form>
                      <div control-group="user">
                       <input type="text" control="login">
                      </div>
-               </div>`;
+               </form>`;
 
                   tb.createView(MyComp, {context: ctx, html: t})
                       .then((view) => {
@@ -448,14 +448,30 @@ export function main() {
                   flushMicrotasks();
                 })));
 
+      it("should not create a template-driven form when ng-no-form is used",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: null});
+
+                  var t = `<form ng-no-form>
+               </form>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+
+                        expect(view.rawView.elementInjectors.length).toEqual(0);
+                      });
+                  flushMicrotasks();
+                })));
+
       it("should remove controls", inject([TestBed], fakeAsync(tb => {
                                             var ctx = MyComp.create({name: 'show'});
 
-                                            var t = `<div form>
+                                            var t = `<form>
                     <div *ng-if="name == 'show'">
                       <input type="text" control="login">
                     </div>
-                  </div>`;
+                  </form>`;
 
                                             tb.createView(MyComp, {context: ctx, html: t})
                                                 .then((view) => {
@@ -481,11 +497,11 @@ export function main() {
                   var ctx = MyComp.create({name: 'show'});
 
 
-                  var t = `<div form>
+                  var t = `<form>
                      <div *ng-if="name=='show'" control-group="user">
                       <input type="text" control="login">
                      </div>
-               </div>`;
+               </form>`;
 
 
                   tb.createView(MyComp, {context: ctx, html: t})
