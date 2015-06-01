@@ -114,6 +114,30 @@ export function main() {
              });
        }));
 
+    it("should update DOM elements when updating the value of a control",
+       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         var login = new Control("oldValue");
+         var form = new ControlGroup({"login": login});
+         var ctx = MyComp.create({form: form});
+
+         var t = `<div [form-model]="form">
+                <input type="text" control="login">
+               </div>`;
+
+         tb.createView(MyComp, {context: ctx, html: t})
+             .then((view) => {
+               view.detectChanges();
+
+               login.updateValue("newValue");
+
+               view.detectChanges();
+
+               var input = view.querySelector("input");
+               expect(input.value).toEqual("newValue");
+               async.done();
+             });
+       }));
+
     describe("different control types", () => {
       it("should support <input type=text>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
