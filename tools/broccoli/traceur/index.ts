@@ -16,7 +16,7 @@ class DiffingTraceurCompiler implements DiffingBroccoliPlugin {
   static includeExtensions = ['.js', '.es6', '.cjs'];
 
   rebuild(treeDiff: DiffResult) {
-    treeDiff.changedPaths.forEach((changedFilePath) => {
+    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((changedFilePath) => {
       var traceurOpts = xtend({filename: changedFilePath}, this.options.traceurOptions);
 
       var fsOpts = {encoding: 'utf-8'};

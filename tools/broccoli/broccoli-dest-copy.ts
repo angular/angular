@@ -15,7 +15,7 @@ class DestCopy implements DiffingBroccoliPlugin {
 
 
   rebuild(treeDiff: DiffResult) {
-    treeDiff.changedPaths.forEach((changedFilePath) => {
+    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((changedFilePath) => {
       var destFilePath = path.join(this.outputRoot, changedFilePath);
 
       var destDirPath = path.dirname(destFilePath);
