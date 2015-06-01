@@ -11,34 +11,28 @@ import {DEFAULT} from 'angular2/change_detection';
  * {@link Directive}s with an embedded view are called {@link Component}s.
  *
  * A directive consists of a single directive annotation and a controller class. When the
- * directive's `selector` matches
- * elements in the DOM, the following steps occur:
+ * directive's `selector` matches elements in the DOM, the following steps occur:
  *
  * 1. For each directive, the `ElementInjector` attempts to resolve the directive's constructor
  * arguments.
  * 2. Angular instantiates directives for each matched element using `ElementInjector` in a
- * depth-first order,
- *    as declared in the HTML.
+ * depth-first order, as declared in the HTML.
  *
  * ## Understanding How Injection Works
  *
  * There are three stages of injection resolution.
  * - *Pre-existing Injectors*:
  *   - The terminal {@link Injector} cannot resolve dependencies. It either throws an error or, if
- * the dependency was
- *     specified as `@Optional`, returns `null`.
+ * the dependency was specified as `@Optional`, returns `null`.
  *   - The platform injector resolves browser singleton resources, such as: cookies, title,
  * location, and others.
  * - *Component Injectors*: Each component instance has its own {@link Injector}, and they follow
- * the same parent-child hierarchy
- *     as the component instances in the DOM.
+ * the same parent-child hierarchy as the component instances in the DOM.
  * - *Element Injectors*: Each component instance has a Shadow DOM. Within the Shadow DOM each
- * element has an `ElementInjector`
- *     which follow the same parent-child hierarchy as the DOM elements themselves.
+ * element has an `ElementInjector` which follow the same parent-child hierarchy as the DOM elements themselves.
  *
  * When a template is instantiated, it also must instantiate the corresponding directives in a
- * depth-first order. The
- * current `ElementInjector` resolves the constructor dependencies for each directive.
+ * depth-first order. The current `ElementInjector` resolves the constructor dependencies for each directive.
  *
  * Angular then resolves dependencies as follows, according to the order in which they appear in the
  * {@link View}:
@@ -50,16 +44,13 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  *
  * The `ElementInjector` can inject other directives, element-specific special objects, or it can
- * delegate to the parent
- * injector.
+ * delegate to the parent injector.
  *
  * To inject other directives, declare the constructor parameter as:
  * - `directive:DirectiveType`: a directive on the current element only
  * - `@Ancestor() directive:DirectiveType`: any directive that matches the type between the current
- * element and the
- *    Shadow DOM root. Current element is not included in the resolution, therefore even if it could
- * resolve it, it will
- *    be ignored.
+ * element and the Shadow DOM root. Current element is not included in the resolution, therefore even if it could
+ * resolve it, it will be ignored.
  * - `@Parent() directive:DirectiveType`: any directive that matches the type on a direct parent
  * element only.
  * - `@Query(DirectiveType) query:QueryList<DirectiveType>`: A live collection of direct child
@@ -137,8 +128,8 @@ import {DEFAULT} from 'angular2/change_detection';
  * parents.
  *
  * Here, the constructor declares a parameter, `someService`, and injects the `SomeService` type
- * from the parent
- * component's injector.
+ * from the parent component's injector.
+ * 
  * ```
  * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
@@ -169,10 +160,8 @@ import {DEFAULT} from 'angular2/change_detection';
  * ### Injecting a directive from a direct parent element
  *
  * Directives can inject other directives declared on a direct parent element. By definition, a
- * directive with a
- * `@Parent` annotation does not attempt to resolve dependencies for the current element, even if
- * this would satisfy
- * the dependency.
+ * directive with a `@Parent` annotation does not attempt to resolve dependencies for the current element, even if
+ * this would satisfy the dependency.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -189,10 +178,8 @@ import {DEFAULT} from 'angular2/change_detection';
  * ### Injecting a directive from any ancestor elements
  *
  * Directives can inject other directives declared on any ancestor element (in the current Shadow
- * DOM), i.e. on the
- * parent element and its parents. By definition, a directive with an `@Ancestor` annotation does
- * not attempt to
- * resolve dependencies for the current element, even if this would satisfy the dependency.
+ * DOM), i.e. on the parent element and its parents. By definition, a directive with an `@Ancestor` annotation does
+ * not attempt to resolve dependencies for the current element, even if this would satisfy the dependency.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -205,19 +192,16 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * Unlike the `@Parent` which only checks the parent, `@Ancestor` checks the parent, as well as its
  * parents recursively. If `dependency="2"` didn't exist on the direct parent, this injection would
- * have returned
- * `dependency="1"`.
+ * have returned `dependency="1"`.
  *
  *
  * ### Injecting a live collection of direct child directives
  *
  *
  * A directive can also query for other child directives. Since parent directives are instantiated
- * before child
- * directives, a directive can't simply inject the list of child directives. Instead, the directive
+ * before child directives, a directive can't simply inject the list of child directives. Instead, the directive
  * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved
- * by a directive
- * that uses a {@link ViewContainerRef} such as a `for`, an `if`, or a `switch`.
+ * by a directive that uses a {@link ViewContainerRef} such as a `for`, an `if`, or a `switch`.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -228,8 +212,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  *
  * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and
- * 6. Here, `Dependency`
- * 5 would not be included, because it is not a direct child.
+ * 6. Here, `Dependency` 5 would not be included, because it is not a direct child.
  *
  * ### Injecting a live collection of descendant directives
  *
@@ -250,8 +233,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ### Optional injection
  *
  * The normal behavior of directives is to return an error when a specified dependency cannot be
- * resolved. If you
- * would like to inject `null` on unresolved dependency instead, you can annotate that dependency
+ * resolved. If you would like to inject `null` on unresolved dependency instead, you can annotate that dependency
  * with `@Optional()`.
  * This explicitly permits the author of a template to treat some of the surrounding directives as
  * optional.
@@ -265,8 +247,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  *
  * This directive would be instantiated with a `Dependency` directive found on the current element.
- * If none can be
- * found, the injector supplies `null` instead of throwing an error.
+ * If none can be found, the injector supplies `null` instead of throwing an error.
  *
  * ## Example
  *
@@ -304,8 +285,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * }
  * ```
  * In our HTML template, we can then add this behavior to a `<div>` or any other element with the
- * `tooltip` selector,
- * like so:
+ * `tooltip` selector, like so:
  *
  * ```
  * <div tooltip="some text here"></div>
@@ -317,17 +297,14 @@ import {DEFAULT} from 'angular2/change_detection';
  * A directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at
  * runtime.
  * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a
- * location in the current view
- * where these actions are performed.
+ * location in the current view where these actions are performed.
  *
  * Views are always created as children of the current {@link View}, and as siblings of the
- * `<template>` element. Thus a
- * directive in a child view cannot inject the directive that created it.
+ * `<template>` element. Thus a directive in a child view cannot inject the directive that created it.
  *
  * Since directives that create views via ViewContainers are common in Angular, and using the full
- * `<template>` element syntax is wordy, Angular
- * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are
- * equivalent.
+ * `<template>` element syntax is wordy, Angular also supports a shorthand notation: `<li *foo="bar">` and 
+ * `<li template="foo: bar">` are equivalent.
  *
  * Thus,
  *
@@ -348,8 +325,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  *
  * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding for
- * the directive
- * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
+ * the directive controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
  *
  *
  * ## Example
@@ -406,8 +382,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  *
  * Note also that although the `<li></li>` template still exists inside the `<template></template>`,
- * the instantiated
- * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
+ * the instantiated view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  *
  * @exportedAs angular2/annotations
  */
@@ -644,16 +619,14 @@ export class Directive extends Injectable {
    * }
    *
    * In this example every time the value property of the decorator changes, Angular will update the
-   * value property of
-   * the host element.
+   * value property of the host element.
    * ```
    */
   hostProperties: StringMap<string, string>;
 
   /**
    * Specifies static attributes that should be propagated to a host element. Attributes specified
-   * in `hostAttributes`
-   * are propagated only if a given attribute is not present on a host element.
+   * in `hostAttributes` are propagated only if a given attribute is not present on a host element.
    *
    * ## Syntax
    *
@@ -668,8 +641,7 @@ export class Directive extends Injectable {
    * }
    *
    * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
-   * (here: `<div>` )
-   * will ensure that this element will get the "button" role.
+   * (here: `<div>` ) will ensure that this element will get the "button" role.
    * ```
    */
   hostAttributes: StringMap<string, string>;
@@ -780,8 +752,7 @@ export class Directive extends Injectable {
  * Declare reusable UI building blocks for an application.
  *
  * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@Component`
- * annotation specifies when a component is instantiated, and which properties and hostListeners it
+ * `@Component` annotation specifies when a component is instantiated, and which properties and hostListeners it
  * binds to.
  *
  * When a component is instantiated, Angular
@@ -816,22 +787,18 @@ export class Directive extends Injectable {
  * Dynamically loading a component at runtime:
  *
  * Regular Angular components are statically resolved. Dynamic components allows to resolve a
- * component at runtime
- * instead by providing a placeholder into which a regular Angular component can be dynamically
- * loaded. Once loaded,
- * the dynamically-loaded component becomes permanent and cannot be changed.
+ * component at runtime instead by providing a placeholder into which a regular Angular component can be dynamically
+ * loaded. Once loaded, the dynamically-loaded component becomes permanent and cannot be changed.
  * Dynamic components are declared just like components, but without a `@View` annotation.
  *
  *
  * ## Example
  *
  * Here we have `DynamicComp` which acts as the placeholder for `HelloCmp`. At runtime, the dynamic
- * component
- * `DynamicComp` requests loading of the `HelloCmp` component.
+ * component `DynamicComp` requests loading of the `HelloCmp` component.
  *
  * There is nothing special about `HelloCmp`, which is a regular Angular component. It can also be
- * used in other static
- * locations.
+ * used in other static locations.
  *
  * ```
  * @Component({
@@ -869,12 +836,10 @@ export class Component extends Directive {
    * Defines the used change detection strategy.
    *
    * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating
-   * the component's bindings.
+   * propagating the component's bindings.
    *
    * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component
-   * tells it to do so.
+   * or only when the component tells it to do so.
    */
   changeDetection: string;
 
@@ -882,16 +847,12 @@ export class Component extends Directive {
    * Defines the set of injectable objects that are visible to a Component and its children.
    *
    * The `appInjector` defined in the Component annotation allow you to configure a set of bindings
-   * for the component's
-   * injector.
+   * for the component's injector.
    *
    * When a component is instantiated, Angular creates a new child Injector, which is configured
-   * with the bindings in
-   * the Component `appInjector` annotation. The injectable objects then become available for
-   * injection to the component
-   * itself and any of the directives in the component's template, i.e. they are not available to
-   * the directives which
-   * are children in the component's light DOM.
+   * with the bindings in the Component `appInjector` annotation. The injectable objects then become available for
+   * injection to the component itself and any of the directives in the component's template, i.e. they are not available to
+   * the directives which are children in the component's light DOM.
    *
    *
    * The syntax for configuring the `appInjector` injectable is identical to {@link Injector}
