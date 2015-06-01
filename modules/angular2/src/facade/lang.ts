@@ -1,3 +1,4 @@
+/// <reference path="../../globals.d.ts" />
 var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : window);
 export {_global as global};
 
