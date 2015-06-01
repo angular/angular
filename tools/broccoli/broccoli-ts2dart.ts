@@ -1,4 +1,3 @@
-/// <reference path="./broccoli-writer.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 /// <reference path="./ts2dart.d.ts" />
