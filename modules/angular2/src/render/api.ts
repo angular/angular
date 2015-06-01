@@ -222,6 +222,22 @@ export class RenderCompiler {
   compile(template: ViewDefinition): Promise<ProtoViewDto> { return null; }
 }
 
+export enum RenderViewState { NON_EXISTING, CREATED, ATTACHED, ACTIVE }
+
+export class RenderViewActivateConfig {
+  static nonExisting(protoViewRef: RenderProtoViewRef): RenderViewActivateConfig {
+    return new RenderViewActivateConfig(protoViewRef, null, RenderViewState.NON_EXISTING);
+  }
+  static created(viewRef: RenderViewRef): RenderViewActivateConfig {
+    return new RenderViewActivateConfig(null, viewRef, RenderViewState.CREATED);
+  }
+  static attached(viewRef: RenderViewRef): RenderViewActivateConfig {
+    return new RenderViewActivateConfig(null, viewRef, RenderViewState.ATTACHED);
+  }
+
+  constructor(public protoViewRef:RenderProtoViewRef, public cachedViewRef:RenderViewRef, public prevViewState: RenderViewState) {}
+}
+
 export class Renderer {
   /**
    * Creates a root host view that includes the given element.
@@ -231,64 +247,69 @@ export class Renderer {
    * main document)
    * @return {RenderViewRef} the created view
    */
-  createRootHostView(hostProtoViewRef: RenderProtoViewRef,
+  // Note: no prevViewState as root host views can't be cached!
+  activateRootHostView(hostProtoViewRef: RenderProtoViewRef,
                      hostElementSelector: string): RenderViewRef {
     return null;
   }
 
   /**
-   * Detaches a free host view's element from the DOM.
+   * Destroys a root host view.
+   * Note that this will leave the element itself in place.
    */
-  detachFreeHostView(parentHostViewRef: RenderViewRef, hostViewRef: RenderViewRef) {}
+  // Note: no targetViewState as root host views can't be cached!
+  deactivateRootHostView(rootHostView:RenderViewRef) {}
 
   /**
-   * Creates a regular view out of the given ProtoView
+   * Creates a free host view
    */
-  createView(protoViewRef: RenderProtoViewRef): RenderViewRef { return null; }
+  activateFreeHostView(parentViewRef: RenderViewRef, hostViewConfig: RenderViewActivateConfig):RenderViewRef {
+    return null;
+  }
 
   /**
-   * Destroys the given view after it has been dehydrated and detached
+   * Dehydrates, detaches or destroys a free host view, depending on the given targetViewState
    */
-  destroyView(viewRef: RenderViewRef) {}
+  deactivateFreeHostView(parentViewRef: RenderViewRef, hostViewRef: RenderViewRef, targetViewState: RenderViewState) {
+  }
 
   /**
-   * Attaches a componentView into the given hostView at the given element
+   * Creates, attaches and hydrates a component view at the given location.
    */
-  attachComponentView(hostViewRef: RenderViewRef, elementIndex: number,
-                      componentViewRef: RenderViewRef) {}
+  activateComponentView(hostViewRef: RenderViewRef, elementIndex: number, componentViewConfig: RenderViewActivateConfig): RenderViewRef {
+    return null;
+  }
 
   /**
-   * Detaches a componentView into the given hostView at the given element
+   * Dehydrates, detaches or destroys a component view, depending on the given targetViewState
    */
-  detachComponentView(hostViewRef: RenderViewRef, boundElementIndex: number,
-                      componentViewRef: RenderViewRef) {}
+  deactivateComponentView(hostViewRef: RenderViewRef, elementIndex: number, componentViewRef: RenderViewRef, targetViewState: RenderViewState) { }
 
   /**
-   * Attaches a view into a ViewContainer (in the given parentView at the given element) at the
-   * given index.
+   * Creates, attaches and hydrates a view in a ViewContainer at the given location.
    */
-  attachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {}
+  activateViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
+                        viewConfig: RenderViewActivateConfig):RenderViewRef {
+    return null;
+  }
 
   /**
-   * Detaches a view into a ViewContainer (in the given parentView at the given element) at the
-   * given index.
+   * Dehydrates, detaches or destroys a view in a ViewContainer, depending on the given targetViewState
    */
-  // TODO(tbosch): this should return a promise as it can be animated!
-  detachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {}
+  deactivateViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
+    viewRef: RenderViewRef, targetViewState: RenderViewState) { }
 
   /**
-   * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views
-   * inside of the view pool.
+   * Begins the moval of a view in a ViewContainer by removing it.
    */
-  hydrateView(viewRef: RenderViewRef) {}
+  beginMoveViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, fromIndex: number, viewRef: RenderViewRef) {}
 
   /**
-   * Dehydrates a view after it has been attached. Hydration/dehydration is used for reusing views
-   * inside of the view pool.
+   * Finishes the moval of a view in a ViewContainer by inserting it a the given location.
+   * Attention: a view can only be moved within the same ViewContainer!
    */
-  dehydrateView(viewRef: RenderViewRef) {}
+  endMoveViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, toIndex: number, viewRef: RenderViewRef) { }
+
 
   /**
    * Sets a property on an element.

@@ -37,10 +37,10 @@ class MyComp {
 }
 
 export function main() {
-  describe('element probe', function() {
+  describe('DebugElementViewListener', function() {
     beforeEachBindings(() => [bind(APP_VIEW_POOL_CAPACITY).toValue(0)]);
 
-    it('should return a TestElement from a dom element',
+    it('should return a DebugElement from a dom element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
          tcb.overrideTemplate(MyComp, '<div some-dir></div>')
              .createAsync(MyComp)

@@ -18,7 +18,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DomTestbed, TestView} from './dom_testbed';
 
-import {ViewDefinition, DirectiveMetadata, RenderViewRef} from 'angular2/src/render/api';
+import {ViewDefinition, DirectiveMetadata, RenderViewRef, RenderViewActivateConfig, RenderViewState} from 'angular2/src/render/api';
 
 export function main() {
   describe('DomRenderer integration', () => {
@@ -29,10 +29,10 @@ export function main() {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
                var view =
-                   new TestView(tb.renderer.createRootHostView(hostProtoViewDto.render, '#root'));
+                   new TestView(tb.renderer.activateRootHostView(hostProtoViewDto.render, '#root'));
                expect(view.rawView.rootNodes[0]).toEqual(tb.rootEl);
 
-               tb.renderer.destroyView(view.viewRef);
+               tb.renderer.deactivateRootHostView(view.viewRef);
                // destroying a root view should not disconnect it!
                expect(tb.rootEl.parentNode).toBeTruthy();
 
@@ -44,11 +44,11 @@ export function main() {
        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
-               var view = new TestView(tb.renderer.createView(hostProtoViewDto.render));
+               var view = new TestView(tb.renderer.activateFreeHostView(null, RenderViewActivateConfig.nonExisting(hostProtoViewDto.render)));
                var hostElement = tb.renderer.getHostElement(view.viewRef);
                DOM.appendChild(tb.rootEl, hostElement);
 
-               tb.renderer.detachFreeHostView(null, view.viewRef);
+               tb.renderer.deactivateFreeHostView(null, view.viewRef, RenderViewState.NON_EXISTING);
                expect(DOM.parentElement(hostElement)).toBeFalsy();
 
                async.done();
