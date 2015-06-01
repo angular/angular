@@ -5,8 +5,6 @@ var testHelper = require('../../src/firefox_extension/lib/test_helper.js');
 var PROFILE_SAVE_PATH = './perfProfile.json';
 
 exports.config = {
-  seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
-
   specs: ['spec.js'],
 
   getMultiCapabilities: function() { return testHelper.getFirefoxProfileWithExtension(); },

@@ -7,9 +7,9 @@ var fs = require('fs');
 var validateFile = function() {
   try {
     var content = fs.readFileSync(browser.params.profileSavePath, 'utf8');
-    // TODO(hankduan): This check not very useful. Ideally we want to validate
-    // that the file contains all the events that we are looking for. Pending
-    // on data transformer.
+    // TODO(hankduan): This check is not very useful. Ideally we want to
+    // validate that the file contains all the events that we are looking for.
+    // Pending on data transformer.
     expect(content).toContain('forceGC');
     // Delete file
     fs.unlinkSync(browser.params.profileSavePath);
@@ -25,19 +25,15 @@ var validateFile = function() {
 };
 
 describe('firefox extension', function() {
+  var TEST_URL = 'http://localhost:8001/examples/src/hello_world/index.html';
+
   it('should measure performance', function() {
     browser.sleep(3000);  // wait for extension to load
 
-    browser.driver.get('http://www.angularjs.org');
+    browser.driver.get(TEST_URL);
 
     browser.executeScript('window.startProfiler()')
         .then(function() { console.log('started measuring perf'); });
-
-    browser.executeScript('window.forceGC()');
-
-    // Run some commands
-    element(by.model('yourName')).sendKeys('Hank');
-    expect(element(by.binding('yourName')).getText()).toEqual('Hello Hank!');
 
     browser.executeScript('window.forceGC()');
 
