@@ -66,8 +66,14 @@ export class TreeDiffer {
         if (!(this.include && !absolutePath.match(this.include)) &&
             !(this.exclude && absolutePath.match(this.exclude))) {
           result.filesChecked++;
-          if (this.isFileDirty(absolutePath, pathStat)) {
-            result.changedPaths.push(path.relative(this.rootPath, absolutePath));
+          let relativeFilePath = path.relative(this.rootPath, absolutePath);
+
+          switch (this.isFileDirty(absolutePath, pathStat)) {
+            case FileStatus.ADDED:
+              result.addedPaths.push(relativeFilePath);
+              break;
+            case FileStatus.CHANGED:
+              result.changedPaths.push(relativeFilePath);
           }
         }
       }
@@ -77,7 +83,7 @@ export class TreeDiffer {
   }
 
 
-  private isFileDirty(path: string, stat: fs.Stats): boolean {
+  private isFileDirty(path: string, stat: fs.Stats): FileStatus {
     let oldFingerprint = this.fingerprints[path];
     let newFingerprint = `${stat.mtime.getTime()} # ${stat.size}`;
 
@@ -88,11 +94,13 @@ export class TreeDiffer {
 
       if (oldFingerprint === newFingerprint) {
         // nothing changed
-        return false;
+        return FileStatus.UNCHANGED;
       }
+
+      return FileStatus.CHANGED;
     }
 
-    return true;
+    return FileStatus.ADDED;
   }
 
 
@@ -114,6 +122,7 @@ export class TreeDiffer {
 
 
 export interface DiffResult {
+  addedPaths: string[];
   changedPaths: string[];
   removedPaths: string[];
   log(verbose: boolean): void;
@@ -124,6 +133,7 @@ export interface DiffResult {
 class DirtyCheckingDiffResult {
   public filesChecked: number = 0;
   public directoriesChecked: number = 0;
+  public addedPaths: string[] = [];
   public changedPaths: string[] = [];
   public removedPaths: string[] = [];
   public startTime: number = Date.now();
@@ -133,13 +143,14 @@ class DirtyCheckingDiffResult {
 
   toString() {
     return `${pad(this.label, 30)}, ${pad(this.endTime - this.startTime, 5)}ms, ` +
-           `${pad(this.changedPaths.length + this.removedPaths.length, 5)} changes ` +
+           `${pad(this.addedPaths.length + this.changedPaths.length + this.removedPaths.length, 5)} changes ` +
            `(files: ${pad(this.filesChecked, 5)}, dirs: ${pad(this.directoriesChecked, 4)})`;
   }
 
   log(verbose) {
-    let prefixedPaths =
-        this.changedPaths.map((p) => `* ${p}`).concat(this.removedPaths.map((p) => `- ${p}`));
+    let prefixedPaths = this.addedPaths.map(p => `+ ${p}`)
+                            .concat(this.changedPaths.map(p => `* ${p}`))
+                            .concat(this.removedPaths.map(p => `- ${p}`));
     console.log(`Tree diff: ${this}` + ((verbose && prefixedPaths.length) ?
                                              ` [\n  ${prefixedPaths.join('\n  ')}\n]` :
                                              ''));
@@ -153,3 +164,6 @@ function pad(value, length) {
   whitespaceLength = whitespaceLength + 1;
   return new Array(whitespaceLength).join(' ') + value;
 }
+
+
+enum FileStatus { ADDED, UNCHANGED, CHANGED }

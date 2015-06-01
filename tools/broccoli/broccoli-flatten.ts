@@ -2,6 +2,9 @@ import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
+var symlinkOrCopy = require('symlink-or-copy').sync;
+
+var isWindows = process.platform === 'win32';
 
 
 /**
@@ -11,8 +14,17 @@ import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-br
 export class DiffingFlatten implements DiffingBroccoliPlugin {
   constructor(private inputPath, private cachePath, private options) {}
 
+
   rebuild(treeDiff: DiffResult) {
-    treeDiff.changedPaths.forEach((changedFilePath) => {
+    let pathsToUpdate = treeDiff.addedPaths;
+
+    // since we need to run on Windows as well we can't rely on symlinks being available,
+    // which means that we need to respond to both added and changed paths
+    if (isWindows) {
+      pathsToUpdate = pathsToUpdate.concat(treeDiff.changedPaths);
+    }
+
+    pathsToUpdate.forEach((changedFilePath) => {
       var sourceFilePath = path.join(this.inputPath, changedFilePath);
       var destFilePath = path.join(this.cachePath, path.basename(changedFilePath));
       var destDirPath = path.dirname(destFilePath);
@@ -21,9 +33,11 @@ export class DiffingFlatten implements DiffingBroccoliPlugin {
         fse.mkdirpSync(destDirPath);
       }
 
-      // TODO: once we have addedPaths support, we should throw dupes are found
       if (!fs.existsSync(destFilePath)) {
-        fs.symlinkSync(sourceFilePath, destFilePath);
+        symlinkOrCopy(sourceFilePath, destFilePath);
+      } else {
+        throw new Error(`Duplicate file '${path.basename(changedFilePath)}' ` +
+                        `found in path '${changedFilePath}'`);
       }
     });
 

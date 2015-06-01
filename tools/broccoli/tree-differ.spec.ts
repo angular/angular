@@ -11,9 +11,9 @@ describe('TreeDiffer', () => {
   afterEach(() => mockfs.restore());
 
 
-  describe('diff of changed files', () => {
+  describe('diff of added and changed files', () => {
 
-    it('should list all files but no directories during the first diff', () => {
+    it('should list all files (but no directories) during the first diff', () => {
       let testDir = {
         'dir1': {
           'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
@@ -30,9 +30,10 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
 
+      expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
     });
 
@@ -53,11 +54,13 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).not.toEqual([]);
+      expect(diffResult.addedPaths).not.toEqual([]);
+      expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
     });
@@ -80,7 +83,7 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
 
       // change two files
@@ -126,7 +129,7 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
 
       // change two files
@@ -138,8 +141,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt']);
-
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -155,6 +158,7 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       diffResult = differ.diffTree();
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual(['file-1.txt']);
 
@@ -171,7 +175,8 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-1.txt']);
+      expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
     });
 
@@ -204,7 +209,9 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).toEqual(['file-1.js', 'file-3.coffee']);
+      expect(diffResult.addedPaths).toEqual(['file-1.js', 'file-3.coffee']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
 
       // change two files
       testDir['dir1']['file-1.js'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
@@ -216,8 +223,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual(['file-1.js', 'file-3.coffee']);
-
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -250,7 +257,7 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.cs', 'file-1.ts', 'file-1d.cs', 'file-3.ts']);
 
       // change two files
@@ -265,8 +272,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual(['file-1.cs', 'file-1.ts', 'file-3.ts']);
-
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -280,7 +287,7 @@ describe('TreeDiffer', () => {
 
   describe('diff of new files', () => {
 
-    it('should detect file additions and report them as changed files', () => {
+    it('should detect file additions', () => {
       let testDir = {
         'dir1':
             {'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})}
@@ -294,7 +301,9 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       let diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-2.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-2.txt']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
     });
 
 
@@ -313,7 +322,8 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       let diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'file-2.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-2.txt']);
+      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
     });
   });
 
@@ -358,7 +368,8 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       let diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'file-3.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-3.txt']);
+      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
       expect(diffResult.removedPaths).toEqual(['file-2.txt']);
     });
   });

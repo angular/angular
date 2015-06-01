@@ -30,12 +30,13 @@ class DartFormatter implements DiffingBroccoliPlugin {
 
   rebuild(treeDiff: DiffResult): Promise<any> {
     let args = ['-w'];
-    treeDiff.changedPaths.forEach((changedFile) => {
-      let sourcePath = path.join(this.inputPath, changedFile);
-      let destPath = path.join(this.cachePath, changedFile);
-      if (/\.dart$/.test(changedFile)) args.push(destPath);
-      fse.copySync(sourcePath, destPath);
-    });
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((changedFile) => {
+          let sourcePath = path.join(this.inputPath, changedFile);
+          let destPath = path.join(this.cachePath, changedFile);
+          if (/\.dart$/.test(changedFile)) args.push(destPath);
+          fse.copySync(sourcePath, destPath);
+        });
     treeDiff.removedPaths.forEach((removedFile) => {
       let destPath = path.join(this.cachePath, removedFile);
       fse.removeSync(destPath);

@@ -37,7 +37,7 @@ export class LodashRenderer implements DiffingBroccoliPlugin {
       fs.unlinkSync(destFilePath);
     };
 
-    treeDiff.changedPaths.forEach(processFile);
+    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach(processFile);
     treeDiff.removedPaths.forEach(removeFile);
   }
 }

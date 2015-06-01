@@ -4,6 +4,8 @@ import path = require('path');
 var symlinkOrCopySync = require('symlink-or-copy').sync;
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
+var isWindows = process.platform === 'win32';
+
 interface MergeTreesOptions {
   overwrite?: boolean;
 }
@@ -43,10 +45,12 @@ export class MergeTrees implements DiffingBroccoliPlugin {
     };
 
     if (this.firstBuild) {
+      this.firstBuild = false;
+
       // Build initial cache
       treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
         index = treeDiffs.length - 1 - index;
-        treeDiff.changedPaths.forEach((changedPath) => {
+        treeDiff.addedPaths.forEach((changedPath) => {
           let cache = this.pathCache[changedPath];
           if (cache === undefined) {
             this.pathCache[changedPath] = [index];
@@ -59,7 +63,7 @@ export class MergeTrees implements DiffingBroccoliPlugin {
           }
         });
       });
-      this.firstBuild = false;
+
     } else {
       // Update cache
       treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
@@ -81,7 +85,14 @@ export class MergeTrees implements DiffingBroccoliPlugin {
             }
           }
         });
-        treeDiff.changedPaths.forEach((changedPath) => {
+
+        let pathsToUpdate = treeDiff.addedPaths;
+
+        if (isWindows) {
+          pathsToUpdate = pathsToUpdate.concat(treeDiff.changedPaths);
+        }
+
+        pathsToUpdate.forEach((changedPath) => {
           let cache = this.pathCache[changedPath];
           if (cache === undefined) {
             // File was added

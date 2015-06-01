@@ -15,13 +15,14 @@ class DestCopy implements DiffingBroccoliPlugin {
 
 
   rebuild(treeDiff: DiffResult) {
-    treeDiff.changedPaths.forEach((changedFilePath) => {
-      var destFilePath = path.join(this.outputRoot, changedFilePath);
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((changedFilePath) => {
+          var destFilePath = path.join(this.outputRoot, changedFilePath);
 
-      var destDirPath = path.dirname(destFilePath);
-      fse.mkdirsSync(destDirPath);
-      fse.copySync(path.join(this.inputPath, changedFilePath), destFilePath);
-    });
+          var destDirPath = path.dirname(destFilePath);
+          fse.mkdirsSync(destDirPath);
+          fse.copySync(path.join(this.inputPath, changedFilePath), destFilePath);
+        });
 
     treeDiff.removedPaths.forEach((removedFilePath) => {
       var destFilePath = path.join(this.outputRoot, removedFilePath);

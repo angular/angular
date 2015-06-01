@@ -45,7 +45,7 @@ describe('MergeTrees', () => {
     expect(read('dest/foo.js')).toBe('tree2/foo.js content');
   });
 
-  it('should throw if duplicates are used by default', () => {
+  it('should throw if duplicates are found during the initial build', () => {
     let testDir: any = {
       'tree1': {'foo.js': mockfs.file({content: 'tree1/foo.js content', mtime: new Date(1000)})},
       'tree2': {'foo.js': mockfs.file({content: 'tree2/foo.js content', mtime: new Date(1000)})},
@@ -54,15 +54,34 @@ describe('MergeTrees', () => {
     mockfs(testDir);
     let treeDiffer = MakeTreeDiffers(['tree1', 'tree2', 'tree3']);
     let treeMerger = mergeTrees(['tree1', 'tree2', 'tree3'], 'dest', {});
-    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).toThrow();
+    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).
+      toThrowError("`overwrite` option is required for handling duplicates.");
 
-    delete testDir.tree2['foo.js'];
-    delete testDir.tree3['foo.js'];
+    testDir = {
+      'tree1': {'foo.js': mockfs.file({content: 'tree1/foo.js content', mtime: new Date(1000)})},
+      'tree2': {},
+      'tree3': {}
+    };
     mockfs(testDir);
+  });
+
+
+  it('should throw if duplicates are found during rebuild', () => {
+    let testDir = {
+      'tree1': {'foo.js': mockfs.file({content: 'tree1/foo.js content', mtime: new Date(1000)})},
+      'tree2': {},
+      'tree3': {}
+    };
+    mockfs(testDir);
+
+    let treeDiffer = MakeTreeDiffers(['tree1', 'tree2', 'tree3']);
+    let treeMerger = mergeTrees(['tree1', 'tree2', 'tree3'], 'dest', {});
     expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).not.toThrow();
+
 
     testDir.tree2['foo.js'] = mockfs.file({content: 'tree2/foo.js content', mtime: new Date(1000)});
     mockfs(testDir);
-    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).toThrow();
+    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).
+      toThrowError("`overwrite` option is required for handling duplicates.");
   });
 });
