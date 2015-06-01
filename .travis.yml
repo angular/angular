@@ -6,6 +6,7 @@ node_js:
 cache:
   directories:
     - node_modules
+    - $HOME/.pub-cache
 
 env:
   global:
