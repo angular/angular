@@ -1,4 +1,5 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 import {Directive, Ancestor, onChange} from 'angular2/angular2';
@@ -53,20 +54,24 @@ const formControlBinding =
 export class FormControlDirective extends ControlDirective {
   control: Control;
   ngModel: EventEmitter;
+  _added: boolean;
+  model: any;
 
   constructor() {
     super();
     this.ngModel = new EventEmitter();
+    this._added = false;
   }
 
-  onChange(_) {
-    setUpControl(this.control, this);
-    this.control.updateValidity();
-  }
-
-  set model(value) {
-    this.control.updateValue(value);
-    this.valueAccessor.writeValue(value);
+  onChange(c) {
+    if (!this._added) {
+      setUpControl(this.control, this);
+      this.control.updateValidity();
+      this._added = true;
+    }
+    if (StringMapWrapper.contains(c, "model")) {
+      this.control.updateValue(this.model);
+    }
   }
 
   viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }

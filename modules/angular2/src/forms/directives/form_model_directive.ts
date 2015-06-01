@@ -89,8 +89,7 @@ export class FormModelDirective extends ControlContainerDirective implements For
 
   updateModel(dir: ControlDirective, value: any): void {
     var c  = <Control>this.form.find(dir.path);
-    c.value = value;
-    dir.valueAccessor.writeValue(value);
+    c.updateValue(value);
   }
 
   _updateDomValue() {

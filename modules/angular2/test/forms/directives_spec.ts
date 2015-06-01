@@ -79,7 +79,7 @@ export function main() {
         });
 
         it("should write value to the DOM", () => {
-          formModel.find(["login"]).value = "initValue";
+          formModel.find(["login"]).updateValue("initValue");
 
           form.addControl(loginControlDir);
 
@@ -104,7 +104,7 @@ export function main() {
         it("should update dom values of all the directives", () => {
           form.addControl(loginControlDir);
 
-          formModel.find(["login"]).value = "new value";
+          formModel.find(["login"]).updateValue("new value");
 
           form.onChange(null);
 
@@ -180,7 +180,7 @@ export function main() {
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        controlDir.onChange(null);
+        controlDir.onChange({});
 
         expect(control.valid).toBe(false);
       });

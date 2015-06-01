@@ -40,8 +40,7 @@ export class NgModelDirective extends ControlDirective {
     };
 
     if (StringMapWrapper.contains(c, "model")) {
-      this.control.value = this.model;
-      this.valueAccessor.writeValue(this.model);
+      this.control.updateValue(this.model);
     }
   }
 
