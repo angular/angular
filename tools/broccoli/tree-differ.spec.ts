@@ -184,11 +184,11 @@ describe('TreeDiffer', () => {
 
     it("should throw an error if an extension isn't prefixed with doc", () => {
       // includeExtensions
-      expect(() => new TreeDiffer('testLabel', 'dir1', ['js']))
+      expect(() => new TreeDiffer('testLabel', 'dir1', {includeExtensions: ['js']}))
           .toThrowError("Extension must begin with '.'. Was: 'js'");
 
       // excludeExtentions
-      expect(() => new TreeDiffer('testLabel', 'dir1', [], ['js']))
+      expect(() => new TreeDiffer('testLabel', 'dir1', {excludeExtensions: ['js']}))
           .toThrowError("Extension must begin with '.'. Was: 'js'");
     });
 
@@ -206,7 +206,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', ['.js', '.coffee']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {includeExtensions: ['.js', '.coffee']});
 
       let diffResult = differ.diffTree();
 
@@ -254,7 +254,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', ['.ts', '.cs'], ['.d.ts', '.d.cs']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {includeExtensions: ['.ts', '.cs'], excludeExtension: ['.d.ts', '.d.cs']});
 
       let diffResult = differ.diffTree();
 
@@ -391,7 +391,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', null, null, ['**/file-1.*']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {include: ['**/file-1.*']});
       let diffResult = differ.diffTree();
       expect(diffResult.addedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt', 'subdir-1/file-1.2.js']);
       expect(diffResult.changedPaths).toEqual([]);
@@ -412,7 +412,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', null, null, null, ['**/file-1.*']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {exclude: ['**/file-1.*']});
       let diffResult = differ.diffTree();
       expect(diffResult.addedPaths).toEqual(['file-2.js']);
       expect(diffResult.changedPaths).toEqual([]);
@@ -433,7 +433,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', null, null, ['**/*.js'], ['**/file-2.*']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {include: ['**/*.js'], exclude: ['**/file-2.*']});
       let diffResult = differ.diffTree();
       expect(diffResult.addedPaths).toEqual(['subdir-1/file-1.2.js']);
       expect(diffResult.changedPaths).toEqual([]);
@@ -457,8 +457,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', null, null, null, null,
-        ['subdir-1/file-1.2.js']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {files: ['subdir-1/file-1.2.js']});
       let diffResult = differ.diffTree();
       expect(diffResult.addedPaths).toEqual(['subdir-1/file-1.2.js']);
       expect(diffResult.changedPaths).toEqual([]);
@@ -480,8 +479,8 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       expect(() => {
-        new TreeDiffer('testLabel', 'dir1', null, null, ['**/.js'], ['**/file-1.*'],
-          ['subdir-1/file-1.2.js']);
+        new TreeDiffer('testLabel', 'dir1', {include: ['**/.js'], exclude: ['**/file-1.*'], files:
+          ['subdir-1/file-1.2.js']});
       }).toThrowError(
         "Mixing 'files' filter with 'includes' or 'excludes' filters is not supported");
     });

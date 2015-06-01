@@ -99,13 +99,19 @@ class DiffingPluginWrapper implements BroccoliTree {
 
   private init() {
     if (!this.initialized) {
-      let includeExtensions = this.pluginClass.includeExtensions || [];
-      let excludeExtensions = this.pluginClass.excludeExtensions || [];
       this.initialized = true;
-      this.treeDiffer =
-          new TreeDiffer(this.description, this.inputPath, includeExtensions, excludeExtensions);
-      this.wrappedPlugin =
-          new this.pluginClass(this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
+
+      let pluginOptions = this.wrappedPluginArguments[1];
+      let filteringOptions = {
+        includeExtensions: this.pluginClass.includeExtensions,
+        excludeExtensions: this.pluginClass.excludeExtensions,
+        include: pluginOptions.include,
+        exclude: pluginOptions.exclude,
+        files: pluginOptions.files
+      };
+
+      this.treeDiffer = new TreeDiffer(this.description, this.inputPath, filteringOptions);
+      this.wrappedPlugin = new this.pluginClass(this.inputPath, this.cachePath, pluginOptions);
     }
   }
 

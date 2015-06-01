@@ -19,32 +19,24 @@ export class TreeDiffer {
   private fingerprints: {[key: string]: string} = Object.create(null);
   private nextFingerprints: {[key: string]: string} = Object.create(null);
   private rootDirName: string;
-  private include: RegExp = null;
-  private exclude: RegExp = null;
+  private files: string[];
+  private include: string[] = [];
+  private exclude: string[] = [];
 
-  constructor(private label: string, private rootPath: string, includeExtensions?: string[],
-              excludeExtensions?: string[], private includes?: string[],
-              private excludes?: string[], private files? : string[]) {
-    if (this.files && (this.include || this.includes || this.exclude || this.excludes)) {
+  constructor(private label: string, private rootPath: string,
+              private filteringOptions?: FilteringOptions) {
+    if (filteringOptions.files && (filteringOptions.include || filteringOptions.exclude)) {
       throw new Error(
         "Mixing 'files' filter with 'includes' or 'excludes' filters is not supported");
     }
 
     this.rootDirName = path.basename(rootPath);
 
-    let buildRegexp = (arr) => new RegExp(`(${arr.reduce(combine, "")})$`, "i");
-
-    this.include = (includeExtensions || []).length ? buildRegexp(includeExtensions) : null;
-    this.exclude = (excludeExtensions || []).length ? buildRegexp(excludeExtensions) : null;
-
-    function combine(prev, curr) {
-      if (curr.charAt(0) !== ".") {
-        throw new Error(`Extension must begin with '.'. Was: '${curr}'`);
-      }
-      let kSpecialRegexpChars = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
-      curr = '(' + curr.replace(kSpecialRegexpChars, '\\$&') + ')';
-      return prev ? (prev + '|' + curr) : curr;
-    }
+    this.include = this.include.concat(filteringOptions.include || [])
+                               .concat((filteringOptions.includeExtensions || []).map(extensionToGlob));
+    this.exclude = this.exclude.concat(filteringOptions.exclude || [])
+                               .concat((filteringOptions.excludeExtensions || []).map(extensionToGlob));
+    this.files = filteringOptions.files;
   }
 
 
@@ -133,15 +125,13 @@ export class TreeDiffer {
       return false;
     }
 
-    if (this.include && !absolutePath.match(this.include)) return false;
-    if (this.includes) {
-      for (let glob of this.includes) {
+    if (this.include) {
+      for (let glob of this.include) {
         if (!minimatch(absolutePath, glob)) return false;
       }
     }
-    if (this.exclude && absolutePath.match(this.exclude)) return false;
-    if (this.excludes) {
-      for (let glob of this.excludes) {
+    if (this.exclude) {
+      for (let glob of this.exclude) {
         if (minimatch(absolutePath, glob)) return false;
       }
     }
@@ -197,4 +187,22 @@ function pad(value, length) {
 }
 
 
+function extensionToGlob(extension: string) {
+  if (extension.charAt(0) !== ".") {
+    throw new Error(`Extension must begin with '.'. Was: '${extension}'`);
+  }
+
+  return '**/*' + extension;
+}
+
+
 enum FileStatus {ADDED, UNCHANGED, CHANGED}
+
+
+interface FilteringOptions {
+  includeExtensions?: string[],
+  excludeExtensions?: string[],
+  include?: string[],
+  exclude?: string[],
+  files?: string[]
+}
