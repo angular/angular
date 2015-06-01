@@ -78,7 +78,7 @@ export function main() {
          var template = new ViewDefinition({absUrl: 'base/foo'});
          PromiseWrapper.then(loader.load(template), function(_) { throw 'Unexpected response'; },
                              function(error) {
-                               expect(error).toEqual('Failed to load base/foo');
+                               expect(error.message).toEqual('Failed to fetch url "base/foo"');
                                async.done();
                              });
          xhr.flush();
