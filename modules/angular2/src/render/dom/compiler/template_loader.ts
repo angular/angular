@@ -32,10 +32,14 @@ export class TemplateLoader {
       var promise = StringMapWrapper.get(this._htmlCache, url);
 
       if (isBlank(promise)) {
-        promise = this._xhr.get(url).then(function(html) {
+        // TODO(vicb): change error when TS gets fixed
+        // https://github.com/angular/angular/issues/2280
+        // throw new BaseException(`Failed to fetch url "${url}"`);
+        promise = PromiseWrapper.then(this._xhr.get(url), html => {
           var template = DOM.createTemplate(html);
           return template;
-        });
+        }, _ => PromiseWrapper.reject(new BaseException(`Failed to fetch url "${url}"`), null));
+
         StringMapWrapper.set(this._htmlCache, url, promise);
       }
 

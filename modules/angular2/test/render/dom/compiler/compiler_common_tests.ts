@@ -103,7 +103,8 @@ export function runCompilerCommonTests() {
            PromiseWrapper.catchError(
                compiler.compile(new ViewDefinition({componentId: 'someId', absUrl: 'someUrl'})),
                (e) => {
-                 expect(e.message).toContain(`Failed to load the template "someId"`);
+                 expect(e.message).toEqual(
+                     'Failed to load the template for "someId" : Failed to fetch url "someUrl"');
                  async.done();
                  return null;
                });
@@ -208,9 +209,9 @@ class FakeTemplateLoader extends TemplateLoader {
 
     if (isPresent(template.absUrl)) {
       var content = MapWrapper.get(this._urlData, template.absUrl);
-      if (isPresent(content)) {
-        return PromiseWrapper.resolve(DOM.createTemplate(content));
-      }
+      return isPresent(content) ?
+                 PromiseWrapper.resolve(DOM.createTemplate(content)) :
+                 PromiseWrapper.reject(`Failed to fetch url "${template.absUrl}"`, null);
     }
 
     return PromiseWrapper.reject('Load failed', null);

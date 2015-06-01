@@ -36,8 +36,9 @@ export class DomCompiler extends RenderCompiler {
     var tplPromise = this._templateLoader.load(template);
     return PromiseWrapper.then(
         tplPromise, (el) => this._compileTemplate(template, el, ProtoViewDto.COMPONENT_VIEW_TYPE),
-        (_) => {
-          throw new BaseException(`Failed to load the template "${template.componentId}"`);
+        (e) => {
+          throw new BaseException(
+              `Failed to load the template for "${template.componentId}" : ${e}`);
         });
   }
 
