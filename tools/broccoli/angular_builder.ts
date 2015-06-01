@@ -86,17 +86,6 @@ export class AngularBuilder {
 
   private rebuild(builder) {
     return builder.build()
-        .then((result) => { printSlowTrees(result.graph); })
-        .catch((err) => {
-          console.error(err.toString());
-          // Should show file and line/col if present
-          if (err.file) {
-            console.error('File: ' + err.file);
-          }
-          if (err.stack) {
-            console.error(err.stack);
-          }
-          throw err;
-        });
+        .then((result) => { printSlowTrees(result.graph); });
   }
 }
