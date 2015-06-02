@@ -40,3 +40,11 @@ export function microBenchmark(name, iterationCount, callback) {
   callback();
   window.console.timeEnd(durationName);
 }
+
+export function windowProfile(name: string): void {
+  (<any>window.console).profile(name);
+}
+
+export function windowProfileEnd(name: string): void {
+  (<any>window.console).profileEnd(name);
+}

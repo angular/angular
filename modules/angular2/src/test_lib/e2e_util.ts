@@ -1,5 +1,6 @@
 /// <reference path="../../typings/node/node.d.ts" />
 /// <reference path="../../typings/angular-protractor/angular-protractor.d.ts" />
+/// <reference path="../../typings/jasmine/jasmine"/>
 
 import webdriver = require('selenium-webdriver');
 

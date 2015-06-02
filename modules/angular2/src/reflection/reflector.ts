@@ -28,11 +28,17 @@ export class Reflector {
     MapWrapper.set(this._typeInfo, type, typeInfo);
   }
 
-  registerGetters(getters: Map<string, GetterFn>): void { _mergeMaps(this._getters, getters); }
+  registerGetters(getters: StringMap<string, GetterFn>): void {
+    _mergeMaps(this._getters, getters);
+  }
 
-  registerSetters(setters: Map<string, SetterFn>): void { _mergeMaps(this._setters, setters); }
+  registerSetters(setters: StringMap<string, SetterFn>): void {
+    _mergeMaps(this._setters, setters);
+  }
 
-  registerMethods(methods: Map<string, MethodFn>): void { _mergeMaps(this._methods, methods); }
+  registerMethods(methods: StringMap<string, MethodFn>): void {
+    _mergeMaps(this._methods, methods);
+  }
 
   factory(type: Type): Function {
     if (this._containsTypeInfo(type)) {
@@ -98,6 +104,6 @@ export class Reflector {
   _containsTypeInfo(typeOrFunc) { return MapWrapper.contains(this._typeInfo, typeOrFunc); }
 }
 
-function _mergeMaps(target: Map<any, any>, config: Map<string, Function>): void {
+function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {
   StringMapWrapper.forEach(config, (v, k) => MapWrapper.set(target, k, v));
 }
