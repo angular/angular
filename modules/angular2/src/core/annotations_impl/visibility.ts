@@ -108,8 +108,9 @@ export class Parent extends Visibility {
  * Specifies that an injector should retrieve a dependency from any ancestor element within the same
  * shadow boundary.
  *
- * An ancestor is any element between the parent element and shadow root.
+ * An ancestor is any element between the parent element and the shadow root.
  *
+ * Use {@link Unbounded} if you need to cross upper shadow boundaries.
  *
  * ## Example
  *
@@ -166,10 +167,10 @@ export class Ancestor extends Visibility {
 }
 
 /**
- * Specifies that an injector should retrieve a dependency from any ancestor element.
+ * Specifies that an injector should retrieve a dependency from any ancestor element, crossing
+ * component boundaries.
  *
- * An ancestor is any element between the parent element and shadow root.
- *
+ * Use {@link Ancestor} to look for ancestors within the current shadow boundary only.
  *
  * ## Example
  *
