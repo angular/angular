@@ -11,7 +11,7 @@ import {
 } from 'angular2/test_lib';
 import {ShadowCss} from 'angular2/src/render/dom/shadow_dom/shadow_css';
 
-import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -56,18 +56,22 @@ export function main() {
       expect(s(css, 'a')).toEqual(expected);
     });
 
-    it('should handle keyframes rules', () => {
-      var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
-      var passRe = RegExpWrapper.create(
-          '@keyframes foo {\\s*0% {\\s*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}\\s*}');
-      expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
-    });
+    // Check that the browser supports unprefixed CSS animation
+    if (isPresent(DOM.defaultDoc().body.style) &&
+        isPresent(DOM.defaultDoc().body.style.animationName)) {
+      it('should handle keyframes rules', () => {
+        var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
+        var passRe = RegExpWrapper.create(
+            '@keyframes foo {\\s*0% {\\s*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}\\s*}');
+        expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
+      });
+    }
 
     if (DOM.getUserAgent().indexOf('AppleWebKit') > -1) {
       it('should handle -webkit-keyframes rules', () => {
-        var css = '@-webkit-keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
+        var css = '@-webkit-keyframes foo {0% {-webkit-transform: translate(-50%) scaleX(0);}}';
         var passRe = RegExpWrapper.create(
-            '@-webkit-keyframes foo {\\s*0% {\\s*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
+            '@-webkit-keyframes foo {\\s*0% {\\s*(-webkit-)*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
         expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
       });
     }
