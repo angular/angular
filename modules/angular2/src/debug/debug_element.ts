@@ -43,7 +43,9 @@ export class DebugElement {
   }
 
   get domElement(): any {
-    return resolveInternalDomView(this._parentView.render).boundElements[this._boundElementIndex];
+    return resolveInternalDomView(this._parentView.render)
+        .boundElements[this._boundElementIndex]
+        .element;
   }
 
   getDirectiveInstance(directiveIndex: number): any {

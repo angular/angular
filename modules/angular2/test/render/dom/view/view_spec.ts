@@ -15,13 +15,13 @@ import {
   SpyObject,
   proxy
 } from 'angular2/test_lib';
-import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
 import {DomView} from 'angular2/src/render/dom/view/view';
-import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
+import {DomElement} from 'angular2/src/render/dom/view/element';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -42,20 +42,19 @@ export function main() {
       var root = el('<div><div></div></div>');
       var boundElements = [];
       for (var i = 0; i < boundElementCount; i++) {
-        ListWrapper.push(boundElements, el('<span></span'));
+        ListWrapper.push(boundElements,
+                         new DomElement(pv.elementBinders[i], el('<span></span'), null));
       }
-      return new DomView(pv, [DOM.childNodes(root)[0]], [], boundElements, []);
+      return new DomView(pv, [DOM.childNodes(root)[0]], [], boundElements);
     }
 
-    describe('getDirectParentLightDom', () => {
+    describe('getDirectParentElement', () => {
 
-      it('should return the LightDom of the direct parent', () => {
+      it('should return the DomElement of the direct parent', () => {
         var pv = createProtoView(
             [new ElementBinder(), new ElementBinder({parentIndex: 0, distanceToParent: 1})]);
         var view = createView(pv, 2);
-        view.lightDoms[0] = <any>new SpyLightDom();
-        view.lightDoms[1] = <any>new SpyLightDom();
-        expect(view.getDirectParentLightDom(1)).toBe(view.lightDoms[0]);
+        expect(view.getDirectParentElement(1)).toBe(view.boundElements[0]);
       });
 
       it('should return null if the direct parent is not bound', () => {
@@ -65,20 +64,10 @@ export function main() {
           new ElementBinder({parentIndex: 0, distanceToParent: 2})
         ]);
         var view = createView(pv, 3);
-        view.lightDoms[0] = <any>new SpyLightDom();
-        view.lightDoms[1] = <any>new SpyLightDom();
-        view.lightDoms[2] = <any>new SpyLightDom();
-        expect(view.getDirectParentLightDom(2)).toBe(null);
+        expect(view.getDirectParentElement(2)).toBe(null);
       });
 
     });
 
   });
-}
-
-@proxy
-@IMPLEMENTS(LightDom)
-class SpyLightDom extends SpyObject {
-  constructor() { super(LightDom); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }

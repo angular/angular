@@ -18,6 +18,7 @@ import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {DomView} from 'angular2/src/render/dom/view/view';
 import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {DomViewContainer} from 'angular2/src/render/dom/view/view_container';
+import {DomElement} from 'angular2/src/render/dom/view/element';
 
 @proxy
 @IMPLEMENTS(DomProtoView)
@@ -31,31 +32,27 @@ class FakeProtoView extends SpyObject {
 @IMPLEMENTS(DomView)
 class FakeView extends SpyObject {
   boundElements;
-  contentTags;
-  viewContainers;
   proto;
 
   constructor(containers = null, transitiveContentTagCount: number = 1) {
     super(DomView);
     this.proto = new FakeProtoView(transitiveContentTagCount);
     this.boundElements = [];
-    this.contentTags = [];
-    this.viewContainers = [];
     if (isPresent(containers)) {
       ListWrapper.forEach(containers, (c) => {
-        var boundElement = null;
+        var element = null;
         var contentTag = null;
         var vc = null;
         if (c instanceof FakeContentTag) {
           contentTag = c;
-          boundElement = c.contentStartElement;
+          element = c.contentStartElement;
         }
         if (c instanceof FakeViewContainer) {
           vc = c;
-          boundElement = c.templateElement;
+          element = c.templateElement;
         }
-        ListWrapper.push(this.contentTags, contentTag);
-        ListWrapper.push(this.viewContainers, vc);
+        var boundElement = new DomElement(null, element, contentTag);
+        boundElement.viewContainer = vc;
         ListWrapper.push(this.boundElements, boundElement);
       });
     }

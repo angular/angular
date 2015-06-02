@@ -123,7 +123,7 @@ export class DomTestbed {
   }
 
   triggerEvent(viewRef: RenderViewRef, boundElementIndex: number, eventName: string) {
-    var element = resolveInternalDomView(viewRef).boundElements[boundElementIndex];
+    var element = resolveInternalDomView(viewRef).boundElements[boundElementIndex].element;
     dispatchEvent(element, eventName);
   }
 }

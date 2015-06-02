@@ -3,10 +3,9 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import {Locals} from 'angular2/change_detection';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 
-import {DomViewContainer} from './view_container';
 import {DomProtoView} from './proto_view';
 import {LightDom} from '../shadow_dom/light_dom';
-import {Content} from '../shadow_dom/content_tag';
+import {DomElement} from './element';
 
 import {RenderViewRef, EventDispatcher} from '../../api';
 
@@ -29,10 +28,6 @@ const NG_BINDING_CLASS = 'ng-binding';
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
 export class DomView {
-  // TODO(tbosch): move componentChildViews, viewContainers, contentTags, lightDoms into
-  // a single array with records inside
-  viewContainers: List<DomViewContainer>;
-  lightDoms: List<LightDom>;
   hostLightDom: LightDom;
   shadowRoot;
   hydrated: boolean;
@@ -40,10 +35,7 @@ export class DomView {
   eventHandlerRemovers: List<Function>;
 
   constructor(public proto: DomProtoView, public rootNodes: List</*node*/ any>,
-              public boundTextNodes: List</*node*/ any>,
-              public boundElements: List</*element*/ any>, public contentTags: List<Content>) {
-    this.viewContainers = ListWrapper.createFixedSize(boundElements.length);
-    this.lightDoms = ListWrapper.createFixedSize(boundElements.length);
+              public boundTextNodes: List</*node*/ any>, public boundElements: List<DomElement>) {
     this.hostLightDom = null;
     this.hydrated = false;
     this.eventHandlerRemovers = [];
@@ -51,25 +43,25 @@ export class DomView {
     this.shadowRoot = null;
   }
 
-  getDirectParentLightDom(boundElementIndex: number) {
+  getDirectParentElement(boundElementIndex: number): DomElement {
     var binder = this.proto.elementBinders[boundElementIndex];
-    var destLightDom = null;
+    var parent = null;
     if (binder.parentIndex !== -1 && binder.distanceToParent === 1) {
-      destLightDom = this.lightDoms[binder.parentIndex];
+      parent = this.boundElements[binder.parentIndex];
     }
-    return destLightDom;
+    return parent;
   }
 
   setElementProperty(elementIndex: number, propertyName: string, value: any) {
     var setter =
         MapWrapper.get(this.proto.elementBinders[elementIndex].propertySetters, propertyName);
-    setter(this.boundElements[elementIndex], value);
+    setter(this.boundElements[elementIndex].element, value);
   }
 
   callAction(elementIndex: number, actionExpression: string, actionArgs: any) {
     var binder = this.proto.elementBinders[elementIndex];
     var hostAction = MapWrapper.get(binder.hostActions, actionExpression);
-    hostAction.eval(this.boundElements[elementIndex], this._localsWithAction(actionArgs));
+    hostAction.eval(this.boundElements[elementIndex].element, this._localsWithAction(actionArgs));
   }
 
   _localsWithAction(action: Object): Locals {
