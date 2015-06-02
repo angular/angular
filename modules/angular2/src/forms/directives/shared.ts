@@ -27,6 +27,9 @@ export function setUpControl(c: Control, dir: ControlDirective) {
 
   // model -> view
   c.registerOnChange(newValue => dir.valueAccessor.writeValue(newValue));
+
+  // touched
+  dir.valueAccessor.registerOnTouched(() => c.touch());
 }
 
 function _throwError(dir: ControlDirective, message: string): void {

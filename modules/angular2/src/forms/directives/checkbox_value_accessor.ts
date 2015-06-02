@@ -17,15 +17,17 @@ import {ControlValueAccessor} from './control_value_accessor';
 @Directive({
   selector:
       'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
-  hostListeners: {'change': 'onChange($event.target.checked)'},
+  hostListeners: {'change': 'onChange($event.target.checked)', 'blur': 'onTouched()'},
   hostProperties: {'checked': 'checked'}
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
   checked: boolean;
   onChange: Function;
+  onTouched: Function;
 
   constructor(cd: ControlDirective, private _elementRef: ElementRef, private _renderer: Renderer) {
     this.onChange = (_) => {};
+    this.onTouched = (_) => {};
     cd.valueAccessor = this;
   }
 
@@ -34,5 +36,6 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
                                       this._elementRef.boundElementIndex, 'checked', value)
   }
 
-  registerOnChange(fn) { this.onChange = fn; }
+  registerOnChange(fn): void { this.onChange = fn; }
+  registerOnTouched(fn): void { this.onTouched = fn; }
 }

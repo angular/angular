@@ -30,6 +30,7 @@ export class AbstractControl {
   _status: string;
   _errors: StringMap<string, any>;
   _pristine: boolean;
+  _touched: boolean;
   _parent: any; /* ControlGroup | ControlArray */
   validator: Function;
 
@@ -38,6 +39,7 @@ export class AbstractControl {
   constructor(validator: Function) {
     this.validator = validator;
     this._pristine = true;
+    this._touched = false;
   }
 
   get value(): any { return this._value; }
@@ -52,7 +54,13 @@ export class AbstractControl {
 
   get dirty(): boolean { return !this.pristine; }
 
+  get touched(): boolean { return this._touched; }
+
+  get untouched(): boolean { return !this._touched; }
+
   get valueChanges(): Observable { return this._valueChanges; }
+
+  touch(): void { this._touched = true; }
 
   setParent(parent) { this._parent = parent; }
 

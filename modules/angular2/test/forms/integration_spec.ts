@@ -138,6 +138,32 @@ export function main() {
              });
        }));
 
+    it("should mark controls as touched after interacting with the DOM control",
+       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         var login = new Control("oldValue");
+         var form = new ControlGroup({"login": login});
+         var ctx = MyComp.create({form: form});
+
+         var t = `<div [ng-form-model]="form">
+                <input type="text" ng-control="login">
+               </div>`;
+
+         tb.createView(MyComp, {context: ctx, html: t})
+             .then((view) => {
+               view.detectChanges();
+
+               var loginEl = view.querySelector("input");
+
+               expect(login.touched).toBe(false);
+
+               dispatchEvent(loginEl, "blur");
+
+               expect(login.touched).toBe(true);
+
+               async.done();
+             });
+       }));
+
     describe("different control types", () => {
       it("should support <input type=text>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
@@ -590,6 +616,7 @@ class WrappedValue implements ControlValueAccessor {
   writeValue(value) { this.value = `!${value}!`; }
 
   registerOnChange(fn) { this.onChange = fn; }
+  registerOnTouched(fn) {}
 
   handleOnChange(value) { this.onChange(value.substring(1, value.length - 1)); }
 }

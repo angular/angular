@@ -29,6 +29,7 @@ class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue;
 
   registerOnChange(fn) {}
+  registerOnTouched(fn) {}
 
   writeValue(obj: any): void { this.writtenValue = obj; }
 }

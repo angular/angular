@@ -18,16 +18,21 @@ import {ControlValueAccessor} from './control_value_accessor';
  */
 @Directive({
   selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
-  hostListeners:
-      {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
+  hostListeners: {
+    'change': 'onChange($event.target.value)',
+    'input': 'onChange($event.target.value)',
+    'blur': 'onTouched()'
+  },
   hostProperties: {'value': 'value'}
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
   value = null;
   onChange: Function;
+  onTouched: Function;
 
   constructor(cd: ControlDirective, private _elementRef: ElementRef, private _renderer: Renderer) {
     this.onChange = (_) => {};
+    this.onTouched = (_) => {};
     this.value = '';
     cd.valueAccessor = this;
   }
@@ -37,5 +42,6 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
                                       this._elementRef.boundElementIndex, 'value', value)
   }
 
-  registerOnChange(fn) { this.onChange = fn; }
+  registerOnChange(fn): void { this.onChange = fn; }
+  registerOnTouched(fn): void { this.onTouched = fn; }
 }
