@@ -1,7 +1,8 @@
 {%- macro commentBlock(doc, level) -%}
 {%- if doc.content | trim %}
+
 {% if level > 1 %}{$ '/**' | indent(level-1, true) | replace(r/\n$/, "") $}{% else %}/**{% endif %}
-{$ doc.content | replace(r/^/gm, "* ") | indent(level, true) | replace(r/\n$/, "") $}
+{$ doc.content | trim | replace(r/^/gm, "* ") | indent(level, true) | replace(r/\n$/, "") $}
 {$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
 {%- endmacro -%}
 
@@ -15,7 +16,6 @@
 // Please do not create manual edits or send pull requests
 // modifying this file.
 // ***********************************************************
-
 {% for module in doc.modules %}
 {$ commentBlock(module, 1) $}
 declare module "{$ module.id $}" {
@@ -37,7 +37,8 @@ declare module "{$ module.id $}" {
   {%- else -%}
     {% if export.parameters %}({% for param in export.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
     {%- if export.returnType %} : {$ export.returnType $} {% endif -%}
-  {% endif %}
+    ;
+  {%- endif %}
   {% endfor %}
 }
 
