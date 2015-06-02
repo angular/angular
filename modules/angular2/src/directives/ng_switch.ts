@@ -179,7 +179,7 @@ export class NgSwitchWhen {
 /**
  * Defines a default case statement.
  *
- * Default case statements are displayed when no `NgSwitchWhen` match the `switch` value.
+ * Default case statements are displayed when no `NgSwitchWhen` match the `ng-switch` value.
  *
  * Example:
  *

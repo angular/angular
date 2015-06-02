@@ -213,11 +213,10 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  *
  * A directive can also query for other child directives. Since parent directives are instantiated
- * before child
- * directives, a directive can't simply inject the list of child directives. Instead, the directive
- * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved
- * by a directive
- * that uses a {@link ViewContainerRef} such as a `for`, an `if`, or a `switch`.
+ * before child directives, a directive can't simply inject the list of child directives. Instead,
+ * the directive injects a {@link QueryList}, which updates its contents as children are added,
+ * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ng-for`, an
+ * `ng-if`, or an `ng-switch`.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -228,8 +227,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  *
  * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and
- * 6. Here, `Dependency`
- * 5 would not be included, because it is not a direct child.
+ * 6. Here, `Dependency` 5 would not be included, because it is not a direct child.
  *
  * ### Injecting a live collection of descendant directives
  *

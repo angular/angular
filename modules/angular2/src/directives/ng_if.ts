@@ -5,9 +5,8 @@ import {isBlank} from 'angular2/src/facade/lang';
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
  *
- * If the expression assigned to `if` evaluates to a false value then the element is removed from
- * the
- * DOM, otherwise a clone of the element is reinserted into the DOM.
+ * If the expression assigned to `ng-if` evaluates to a false value then the element
+ * is removed from the DOM, otherwise a clone of the element is reinserted into the DOM.
  *
  * # Example:
  *
