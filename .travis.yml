@@ -26,6 +26,9 @@ env:
   - MODE=dart DART_CHANNEL=stable
   - MODE=dart DART_CHANNEL=dev
 
+addons:
+  firefox: "38.0"
+
 before_install:
 - echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
