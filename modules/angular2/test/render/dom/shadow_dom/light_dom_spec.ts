@@ -16,7 +16,16 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Content} from 'angular2/src/render/dom/shadow_dom/content_tag';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {DomView} from 'angular2/src/render/dom/view/view';
+import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {DomViewContainer} from 'angular2/src/render/dom/view/view_container';
+
+@proxy
+@IMPLEMENTS(DomProtoView)
+class FakeProtoView extends SpyObject {
+  constructor(public transitiveContentTagCount: number) { super(DomProtoView); }
+
+  noSuchMethod(i) { super.noSuchMethod(i); }
+}
 
 @proxy
 @IMPLEMENTS(DomView)
@@ -24,9 +33,11 @@ class FakeView extends SpyObject {
   boundElements;
   contentTags;
   viewContainers;
+  proto;
 
-  constructor(containers = null) {
+  constructor(containers = null, transitiveContentTagCount: number = 1) {
     super(DomView);
+    this.proto = new FakeProtoView(transitiveContentTagCount);
     this.boundElements = [];
     this.contentTags = [];
     this.viewContainers = [];
@@ -109,7 +120,7 @@ export function main() {
     beforeEach(() => { lightDomView = new FakeView(); });
 
     describe("contentTags", () => {
-      it("should collect content tags from element injectors", () => {
+      it("should collect unconditional content tags", () => {
         var tag = new FakeContentTag(el('<script></script>'));
         var shadowDomView = new FakeView([tag]);
 
@@ -125,6 +136,15 @@ export function main() {
         var lightDom = createLightDom(lightDomView, shadowDomView, el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
+      });
+
+      it("should not walk views that can't have content tags", () => {
+        var tag = new FakeContentTag(el('<script></script>'));
+        var shadowDomView = new FakeView([tag], 0);
+
+        var lightDom = createLightDom(lightDomView, shadowDomView, el("<div></div>"));
+
+        expect(lightDom.contentTags()).toEqual([]);
       });
     });
 
