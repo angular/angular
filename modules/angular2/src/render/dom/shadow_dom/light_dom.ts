@@ -52,6 +52,9 @@ export class LightDom {
 
   // Collects the Content directives from the view and all its child views
   private _collectAllContentTags(view: viewModule.DomView, acc: List<Content>): List<Content> {
+    if (view.proto.transitiveContentTagCount === 0) {
+      return acc;
+    }
     var contentTags = view.contentTags;
     var vcs = view.viewContainers;
     for (var i = 0; i < vcs.length; i++) {
