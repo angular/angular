@@ -115,8 +115,8 @@ export class Injector {
    * Creates an injector from previously resolved bindings. This bypasses resolution and flattening.
    * This API is the recommended way to construct injectors in performance-sensitive parts.
    *
-   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link
-   *Injector}.
+   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the
+   * {@link Injector}.
    * @param `defaultBindings` Setting to true will auto-create bindings.
    */
   static fromResolvedBindings(bindings: List<ResolvedBinding>,
@@ -125,8 +125,8 @@ export class Injector {
   }
 
   /**
-   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link
-   * Injector}.
+   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the
+   * {@link Injector}.
    * @param `parent` Parent Injector or `null` if root Injector.
    * @param `defaultBindings` Setting to true will auto-create bindings. (Only use with root
    * injector.)
