@@ -10,26 +10,30 @@ import {
 } from 'angular2/src/facade/lang';
 
 export function main() {
-  describe('RegExp', () => {it('should expose the index for each match', () => {
-                       var re = RegExpWrapper.create('(!)');
-                       var matcher = RegExpWrapper.matcher(re, '0!23!567!!');
-                       var indexes = [];
-                       var m;
+  describe('RegExp', () => {
+    it('should expose the index for each match', () => {
+      var re = RegExpWrapper.create('(!)');
+      var matcher = RegExpWrapper.matcher(re, '0!23!567!!');
+      var indexes = [];
+      var m;
 
-                       while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
-                         ListWrapper.push(indexes, m.index);
-                         expect(m[0]).toEqual('!');
-                         expect(m[1]).toEqual('!');
-                         expect(m.length).toBe(2);
-                       }
+      while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
+        ListWrapper.push(indexes, m.index);
+        expect(m[0]).toEqual('!');
+        expect(m[1]).toEqual('!');
+        expect(m.length).toBe(2);
+      }
 
-                       expect(indexes).toEqual([1, 4, 8, 9]);
-                     })});
+      expect(indexes).toEqual([1, 4, 8, 9]);
+    });
+  });
 
-  describe('const', () => {it('should support const expressions both in TS and Dart', () => {
-                      const numbers = CONST_EXPR([1, 2, 3]);
-                      expect(numbers).toEqual([1, 2, 3]);
-                    })});
+  describe('const', () => {
+    it('should support const expressions both in TS and Dart', () => {
+      const numbers = CONST_EXPR([1, 2, 3]);
+      expect(numbers).toEqual([1, 2, 3]);
+    });
+  });
 
   describe('String', () => {
     var upper, lower;
