@@ -28,9 +28,9 @@ const formDirectiveBinding = CONST_EXPR(
  * @Component({selector: "login-comp"})
  * @View({
  *      directives: [formDirectives],
- *      template: "<form [form-model]='loginForm'>" +
- *              "Login <input type='text' control='login'>" +
- *              "Password <input type='password' control='password'>" +
+ *      template: "<form [ng-form-model]='loginForm'>" +
+ *              "Login <input type='text' ng-control='login'>" +
+ *              "Password <input type='password' ng-control='password'>" +
  *              "<button (click)="onLogin()">Login</button>" +
  *              "</form>"
  *      })
@@ -54,9 +54,9 @@ const formDirectiveBinding = CONST_EXPR(
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: '[form-model]',
+  selector: '[ng-form-model]',
   hostInjector: [formDirectiveBinding],
-  properties: ['form: form-model'],
+  properties: ['form: ng-form-model'],
   lifecycle: [onChange]
 })
 export class FormModelDirective extends ControlContainerDirective implements FormDirective {

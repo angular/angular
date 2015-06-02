@@ -2,7 +2,7 @@ import {ControlValueAccessor} from './control_value_accessor';
 import {Validators} from '../validators';
 
 /**
- * A directive that bind a [Control] object to a DOM element.
+ * A directive that bind a [ng-control] object to a DOM element.
  *
  * @exportedAs angular2/forms
  */

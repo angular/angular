@@ -30,7 +30,7 @@ const formControlBinding =
  * @Component({selector: "login-comp"})
  * @View({
  *      directives: [formDirectives],
- *      template: "<input type='text' [form-control]='loginControl'>"
+ *      template: "<input type='text' [ng-form-control]='loginControl'>"
  *      })
  * class LoginComp {
  *  loginControl:Control;
@@ -45,9 +45,9 @@ const formControlBinding =
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: '[form-control]',
+  selector: '[ng-form-control]',
   hostInjector: [formControlBinding],
-  properties: ['control: form-control', 'model: ng-model'],
+  properties: ['control: ng-form-control', 'model: ng-model'],
   events: ['ngModel'],
   lifecycle: [onChange]
 })

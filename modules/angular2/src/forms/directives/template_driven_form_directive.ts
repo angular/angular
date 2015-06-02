@@ -14,7 +14,7 @@ const formDirectiveBinding = CONST_EXPR(new Binding(
     ControlContainerDirective, {toAlias: FORWARD_REF(() => TemplateDrivenFormDirective)}));
 
 @Directive({
-  selector: 'form:not([ng-no-form]):not([form-model]),ng-form,[ng-form]',
+  selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
   hostInjector: [formDirectiveBinding]
 })
 export class TemplateDrivenFormDirective extends ControlContainerDirective implements

@@ -11,13 +11,13 @@ import {ControlValueAccessor} from './control_value_accessor';
  *
  *  # Example
  *  ```
- *  <input type="text" [control]="loginControl">
+ *  <input type="text" [ng-control]="loginControl">
  *  ```
  *
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: 'select[control],select[form-control],select[ng-model]',
+  selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
   hostListeners:
       {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
   hostProperties: {'value': 'value'}

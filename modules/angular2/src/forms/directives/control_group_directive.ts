@@ -10,11 +10,11 @@ const controlGroupBinding = CONST_EXPR(
     new Binding(ControlContainerDirective, {toAlias: FORWARD_REF(() => ControlGroupDirective)}));
 
 /**
- * Binds a control group to a DOM element.
+ * Binds a ng-control group to a DOM element.
  *
  * # Example
  *
- * In this example, we create a control group, and we bind the login and
+ * In this example, we create a ng-control group, and we bind the login and
  * password controls to the login and password elements.
  *
  * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
@@ -25,10 +25,10 @@ const controlGroupBinding = CONST_EXPR(
  * @View({
  *      directives: [formDirectives],
  *      template:
- *              "<form [form-model]='loginForm'>" +
- *              "<div control-group="credentials">
- *              "Login <input type='text' control='login'>" +
- *              "Password <input type='password' control='password'>" +
+ *              "<form [ng-form-model]='loginForm'>" +
+ *              "<div ng-control-group="credentials">
+ *              "Login <input type='text' ng-control='login'>" +
+ *              "Password <input type='password' ng-control='password'>" +
  *              "<button (click)="onLogin()">Login</button>" +
  *              "</div>"
  *              "</form>"
@@ -39,7 +39,7 @@ const controlGroupBinding = CONST_EXPR(
  *  constructor() {
  *    this.loginForm = new ControlGroup({
  *      credentials: new ControlGroup({
- *        login: new Control(""),
+ *        login: new Cntrol(""),
  *        password: new Control("")
  *      })
  *    });
@@ -55,9 +55,9 @@ const controlGroupBinding = CONST_EXPR(
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: '[control-group]',
+  selector: '[ng-control-group]',
   hostInjector: [controlGroupBinding],
-  properties: ['name: control-group'],
+  properties: ['name: ng-control-group'],
   lifecycle: [onInit, onDestroy]
 })
 export class ControlGroupDirective extends ControlContainerDirective {

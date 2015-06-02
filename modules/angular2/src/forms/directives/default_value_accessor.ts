@@ -11,15 +11,14 @@ import {ControlValueAccessor} from './control_value_accessor';
  *
  *  # Example
  *  ```
- *  <input type="text" [form-control]="loginControl">
+ *  <input type="text" [ng-form-control]="loginControl">
  *  ```
  *
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: 'input:not([type=checkbox])[control],textarea[control],' +
-                'input:not([type=checkbox])[form-control],textarea[form-control],' +
-                'input:not([type=checkbox])[ng-model],textarea[ng-model]',
+  selector:
+      'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model]',
   hostListeners:
       {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
   hostProperties: {'value': 'value'}

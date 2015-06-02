@@ -31,8 +31,8 @@ const controlNameBinding =
  * @View({
  *      directives: [formDirectives],
  *      template:
- *              "<form [form-model]='loginForm'>" +
- *              "Login <input type='text' control='login'>" +
+ *              "<form [ng-form-model]='loginForm'>" +
+ *              "Login <input type='text' ng-control='login'>" +
  *              "<button (click)="onLogin()">Login</button>" +
  *              "</form>"
  *      })
@@ -55,9 +55,9 @@ const controlNameBinding =
  * @exportedAs angular2/forms
  */
 @Directive({
-  selector: '[control]',
+  selector: '[ng-control]',
   hostInjector: [controlNameBinding],
-  properties: ['name: control', 'model: ng-model'],
+  properties: ['name: ng-control', 'model: ng-model'],
   events: ['ngModel'],
   lifecycle: [onDestroy, onChange]
 })

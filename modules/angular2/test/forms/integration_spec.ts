@@ -37,8 +37,8 @@ export function main() {
        inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var ctx = MyComp.create({form: new ControlGroup({"login": new Control("loginValue")})});
 
-         var t = `<div [form-model]="form">
-                <input type="text" control="login">
+         var t = `<div [ng-form-model]="form">
+                <input type="text" ng-control="login">
                </div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
@@ -56,8 +56,8 @@ export function main() {
          var form = new ControlGroup({"login": new Control("oldValue")});
          var ctx = MyComp.create({form: form});
 
-         var t = `<div [form-model]="form">
-                <input type="text" control="login">
+         var t = `<div [ng-form-model]="form">
+                <input type="text" ng-control="login">
               </div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
@@ -77,7 +77,7 @@ export function main() {
          var control = new Control("loginValue");
          var ctx = MyComp.create({form: control});
 
-         var t = `<div><input type="text" [form-control]="form"></div>`;
+         var t = `<div><input type="text" [ng-form-control]="form"></div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
              .then((view) => {
@@ -98,8 +98,8 @@ export function main() {
          var form = new ControlGroup({"login": new Control("oldValue")});
          var ctx = MyComp.create({form: form});
 
-         var t = `<div [form-model]="form">
-                <input type="text" control="login">
+         var t = `<div [ng-form-model]="form">
+                <input type="text" ng-control="login">
                </div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
@@ -120,8 +120,8 @@ export function main() {
          var form = new ControlGroup({"login": login});
          var ctx = MyComp.create({form: form});
 
-         var t = `<div [form-model]="form">
-                <input type="text" control="login">
+         var t = `<div [ng-form-model]="form">
+                <input type="text" ng-control="login">
                </div>`;
 
          tb.createView(MyComp, {context: ctx, html: t})
@@ -142,8 +142,8 @@ export function main() {
       it("should support <input type=text>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
 
-           var t = `<div [form-model]="form">
-                  <input type="text" control="text">
+           var t = `<div [ng-form-model]="form">
+                  <input type="text" ng-control="text">
                 </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -164,8 +164,8 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
 
-           var t = `<div [form-model]="form">
-                  <input control="text">
+           var t = `<div [ng-form-model]="form">
+                  <input ng-control="text">
                 </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -185,8 +185,8 @@ export function main() {
       it("should support <textarea>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control('old')})});
 
-           var t = `<div [form-model]="form">
-                  <textarea control="text"></textarea>
+           var t = `<div [ng-form-model]="form">
+                  <textarea ng-control="text"></textarea>
                 </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -206,8 +206,8 @@ export function main() {
       it("should support <type=checkbox>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"checkbox": new Control(true)})});
 
-           var t = `<div [form-model]="form">
-                  <input type="checkbox" control="checkbox">
+           var t = `<div [ng-form-model]="form">
+                  <input type="checkbox" ng-control="checkbox">
                 </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -227,8 +227,8 @@ export function main() {
       it("should support <select>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"city": new Control("SF")})});
 
-           var t = `<div [form-model]="form">
-                    <select control="city">
+           var t = `<div [ng-form-model]="form">
+                    <select ng-control="city">
                       <option value="SF"></option>
                       <option value="NYC"></option>
                     </select>
@@ -255,8 +255,8 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"name": new Control("aa")})});
 
-           var t = `<div [form-model]="form">
-                  <input type="text" control="name" wrapped-value>
+           var t = `<div [ng-form-model]="form">
+                  <input type="text" ng-control="name" wrapped-value>
                 </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -280,8 +280,8 @@ export function main() {
            var form = new ControlGroup({"login": new Control("aa")});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [form-model]="form">
-                  <input type="text" control="login" required>
+           var t = `<div [ng-form-model]="form">
+                  <input type="text" ng-control="login" required>
                  </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -304,8 +304,8 @@ export function main() {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [form-model]="form">
-                  <input type="text" control="login">
+           var t = `<div [ng-form-model]="form">
+                  <input type="text" ng-control="login">
                  </div>`;
 
            tb.createView(MyComp, {context: ctx, html: t})
@@ -331,9 +331,9 @@ export function main() {
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [form-model]="form">
-                  <div control-group="nested">
-                    <input type="text" control="login">
+           var t = `<div [ng-form-model]="form">
+                  <div ng-control-group="nested">
+                    <input type="text" ng-control="login">
                   </div>
               </div>`;
 
@@ -352,9 +352,9 @@ export function main() {
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
            var ctx = MyComp.create({form: form});
 
-           var t = `<div [form-model]="form">
-                    <div control-group="nested">
-                      <input type="text" control="login">
+           var t = `<div [ng-form-model]="form">
+                    <div ng-control-group="nested">
+                      <input type="text" ng-control="login">
                     </div>
                 </div>`;
 
@@ -379,7 +379,7 @@ export function main() {
              var ctx = MyComp.create({name: "oldValue", form: form});
 
              var t =
-                 `<div [form-model]="form"><input type="text" control="name" [(ng-model)]="name"></div>`;
+                 `<div [ng-form-model]="form"><input type="text" ng-control="name" [(ng-model)]="name"></div>`;
 
              tb.createView(MyComp, {context: ctx, html: t})
                  .then((view) => {
@@ -403,7 +403,8 @@ export function main() {
                 var form = new Control("");
                 var ctx = MyComp.create({name: "oldValue", form: form});
 
-                var t = `<div><input type="text" [form-control]="form" [(ng-model)]="name"></div>`;
+                var t =
+                    `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
 
                 tb.createView(MyComp, {context: ctx, html: t})
                     .then((view) => {
@@ -428,8 +429,8 @@ export function main() {
                   var ctx = MyComp.create({name: null});
 
                   var t = `<form>
-                     <div control-group="user">
-                      <input type="text" control="login">
+                     <div ng-control-group="user">
+                      <input type="text" ng-control="login">
                      </div>
                </form>`;
 
@@ -469,7 +470,7 @@ export function main() {
 
                                             var t = `<form>
                     <div *ng-if="name == 'show'">
-                      <input type="text" control="login">
+                      <input type="text" ng-control="login">
                     </div>
                   </form>`;
 
@@ -498,8 +499,8 @@ export function main() {
 
 
                   var t = `<form>
-                     <div *ng-if="name=='show'" control-group="user">
-                      <input type="text" control="login">
+                     <div *ng-if="name=='show'" ng-control-group="user">
+                      <input type="text" ng-control="login">
                      </div>
                </form>`;
 
@@ -526,9 +527,9 @@ export function main() {
          inject([TestBed], fakeAsync(tb => {
                   var ctx = MyComp.create({name: "oldValue"});
 
-                  var t = `<div form>
-                      <input type="text" control="name" [(ng-model)]="name">
-               </div>`;
+                  var t = `<form>
+                      <input type="text" ng-control="name" [(ng-model)]="name">
+               </form>`;
 
                   tb.createView(MyComp, {context: ctx, html: t})
                       .then((view) => {

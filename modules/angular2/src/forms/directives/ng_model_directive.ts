@@ -13,7 +13,7 @@ const formControlBinding =
     CONST_EXPR(new Binding(ControlDirective, {toAlias: FORWARD_REF(() => NgModelDirective)}));
 
 @Directive({
-  selector: '[ng-model]:not([control]):not([form-control])',
+  selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
   hostInjector: [formControlBinding],
   properties: ['model: ng-model'],
   events: ['ngModel'],

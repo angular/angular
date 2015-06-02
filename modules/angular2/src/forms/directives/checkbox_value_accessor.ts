@@ -9,14 +9,14 @@ import {ControlValueAccessor} from './control_value_accessor';
  *
  *  # Example
  *  ```
- *  <input type="checkbox" [control]="rememberLogin">
+ *  <input type="checkbox" [ng-control]="rememberLogin">
  *  ```
  *
  * @exportedAs angular2/forms
  */
 @Directive({
   selector:
-      'input[type=checkbox][control],input[type=checkbox][form-control],input[type=checkbox][ng-model]',
+      'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
   hostListeners: {'change': 'onChange($event.target.checked)'},
   hostProperties: {'checked': 'checked'}
 })
