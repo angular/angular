@@ -106,7 +106,7 @@ class NeedsDirectiveFromParent {
 @Injectable()
 class NeedsDirectiveFromParentOrSelf {
   dependency: SimpleDirective;
-  constructor(@Parent({self:true}) dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Parent({self: true}) dependency: SimpleDirective) { this.dependency = dependency; }
 }
 
 @Injectable()
@@ -478,8 +478,21 @@ export function main() {
           expect(pei.getBindingAtIndex(i).key.token).toBe(i);
         }
       });
-    });
 
+      it('should throw whenever multiple directives declare the same host injectable', () => {
+        expect(() => {
+          createPei(null, 0, [
+            DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
+              hostInjector: [bind('injectable1').toValue('injectable1')]
+            })),
+            DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Component({
+              hostInjector: [bind('injectable1').toValue('injectable2')]
+            }))
+          ]);
+        }).toThrowError('Multiple directives defined the same host injectable: "injectable1"');
+      });
+
+    });
   });
 
   describe("ElementInjector", () => {

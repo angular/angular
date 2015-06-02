@@ -466,8 +466,14 @@ export class ProtoElementInjector {
 
   private static _createHostInjectorBindingData(bindings: List<ResolvedBinding>,
                                                 bd: List<BindingData>) {
+    var visitedIds: Map<number, boolean> = MapWrapper.create();
     ListWrapper.forEach(bindings, b => {
       ListWrapper.forEach(b.resolvedHostInjectables, b => {
+        if (MapWrapper.contains(visitedIds, b.key.id)) {
+          throw new BaseException(
+              `Multiple directives defined the same host injectable: "${stringify(b.key.token)}"`);
+        }
+        MapWrapper.set(visitedIds, b.key.id, true);
         ListWrapper.push(bd, new BindingData(ProtoElementInjector._createBinding(b), LIGHT_DOM));
       });
     });
