@@ -16,6 +16,7 @@ import {EventManager} from './events/event_manager';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './view/proto_view';
 import {DomView, DomViewRef, resolveInternalDomView} from './view/view';
+import {DomElement} from './view/element';
 import {DomViewContainer} from './view/view_container';
 import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from './util';
 
@@ -65,8 +66,8 @@ export class DomRenderer extends Renderer {
                       componentViewRef: RenderViewRef) {
     var hostView = resolveInternalDomView(hostViewRef);
     var componentView = resolveInternalDomView(componentViewRef);
-    var element = hostView.boundElements[elementIndex];
-    var lightDom = hostView.lightDoms[elementIndex];
+    var element = hostView.boundElements[elementIndex].element;
+    var lightDom = hostView.boundElements[elementIndex].lightDom;
     if (isPresent(lightDom)) {
       lightDom.attachShadowDomView(componentView);
     }
@@ -92,7 +93,7 @@ export class DomRenderer extends Renderer {
     var hostView = resolveInternalDomView(hostViewRef);
     var componentView = resolveInternalDomView(componentViewRef);
     this._removeViewNodes(componentView);
-    var lightDom = hostView.lightDoms[boundElementIndex];
+    var lightDom = hostView.boundElements[boundElementIndex].lightDom;
     if (isPresent(lightDom)) {
       lightDom.detachShadowDomView();
     }
@@ -108,11 +109,11 @@ export class DomRenderer extends Renderer {
     ListWrapper.insert(viewContainer.views, atIndex, view);
     view.hostLightDom = parentView.hostLightDom;
 
-    var directParentLightDom = parentView.getDirectParentLightDom(boundElementIndex);
+    var directParentLightDom = this._directParentLightDom(parentView, boundElementIndex);
     if (isBlank(directParentLightDom)) {
       var siblingToInsertAfter;
       if (atIndex == 0) {
-        siblingToInsertAfter = parentView.boundElements[boundElementIndex];
+        siblingToInsertAfter = parentView.boundElements[boundElementIndex].element;
       } else {
         siblingToInsertAfter = ListWrapper.last(viewContainer.views[atIndex - 1].rootNodes);
       }
@@ -130,10 +131,10 @@ export class DomRenderer extends Renderer {
                         viewRef: RenderViewRef) {
     var parentView = resolveInternalDomView(parentViewRef);
     var view = resolveInternalDomView(viewRef);
-    var viewContainer = parentView.viewContainers[boundElementIndex];
+    var viewContainer = parentView.boundElements[boundElementIndex].viewContainer;
     var detachedView = viewContainer.views[atIndex];
     ListWrapper.removeAt(viewContainer.views, atIndex);
-    var directParentLightDom = parentView.getDirectParentLightDom(boundElementIndex);
+    var directParentLightDom = this._directParentLightDom(parentView, boundElementIndex);
     if (isBlank(directParentLightDom)) {
       this._removeViewNodes(detachedView);
     } else {
@@ -151,8 +152,8 @@ export class DomRenderer extends Renderer {
     if (view.hydrated) throw new BaseException('The view is already hydrated.');
     view.hydrated = true;
 
-    for (var i = 0; i < view.lightDoms.length; ++i) {
-      var lightDom = view.lightDoms[i];
+    for (var i = 0; i < view.boundElements.length; ++i) {
+      var lightDom = view.boundElements[i].lightDom;
       if (isPresent(lightDom)) {
         lightDom.redistribute();
       }
@@ -244,7 +245,6 @@ export class DomRenderer extends Renderer {
     var binders = protoView.elementBinders;
     var boundTextNodes = [];
     var boundElements = ListWrapper.createFixedSize(binders.length);
-    var contentTags = ListWrapper.createFixedSize(binders.length);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -261,7 +261,6 @@ export class DomRenderer extends Renderer {
         element = elementsWithBindings[binderIdx - protoView.rootBindingOffset];
         childNodes = DOM.childNodes(element);
       }
-      boundElements[binderIdx] = element;
 
       // boundTextNodes
       var textNodeIndices = binder.textNodeIndices;
@@ -274,10 +273,10 @@ export class DomRenderer extends Renderer {
       if (isPresent(binder.contentTagSelector)) {
         contentTag = new Content(element, binder.contentTagSelector);
       }
-      contentTags[binderIdx] = contentTag;
+      boundElements[binderIdx] = new DomElement(binder, element, contentTag);
     }
 
-    var view = new DomView(protoView, viewRootNodes, boundTextNodes, boundElements, contentTags);
+    var view = new DomView(protoView, viewRootNodes, boundTextNodes, boundElements);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -286,21 +285,21 @@ export class DomRenderer extends Renderer {
       // lightDoms
       var lightDom = null;
       if (isPresent(binder.componentId)) {
-        lightDom = this._shadowDomStrategy.constructLightDom(view, boundElements[binderIdx]);
+        lightDom = this._shadowDomStrategy.constructLightDom(view, element.element);
       }
-      view.lightDoms[binderIdx] = lightDom;
+      element.lightDom = lightDom;
 
       // init contentTags
-      var contentTag = contentTags[binderIdx];
+      var contentTag = element.contentTag;
       if (isPresent(contentTag)) {
-        var destLightDom = view.getDirectParentLightDom(binderIdx);
-        contentTag.init(destLightDom);
+        var directParentLightDom = this._directParentLightDom(view, binderIdx);
+        contentTag.init(directParentLightDom);
       }
 
       // events
       if (isPresent(binder.eventLocals) && isPresent(binder.localEvents)) {
         for (var i = 0; i < binder.localEvents.length; i++) {
-          this._createEventListener(view, element, binderIdx, binder.localEvents[i].name,
+          this._createEventListener(view, element.element, binderIdx, binder.localEvents[i].name,
                                     binder.eventLocals);
         }
       }
@@ -337,12 +336,18 @@ export class DomRenderer extends Renderer {
   }
 
   _getOrCreateViewContainer(parentView: DomView, boundElementIndex) {
-    var vc = parentView.viewContainers[boundElementIndex];
+    var el = parentView.boundElements[boundElementIndex];
+    var vc = el.viewContainer;
     if (isBlank(vc)) {
       vc = new DomViewContainer();
-      parentView.viewContainers[boundElementIndex] = vc;
+      el.viewContainer = vc;
     }
     return vc;
+  }
+
+  _directParentLightDom(view: DomView, boundElementIndex: number) {
+    var directParentEl = view.getDirectParentElement(boundElementIndex);
+    return isPresent(directParentEl) ? directParentEl.lightDom : null;
   }
 
   _createGlobalEventListener(view, elementIndex, eventName, eventTarget, fullName): Function {

@@ -80,7 +80,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
                     var domView = resolveInternalDomView(componentRef.hostView.render);
                     // We need to do this here to ensure that we create Testability and
                     // it's ready on the window for users.
-                    registry.registerApplication(domView.boundElements[0], testability);
+                    registry.registerApplication(domView.boundElements[0].element, testability);
 
                     return componentRef;
                   });

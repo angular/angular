@@ -23,7 +23,9 @@ export class ElementRef {
   // We need a more general way to read/write to the DOM element
   // via a proper abstraction in the render layer
   get domElement() {
-    return resolveInternalDomView(this.parentView.render).boundElements[this.boundElementIndex];
+    return resolveInternalDomView(this.parentView.render)
+        .boundElements[this.boundElementIndex]
+        .element;
   }
 
   /**

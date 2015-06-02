@@ -3,18 +3,13 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import * as viewModule from '../view/view';
+import * as elModule from '../view/element';
 import {Content} from './content_tag';
 
 export class DestinationLightDom {}
 
 class _Root {
-  node;
-  boundElementIndex: number;
-
-  constructor(node, boundElementIndex) {
-    this.node = node;
-    this.boundElementIndex = boundElementIndex;
-  }
+  constructor(public node, public boundElement: elModule.DomElement) {}
 }
 
 // TODO: LightDom should implement DestinationLightDom
@@ -59,16 +54,14 @@ export class LightDom {
     if (view.proto.transitiveContentTagCount === 0) {
       return acc;
     }
-    var contentTags = view.contentTags;
-    var vcs = view.viewContainers;
-    for (var i = 0; i < vcs.length; i++) {
-      var vc = vcs[i];
-      var contentTag = contentTags[i];
-      if (isPresent(contentTag)) {
-        ListWrapper.push(acc, contentTag);
+    var els = view.boundElements;
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (isPresent(el.contentTag)) {
+        ListWrapper.push(acc, el.contentTag);
       }
-      if (isPresent(vc)) {
-        ListWrapper.forEach(vc.contentTagContainers(),
+      if (isPresent(el.viewContainer)) {
+        ListWrapper.forEach(el.viewContainer.contentTagContainers(),
                             (view) => { this._collectAllContentTags(view, acc); });
       }
     }
@@ -85,9 +78,9 @@ export class LightDom {
     var roots = this._findRoots();
     for (var i = 0; i < roots.length; ++i) {
       var root = roots[i];
-      if (isPresent(root.boundElementIndex)) {
-        var vc = this.lightDomView.viewContainers[root.boundElementIndex];
-        var content = this.lightDomView.contentTags[root.boundElementIndex];
+      if (isPresent(root.boundElement)) {
+        var vc = root.boundElement.viewContainer;
+        var content = root.boundElement.contentTag;
         if (isPresent(vc)) {
           res = ListWrapper.concat(res, vc.nodes());
         } else if (isPresent(content)) {
@@ -103,22 +96,22 @@ export class LightDom {
   }
 
   // Returns a list of Roots for all the nodes of the light DOM.
-  // The Root object contains the DOM node and its corresponding boundElementIndex
+  // The Root object contains the DOM node and its corresponding boundElement
   private _findRoots() {
     if (isPresent(this._roots)) return this._roots;
 
     var boundElements = this.lightDomView.boundElements;
 
     this._roots = ListWrapper.map(this.nodes, (n) => {
-      var boundElementIndex = null;
+      var boundElement = null;
       for (var i = 0; i < boundElements.length; i++) {
         var boundEl = boundElements[i];
-        if (isPresent(boundEl) && boundEl === n) {
-          boundElementIndex = i;
+        if (isPresent(boundEl) && boundEl.element === n) {
+          boundElement = boundEl;
           break;
         }
       }
-      return new _Root(n, boundElementIndex);
+      return new _Root(n, boundElement);
     });
 
     return this._roots;

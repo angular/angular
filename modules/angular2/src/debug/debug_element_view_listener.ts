@@ -61,7 +61,7 @@ export class DebugElementViewListener implements AppViewListener {
     MapWrapper.set(_allIdsByView, view, viewId);
     var renderView = resolveInternalDomView(view.render);
     for (var i = 0; i < renderView.boundElements.length; i++) {
-      _setElementId(renderView.boundElements[i], [viewId, i]);
+      _setElementId(renderView.boundElements[i].element, [viewId, i]);
     }
   }
 
