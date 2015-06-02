@@ -17,6 +17,8 @@ env:
   - KARMA_BROWSERS=DartiumWithWebPlatform
   - E2E_BROWSERS=Dartium
   - LOGS_DIR=/tmp/angular-build/logs
+  - SAUCE_USERNAME=angular-ci
+  - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   - ARCH=linux-x64
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
@@ -26,10 +28,15 @@ env:
   # (password is in Valentine)
   - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
   matrix:
-  - MODE=js DART_CHANNEL=dev
-  - MODE=dart DART_CHANNEL=stable
-  - MODE=dart DART_CHANNEL=dev
-  - MODE=dart_experimental DART_CHANNEL=dev
+    - MODE=js DART_CHANNEL=dev
+    - MODE=dart DART_CHANNEL=stable
+    - MODE=dart DART_CHANNEL=dev
+    - MODE=dart_experimental DART_CHANNEL=dev
+    - MODE=saucelabs DART_CHANNEL=dev
+
+matrix:  
+  allow_failures:
+  - env: "MODE=saucelabs DART_CHANNEL=dev"
 
 addons:
   firefox: "38.0"

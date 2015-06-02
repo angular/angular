@@ -177,15 +177,15 @@ void _it(gnsFn, name, fn) {
   });
 }
 
-void it(name, fn) {
+void it(name, fn, [timeOut = null]) {
   _it(gns.it, name, fn);
 }
 
-void iit(name, fn) {
+void iit(name, fn, [timeOut = null]) {
   _it(gns.iit, name, fn);
 }
 
-void xit(name, fn) {
+void xit(name, fn, [timeOut = null]) {
   _it(gns.xit, name, fn);
 }
 

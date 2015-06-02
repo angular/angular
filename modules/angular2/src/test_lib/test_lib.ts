@@ -129,7 +129,7 @@ export function beforeEachBindings(fn) {
   });
 }
 
-function _it(jsmFn, name, fn) {
+function _it(jsmFn, name, fn, timeOut) {
   var runner = runnerStack[runnerStack.length - 1];
 
   jsmFn(name, function(done) {
@@ -156,19 +156,19 @@ function _it(jsmFn, name, fn) {
     inIt = false;
 
     if (!async) done();
-  });
+  }, timeOut);
 }
 
-export function it(name, fn) {
-  return _it(jsmIt, name, fn);
+export function it(name, fn, timeOut = null) {
+  return _it(jsmIt, name, fn, timeOut);
 }
 
-export function xit(name, fn) {
-  return _it(jsmXIt, name, fn);
+export function xit(name, fn, timeOut = null) {
+  return _it(jsmXIt, name, fn, timeOut);
 }
 
-export function iit(name, fn) {
-  return _it(jsmIIt, name, fn);
+export function iit(name, fn, timeOut = null) {
+  return _it(jsmIIt, name, fn, timeOut);
 }
 
 // Some Map polyfills don't polyfill Map.toString correctly, which
