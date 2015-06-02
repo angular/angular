@@ -25,8 +25,10 @@ describe('key_events', function () {
     firstArea.sendKeys(' ');
     expect(firstArea.getText()).toBe('space');
 
-    firstArea.sendKeys('a');
-    expect(firstArea.getText()).toBe('a');
+    // It would not work with a letter which position depends on the keyboard layout (ie AZERTY vs
+    // QWERTY), see https://code.google.com/p/chromedriver/issues/detail?id=553
+    firstArea.sendKeys('u');
+    expect(firstArea.getText()).toBe('u');
 
     firstArea.sendKeys(protractor.Key.CONTROL, 'b');
     expect(firstArea.getText()).toBe('control.b');
