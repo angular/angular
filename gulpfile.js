@@ -38,6 +38,7 @@ var insert = require('gulp-insert');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
 var tslint = require('gulp-tslint');
+var sauceConf = require('./sauce.conf');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.9.0',
@@ -428,7 +429,7 @@ function runKarma(configFile, done) {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.typings', 'test.unit.js.sauce/ci', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -444,22 +445,54 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']))
 //     These tests run in the browser and are allowed to access
 //     HTML DOM APIs.
 function getBrowsersFromCLI() {
+  var isSauce = false;
+  var launchers = sauceConf.customLaunchers;
+  var aliases = sauceConf.aliases;
   var args = minimist(process.argv.slice(2));
-  return [args.browsers?args.browsers:'DartiumWithWebPlatform']
+  var rawInput = args.browsers?args.browsers:'DartiumWithWebPlatform';
+  var inputList = rawInput.replace(' ', '').toUpperCase().split(',');
+  var outputList = [];
+  for (var i = 0; i < inputList.length; i++) {
+    var input = inputList[i];
+    if (launchers.hasOwnProperty(input)) {
+      //Non-sauce browsers case: overrides everything, ignoring other options
+      outputList = [input];
+      isSauce = false;
+      break;
+    } else if (launchers.hasOwnProperty("SL_" + input)) {
+      isSauce = true;
+      outputList.push("SL_" + input);
+    } else if (aliases.hasOwnProperty(input)) {
+      outputList = outputList.concat(aliases[input]);
+      isSauce = true;
+    } else {
+      throw new Error('ERROR: unknown browser found in getBrowsersFromCLI()');
+    }
+  }
+  return {
+    browsersToRun: outputList.filter(function(item, pos, self) {return self.indexOf(item) == pos;}),
+    isSauce: isSauce
+  }
 }
 
 
-gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
-
-  runSequence(
-    '!test.unit.js/karma-server',
-    function() {
-      watch('modules/**', [
-        '!broccoli.js.dev',
-        '!test.unit.js/karma-run'
-      ]);
-    }
-  );
+gulp.task('test.unit.js', ['build.js.dev'], function (done) {
+  var browserConf = getBrowsersFromCLI();
+  if (browserConf.isSauce) {
+    karma.server.start({configFile: __dirname + '/karma-js.conf.js',
+      singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000, reporters: ['dots'], browsers: browserConf.browsersToRun}, 
+      function(err) {done(); process.exit(err ? 1 : 0)});
+  } else {
+    runSequence(
+      '!test.unit.js/karma-server',
+      function() {
+        watch('modules/**', [
+          '!broccoli.js.dev',
+          '!test.unit.js/karma-run'
+        ]);
+      }
+    );
+  }
 });
 
 
@@ -511,13 +544,21 @@ gulp.task('!test.unit.dart/karma-server', function() {
 
 
 gulp.task('test.unit.js/ci', function (done) {
+  var browserConf = getBrowsersFromCLI();
   karma.server.start({configFile: __dirname + '/karma-js.conf.js',
-    singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+});
+
+gulp.task('test.unit.js.sauce/ci', function (done) {
+  karma.server.start({configFile: __dirname + '/karma-js.conf.js',
+    singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000, reporters: ['dots', 'saucelabs'], browsers: sauceConf.aliases.CI},
+    function(err) {done(); process.exit(err ? 1 : 0)});
 });
 
 gulp.task('test.unit.dart/ci', function (done) {
+  var browserConf = getBrowsersFromCLI();
   karma.server.start({configFile: __dirname + '/karma-dart.conf.js',
-    singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+    singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
 });
 
 

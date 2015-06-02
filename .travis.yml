@@ -13,6 +13,8 @@ env:
   - KARMA_BROWSERS=DartiumWithWebPlatform
   - E2E_BROWSERS=Dartium
   - LOGS_DIR=/tmp/angular-build/logs
+  - SAUCE_USERNAME=angular-ci
+  - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   - ARCH=linux-x64
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
@@ -49,6 +51,8 @@ install:
 
 before_script:
 - mkdir -p $LOGS_DIR
+- ./scripts/sauce/sauce_connect_setup.sh
+- ./scripts/sauce/sauce_connect_block.sh
 
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
