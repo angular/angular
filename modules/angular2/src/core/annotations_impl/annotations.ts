@@ -705,7 +705,8 @@ export class Directive extends Injectable {
   /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
-   * See {@link annotations/onChange}, {@link annotations/onDestroy}, {@link annotations/onAllChangesDone} for details.
+   * See {@link annotations/onChange}, {@link annotations/onDestroy}, {@link
+   * annotations/onAllChangesDone} for details.
    */
   lifecycle: List<LifecycleEvent>;
 
