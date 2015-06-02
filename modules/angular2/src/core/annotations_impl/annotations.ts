@@ -69,8 +69,8 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: ElementRef` to obtain a reference to logical element in the view.
- * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link
- * Directive} directives only
+ * - `viewContainer: ViewContainerRef` to control child template instantiation, for
+ * {@link Directive} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -514,7 +514,7 @@ export class Directive extends Injectable {
    * For example, we could write a binding that updates the directive on structural changes, rather
    * than on reference changes, as normally occurs in change detection.
    *
-   * See {@link Pipe} and {@link keyValDiff} documentation for more details.
+   * See {@link Pipe} and {@link pipes/keyValDiff} documentation for more details.
    *
    * ```
    * @Directive({
@@ -705,7 +705,7 @@ export class Directive extends Injectable {
   /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
-   * See {@link onChange}, {@link onDestroy}, {@link onAllChangesDone} for details.
+   * See {@link annotations/onChange}, {@link annotations/onDestroy}, {@link annotations/onAllChangesDone} for details.
    */
   lifecycle: List<LifecycleEvent>;
 
@@ -787,8 +787,8 @@ export class Directive extends Injectable {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child {@link Injector} which is configured with the `appInjector` for the {@link
- * Component}.
+ * - creates a child {@link Injector} which is configured with the `appInjector` for the
+ * {@link Component}.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *

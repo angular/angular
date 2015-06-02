@@ -4,8 +4,8 @@ import {ControlDirective} from './control_directive';
 import {ControlValueAccessor} from './control_value_accessor';
 
 /**
- * The default accessor for writing a value and listening to changes that is used by a {@link
-  * Control} directive.
+ * The default accessor for writing a value and listening to changes that is used by a
+ * {@link Control} directive.
  *
  * This is the default strategy that Angular uses when no other accessor is applied.
  *

@@ -5,15 +5,15 @@ module.exports = new Package('angular-public', [basePackage])
 
 .config(function(readTypeScriptModules) {
   readTypeScriptModules.sourceFiles = [
-    'angular2/annotations.js',
+    'angular2/annotations.ts',
     'angular2/change_detection.ts',
-    'angular2/core.js',
+    'angular2/core.ts',
     'angular2/di.ts',
-    'angular2/directives.js',
-    'angular2/forms.js',
+    'angular2/directives.ts',
+    'angular2/forms.ts',
     'angular2/router.js',
-    'angular2/test.js',
-    'angular2/pipes.js'
+    'angular2/test.ts',
+    'angular2/pipes.ts'
   ];
   readTypeScriptModules.hidePrivateMembers = true;
 })
