@@ -1,23 +1,14 @@
-/// <reference path="../../typings/node/node.d.ts" />
-/// <reference path="../../typings/angular-protractor/angular-protractor.d.ts" />
+export {verifyNoBrowserErrors} from './e2e_util';
 
-var testUtil = require('./e2e_util');
+import {bind, Options} from 'benchpress/benchpress';
 
-var benchpress = require('benchpress/benchpress');
-
-module.exports = {
-  runClickBenchmark: runClickBenchmark,
-  runBenchmark: runBenchmark,
-  verifyNoBrowserErrors: testUtil.verifyNoBrowserErrors
-};
-
-function runClickBenchmark(config) {
+export function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) { return $(selector); });
   config.work = function() { buttons.forEach(function(button) { button.click(); }); };
   return runBenchmark(config);
 }
 
-function runBenchmark(config) {
+export function runBenchmark(config) {
   return getScaleFactor(browser.params.benchmark.scaling)
       .then(function(scaleFactor) {
         var description = {};
@@ -32,13 +23,12 @@ function runBenchmark(config) {
         }
         var url = encodeURI(config.url + '?' + urlParams.join('&'));
         return browser.get(url).then(function() {
-          return new benchpress.Runner().sample({
+          return global['benchpressRunner'].sample({
             id: config.id,
             execute: config.work,
             prepare: config.prepare,
             microMetrics: config.microMetrics,
-            bindings:
-                [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue(description)]
+            bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue(description)]
           });
         });
       });
