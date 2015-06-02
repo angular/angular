@@ -3,7 +3,7 @@ var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : 
 export {_global as global};
 
 export var Type = Function;
-export type Type = new (...args: any[]) => any;
+export type Type = new (... args: any[]) => any;
 
 export class BaseException extends Error {
   message;
@@ -119,7 +119,7 @@ export class StringWrapper {
   }
 
   static replaceAllMapped(s: string, from: RegExp, cb: Function): string {
-    return s.replace(from, function(...matches) {
+    return s.replace(from, function(... matches) {
       // Remove offset & string from the result array
       matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
