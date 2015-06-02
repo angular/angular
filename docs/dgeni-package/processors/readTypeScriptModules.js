@@ -22,7 +22,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     // The base path from which to load the source files
     basePath: '.',
     // We can ignore members of classes that are private
-    hidePrivateMembers: false,
+    hidePrivateMembers: true,
     // We can sort class members alphabetically
     sortClassMembers: true,
     // We can provide a collection of strings or regexes to ignore exports whose export names match
