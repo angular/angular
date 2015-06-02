@@ -19,6 +19,7 @@ module.exports = function(gulp, plugins, config) {
       var destFolder = path.resolve(path.join(config.dest, path.basename(folder)));
       var pubMode = config.mode || 'release';
       var pubArgs = ['build', '--mode', pubMode, '-o', destFolder];
+
       return util.processToPromise(spawn(config.command, pubArgs, {
         stdio: 'inherit',
         cwd: folder
@@ -45,8 +46,10 @@ function replaceDartWithJsScripts(gulp, folder) {
 }
 
 function removeWebFolder(gulp, folder) {
-  fs.renameSync(path.join(folder, 'web', 'src'), path.join(folder, 'src'));
-  fs.renameSync(path.join(folder, 'web', 'packages'), path.join(folder, 'packages'));
+  var folders = [].slice.call(glob.sync(path.join(folder, 'web', '*')));
+  folders.forEach(function(subFolder) {
+    fs.renameSync(subFolder, subFolder.replace(path.sep + 'web' + path.sep, path.sep));
+  });
   fs.rmdirSync(path.join(folder, 'web'));
   return Q.resolve();
 }
