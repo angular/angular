@@ -42,8 +42,6 @@ export class AbstractControl {
 
   get value(): any { return this._value; }
 
-  set value(v) { this._value = v; }
-
   get status(): string { return this._status; }
 
   get valid(): boolean { return this._status === VALID; }
@@ -58,19 +56,36 @@ export class AbstractControl {
 
   setParent(parent) { this._parent = parent; }
 
-  _updateParent() {
-    if (isPresent(this._parent)) {
-      this._parent._updateValue();
+  updateValidity({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = isPresent(onlySelf) ? onlySelf : false;
+
+    this._errors = this.validator(this);
+    this._status = isPresent(this._errors) ? INVALID : VALID;
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent.updateValidity({onlySelf: onlySelf});
     }
   }
 
-  updateValidity() {
+  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean,
+                                                 emitEvent?: boolean} = {}): void {
+    onlySelf = isPresent(onlySelf) ? onlySelf : false;
+    emitEvent = isPresent(emitEvent) ? emitEvent : true;
+
+    this._updateValue();
+    this._pristine = false;
+
+    if (emitEvent) {
+      ObservableWrapper.callNext(this._valueChanges, this._value);
+    }
+
     this._errors = this.validator(this);
     this._status = isPresent(this._errors) ? INVALID : VALID;
-    if (isPresent(this._parent)) {
-      this._parent.updateValidity();
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
     }
   }
+
+  _updateValue(): void {}
 }
 
 /**
@@ -83,26 +98,23 @@ export class AbstractControl {
  * @exportedAs angular2/forms
  */
 export class Control extends AbstractControl {
+  _onChange: Function;
+
   constructor(value: any, validator: Function = Validators.nullValidator) {
     super(validator);
-    this._setValueErrorsStatus(value);
+    this._value = value;
+    this.updateValidity({onlySelf: true});
     this._valueChanges = new EventEmitter();
   }
 
-  updateValue(value: any): void {
-    this._setValueErrorsStatus(value);
-    this._pristine = false;
-
-    ObservableWrapper.callNext(this._valueChanges, this._value);
-
-    this._updateParent();
-  }
-
-  _setValueErrorsStatus(value) {
+  updateValue(value: any,
+              {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._value = value;
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
+    if (isPresent(this._onChange)) this._onChange(this._value);
+    this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
+
+  registerOnChange(fn: Function): void { this._onChange = fn; }
 }
 
 /**
@@ -136,7 +148,8 @@ export class ControlGroup extends AbstractControl {
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
-    this._setValueErrorsStatus();
+    this._value = this._reduceValue();
+    this.updateValidity({onlySelf: true});
   }
 
   addControl(name: string, c: AbstractControl) { this.controls[name] = c; }
@@ -145,12 +158,12 @@ export class ControlGroup extends AbstractControl {
 
   include(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, true);
-    this._updateValue();
+    this.updateValueAndValidity();
   }
 
   exclude(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, false);
-    this._updateValue();
+    this.updateValueAndValidity();
   }
 
   contains(controlName: string): boolean {
@@ -174,20 +187,7 @@ export class ControlGroup extends AbstractControl {
     StringMapWrapper.forEach(this.controls, (control, name) => { control.setParent(this); });
   }
 
-  _updateValue() {
-    this._setValueErrorsStatus();
-    this._pristine = false;
-
-    ObservableWrapper.callNext(this._valueChanges, this._value);
-
-    this._updateParent();
-  }
-
-  _setValueErrorsStatus() {
-    this._value = this._reduceValue();
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
-  }
+  _updateValue() { this._value = this._reduceValue(); }
 
   _reduceValue() {
     return this._reduceChildren({}, (acc, control, name) => {
@@ -239,7 +239,8 @@ export class ControlArray extends AbstractControl {
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
-    this._setValueErrorsStatus();
+    this._updateValue();
+    this.updateValidity({onlySelf: true});
   }
 
   at(index: number): AbstractControl { return this.controls[index]; }
@@ -247,38 +248,25 @@ export class ControlArray extends AbstractControl {
   push(control: AbstractControl): void {
     ListWrapper.push(this.controls, control);
     control.setParent(this);
-    this._updateValue();
+    this.updateValueAndValidity();
   }
 
   insert(index: number, control: AbstractControl): void {
     ListWrapper.insert(this.controls, index, control);
     control.setParent(this);
-    this._updateValue();
+    this.updateValueAndValidity();
   }
 
   removeAt(index: number): void {
     ListWrapper.removeAt(this.controls, index);
-    this._updateValue();
+    this.updateValueAndValidity();
   }
 
   get length(): number { return this.controls.length; }
 
-  _updateValue() {
-    this._setValueErrorsStatus();
-    this._pristine = false;
-
-    ObservableWrapper.callNext(this._valueChanges, this._value);
-
-    this._updateParent();
-  }
+  _updateValue() { this._value = ListWrapper.map(this.controls, (c) => c.value); }
 
   _setParentForControls() {
     ListWrapper.forEach(this.controls, (control) => { control.setParent(this); });
-  }
-
-  _setValueErrorsStatus() {
-    this._value = ListWrapper.map(this.controls, (c) => c.value);
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
   }
 }

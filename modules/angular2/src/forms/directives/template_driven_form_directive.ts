@@ -62,6 +62,13 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     });
   }
 
+  updateModel(dir: ControlDirective, value: any): void {
+    this._later(_ => {
+      var c = <Control>this.form.find(dir.path);
+      c.updateValue(value);
+    });
+  }
+
   _findContainer(path: List<string>): ControlGroup {
     ListWrapper.removeLast(path);
     return <ControlGroup>this.form.find(path);

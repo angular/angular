@@ -9,6 +9,9 @@ import {
   afterEach,
   el,
   AsyncTestCompleter,
+  fakeAsync,
+  flushMicrotasks,
+  tick,
   inject
 } from 'angular2/test_lib';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/forms';
@@ -60,6 +63,54 @@ export function main() {
           c.updateValue("new value");
           expect(c.dirty).toEqual(true);
         });
+      });
+
+      describe("updateValue", () => {
+        var g, c;
+        beforeEach(() => {
+          c = new Control("oldValue");
+          g = new ControlGroup({"one": c});
+        });
+
+        it("should update the value of the control", () => {
+          c.updateValue("newValue");
+          expect(c.value).toEqual("newValue");
+        });
+
+        it("should invoke onChange if it is present", () => {
+          var onChange;
+          c.registerOnChange((v) => onChange = ["invoked", v]);
+
+          c.updateValue("newValue");
+
+          expect(onChange).toEqual(["invoked", "newValue"]);
+        });
+
+        it("should update the parent", () => {
+          c.updateValue("newValue");
+          expect(g.value).toEqual({"one": "newValue"});
+        });
+
+        it("should not update the parent when explicitly specified", () => {
+          c.updateValue("newValue", {onlySelf: true});
+          expect(g.value).toEqual({"one": "oldValue"});
+        });
+
+        it("should fire an event", fakeAsync(() => {
+             ObservableWrapper.subscribe(c.valueChanges,
+                                         (value) => { expect(value).toEqual("newValue"); });
+
+             c.updateValue("newValue");
+             tick();
+           }));
+
+        it("should not fire an event when explicitly specified", fakeAsync(() => {
+             ObservableWrapper.subscribe(c.valueChanges, (value) => { throw "Should not happen"; });
+
+             c.updateValue("newValue", {emitEvent: false});
+
+             tick();
+           }));
       });
 
       describe("valueChanges", () => {
@@ -302,8 +353,8 @@ export function main() {
 
                  if (loggedValues.length == 2) {
                    expect(loggedValues)
-                       .toEqual([{"one": "new1", "two": "old2"}, {"one": "new1", "two": "new2"}])
-                           async.done();
+                       .toEqual([{"one": "new1", "two": "old2"}, {"one": "new1", "two": "new2"}]);
+                   async.done();
                  }
                });
 

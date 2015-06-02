@@ -14,9 +14,8 @@ const controlGroupBinding = CONST_EXPR(
  *
  * # Example
  *
- * In this example, we bind the control group to the form element, and we bind the login and
- * password controls to the
- * login and password elements.
+ * In this example, we create a control group, and we bind the login and
+ * password controls to the login and password elements.
  *
  * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
  * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
@@ -25,10 +24,13 @@ const controlGroupBinding = CONST_EXPR(
  * @Component({selector: "login-comp"})
  * @View({
  *      directives: [formDirectives],
- *      template: "<form [control-group]='loginForm'>" +
+ *      template:
+ *              "<form [form-model]='loginForm'>" +
+ *              "<div control-group="credentials">
  *              "Login <input type='text' control='login'>" +
  *              "Password <input type='password' control='password'>" +
  *              "<button (click)="onLogin()">Login</button>" +
+ *              "</div>"
  *              "</form>"
  *      })
  * class LoginComp {
@@ -36,8 +38,10 @@ const controlGroupBinding = CONST_EXPR(
  *
  *  constructor() {
  *    this.loginForm = new ControlGroup({
- *      login: new Control(""),
- *      password: new Control("")
+ *      credentials: new ControlGroup({
+ *        login: new Control(""),
+ *        password: new Control("")
+ *      })
  *    });
  *  }
  *
