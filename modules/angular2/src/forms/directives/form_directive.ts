@@ -6,4 +6,5 @@ export interface FormDirective {
   removeControl(dir: ControlDirective): void;
   addControlGroup(dir: ControlGroupDirective): void;
   removeControlGroup(dir: ControlGroupDirective): void;
+  updateModel(dir: ControlDirective, value: any): void;
 }

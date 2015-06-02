@@ -8,11 +8,12 @@ import {
   dispatchEvent,
   fakeAsync,
   flushMicrotasks,
+  tick,
   el,
   expect,
-  iit,
-  inject,
   it,
+  inject,
+  iit,
   xit
 } from 'angular2/test_lib';
 
@@ -347,6 +348,56 @@ export function main() {
          }));
     });
 
+    it("should support ng-model for complex forms",
+       inject(
+           [TestBed], fakeAsync(tb => {
+             var form = new ControlGroup({"name": new Control("")});
+             var ctx = MyComp.create({name: "oldValue", form: form});
+
+             var t =
+                 `<div [form-model]="form"><input type="text" control="name" [(ng-model)]="name"></div>`;
+
+             tb.createView(MyComp, {context: ctx, html: t})
+                 .then((view) => {
+                   view.detectChanges();
+
+                   var input = view.querySelector("input");
+                   expect(input.value).toEqual("oldValue");
+
+                   input.value = "updatedValue";
+                   dispatchEvent(input, "change");
+
+                   tick();
+
+                   expect(ctx.name).toEqual("updatedValue");
+                 });
+             flushMicrotasks();
+           })));
+
+    it("should support ng-model for single fields",
+       inject([TestBed], fakeAsync(tb => {
+                var form = new Control("");
+                var ctx = MyComp.create({name: "oldValue", form: form});
+
+                var t = `<div><input type="text" [form-control]="form" [(ng-model)]="name"></div>`;
+
+                tb.createView(MyComp, {context: ctx, html: t})
+                    .then((view) => {
+                      view.detectChanges();
+
+                      var input = view.querySelector("input");
+                      expect(input.value).toEqual("oldValue");
+
+                      input.value = "updatedValue";
+                      dispatchEvent(input, "change");
+
+                      tick();
+
+                      expect(ctx.name).toEqual("updatedValue");
+                    });
+                flushMicrotasks();
+              })));
+
     describe("template-driven forms", () => {
       it("should add new controls and control groups",
          inject([TestBed], fakeAsync(tb => {
@@ -365,7 +416,7 @@ export function main() {
                             view.rawView.elementInjectors[0].get(TemplateDrivenFormDirective);
                         expect(form.controls['user']).not.toBeDefined();
 
-                        flushMicrotasks();
+                        tick();
 
                         expect(form.controls['user']).toBeDefined();
                         expect(form.controls['user'].controls['login']).toBeDefined();
@@ -388,13 +439,13 @@ export function main() {
                                                   var form = view.rawView.elementInjectors[0].get(
                                                       TemplateDrivenFormDirective);
 
-                                                  flushMicrotasks();
+                                                  tick();
 
                                                   expect(form.controls['login']).toBeDefined();
 
                                                   ctx.name = 'hide';
                                                   view.detectChanges();
-                                                  flushMicrotasks();
+                                                  tick();
 
                                                   expect(form.controls['login']).not.toBeDefined();
                                                 });
@@ -427,6 +478,56 @@ export function main() {
                         flushMicrotasks();
 
                         expect(form.controls['user']).not.toBeDefined();
+                      });
+                  flushMicrotasks();
+                })));
+
+      it("should support ng-model for complex forms",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: "oldValue"});
+
+                  var t = `<div form>
+                      <input type="text" control="name" [(ng-model)]="name">
+               </div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+                        tick();
+
+                        var input = view.querySelector("input");
+                        expect(input.value).toEqual("oldValue");
+
+                        input.value = "updatedValue";
+                        dispatchEvent(input, "change");
+
+                        tick();
+
+                        expect(ctx.name).toEqual("updatedValue");
+                      });
+                  flushMicrotasks();
+                })));
+
+
+      it("should support ng-model for single fields",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: "oldValue"});
+
+                  var t = `<div><input type="text" [(ng-model)]="name"></div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+
+                        var input = view.querySelector("input");
+                        expect(input.value).toEqual("oldValue");
+
+                        input.value = "updatedValue";
+                        dispatchEvent(input, "change");
+
+                        tick();
+
+                        expect(ctx.name).toEqual("updatedValue");
                       });
                   flushMicrotasks();
                 })));

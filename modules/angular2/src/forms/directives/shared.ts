@@ -18,7 +18,10 @@ export function setUpControl(c: Control, dir: ControlDirective) {
 
   c.validator = Validators.compose([c.validator, dir.validator]);
   dir.valueAccessor.writeValue(c.value);
-  dir.valueAccessor.registerOnChange(newValue => c.updateValue(newValue));
+  dir.valueAccessor.registerOnChange(newValue => {
+    dir.viewToModelUpdate(newValue);
+    c.updateValue(newValue);
+  });
 }
 
 function _throwError(dir: ControlDirective, message: string): void {
