@@ -27,7 +27,7 @@ Function fakeAsync(Function fn) {
       a7 = _u, a8 = _u, a9 = _u]) {
     // runZoned() to install a custom exception handler that re-throws
     return runZoned(() {
-      new quiver.FakeAsync().run((quiver.FakeAsync async) {
+      return new quiver.FakeAsync().run((quiver.FakeAsync async) {
         try {
           _fakeAsync = async;
           List args = [
@@ -42,7 +42,9 @@ Function fakeAsync(Function fn) {
             a8,
             a9
           ].takeWhile((a) => a != _u).toList();
-          return Function.apply(fn, args);
+          var res = Function.apply(fn, args);
+          _fakeAsync.flushMicrotasks();
+          return res;
         } finally {
           _fakeAsync = null;
         }

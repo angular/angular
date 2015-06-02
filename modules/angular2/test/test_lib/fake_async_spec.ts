@@ -46,6 +46,18 @@ export function main() {
       });
     }
 
+    it('should flush microtasks before returning', () => {
+      var thenRan = false;
+
+      fakeAsync(() => { PromiseWrapper.resolve(null).then(_ => { thenRan = true; }); })();
+
+      expect(thenRan).toEqual(true);
+    });
+
+
+    it('should propagate the return value',
+       () => { expect(fakeAsync(() => 'foo')()).toEqual('foo'); });
+
     describe('Promise', () => {
       it('should run asynchronous code', fakeAsync(() => {
            var thenRan = false;

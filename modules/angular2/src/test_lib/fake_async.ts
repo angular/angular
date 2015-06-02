@@ -46,7 +46,11 @@ export function fakeAsync(fn: Function): Function {
     ListWrapper.clear(_pendingPeriodicTimers);
     ListWrapper.clear(_pendingTimers);
 
-    var res = fakeAsyncZone.run(() => { var res = fn(... args); });
+    let res = fakeAsyncZone.run(() => {
+      let res = fn(... args);
+      flushMicrotasks();
+      return res;
+    });
 
     if (_pendingPeriodicTimers.length > 0) {
       throw new BaseException(
