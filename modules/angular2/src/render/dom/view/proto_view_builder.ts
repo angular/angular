@@ -54,6 +54,7 @@ export class ProtoViewBuilder {
     var renderElementBinders = [];
 
     var apiElementBinders = [];
+    var transitiveContentTagCount = 0;
     ListWrapper.forEach(this.elements, (ebb) => {
       var propertySetters = MapWrapper.create();
       var hostActions = MapWrapper.create();
@@ -82,6 +83,14 @@ export class ProtoViewBuilder {
       });
 
       var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
+      var nestedRenderProtoView =
+          isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null;
+      if (isPresent(nestedRenderProtoView)) {
+        transitiveContentTagCount += nestedRenderProtoView.transitiveContentTagCount;
+      }
+      if (isPresent(ebb.contentTagSelector)) {
+        transitiveContentTagCount++;
+      }
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
       ListWrapper.push(apiElementBinders, new api.ElementBinder({
         index: ebb.index,
@@ -112,8 +121,11 @@ export class ProtoViewBuilder {
                        }));
     });
     return new api.ProtoViewDto({
-      render: new DomProtoViewRef(
-          new DomProtoView({element: this.rootElement, elementBinders: renderElementBinders})),
+      render: new DomProtoViewRef(new DomProtoView({
+        element: this.rootElement,
+        elementBinders: renderElementBinders,
+        transitiveContentTagCount: transitiveContentTagCount
+      })),
       type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings

@@ -25,10 +25,13 @@ export class DomProtoView {
   elementBinders: List<ElementBinder>;
   isTemplateElement: boolean;
   rootBindingOffset: number;
+  // the number of content tags seen in this or any child proto view.
+  transitiveContentTagCount: number;
 
-  constructor({elementBinders, element}) {
+  constructor({elementBinders, element, transitiveContentTagCount}) {
     this.element = element;
     this.elementBinders = elementBinders;
+    this.transitiveContentTagCount = transitiveContentTagCount;
     this.isTemplateElement = DOM.isTemplateElement(this.element);
     this.rootBindingOffset =
         (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;

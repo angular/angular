@@ -52,6 +52,13 @@ export class LightDom {
 
   // Collects the Content directives from the view and all its child views
   private _collectAllContentTags(view: viewModule.DomView, acc: List<Content>): List<Content> {
+    // Note: exiting early here is important as we call this function for every view
+    // that is added, so we have O(n^2) runtime.
+    // TODO(tbosch): fix the root problem, see
+    // https://github.com/angular/angular/issues/2298
+    if (view.proto.transitiveContentTagCount === 0) {
+      return acc;
+    }
     var contentTags = view.contentTags;
     var vcs = view.viewContainers;
     for (var i = 0; i < vcs.length; i++) {
