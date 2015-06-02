@@ -1,3 +1,5 @@
+var sauceConf = require('./sauce.conf');
+
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
 module.exports = function(config) {
@@ -25,23 +27,42 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false},
+      'modules/angular2/src/test_lib/shims_for_IE.ts'
     ],
 
     exclude: [
       'dist/js/dev/es5/**/e2e_test/**',
     ],
 
-    customLaunchers: {
-      DartiumWithWebPlatform: {
-        base: 'Dartium',
-        flags: ['--enable-experimental-web-platform-features'] },
-      ChromeNoSandbox: {
-        base: 'Chrome',
-        flags: ['--no-sandbox'] }
+    customLaunchers: sauceConf.customLaunchers,
+
+    sauceLabs: {
+      testName: 'Angular2',
+      startConnect: false,
+      recordVideo: false,
+      recordScreenshots: false,
+      options:  {
+          'selenium-version': '2.45.0',
+          'command-timeout': 600,
+          'idle-timeout': 600,
+          'max-duration': 5400
+      }
     },
+
     browsers: ['ChromeCanary'],
 
     port: 9876
   });
+
+  if (process.env.TRAVIS) {
+    config.sauceLabs.build = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
+    config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+
+    // TODO(mlaval): remove once SauceLabs supports websockets.
+    // This speeds up the capturing a bit, as browsers don't even try to use websocket.
+    config.transports = ['xhr-polling'];
+  }
 };
+
+

@@ -1,3 +1,5 @@
+var sauceConf = require('./sauce.conf');
+
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
 module.exports = function(config) {
@@ -48,11 +50,7 @@ module.exports = function(config) {
       '/packages/examples': '/base/dist/dart/examples/lib'
     },
 
-    customLaunchers: {
-      DartiumWithWebPlatform: {
-        base: 'Dartium',
-        flags: ['--enable-experimental-web-platform-features'] }
-    },
+    customLaunchers: sauceConf.customLaunchers,
     browsers: ['DartiumWithWebPlatform'],
 
     port: 9877
