@@ -12,8 +12,6 @@ function watch(globs, opts, tasks) {
   var useRunSequence = typeof tasks !== 'function';
   var runTasks;
 
-  var log = typeof opts.log === 'function' ? opts.log : function noop() {};
-
   if (useRunSequence) {
     if (!Array.isArray(tasks)) tasks = [tasks];
     tasks = tasks.slice();
@@ -50,6 +48,28 @@ function watch(globs, opts, tasks) {
         throw err;
       });
 
+  var log = function watchLogger(triggerCount) {
+    // Don't report change for initial event
+    if (!ignoreInitial && !--triggerCount) return;
+
+    process.stdout.write([
+      '',
+      '==================================================',
+      ' WATCH TRIGGERED BY FILE CHANGE #' + triggerCount,
+      ' On: ' + prettyTime(),
+      '==================================================\n',
+    ].join('\n'));
+
+    function prettyTime() {
+      var now = new Date();
+      return now.toLocaleDateString() + " at " + now.toLocaleTimeString();
+    }
+  }
+
+  if (opts.log !== undefined && !opts.log) {
+    log = function noopLog(triggerCount) {}
+  }
+
   var close = watcher.close.bind(watcher);
   watcher.close = function() {
     if (timeoutId !== null) clearTimeout(timeoutId);
@@ -60,7 +80,8 @@ function watch(globs, opts, tasks) {
   var timeoutId = null; // If non-null, event capture window is open
 
   if (!ignoreInitial) {
-    handleEvent('change', 'madeupFilePath'); // synthetic event to kick off the first task run
+    // synthetic event to kick off the first task run
+    timeoutId = setTimeout(invokeCallback, delay);
   }
 
   return watcher;
