@@ -3,7 +3,7 @@
  */
 
 /// <reference path="typings/zone/zone.d.ts"/>
-
+/// <reference path="traceur-runtime.d.ts" />
 declare var assert: any;
 declare type int = number;
 
