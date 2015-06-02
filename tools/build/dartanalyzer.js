@@ -10,42 +10,33 @@ var yaml = require('js-yaml');
 module.exports = function(gulp, plugins, config) {
   return function() {
     var tempFile = '_analyzer.dart';
-    return util.forEachSubDirSequential(
-      config.dest,
-      function(dir) {
-        var pubspecContents = fs.readFileSync(path.join(dir, 'pubspec.yaml'));
-        var pubspec = yaml.safeLoad(pubspecContents);
-        var packageName = pubspec.name;
+    return util.forEachSubDirSequential(config.dest, function(dir) {
+      var pubspecContents = fs.readFileSync(path.join(dir, 'pubspec.yaml'));
+      var pubspec = yaml.safeLoad(pubspecContents);
+      var packageName = pubspec.name;
 
-        var libFiles = [].slice.call(glob.sync('lib/**/*.dart', {
-          cwd: dir
-        }));
+      var libFiles = [].slice.call(glob.sync('lib/**/*.dart', {cwd: dir}));
 
-        var webFiles = [].slice.call(glob.sync('web/**/*.dart', {
-          cwd: dir
-        }));
+      var webFiles = [].slice.call(glob.sync('web/**/*.dart', {cwd: dir}));
 
-        var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {
-          cwd: dir
-        }));
-        var analyzeFile = ['library _analyzer;'];
-        libFiles.concat(testFiles).concat(webFiles).forEach(function(fileName, index) {
-          if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
-            if (fileName.indexOf('lib') == 0) {
-              fileName = 'package:' + packageName + '/' + path.relative('lib', fileName);
-            }
-            analyzeFile.push('import "' + fileName + '" as mod' + index + ';');
+      var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {cwd: dir}));
+      var analyzeFile = ['library _analyzer;'];
+      libFiles.concat(testFiles).concat(webFiles).forEach(function(fileName, index) {
+        if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
+          if (fileName.indexOf('lib') == 0) {
+            fileName = 'package:' + packageName + '/' + path.relative('lib', fileName);
           }
-        });
-        fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
-        var defer = Q.defer();
-        analyze(dir, defer.makeNodeResolver());
-        return defer.promise;
-      }
-    );
+          analyzeFile.push('import "' + fileName + '" as mod' + index + ';');
+        }
+      });
+      fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
+      var defer = Q.defer();
+      analyze(dir, defer.makeNodeResolver());
+      return defer.promise;
+    });
 
     function analyze(dirName, done) {
-      //TODO remove --package-warnings once dartanalyzer handles transitive libraries
+      // TODO remove --package-warnings once dartanalyzer handles transitive libraries
       var args = ['--fatal-warnings', '--package-warnings', '--format=machine'].concat(tempFile);
 
       var stream = spawn(config.command, args, {
@@ -57,11 +48,8 @@ module.exports = function(gulp, plugins, config) {
       // We don't reexports from the generated file
       // as this could lead to name clashes when two files
       // export the same thing.
-      var rl = readline.createInterface({
-        input: stream.stderr,
-        output: process.stdout,
-        terminal: false
-      });
+      var rl = readline.createInterface(
+          {input: stream.stderr, output: process.stdout, terminal: false});
       var hintCount = 0;
       var errorCount = 0;
       var warningCount = 0;
@@ -72,9 +60,9 @@ module.exports = function(gulp, plugins, config) {
           console.log('Unexpected output: ' + line);
           return;
         }
-        //TODO remove once dartanalyzer handles transitive libraries
-        //skip errors in third-party packages
-        if (parsedLine.source.indexOf(dirName) == -1) {
+        // TODO remove once dartanalyzer handles transitive libraries
+        // skip errors in third-party packages
+        if (parsedLine.sourcePath.indexOf(dirName) == -1) {
           return;
         }
         if (parsedLine.shouldIgnore()) {
@@ -86,7 +74,7 @@ module.exports = function(gulp, plugins, config) {
         } else if (parsedLine.isWarning) {
           warningCount++;
         } else {
-          errorCount ++;
+          errorCount++;
         }
         console.log(dirName + ':' + parsedLine);
       });
@@ -116,10 +104,11 @@ function _AnalyzerOutputLine(result) {
   this.severity = result[1];
   this.errorType = result[2];
   this.errorCode = result[3];
-  this.source = result[4];
+  this.sourcePath = result[4];
   this.lineNum = result[5];
   this.colNum = result[6];
-  this.errorMsg = result[7];
+  this.asciiLineLength = parseInt(result[7], 10);
+  this.errorMsg = result[8];
 
   this.isError = Boolean(this.severity.match(/ERROR/i));
   this.isHint = Boolean(this.severity.match(/INFO/i));
@@ -131,25 +120,41 @@ _AnalyzerOutputLine.parse = function(line) {
   return result ? new _AnalyzerOutputLine(result) : null;
 };
 
-_AnalyzerOutputLine._analyzerParseRegExp = new RegExp(
-    '([^\|]+)\\|' + // #1, severity (NONE, INFO, WARNING, ERROR)
-    '([^\|]+)\\|' + // #2, errorCode.type (HINT, *_WARNING, *_ERROR, etc)
-    '([^\|]+)\\|' + // #3, errorCode (UNUSED_IMPORT, UNUSED_CATCH_STACK, etc)
-    '([^\|]+)\\|' + // #4, source path
-    '([^\|]+)\\|' + // #5, line number
-    '([^\|]+)\\|' + // #6, column number
-    '[^\|]+\\|'   + // length of the ASCII line to draw (ignored)
-    '(.*)$');       // #7, error message
+_AnalyzerOutputLine._analyzerParseRegExp =
+    new RegExp('([^\|]+)\\|' +           // #1, severity (NONE, INFO, WARNING, ERROR)
+               '([^\|]+)\\|' +           // #2, errorCode.type (HINT, *_WARNING, *_ERROR, etc)
+               '([^\|]+)\\|' +           // #3, errorCode (UNUSED_IMPORT, UNUSED_CATCH_STACK, etc)
+               '([^\|]+[^\|\\\\])\\|' +  // #4, sourcePath with '|' chars backslash-escaped.
+               '([^\|]+)\\|' +           // #5, line number
+               '([^\|]+)\\|' +           // #6, column number
+               '([^\|]+)\\|' +           // #7, length of the ASCII line to draw
+               '(.*)$');                 // #8, error message
+
+/* Maps file path (as string) to file source (an array of strings, one per line). */
+_AnalyzerOutputLine.cache = {};
+
+_AnalyzerOutputLine.ERR_NO_SOURCE = '(Could not find source line).';
 
 _AnalyzerOutputLine.prototype = {
   toString: function() {
-    return '[' + this.errorCode + '] ' + this.errorMsg +
-        ' (' + this.source + ', line ' + this.lineNum + ', col ' + this.colNum + ')';
+    var sourceLine = this._getSourceLine();
+    var lineText = _AnalyzerOutputLine.ERR_NO_SOURCE;
+    if (sourceLine) {
+      var repeat = function(str, num) {
+        if (str.repeat) return str.repeat(num);
+        return Array.prototype.join.call({length: num}, str);
+      };
+
+      lineText =
+          '\n' + sourceLine + '\n' + repeat(' ', this.colNum) + repeat('^', this.asciiLineLength);
+    }
+    return '[' + this.severity + '] ' + this.errorMsg + ' (' + this.sourcePath + ', line ' +
+           this.lineNum + ', col ' + this.colNum + ')' + lineText;
   },
 
   shouldIgnore: function() {
     if (this.errorCode.match(/UNUSED_IMPORT/i)) {
-      if (this.source.match(/_analyzer\.dart/)) {
+      if (this.sourcePath.match(/_analyzer\.dart/)) {
         return true;
       }
     }
@@ -159,9 +164,29 @@ _AnalyzerOutputLine.prototype = {
     }
 
     // Don't worry about hints in generated files.
-    if (this.isHint && this.source.match(/generated/i)) {
+    if (this.isHint && this.sourcePath.match(/generated/i)) {
       return true;
     }
     return false;
+  },
+
+  // Reads the source file for the Analyzer output, caching it for future use.
+  _getSourceLine: function() {
+    var cache = _AnalyzerOutputLine.cache;
+    var sourceLines = null;
+    if (cache.hasOwnProperty(this.sourcePath)) {
+      sourceLines = cache[this.sourcePath];
+    } else {
+      try {
+        sourceLines = String(fs.readFileSync(this.sourcePath));
+        sourceLines = sourceLines.split('\n');
+      } catch (e) {
+        sourceLines = null;
+      } finally {
+        // Even if this fails, cache `null` so we don't try again.
+        cache[this.sourcePath] = sourceLines;
+      }
+    }
+    return sourceLines && this.lineNum <= sourceLines.length ? sourceLines[this.lineNum - 1] : null;
   }
 };
