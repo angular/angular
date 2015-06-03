@@ -597,7 +597,6 @@ gulp.task('build/packages.dart', function(done) {
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     'build/pure-packages.dart',
-    'build/format.dart',
     sequenceComplete(done));
 });
 
