@@ -1,5 +1,4 @@
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 
 /**
  * Injectable Objects that contains a live list of child directives in the light Dom of a directive.
@@ -10,8 +9,8 @@ import {Directive} from 'angular2/src/core/annotations_impl/annotations';
  *
  * @exportedAs angular2/view
  */
-export class BaseQueryList {
-  _results: List<Directive>;
+export class BaseQueryList<T> {
+  _results: List<T>;
   _callbacks;
   _dirty;
 

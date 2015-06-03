@@ -98,8 +98,8 @@ class TextDirective {
 @View({directives: [NgFor], template: '<div *ng-for="var dir of query">{{dir.text}}|</div>'})
 @Injectable()
 class NeedsQuery {
-  query: QueryList;
-  constructor(@Query(TextDirective) query: QueryList) { this.query = query; }
+  query: QueryList<TextDirective>;
+  constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
 }
 
 var _constructiontext = 0;

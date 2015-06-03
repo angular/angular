@@ -947,7 +947,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   private _createQueryRef(directive): void {
-    var queryList = new QueryList();
+    var queryList = new QueryList<any>();
     if (isBlank(this._query0)) {
       this._query0 = new QueryRef(directive, queryList, this);
     } else if (isBlank(this._query1)) {
@@ -1515,10 +1515,10 @@ class QueryError extends BaseException {
 
 class QueryRef {
   directive;
-  list: QueryList;
+  list: QueryList<any>;
   originator: ElementInjector;
 
-  constructor(directive, list: QueryList, originator: ElementInjector) {
+  constructor(directive, list: QueryList<any>, originator: ElementInjector) {
     this.directive = directive;
     this.list = list;
     this.originator = originator;

@@ -1540,10 +1540,10 @@ class ToolbarViewContainer {
 })
 @Injectable()
 class ToolbarComponent {
-  query: QueryList;
+  query: QueryList<ToolbarPart>;
   ctxProp: string;
 
-  constructor(@Query(ToolbarPart) query: QueryList) {
+  constructor(@Query(ToolbarPart) query: QueryList<ToolbarPart>) {
     this.ctxProp = 'hello world';
     this.query = query;
   }

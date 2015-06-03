@@ -157,8 +157,8 @@ class NeedsAttributeNoType {
 
 @Injectable()
 class NeedsQuery {
-  query: QueryList;
-  constructor(@Query(CountingDirective) query: QueryList) { this.query = query; }
+  query: QueryList<CountingDirective>;
+  constructor(@Query(CountingDirective) query: QueryList<CountingDirective>) { this.query = query; }
 }
 
 @Injectable()
