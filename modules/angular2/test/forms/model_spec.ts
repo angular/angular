@@ -39,19 +39,6 @@ export function main() {
         });
       });
 
-      describe("pristine", () => {
-        it("should be true after creating a control", () => {
-          var c = new Control("value");
-          expect(c.pristine).toEqual(true);
-        });
-
-        it("should be false after changing the value of the control", () => {
-          var c = new Control("value");
-          c.updateValue("new value");
-          expect(c.pristine).toEqual(false);
-        });
-      });
-
       describe("dirty", () => {
         it("should be false after creating a control", () => {
           var c = new Control("value");
@@ -60,7 +47,7 @@ export function main() {
 
         it("should be true after changing the value of the control", () => {
           var c = new Control("value");
-          c.updateValue("new value");
+          c.markAsDirty();
           expect(c.dirty).toEqual(true);
         });
       });
@@ -215,20 +202,22 @@ export function main() {
         });
       });
 
-      describe("pristine", () => {
-        it("should be true after creating a control", () => {
-          var c = new Control('value');
-          var g = new ControlGroup({"one": c});
+      describe("dirty", () => {
+        var c,g;
 
-          expect(g.pristine).toEqual(true);
+        beforeEach(() => {
+          c = new Control('value');
+          g = new ControlGroup({"one": c});
+        });
+
+        it("should be false after creating a control", () => {
+          expect(g.dirty).toEqual(false);
         });
 
         it("should be false after changing the value of the control", () => {
-          var c = new Control('value');
-          var g = new ControlGroup({"one": c});
-          c.updateValue('new value');
+          c.markAsDirty();
 
-          expect(g.pristine).toEqual(false);
+          expect(g.dirty).toEqual(true);
         });
       });
 
@@ -452,19 +441,22 @@ export function main() {
           });
         });
 
-        describe("pristine", () => {
-          it("should be true after creating a control", () => {
-            var a = new ControlArray([new Control(1)]);
-            expect(a.pristine).toBe(true);
+        describe("dirty", () => {
+          var c,a;
+
+          beforeEach(() => {
+            c = new Control('value');
+            a = new ControlArray([c]);
+          });
+
+          it("should be false after creating a control", () => {
+            expect(a.dirty).toEqual(false);
           });
 
           it("should be false after changing the value of the control", () => {
-            var c = new Control(1);
-            var a = new ControlArray([c]);
+            c.markAsDirty();
 
-            c.updateValue('new value');
-
-            expect(a.pristine).toEqual(false);
+            expect(a.dirty).toEqual(true);
           });
         });
 

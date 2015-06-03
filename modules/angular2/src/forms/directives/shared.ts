@@ -23,13 +23,14 @@ export function setUpControl(c: Control, dir: ControlDirective) {
   dir.valueAccessor.registerOnChange(newValue => {
     dir.viewToModelUpdate(newValue);
     c.updateValue(newValue);
+    c.markAsDirty();
   });
 
   // model -> view
   c.registerOnChange(newValue => dir.valueAccessor.writeValue(newValue));
 
   // touched
-  dir.valueAccessor.registerOnTouched(() => c.touch());
+  dir.valueAccessor.registerOnTouched(() => c.markAsTouched());
 }
 
 function _throwError(dir: ControlDirective, message: string): void {

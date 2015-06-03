@@ -60,7 +60,16 @@ export class AbstractControl {
 
   get valueChanges(): Observable { return this._valueChanges; }
 
-  touch(): void { this._touched = true; }
+  markAsTouched(): void { this._touched = true; }
+
+  markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = isPresent(onlySelf) ? onlySelf : false;
+
+    this._pristine = false;
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent.markAsDirty({onlySelf: onlySelf});
+    }
+  }
 
   setParent(parent) { this._parent = parent; }
 
@@ -80,7 +89,6 @@ export class AbstractControl {
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
     this._updateValue();
-    this._pristine = false;
 
     if (emitEvent) {
       ObservableWrapper.callNext(this._valueChanges, this._value);
