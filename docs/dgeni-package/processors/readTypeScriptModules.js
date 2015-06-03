@@ -3,7 +3,8 @@ var path = require('canonical-path');
 var _ = require('lodash');
 var ts = require('typescript');
 
-module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, modules, getFileInfo, getExportDocType, getContent, log) {
+module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, modules, getFileInfo,
+                                                getExportDocType, getContent, log) {
 
   return {
     $runAfter: ['files-read'],
@@ -12,8 +13,8 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     $validate: {
       sourceFiles: {presence: true},
       basePath: {presence: true},
-      hidePrivateMembers: { inclusion: [true, false] },
-      sortClassMembers: { inclusion: [true, false] },
+      hidePrivateMembers: {inclusion: [true, false]},
+      sortClassMembers: {inclusion: [true, false]},
       ignoreExportsMatching: {}
     },
 
@@ -64,7 +65,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
 
           // Generate docs for each of the export's members
           if (resolvedExport.flags & ts.SymbolFlags.HasMembers) {
-
+            
             exportDoc.members = [];
             for(var memberName in resolvedExport.members) {
               log.silly('>>>>>> member: ' + memberName + ' from ' + exportDoc.id + ' in ' + moduleDoc.id);
@@ -115,6 +116,29 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
   }
 
   function createExportDoc(name, exportSymbol, moduleDoc, basePath, typeChecker) {
+    exportSymbol.declarations.forEach(function(decl) {
+      var sourceFile = ts.getSourceFileOfNode(decl);
+      if (decl.typeParameters) {
+        name = name + '<' + getText(sourceFile, decl.typeParameters) + '>';
+      }
+      if (decl.heritageClauses) {
+        decl.heritageClauses.forEach(function(heritage) {
+          if (heritage.token == ts.SyntaxKind.ExtendsKeyword) {
+            name = name + " extends ";
+            heritage.types.forEach(function(typ, idx) {
+              name = name + (idx > 0 ? ', ' : '') + typ.getFullText();
+            });
+          }
+          if (heritage.token == ts.SyntaxKind.ImplementsKeyword) {
+            name = name + " implements ";
+            heritage.types.forEach(function(typ, idx) {
+              name = name + (idx > 0 ? ', ' : '') + typ.getFullText();
+            });
+          }
+        });
+      }
+    });
+
     var exportDoc = {
       docType: getExportDocType(exportSymbol),
       name: name,
@@ -167,14 +191,21 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
   function getParameters(typeChecker, symbol) {
     var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
-    if(!declaration.parameters) {
+    if (!declaration.parameters) {
       var location = getLocation(symbol);
       throw new Error('missing declaration parameters for "' + symbol.name +
         '" in ' + sourceFile.fileName +
         ' at line ' + location.start.line);
     }
     return declaration.parameters.map(function(parameter) {
-      return getText(sourceFile, parameter).trim();
+      var paramText = getText(sourceFile, parameter.name);
+      if (parameter.questionToken || parameter.initializer) {
+        paramText += '?';
+      }
+      if (parameter.type) {
+        paramText += ':' + getType(sourceFile, parameter.type);
+      }
+      return paramText.trim();
     });
   }
 
@@ -182,7 +213,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
     if (declaration.type) {
-      return getText(sourceFile, declaration.type).trim();
+      return getType(sourceFile, declaration.type).trim();
     }
   }
 
@@ -200,6 +231,18 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     return sourceFile.text.substring(node.pos, node.end);
   }
 
+
+  // Strip any local renamed imports from the front of types
+  function getType(sourceFile, type) {
+    var text = getText(sourceFile, type);
+    while (text.indexOf(".") >= 0) {
+      // Keep namespaced symbols in Rx
+      if (text.match(/^\s*Rx\./)) break;
+      // handle the case List<thing.stuff> -> List<stuff>
+      text = text.replace(/([^.<]*)\.([^>]*)/, "$2");
+    }
+    return text;
+  }
 
   function getLocation(symbol) {
     var node = symbol.valueDeclaration || symbol.declarations[0];

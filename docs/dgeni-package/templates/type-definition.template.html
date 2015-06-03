@@ -6,7 +6,7 @@
 {$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
 {%- endmacro -%}
 
-// Type definitions for Angular v2.0.0-alpha.22
+// Type definitions for Angular v2.0.0-alpha.26
 // Project: http://angular.io/
 // Definitions by: angular team <https://github.com/angular/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -16,6 +16,29 @@
 // Please do not create manual edits or send pull requests
 // modifying this file.
 // ***********************************************************
+
+// Angular depends transitively on these libraries.
+// If you don't have them installed you can run
+// $ tsd query es6-promise rx rx-lite --action install --save
+///<reference path="../es6-promise/es6-promise.d.ts"/>
+///<reference path="../rx/rx.d.ts"/>
+
+interface List<T> extends Array<T> {}
+interface Map<K,V> {}
+interface StringMap<K,V> extends Map<K,V> {}
+interface Type {}
+
+declare module "angular2/angular2" {
+  type SetterFn = typeof Function;
+  type int = number;
+
+  // See https://github.com/Microsoft/TypeScript/issues/1168
+  class BaseException /* extends Error */ {
+    message;
+    stack;
+    toString(): string;
+  }
+}
 {% for module in doc.modules %}
 {$ commentBlock(module, 1) $}
 declare module "{$ module.id $}" {

@@ -15,8 +15,9 @@ module.exports = function createTypeDefinitionFile() {
       };
       _.forEach(docs, function(doc) {
         // The shape of the public API is determined by what is reexported into
-        // angular2/angular2.
-        if (doc.id === 'angular2/angular2') {
+        // angular2/angular2, with hacks layered into angular2.api.ts
+        if (doc.id === 'angular2/angular2.api') {
+          doc.id = 'angular2/angular2';
           typeDefDoc.modules.push(doc);
         }
       });
