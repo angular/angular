@@ -36,14 +36,13 @@ export function main() {
       if (isBlank(directives)) directives = annotatedDirectives;
 
       return new CompilePipeline([
-        new MockStep((parent, current, control) =>
-                     {
-                       if (isPresent(propertyBindings)) {
-                         StringMapWrapper.forEach(propertyBindings, (ast, name) => {
-                           current.bindElement().bindProperty(name, ast);
-                         });
-                       }
-                     }),
+        new MockStep((parent, current, control) => {
+          if (isPresent(propertyBindings)) {
+            StringMapWrapper.forEach(propertyBindings, (ast, name) => {
+              current.bindElement().bindProperty(name, ast);
+            });
+          }
+        }),
         new DirectiveParser(parser, directives)
       ]);
     }

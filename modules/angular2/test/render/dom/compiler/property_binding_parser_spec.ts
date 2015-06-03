@@ -15,12 +15,11 @@ export function main() {
   describe('PropertyBindingParser', () => {
     function createPipeline(hasNestedProtoView = false) {
       return new CompilePipeline([
-        new MockStep((parent, current, control) =>
-                     {
-                       if (hasNestedProtoView) {
-                         current.bindElement().bindNestedProtoView(el('<template></template>'));
-                       }
-                     }),
+        new MockStep((parent, current, control) => {
+          if (hasNestedProtoView) {
+            current.bindElement().bindNestedProtoView(el('<template></template>'));
+          }
+        }),
         new PropertyBindingParser(new Parser(new Lexer()))
       ]);
     }

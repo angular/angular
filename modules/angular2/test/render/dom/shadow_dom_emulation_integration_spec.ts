@@ -43,8 +43,8 @@ export function main() {
                              styleInliner, styleUrlResolver, null),
                          [StyleInliner, StyleUrlResolver]),
       "unscoped": bind(ShadowDomStrategy)
-                      .toFactory((styleUrlResolver) =>
-                                     new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+                      .toFactory((styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
+                                     styleUrlResolver, null),
                                  [StyleUrlResolver])
     };
     if (DOM.supportsNativeShadowDOM()) {
@@ -404,8 +404,8 @@ var mainDir =
 var simple = new DirectiveMetadata(
     {selector: 'simple', id: 'simple', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var empty = new DirectiveMetadata(
-    {selector: 'empty', id: 'empty', type: DirectiveMetadata.COMPONENT_TYPE});
+var empty =
+    new DirectiveMetadata({selector: 'empty', id: 'empty', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var dynamicComponent = new DirectiveMetadata(
     {selector: 'dynamic', id: 'dynamic', type: DirectiveMetadata.COMPONENT_TYPE});
@@ -425,11 +425,11 @@ var outerWithIndirectNestedComponent = new DirectiveMetadata({
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var outerComponent = new DirectiveMetadata(
-    {selector: 'outer', id: 'outer', type: DirectiveMetadata.COMPONENT_TYPE});
+var outerComponent =
+    new DirectiveMetadata({selector: 'outer', id: 'outer', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var innerComponent = new DirectiveMetadata(
-    {selector: 'inner', id: 'inner', type: DirectiveMetadata.COMPONENT_TYPE});
+var innerComponent =
+    new DirectiveMetadata({selector: 'inner', id: 'inner', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var innerInnerComponent = new DirectiveMetadata(
     {selector: 'innerinner', id: 'innerinner', type: DirectiveMetadata.COMPONENT_TYPE});

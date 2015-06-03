@@ -239,7 +239,7 @@ export class Parse5DomAdapter extends DomAdapter {
   createTextNode(text: string) { throw _notImplemented('createTextNode'); }
   createScriptTag(attrName: string, attrValue: string) {
     return treeAdapter.createElement("script", 'http://www.w3.org/1999/xhtml',
-                                                   [{name: attrName, value: attrValue}]);
+                                     [{name: attrName, value: attrValue}]);
   }
   createStyleElement(css: string) {
     var style = this.createElement('style');

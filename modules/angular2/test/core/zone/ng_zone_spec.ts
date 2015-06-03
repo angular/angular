@@ -290,18 +290,17 @@ function commonTests() {
          var ran = false;
          _zone.initCallbacks({
            onTurnStart: _log.fn('onTurnStart'),
-           onTurnDone: () =>
-                       {
-                         _log.add('onTurnDone(begin)');
-                         if (!ran) {
-                           microTask(() => {
-                             ran = true;
-                             _log.add('executedMicrotask');
-                           });
-                         }
+           onTurnDone: () => {
+             _log.add('onTurnDone(begin)');
+             if (!ran) {
+               microTask(() => {
+                 ran = true;
+                 _log.add('executedMicrotask');
+               });
+             }
 
-                         _log.add('onTurnDone(end)');
-                       }
+             _log.add('onTurnDone(end)');
+           }
          });
 
          macroTask(() => { _zone.run(_log.fn('run')); });
@@ -323,18 +322,17 @@ function commonTests() {
          var ran = false;
          _zone.initCallbacks({
            onTurnStart: _log.fn('onTurnStart'),
-           onTurnDone: () =>
-                       {
-                         _log.add('onTurnDone(begin)');
-                         if (!ran) {
-                           _log.add('onTurnDone(scheduleMicrotask)');
-                           microTask(() => {
-                             ran = true;
-                             _log.add('onTurnDone(executeMicrotask)');
-                           });
-                         }
-                         _log.add('onTurnDone(end)');
-                       }
+           onTurnDone: () => {
+             _log.add('onTurnDone(begin)');
+             if (!ran) {
+               _log.add('onTurnDone(scheduleMicrotask)');
+               microTask(() => {
+                 ran = true;
+                 _log.add('onTurnDone(executeMicrotask)');
+               });
+             }
+             _log.add('onTurnDone(end)');
+           }
          });
 
          macroTask(() => {
@@ -361,37 +359,36 @@ function commonTests() {
          var startPromiseRan = false;
 
          _zone.initCallbacks({
-           onTurnStart: () =>
-                        {
-                          _log.add('onTurnStart(begin)');
-                          if (!startPromiseRan) {
-                            _log.add('onTurnStart(schedulePromise)');
-                            microTask(_log.fn('onTurnStart(executePromise)'));
-                            startPromiseRan = true;
-                          }
-                          _log.add('onTurnStart(end)');
-                        },
-           onTurnDone: () =>
-                       {
-                         _log.add('onTurnDone(begin)');
-                         if (!donePromiseRan) {
-                           _log.add('onTurnDone(schedulePromise)');
-                           microTask(_log.fn('onTurnDone(executePromise)'));
-                           donePromiseRan = true;
-                         }
-                         _log.add('onTurnDone(end)');
-                       }
+           onTurnStart: () => {
+             _log.add('onTurnStart(begin)');
+             if (!startPromiseRan) {
+               _log.add('onTurnStart(schedulePromise)');
+               microTask(_log.fn('onTurnStart(executePromise)'));
+               startPromiseRan = true;
+             }
+             _log.add('onTurnStart(end)');
+           },
+           onTurnDone: () => {
+             _log.add('onTurnDone(begin)');
+             if (!donePromiseRan) {
+               _log.add('onTurnDone(schedulePromise)');
+               microTask(_log.fn('onTurnDone(executePromise)'));
+               donePromiseRan = true;
+             }
+             _log.add('onTurnDone(end)');
+           }
          });
 
          macroTask(() => {
            _zone.run(() => {
              _log.add('run start');
-             PromiseWrapper.resolve(null).then((_) => {
-                                           _log.add('promise then');
-                                           PromiseWrapper.resolve(null)
-                                               .then(_log.fn('promise foo'));
-                                           return PromiseWrapper.resolve(null);
-                                         }).then(_log.fn('promise bar'));
+             PromiseWrapper.resolve(null)
+                 .then((_) => {
+                   _log.add('promise then');
+                   PromiseWrapper.resolve(null).then(_log.fn('promise foo'));
+                   return PromiseWrapper.resolve(null);
+                 })
+                 .then(_log.fn('promise bar'));
              _log.add('run end');
            });
          });

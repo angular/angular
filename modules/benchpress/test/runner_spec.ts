@@ -36,12 +36,12 @@ export function main() {
       }
       runner = new Runner([
         defaultBindings,
-        bind(Sampler).toFactory((_injector) =>
-                                {
-                                  injector = _injector;
-                                  return new MockSampler();
-                                },
-                                [Injector]),
+        bind(Sampler).toFactory(
+            (_injector) => {
+              injector = _injector;
+              return new MockSampler();
+            },
+            [Injector]),
         bind(Metric).toFactory(() => new MockMetric(), []),
         bind(Validator).toFactory(() => new MockValidator(), []),
         bind(WebDriverAdapter).toFactory(() => new MockWebDriverAdapter(), [])
@@ -61,8 +61,7 @@ export function main() {
 
     it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
          createRunner([bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1})])
-             .sample(
-                 {id: 'someId', bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
+             .sample({id: 'someId', bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
              .then((_) => injector.asyncGet(SampleDescription))
              .then((desc) => {
 

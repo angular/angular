@@ -181,10 +181,9 @@ class SurveyBuilder {
     // We are disabling the responseLength control when the question type is checkbox.
     var typeCtrl: Control = newQuestion.controls['type'];
 
-    ObservableWrapper.subscribe(typeCtrl.valueChanges,
-                                (v) => v == 'text' || v == 'textarea' ?
-                                           newQuestion.include('responseLength') :
-                                           newQuestion.exclude('responseLength'));
+    ObservableWrapper.subscribe(typeCtrl.valueChanges, (v) => v == 'text' || v == 'textarea' ?
+                                                           newQuestion.include('responseLength') :
+                                                           newQuestion.exclude('responseLength'));
 
     (<ControlArray>this.form.controls['questions']).push(newQuestion);
   }

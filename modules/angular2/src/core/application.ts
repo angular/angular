@@ -71,21 +71,21 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
         .toValue(DOM.defaultDoc()),
     bind(appComponentTypeToken).toValue(appComponentType),
     bind(appComponentRefToken)
-        .toAsyncFactory((dynamicComponentLoader, injector, testability, registry) =>
-                        {
+        .toAsyncFactory(
+            (dynamicComponentLoader, injector, testability, registry) => {
 
-                          // TODO(rado): investigate whether to support bindings on root component.
-                          return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
-                              .then((componentRef) => {
-                                var domView = resolveInternalDomView(componentRef.hostView.render);
-                                // We need to do this here to ensure that we create Testability and
-                                // it's ready on the window for users.
-                                registry.registerApplication(domView.boundElements[0], testability);
+              // TODO(rado): investigate whether to support bindings on root component.
+              return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
+                  .then((componentRef) => {
+                    var domView = resolveInternalDomView(componentRef.hostView.render);
+                    // We need to do this here to ensure that we create Testability and
+                    // it's ready on the window for users.
+                    registry.registerApplication(domView.boundElements[0], testability);
 
-                                return componentRef;
-                              });
-                        },
-                        [DynamicComponentLoader, Injector, Testability, TestabilityRegistry]),
+                    return componentRef;
+                  });
+            },
+            [DynamicComponentLoader, Injector, Testability, TestabilityRegistry]),
 
     bind(appComponentType).toFactory((ref) => ref.instance, [appComponentRefToken]),
     bind(LifeCycle)
@@ -93,8 +93,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
                    [ExceptionHandler]),
     bind(EventManager)
         .toFactory(
-            (ngZone) =>
-            {
+            (ngZone) => {
               var plugins =
                   [new HammerGesturesPlugin(), new KeyEventsPlugin(), new DomEventsPlugin()];
               return new EventManager(plugins, ngZone);
@@ -102,7 +101,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
             [NgZone]),
     bind(ShadowDomStrategy)
         .toFactory((styleUrlResolver, doc) =>
-                       new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
+                           new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
                    [StyleUrlResolver, DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
@@ -293,8 +292,7 @@ export function bootstrap(appComponentType: Type,
 
     PromiseWrapper.then(
         appInjector.asyncGet(appComponentRefToken),
-        (componentRef) =>
-        {
+        (componentRef) => {
           var appChangeDetector = internalView(componentRef.hostView).changeDetector;
           // retrieve life cycle: may have already been created if injected in root component
           var lc = appInjector.get(LifeCycle);

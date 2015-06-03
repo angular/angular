@@ -86,7 +86,7 @@ function _getAppBindings() {
         .toValue(appDoc),
     bind(ShadowDomStrategy)
         .toFactory((styleUrlResolver, doc) =>
-                       new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
+                           new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
                    [StyleUrlResolver, DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
@@ -118,14 +118,14 @@ function _getAppBindings() {
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
     bind(EventManager)
-        .toFactory((zone) =>
-                   {
-                     var plugins = [
-                       new DomEventsPlugin(),
-                     ];
-                     return new EventManager(plugins, zone);
-                   },
-                   [NgZone]),
+        .toFactory(
+            (zone) => {
+              var plugins = [
+                new DomEventsPlugin(),
+              ];
+              return new EventManager(plugins, zone);
+            },
+            [NgZone]),
   ];
 }
 

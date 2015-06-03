@@ -35,7 +35,8 @@ export var routerInjectables: List<any> = [
   Pipeline,
   BrowserLocation,
   Location,
-  bind(Router).toFactory((registry, pipeline, location, appRoot) =>
-                         { return new RootRouter(registry, pipeline, location, appRoot);},
-                         [RouteRegistry, Pipeline, Location, appComponentTypeToken])
+  bind(Router)
+      .toFactory((registry, pipeline, location,
+                  appRoot) => { return new RootRouter(registry, pipeline, location, appRoot);},
+                 [RouteRegistry, Pipeline, Location, appComponentTypeToken])
 ];

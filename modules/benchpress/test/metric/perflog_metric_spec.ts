@@ -44,11 +44,10 @@ export function main() {
       PerflogMetric.BINDINGS,
       bind(Options.MICRO_METRICS).toValue(microMetrics),
       bind(PerflogMetric.SET_TIMEOUT)
-          .toValue((fn, millis) =>
-                   {
-                     ListWrapper.push(commandLog, ['setTimeout', millis]);
-                     fn();
-                   }),
+          .toValue((fn, millis) => {
+            ListWrapper.push(commandLog, ['setTimeout', millis]);
+            fn();
+          }),
       bind(WebDriverExtension)
           .toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
     ];
@@ -125,12 +124,14 @@ export function main() {
 
       it('should mark and aggregate events in between the marks',
          inject([AsyncTestCompleter], (async) => {
-           var events = [[
-             eventFactory.markStart('benchpress0', 0),
-             eventFactory.start('script', 4),
-             eventFactory.end('script', 6),
-             eventFactory.markEnd('benchpress0', 10)
-           ]];
+           var events = [
+             [
+               eventFactory.markStart('benchpress0', 0),
+               eventFactory.start('script', 4),
+               eventFactory.end('script', 6),
+               eventFactory.markEnd('benchpress0', 10)
+             ]
+           ];
            var metric = createMetric(events);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(false))
@@ -224,11 +225,10 @@ export function main() {
            var metric = createMetric(events);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(true))
-               .then((data) =>
-                     {
-                       expect(data['scriptTime']).toBe(0);
-                       return metric.endMeasure(true)
-                     })
+               .then((data) => {
+                 expect(data['scriptTime']).toBe(0);
+                 return metric.endMeasure(true)
+               })
                .then((data) => {
                  expect(commandLog)
                      .toEqual([
@@ -247,16 +247,18 @@ export function main() {
       describe('with forced gc', () => {
         var events;
         beforeEach(() => {
-          events = [[
-            eventFactory.markStart('benchpress0', 0),
-            eventFactory.start('script', 4),
-            eventFactory.end('script', 6),
-            eventFactory.markEnd('benchpress0', 10),
-            eventFactory.markStart('benchpress1', 11),
-            eventFactory.start('gc', 12, {'usedHeapSize': 2500}),
-            eventFactory.end('gc', 15, {'usedHeapSize': 1000}),
-            eventFactory.markEnd('benchpress1', 20)
-          ]];
+          events = [
+            [
+              eventFactory.markStart('benchpress0', 0),
+              eventFactory.start('script', 4),
+              eventFactory.end('script', 6),
+              eventFactory.markEnd('benchpress0', 10),
+              eventFactory.markStart('benchpress1', 11),
+              eventFactory.start('gc', 12, {'usedHeapSize': 2500}),
+              eventFactory.end('gc', 15, {'usedHeapSize': 1000}),
+              eventFactory.markEnd('benchpress1', 20)
+            ]
+          ];
         });
 
         it('should measure forced gc', inject([AsyncTestCompleter], (async) => {
@@ -359,14 +361,16 @@ export function main() {
       it('should ignore events from different processed as the start mark',
          inject([AsyncTestCompleter], (async) => {
            var otherProcessEventFactory = new TraceEventFactory('timeline', 'pid1');
-           var metric = createMetric([[
-             eventFactory.markStart('benchpress0', 0),
-             eventFactory.start('script', 0, null),
-             eventFactory.end('script', 5, null),
-             otherProcessEventFactory.start('script', 10, null),
-             otherProcessEventFactory.end('script', 17, null),
-             eventFactory.markEnd('benchpress0', 20)
-           ]]);
+           var metric = createMetric([
+             [
+               eventFactory.markStart('benchpress0', 0),
+               eventFactory.start('script', 0, null),
+               eventFactory.end('script', 5, null),
+               otherProcessEventFactory.start('script', 10, null),
+               otherProcessEventFactory.end('script', 17, null),
+               eventFactory.markEnd('benchpress0', 20)
+             ]
+           ]);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(false))
                .then((data) => {

@@ -242,7 +242,7 @@ var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 var _BINDINGS = [
   bind(PerflogMetric)
       .toFactory((driverExtension, setTimeout, microMetrics, forceGc) =>
-                     new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc),
+                         new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc),
                  [WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC]),
   bind(_SET_TIMEOUT).toValue((fn, millis) => TimerWrapper.setTimeout(fn, millis))
 ];

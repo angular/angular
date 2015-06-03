@@ -239,22 +239,22 @@ export function main() {
         {
           "dynamic": (bindingRecords, variableBindings = null, directiveRecords = null,
                       registry = null, strategy = null) =>
-                         new DynamicProtoChangeDetector(
-                             registry,
-                             new ChangeDetectorDefinition(
-                                 null, strategy, isBlank(variableBindings) ? [] : variableBindings,
-                                 isBlank(bindingRecords) ? [] : bindingRecords,
-                                 isBlank(directiveRecords) ? [] : directiveRecords)),
+                             new DynamicProtoChangeDetector(
+                                 registry, new ChangeDetectorDefinition(
+                                               null, strategy,
+                                               isBlank(variableBindings) ? [] : variableBindings,
+                                               isBlank(bindingRecords) ? [] : bindingRecords,
+                                               isBlank(directiveRecords) ? [] : directiveRecords)),
 
-          "JIT":
-              (bindingRecords, variableBindings = null, directiveRecords = null, registry = null,
-               strategy = null) =>
-                  new JitProtoChangeDetector(
-                      registry, new ChangeDetectorDefinition(
-                                    null, strategy, isBlank(variableBindings) ? [] :
-                                                                                variableBindings,
-                                    isBlank(bindingRecords) ? [] : bindingRecords,
-                                    isBlank(directiveRecords) ? [] : directiveRecords))
+          "JIT": (bindingRecords, variableBindings = null, directiveRecords = null, registry = null,
+                  strategy = null) =>
+                         new JitProtoChangeDetector(
+                             registry, new ChangeDetectorDefinition(
+                                           null,
+                                           strategy, isBlank(variableBindings) ? [] :
+                                                                                 variableBindings,
+                                           isBlank(bindingRecords) ? [] : bindingRecords,
+                                           isBlank(directiveRecords) ? [] : directiveRecords))
 
         },
         (createProtoChangeDetector, name) => {

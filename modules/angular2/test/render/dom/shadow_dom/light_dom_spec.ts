@@ -158,10 +158,11 @@ export function main() {
       it("should include view container nodes", () => {
         var lightDomEl = el("<div><template></template></div>");
         var lightDom = createLightDom(
-            new FakeView(
-                [new FakeViewContainer(DOM.firstChild(lightDomEl),  // template element
-                                       [el('<a></a>')]  // light DOM nodes of view container
-                                       )]),
+            new FakeView([
+              new FakeViewContainer(DOM.firstChild(lightDomEl),  // template element
+                                    [el('<a></a>')]  // light DOM nodes of view container
+                                    )
+            ]),
             null, lightDomEl);
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
@@ -169,12 +170,14 @@ export function main() {
 
       it("should include content nodes", () => {
         var lightDomEl = el("<div><content></content></div>");
-        var lightDom = createLightDom(
-            new FakeView([new FakeContentTag(DOM.firstChild(lightDomEl),  // content element
-                                             '',                          // selector
-                                             [el('<a></a>')]  // light DOM nodes of content tag
-                                             )]),
-            null, lightDomEl);
+        var lightDom =
+            createLightDom(new FakeView([
+                             new FakeContentTag(DOM.firstChild(lightDomEl),  // content element
+                                                '',                          // selector
+                                                [el('<a></a>')]  // light DOM nodes of content tag
+                                                )
+                           ]),
+                           null, lightDomEl);
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });

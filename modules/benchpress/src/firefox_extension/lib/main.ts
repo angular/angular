@@ -44,10 +44,9 @@ var data = require("sdk/self").data;
 mod.PageMod({
   include: ['*'],
   contentScriptFile: data.url("installed_script.js"),
-  onAttach: worker =>
-            {
-              worker.port.on('startProfiler', () => startProfiler());
-              worker.port.on('stopAndRecord', filePath => stopAndRecord(filePath));
-              worker.port.on('forceGC', () => forceGC());
-            }
+  onAttach: worker => {
+    worker.port.on('startProfiler', () => startProfiler());
+    worker.port.on('stopAndRecord', filePath => stopAndRecord(filePath));
+    worker.port.on('forceGC', () => forceGC());
+  }
 });

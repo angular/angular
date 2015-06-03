@@ -151,18 +151,17 @@ export function main() {
          var iterationCount = 1;
          createSampler({
            validator: createCountingValidator(2),
-           metric: new MockMetric([], () =>
-                                      {
-                                        var result = PromiseWrapper.resolve({'script': scriptTime});
-                                        scriptTime = 0;
-                                        return result;
-                                      }),
+           metric: new MockMetric([],
+                                  () => {
+                                    var result = PromiseWrapper.resolve({'script': scriptTime});
+                                    scriptTime = 0;
+                                    return result;
+                                  }),
            prepare: () => { scriptTime = 1 * iterationCount; },
-           execute: () =>
-                    {
-                      scriptTime = 10 * iterationCount;
-                      iterationCount++;
-                    }
+           execute: () => {
+             scriptTime = 10 * iterationCount;
+             iterationCount++;
+           }
          });
          sampler.sample().then((state) => {
            expect(state.completeSample.length).toBe(2);
@@ -192,11 +191,8 @@ export function main() {
 
            expect(log.length).toBe(2);
            expect(log[0]).toEqual(['validate', [mv(0, 1000, {'script': 0})], null]);
-           expect(log[1]).toEqual([
-             'validate',
-             [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})],
-             validSample
-           ]);
+           expect(log[1]).toEqual(
+               ['validate', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample]);
 
            async.done();
          });

@@ -139,10 +139,8 @@ export function main() {
         });
 
         it("should support nested groups", () => {
-          var g = new ControlGroup({
-            "one": new Control("111"),
-            "nested": new ControlGroup({"two": new Control("222")})
-          });
+          var g = new ControlGroup(
+              {"one": new Control("111"), "nested": new ControlGroup({"two": new Control("222")})});
           expect(g.value).toEqual({"one": "111", "nested": {"two": "222"}});
 
           g.controls["nested"].controls["two"].updateValue("333");
@@ -154,10 +152,8 @@ export function main() {
       describe("find", () => {
         var g;
         beforeEach(() => {
-          g = new ControlGroup({
-            "one": new Control("111"),
-            "nested": new ControlGroup({"two": new Control("222")})
-          });
+          g = new ControlGroup(
+              {"one": new Control("111"), "nested": new ControlGroup({"two": new Control("222")})});
         });
 
         it("should return a control if it is present", () => {

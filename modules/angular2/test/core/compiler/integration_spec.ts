@@ -112,8 +112,8 @@ export function main() {
 
       it('should consume binding to aria-* attributes',
          inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(
-               MyComp, new viewAnn.View({template: '<div [attr.aria-label]="ctxProp"></div>'}));
+           tb.overrideView(MyComp,
+                           new viewAnn.View({template: '<div [attr.aria-label]="ctxProp"></div>'}));
 
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -234,10 +234,12 @@ export function main() {
 
       describe('pipes', () => {
         beforeEachBindings(() => {
-          return [bind(ChangeDetection)
-                      .toFactory(() => new DynamicChangeDetection(
-                                     new PipeRegistry({"double": [new DoublePipeFactory()]})),
-                                 [])];
+          return [
+            bind(ChangeDetection)
+                .toFactory(() => new DynamicChangeDetection(
+                               new PipeRegistry({"double": [new DoublePipeFactory()]})),
+                           [])
+          ];
         });
 
         it("should support pipes in bindings and bind config",
@@ -312,8 +314,8 @@ export function main() {
 
       it('should support directives where a selector matches property binding',
          inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(MyComp, new viewAnn.View(
-                                       {template: '<p [id]="ctxProp"></p>', directives: [IdDir]}));
+           tb.overrideView(
+               MyComp, new viewAnn.View({template: '<p [id]="ctxProp"></p>', directives: [IdDir]}));
 
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -1007,11 +1009,8 @@ export function main() {
               </parent-providing-event-bus>
             </grand-parent-providing-event-bus>
           `,
-             directives: [
-               GrandParentProvidingEventBus,
-               ParentProvidingEventBus,
-               ChildConsumingEventBus
-             ]
+             directives:
+                 [GrandParentProvidingEventBus, ParentProvidingEventBus, ChildConsumingEventBus]
            }));
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -1161,8 +1160,7 @@ export function main() {
           tb.overrideView(MyComp, new viewAnn.View({template: inlineTpl}));
           PromiseWrapper.then(
               tb.createView(MyComp),
-              (value) =>
-              {
+              (value) => {
                 throw new BaseException(
                     "Test failure: should not have come here as an exception was expected");
               },
@@ -1638,11 +1636,15 @@ function createParentBusView(p) {
 }
 @Component({
   selector: 'parent-providing-event-bus',
-  hostInjector: [new Binding(
-      EventBus, {toFactory: createParentBusHost, deps: [[EventBus, new visAnn.Unbounded()]]})],
-  viewInjector: [new Binding(
-      EventBus,
-      {toFactory: createParentBusView, deps: [[FORWARD_REF(() => ParentProvidingEventBus)]]})]
+  hostInjector: [
+    new Binding(EventBus,
+                {toFactory: createParentBusHost, deps: [[EventBus, new visAnn.Unbounded()]]})
+  ],
+  viewInjector: [
+    new Binding(
+        EventBus,
+        {toFactory: createParentBusView, deps: [[FORWARD_REF(() => ParentProvidingEventBus)]]})
+  ]
 })
 @View({
   directives: [FORWARD_REF(() => ChildConsumingEventBus)],

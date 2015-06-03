@@ -23,19 +23,17 @@ export function setupReflector() {
 
   // TODO(kegluneq): Generate this.
   reflector.registerSetters({
-    'style': (o, m) =>
-             {
-               // HACK
-               MapWrapper.forEach(m, function(v, k) { o.style.setProperty(k, v); });
-             }
+    'style': (o, m) => {
+      // HACK
+      MapWrapper.forEach(m, function(v, k) { o.style.setProperty(k, v); });
+    }
   });
 
   reflector.registerMethods({
-    'onScroll': (o, args) =>
-                {
-                  // HACK
-                  o.onScroll(args[0]);
-                },
+    'onScroll': (o, args) => {
+      // HACK
+      o.onScroll(args[0]);
+    },
     'setStage': (o, args) => o.setStage(args[0])
   });
 }

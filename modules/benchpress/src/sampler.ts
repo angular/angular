@@ -95,26 +95,27 @@ export class SampleState {
   constructor(public completeSample: List<any>, public validSample: List<any>) {}
 }
 
-var _BINDINGS =
-    [bind(Sampler)
-            .toFactory((driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
-                         driver: driver,
-                         reporter: reporter,
-                         validator: validator,
-                         metric: metric,
-                         // TODO(tbosch): DI right now does not support null/undefined objects
-                         // Mostly because the cache would have to be initialized with a
-                         // special null object, which is expensive.
-                         prepare: prepare !== false ? prepare : null,
-                         execute: execute,
-                         now: now
-                       }),
-                       [
-                         WebDriverAdapter,
-                         Metric,
-                         Reporter,
-                         Validator,
-                         Options.PREPARE,
-                         Options.EXECUTE,
-                         Options.NOW
-                       ])];
+var _BINDINGS = [
+  bind(Sampler)
+      .toFactory((driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
+                   driver: driver,
+                   reporter: reporter,
+                   validator: validator,
+                   metric: metric,
+                   // TODO(tbosch): DI right now does not support null/undefined objects
+                   // Mostly because the cache would have to be initialized with a
+                   // special null object, which is expensive.
+                   prepare: prepare !== false ? prepare : null,
+                   execute: execute,
+                   now: now
+                 }),
+                 [
+                   WebDriverAdapter,
+                   Metric,
+                   Reporter,
+                   Validator,
+                   Options.PREPARE,
+                   Options.EXECUTE,
+                   Options.NOW
+                 ])
+];

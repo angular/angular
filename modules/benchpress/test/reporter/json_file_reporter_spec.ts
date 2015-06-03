@@ -30,14 +30,13 @@ export function main() {
         bind(JsonFileReporter.PATH).toValue(path),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
         bind(Options.WRITE_FILE)
-            .toValue((filename, content) =>
-                     {
-                       loggedFile = {
-                         'filename': filename,
-                         'content': content
-                       };
-                       return PromiseWrapper.resolve(null);
-                     })
+            .toValue((filename, content) => {
+              loggedFile = {
+                'filename': filename,
+                'content': content
+              };
+              return PromiseWrapper.resolve(null);
+            })
       ];
       return Injector.resolveAndCreate(bindings).get(JsonFileReporter);
     }
@@ -58,11 +57,13 @@ export function main() {
              .toEqual({
                "description":
                    {"id": "someId", "description": {"a": 2}, "metrics": {"script": "script time"}},
-               "completeSample": [{
-                 "timeStamp": "1970-01-01T00:00:00.000Z",
-                 "runIndex": 0,
-                 "values": {"a": 3, "b": 6}
-               }],
+               "completeSample": [
+                 {
+                   "timeStamp": "1970-01-01T00:00:00.000Z",
+                   "runIndex": 0,
+                   "values": {"a": 3, "b": 6}
+                 }
+               ],
                "validSample": [
                  {
                    "timeStamp": "1970-01-01T00:00:00.000Z",

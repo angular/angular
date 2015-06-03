@@ -58,8 +58,7 @@ export function main() {
        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compileAll([
              someComponent,
-             new ViewDefinition(
-                 {componentId: 'someComponent', template: 'hello', directives: []})
+             new ViewDefinition({componentId: 'someComponent', template: 'hello', directives: []})
            ])
              .then((protoViewDtos) => {
                var rootView = tb.createRootView(protoViewDtos[0]);
@@ -74,8 +73,7 @@ export function main() {
     it('should update text nodes', inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compileAll([
              someComponent,
-             new ViewDefinition(
-                 {componentId: 'someComponent', template: '{{a}}', directives: []})
+             new ViewDefinition({componentId: 'someComponent', template: '{{a}}', directives: []})
            ])
              .then((protoViewDtos) => {
                var rootView = tb.createRootView(protoViewDtos[0]);

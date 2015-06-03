@@ -135,8 +135,10 @@ export function main() {
          }));
 
       it('should ignore FunctionCalls from webdriver', inject([AsyncTestCompleter], (async) => {
-           createExtension([chromeTimelineEvents.start(
-                               'FunctionCall', 0, {'data': {'scriptName': 'InjectedScript'}})])
+           createExtension([
+             chromeTimelineEvents.start('FunctionCall', 0,
+                                        {'data': {'scriptName': 'InjectedScript'}})
+           ])
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([]);
@@ -270,8 +272,7 @@ class MockDriverAdapter extends WebDriverAdapter {
     if (type === 'performance') {
       return PromiseWrapper.resolve(this._events.map((event) => {
         return {
-          'message':
-              Json.stringify({'message': {'method': this._messageMethod, 'params': event}})
+          'message': Json.stringify({'message': {'method': this._messageMethod, 'params': event}})
         };
       }));
     } else {

@@ -46,9 +46,10 @@ export function main() {
       RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
-      bind(Router).toFactory((registry, pipeline, location) =>
-                             { return new RootRouter(registry, pipeline, location, MyComp); },
-                             [RouteRegistry, Pipeline, Location])
+      bind(Router)
+          .toFactory((registry, pipeline,
+                      location) => { return new RootRouter(registry, pipeline, location, MyComp); },
+                     [RouteRegistry, Pipeline, Location])
     ]);
 
     beforeEach(inject([TestBed, Router, Location], (testBed, router, loc) => {
@@ -60,10 +61,10 @@ export function main() {
     }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
-      tb.overrideView(MyComp, new annotations.View({
-        template: ('<div>' + template + '</div>'),
-        directives: [RouterOutlet, RouterLink]
-      }));
+      tb.overrideView(
+          MyComp,
+          new annotations.View(
+              {template: ('<div>' + template + '</div>'), directives: [RouterOutlet, RouterLink]}));
       return tb.createView(MyComp, {context: ctx}).then((v) => { view = v; });
     }
 
@@ -84,11 +85,10 @@ export function main() {
          compile()
              .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp}))
              .then((_) => rtr.navigate('/user/brian'))
-             .then((_) =>
-                   {
-                     view.detectChanges();
-                     expect(view.rootNodes).toHaveText('hello brian');
-                   })
+             .then((_) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText('hello brian');
+             })
              .then((_) => rtr.navigate('/user/igor'))
              .then((_) => {
                view.detectChanges();
@@ -116,11 +116,10 @@ export function main() {
              .then((_) => rtr.config({'path': '/ab', 'components': {'left': A, 'right': B}}))
              .then((_) => rtr.config({'path': '/ba', 'components': {'left': B, 'right': A}}))
              .then((_) => rtr.navigate('/ab'))
-             .then((_) =>
-                   {
-                     view.detectChanges();
-                     expect(view.rootNodes).toHaveText('left { A } | right { B }');
-                   })
+             .then((_) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText('left { A } | right { B }');
+             })
              .then((_) => rtr.navigate('/ba'))
              .then((_) => {
                view.detectChanges();
@@ -175,12 +174,11 @@ export function main() {
          compile()
              .then((_) => rtr.config({'path': '/team/:id', 'component': TeamCmp}))
              .then((_) => rtr.navigate('/team/angular/user/rado'))
-             .then((_) =>
-                   {
-                     view.detectChanges();
-                     expect(teamCmpCount).toBe(1);
-                     expect(view.rootNodes).toHaveText('team angular { hello rado }');
-                   })
+             .then((_) => {
+               view.detectChanges();
+               expect(teamCmpCount).toBe(1);
+               expect(view.rootNodes).toHaveText('team angular { hello rado }');
+             })
              .then((_) => rtr.navigate('/team/angular/user/victor'))
              .then((_) => {
                view.detectChanges();

@@ -20,21 +20,20 @@ export class WebDriverExtension {
                               ListWrapper.map(childTokens, (token) => injector.asyncGet(token))),
                           [Injector]),
       bind(WebDriverExtension)
-          .toFactory((children, capabilities) =>
-                     {
-                       var delegate;
-                       ListWrapper.forEach(children, (extension) => {
-                         if (extension.supports(capabilities)) {
-                           delegate = extension;
-                         }
-                       });
-                       if (isBlank(delegate)) {
-                         throw new BaseException(
-                             'Could not find a delegate for given capabilities!');
-                       }
-                       return delegate;
-                     },
-                     [_CHILDREN, Options.CAPABILITIES])
+          .toFactory(
+              (children, capabilities) => {
+                var delegate;
+                ListWrapper.forEach(children, (extension) => {
+                  if (extension.supports(capabilities)) {
+                    delegate = extension;
+                  }
+                });
+                if (isBlank(delegate)) {
+                  throw new BaseException('Could not find a delegate for given capabilities!');
+                }
+                return delegate;
+              },
+              [_CHILDREN, Options.CAPABILITIES])
     ];
   }
 

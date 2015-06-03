@@ -50,26 +50,24 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     let pathsToEmit = [];
     let pathsWithErrors = [];
 
-    treeDiff.changedPaths
-        .forEach((tsFilePath) => {
-          if (!this.fileRegistry[tsFilePath]) {
-            this.fileRegistry[tsFilePath] = {version: 0};
-            this.rootFilePaths.push(tsFilePath);
-          } else {
-            this.fileRegistry[tsFilePath].version++;
-          }
+    treeDiff.changedPaths.forEach((tsFilePath) => {
+      if (!this.fileRegistry[tsFilePath]) {
+        this.fileRegistry[tsFilePath] = {version: 0};
+        this.rootFilePaths.push(tsFilePath);
+      } else {
+        this.fileRegistry[tsFilePath].version++;
+      }
 
-          pathsToEmit.push(tsFilePath);
-        });
+      pathsToEmit.push(tsFilePath);
+    });
 
-    treeDiff.removedPaths
-        .forEach((tsFilePath) => {
-          console.log('removing outputs for', tsFilePath);
+    treeDiff.removedPaths.forEach((tsFilePath) => {
+      console.log('removing outputs for', tsFilePath);
 
-          this.rootFilePaths.splice(this.rootFilePaths.indexOf(tsFilePath), 1);
-          this.fileRegistry[tsFilePath] = null;
-          this.removeOutputFor(tsFilePath);
-        });
+      this.rootFilePaths.splice(this.rootFilePaths.indexOf(tsFilePath), 1);
+      this.fileRegistry[tsFilePath] = null;
+      this.removeOutputFor(tsFilePath);
+    });
 
     if (this.firstRun) {
       this.firstRun = false;
@@ -136,9 +134,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       let errorMessages = [];
 
       allDiagnostics.forEach(diagnostic => {
-        var { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+        var {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
         var message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-        errorMessages.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+        errorMessages.push(
+            `  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
       });
 
       if (errorMessages.length) {

@@ -52,12 +52,11 @@ export function main() {
          xhr.expect('base/foo', 'xhr template');
          var template = new ViewDefinition({absUrl: 'base/foo'});
          loader.load(template)
-             .then((el) =>
-                   {
-                     expect(DOM.content(el)).toHaveText('xhr template');
-                     firstEl = el;
-                     return loader.load(template);
-                   })
+             .then((el) => {
+               expect(DOM.content(el)).toHaveText('xhr template');
+               firstEl = el;
+               return loader.load(template);
+             })
              .then((el) => {
                expect(el).not.toBe(firstEl);
                expect(DOM.content(el)).toHaveText('xhr template');
