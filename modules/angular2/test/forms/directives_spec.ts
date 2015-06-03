@@ -172,7 +172,7 @@ export function main() {
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new Control(null);
-        controlDir.control = control;
+        controlDir.form = control;
       });
 
       it("should set up validator", () => {

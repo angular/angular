@@ -47,12 +47,12 @@ const formControlBinding =
 @Directive({
   selector: '[ng-form-control]',
   hostInjector: [formControlBinding],
-  properties: ['control: ng-form-control', 'model: ng-model'],
+  properties: ['form: ng-form-control', 'model: ng-model'],
   events: ['ngModel'],
   lifecycle: [onChange]
 })
 export class FormControlDirective extends ControlDirective {
-  control: Control;
+  form: Control;
   ngModel: EventEmitter;
   _added: boolean;
   model: any;
@@ -65,14 +65,18 @@ export class FormControlDirective extends ControlDirective {
 
   onChange(c) {
     if (!this._added) {
-      setUpControl(this.control, this);
-      this.control.updateValidity();
+      setUpControl(this.form, this);
+      this.form.updateValidity();
       this._added = true;
     }
     if (StringMapWrapper.contains(c, "model")) {
-      this.control.updateValue(this.model);
+      this.form.updateValue(this.model);
     }
   }
+
+  get control(): Control { return this.form; }
+
+  get path(): List<string> { return []; }
 
   viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }
 }

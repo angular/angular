@@ -1,5 +1,4 @@
-import {ElementRef, Directive} from 'angular2/angular2';
-import {Renderer} from 'angular2/src/render/api';
+import {Directive} from 'angular2/angular2';
 import {ControlDirective} from './control_directive';
 import {ControlValueAccessor} from './control_value_accessor';
 
@@ -24,24 +23,30 @@ import {ControlValueAccessor} from './control_value_accessor';
     'input': 'onChange($event.target.value)',
     'blur': 'onTouched()'
   },
-  hostProperties: {'value': 'value'}
+  hostProperties: {
+    'value': 'value',
+    'cd.control?.untouched == true': 'class.ng-untouched',
+    'cd.control?.touched == true': 'class.ng-touched',
+    'cd.control?.pristine == true': 'class.ng-pristine',
+    'cd.control?.dirty == true': 'class.ng-dirty',
+    'cd.control?.valid == true': 'class.ng-valid',
+    'cd.control?.valid == false': 'class.ng-invalid'
+  }
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   value = null;
   onChange: Function;
   onTouched: Function;
 
-  constructor(cd: ControlDirective, private _elementRef: ElementRef, private _renderer: Renderer) {
+  constructor(private cd: ControlDirective) {
     this.onChange = (_) => {};
     this.onTouched = (_) => {};
     cd.valueAccessor = this;
   }
 
-  writeValue(value) {
-    this._renderer.setElementProperty(this._elementRef.parentView.render,
-                                      this._elementRef.boundElementIndex, 'value', value)
-  }
+  writeValue(value) { this.value = value; }
 
   registerOnChange(fn): void { this.onChange = fn; }
+
   registerOnTouched(fn): void { this.onTouched = fn; }
 }

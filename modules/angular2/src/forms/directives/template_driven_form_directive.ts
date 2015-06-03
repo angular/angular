@@ -43,6 +43,8 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     });
   }
 
+  getControl(dir: ControlDirective): Control { return <Control>this.form.find(dir.path); }
+
   removeControl(dir: ControlDirective): void {
     this._later(_ => {
       var c = this._findContainer(dir.path);

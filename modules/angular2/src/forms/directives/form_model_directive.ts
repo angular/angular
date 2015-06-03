@@ -81,6 +81,8 @@ export class FormModelDirective extends ControlContainerDirective implements For
     ListWrapper.push(this.directives, dir);
   }
 
+  getControl(dir: ControlDirective): Control { return <Control>this.form.find(dir.path); }
+
   removeControl(dir: ControlDirective): void { ListWrapper.remove(this.directives, dir); }
 
   addControlGroup(dir: ControlGroupDirective) {}

@@ -17,6 +17,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {NgIf} from 'angular2/directives';
 
@@ -561,6 +562,7 @@ export function main() {
                       .then((view) => {
                         view.detectChanges();
                         tick();
+                        view.detectChanges();
 
                         var input = view.querySelector("input");
                         expect(input.value).toEqual("oldValue");
@@ -595,6 +597,105 @@ export function main() {
                         tick();
 
                         expect(ctx.name).toEqual("updatedValue");
+                      });
+                  flushMicrotasks();
+                })));
+    });
+
+
+    describe("setting status classes", () => {
+      it("should work with single fields",
+         inject([TestBed], fakeAsync(tb => {
+                  var form = new Control("", Validators.required);
+                  var ctx = MyComp.create({form: form});
+
+                  var t = `<div><input type="text" [ng-form-control]="form"></div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+
+                        var input = view.querySelector("input");
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+
+                        dispatchEvent(input, "blur");
+                        view.detectChanges();
+
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+
+                        input.value = "updatedValue";
+                        dispatchEvent(input, "change");
+                        view.detectChanges();
+
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+                        tick();
+                      });
+                  flushMicrotasks();
+                })));
+
+      it("should work with complex model-driven forms",
+         inject([TestBed], fakeAsync(tb => {
+                  var form = new ControlGroup({"name": new Control("", Validators.required)});
+                  var ctx = MyComp.create({form: form});
+
+                  var t =
+                      `<form [ng-form-model]="form"><input type="text" ng-control="name"></form>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+
+                        var input = view.querySelector("input");
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+
+                        dispatchEvent(input, "blur");
+                        view.detectChanges();
+
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+
+                        input.value = "updatedValue";
+                        dispatchEvent(input, "change");
+                        view.detectChanges();
+
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+                        tick();
+                      });
+                  flushMicrotasks();
+                })));
+
+      it("should work with ng-model",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: ""});
+
+                  var t = `<div><input [(ng-model)]="name" required></div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+
+                        var input = view.querySelector("input");
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+
+                        dispatchEvent(input, "blur");
+                        view.detectChanges();
+
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+
+                        input.value = "updatedValue";
+                        dispatchEvent(input, "change");
+                        view.detectChanges();
+
+                        expect(DOM.classList(input))
+                            .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+                        tick();
                       });
                   flushMicrotasks();
                 })));

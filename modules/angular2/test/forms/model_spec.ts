@@ -203,16 +203,14 @@ export function main() {
       });
 
       describe("dirty", () => {
-        var c,g;
+        var c, g;
 
         beforeEach(() => {
           c = new Control('value');
           g = new ControlGroup({"one": c});
         });
 
-        it("should be false after creating a control", () => {
-          expect(g.dirty).toEqual(false);
-        });
+        it("should be false after creating a control", () => { expect(g.dirty).toEqual(false); });
 
         it("should be false after changing the value of the control", () => {
           c.markAsDirty();
@@ -442,16 +440,14 @@ export function main() {
         });
 
         describe("dirty", () => {
-          var c,a;
+          var c, a;
 
           beforeEach(() => {
             c = new Control('value');
             a = new ControlArray([c]);
           });
 
-          it("should be false after creating a control", () => {
-            expect(a.dirty).toEqual(false);
-          });
+          it("should be false after creating a control", () => { expect(a.dirty).toEqual(false); });
 
           it("should be false after changing the value of the control", () => {
             c.markAsDirty();

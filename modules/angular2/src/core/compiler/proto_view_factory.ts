@@ -105,7 +105,10 @@ class BindingRecordsCreator {
       if (directiveRecord.callOnCheck) {
         ListWrapper.push(bindings, BindingRecord.createDirectiveOnCheck(directiveRecord));
       }
+    }
 
+    for (var i = 0; i < directiveBinders.length; i++) {
+      var directiveBinder = directiveBinders[i];
       // host properties
       MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
         var dirIndex = new DirectiveIndex(boundElementIndex, i);
