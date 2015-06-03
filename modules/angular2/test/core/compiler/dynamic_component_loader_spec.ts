@@ -76,31 +76,27 @@ export function main() {
              view.context.ctxBoolProp = true;
              view.detectChanges();
              var dynamicComponent = view.rawView.viewContainers[0].views[0].locals.get("dynamic");
-             dynamicComponent.done.then((_) =>
-                                        {
-                                          view.detectChanges();
-                                          expect(view.rootNodes).toHaveText('hello');
+             var promise = dynamicComponent.done.then((_) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText('hello');
 
-                                          view.context.ctxBoolProp = false;
-                                          view.detectChanges();
+               view.context.ctxBoolProp = false;
+               view.detectChanges();
 
-                                          expect(view.rawView.viewContainers[0].views.length)
-                                              .toBe(0);
-                                          expect(view.rootNodes).toHaveText('');
+               expect(view.rawView.viewContainers[0].views.length).toBe(0);
+               expect(view.rootNodes).toHaveText('');
 
-                                          view.context.ctxBoolProp = true;
-                                          view.detectChanges();
+               view.context.ctxBoolProp = true;
+               view.detectChanges();
 
-                                          var dynamicComponent =
-                                              view.rawView.viewContainers[0].views[0].locals.get(
-                                                  "dynamic");
-                                          return dynamicComponent.done;
-                                        })
-                 .then((_) => {
-                   view.detectChanges();
-                   expect(view.rootNodes).toHaveText('hello');
-                   async.done();
-                 });
+               var dynamicComponent = view.rawView.viewContainers[0].views[0].locals.get("dynamic");
+               return dynamicComponent.done;
+             });
+             promise.then((_) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText('hello');
+               async.done();
+             });
            });
          }));
     });

@@ -19,12 +19,8 @@ export function main() {
     it("should remove non-terminal duplicate records" +
            " and update the context indices referencing them",
        () => {
-         var rs = coalesce([
-           r("user", [], 0, 1),
-           r("first", [], 1, 2),
-           r("user", [], 0, 3),
-           r("last", [], 3, 4)
-         ]);
+         var rs = coalesce(
+             [r("user", [], 0, 1), r("first", [], 1, 2), r("user", [], 0, 3), r("last", [], 3, 4)]);
 
          expect(rs).toEqual([r("user", [], 0, 1), r("first", [], 1, 2), r("last", [], 1, 3)]);
        });

@@ -39,12 +39,14 @@ export function main() {
 
     it('should inherit protoViewBuilders to children', () => {
       var element = el('<div><div><span viewroot><span></span></span></div></div>');
-      var pipeline = new CompilePipeline([new MockStep((parent, current, control) => {
-        if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
-          current.inheritedProtoView =
-              new ProtoViewBuilder(current.element, ProtoViewDto.EMBEDDED_VIEW_TYPE);
-        }
-      })]);
+      var pipeline = new CompilePipeline([
+        new MockStep((parent, current, control) => {
+          if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
+            current.inheritedProtoView =
+                new ProtoViewBuilder(current.element, ProtoViewDto.EMBEDDED_VIEW_TYPE);
+          }
+        })
+      ]);
       var results = pipeline.process(element);
       expect(results[0].inheritedProtoView).toBe(results[1].inheritedProtoView);
       expect(results[2].inheritedProtoView).toBe(results[3].inheritedProtoView);
@@ -52,11 +54,13 @@ export function main() {
 
     it('should inherit elementBinderBuilders to children', () => {
       var element = el('<div bind><div><span bind><span></span></span></div></div>');
-      var pipeline = new CompilePipeline([new MockStep((parent, current, control) => {
-        if (isPresent(DOM.getAttribute(current.element, 'bind'))) {
-          current.bindElement();
-        }
-      })]);
+      var pipeline = new CompilePipeline([
+        new MockStep((parent, current, control) => {
+          if (isPresent(DOM.getAttribute(current.element, 'bind'))) {
+            current.bindElement();
+          }
+        })
+      ]);
       var results = pipeline.process(element);
       expect(results[0].inheritedElementBinder).toBe(results[1].inheritedElementBinder);
       expect(results[2].inheritedElementBinder).toBe(results[3].inheritedElementBinder);
@@ -70,11 +74,13 @@ export function main() {
 
     it('should calculate distanceToParent / parent correctly', () => {
       var element = el('<div bind><div bind></div><div><div bind></div></div></div>');
-      var pipeline = new CompilePipeline([new MockStep((parent, current, control) => {
-        if (isPresent(DOM.getAttribute(current.element, 'bind'))) {
-          current.bindElement();
-        }
-      })]);
+      var pipeline = new CompilePipeline([
+        new MockStep((parent, current, control) => {
+          if (isPresent(DOM.getAttribute(current.element, 'bind'))) {
+            current.bindElement();
+          }
+        })
+      ]);
       var results = pipeline.process(element);
       expect(results[0].inheritedElementBinder.distanceToParent).toBe(0);
       expect(results[1].inheritedElementBinder.distanceToParent).toBe(1);
@@ -101,8 +107,8 @@ export function main() {
         var element = el('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
-        var pipeline = new CompilePipeline(
-            [createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
+        var pipeline =
+            new CompilePipeline([createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
         var result = pipeline.process(element);
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<3']);
@@ -149,8 +155,8 @@ export function main() {
         var element = el('<div id="1"><span wrap0="2" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
-        var pipeline = new CompilePipeline(
-            [createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
+        var pipeline =
+            new CompilePipeline([createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
         var result = pipeline.process(element);
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<wrap0#1', 'wrap0#1<2', '2<3']);
@@ -165,12 +171,11 @@ export function main() {
         var resultLog = [];
         var newChild = new CompileElement(el('<div id="3"></div>'));
         var pipeline = new CompilePipeline([
-          new MockStep((parent, current, control) =>
-                       {
-                         if (StringWrapper.equals(DOM.getAttribute(current.element, 'id'), '1')) {
-                           control.addChild(newChild);
-                         }
-                       }),
+          new MockStep((parent, current, control) => {
+            if (StringWrapper.equals(DOM.getAttribute(current.element, 'id'), '1')) {
+              control.addChild(newChild);
+            }
+          }),
           createLoggerStep(resultLog)
         ]);
         var result = pipeline.process(element);

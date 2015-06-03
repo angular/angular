@@ -42,11 +42,9 @@ export function main() {
 
       it('should not allow overriding a template after it has been resolved', () => {
         resolver.resolve(SomeComponent);
-        expect(() =>
-               {
-                 resolver.setView(SomeComponent,
-                                  new viewImpl.View({template: 'overridden template'}));
-               })
+        expect(() => {
+          resolver.setView(SomeComponent, new viewImpl.View({template: 'overridden template'}));
+        })
             .toThrowError(
                 `The component ${stringify(SomeComponent)} has already been compiled, its configuration can not be changed`);
       });
@@ -101,9 +99,9 @@ export function main() {
 
       it('should not allow overriding a directive after its template has been resolved', () => {
         resolver.resolve(SomeComponent);
-        expect(
-            () =>
-            { resolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective); })
+        expect(() => {
+          resolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);
+        })
             .toThrowError(
                 `The component ${stringify(SomeComponent)} has already been compiled, its configuration can not be changed`);
       });

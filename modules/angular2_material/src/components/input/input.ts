@@ -58,11 +58,8 @@ export class MdInputContainer {
   selector: 'md-input-container input',
   events: ['mdChange', 'mdFocusChange'],
   hostProperties: {'yes': 'class.md-input'},
-  hostListeners: {
-    'input': 'updateValue($event)',
-    'focus': 'setHasFocus(true)',
-    'blur': 'setHasFocus(false)'
-  }
+  hostListeners:
+      {'input': 'updateValue($event)', 'focus': 'setHasFocus(true)', 'blur': 'setHasFocus(false)'}
 })
 export class MdInput {
   value: string;

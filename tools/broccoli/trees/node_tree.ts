@@ -84,11 +84,13 @@ module.exports = function makeNodeTree(destinationPath) {
   // TODO: remove this when we no longer use traceur
   var traceurCompatibleTsModulesTree = replace(modulesTree, {
     files: ['**/*.ts'],
-    patterns: [{
-      // Empty replacement needed so that replaceWithPath gets triggered...
-      match: /$/g,
-      replacement: ""
-    }],
+    patterns: [
+      {
+        // Empty replacement needed so that replaceWithPath gets triggered...
+        match: /$/g,
+        replacement: ""
+      }
+    ],
     replaceWithPath: function(path, content) {
       if (!path.endsWith('.d.ts')) {
         content += '\r\nexport var __esModule = true;\n';
@@ -120,11 +122,13 @@ module.exports = function makeNodeTree(destinationPath) {
       return "var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
              "parse5Adapter.Parse5DomAdapter.makeCurrent();" + content;
     },
-    patterns: [{
-      // Append main() to all tests since all of our tests are wrapped in exported main fn
-      match: /$/g,
-      replacement: "\r\n main();"
-    }]
+    patterns: [
+      {
+        // Append main() to all tests since all of our tests are wrapped in exported main fn
+        match: /$/g,
+        replacement: "\r\n main();"
+      }
+    ]
   });
 
   return destCopy(nodeTree, destinationPath);

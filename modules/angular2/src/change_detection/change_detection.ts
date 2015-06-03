@@ -33,8 +33,8 @@ export var iterableDiff: List<PipeFactory> = [new IterableChangesFactory(), new 
  *
  * @exportedAs angular2/pipes
  */
-export var async: List<
-    PipeFactory> = [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
+export var async: List<PipeFactory> =
+    [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
 
 /**
  * Uppercase text transform.

@@ -167,9 +167,8 @@ export function main() {
     });
 
     it('should support overriding factory dependencies', () => {
-      var injector =
-          Injector
-              .resolveAndCreate([Engine, bind(Car).toFactory((e) => new SportsCar(e), [Engine])]);
+      var injector = Injector.resolveAndCreate(
+          [Engine, bind(Car).toFactory((e) => new SportsCar(e), [Engine])]);
 
       var car = injector.get(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
@@ -191,9 +190,8 @@ export function main() {
     });
 
     it("should use the last binding when there are multiple bindings for same token", () => {
-      var injector =
-          Injector
-              .resolveAndCreate([bind(Engine).toClass(Engine), bind(Engine).toClass(TurboEngine)]);
+      var injector = Injector.resolveAndCreate(
+          [bind(Engine).toClass(Engine), bind(Engine).toClass(TurboEngine)]);
 
       expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
     });
@@ -278,7 +276,7 @@ export function main() {
 
     describe("default bindings", () => {
       it("should be used when no matching binding found", () => {
-        var injector = Injector.resolveAndCreate([], { defaultBindings: true });
+        var injector = Injector.resolveAndCreate([], {defaultBindings: true});
 
         var car = injector.get(Car);
 
@@ -327,7 +325,7 @@ export function main() {
       });
 
       it("should create child injectors without default bindings", () => {
-        var parent = Injector.resolveAndCreate([], { defaultBindings: true });
+        var parent = Injector.resolveAndCreate([], {defaultBindings: true});
         var child = parent.resolveAndCreateChild([]);
 
         // child delegates to parent the creation of Car
@@ -393,10 +391,11 @@ export function main() {
       });
 
       it('should support overriding factory dependencies with dependency annotations', () => {
-        var bindings = Injector.resolve(
-            [bind("token")
-                    .toFactory((e) => "result",
-                               [[new ann.Inject("dep"), new CustomDependencyAnnotation()]])]);
+        var bindings = Injector.resolve([
+          bind("token")
+              .toFactory((e) => "result",
+                         [[new ann.Inject("dep"), new CustomDependencyAnnotation()]])
+        ]);
         var binding = bindings[Key.get("token").id];
 
         expect(binding.dependencies[0].key.token).toEqual("dep");

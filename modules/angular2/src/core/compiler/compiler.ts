@@ -94,11 +94,9 @@ export class Compiler {
 
     var directiveMetadata = componentBinding.metadata;
     return this._render.compileHost(directiveMetadata)
-        .then((hostRenderPv) =>
-              {
-                return this._compileNestedProtoViews(componentBinding, hostRenderPv,
-                                                     [componentBinding]);
-              })
+        .then((hostRenderPv) => {
+          return this._compileNestedProtoViews(componentBinding, hostRenderPv, [componentBinding]);
+        })
         .then((appProtoView) => { return new ProtoViewRef(appProtoView); });
   }
 

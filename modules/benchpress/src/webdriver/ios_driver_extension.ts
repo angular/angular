@@ -128,5 +128,7 @@ function createMarkEndEvent(name, time) {
   return createEvent('e', name, time);
 }
 
-var _BINDINGS = [bind(IOsDriverExtension)
-                     .toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])];
+var _BINDINGS = [
+  bind(IOsDriverExtension)
+      .toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])
+];

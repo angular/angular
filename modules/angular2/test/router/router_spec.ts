@@ -34,9 +34,10 @@ export function main() {
       RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
-      bind(Router).toFactory((registry, pipeline, location) =>
-                             { return new RootRouter(registry, pipeline, location, AppCmp); },
-                             [RouteRegistry, Pipeline, Location])
+      bind(Router)
+          .toFactory((registry, pipeline,
+                      location) => { return new RootRouter(registry, pipeline, location, AppCmp); },
+                     [RouteRegistry, Pipeline, Location])
     ]);
 
 
@@ -78,11 +79,10 @@ export function main() {
 
          router.registerOutlet(outlet)
              .then((_) => router.navigate('/a'))
-             .then((_) =>
-                   {
-                     expect(outlet.spy('activate')).not.toHaveBeenCalled();
-                     return router.config({'path': '/a', 'component': 'A'});
-                   })
+             .then((_) => {
+               expect(outlet.spy('activate')).not.toHaveBeenCalled();
+               return router.config({'path': '/a', 'component': 'A'});
+             })
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
                async.done();

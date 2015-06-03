@@ -110,8 +110,7 @@ describe('TreeDiffer', () => {
           'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
           'file-2.txt': mockfs.file({content: 'file-2.txt content', mtime: new Date(1000)}),
           'subdir-1': {
-            'file-1.1.txt':
-                mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)})
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)})
           }
         },
         'symlinks': {

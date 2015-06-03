@@ -48,8 +48,7 @@ export function main() {
 }
 
 
-@Directive(
-    {selector: "[lifecycle]", properties: ['field'], lifecycle: [onChange, onCheck, onInit]})
+@Directive({selector: "[lifecycle]", properties: ['field'], lifecycle: [onChange, onCheck, onInit]})
 class LifecycleDir {
   field;
   log: List<string>;

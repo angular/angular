@@ -45,9 +45,9 @@ function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): P
 
 function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
   return ListWrapper.find(rs, (rr) => rr.mode !== RECORD_TYPE_DIRECTIVE_LIFECYCLE &&
-                                      rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
-                                      rr.contextIndex === r.contextIndex &&
-                                      ListWrapper.equals(rr.args, r.args));
+                                  rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
+                                  rr.contextIndex === r.contextIndex &&
+                                  ListWrapper.equals(rr.args, r.args));
 }
 
 function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, any>) {

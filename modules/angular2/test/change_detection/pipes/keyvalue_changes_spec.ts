@@ -58,14 +58,12 @@ export function main() {
         MapWrapper.set(m, 1, 20);
         changes.check(m);
 
-        changes.forEachChangedItem((record) =>
-                                   {
-                                     previous = record.previousValue;
-                                     current = record.currentValue;
-                                   })
+        changes.forEachChangedItem((record) => {
+          previous = record.previousValue;
+          current = record.currentValue;
+        });
 
-            expect(previous)
-                .toEqual(10);
+        expect(previous).toEqual(10);
         expect(current).toEqual(20);
       });
 
@@ -97,11 +95,8 @@ export function main() {
         MapWrapper.delete(m, 'b');
         changes.check(m);
         expect(changes.toString())
-            .toEqual(kvChangesAsString({
-              map: ['a', 'd'],
-              previous: ['a', 'b[BB->null]', 'd'],
-              removals: ['b[BB->null]']
-            }));
+            .toEqual(kvChangesAsString(
+                {map: ['a', 'd'], previous: ['a', 'b[BB->null]', 'd'], removals: ['b[BB->null]']}));
 
         MapWrapper.clear(m);
         changes.check(m);

@@ -132,5 +132,7 @@ function normalizeEvent(chromeEvent: StringMap<string, any>,
   return result;
 }
 
-var _BINDINGS = [bind(ChromeDriverExtension)
-                     .toFactory((driver) => new ChromeDriverExtension(driver), [WebDriverAdapter])];
+var _BINDINGS = [
+  bind(ChromeDriverExtension)
+      .toFactory((driver) => new ChromeDriverExtension(driver), [WebDriverAdapter])
+];

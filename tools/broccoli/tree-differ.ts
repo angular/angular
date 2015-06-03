@@ -129,7 +129,7 @@ class DirtyCheckingDiffResult {
   public startTime: number = Date.now();
   public endTime: number = null;
 
-  constructor(public label:string, public directoryName: string) {}
+  constructor(public label: string, public directoryName: string) {}
 
   toString() {
     return `${pad(this.label, 30)}, ${pad(this.endTime - this.startTime, 5)}ms, ` +

@@ -334,11 +334,10 @@ export class SpyObject {
 }
 
 function elementText(n) {
-  var hasNodes = (n) =>
-  {
+  var hasNodes = (n) => {
     var children = DOM.childNodes(n);
     return children && children.length > 0;
-  }
+  };
 
   if (n instanceof Array) {
     return n.map((nn) => elementText(nn)).join("");

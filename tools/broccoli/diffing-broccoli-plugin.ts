@@ -34,7 +34,7 @@ export interface DiffingBroccoliPlugin {
 
 
 type DiffingPluginWrapperFactory = (inputTrees: (BroccoliTree | BroccoliTree[]), options?) =>
-    BroccoliTree;
+                                       BroccoliTree;
 
 
 class DiffingPluginWrapper implements BroccoliTree {

@@ -68,9 +68,8 @@ export function main() {
       it('should return a promise when instantiating a sync binding ' +
              'with an async dependency',
          inject([AsyncTestCompleter], (async) => {
-           var injector =
-               Injector
-                   .resolveAndCreate([bind(UserList).toAsyncFactory(fetchUsers), UserController]);
+           var injector = Injector.resolveAndCreate(
+               [bind(UserList).toAsyncFactory(fetchUsers), UserController]);
 
            injector.asyncGet(UserController)
                .then(function(userController) {
@@ -145,9 +144,8 @@ export function main() {
 
       it('should not throw when instantiating a sync binding with a resolved async dependency',
          inject([AsyncTestCompleter], (async) => {
-           var injector =
-               Injector
-                   .resolveAndCreate([bind(UserList).toAsyncFactory(fetchUsers), UserController]);
+           var injector = Injector.resolveAndCreate(
+               [bind(UserList).toAsyncFactory(fetchUsers), UserController]);
 
            injector.asyncGet(UserList).then((_) => {
              expect(() => { injector.get(UserController); }).not.toThrow();

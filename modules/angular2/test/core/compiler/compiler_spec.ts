@@ -77,8 +77,7 @@ export function main() {
       }
 
       function captureDirective(directive): Promise<renderApi.DirectiveMetadata> {
-        return captureTemplate(
-                   new viewAnn.View({template: '<div></div>', directives: [directive]}))
+        return captureTemplate(new viewAnn.View({template: '<div></div>', directives: [directive]}))
             .then((renderTpl) => {
               expect(renderTpl.directives.length).toBe(1);
               return renderTpl.directives[0];
@@ -315,9 +314,11 @@ export function main() {
              createProtoView([createComponentElementBinder(directiveResolver, NestedComponent)]);
          var nestedProtoView = createProtoView();
          var compiler = createCompiler([
-           createRenderProtoView([createRenderViewportElementBinder(
-               createRenderProtoView([createRenderComponentElementBinder(0)],
-                                     renderApi.ProtoViewDto.EMBEDDED_VIEW_TYPE))]),
+           createRenderProtoView([
+             createRenderViewportElementBinder(
+                 createRenderProtoView([createRenderComponentElementBinder(0)],
+                                       renderApi.ProtoViewDto.EMBEDDED_VIEW_TYPE))
+           ]),
            createRenderProtoView()
          ],
                                        [[mainProtoView, viewportProtoView], [nestedProtoView]]);
@@ -336,11 +337,10 @@ export function main() {
          var expectedProtoView = createProtoView();
          var compiler = createCompiler([renderProtoView], [[expectedProtoView]]);
          compiler.compile(MainComponent)
-             .then((protoViewRef) =>
-                   {
-                     expect(internalProtoView(protoViewRef)).toBe(expectedProtoView);
-                     return compiler.compile(MainComponent);
-                   })
+             .then((protoViewRef) => {
+               expect(internalProtoView(protoViewRef)).toBe(expectedProtoView);
+               return compiler.compile(MainComponent);
+             })
              .then((protoViewRef) => {
                expect(internalProtoView(protoViewRef)).toBe(expectedProtoView);
                async.done();
