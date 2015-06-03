@@ -10,7 +10,7 @@ import ts2dart = require('ts2dart');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 class TSToDartTranspiler implements DiffingBroccoliPlugin {
-  static includeExtensions = ['.js', '.ts'];
+  static includeExtensions = ['.ts'];
 
   private basePath: string;
   private transpiler: ts2dart.Transpiler;
