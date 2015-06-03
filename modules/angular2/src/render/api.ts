@@ -237,9 +237,9 @@ export class Renderer {
   }
 
   /**
-   * Detaches a free host view's element from the DOM.
+   * Detaches a free view's element from the DOM.
    */
-  detachFreeHostView(parentHostViewRef: RenderViewRef, hostViewRef: RenderViewRef) {}
+  detachFreeView(view: RenderViewRef) {}
 
   /**
    * Creates a regular view out of the given ProtoView

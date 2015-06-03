@@ -29,11 +29,12 @@ import {
   isJsObject,
   global,
   stringify,
-  CONST
+  CONST,
+  CONST_EXPR
 } from 'angular2/src/facade/lang';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Injector, bind, Injectable, Binding, FORWARD_REF} from 'angular2/di';
+import {Injector, bind, Injectable, Binding, FORWARD_REF, OpaqueToken, Inject} from 'angular2/di';
 import {
   PipeRegistry,
   defaultPipeRegistry,
@@ -63,16 +64,20 @@ import {NgIf} from 'angular2/src/directives/ng_if';
 import {NgFor} from 'angular2/src/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
+import {ProtoViewRef, ViewRef} from 'angular2/src/core/compiler/view_ref';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 
+const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
+
 export function main() {
   describe('integration tests', function() {
     var ctx;
+
+    beforeEachBindings(() => [bind(ANCHOR_ELEMENT).toValue(el('<div></div>'))]);
 
     beforeEach(() => { ctx = new MyComp(); });
 
@@ -1124,6 +1129,28 @@ export function main() {
          });
        }));
 
+    it('should support free embedded views',
+       inject([TestBed, AsyncTestCompleter, ANCHOR_ELEMENT], (tb, async, anchorElement) => {
+         tb.overrideView(MyComp, new viewAnn.View({
+           template: '<div><div *some-impvp="ctxBoolProp">hello</div></div>',
+           directives: [SomeImperativeViewport]
+         }));
+         tb.createView(MyComp).then((view) => {
+           view.detectChanges();
+           expect(anchorElement).toHaveText('');
+
+           view.context.ctxBoolProp = true;
+           view.detectChanges();
+           expect(anchorElement).toHaveText('hello');
+
+           view.context.ctxBoolProp = false;
+           view.detectChanges();
+           expect(view.rootNodes).toHaveText('');
+
+           async.done();
+         });
+       }));
+
     // Disabled until a solution is found, refs:
     // - https://github.com/angular/angular/issues/776
     // - https://github.com/angular/angular/commit/81f3f32
@@ -1639,4 +1666,31 @@ class ChildConsumingEventBus {
   bus: EventBus;
 
   constructor(@Unbounded() bus: EventBus) { this.bus = bus; }
+}
+
+@Directive({selector: '[some-impvp]', properties: ['someImpvp']})
+@Injectable()
+class SomeImperativeViewport {
+  view: ViewRef;
+  anchor;
+  constructor(public element: ElementRef, public protoView: ProtoViewRef,
+              public viewManager: AppViewManager, public renderer: DomRenderer,
+              @Inject(ANCHOR_ELEMENT) anchor) {
+    this.view = null;
+    this.anchor = anchor;
+  }
+
+  set someImpvp(value: boolean) {
+    if (isPresent(this.view)) {
+      this.viewManager.destroyFreeEmbeddedView(this.element, this.view);
+      this.view = null;
+    }
+    if (value) {
+      this.view = this.viewManager.createFreeEmbeddedView(this.element, this.protoView);
+      var nodes = this.renderer.getRootNodes(this.view.render);
+      for (var i = 0; i < nodes.length; i++) {
+        DOM.appendChild(this.anchor, nodes[i]);
+      }
+    }
+  }
 }

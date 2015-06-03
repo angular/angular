@@ -40,17 +40,16 @@ export function main() {
              });
        }));
 
-    it('should create and destroy free host views',
+    it('should create and destroy free views',
        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
                var view = new TestView(tb.renderer.createView(hostProtoViewDto.render));
-               var hostElement = tb.renderer.getHostElement(view.viewRef);
+               var hostElement = tb.renderer.getRootNodes(view.viewRef)[0];
                DOM.appendChild(tb.rootEl, hostElement);
 
-               tb.renderer.detachFreeHostView(null, view.viewRef);
+               tb.renderer.detachFreeView(view.viewRef);
                expect(DOM.parentElement(hostElement)).toBeFalsy();
-
                async.done();
              });
        }));

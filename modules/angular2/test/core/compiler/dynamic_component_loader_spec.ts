@@ -257,7 +257,7 @@ class ImperativeViewComponentUsingNgComponent {
     renderer.setComponentViewRootNodes(shadowViewRef.render, [div]);
     this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, null)
                     .then((componentRef) => {
-                      var element = renderer.getHostElement(componentRef.hostView.render);
+                      var element = renderer.getRootNodes(componentRef.hostView.render)[0];
                       DOM.appendChild(div, element);
                       return componentRef;
                     });

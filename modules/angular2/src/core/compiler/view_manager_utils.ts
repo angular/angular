@@ -110,6 +110,28 @@ export class AppViewManagerUtils {
     ListWrapper.remove(parentView.freeHostViews, hostView);
   }
 
+  attachAndHydrateFreeEmbeddedView(parentView: viewModule.AppView, boundElementIndex: number,
+                                   view: viewModule.AppView, injector: Injector = null) {
+    parentView.changeDetector.addChild(view.changeDetector);
+    var viewContainer = this._getOrCreateViewContainer(parentView, boundElementIndex);
+    ListWrapper.push(viewContainer.freeViews, view);
+    var elementInjector = parentView.elementInjectors[boundElementIndex];
+    for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
+      view.rootElementInjectors[i].link(elementInjector);
+    }
+    this._hydrateView(view, injector, elementInjector, parentView.context, parentView.locals);
+  }
+
+  detachFreeEmbeddedView(parentView: viewModule.AppView, boundElementIndex: number,
+                         view: viewModule.AppView) {
+    var viewContainer = parentView.viewContainers[boundElementIndex];
+    view.changeDetector.remove();
+    ListWrapper.remove(viewContainer.freeViews, view);
+    for (var i = 0; i < view.rootElementInjectors.length; ++i) {
+      view.rootElementInjectors[i].unlink();
+    }
+  }
+
   attachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                         contextView: viewModule.AppView, contextBoundElementIndex: number,
                         atIndex: number, view: viewModule.AppView) {
@@ -118,11 +140,7 @@ export class AppViewManagerUtils {
       contextBoundElementIndex = boundElementIndex;
     }
     parentView.changeDetector.addChild(view.changeDetector);
-    var viewContainer = parentView.viewContainers[boundElementIndex];
-    if (isBlank(viewContainer)) {
-      viewContainer = new viewModule.AppViewContainer();
-      parentView.viewContainers[boundElementIndex] = viewContainer;
-    }
+    var viewContainer = this._getOrCreateViewContainer(parentView, boundElementIndex);
     ListWrapper.insert(viewContainer.views, atIndex, view);
     var sibling;
     if (atIndex == 0) {
@@ -206,6 +224,15 @@ export class AppViewManagerUtils {
       }
     }
     view.changeDetector.hydrate(view.context, view.locals, view);
+  }
+
+  _getOrCreateViewContainer(parentView: viewModule.AppView, boundElementIndex: number) {
+    var viewContainer = parentView.viewContainers[boundElementIndex];
+    if (isBlank(viewContainer)) {
+      viewContainer = new viewModule.AppViewContainer();
+      parentView.viewContainers[boundElementIndex] = viewContainer;
+    }
+    return viewContainer;
   }
 
   _setUpEventEmitters(view: viewModule.AppView, elementInjector: eli.ElementInjector,

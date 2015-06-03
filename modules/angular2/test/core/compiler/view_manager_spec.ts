@@ -377,8 +377,7 @@ export function main() {
 
         it('should detach the render view', () => {
           manager.destroyFreeHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
-          expect(renderer.spy('detachFreeHostView'))
-              .toHaveBeenCalledWith(parentView.render, hostRenderViewRef);
+          expect(renderer.spy('detachFreeView')).toHaveBeenCalledWith(hostRenderViewRef);
         });
 
         it('should return the view to the pool', () => {
@@ -399,6 +398,101 @@ export function main() {
       describe('recursively destroy inPlaceHostViews', () => {
                                                            // TODO
                                                        });
+
+    });
+
+    describe('createFreeEmbeddedView', () => {
+
+      // Note: We don't add tests for recursion or viewpool here as we assume that
+      // this is using the same mechanism as the other methods...
+
+      describe('basic functionality', () => {
+        var parentView, childProtoView;
+        beforeEach(() => {
+          parentView = createView(createProtoView([createEmptyElBinder()]));
+          childProtoView = createProtoView();
+        });
+
+        it('should create the view', () => {
+          expect(internalView(manager.createFreeEmbeddedView(elementRef(wrapView(parentView), 0),
+                                                             wrapPv(childProtoView), null)))
+              .toBe(createdViews[0]);
+          expect(createdViews[0].proto).toBe(childProtoView);
+          expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(createdViews[0]);
+        });
+
+        it('should attachAndHydrate the view', () => {
+          var injector = new Injector([], null, false);
+          manager.createFreeEmbeddedView(elementRef(wrapView(parentView), 0),
+                                         wrapPv(childProtoView), injector);
+          expect(utils.spy('attachAndHydrateFreeEmbeddedView'))
+              .toHaveBeenCalledWith(parentView, 0, createdViews[0], injector);
+          expect(renderer.spy('hydrateView')).toHaveBeenCalledWith(createdViews[0].render);
+        });
+
+        it('should create and set the render view', () => {
+          manager.createFreeEmbeddedView(elementRef(wrapView(parentView), 0),
+                                         wrapPv(childProtoView), null);
+          expect(renderer.spy('createView')).toHaveBeenCalledWith(childProtoView.render);
+          expect(createdViews[0].render).toBe(createdRenderViews[0]);
+        });
+
+        it('should set the event dispatcher', () => {
+          manager.createFreeEmbeddedView(elementRef(wrapView(parentView), 0),
+                                         wrapPv(childProtoView), null);
+          var cmpView = createdViews[0];
+          expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(cmpView.render, cmpView);
+        });
+      });
+
+    });
+
+
+    describe('destroyFreeEmbeddedView', () => {
+      describe('basic functionality', () => {
+        var parentView, childProtoView, childView;
+        beforeEach(() => {
+          parentView = createView(createProtoView([createEmptyElBinder()]));
+          childProtoView = createProtoView();
+          childView = internalView(manager.createFreeEmbeddedView(
+              elementRef(wrapView(parentView), 0), wrapPv(childProtoView), null));
+        });
+
+        it('should detach', () => {
+          manager.destroyFreeEmbeddedView(elementRef(wrapView(parentView), 0), wrapView(childView));
+          expect(utils.spy('detachFreeEmbeddedView'))
+              .toHaveBeenCalledWith(parentView, 0, childView);
+        });
+
+        it('should dehydrate', () => {
+          manager.destroyFreeEmbeddedView(elementRef(wrapView(parentView), 0), wrapView(childView));
+          expect(utils.spy('dehydrateView')).toHaveBeenCalledWith(childView);
+          expect(renderer.spy('dehydrateView')).toHaveBeenCalledWith(childView.render);
+        });
+
+        it('should detach the render view', () => {
+          manager.destroyFreeEmbeddedView(elementRef(wrapView(parentView), 0), wrapView(childView));
+          expect(renderer.spy('detachFreeView')).toHaveBeenCalledWith(childView.render);
+        });
+
+        it('should return the view to the pool', () => {
+          manager.destroyFreeEmbeddedView(elementRef(wrapView(parentView), 0), wrapView(childView));
+          expect(viewPool.spy('returnView')).toHaveBeenCalledWith(childView);
+          expect(renderer.spy('destroyView')).not.toHaveBeenCalled();
+        });
+
+        it('should destroy the view if the pool is full', () => {
+          viewPool.spy('returnView').andReturn(false);
+          manager.destroyFreeEmbeddedView(elementRef(wrapView(parentView), 0), wrapView(childView));
+          expect(renderer.spy('destroyView')).toHaveBeenCalledWith(childView.render);
+          expect(viewListener.spy('viewDestroyed')).toHaveBeenCalledWith(childView);
+        });
+
+      });
+
+      describe('recursively destroyFreeEmbeddedView', () => {
+                                                          // TODO
+                                                      });
 
     });
 

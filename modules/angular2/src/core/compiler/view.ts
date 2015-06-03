@@ -23,12 +23,9 @@ import * as renderApi from 'angular2/src/render/api';
 import {EventDispatcher} from 'angular2/src/render/api';
 
 export class AppViewContainer {
-  views: List<AppView>;
-
-  constructor() {
-    // The order in this list matches the DOM order.
-    this.views = [];
-  }
+  // The order in this list matches the DOM order.
+  views: List<AppView> = [];
+  freeViews: List<AppView> = [];
 }
 
 /**

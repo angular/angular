@@ -47,9 +47,9 @@ export class DomRenderer extends Renderer {
     return new DomViewRef(this._createView(hostProtoView, element));
   }
 
-  detachFreeHostView(parentHostViewRef: RenderViewRef, hostViewRef: RenderViewRef) {
-    var hostView = resolveInternalDomView(hostViewRef);
-    this._removeViewNodes(hostView);
+  detachFreeView(viewRef: RenderViewRef) {
+    var view = resolveInternalDomView(viewRef);
+    this._removeViewNodes(view);
   }
 
   createView(protoViewRef: RenderProtoViewRef): RenderViewRef {
@@ -83,9 +83,8 @@ export class DomRenderer extends Renderer {
     this._moveViewNodesIntoParent(componentView.shadowRoot, componentView);
   }
 
-  getHostElement(hostViewRef: RenderViewRef) {
-    var hostView = resolveInternalDomView(hostViewRef);
-    return hostView.boundElements[0];
+  getRootNodes(viewRef: RenderViewRef): List</*node*/ any> {
+    return resolveInternalDomView(viewRef).rootNodes;
   }
 
   detachComponentView(hostViewRef: RenderViewRef, boundElementIndex: number,

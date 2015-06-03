@@ -115,6 +115,24 @@ export class AppViewManager {
     this._destroyFreeHostView(parentView, hostView);
   }
 
+  createFreeEmbeddedView(location: ElementRef, protoViewRef: ProtoViewRef,
+                         injector: Injector = null): ViewRef {
+    var protoView = internalProtoView(protoViewRef);
+    var parentView = internalView(location.parentView);
+    var boundElementIndex = location.boundElementIndex;
+
+    var view = this._createPooledView(protoView);
+    this._utils.attachAndHydrateFreeEmbeddedView(parentView, boundElementIndex, view, injector);
+    this._viewHydrateRecurse(view);
+    return new ViewRef(view);
+  }
+
+  destroyFreeEmbeddedView(location: ElementRef, viewRef: ViewRef) {
+    var parentView = internalView(location.parentView);
+    var boundElementIndex = location.boundElementIndex;
+    this._destroyFreeEmbeddedView(parentView, boundElementIndex, internalView(viewRef));
+  }
+
   createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         protoViewRef: ProtoViewRef, context: ElementRef = null,
                         injector: Injector = null): ViewRef {
@@ -225,9 +243,16 @@ export class AppViewManager {
 
   _destroyFreeHostView(parentView, hostView) {
     this._viewDehydrateRecurse(hostView, true);
-    this._renderer.detachFreeHostView(parentView.render, hostView.render);
+    this._renderer.detachFreeView(hostView.render);
     this._utils.detachFreeHostView(parentView, hostView);
     this._destroyPooledView(hostView);
+  }
+
+  _destroyFreeEmbeddedView(parentView, boundElementIndex, view) {
+    this._viewDehydrateRecurse(view, false);
+    this._renderer.detachFreeView(view.render);
+    this._utils.detachFreeEmbeddedView(parentView, boundElementIndex, view);
+    this._destroyPooledView(view);
   }
 
   _viewHydrateRecurse(view: viewModule.AppView) {
@@ -259,6 +284,9 @@ export class AppViewManager {
       if (isPresent(vc)) {
         for (var j = vc.views.length - 1; j >= 0; j--) {
           this._destroyViewInContainer(view, i, j);
+        }
+        for (var j = vc.freeViews.length - 1; j >= 0; j--) {
+          this._destroyFreeEmbeddedView(view, i, j);
         }
       }
     }
