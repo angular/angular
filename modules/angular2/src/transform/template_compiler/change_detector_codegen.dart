@@ -303,12 +303,21 @@ class _CodegenState {
         rhs = '$context.${r.name}';
         break;
 
+      case RECORD_TYPE_SAFE_PROPERTY:
+        rhs = '${_UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}';
+        break;
+
       case RECORD_TYPE_LOCAL:
         rhs = '$_LOCALS_ACCESSOR.get("${r.name}")';
         break;
 
       case RECORD_TYPE_INVOKE_METHOD:
         rhs = '$context.${r.name}($argString)';
+        break;
+
+      case RECORD_TYPE_SAFE_INVOKE_METHOD:
+        rhs = '${_UTIL}.isValueBlank(${context}) '
+            '? null : ${context}.${r.name}(${argString})';
         break;
 
       case RECORD_TYPE_INVOKE_CLOSURE:
