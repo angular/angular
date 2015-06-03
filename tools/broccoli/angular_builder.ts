@@ -85,7 +85,6 @@ export class AngularBuilder {
 
 
   private rebuild(builder) {
-    return builder.build()
-        .then((result) => { printSlowTrees(result.graph); });
+    return builder.build().then((result) => { printSlowTrees(result.graph); });
   }
 }
