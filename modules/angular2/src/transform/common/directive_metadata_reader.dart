@@ -66,8 +66,7 @@ class _DirectiveMetadataVisitor extends Object
         callOnChange: false,
         callOnCheck: false,
         callOnInit: false,
-        callOnAllChangesDone: false
-    );
+        callOnAllChangesDone: false);
   }
 
   @override

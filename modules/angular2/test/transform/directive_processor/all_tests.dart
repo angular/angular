@@ -42,6 +42,15 @@ void allTests() {
 
   _testNgDeps('should inline `templateUrl`s expressed as adjacent strings.',
       'split_url_expression_files/hello.dart');
+
+  _testNgDeps('should report implemented types as `interfaces`.',
+      'interfaces_files/soup.dart');
+
+  _testNgDeps('should not include transitively implemented types.',
+      'interface_chain_files/soup.dart');
+
+  _testNgDeps('should not include superclasses in `interfaces`.',
+      'superclass_files/soup.dart');
 }
 
 void _testNgDeps(String name, String inputPath,

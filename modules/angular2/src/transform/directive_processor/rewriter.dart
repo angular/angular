@@ -192,6 +192,15 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     }
     writer.print(''', 'annotations': ''');
     node.accept(_metaVisitor);
+    if (node.implementsClause != null &&
+        node.implementsClause.interfaces != null &&
+        node.implementsClause.interfaces.isNotEmpty) {
+      writer.print(''', 'interfaces': const [''');
+      node.implementsClause.interfaces.forEach((interface) {
+        writer.print('${interface.name}');
+      });
+      writer.print(']');
+    }
     writer.print('})');
     return null;
   }
