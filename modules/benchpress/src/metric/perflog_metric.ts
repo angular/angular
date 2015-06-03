@@ -168,7 +168,8 @@ export class PerflogMetric extends Metric {
     var gcTimeInScript = 0;
     var renderTimeInScript = 0;
 
-    var intervalStarts = {};
+    var intervalStarts: StringMap<string, any> = {};
+    var intervalStartCount: StringMap<string, number> = {};
     events.forEach((event) => {
       var ph = event['ph'];
       var name = event['name'];
@@ -187,33 +188,41 @@ export class PerflogMetric extends Metric {
       if (isPresent(markStartEvent) && isBlank(markEndEvent) &&
           event['pid'] === markStartEvent['pid']) {
         if (StringWrapper.equals(ph, 'B') || StringWrapper.equals(ph, 'b')) {
-          intervalStarts[name] = event;
+          if (isBlank(intervalStarts[name])) {
+            intervalStartCount[name] = 1;
+            intervalStarts[name] = event;
+          } else {
+            intervalStartCount[name]++;
+          }
         } else if ((StringWrapper.equals(ph, 'E') || StringWrapper.equals(ph, 'e')) &&
                    isPresent(intervalStarts[name])) {
-          var startEvent = intervalStarts[name];
-          var duration = (event['ts'] - startEvent['ts']);
-          intervalStarts[name] = null;
-          if (StringWrapper.equals(name, 'gc')) {
-            result['gcTime'] += duration;
-            var amount =
-                (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
-            result['gcAmount'] += amount;
-            var majorGc = event['args']['majorGc'];
-            if (isPresent(majorGc) && majorGc) {
-              result['majorGcTime'] += duration;
+          intervalStartCount[name]--;
+          if (intervalStartCount[name] === 0) {
+            var startEvent = intervalStarts[name];
+            var duration = (event['ts'] - startEvent['ts']);
+            intervalStarts[name] = null;
+            if (StringWrapper.equals(name, 'gc')) {
+              result['gcTime'] += duration;
+              var amount =
+                  (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
+              result['gcAmount'] += amount;
+              var majorGc = event['args']['majorGc'];
+              if (isPresent(majorGc) && majorGc) {
+                result['majorGcTime'] += duration;
+              }
+              if (isPresent(intervalStarts['script'])) {
+                gcTimeInScript += duration;
+              }
+            } else if (StringWrapper.equals(name, 'render')) {
+              result['renderTime'] += duration;
+              if (isPresent(intervalStarts['script'])) {
+                renderTimeInScript += duration;
+              }
+            } else if (StringWrapper.equals(name, 'script')) {
+              result['scriptTime'] += duration;
+            } else if (isPresent(this._microMetrics[name])) {
+              result[name] += duration / microIterations;
             }
-            if (isPresent(intervalStarts['script'])) {
-              gcTimeInScript += duration;
-            }
-          } else if (StringWrapper.equals(name, 'render')) {
-            result['renderTime'] += duration;
-            if (isPresent(intervalStarts['script'])) {
-              renderTimeInScript += duration;
-            }
-          } else if (StringWrapper.equals(name, 'script')) {
-            result['scriptTime'] += duration;
-          } else if (isPresent(this._microMetrics[name])) {
-            result[name] += duration / microIterations;
           }
         }
       }

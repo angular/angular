@@ -343,6 +343,19 @@ export function main() {
                });
          }));
 
+      it('should ignore nested intervals', inject([AsyncTestCompleter], (async) => {
+           aggregate([
+             eventFactory.start('script', 0),
+             eventFactory.start('script', 5),
+             eventFactory.end('script', 10),
+             eventFactory.end('script', 17)
+           ])
+               .then((data) => {
+                 expect(data['scriptTime']).toBe(17);
+                 async.done();
+               });
+         }));
+
       it('should ignore events from different processed as the start mark',
          inject([AsyncTestCompleter], (async) => {
            var otherProcessEventFactory = new TraceEventFactory('timeline', 'pid1');
