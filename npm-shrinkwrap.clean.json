@@ -8807,7 +8807,7 @@
       }
     },
     "traceur": {
-      "version": "0.0.87",
+      "version": "0.0.90",
       "dependencies": {
         "commander": {
           "version": "2.6.0"

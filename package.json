@@ -35,7 +35,7 @@
     "rx": "2.5.1",
     "selenium-webdriver": "2.45.1",
     "systemjs": "^0.9.1",
-    "traceur": "0.0.87",
+    "traceur": "0.0.90",
     "which": "~1",
     "zone.js": "0.5.0"
   },
