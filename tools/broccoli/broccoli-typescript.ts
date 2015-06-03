@@ -50,7 +50,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     let pathsToEmit = [];
     let pathsWithErrors = [];
 
-    treeDiff.changedPaths
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((tsFilePath) => {
           if (!this.fileRegistry[tsFilePath]) {
             this.fileRegistry[tsFilePath] = {version: 0};

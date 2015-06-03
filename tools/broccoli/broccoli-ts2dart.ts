@@ -1,4 +1,3 @@
-/// <reference path="./broccoli-writer.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 /// <reference path="./ts2dart.d.ts" />
@@ -23,7 +22,7 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
   rebuild(treeDiff: DiffResult) {
     let toEmit = [];
     let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
-    treeDiff.changedPaths.forEach((changedPath) => {
+    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((changedPath) => {
       let inputFilePath = path.resolve(this.inputPath, changedPath);
 
       // Ignore files which don't need to be transpiled to Dart

@@ -11,9 +11,9 @@ describe('TreeDiffer', () => {
   afterEach(() => mockfs.restore());
 
 
-  describe('diff of changed files', () => {
+  describe('diff of added and changed files', () => {
 
-    it('should list all files but no directories during the first diff', () => {
+    it('should list all files (but no directories) during the first diff', () => {
       let testDir = {
         'dir1': {
           'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
@@ -30,9 +30,10 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
 
+      expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
     });
 
@@ -53,11 +54,13 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).not.toEqual([]);
+      expect(diffResult.addedPaths).not.toEqual([]);
+      expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
     });
@@ -80,7 +83,7 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
 
       // change two files
@@ -127,7 +130,7 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
 
       // change two files
@@ -139,8 +142,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt']);
-
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -156,6 +159,7 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       diffResult = differ.diffTree();
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual(['file-1.txt']);
 
@@ -172,18 +176,19 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-1.txt']);
+      expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
     });
 
 
     it("should throw an error if an extension isn't prefixed with doc", () => {
       // includeExtensions
-      expect(() => new TreeDiffer('testLabel', 'dir1', ['js']))
+      expect(() => new TreeDiffer('testLabel', 'dir1', {includeExtensions: ['js']}))
           .toThrowError("Extension must begin with '.'. Was: 'js'");
 
       // excludeExtentions
-      expect(() => new TreeDiffer('testLabel', 'dir1', [], ['js']))
+      expect(() => new TreeDiffer('testLabel', 'dir1', {excludeExtensions: ['js']}))
           .toThrowError("Extension must begin with '.'. Was: 'js'");
     });
 
@@ -201,11 +206,13 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', ['.js', '.coffee']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {includeExtensions: ['.js', '.coffee']});
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).toEqual(['file-1.js', 'file-3.coffee']);
+      expect(diffResult.addedPaths).toEqual(['file-1.js', 'file-3.coffee']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
 
       // change two files
       testDir['dir1']['file-1.js'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
@@ -217,8 +224,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual(['file-1.js', 'file-3.coffee']);
-
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -247,11 +254,11 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('testLabel', 'dir1', ['.ts', '.cs'], ['.d.ts', '.d.cs']);
+      let differ = new TreeDiffer('testLabel', 'dir1', {includeExtensions: ['.ts', '.cs'], excludeExtension: ['.d.ts', '.d.cs']});
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths)
+      expect(diffResult.addedPaths)
           .toEqual(['file-1.cs', 'file-1.ts', 'file-1d.cs', 'file-3.ts']);
 
       // change two files
@@ -266,8 +273,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
+      expect(diffResult.addedPaths).toEqual([]);
       expect(diffResult.changedPaths).toEqual(['file-1.cs', 'file-1.ts', 'file-3.ts']);
-
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -281,7 +288,7 @@ describe('TreeDiffer', () => {
 
   describe('diff of new files', () => {
 
-    it('should detect file additions and report them as changed files', () => {
+    it('should detect file additions', () => {
       let testDir = {
         'dir1':
             {'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})}
@@ -295,7 +302,9 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       let diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-2.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-2.txt']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
     });
 
 
@@ -314,7 +323,8 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       let diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'file-2.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-2.txt']);
+      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
     });
   });
 
@@ -359,8 +369,120 @@ describe('TreeDiffer', () => {
       mockfs(testDir);
 
       let diffResult = differ.diffTree();
-      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'file-3.txt']);
+      expect(diffResult.addedPaths).toEqual(['file-3.txt']);
+      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
       expect(diffResult.removedPaths).toEqual(['file-2.txt']);
+    });
+  });
+
+
+  describe('include / exclude filters', function() {
+
+    it('should take include globs into account', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', {include: ['**/file-1.*']});
+      let diffResult = differ.diffTree();
+      expect(diffResult.addedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt', 'subdir-1/file-1.2.js']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
+    it('should take exclude globs into account', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', {exclude: ['**/file-1.*']});
+      let diffResult = differ.diffTree();
+      expect(diffResult.addedPaths).toEqual(['file-2.js']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
+    it('should consider excludes globs as more important that includes globs', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', {include: ['**/*.js'], exclude: ['**/file-2.*']});
+      let diffResult = differ.diffTree();
+      expect(diffResult.addedPaths).toEqual(['subdir-1/file-1.2.js']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+  });
+
+
+  describe('files filter', function() {
+
+    it('should include only paths specified via files', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', {files: ['subdir-1/file-1.2.js']});
+      let diffResult = differ.diffTree();
+      expect(diffResult.addedPaths).toEqual(['subdir-1/file-1.2.js']);
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
+    it('should throw if files filter is being used along with include/exclude globs', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      expect(() => {
+        new TreeDiffer('testLabel', 'dir1', {include: ['**/.js'], exclude: ['**/file-1.*'], files:
+          ['subdir-1/file-1.2.js']});
+      }).toThrowError(
+        "Mixing 'files' filter with 'includes' or 'excludes' filters is not supported");
     });
   });
 });
