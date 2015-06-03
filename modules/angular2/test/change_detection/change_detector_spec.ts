@@ -72,12 +72,11 @@ export function main() {
         }
       }
 
-      function _bindConstValue(expression: string) {
+      function _bindSimpleValue(expression: string, context = null) {
         var dispatcher = new TestDispatcher();
         var protoCd = _getProtoChangeDetector(getDefinition(expression, 'propName'));
         var cd = protoCd.instantiate(dispatcher);
 
-        var context = null;
         var locals = null;
         cd.hydrate(context, locals, null);
         cd.detectChanges();
@@ -85,76 +84,153 @@ export function main() {
       }
 
       it('should support literals',
-         () => { expect(_bindConstValue('10')).toEqual(['propName=10']); });
+         () => { expect(_bindSimpleValue('10')).toEqual(['propName=10']); });
+
       it('should strip quotes from literals',
-         () => { expect(_bindConstValue('"str"')).toEqual(['propName=str']); });
+         () => { expect(_bindSimpleValue('"str"')).toEqual(['propName=str']); });
+
       it('should support newlines in literals',
-         () => { expect(_bindConstValue('"a\n\nb"')).toEqual(['propName=a\n\nb']); });
+         () => { expect(_bindSimpleValue('"a\n\nb"')).toEqual(['propName=a\n\nb']); });
+
       it('should support + operations',
-         () => { expect(_bindConstValue('10 + 2')).toEqual(['propName=12']); });
+         () => { expect(_bindSimpleValue('10 + 2')).toEqual(['propName=12']); });
+
       it('should support - operations',
-         () => { expect(_bindConstValue('10 - 2')).toEqual(['propName=8']); });
+         () => { expect(_bindSimpleValue('10 - 2')).toEqual(['propName=8']); });
+
       it('should support * operations',
-         () => { expect(_bindConstValue('10 * 2')).toEqual(['propName=20']); });
+         () => { expect(_bindSimpleValue('10 * 2')).toEqual(['propName=20']); });
+
       it('should support / operations', () => {
-        expect(_bindConstValue('10 / 2')).toEqual([`propName=${5.0}`]);
+        expect(_bindSimpleValue('10 / 2')).toEqual([`propName=${5.0}`]);
       });  // dart exp=5.0, js exp=5
+
       it('should support % operations',
-         () => { expect(_bindConstValue('11 % 2')).toEqual(['propName=1']); });
+         () => { expect(_bindSimpleValue('11 % 2')).toEqual(['propName=1']); });
+
       it('should support == operations on identical',
-         () => { expect(_bindConstValue('1 == 1')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('1 == 1')).toEqual(['propName=true']); });
+
       it('should support != operations',
-         () => { expect(_bindConstValue('1 != 1')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('1 != 1')).toEqual(['propName=false']); });
+
       it('should support == operations on coerceible', () => {
         var expectedValue = IS_DARTIUM ? 'false' : 'true';
-        expect(_bindConstValue('1 == true')).toEqual([`propName=${expectedValue}`]);
+        expect(_bindSimpleValue('1 == true')).toEqual([`propName=${expectedValue}`]);
       });
+
       it('should support === operations on identical',
-         () => { expect(_bindConstValue('1 === 1')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('1 === 1')).toEqual(['propName=true']); });
+
       it('should support !== operations',
-         () => { expect(_bindConstValue('1 !== 1')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('1 !== 1')).toEqual(['propName=false']); });
+
       it('should support === operations on coerceible',
-         () => { expect(_bindConstValue('1 === true')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('1 === true')).toEqual(['propName=false']); });
+
       it('should support true < operations',
-         () => { expect(_bindConstValue('1 < 2')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('1 < 2')).toEqual(['propName=true']); });
+
       it('should support false < operations',
-         () => { expect(_bindConstValue('2 < 1')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('2 < 1')).toEqual(['propName=false']); });
+
       it('should support false > operations',
-         () => { expect(_bindConstValue('1 > 2')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('1 > 2')).toEqual(['propName=false']); });
+
       it('should support true > operations',
-         () => { expect(_bindConstValue('2 > 1')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('2 > 1')).toEqual(['propName=true']); });
+
       it('should support true <= operations',
-         () => { expect(_bindConstValue('1 <= 2')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('1 <= 2')).toEqual(['propName=true']); });
+
       it('should support equal <= operations',
-         () => { expect(_bindConstValue('2 <= 2')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('2 <= 2')).toEqual(['propName=true']); });
+
       it('should support false <= operations',
-         () => { expect(_bindConstValue('2 <= 1')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('2 <= 1')).toEqual(['propName=false']); });
+
       it('should support true >= operations',
-         () => { expect(_bindConstValue('2 >= 1')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('2 >= 1')).toEqual(['propName=true']); });
+
       it('should support equal >= operations',
-         () => { expect(_bindConstValue('2 >= 2')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('2 >= 2')).toEqual(['propName=true']); });
+
       it('should support false >= operations',
-         () => { expect(_bindConstValue('1 >= 2')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('1 >= 2')).toEqual(['propName=false']); });
+
       it('should support true && operations',
-         () => { expect(_bindConstValue('true && true')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('true && true')).toEqual(['propName=true']); });
+
       it('should support false && operations',
-         () => { expect(_bindConstValue('true && false')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('true && false')).toEqual(['propName=false']); });
+
       it('should support true || operations',
-         () => { expect(_bindConstValue('true || false')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('true || false')).toEqual(['propName=true']); });
+
       it('should support false || operations',
-         () => { expect(_bindConstValue('false || false')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('false || false')).toEqual(['propName=false']); });
+
       it('should support negate',
-         () => { expect(_bindConstValue('!true')).toEqual(['propName=false']); });
+         () => { expect(_bindSimpleValue('!true')).toEqual(['propName=false']); });
+
       it('should support double negate',
-         () => { expect(_bindConstValue('!!true')).toEqual(['propName=true']); });
+         () => { expect(_bindSimpleValue('!!true')).toEqual(['propName=true']); });
+
       it('should support true conditionals',
-         () => { expect(_bindConstValue('1 < 2 ? 1 : 2')).toEqual(['propName=1']); });
+         () => { expect(_bindSimpleValue('1 < 2 ? 1 : 2')).toEqual(['propName=1']); });
+
       it('should support false conditionals',
-         () => { expect(_bindConstValue('1 > 2 ? 1 : 2')).toEqual(['propName=2']); });
+         () => { expect(_bindSimpleValue('1 > 2 ? 1 : 2')).toEqual(['propName=2']); });
+
       it('should support keyed access to a list item',
-         () => { expect(_bindConstValue('["foo", "bar"][0]')).toEqual(['propName=foo']); });
+         () => { expect(_bindSimpleValue('["foo", "bar"][0]')).toEqual(['propName=foo']); });
+
       it('should support keyed access to a map item',
-         () => { expect(_bindConstValue('{"foo": "bar"}["foo"]')).toEqual(['propName=bar']); });
+         () => { expect(_bindSimpleValue('{"foo": "bar"}["foo"]')).toEqual(['propName=bar']); });
+
+      it('should report all changes on the first run including uninitialized values', () => {
+        expect(_bindSimpleValue('value', new Uninitialized())).toEqual(['propName=null']);
+      });
+
+      it('should report all changes on the first run including null values', () => {
+        var td = new TestData(null);
+        expect(_bindSimpleValue('a', td)).toEqual(['propName=null']);
+      });
+
+      it('should support simple chained property access', () => {
+        var address = new Address('Grenoble');
+        var person = new Person('Victor', address);
+
+        expect(_bindSimpleValue('address.city', person)).toEqual(['propName=Grenoble']);
+      });
+
+      it('should support the safe navigation operator', () => {
+        var person = new Person('Victor', null);
+
+        expect(_bindSimpleValue('address?.city', person)).toEqual(['propName=null']);
+        expect(_bindSimpleValue('address?.toString()', person)).toEqual(['propName=null']);
+
+        person.address = new Address('MTV');
+
+        expect(_bindSimpleValue('address?.city', person)).toEqual(['propName=MTV']);
+        expect(_bindSimpleValue('address?.toString()', person)).toEqual(['propName=MTV']);
+      });
+
+      it("should support method calls", () => {
+        var person = new Person('Victor');
+        expect(_bindSimpleValue('sayHi("Jim")', person)).toEqual(['propName=Hi, Jim']);
+      });
+
+      it("should support function calls", () => {
+        var td = new TestData(() => (a) => a);
+        expect(_bindSimpleValue('a()(99)', td)).toEqual(['propName=99']);
+      });
+
+      it("should support chained method calls", () => {
+        var person = new Person('Victor');
+        var td = new TestData(person);
+        expect(_bindSimpleValue('a.sayHi("Jim")', td)).toEqual(['propName=Hi, Jim']);
+      });
     });
   });
 
@@ -246,51 +322,6 @@ export function main() {
               person.name = "Misko";
               cd.detectChanges();
               expect(dispatcher.log).toEqual(['name=Misko']);
-            });
-
-            it('should report all changes on the first run including uninitialized values', () => {
-              expect(executeWatch('value', 'value', new Uninitialized())).toEqual(['value=null']);
-            });
-
-            it('should report all changes on the first run including null values', () => {
-              var td = new TestData(null);
-              expect(executeWatch('a', 'a', td)).toEqual(['a=null']);
-            });
-
-            it('should support simple chained property access', () => {
-              var address = new Address('Grenoble');
-              var person = new Person('Victor', address);
-
-              expect(executeWatch('address.city', 'address.city', person))
-                  .toEqual(['address.city=Grenoble']);
-            });
-
-            it('should support the safe navigation operator', () => {
-              var person = new Person('Victor', null);
-
-              expect(executeWatch('city', 'address?.city', person)).toEqual(['city=null']);
-              expect(executeWatch('city', 'address?.toString()', person)).toEqual(['city=null']);
-
-              person.address = new Address('MTV');
-
-              expect(executeWatch('city', 'address?.city', person)).toEqual(['city=MTV']);
-              expect(executeWatch('city', 'address?.toString()', person)).toEqual(['city=MTV']);
-            });
-
-            it("should support method calls", () => {
-              var person = new Person('Victor');
-              expect(executeWatch('m', 'sayHi("Jim")', person)).toEqual(['m=Hi, Jim']);
-            });
-
-            it("should support function calls", () => {
-              var td = new TestData(() => (a) => a);
-              expect(executeWatch('value', 'a()(99)', td)).toEqual(['value=99']);
-            });
-
-            it("should support chained method calls", () => {
-              var person = new Person('Victor');
-              var td = new TestData(person);
-              expect(executeWatch('m', 'a.sayHi("Jim")', td)).toEqual(['m=Hi, Jim']);
             });
 
             it("should support literal array", () => {

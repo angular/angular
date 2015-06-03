@@ -1,10 +1,13 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {BindingRecord, ChangeDetectorDefinition, Lexer, Parser} from 'angular2/change_detection';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 var _parser = new Parser(new Lexer());
 
 function _createChangeDetectorDefinition(id: string, propName: string,
                                          expression: string): ChangeDetectorDefinition {
+  reflector.reflectionCapabilities = new ReflectionCapabilities();
   var ast = _parser.parseBinding(expression, 'location');
   var bindingRecords = [BindingRecord.createForElement(ast, 0, propName)];
 
@@ -68,5 +71,13 @@ var _availableDefinitions = [
   '1 < 2 ? 1 : 2',
   '1 > 2 ? 1 : 2',
   '["foo", "bar"][0]',
-  '{"foo": "bar"}["foo"]'
+  '{"foo": "bar"}["foo"]',
+  'value',
+  'a',
+  'address.city',
+  'address?.city',
+  'address?.toString()',
+  'sayHi("Jim")',
+  'a()(99)',
+  'a.sayHi("Jim")'
 ];
