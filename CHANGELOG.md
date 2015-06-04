@@ -1,3 +1,144 @@
+<a name"2.0.0-alpha.26"></a>
+### 2.0.0-alpha.26 (2015-06-03)
+
+
+#### Bug Fixes
+
+* format a file that slipped in. ([471a1b6d](https://github.com/angular/angular/commit/471a1b6d))
+* fix clang errors ([01fb8e66](https://github.com/angular/angular/commit/01fb8e66))
+* **ShadowCss:** keyframes tests failing in Safari ([4c8e11a5](https://github.com/angular/angular/commit/4c8e11a5), closes [#2283](https://github.com/angular/angular/issues/2283))
+* **Tools:** Moves files out of dart2js/**/web. ([40150379](https://github.com/angular/angular/commit/40150379))
+* **ast:** fix the size of a list in _evalListCache ([0387221d](https://github.com/angular/angular/commit/0387221d))
+* **benchpress:**
+  * support nested intervals ([c280fe81](https://github.com/angular/angular/commit/c280fe81))
+  * add index to root of module ([383f0a1f](https://github.com/angular/angular/commit/383f0a1f))
+* **binding:** unbalanced curly brackets in documentation ([a80921b4](https://github.com/angular/angular/commit/a80921b4))
+* **browser_adapter:**
+  * HTMLStyleElement.innerText does not trigger creation of CSS rules (Firefox) ([b2a24e02](https://github.com/angular/angular/commit/b2a24e02))
+  * event creation fails (IE11, Firefox) ([665ccafd](https://github.com/angular/angular/commit/665ccafd))
+  * element.getBoundingClientRect fails when element not in DOM (IE11) ([f35dbb99](https://github.com/angular/angular/commit/f35dbb99))
+  * element.matches only available with prefix (IE11) ([a393f84f](https://github.com/angular/angular/commit/a393f84f))
+  * assigning null to document.title sets the title to "null" (IE11, Firefox) ([92c2c33a](https://github.com/angular/angular/commit/92c2c33a))
+* **build:**
+  * remove nonexistant dart format task from gulpfile ([f74d7727](https://github.com/angular/angular/commit/f74d7727))
+  * make dart formatter errors more readable ([31b66878](https://github.com/angular/angular/commit/31b66878))
+  * also run ts tests in node. ([05774f6c](https://github.com/angular/angular/commit/05774f6c))
+* **collection:**
+  * iterator on Map keys is not supported (Safari) ([4b98ed11](https://github.com/angular/angular/commit/4b98ed11), closes [#2096](https://github.com/angular/angular/issues/2096))
+  * new Map(iterable) is not supported (Safari) ([d308e55e](https://github.com/angular/angular/commit/d308e55e))
+  * new Set(iterable) is not supported (IE11, Safari) ([57b88ec2](https://github.com/angular/angular/commit/57b88ec2), closes [#2063](https://github.com/angular/angular/issues/2063))
+* **core:** resurrect OnChange interface ([d48fae35](https://github.com/angular/angular/commit/d48fae35))
+* **dartdocs:** Hide duplicate exports from guinness. ([17e1d7f1](https://github.com/angular/angular/commit/17e1d7f1))
+* **deps:** Update clang-format to 1.0.14. ([15f1eb28](https://github.com/angular/angular/commit/15f1eb28))
+* **di:** allow `@Inject(…)` to work in dart2js and dynamic reflection ([4a3fd5e8](https://github.com/angular/angular/commit/4a3fd5e8), closes [#2185](https://github.com/angular/angular/issues/2185))
+* **docs:** generate d.ts file only for angular2/angular2. ([0a0b84a0](https://github.com/angular/angular/commit/0a0b84a0))
+* **dom:**
+  * allow to correctly clone document fragments ([2351896c](https://github.com/angular/angular/commit/2351896c))
+  * `querySelectorAll` should only query child nodes ([307011a9](https://github.com/angular/angular/commit/307011a9))
+* **example:** unused event ([f83f1ee0](https://github.com/angular/angular/commit/f83f1ee0))
+* **examples:** update form example to use NgIf ([1ad65582](https://github.com/angular/angular/commit/1ad65582))
+* **facade:**
+  * Make PromiseWrapper#all semantics equivalent ([22f59252](https://github.com/angular/angular/commit/22f59252))
+  * Fix bug in TS indexOf ([cda35101](https://github.com/angular/angular/commit/cda35101))
+* **fake_async:** fixed fakeAsync to throw instead of crashing on cjs ([5c53cf64](https://github.com/angular/angular/commit/5c53cf64))
+* **forms:** disabled form tests on cjs until fakeAsync is fixed ([cd52d8a3](https://github.com/angular/angular/commit/cd52d8a3))
+* **gulp:** prevent duplicate error messages ([381d4cb3](https://github.com/angular/angular/commit/381d4cb3), closes [#2021](https://github.com/angular/angular/issues/2021))
+* **injectable:** add missing @Injectables annotations ([0c7f05f5](https://github.com/angular/angular/commit/0c7f05f5), closes [#2173](https://github.com/angular/angular/issues/2173))
+* **package.json:** add `reflect-metadata` to package.json ([60801777](https://github.com/angular/angular/commit/60801777), closes [#2170](https://github.com/angular/angular/issues/2170))
+* **render:**
+  * only look for content tags in views that might have them. ([ba7956f5](https://github.com/angular/angular/commit/ba7956f5), closes [#2297](https://github.com/angular/angular/issues/2297))
+  * don’t store a document fragment as bound element ([24bc4b66](https://github.com/angular/angular/commit/24bc4b66))
+* **router:** event.defaultPrevented is not reliable (IE11) ([2287938f](https://github.com/angular/angular/commit/2287938f))
+* **selector:** support multiple `:not` clauses ([62a95823](https://github.com/angular/angular/commit/62a95823), closes [#2243](https://github.com/angular/angular/issues/2243))
+* **test:**
+  * clang formatting errors ([05d66bba](https://github.com/angular/angular/commit/05d66bba))
+  * solve CSS discrepancies across browsers ([fb42d590](https://github.com/angular/angular/commit/fb42d590), closes [#2177](https://github.com/angular/angular/issues/2177))
+  * use a not expandable CSS rule in ShadowCSS spec (Firefox) ([588fbfd8](https://github.com/angular/angular/commit/588fbfd8), closes [#2061](https://github.com/angular/angular/issues/2061))
+  * adds longer timers for NgZone and PromisePipe tests (IE11) ([661a0479](https://github.com/angular/angular/commit/661a0479), closes [#2055](https://github.com/angular/angular/issues/2055))
+  * native shadow DOM is required (IE11, Firefox) ([9802debf](https://github.com/angular/angular/commit/9802debf))
+  * function.name is not available (IE11) ([5103f080](https://github.com/angular/angular/commit/5103f080))
+* **tests:** disable mobile emulation so benchmarks run on current chrome ([b071b66b](https://github.com/angular/angular/commit/b071b66b))
+* **types:** parametrize QueryList. ([552985e3](https://github.com/angular/angular/commit/552985e3))
+
+
+#### Features
+
+* add support for the safe navigation (aka Elvis) operator ([a9be2ebf](https://github.com/angular/angular/commit/a9be2ebf), closes [#791](https://github.com/angular/angular/issues/791))
+* **Directive:** convert properties to an array ([d7df853b](https://github.com/angular/angular/commit/d7df853b), closes [#2013](https://github.com/angular/angular/issues/2013))
+* **ElementInjector:** support an arbitrary number of bindings ([b1c9bf14](https://github.com/angular/angular/commit/b1c9bf14), closes [#1853](https://github.com/angular/angular/issues/1853))
+* **OpaqueToken:** now a const constructor ([c571b269](https://github.com/angular/angular/commit/c571b269))
+* **RegExpWrapper:** implement a test method ([551586ce](https://github.com/angular/angular/commit/551586ce))
+* **benchpress:** Add extension for ff metrics reporting ([b390f441](https://github.com/angular/angular/commit/b390f441), closes [#1976](https://github.com/angular/angular/issues/1976))
+* **binding:** throw on binding to a blank alias ([ec2d8cc2](https://github.com/angular/angular/commit/ec2d8cc2), closes [#2068](https://github.com/angular/angular/issues/2068))
+* **broccoli:** add incremental dartfmt plugin ([e5d06e47](https://github.com/angular/angular/commit/e5d06e47), closes [#2211](https://github.com/angular/angular/issues/2211))
+* **change_detection:** added onInit and onCheck hooks ([c39c8ebc](https://github.com/angular/angular/commit/c39c8ebc))
+* **change_detection.ts:** export PipeFactory ([93f464a1](https://github.com/angular/angular/commit/93f464a1), closes [#2245](https://github.com/angular/angular/issues/2245))
+* **core:**
+  * added support for detecting lifecycle events based on interfaces ([30b6542f](https://github.com/angular/angular/commit/30b6542f))
+  * added missing interfaces for onDestroy and onAllChangesDone lifecycle events ([2b6a6530](https://github.com/angular/angular/commit/2b6a6530))
+* **di:** added optional self parameter to Parent, Ancestor, and Unbounded ([34cfc9f4](https://github.com/angular/angular/commit/34cfc9f4))
+* **dom:** add `setData()` method. ([6f3368ef](https://github.com/angular/angular/commit/6f3368ef))
+* **facade:** add read/write access to global variables ([cdf791f0](https://github.com/angular/angular/commit/cdf791f0))
+* **fakeAsync:** flush the microtasks before returning ([c7572ac1](https://github.com/angular/angular/commit/c7572ac1), closes [#2269](https://github.com/angular/angular/issues/2269))
+* **form:** implemented an imperative way of updating the view by updating the value of a co ([652ed0cf](https://github.com/angular/angular/commit/652ed0cf))
+* **forms:**
+  * added support for status classes ([3baf815d](https://github.com/angular/angular/commit/3baf815d))
+  * added touched and untouched to Control ([ec3a7828](https://github.com/angular/angular/commit/ec3a7828))
+  * renamed control, control-group into ng-control and ng-control-group ([f543834b](https://github.com/angular/angular/commit/f543834b))
+  * changed the selector of TemplatdrivenFormDirective to match <form> ([6bef1c41](https://github.com/angular/angular/commit/6bef1c41))
+  * added ng-model ([559f54e9](https://github.com/angular/angular/commit/559f54e9))
+  * implemented template-driven forms ([a9d6fd9a](https://github.com/angular/angular/commit/a9d6fd9a))
+* **key_event:** alias esc to escape ([10bc7e94](https://github.com/angular/angular/commit/10bc7e94), closes [#2010](https://github.com/angular/angular/issues/2010))
+* **reflector:** added a method to get type's interfaces ([34d75e89](https://github.com/angular/angular/commit/34d75e89))
+* **render:** re-export render and export `DirectiveResolver` ([662da0d7](https://github.com/angular/angular/commit/662da0d7), closes [#2026](https://github.com/angular/angular/issues/2026))
+* **router:** add the router bundle to the bundle task. ([05fa9bc9](https://github.com/angular/angular/commit/05fa9bc9))
+* **router.js:**
+  * export router injectables ([28ee0612](https://github.com/angular/angular/commit/28ee0612))
+  * export routerDirectives ([1f20ef97](https://github.com/angular/angular/commit/1f20ef97))
+* **test:**
+  * added not.toBeNull ([74882c6c](https://github.com/angular/angular/commit/74882c6c))
+  * add element probe ([f9908cd4](https://github.com/angular/angular/commit/f9908cd4), closes [#1992](https://github.com/angular/angular/issues/1992))
+* **test_lib:**
+  * add method to compare stringified DOM element ([c6335c12](https://github.com/angular/angular/commit/c6335c12), closes [#2106](https://github.com/angular/angular/issues/2106))
+  * add `containsRegex` ([23d59df8](https://github.com/angular/angular/commit/23d59df8))
+* **tests:** add TestComponentBuilder ([c32dbad7](https://github.com/angular/angular/commit/c32dbad7), closes [#1812](https://github.com/angular/angular/issues/1812))
+* **transformers:** added support for lifecycle events ([f19970a4](https://github.com/angular/angular/commit/f19970a4))
+* **view:**
+  * introduce free embedded views ([5030ffb0](https://github.com/angular/angular/commit/5030ffb0))
+  * add `AppViewListener` interface ([75578f41](https://github.com/angular/angular/commit/75578f41))
+
+
+#### Breaking Changes
+
+* 
+- `Renderer.detachFreeHostView` was renamed to
+  `Renderer.detachFreeView`
+- `DomRenderer.getHostElement()` was generalized into
+  `DomRenderer.getRootNodes()`
+
+ ([5030ffb0](https://github.com/angular/angular/commit/5030ffb0))
+* 
+now a `const` constructor
+
+ ([c571b269](https://github.com/angular/angular/commit/c571b269))
+* 
+Before
+
+    @Directive(properties: {
+      'sameName': 'sameName',
+      'directiveProp': 'elProp | pipe'
+    })
+
+After
+
+    @Directive(properties: [
+      'sameName',
+      'directiveProp: elProp | pipe'
+    ])
+
+ ([d7df853b](https://github.com/angular/angular/commit/d7df853b))
+
+
 <a name"2.0.0-alpha.25"></a>
 ### 2.0.0-alpha.25 (2015-05-21)
 
