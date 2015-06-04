@@ -91,18 +91,19 @@ void allTests() {
     },
         outputs: {
       'a|web/bar.ng_deps.dart': 'synthetic_ctor_files/expected/bar.ng_deps.dart'
-    }),
-    new IntegrationTestConfig('should preserve multiple annotations.',
-        inputs: {
-      'a|web/index.dart': 'two_annotations_files/index.dart',
-      'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations_impl/view.dart':
-          '../../../lib/src/core/annotations_impl/view.dart'
-    },
-        outputs: {
-      'a|web/bar.ng_deps.dart':
-          'two_annotations_files/expected/bar.ng_deps.dart'
     })
+// TODO: enable once cd transformers are fully implemented
+//    new IntegrationTestConfig('should preserve multiple annotations.',
+//        inputs: {
+//      'a|web/index.dart': 'two_annotations_files/index.dart',
+//      'a|web/bar.dart': 'two_annotations_files/bar.dart',
+//      'angular2|lib/src/core/annotations_impl/view.dart':
+//          '../../../lib/src/core/annotations_impl/view.dart'
+//    },
+//        outputs: {
+//      'a|web/bar.ng_deps.dart':
+//          'two_annotations_files/expected/bar.ng_deps.dart'
+//    })
   ];
 
   var cache = {};
