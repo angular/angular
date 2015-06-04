@@ -418,6 +418,18 @@ export function main() {
         expect(accessor.getter(new HasEventEmitter())).toEqual('emitter');
       });
 
+      it('should allow a different event vs field name', () => {
+        var binding = DirectiveBinding.createFromType(HasEventEmitter,
+            new dirAnn.Directive({events: ['emitter: publicEmitter']}));
+
+        var inj = createPei(null, 0, [binding]);
+        expect(inj.eventEmitterAccessors.length).toEqual(1);
+
+        var accessor = inj.eventEmitterAccessors[0][0];
+        expect(accessor.eventName).toEqual('publicEmitter');
+        expect(accessor.getter(new HasEventEmitter())).toEqual('emitter');
+      });
+
       it('should return a list of hostAction accessors', () => {
         var binding = DirectiveBinding.createFromType(
             HasEventEmitter, new dirAnn.Directive({hostActions: {'hostActionName': 'onAction'}}));
@@ -430,7 +442,6 @@ export function main() {
         expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });
-
 
     describe(".create", () => {
       it("should collect hostInjector injectables from all directives", () => {
