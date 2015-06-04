@@ -420,11 +420,11 @@ function createProtoView(elementBinders = null) {
 
 function createComponentElementBinder(directiveResolver, type) {
   var binding = createDirectiveBinding(directiveResolver, type);
-  return new ElementBinder(0, null, 0, null, binding);
+  return new ElementBinder(0, null, 0, null, null, binding);
 }
 
 function createViewportElementBinder(nestedProtoView) {
-  var elBinder = new ElementBinder(0, null, 0, null, null);
+  var elBinder = new ElementBinder(0, null, 0, null, null, null);
   elBinder.nestedProtoView = nestedProtoView;
   return elBinder;
 }

@@ -58,11 +58,11 @@ export function main() {
       return DirectiveBinding.createFromType(type, annotation);
     }
 
-    function createEmptyElBinder() { return new ElementBinder(0, null, 0, null, null); }
+    function createEmptyElBinder() { return new ElementBinder(0, null, 0, null, null, null); }
 
     function createComponentElBinder(nestedProtoView = null) {
       var binding = createDirectiveBinding(SomeComponent);
-      var binder = new ElementBinder(0, null, 0, null, binding);
+      var binder = new ElementBinder(0, null, 0, null, null, binding);
       binder.nestedProtoView = nestedProtoView;
       return binder;
     }

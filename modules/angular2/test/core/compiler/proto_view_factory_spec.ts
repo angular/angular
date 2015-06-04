@@ -20,9 +20,11 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetection, ChangeDetectorDefinition} from 'angular2/change_detection';
 import {
   ProtoViewFactory,
-  getChangeDetectorDefinitions
+  getChangeDetectorDefinitions,
+  createDirectiveVariableBindings
 } from 'angular2/src/core/compiler/proto_view_factory';
 import {Component, Directive} from 'angular2/annotations';
+import {Key} from 'angular2/di';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import * as renderApi from 'angular2/src/render/api';
@@ -65,10 +67,83 @@ export function main() {
         expect(pvs.length).toBe(1);
         expect(pvs[0].render).toBe(renderPv.render);
       });
-
     });
 
+    describe("createDirectiveVariableBindings", () => {
+      it("should calculate directive variable bindings", () => {
+        var dvbs = createDirectiveVariableBindings(
+            new renderApi.ElementBinder(
+                {variableBindings: MapWrapper.createFromStringMap({"exportName": "templateName"})}),
+            [
+              directiveBinding(
+                  {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})}),
+              directiveBinding(
+                  {metadata: new renderApi.DirectiveMetadata({exportAs: 'otherName'})})
+            ]);
+
+        expect(dvbs).toEqual(MapWrapper.createFromStringMap({"templateName": 0}));
+      });
+
+      it("should set exportAs to $implicit for component with exportAs = null", () => {
+        var dvbs = createDirectiveVariableBindings(
+            new renderApi.ElementBinder(
+                {variableBindings: MapWrapper.createFromStringMap({"$implicit": "templateName"})}),
+            [
+              directiveBinding({
+                metadata: new renderApi.DirectiveMetadata(
+                    {exportAs: null, type: renderApi.DirectiveMetadata.COMPONENT_TYPE})
+              })
+            ]);
+
+        expect(dvbs).toEqual(MapWrapper.createFromStringMap({"templateName": 0}));
+      });
+
+      it("should throw we no directive exported with this name", () => {
+        expect(() => {
+          createDirectiveVariableBindings(
+              new renderApi.ElementBinder({
+                variableBindings:
+                    MapWrapper.createFromStringMap({"someInvalidName": "templateName"})
+              }),
+              [
+                directiveBinding(
+                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})})
+              ]);
+        }).toThrowError(new RegExp("Cannot find directive with exportAs = 'someInvalidName'"));
+      });
+
+      it("should throw when binding to a name exported by two directives", () => {
+        expect(() => {
+          createDirectiveVariableBindings(
+              new renderApi.ElementBinder({
+                variableBindings: MapWrapper.createFromStringMap({"exportName": "templateName"})
+              }),
+              [
+                directiveBinding(
+                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})}),
+                directiveBinding(
+                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})})
+              ]);
+        }).toThrowError(new RegExp("More than one directive have exportAs = 'exportName'"));
+      });
+
+      it("should not throw when not binding to a name exported by two directives", () => {
+        expect(() => {
+          createDirectiveVariableBindings(
+              new renderApi.ElementBinder({variableBindings: MapWrapper.create()}), [
+                directiveBinding(
+                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})}),
+                directiveBinding(
+                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})})
+              ]);
+        }).not.toThrow();
+      });
+    });
   });
+}
+
+function directiveBinding({metadata}: {metadata?: any} = {}) {
+  return new DirectiveBinding(Key.get("dummy"), null, [], false, [], [], [], metadata);
 }
 
 function createRenderProtoView(elementBinders = null, type: number = null) {

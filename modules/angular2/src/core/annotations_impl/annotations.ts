@@ -746,9 +746,35 @@ export class Directive extends Injectable {
    */
   hostInjector: List<any>;
 
+  /**
+   * Defines the name that can be used in the template to assign this directive to a variable.
+   *
+   * ## Simple Example
+   *
+   * @Directive({
+   *   selector: 'child-dir',
+   *   exportAs: 'child'
+   * })
+   * class ChildDir {
+   * }
+   *
+   * @Component({
+   *   selector: 'main',
+   * })
+   * @View({
+   *   template: `<child-dir #c="child"></child-dir>`,
+   *   directives: [ChildDir]
+   * })
+   * class MainComponent {
+   * }
+   *
+   * ```
+   */
+  exportAs: string;
+
   constructor({
                   selector, properties, events, hostListeners, hostProperties, hostAttributes,
-                  hostActions, lifecycle, hostInjector, compileChildren = true,
+                  hostActions, lifecycle, hostInjector, exportAs, compileChildren = true,
               }: {
     selector?: string,
     properties?: List<string>,
@@ -759,6 +785,7 @@ export class Directive extends Injectable {
     hostActions?: StringMap<string, string>,
     lifecycle?: List<LifecycleEvent>,
     hostInjector?: List<any>,
+    exportAs?: string,
     compileChildren?: boolean
   } = {}) {
     super();
@@ -769,6 +796,7 @@ export class Directive extends Injectable {
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
     this.hostActions = hostActions;
+    this.exportAs = exportAs;
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
     this.hostInjector = hostInjector;
@@ -973,7 +1001,7 @@ export class Component extends Directive {
   viewInjector: List<any>;
 
   constructor({selector, properties, events, hostListeners, hostProperties, hostAttributes,
-               hostActions, appInjector, lifecycle, hostInjector, viewInjector,
+               hostActions, exportAs, appInjector, lifecycle, hostInjector, viewInjector,
                changeDetection = DEFAULT, compileChildren = true}: {
     selector?: string,
     properties?: List<string>,
@@ -982,6 +1010,7 @@ export class Component extends Directive {
     hostProperties?: StringMap<string, string>,
     hostAttributes?: StringMap<string, string>,
     hostActions?: StringMap<string, string>,
+    exportAs?: string,
     appInjector?: List<any>,
     lifecycle?: List<LifecycleEvent>,
     hostInjector?: List<any>,
@@ -997,6 +1026,7 @@ export class Component extends Directive {
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
       hostActions: hostActions,
+      exportAs: exportAs,
       hostInjector: hostInjector,
       lifecycle: lifecycle,
       compileChildren: compileChildren

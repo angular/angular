@@ -16,6 +16,7 @@ export function main() {
         readAttributes: ['read1', 'read2'],
         selector: 'some-comp',
         type: DirectiveMetadata.COMPONENT_TYPE,
+        exportAs: 'aaa',
         callOnDestroy: true,
         callOnChange: true,
         callOnCheck: true,
@@ -40,6 +41,7 @@ export function main() {
       expect(MapWrapper.get(map, 'callOnChange')).toEqual(true);
       expect(MapWrapper.get(map, 'callOnInit')).toEqual(true);
       expect(MapWrapper.get(map, 'callOnAllChangesDone')).toEqual(true);
+      expect(MapWrapper.get(map, 'exportAs')).toEqual('aaa');
     });
 
     it('mapToDirectiveMetadata', () => {
@@ -53,6 +55,7 @@ export function main() {
         ['readAttributes', ['readTest1', 'readTest2']],
         ['selector', 'testSelector'],
         ['type', DirectiveMetadata.DIRECTIVE_TYPE],
+        ['exportAs', 'aaa'],
         ['callOnDestroy', true],
         ['callOnCheck', true],
         ['callOnInit', true],
@@ -71,6 +74,7 @@ export function main() {
       expect(meta.readAttributes).toEqual(['readTest1', 'readTest2']);
       expect(meta.selector).toEqual('testSelector');
       expect(meta.type).toEqual(DirectiveMetadata.DIRECTIVE_TYPE);
+      expect(meta.exportAs).toEqual('aaa');
       expect(meta.callOnDestroy).toEqual(true);
       expect(meta.callOnCheck).toEqual(true);
       expect(meta.callOnInit).toEqual(true);

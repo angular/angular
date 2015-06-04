@@ -422,110 +422,127 @@ export function main() {
                });
          }));
 
-      it('should assign the component instance to a var-',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(MyComp, new viewAnn.View({
-             template: '<p><child-cmp var-alice></child-cmp></p>',
-             directives: [ChildComp]
+      describe("variable bindings", () => {
+        it('should assign a component to a var-',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(MyComp, new viewAnn.View({
+               template: '<p><child-cmp var-alice></child-cmp></p>',
+               directives: [ChildComp]
+             }));
+
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
+                   expect(view.rawView.locals).not.toBe(null);
+                   expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
+
+                   async.done();
+                 })
            }));
 
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
-                 expect(view.rawView.locals).not.toBe(null);
-                 expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
+        it('should assign a directive to a var-',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(MyComp, new viewAnn.View({
+               template: '<p><div [export-dir] #localdir="dir"></div></p>',
+               directives: [ExportDir]
+             }));
 
-                 async.done();
-               })
-         }));
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
+                   expect(view.rawView.locals).not.toBe(null);
+                   expect(view.rawView.locals.get('localdir')).toBeAnInstanceOf(ExportDir);
 
-      it('should make the assigned component accessible in property bindings',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(MyComp, new viewAnn.View({
-             template: '<p><child-cmp var-alice></child-cmp>{{alice.ctxProp}}</p>',
-             directives: [ChildComp]
+                   async.done();
+                 });
            }));
 
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
-                 view.detectChanges();
+        it('should make the assigned component accessible in property bindings',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(MyComp, new viewAnn.View({
+               template: '<p><child-cmp var-alice></child-cmp>{{alice.ctxProp}}</p>',
+               directives: [ChildComp]
+             }));
 
-                 expect(view.rootNodes).toHaveText('hellohello');  // this first one is the
-                                                                   // component, the second one is
-                                                                   // the text binding
-                 async.done();
-               })
-         }));
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
+                   view.detectChanges();
 
-      it('should assign two component instances each with a var-',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(MyComp, new viewAnn.View({
-             template: '<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>',
-             directives: [ChildComp]
+                   expect(view.rootNodes).toHaveText('hellohello');  // this first one is the
+                                                                     // component, the second one is
+                                                                     // the text binding
+                   async.done();
+                 })
            }));
 
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
+        it('should assign two component instances each with a var-',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(MyComp, new viewAnn.View({
+               template: '<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>',
+               directives: [ChildComp]
+             }));
 
-                 expect(view.rawView.locals).not.toBe(null);
-                 expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
-                 expect(view.rawView.locals.get('bob')).toBeAnInstanceOf(ChildComp);
-                 expect(view.rawView.locals.get('alice')).not.toBe(view.rawView.locals.get('bob'));
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
 
-                 async.done();
-               })
-         }));
+                   expect(view.rawView.locals).not.toBe(null);
+                   expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
+                   expect(view.rawView.locals.get('bob')).toBeAnInstanceOf(ChildComp);
+                   expect(view.rawView.locals.get('alice'))
+                       .not.toBe(view.rawView.locals.get('bob'));
 
-      it('should assign the component instance to a var- with shorthand syntax',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(
-               MyComp, new viewAnn.View(
-                           {template: '<child-cmp #alice></child-cmp>', directives: [ChildComp]}));
+                   async.done();
+                 })
+           }));
 
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
+        it('should assign the component instance to a var- with shorthand syntax',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(
+                 MyComp,
+                 new viewAnn.View(
+                     {template: '<child-cmp #alice></child-cmp>', directives: [ChildComp]}));
 
-                 expect(view.rawView.locals).not.toBe(null);
-                 expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
 
-                 async.done();
-               })
-         }));
+                   expect(view.rawView.locals).not.toBe(null);
+                   expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
 
-      it('should assign the element instance to a user-defined variable',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(
-               MyComp, new viewAnn.View({template: '<p><div var-alice><i>Hello</i></div></p>'}));
+                   async.done();
+                 })
+           }));
 
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
-                 expect(view.rawView.locals).not.toBe(null);
+        it('should assign the element instance to a user-defined variable',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(
+                 MyComp, new viewAnn.View({template: '<p><div var-alice><i>Hello</i></div></p>'}));
 
-                 var value = view.rawView.locals.get('alice');
-                 expect(value).not.toBe(null);
-                 expect(value.tagName.toLowerCase()).toEqual('div');
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
+                   expect(view.rawView.locals).not.toBe(null);
 
-                 async.done();
-               })
-         }));
+                   var value = view.rawView.locals.get('alice');
+                   expect(value).not.toBe(null);
+                   expect(value.tagName.toLowerCase()).toEqual('div');
 
+                   async.done();
+                 })
+           }));
 
-      it('should assign the element instance to a user-defined variable with camelCase using dash-case',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-           tb.overrideView(
-               MyComp,
-               new viewAnn.View({template: '<p><div var-super-alice><i>Hello</i></div></p>'}));
+        it('should change dash-case to camel-case',
+           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+             tb.overrideView(MyComp, new viewAnn.View({
+               template: '<p><child-cmp var-super-alice></child-cmp></p>',
+               directives: [ChildComp]
+             }));
 
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
-                 expect(view.rawView.locals).not.toBe(null);
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
+                   expect(view.rawView.locals).not.toBe(null);
+                   expect(view.rawView.locals.get('superAlice')).toBeAnInstanceOf(ChildComp);
 
-                 var value = view.rawView.locals.get('superAlice');
-                 expect(value).not.toBe(null);
-                 expect(value.tagName.toLowerCase()).toEqual('div');
-
-                 async.done();
-               })
-         }));
+                   async.done();
+                 });
+           }));
+      });
 
       describe("ON_PUSH components", () => {
         it("should use ChangeDetectorRef to manually request a check",
@@ -1695,4 +1712,8 @@ class SomeImperativeViewport {
       }
     }
   }
+}
+
+@Directive({selector: '[export-dir]', exportAs: 'dir'})
+class ExportDir {
 }

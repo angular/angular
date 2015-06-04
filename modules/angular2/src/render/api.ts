@@ -36,7 +36,7 @@ export class ElementBinder {
   directives: List<DirectiveBinder>;
   nestedProtoView: ProtoViewDto;
   propertyBindings: Map<string, ASTWithSource>;
-  variableBindings: Map<string, ASTWithSource>;
+  variableBindings: Map<string, string>;
   // Note: this contains a preprocessed AST
   // that replaced the values that should be extracted from the element
   // with a local name
@@ -52,7 +52,7 @@ export class ElementBinder {
     directives?: List<DirectiveBinder>,
     nestedProtoView?: ProtoViewDto,
     propertyBindings?: Map<string, ASTWithSource>,
-    variableBindings?: Map<string, ASTWithSource>,
+    variableBindings?: Map<string, string>,
     eventBindings?: List<EventBinding>,
     textBindings?: List<ASTWithSource>,
     readAttributes?: Map<string, string>
@@ -142,9 +142,10 @@ export class DirectiveMetadata {
   callOnInit: boolean;
   callOnAllChangesDone: boolean;
   changeDetection: string;
+  exportAs: string;
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
                hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
-               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection}: {
+               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -161,7 +162,8 @@ export class DirectiveMetadata {
     callOnCheck?: boolean,
     callOnInit?: boolean,
     callOnAllChangesDone?: boolean,
-    changeDetection?: string
+    changeDetection?: string,
+    exportAs?: string
   }) {
     this.id = id;
     this.selector = selector;
@@ -180,6 +182,7 @@ export class DirectiveMetadata {
     this.callOnInit = callOnInit;
     this.callOnAllChangesDone = callOnAllChangesDone;
     this.changeDetection = changeDetection;
+    this.exportAs = exportAs;
   }
 }
 

@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/di';
 
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {
@@ -309,7 +309,7 @@ function _createElementBinders(protoView, elementBinders, allDirectiveBindings) 
                                     componentDirectiveBinding, directiveBindings);
 
     _createElementBinder(protoView, i, renderElementBinder, protoElementInjector,
-                         componentDirectiveBinding);
+                         componentDirectiveBinding, directiveBindings);
   }
 }
 
@@ -343,28 +343,20 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
         parentPeiWithDistance.protoElementInjector, binderIndex, directiveBindings,
         isPresent(componentDirectiveBinding), parentPeiWithDistance.distance);
     protoElementInjector.attributes = renderElementBinder.readAttributes;
-    if (hasVariables) {
-      protoElementInjector.exportComponent = isPresent(componentDirectiveBinding);
-      protoElementInjector.exportElement = isBlank(componentDirectiveBinding);
-
-      // experiment
-      var exportImplicitName = MapWrapper.get(renderElementBinder.variableBindings, '\$implicit');
-      if (isPresent(exportImplicitName)) {
-        protoElementInjector.exportImplicitName = exportImplicitName;
-      }
-    }
   }
   return protoElementInjector;
 }
 
 function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
-                              protoElementInjector, componentDirectiveBinding): ElementBinder {
+                              protoElementInjector, componentDirectiveBinding, directiveBindings): ElementBinder {
   var parent = null;
   if (renderElementBinder.parentIndex !== -1) {
     parent = protoView.elementBinders[renderElementBinder.parentIndex];
   }
+
+  var directiveVariableBindings = createDirectiveVariableBindings(renderElementBinder, directiveBindings);
   var elBinder = protoView.bindElement(parent, renderElementBinder.distanceToParent,
-                                       protoElementInjector, componentDirectiveBinding);
+                                       protoElementInjector, directiveVariableBindings, componentDirectiveBinding);
   protoView.bindEvent(renderElementBinder.eventBindings, boundElementIndex, -1);
   // variables
   // The view's locals needs to have a full set of variable names at construction time
@@ -375,6 +367,49 @@ function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
     MapWrapper.set(protoView.protoLocals, mappedName, null);
   });
   return elBinder;
+}
+
+export function createDirectiveVariableBindings(renderElementBinder:renderApi.ElementBinder,
+                                         directiveBindings:List<DirectiveBinding>): Map<String, number> {
+  var directiveVariableBindings = MapWrapper.create();
+  MapWrapper.forEach(renderElementBinder.variableBindings, (templateName, exportAs) => {
+    var dirIndex = _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, exportAs);
+    MapWrapper.set(directiveVariableBindings, templateName, dirIndex);
+  });
+  return directiveVariableBindings;
+}
+
+function _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, exportAs) {
+  var matchedDirectiveIndex = null;
+  var matchedDirective;
+
+  for (var i = 0; i < directiveBindings.length; ++i) {
+    var directive = directiveBindings[i];
+
+    if (_directiveExportAs(directive) == exportAs) {
+      if (isPresent(matchedDirective)) {
+        throw new BaseException(`More than one directive have exportAs = '${exportAs}'. Directives: [${matchedDirective.displayName}, ${directive.displayName}]`);
+      }
+
+      matchedDirectiveIndex = i;
+      matchedDirective = directive;
+    }
+  }
+
+  if (isBlank(matchedDirective) && exportAs !== "$implicit") {
+    throw new BaseException(`Cannot find directive with exportAs = '${exportAs}'`);
+  }
+
+  return matchedDirectiveIndex;
+}
+
+function _directiveExportAs(directive):string {
+  var directiveExportAs = directive.metadata.exportAs;
+  if (isBlank(directiveExportAs) && directive.metadata.type === renderApi.DirectiveMetadata.COMPONENT_TYPE) {
+    return "$implicit";
+  } else {
+    return directiveExportAs;
+  }
 }
 
 function _bindDirectiveEvents(protoView, elementBinders: List<renderApi.ElementBinder>) {

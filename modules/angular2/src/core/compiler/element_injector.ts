@@ -317,7 +317,9 @@ export class DirectiveBinding extends ResolvedBinding {
       callOnAllChangesDone: hasLifecycleHook(onAllChangesDone, rb.key.token, ann),
 
       changeDetection: ann instanceof
-          Component ? ann.changeDetection : null
+          Component ? ann.changeDetection : null,
+
+      exportAs: ann.exportAs
     });
     return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise,
                                 resolvedAppInjectables, resolvedHostInjectables,
@@ -422,15 +424,6 @@ export class ProtoElementInjector {
   eventEmitterAccessors: List<List<EventEmitterAccessor>>;
   hostActionAccessors: List<List<HostActionAccessor>>;
 
-  /** Whether the element is exported as $implicit. */
-  exportElement: boolean;
-
-  /** Whether the component instance is exported as $implicit. */
-  exportComponent: boolean;
-
-  /** The variable name that will be set to $implicit for the element. */
-  exportImplicitName: string;
-
   _strategy: _ProtoElementInjectorStrategy;
 
   static create(parent: ProtoElementInjector, index: number, bindings: List<ResolvedBinding>,
@@ -483,9 +476,6 @@ export class ProtoElementInjector {
 
   constructor(public parent: ProtoElementInjector, public index: int, bd: List<BindingData>,
               public distanceToParent: number, public _firstBindingIsComponent: boolean) {
-    this.exportComponent = false;
-    this.exportElement = false;
-
     var length = bd.length;
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
     this.hostActionAccessors = ListWrapper.createFixedSize(length);
@@ -1163,15 +1153,6 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   getDirectiveAtIndex(index: number) { return this._strategy.getDirectiveAtIndex(index); }
 
   hasInstances(): boolean { return this._constructionCounter > 0; }
-
-  /** Gets whether this element is exporting a component instance as $implicit. */
-  isExportingComponent(): boolean { return this._proto.exportComponent; }
-
-  /** Gets whether this element is exporting its element as $implicit. */
-  isExportingElement(): boolean { return this._proto.exportElement; }
-
-  /** Get the name to which this element's $implicit is to be assigned. */
-  getExportImplicitName(): string { return this._proto.exportImplicitName; }
 
   getLightDomAppInjector(): Injector { return this._lightDomAppInjector; }
 

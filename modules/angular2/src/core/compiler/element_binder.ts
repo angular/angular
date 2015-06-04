@@ -8,8 +8,10 @@ import * as viewModule from './view';
 export class ElementBinder {
   nestedProtoView: viewModule.AppProtoView;
   hostListeners: StringMap<string, Map<number, AST>>;
+
   constructor(public index: int, public parent: ElementBinder, public distanceToParent: int,
               public protoElementInjector: eiModule.ProtoElementInjector,
+              public directiveVariableBindings: Map<string, number>,
               public componentDirective: DirectiveBinding) {
     if (isBlank(index)) {
       throw new BaseException('null index not allowed.');
