@@ -13,7 +13,7 @@ void main(List<String> args) {
   var allDefs = getAllDefinitions('propName');
   for (var i = 0; i < allDefs.length; ++i) {
     var className = 'ChangeDetector${i}';
-    codegen.generate(className, allDefs[i]);
+    codegen.generate('dynamic', className, allDefs[i]);
     if (i > 0) {
       buf.write(',');
     }

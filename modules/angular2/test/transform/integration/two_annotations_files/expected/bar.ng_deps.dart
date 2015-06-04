@@ -27,7 +27,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-  dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
+  MyComponent _context = null;
 
   _MyComponent_ChangeDetector0(this._dispatcher, this._pipeRegistry,
       this._protos, this._directiveRecords)
@@ -45,19 +45,18 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
 
   void callOnAllChangesDone() {}
 
-  void hydrate(context, locals, directives) {
+  void hydrate(MyComponent context, locals, directives) {
     mode = 'ALWAYS_CHECK';
     _context = context;
     _locals = locals;
   }
 
   void dehydrate() {
-    _context = _gen.ChangeDetectionUtil.uninitialized();
+    _context = null;
     _locals = null;
   }
 
-  hydrated() =>
-      !_gen.looseIdentical(_context, _gen.ChangeDetectionUtil.uninitialized());
+  hydrated() => _context == null;
 
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {

@@ -131,7 +131,7 @@ export class ChangeDetectorJITGenerator {
       }
 
       ${this.typeName}.prototype.hydrated = function() {
-        return ${CONTEXT_ACCESSOR} !== ${UTIL}.uninitialized();
+        return Boolean(${CONTEXT_ACCESSOR});
       }
 
       return function(dispatcher, pipeRegistry) {
@@ -173,7 +173,11 @@ export class ChangeDetectorJITGenerator {
     fields = fields.concat(this._getNonNullPipeNames());
     fields = fields.concat(this._genGetDirectiveFieldNames());
     fields = fields.concat(this._genGetDetectorFieldNames());
-    return fields.map((n) => `${n} = ${UTIL}.uninitialized();`).join("\n");
+    return fields.map((n) => {
+                   return n == CONTEXT_ACCESSOR ? `${n} = null;` :
+                                                  `${n} = ${UTIL}.uninitialized();`;
+                 })
+        .join("\n");
   }
 
   _genHydrateDirectives(): string {

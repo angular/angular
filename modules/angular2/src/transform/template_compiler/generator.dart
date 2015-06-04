@@ -48,7 +48,7 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
       var defs = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
           result.protoView, viewDefEntry.viewDef.directives);
       for (var i = 0; i < defs.length; ++i) {
-        changeDetectorClasses.generate(
+        changeDetectorClasses.generate('${rType.typeName}',
             '_${rType.typeName}_ChangeDetector$i', defs[i]);
       }
 

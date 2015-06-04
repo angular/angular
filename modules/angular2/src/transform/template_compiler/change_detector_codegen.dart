@@ -15,8 +15,11 @@ import 'package:angular2/src/change_detection/proto_record.dart';
 class Codegen {
   final StringBuffer _buf = new StringBuffer();
 
-  void generate(String name, ChangeDetectorDefinition def) {
-    new _CodegenState(name, def)._writeToBuf(_buf);
+  /// Generates a change detector class with name `changeDetectorTypeName`
+  /// which is used to detect changes in Objects of type `typeName`.
+  void generate(String typeName, String changeDetectorTypeName,
+      ChangeDetectorDefinition def) {
+    new _CodegenState(typeName, changeDetectorTypeName, def)._writeToBuf(_buf);
   }
 
   String get imports {
@@ -33,7 +36,8 @@ class Codegen {
 
 /// The state needed to generate a change detector for a single `Component`.
 class _CodegenState {
-  final String _typeName;
+  final String _contextTypeName;
+  final String _changeDetectorTypeName;
   final String _changeDetectionMode;
   final List<ProtoRecord> _records;
   final List<DirectiveRecord> _directiveRecords;
@@ -42,8 +46,9 @@ class _CodegenState {
   final List<String> _fieldNames;
   final List<String> _pipeNames;
 
-  _CodegenState._(this._typeName, String changeDetectionStrategy, this._records,
-      this._directiveRecords, List<String> localNames)
+  _CodegenState._(this._contextTypeName, this._changeDetectorTypeName,
+      String changeDetectionStrategy, this._records, this._directiveRecords,
+      List<String> localNames)
       : this._localNames = localNames,
         _changeNames = _getChangeNames(localNames),
         _fieldNames = _getFieldNames(localNames),
@@ -51,21 +56,23 @@ class _CodegenState {
         _changeDetectionMode = ChangeDetectionUtil
             .changeDetectionMode(changeDetectionStrategy);
 
-  factory _CodegenState(String typeName, ChangeDetectorDefinition def) {
+  factory _CodegenState(String typeName, String changeDetectorTypeName,
+      ChangeDetectorDefinition def) {
     var protoRecords = new ProtoRecordBuilder();
     def.bindingRecords
         .forEach((rec) => protoRecords.add(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
-    return new _CodegenState._(typeName, def.strategy, records,
-        def.directiveRecords, _getLocalNames(records));
+    return new _CodegenState._(typeName, changeDetectorTypeName, def.strategy,
+        records, def.directiveRecords, _getLocalNames(records));
   }
 
   /// Generates sanitized names for use as local variables.
   static List<String> _getLocalNames(List<ProtoRecord> records) {
+    var whitespacePattern = new RegExp(r'\W');
     var localNames = new List<String>(records.length + 1);
     localNames[0] = 'context';
     for (var i = 0; i < records.length; ++i) {
-      var sanitizedName = records[i].name.replaceAll(new RegExp(r'\W'), '');
+      var sanitizedName = records[i].name.replaceAll(whitespacePattern, '');
       localNames[i + 1] = '$sanitizedName$i';
     }
     return localNames;
@@ -85,17 +92,21 @@ class _CodegenState {
 
   void _writeToBuf(StringBuffer buf) {
     buf.write('''
-      class $_typeName extends $_BASE_CLASS {
+      class $_changeDetectorTypeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
         final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
             $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
-        ${_allFields().map(
-            (f) => 'dynamic $f = $_UTIL.uninitialized();').join('')}
+        ${_allFields().map((f) {
+          if (f == _CONTEXT_ACCESSOR) {
+            return '$_contextTypeName $f = null;';
+          }
+          return 'dynamic $f = $_UTIL.uninitialized();';
+        }).join('')}
 
-        $_typeName(
+        $_changeDetectorTypeName(
             this.$_DISPATCHER_ACCESSOR,
             this.$_PIPE_REGISTRY_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
@@ -116,7 +127,7 @@ class _CodegenState {
           ${_getCallOnAllChangesDoneBody()}
         }
 
-        void hydrate(context, locals, directives) {
+        void hydrate($_contextTypeName context, locals, directives) {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
           $_CONTEXT_ACCESSOR = context;
           $_LOCALS_ACCESSOR = locals;
@@ -126,19 +137,22 @@ class _CodegenState {
 
         void dehydrate() {
           ${_genPipeOnDestroy()}
-          ${_allFields().map((f) => '$f = $_UTIL.uninitialized();').join('')}
+          ${_allFields().map((f) {
+            return f == _CONTEXT_ACCESSOR
+              ? '$f = null;'
+              : '$f = $_UTIL.uninitialized();';
+          }).join('')}
           $_LOCALS_ACCESSOR = null;
         }
 
-        hydrated() => !$_IDENTICAL_CHECK_FN(
-            $_CONTEXT_ACCESSOR, $_UTIL.uninitialized());
+        hydrated() => $_CONTEXT_ACCESSOR == null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
             $_GEN_PREFIX.PipeRegistry registry,
             $_GEN_PREFIX.ChangeDetectorDefinition def) {
           return new $_GEN_PREFIX.PregenProtoChangeDetector(
-              (a, b, c, d) => new $_typeName(a, b, c, d),
+              (a, b, c, d) => new $_changeDetectorTypeName(a, b, c, d),
               registry, def);
         }
       }
