@@ -3,9 +3,10 @@ import {BaseException, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
+import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
-import {Pipe, LiteralPrimitive, AccessMember} from 'angular2/src/change_detection/parser/ast';
+import {Pipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
   constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
@@ -383,34 +384,20 @@ export function main() {
     describe("parseBinding", () => {
       describe("pipes", () => {
         it("should parse pipes", () => {
-          var exp = parseBinding("'Foo'|uppercase").ast;
-          expect(exp).toBeAnInstanceOf(Pipe);
-          expect(exp.name).toEqual("uppercase");
+          var originalExp = '"Foo" | uppercase';
+          var ast = parseBinding(originalExp).ast;
+          expect(ast).toBeAnInstanceOf(Pipe);
+          expect(new Unparser().unparse(ast)).toEqual(`(${originalExp})`);
         });
 
         it("should parse pipes in the middle of a binding", () => {
-          var exp = parseBinding("user|a|b.name").ast;
-
-          expect(exp.name).toEqual("name");
-          expect(exp.receiver).toBeAnInstanceOf(Pipe);
-          expect(exp.receiver.name).toEqual("b");
-
-          expect(exp.receiver.exp).toBeAnInstanceOf(Pipe);
-          expect(exp.receiver.exp.name).toEqual("a");
+          var ast = parseBinding('(user | a | b).name').ast;
+          expect(new Unparser().unparse(ast)).toEqual('((user | a) | b).name');
         });
 
         it("should parse pipes with args", () => {
-          var exp = parseBinding("(1|a:2)|b:3").ast;
-
-          expect(exp).toBeAnInstanceOf(Pipe);
-          expect(exp.name).toEqual("b");
-          expect(exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
-
-          expect(exp.exp).toBeAnInstanceOf(Pipe);
-          expect(exp.exp.name).toEqual("a");
-          expect(exp.exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
-
-          expect(exp.exp.exp).toBeAnInstanceOf(LiteralPrimitive);
+          var ast = parseBinding("(1|a:2)|b:3").ast;
+          expect(new Unparser().unparse(ast)).toEqual('((1 | a:2) | b:3)');
         });
 
         it('should only allow identifier or keyword as formatter names', () => {
@@ -421,6 +408,25 @@ export function main() {
               .toThrowError(new RegExp('identifier or keyword'));
         });
 
+        it('should parse pipes', () => {
+          let unparser = new Unparser();
+          let exps = [
+            ['a(b | c)', 'a((b | c))'],
+            ['a.b(c.d(e) | f)', 'a.b((c.d(e) | f))'],
+            ['[1, 2, 3] | a', '([1, 2, 3] | a)'],
+            ['{a: 1} | b', '({a: 1} | b)'],
+            ['a[b] | c', '(a[b] | c)'],
+            ['a?.b | c', '(a?.b | c)'],
+            ['true | a', '(true | a)'],
+            ['a | b:c | d', '(a | b:(c | d))'],
+            ['(a | b:c) | d', '((a | b:c) | d)']
+          ];
+
+          ListWrapper.forEach(exps, e => {
+            var ast = parseBinding(e[0]).ast;
+            expect(unparser.unparse(ast)).toEqual(e[1]);
+          });
+        });
       });
 
       it('should store the source in the result',
@@ -433,7 +439,7 @@ export function main() {
         expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
       });
 
-      it('should throw on assignmnt', () => {
+      it('should throw on assignment', () => {
         expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
       });
     });
@@ -584,11 +590,9 @@ export function main() {
       });
 
       it('should parse prefix/suffix with multiple interpolation', () => {
-        var ast = parseInterpolation('before{{a}}middle{{b}}after').ast;
-        expect(ast.strings).toEqual(['before', 'middle', 'after']);
-        expect(ast.expressions.length).toEqual(2);
-        expect(ast.expressions[0].name).toEqual('a');
-        expect(ast.expressions[1].name).toEqual('b');
+        var originalExp = 'before {{ a }} middle {{ b }} after';
+        var ast = parseInterpolation(originalExp).ast;
+        expect(new Unparser().unparse(ast)).toEqual(originalExp);
       });
     });
 

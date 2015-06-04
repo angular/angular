@@ -68,12 +68,14 @@ export class Unparser implements AstVisitor {
   }
 
   visitPipe(ast: Pipe) {
+    this._expression += '(';
     this._visit(ast.exp);
     this._expression += ` | ${ast.name}`;
     ast.args.forEach(arg => {
       this._expression += ':';
       this._visit(arg);
-    })
+    });
+    this._expression += ')';
   }
 
   visitFunctionCall(ast: FunctionCall) {

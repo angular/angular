@@ -216,10 +216,21 @@ class _ParseAST {
   parsePipe() {
     var result = this.parseExpression();
     if (this.optionalOperator("|")) {
-      return this.parseInlinedPipe(result);
-    } else {
-      return result;
+      if (this.parseAction) {
+        this.error("Cannot have a pipe in an action expression");
+      }
+
+      do {
+        var name = this.expectIdentifierOrKeyword();
+        var args = [];
+        while (this.optionalCharacter($COLON)) {
+          ListWrapper.push(args, this.parsePipe());
+        }
+        result = new Pipe(result, name, args, true);
+      } while (this.optionalOperator("|"));
     }
+
+    return result;
   }
 
   parseExpression() {
@@ -249,13 +260,13 @@ class _ParseAST {
     var result = this.parseLogicalOr();
 
     if (this.optionalOperator('?')) {
-      var yes = this.parseExpression();
+      var yes = this.parsePipe();
       if (!this.optionalCharacter($COLON)) {
         var end = this.inputIndex;
         var expression = this.input.substring(start, end);
         this.error(`Conditional expression ${expression} requires all 3 expressions`);
       }
-      var no = this.parseExpression();
+      var no = this.parsePipe();
       return new Conditional(result, yes, no);
     } else {
       return result;
@@ -368,7 +379,7 @@ class _ParseAST {
         result = this.parseAccessMemberOrMethodCall(result, true);
 
       } else if (this.optionalCharacter($LBRACKET)) {
-        var key = this.parseExpression();
+        var key = this.parsePipe();
         this.expectCharacter($RBRACKET);
         result = new KeyedAccess(result, key);
 
@@ -385,9 +396,9 @@ class _ParseAST {
 
   parsePrimary() {
     if (this.optionalCharacter($LPAREN)) {
-      var result = this.parsePipe();
+      let result = this.parsePipe();
       this.expectCharacter($RPAREN);
-      return result;
+      return result
 
     } else if (this.next.isKeywordNull() || this.next.isKeywordUndefined()) {
       this.advance();
@@ -434,7 +445,7 @@ class _ParseAST {
     var result = [];
     if (!this.next.isCharacter(terminator)) {
       do {
-        ListWrapper.push(result, this.parseExpression());
+        ListWrapper.push(result, this.parsePipe());
       } while (this.optionalCharacter($COMMA));
     }
     return result;
@@ -449,7 +460,7 @@ class _ParseAST {
         var key = this.expectIdentifierOrKeywordOrString();
         ListWrapper.push(keys, key);
         this.expectCharacter($COLON);
-        ListWrapper.push(values, this.parseExpression());
+        ListWrapper.push(values, this.parsePipe());
       } while (this.optionalCharacter($COMMA));
       this.expectCharacter($RBRACE);
     }
@@ -457,50 +468,28 @@ class _ParseAST {
   }
 
   parseAccessMemberOrMethodCall(receiver, isSafe: boolean = false): AST {
-    var id = this.expectIdentifierOrKeyword();
+    let id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter($LPAREN)) {
-      var args = this.parseCallArguments();
+      let args = this.parseCallArguments();
       this.expectCharacter($RPAREN);
-      var fn = this.reflector.method(id);
+      let fn = this.reflector.method(id);
       return isSafe ? new SafeMethodCall(receiver, id, fn, args) :
                       new MethodCall(receiver, id, fn, args);
 
     } else {
-      var getter = this.reflector.getter(id);
-      var setter = this.reflector.setter(id);
-      var am = isSafe ? new SafeAccessMember(receiver, id, getter, setter) :
-                        new AccessMember(receiver, id, getter, setter);
-
-      if (this.optionalOperator("|")) {
-        return this.parseInlinedPipe(am);
-      } else {
-        return am;
-      }
+      let getter = this.reflector.getter(id);
+      let setter = this.reflector.setter(id);
+      return isSafe ? new SafeAccessMember(receiver, id, getter, setter) :
+                      new AccessMember(receiver, id, getter, setter);
     }
-  }
-
-  parseInlinedPipe(result) {
-    do {
-      if (this.parseAction) {
-        this.error("Cannot have a pipe in an action expression");
-      }
-      var name = this.expectIdentifierOrKeyword();
-      var args = ListWrapper.create();
-      while (this.optionalCharacter($COLON)) {
-        ListWrapper.push(args, this.parseExpression());
-      }
-      result = new Pipe(result, name, args, true);
-    } while (this.optionalOperator("|"));
-
-    return result;
   }
 
   parseCallArguments() {
     if (this.next.isCharacter($RPAREN)) return [];
     var positionals = [];
     do {
-      ListWrapper.push(positionals, this.parseExpression());
+      ListWrapper.push(positionals, this.parsePipe());
     } while (this.optionalCharacter($COMMA));
     return positionals;
   }
