@@ -18,7 +18,7 @@ To add a new dependency do the following:
 2. make sure you are in sync with `upstream/master`
 3. ensure that your `node_modules` directory is not stale or poisoned by doing a clean install with `rm -rf node_modules && npm install`
 4. add a new dependency via `npm install -D <packagename>`
-5. update npm-shrinkwrap.json with `npm shrinkwrap --dev` (see note below about the `minichain` issue)
+5. update npm-shrinkwrap.json with `npm shrinkwrap --dev`
 6. run `./tools/npm/clean-shrinkwrap.js`
 7. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`
 8. commit changes to these three files and you are done
@@ -30,37 +30,8 @@ To update existing dependency do the following:
 2. make sure you are in sync with `upstream/master`: `git fetch upstream && git rebase upstream/master`
 3. ensure that your `node_modules` directory is not stale or poisoned by doing a clean install with `rm -rf node_modules && npm install`
 4. run `npm install -D <packagename>@<version|latest>` or `npm update <packagename>` to update to the latest version that matches version constraint in `package.json`
-5. relock the dependencies with `npm shrinkwrap --dev` (see note below about the `minichain` issue)
+5. relock the dependencies with `npm shrinkwrap --dev`
 6. clean up the shrinkwrap file for review with `./tools/npm/clean-shrinkwrap.js`
 7. these steps should change 2 files: `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`. Optionally if you used `npm install ...` in the first step, `package.json` might be modified as well
 8. commit changes to these three files and you are done
 
-
-
-=== Note about `minichain` dependency ===
-
-Due to https://github.com/Bartvds/minitable/issues/2, we need to do extra dance to `tsd` and its transitive dependency `minitable` whenever we update our shrinkwrap file.
-
-1. Manually patch `node_modules/tsd/node_modules/minitable/package.json` and remove the `minichain` from the `peerDependencies` section.
-
-before:
-
-```
- "peerDependencies": {
-    "minichain": "~X.Y.Z",
-    ...
-  },
-```
-
-
-after:
-
-```
- "peerDependencies": {
-    ...
-  },
-```
-
-2. Then delete the `minichain` directory: `rm -rf node_modules/tsd/node_modules/minichain`.
-
-Afterwards resume the shrinkwrap update and cleaning steps.
