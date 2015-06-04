@@ -599,15 +599,6 @@ export function main() {
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
              });
 
-          it("should instantiate components that depends on viewInjector dependencies", function() {
-            var inj = injector(
-                [DirectiveBinding.createFromType(
-                    NeedsService,
-                    new dirAnn.Component({viewInjector: [bind('service').toValue('service')]}))],
-                null, true);
-            expect(inj.get(NeedsService).service).toEqual('service');
-          });
-
           it("should instantiate hostInjector injectables that have dependencies", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Directive({
@@ -624,7 +615,7 @@ export function main() {
             expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
           });
 
-          it("should instantiate components that depends on viewInjector dependencies", function() {
+          it("should instantiate components that depends on viewInjector dependencies", () => {
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(NeedsService, new dirAnn.Component({
                                      viewInjector: [bind('service').toValue('service')]
@@ -633,6 +624,16 @@ export function main() {
                 null, true);
             expect(inj.get(NeedsService).service).toEqual('service');
           });
+
+          it("should prioritize hostInjector over viewInjector for the same binding", () => {
+            var inj = injector(
+                ListWrapper.concat([DirectiveBinding.createFromType(NeedsService, new dirAnn.Component({
+                      hostInjector: [bind('service').toValue('hostService')],
+                      viewInjector: [bind('service').toValue('viewService')]})
+                    )], extraBindings), null, true);
+            expect(inj.get(NeedsService).service).toEqual('hostService');
+          });
+
 
           it("should instantiate directives that depend on app services", () => {
             var appInjector = Injector.resolveAndCreate(

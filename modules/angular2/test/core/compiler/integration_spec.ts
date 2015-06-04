@@ -967,6 +967,28 @@ export function main() {
                });
          }));
 
+
+      it('should prioritze hostInjector over viewInjector for the same binding',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           tb.overrideView(MyComp, new viewAnn.View({
+             template: `
+                  <directive-providing-injectable>
+                    <directive-consuming-injectable #consuming>
+                    </directive-consuming-injectable>
+                  </directive-providing-injectable>
+                `,
+             directives:
+                 [DirectiveProvidingInjectableInHostAndView, DirectiveConsumingInjectable]
+           }));
+           tb.createView(MyComp, {context: ctx})
+               .then((view) => {
+                 var comp = view.rawView.locals.get("consuming");
+                 expect(comp.injectable).toEqual("host");
+
+                 async.done();
+               });
+         }));
+
       it("should support viewInjector", inject([TestBed, AsyncTestCompleter], (tb, async) => {
            tb.overrideView(DirectiveProvidingInjectableInView, new viewAnn.View({
              template: `
@@ -1592,13 +1614,24 @@ class DirectiveProvidingInjectable {
 class DirectiveProvidingInjectableInView {
 }
 
+@Component({
+  selector: 'directive-providing-injectable',
+  hostInjector: [new Binding(InjectableService, {toValue: 'host'})],
+  viewInjector: [new Binding(InjectableService, {toValue: 'view'})]
+})
+@View({template: ''})
+@Injectable()
+class DirectiveProvidingInjectableInHostAndView {
+}
+
+
 @Component({selector: 'directive-consuming-injectable'})
 @View({template: ''})
 @Injectable()
 class DirectiveConsumingInjectable {
   injectable;
 
-  constructor(@Ancestor() injectable: InjectableService) { this.injectable = injectable; }
+  constructor(@Ancestor() @Inject(InjectableService) injectable) { this.injectable = injectable; }
 }
 
 
