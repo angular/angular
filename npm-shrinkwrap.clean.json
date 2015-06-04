@@ -4029,10 +4029,13 @@
       }
     },
     "gulp-clang-format": {
-      "version": "1.0.14",
+      "version": "1.0.19",
       "dependencies": {
+        "clang-format": {
+          "version": "1.0.17"
+        },
         "gulp-util": {
-          "version": "3.0.4",
+          "version": "3.0.5",
           "dependencies": {
             "array-differ": {
               "version": "1.0.0"
@@ -4041,7 +4044,7 @@
               "version": "1.0.2"
             },
             "beeper": {
-              "version": "1.0.0"
+              "version": "1.1.0"
             },
             "chalk": {
               "version": "1.0.0",
@@ -4081,7 +4084,7 @@
                       "version": "1.0.0",
                       "dependencies": {
                         "camelcase": {
-                          "version": "1.0.2"
+                          "version": "1.1.0"
                         },
                         "map-obj": {
                           "version": "1.0.1"
@@ -4102,7 +4105,7 @@
               "version": "3.0.0"
             },
             "lodash.template": {
-              "version": "3.5.1",
+              "version": "3.6.1",
               "dependencies": {
                 "lodash._basecopy": {
                   "version": "3.0.1"
@@ -4114,22 +4117,22 @@
                   "version": "3.0.0"
                 },
                 "lodash._isiterateecall": {
-                  "version": "3.0.7"
+                  "version": "3.0.9"
                 },
                 "lodash.escape": {
                   "version": "3.0.0"
                 },
-                "lodash.isnative": {
-                  "version": "3.0.2"
-                },
                 "lodash.keys": {
-                  "version": "3.0.7",
+                  "version": "3.1.1",
                   "dependencies": {
+                    "lodash._getnative": {
+                      "version": "3.9.0"
+                    },
                     "lodash.isarguments": {
-                      "version": "3.0.2"
+                      "version": "3.0.3"
                     },
                     "lodash.isarray": {
-                      "version": "3.0.2"
+                      "version": "3.0.3"
                     }
                   }
                 },
@@ -4176,6 +4179,9 @@
             }
           }
         },
+        "pkginfo": {
+          "version": "0.3.0"
+        },
         "stream-equal": {
           "version": "0.1.5",
           "dependencies": {
@@ -4197,9 +4203,6 @@
               }
             }
           }
-        },
-        "clang-format": {
-          "version": "1.0.17"
         }
       }
     },
