@@ -70,7 +70,9 @@ if [[ -z $ENV_SET ]]; then
   export DARTSDK
   export DART
   export PUB=${PUB:-"$DART_SDK/bin/pub"}
-  export PUB_CACHE=$DART_SDK/pub-cache
+  if [ -z "$PUB_CACHE" ]; then
+    export PUB_CACHE=$DART_SDK/pub-cache
+  fi
   export DARTANALYZER=${DARTANALYZER:-"$DART_SDK/bin/dartanalyzer"}
   export DARTDOC=${DARTDOC:-"$DART_SDK/bin/dartdoc"}
   export DART_DOCGEN=${DART_DOCGEN:-"$DART_SDK/bin/docgen"}

@@ -25,6 +25,7 @@ env:
   - MODE=js DART_CHANNEL=dev
   - MODE=dart DART_CHANNEL=stable
   - MODE=dart DART_CHANNEL=dev
+  - MODE=dart_experimental DART_CHANNEL=dev
 
 addons:
   firefox: "38.0"
