@@ -21,7 +21,7 @@ describe('MergeTrees', () => {
 
   function read(path) { return fs.readFileSync(path, "utf-8"); }
 
-  it('should copy the file from the right-most inputTree', () => {
+  it('should copy the file from the right-most inputTree with overwrite=true', () => {
     let testDir: any = {
       'tree1': {'foo.js': mockfs.file({content: 'tree1/foo.js content', mtime: new Date(1000)})},
       'tree2': {'foo.js': mockfs.file({content: 'tree2/foo.js content', mtime: new Date(1000)})},
@@ -29,7 +29,7 @@ describe('MergeTrees', () => {
     };
     mockfs(testDir);
     let treeDiffer = MakeTreeDiffers(['tree1', 'tree2', 'tree3']);
-    let treeMerger = mergeTrees(['tree1', 'tree2', 'tree3'], 'dest', {});
+    let treeMerger = mergeTrees(['tree1', 'tree2', 'tree3'], 'dest', {overwrite: true});
     treeMerger.rebuild(treeDiffer.diffTrees());
     expect(read('dest/foo.js')).toBe('tree3/foo.js content');
 
@@ -43,5 +43,26 @@ describe('MergeTrees', () => {
     mockfs(testDir);
     treeMerger.rebuild(treeDiffer.diffTrees());
     expect(read('dest/foo.js')).toBe('tree2/foo.js content');
+  });
+
+  it('should throw if duplicates are used by default', () => {
+    let testDir: any = {
+      'tree1': {'foo.js': mockfs.file({content: 'tree1/foo.js content', mtime: new Date(1000)})},
+      'tree2': {'foo.js': mockfs.file({content: 'tree2/foo.js content', mtime: new Date(1000)})},
+      'tree3': {'foo.js': mockfs.file({content: 'tree3/foo.js content', mtime: new Date(1000)})}
+    };
+    mockfs(testDir);
+    let treeDiffer = MakeTreeDiffers(['tree1', 'tree2', 'tree3']);
+    let treeMerger = mergeTrees(['tree1', 'tree2', 'tree3'], 'dest', {});
+    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).toThrow();
+
+    delete testDir.tree2['foo.js'];
+    delete testDir.tree3['foo.js'];
+    mockfs(testDir);
+    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).not.toThrow();
+
+    testDir.tree2['foo.js'] = mockfs.file({content: 'tree2/foo.js content', mtime: new Date(1000)});
+    mockfs(testDir);
+    expect(() => treeMerger.rebuild(treeDiffer.diffTrees())).toThrow();
   });
 });
