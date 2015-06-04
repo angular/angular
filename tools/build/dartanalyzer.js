@@ -19,7 +19,10 @@ module.exports = function(gulp, plugins, config) {
 
       var webFiles = [].slice.call(glob.sync('web/**/*.dart', {cwd: dir}));
 
-      var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {cwd: dir}));
+      var testFiles = config.use_ddc
+        ? []
+        : [].slice.call(glob.sync('test/**/*_spec.dart', {cwd: dir}));
+
       var analyzeFile = ['library _analyzer;'];
       libFiles.concat(testFiles).concat(webFiles).forEach(function(fileName, index) {
         if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
@@ -31,7 +34,11 @@ module.exports = function(gulp, plugins, config) {
       });
       fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
       var defer = Q.defer();
-      analyze(dir, defer.makeNodeResolver());
+      if (config.use_ddc) {
+        analyzeUsingDdc(dir, defer.makeNodeResolver());
+      } else {
+        analyze(dir, defer.makeNodeResolver());
+      }
       return defer.promise;
     });
 
@@ -94,6 +101,46 @@ module.exports = function(gulp, plugins, config) {
           error = 'Dartanalyzer showed ' + report.join(', ');
         }
         done(error);
+      });
+    }
+
+    function analyzeUsingDdc(dirName, done) {
+      var home = process.env.HOME || process.env.USERPROFILE;
+      var stream = spawn(home + '/.pub-cache/bin/dartdevc', [tempFile], {
+        // TODO(yjbanov): currently ddc output to stdout; this might change
+        stdio: [process.stdin, 'pipe', process.stderr],
+        cwd: dirName
+      });
+
+      var rl = readline.createInterface(
+          {input: stream.stdout, output: process.stdout, terminal: false});
+      var severeCount = 0;
+      var warningCount = 0;
+      rl.on('line', function(line) {
+        console.log('DDC: ' + dirName + ': ' + line);
+        if (line.startsWith('severe:')) {
+          severeCount++;
+        } else if (line.startsWith('warning:')) {
+          warningCount++;
+        }
+      });
+      stream.on('close', function() {
+        var report = [];
+        if (severeCount > 0) {
+          report.push(severeCount + ' severe error(s)');
+        }
+        if (warningCount > 0) {
+          report.push(warningCount + ' warning(s)');
+        }
+        // TODO(yjbanov): fail the build when:
+        //  - DDC analyzer is stable enough
+        //  - We have cleaned up all DDC warnings
+        console.log('DDC analyzer showed ' + report.join(', '));
+        done();
+      });
+      stream.on('error', function(e) {
+        // TODO(yjbanov): fail the build when DDC is stable enough
+        console.log('ERROR: failed to run DDC at all: ' + e);
       });
     }
   };

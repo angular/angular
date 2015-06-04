@@ -198,6 +198,12 @@ gulp.task('build/analyze.dart', dartanalyzer(gulp, gulpPlugins, {
   command: DART_SDK.ANALYZER
 }));
 
+gulp.task('build/analyze.ddc.dart', dartanalyzer(gulp, gulpPlugins, {
+  dest: CONFIG.dest.dart,
+  command: DART_SDK.ANALYZER,
+  use_ddc: true
+}));
+
 // ------------
 // pubbuild
 
