@@ -67,6 +67,12 @@ void allTests() {
       expect(metadata.properties).toContain('key2: val2');
     });
 
+    it('should parse exportAs.', () async {
+      var metadata = await readMetadata('directive_metadata_extractor/'
+          'directive_metadata_files/directive_export_as.ng_deps.dart');
+      expect(metadata.exportAs).toEqual('exportAsName');
+    });
+
     it('should parse host listeners.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/host_listeners.ng_deps.dart');

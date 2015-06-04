@@ -61,6 +61,7 @@ class _DirectiveMetadataVisitor extends Object
         hostProperties: {},
         hostAttributes: {},
         readAttributes: [],
+        exportAs: null,
         callOnDestroy: false,
         callOnChange: false,
         callOnCheck: false,
@@ -135,6 +136,9 @@ class _DirectiveMetadataVisitor extends Object
         break;
       case 'lifecycle':
         _populateLifecycle(node.expression);
+        break;
+      case 'exportAs':
+        _populateExportAs(node.expression);
         break;
     }
     return null;
@@ -223,6 +227,11 @@ class _DirectiveMetadataVisitor extends Object
     _checkMeta();
     _populateMap(
         hostAttributeValue, meta.hostAttributes, 'Directive#hostAttributes');
+  }
+
+  void _populateExportAs(Expression exportAsValue) {
+    _checkMeta();
+    meta.exportAs = _expressionToString(exportAsValue, 'Directive#exportAs');
   }
 
   void _populateLifecycle(Expression lifecycleValue) {

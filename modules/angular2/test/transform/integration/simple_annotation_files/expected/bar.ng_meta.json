@@ -10,6 +10,7 @@
     "properties": [],
     "readAttributes": [],
     "type": 1,
+    "exportAs": null,
     "callOnDestroy": false,
     "callOnCheck": false,
     "callOnInit": false,
