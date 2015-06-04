@@ -35,7 +35,8 @@ export class Locals {
     if (MapWrapper.contains(this.current, name)) {
       MapWrapper.set(this.current, name, value);
     } else {
-      throw new BaseException('Setting of new keys post-construction is not supported.');
+      throw new BaseException(
+          `Setting of new keys post-construction is not supported. Key: ${name}.`);
     }
   }
 
