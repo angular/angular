@@ -103,10 +103,10 @@ milestone.
 Rough, non-binding estimate of how much work this issue represents. Please change this assessment
 for anything you're working on to better reflect reality.
 
-* `effort: hour` -- straightforward issue that can be resolved in a few hours, e.g. < 1 day of work.
-* `effort: day` -- issue that will be a few days of work. Can be completed within a single 
+* `effort: easy` -- straightforward issue that can be resolved in a few hours, e.g. < 1 day of work.
+* `effort: medium` -- issue that will be a few days of work. Can be completed within a single 
 milestone.
-* `effort: week` -- issue that will likely take more than 1 milestone to complete.
+* `effort: tough` -- issue that will likely take more than 1 milestone to complete.
 
 <!-- We don't like these label names as 
 they're not absolute (what is one developer-hour, really?) but decided it wasn't worth arguing 
@@ -149,10 +149,8 @@ What kind of problem is this?
 ## Special Labels
 
 ### action:design
-More active discussion is needed before the issue can be worked on. Typically used for `type: 
-feature` or `type: RFC/discussion/question`
-
-<!-- TODO: Seems like this it's redundant to also have type:discussion, no? -->
+More active discussion is needed before the issue can be worked on further. Typically used for 
+`type: feature` or `type: RFC/discussion/question`
 
 [See all issues that need discussion](https://github.com/angular/angular/labels/action:%20Design)
 
