@@ -4,7 +4,8 @@ import {
   Type,
   BaseException,
   stringify,
-  CONST_EXPR
+  CONST_EXPR,
+  StringWrapper
 } from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -382,8 +383,20 @@ export class BindingData {
   createEventEmitterAccessors() {
     if (!(this.binding instanceof DirectiveBinding)) return [];
     var db = <DirectiveBinding>this.binding;
-    return ListWrapper.map(db.eventEmitters, eventName => new EventEmitterAccessor(
-                                                 eventName, reflector.getter(eventName)));
+    return ListWrapper.map(db.eventEmitters, eventConfig => {
+      let fieldName;
+      let eventName;
+      var colonIdx = eventConfig.indexOf(':');
+      if (colonIdx > -1) {
+        // long format: 'fieldName: eventName'
+        fieldName = StringWrapper.substring(eventConfig, 0, colonIdx).trim();
+        eventName = StringWrapper.substring(eventConfig, colonIdx + 1).trim();
+      } else {
+        // short format: 'name' when fieldName and eventName are the same
+        fieldName = eventName = eventConfig;
+      }
+      return new EventEmitterAccessor(eventName, reflector.getter(fieldName))
+    });
   }
 
   createHostActionAccessors() {
