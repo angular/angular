@@ -9075,7 +9075,7 @@
       }
     },
     "tsd": {
-      "version": "0.6.0",
+      "version": "0.6.1",
       "dependencies": {
         "assertion-error": {
           "version": "1.0.0"
@@ -9213,7 +9213,7 @@
           "version": "0.1.4"
         },
         "minitable": {
-          "version": "0.0.3",
+          "version": "0.0.4",
           "dependencies": {
             "minichain": {
               "version": "0.0.1"
@@ -9474,10 +9474,10 @@
               "version": "1.0.0",
               "dependencies": {
                 "package-json": {
-                  "version": "1.1.0",
+                  "version": "1.2.0",
                   "dependencies": {
                     "got": {
-                      "version": "2.9.2",
+                      "version": "3.2.0",
                       "dependencies": {
                         "duplexify": {
                           "version": "3.4.1",
