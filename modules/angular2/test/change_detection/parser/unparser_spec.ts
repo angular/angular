@@ -64,7 +64,7 @@ export function main() {
     it('should support Conditional', () => { check('a ? b : c', Conditional); });
 
     it('should support Pipe', () => {
-      var originalExp = 'a | b';
+      var originalExp = '(a | b)';
       var ast = parseBinding(originalExp).ast;
       expect(ast).toBeAnInstanceOf(Pipe);
       expect(unparser.unparse(ast)).toEqual(originalExp);
@@ -94,7 +94,7 @@ export function main() {
     it('should support SafeMethodCall', () => { check('a?.b(c, d)', SafeMethodCall); });
 
     it('should support complex expression', () => {
-      var originalExp = 'a + 3 * fn([c + d | e.f], {a: 3})[g].h && i';
+      var originalExp = 'a + 3 * fn([(c + d | e).f], {a: 3})[g].h && i';
       var ast = parseBinding(originalExp).ast;
       expect(unparser.unparse(ast)).toEqual(originalExp);
     });
