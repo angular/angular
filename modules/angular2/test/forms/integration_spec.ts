@@ -422,7 +422,6 @@ export function main() {
 
                    expect(ctx.name).toEqual("updatedValue");
                  });
-             flushMicrotasks();
            })));
 
     it("should support ng-model for single fields",
@@ -447,7 +446,6 @@ export function main() {
 
                       expect(ctx.name).toEqual("updatedValue");
                     });
-                flushMicrotasks();
               })));
 
     describe("template-driven forms", () => {
@@ -473,7 +471,6 @@ export function main() {
                         expect(form.controls['user']).toBeDefined();
                         expect(form.controls['user'].controls['login']).toBeDefined();
                       });
-                  flushMicrotasks();
                 })));
 
       it("should not create a template-driven form when ng-no-form is used",
@@ -489,7 +486,6 @@ export function main() {
 
                         expect(view.rawView.elementInjectors.length).toEqual(0);
                       });
-                  flushMicrotasks();
                 })));
 
       it("should remove controls", inject([TestBed], fakeAsync(tb => {
@@ -517,7 +513,6 @@ export function main() {
 
                                                   expect(form.controls['login']).not.toBeDefined();
                                                 });
-                                            flushMicrotasks();
                                           })));
 
       it("should remove control groups",
@@ -574,7 +569,6 @@ export function main() {
 
                         expect(ctx.name).toEqual("updatedValue");
                       });
-                  flushMicrotasks();
                 })));
 
 
@@ -697,7 +691,6 @@ export function main() {
                             .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
                         tick();
                       });
-                  flushMicrotasks();
                 })));
     });
   });

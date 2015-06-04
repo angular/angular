@@ -10,7 +10,6 @@ import {
   el,
   AsyncTestCompleter,
   fakeAsync,
-  flushMicrotasks,
   tick,
   inject
 } from 'angular2/test_lib';
