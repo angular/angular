@@ -16,6 +16,45 @@ import {default as transpileWithTraceur, TRACEUR_RUNTIME_PATH} from '../traceur/
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
 
+const kServedPaths = [
+  // Relative (to /modules) paths to benchmark directories
+  'benchmarks/src',
+  'benchmarks/src/change_detection',
+  'benchmarks/src/compiler',
+  'benchmarks/src/costs',
+  'benchmarks/src/di',
+  'benchmarks/src/element_injector',
+  'benchmarks/src/largetable',
+  'benchmarks/src/naive_infinite_scroll',
+  'benchmarks/src/tree',
+
+  // Relative (to /modules) paths to external benchmark directories
+  'benchmarks_external/src',
+  'benchmarks_external/src/compiler',
+  'benchmarks_external/src/largetable',
+  'benchmarks_external/src/naive_infinite_scroll',
+  'benchmarks_external/src/tree',
+  'benchmarks_external/src/tree/react',
+
+  // Relative (to /modules) paths to example directories
+  'examples/src/benchpress',
+  'examples/src/forms',
+  'examples/src/gestures',
+  'examples/src/hello_world',
+  'examples/src/key_events',
+  'examples/src/sourcemap',
+  'examples/src/todo',
+  'examples/src/material/button',
+  'examples/src/material/checkbox',
+  'examples/src/material/dialog',
+  'examples/src/material/grid_list',
+  'examples/src/material/input',
+  'examples/src/material/progress-linear',
+  'examples/src/material/radio',
+  'examples/src/material/switcher'
+];
+
+
 module.exports = function makeBrowserTree(options, destinationPath) {
   var modulesTree = new Funnel(
       'modules',
@@ -84,26 +123,30 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       path.relative(projectRootDir, TRACEUR_RUNTIME_PATH)
     ]
   }));
+
   var vendorScripts_benchmark =
       new Funnel('tools/build/snippets', {files: ['url_params_to_form.js'], destDir: '/'});
   var vendorScripts_benchmarks_external =
       new Funnel('node_modules/angular', {files: ['angular.js'], destDir: '/'});
 
-  var servingTrees = [];
-
-  function copyVendorScriptsTo(destDir) {
-    servingTrees.push(new Funnel(vendorScriptsTree, {srcDir: '/', destDir: destDir}));
+  // Get scripts for each benchmark or example
+  let servingTrees = kServedPaths.reduce(getServedFunnels, []);
+  function getServedFunnels(funnels, destDir) {
+    let options = {
+      srcDir: '/',
+      destDir: destDir
+    };
+    funnels.push(new Funnel(vendorScriptsTree, options));
     if (destDir.indexOf('benchmarks') > -1) {
-      servingTrees.push(new Funnel(vendorScripts_benchmark, {srcDir: '/', destDir: destDir}));
+      funnels.push(new Funnel(vendorScripts_benchmark, options));
     }
     if (destDir.indexOf('benchmarks_external') > -1) {
-      servingTrees.push(
-          new Funnel(vendorScripts_benchmarks_external, {srcDir: '/', destDir: destDir}));
+      funnels.push(new Funnel(vendorScripts_benchmarks_external, options));
     }
+    return funnels;
   }
 
   function writeScriptsForPath(relativePath, result) {
-    copyVendorScriptsTo(path.dirname(relativePath));
     return result.replace('@@FILENAME_NO_EXT', relativePath.replace(/\.\w+$/, ''));
   }
 
@@ -124,11 +167,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     replaceWithPath: writeScriptsForPath
   });
 
-  // Copy all vendor scripts into all examples and benchmarks
-  ['benchmarks/src', 'benchmarks_external/src', 'examples/src/benchpress'].forEach(
-      copyVendorScriptsTo);
-
-  var scripts = mergeTrees(servingTrees, {overwrite: true});
+  var scripts = mergeTrees(servingTrees);
   var css = new Funnel(modulesTree, {include: ["**/*.css"]});
   var polymerFiles = new Funnel('.', {
     files: [
