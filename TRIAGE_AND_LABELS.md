@@ -9,8 +9,7 @@ Every triaged issue must have four attributes assigned to it:
 
 * `priority` -- P0 through P4. P0 issues are "drop everything and do this now". P4 are nice to have.
 * `component` -- Which area of Angular knowledge this relates to.
-* `effort` -- Rough assessment of how much work this issue is. E.g. `effort: hour` means 
-"probably a few hours of work".
+* `effort` -- Rough assessment of how much work this issue.
 * `type` -- Whether this issue is a bug, feature, or other kind of task.
 
 Untriaged issues are any issues in the queue that don't yet have these four attributes. 
@@ -103,14 +102,11 @@ milestone.
 Rough, non-binding estimate of how much work this issue represents. Please change this assessment
 for anything you're working on to better reflect reality.
 
-* `effort: easy` -- straightforward issue that can be resolved in a few hours, e.g. < 1 day of work.
-* `effort: medium` -- issue that will be a few days of work. Can be completed within a single 
-milestone.
+* `effort: easy (hours)` -- straightforward issue that can be resolved in a few hours, e.g. < 1 day
+  of work.
+* `effort: medium (milestone)` -- issue that will be a few days of work. Can be completed within a 
+  single milestone.
 * `effort: tough` -- issue that will likely take more than 1 milestone to complete.
-
-<!-- We don't like these label names as 
-they're not absolute (what is one developer-hour, really?) but decided it wasn't worth arguing 
-over terms. -->
 
 ## Component
 Which area of Angular knowledge is this issue most closely related to? Helpful when deciding what
