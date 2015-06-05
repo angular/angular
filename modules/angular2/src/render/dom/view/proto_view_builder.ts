@@ -13,24 +13,17 @@ import {
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {ElementBinder, Event, HostAction} from './element_binder';
-import {setterFactory} from './property_setter_factory';
+import {PropertySetterFactory} from './property_setter_factory';
 
 import * as api from '../../api';
 
 import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
 
 export class ProtoViewBuilder {
-  rootElement;
-  variableBindings: Map<string, string>;
-  elements: List<ElementBinderBuilder>;
-  type: number;
+  variableBindings: Map<string, string> = MapWrapper.create();
+  elements: List<ElementBinderBuilder> = [];
 
-  constructor(rootElement, type: number) {
-    this.rootElement = rootElement;
-    this.elements = [];
-    this.variableBindings = MapWrapper.create();
-    this.type = type;
-  }
+  constructor(public rootElement, public type: number) {}
 
   bindElement(element, description = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
@@ -50,7 +43,7 @@ export class ProtoViewBuilder {
     MapWrapper.set(this.variableBindings, value, name);
   }
 
-  build(): api.ProtoViewDto {
+  build(setterFactory: PropertySetterFactory): api.ProtoViewDto {
     var renderElementBinders = [];
 
     var apiElementBinders = [];
@@ -63,7 +56,8 @@ export class ProtoViewBuilder {
         ebb.eventBuilder.merge(dbb.eventBuilder);
 
         MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {
-          MapWrapper.set(propertySetters, hostPropertyName, setterFactory(hostPropertyName));
+          MapWrapper.set(propertySetters, hostPropertyName,
+                         setterFactory.createSetter(hostPropertyName));
         });
 
         ListWrapper.forEach(dbb.hostActions, (hostAction) => {
@@ -79,10 +73,11 @@ export class ProtoViewBuilder {
       });
 
       MapWrapper.forEach(ebb.propertyBindings, (_, propertyName) => {
-        MapWrapper.set(propertySetters, propertyName, setterFactory(propertyName));
+        MapWrapper.set(propertySetters, propertyName, setterFactory.createSetter(propertyName));
       });
 
-      var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
+      var nestedProtoView =
+          isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build(setterFactory) : null;
       var nestedRenderProtoView =
           isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null;
       if (isPresent(nestedRenderProtoView)) {

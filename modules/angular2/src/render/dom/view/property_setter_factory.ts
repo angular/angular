@@ -13,119 +13,123 @@ import {camelCaseToDashCase, dashCaseToCamelCase} from '../util';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 const STYLE_SEPARATOR = '.';
-var propertySettersCache = StringMapWrapper.create();
-var innerHTMLSetterCache;
 const ATTRIBUTE_PREFIX = 'attr.';
-var attributeSettersCache = StringMapWrapper.create();
 const CLASS_PREFIX = 'class.';
-var classSettersCache = StringMapWrapper.create();
 const STYLE_PREFIX = 'style.';
-var styleSettersCache = StringMapWrapper.create();
 
-export function setterFactory(property: string): Function {
-  var setterFn, styleParts, styleSuffix;
-  if (StringWrapper.startsWith(property, ATTRIBUTE_PREFIX)) {
-    setterFn = attributeSetterFactory(StringWrapper.substring(property, ATTRIBUTE_PREFIX.length));
-  } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
-    setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
-  } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
-    styleParts = property.split(STYLE_SEPARATOR);
-    styleSuffix = styleParts.length > 2 ? ListWrapper.get(styleParts, 2) : '';
-    setterFn = styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
-  } else if (StringWrapper.equals(property, 'innerHtml')) {
-    if (isBlank(innerHTMLSetterCache)) {
-      innerHTMLSetterCache = (el, value) => DOM.setInnerHTML(el, value);
+export class PropertySetterFactory {
+  private _propertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
+  private _innerHTMLSetterCache: Function;
+  private _attributeSettersCache: StringMap<string, Function> = StringMapWrapper.create();
+  private _classSettersCache: StringMap<string, Function> = StringMapWrapper.create();
+  private _styleSettersCache: StringMap<string, Function> = StringMapWrapper.create();
+
+  createSetter(property: string): Function {
+    var setterFn, styleParts, styleSuffix;
+    if (StringWrapper.startsWith(property, ATTRIBUTE_PREFIX)) {
+      setterFn =
+          this._attributeSetterFactory(StringWrapper.substring(property, ATTRIBUTE_PREFIX.length));
+    } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
+      setterFn = this._classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
+    } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
+      styleParts = property.split(STYLE_SEPARATOR);
+      styleSuffix = styleParts.length > 2 ? ListWrapper.get(styleParts, 2) : '';
+      setterFn = this._styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
+    } else if (StringWrapper.equals(property, 'innerHtml')) {
+      if (isBlank(this._innerHTMLSetterCache)) {
+        this._innerHTMLSetterCache = (el, value) => DOM.setInnerHTML(el, value);
+      }
+      setterFn = this._innerHTMLSetterCache;
+    } else {
+      property = this._resolvePropertyName(property);
+      setterFn = StringMapWrapper.get(this._propertySettersCache, property);
+      if (isBlank(setterFn)) {
+        var propertySetterFn = reflector.setter(property);
+        setterFn = (receiver, value) => {
+          if (DOM.hasProperty(receiver, property)) {
+            return propertySetterFn(receiver, value);
+          }
+        };
+        StringMapWrapper.set(this._propertySettersCache, property, setterFn);
+      }
     }
-    setterFn = innerHTMLSetterCache;
-  } else {
-    property = resolvePropertyName(property);
-    setterFn = StringMapWrapper.get(propertySettersCache, property);
+    return setterFn;
+  }
+
+  private _isValidAttributeValue(attrName: string, value: any): boolean {
+    if (attrName == "role") {
+      return isString(value);
+    } else {
+      return isPresent(value);
+    }
+  }
+
+  private _attributeSetterFactory(attrName: string): Function {
+    var setterFn = StringMapWrapper.get(this._attributeSettersCache, attrName);
+    var dashCasedAttributeName;
+
     if (isBlank(setterFn)) {
-      var propertySetterFn = reflector.setter(property);
-      setterFn = function(receiver, value) {
-        if (DOM.hasProperty(receiver, property)) {
-          return propertySetterFn(receiver, value);
+      dashCasedAttributeName = camelCaseToDashCase(attrName);
+      setterFn = (element, value) => {
+        if (this._isValidAttributeValue(dashCasedAttributeName, value)) {
+          DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
+        } else {
+          if (isPresent(value)) {
+            throw new BaseException("Invalid " + dashCasedAttributeName +
+                                    " attribute, only string values are allowed, got '" +
+                                    stringify(value) + "'");
+          }
+          DOM.removeAttribute(element, dashCasedAttributeName);
         }
       };
-      StringMapWrapper.set(propertySettersCache, property, setterFn);
+      StringMapWrapper.set(this._attributeSettersCache, attrName, setterFn);
     }
+
+    return setterFn;
   }
-  return setterFn;
-}
 
-function _isValidAttributeValue(attrName: string, value: any): boolean {
-  if (attrName == "role") {
-    return isString(value);
-  } else {
-    return isPresent(value);
-  }
-}
-
-function attributeSetterFactory(attrName: string): Function {
-  var setterFn = StringMapWrapper.get(attributeSettersCache, attrName);
-  var dashCasedAttributeName;
-
-  if (isBlank(setterFn)) {
-    dashCasedAttributeName = camelCaseToDashCase(attrName);
-    setterFn = function(element, value) {
-      if (_isValidAttributeValue(dashCasedAttributeName, value)) {
-        DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
-      } else {
-        if (isPresent(value)) {
-          throw new BaseException("Invalid " + dashCasedAttributeName +
-                                  " attribute, only string values are allowed, got '" +
-                                  stringify(value) + "'");
+  private _classSetterFactory(className: string): Function {
+    var setterFn = StringMapWrapper.get(this._classSettersCache, className);
+    var dashCasedClassName;
+    if (isBlank(setterFn)) {
+      dashCasedClassName = camelCaseToDashCase(className);
+      setterFn = (element, value) => {
+        if (value) {
+          DOM.addClass(element, dashCasedClassName);
+        } else {
+          DOM.removeClass(element, dashCasedClassName);
         }
-        DOM.removeAttribute(element, dashCasedAttributeName);
-      }
-    };
-    StringMapWrapper.set(attributeSettersCache, attrName, setterFn);
+      };
+      StringMapWrapper.set(this._classSettersCache, className, setterFn);
+    }
+
+    return setterFn;
   }
 
-  return setterFn;
-}
+  private _styleSetterFactory(styleName: string, styleSuffix: string): Function {
+    var cacheKey = styleName + styleSuffix;
+    var setterFn = StringMapWrapper.get(this._styleSettersCache, cacheKey);
+    var dashCasedStyleName;
 
-function classSetterFactory(className: string): Function {
-  var setterFn = StringMapWrapper.get(classSettersCache, className);
-  var dashCasedClassName;
-  if (isBlank(setterFn)) {
-    dashCasedClassName = camelCaseToDashCase(className);
-    setterFn = function(element, value) {
-      if (value) {
-        DOM.addClass(element, dashCasedClassName);
-      } else {
-        DOM.removeClass(element, dashCasedClassName);
-      }
-    };
-    StringMapWrapper.set(classSettersCache, className, setterFn);
+    if (isBlank(setterFn)) {
+      dashCasedStyleName = camelCaseToDashCase(styleName);
+      setterFn = (element, value) => {
+        var valAsStr;
+        if (isPresent(value)) {
+          valAsStr = stringify(value);
+          DOM.setStyle(element, dashCasedStyleName, valAsStr + styleSuffix);
+        } else {
+          DOM.removeStyle(element, dashCasedStyleName);
+        }
+      };
+      StringMapWrapper.set(this._styleSettersCache, cacheKey, setterFn);
+    }
+
+    return setterFn;
   }
 
-  return setterFn;
-}
-
-function styleSetterFactory(styleName: string, styleSuffix: string): Function {
-  var cacheKey = styleName + styleSuffix;
-  var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
-  var dashCasedStyleName;
-
-  if (isBlank(setterFn)) {
-    dashCasedStyleName = camelCaseToDashCase(styleName);
-    setterFn = function(element, value) {
-      var valAsStr;
-      if (isPresent(value)) {
-        valAsStr = stringify(value);
-        DOM.setStyle(element, dashCasedStyleName, valAsStr + styleSuffix);
-      } else {
-        DOM.removeStyle(element, dashCasedStyleName);
-      }
-    };
-    StringMapWrapper.set(styleSettersCache, cacheKey, setterFn);
+  private _resolvePropertyName(attrName: string): string {
+    var mappedPropName = StringMapWrapper.get(DOM.attrToPropMap, attrName);
+    return isPresent(mappedPropName) ? mappedPropName : attrName;
   }
-
-  return setterFn;
-}
-
-function resolvePropertyName(attrName: string): string {
-  var mappedPropName = StringMapWrapper.get(DOM.attrToPropMap, attrName);
-  return isPresent(mappedPropName) ? mappedPropName : attrName;
 }
