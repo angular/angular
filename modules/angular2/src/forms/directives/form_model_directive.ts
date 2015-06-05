@@ -63,7 +63,8 @@ const formDirectiveBinding = CONST_EXPR(
   hostListeners: {
     'submit': 'onSubmit()',
   },
-  events: ['ngSubmit']
+  events: ['ngSubmit'],
+  exportAs: 'form'
 })
 export class FormModelDirective extends ControlContainerDirective implements FormDirective {
   form: ControlGroup = null;

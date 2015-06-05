@@ -17,7 +17,8 @@ const formControlBinding =
   hostInjector: [formControlBinding],
   properties: ['model: ng-model'],
   events: ['ngModel'],
-  lifecycle: [onChange]
+  lifecycle: [onChange],
+  exportAs: 'form'
 })
 export class NgModelDirective extends ControlDirective {
   control: Control;

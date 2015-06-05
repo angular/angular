@@ -60,7 +60,8 @@ const controlNameBinding =
   hostInjector: [controlNameBinding],
   properties: ['name: ng-control', 'model: ng-model'],
   events: ['ngModel'],
-  lifecycle: [onDestroy, onChange]
+  lifecycle: [onDestroy, onChange],
+  exportAs: 'form'
 })
 export class ControlNameDirective extends ControlDirective {
   _parent: ControlContainerDirective;

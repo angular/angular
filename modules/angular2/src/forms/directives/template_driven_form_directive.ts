@@ -19,7 +19,8 @@ const formDirectiveBinding = CONST_EXPR(new Binding(
   hostListeners: {
     'submit': 'onSubmit()',
   },
-  events: ['ngSubmit']
+  events: ['ngSubmit'],
+  exportAs: 'form'
 })
 export class TemplateDrivenFormDirective extends ControlContainerDirective implements
     FormDirective {

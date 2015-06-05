@@ -58,7 +58,8 @@ const controlGroupBinding = CONST_EXPR(
   selector: '[ng-control-group]',
   hostInjector: [controlGroupBinding],
   properties: ['name: ng-control-group'],
-  lifecycle: [onInit, onDestroy]
+  lifecycle: [onInit, onDestroy],
+  exportAs: 'form'
 })
 export class ControlGroupDirective extends ControlContainerDirective {
   _parent: ControlContainerDirective;
