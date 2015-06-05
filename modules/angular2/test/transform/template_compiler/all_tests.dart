@@ -103,7 +103,6 @@ void allTests() {
       output = await process(new AssetId('a', inputPath));
       _formatThenExpectEquals(output, expected);
     });
-
   });
 }
 
