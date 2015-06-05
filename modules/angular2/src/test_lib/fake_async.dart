@@ -30,8 +30,18 @@ Function fakeAsync(Function fn) {
       return new quiver.FakeAsync().run((quiver.FakeAsync async) {
         try {
           _fakeAsync = async;
-          List args = [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9]
-              .takeWhile((a) => a != _u).toList();
+          List args = [
+            a0,
+            a1,
+            a2,
+            a3,
+            a4,
+            a5,
+            a6,
+            a7,
+            a8,
+            a9
+          ].takeWhile((a) => a != _u).toList();
           var res = Function.apply(fn, args);
           _fakeAsync.flushMicrotasks();
 
