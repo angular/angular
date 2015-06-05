@@ -9,7 +9,7 @@ Every triaged issue must have four attributes assigned to it:
 
 * `priority` -- P0 through P4. P0 issues are "drop everything and do this now". P4 are nice to have.
 * `component` -- Which area of Angular knowledge this relates to.
-* `effort` -- Rough assessment of how much work this issue is. E.g. `effort: hour` means 
+* `effort` -- Rough assessment of how much work this issue is. E.g. `effort: easy` means 
 "probably a few hours of work".
 * `type` -- Whether this issue is a bug, feature, or other kind of task.
 
@@ -127,7 +127,8 @@ to work on next.
  * `comp: core/directives` -- directives 
  * `comp: core/forms` -- forms &rarr; *vsavkin*
  * `comp: core/pipes` -- pipes
- * `comp: core/templating` -- templating
+ * `comp: core/view` -- runtime processing of the `View`s
+ * `comp: core/view/compiler` -- static analysis of the templates which generate `ProtoView`s.
  * `comp: core/testbed` -- e2e tests and support for them
  * `comp: dart-transformer` -- Dart transforms &rarr; *kegluneq*, *jakemac* 
  * `comp: data-access` -- &rarr; *jeffbcross*
