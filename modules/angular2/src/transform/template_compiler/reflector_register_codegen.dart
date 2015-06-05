@@ -2,7 +2,7 @@ library angular2.transform.template_compiler.reflector_register_codegen;
 
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/property_utils.dart' as prop;
-import 'recording_reflection_capabilities.dart';
+import 'reflection_capabilities.dart';
 
 class Codegen {
   final StringBuffer _buf = new StringBuffer();
