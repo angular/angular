@@ -3,71 +3,23 @@
 import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {Observable, ObservableWrapper} from 'angular2/src/facade/async';
 import {Pipe, WrappedValue, PipeFactory} from 'angular2/src/change_detection/pipes/pipe';
+import {ObservablePipe} from 'angular2/src/change_detection/pipes/observable_pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
 import * as Rx from 'rx';
 
-export class RxPipe extends Pipe {
-  _ref: ChangeDetectorRef;
-
-  _latestValue: Object;
-  _latestReturnedValue: Object;
-
-  _subscription: Rx.IDisposable;
-  _observable: Rx.Observable<any>;
-
-  constructor(ref: ChangeDetectorRef) {
-    super();
-    this._ref = ref;
-    this._latestValue = null;
-    this._latestReturnedValue = null;
-    this._subscription = null;
-    this._observable = null;
-  }
-
-  supports(obs): boolean { return obs instanceof (<any>Rx).default.Rx.Observable }
-
-  onDestroy(): void {
-    if (isPresent(this._subscription)) {
-      this._dispose();
-    }
-  }
-
-  transform(obs: Rx.Observable<any>): any {
-    if (isBlank(this._subscription)) {
-      this._subscribe(obs);
-      return null;
-    }
-
-    if (obs !== this._observable) {
-      this._dispose();
-      return this.transform(obs);
-    }
-
-    if (this._latestValue === this._latestReturnedValue) {
-      return this._latestReturnedValue;
+export class RxPipe extends ObservablePipe {
+  supports(obs): boolean {
+    if (Rx.hasOwnProperty('default')) {
+      return obs instanceof (<any>Rx).default.Rx.Observable;
     } else {
-      this._latestReturnedValue = this._latestValue;
-      return WrappedValue.wrap(this._latestValue);
+      return obs instanceof <any>Rx.Observable;
     }
   }
 
-  _subscribe(obs: Rx.Observable<any>): void {
+  _subscribe(obs): void {
     this._observable = obs;
     this._subscription =
-        obs.subscribe(value => {this._updateLatestValue(value)}, e => { throw e; });
-  }
-
-  _dispose(): void {
-    this._subscription.dispose();
-    this._latestValue = null;
-    this._latestReturnedValue = null;
-    this._subscription = null;
-    this._observable = null;
-  }
-
-  _updateLatestValue(value: Object) {
-    this._latestValue = value;
-    this._ref.requestCheck();
+        (<any>obs).subscribe(value => {this._updateLatestValue(value)}, e => { throw e; });
   }
 }
 

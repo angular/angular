@@ -1,11 +1,11 @@
 import {bootstrap, Component, View, NgFor, NgIf, Inject} from 'angular2/angular2';
-import {httpBindings} from 'angular2/http';
+import {httpInjectables} from 'angular2/http';
 import {Http} from 'angular2/src/http/http';
 import {IHttp} from 'angular2/src/http/interfaces';
 import {Response} from 'angular2/src/http/static_response';
 import {LocalVariable} from './assign_local_directive';
 
-@Component({selector: 'http-app', appInjector: [httpBindings]})
+@Component({selector: 'http-app', appInjector: [httpInjectables]})
 @View({
   directives: [NgFor, NgIf, LocalVariable],
   template: `

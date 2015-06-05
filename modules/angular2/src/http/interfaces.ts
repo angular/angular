@@ -11,7 +11,7 @@ import {
 import {Headers} from './headers';
 import {URLSearchParams} from './url_search_params';
 
-export interface IRequestOptions {
+export interface RequestOptions {
   method?: RequestMethods;
   headers?: Headers;
   body?: URLSearchParams | FormData | string;
@@ -20,13 +20,13 @@ export interface IRequestOptions {
   cache?: RequestCacheOpts;
 }
 
-export interface IRequest {
+export interface Request {
   method: RequestMethods;
   mode: RequestModesOpts;
   credentials: RequestCredentialsOpts;
 }
 
-export interface IResponseOptions {
+export interface ResponseOptions {
   status?: number;
   statusText?: string;
   headers?: Headers | Object;
@@ -34,7 +34,7 @@ export interface IResponseOptions {
   url?: string;
 }
 
-export interface IResponse {
+export interface Response {
   headers: Headers;
   ok: boolean;
   status: number;
@@ -49,15 +49,15 @@ export interface IResponse {
   json(): Object;
 }
 
-export interface IConnectionBackend {
-  createConnection(observer: any, config: IRequest): IConnection;
-}
+export interface ConnectionBackend { createConnection(observer: any, config: Request): Connection; }
 
-export interface IConnection {
+export interface Connection {
   readyState: ReadyStates;
-  request: IRequest;
-  response: Rx.Subject<IResponse>;
+  request: Request;
+  response: Rx.Subject<Response>;
   dispose(): void;
 }
 
-export interface IHttp { (url: string, options?: IRequestOptions): Rx.Observable<IResponse> }
+// Prefixed as IHttp because used in conjunction with Http class, but interface is callable
+// constructor(@Inject(Http) http:IHttp)
+export interface IHttp { (url: string, options?: RequestOptions): Rx.Observable<Response> }

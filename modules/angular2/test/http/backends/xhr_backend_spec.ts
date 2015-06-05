@@ -50,7 +50,7 @@ export function main() {
     });
 
     it('should create a connection',
-       () => { expect(() => backend.createConnection({}, sampleRequest)).not.toThrow(); });
+       () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
 
 
     describe('XHRConnection', () => {

@@ -1,9 +1,12 @@
+import {CONST_EXPR, CONST} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 import {URLSearchParams} from './url_search_params';
 import {RequestModesOpts, RequestMethods, RequestCacheOpts, RequestCredentialsOpts} from './enums';
-import {IRequestOptions} from './interfaces';
+import {RequestOptions} from './interfaces';
+import {Injectable} from 'angular2/di';
 
-export class BaseRequestOptions {
+@Injectable()
+export class BaseRequestOptions implements RequestOptions {
   method: RequestMethods;
   headers: Headers;
   body: URLSearchParams | FormData | string;
@@ -11,16 +14,8 @@ export class BaseRequestOptions {
   credentials: RequestCredentialsOpts;
   cache: RequestCacheOpts;
 
-  constructor({method = RequestMethods.GET, headers, body, mode = RequestModesOpts.Cors,
-               credentials, cache}: IRequestOptions = {}) {
-    this.method = method;
-    this.headers = headers;
-    this.body = body;
-    this.mode = mode;
-    this.credentials = credentials;
-    this.cache = cache;
+  constructor() {
+    this.method = RequestMethods.GET;
+    this.mode = RequestModesOpts.Cors;
   }
 }
-;
-
-export var baseRequestOptions = Object.freeze(new BaseRequestOptions());

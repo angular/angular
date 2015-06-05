@@ -1,8 +1,8 @@
-import {Headers} from './Headers';
+import {Headers} from './headers';
 import {ResponseTypes} from './enums';
-import {IResponseOptions} from './interfaces';
+import {ResponseOptions} from './interfaces';
 
-export class BaseResponseOptions implements IResponseOptions {
+export class BaseResponseOptions implements ResponseOptions {
   status: number;
   headers: Headers | Object;
   statusText: string;
@@ -10,7 +10,7 @@ export class BaseResponseOptions implements IResponseOptions {
   url: string;
 
   constructor({status = 200, statusText = 'Ok', type = ResponseTypes.Default,
-               headers = new Headers(), url = ''}: IResponseOptions = {}) {
+               headers = new Headers(), url = ''}: ResponseOptions = {}) {
     this.status = status;
     this.statusText = statusText;
     this.type = type;

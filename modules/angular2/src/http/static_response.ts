@@ -1,4 +1,4 @@
-import {IResponse, IResponseOptions} from './interfaces';
+import {Response as IResponse, ResponseOptions} from './interfaces';
 import {ResponseTypes} from './enums';
 import {baseResponseOptions} from './base_response_options';
 import {BaseException, isJsObject, isString, global} from 'angular2/src/facade/lang';
@@ -15,7 +15,7 @@ export class Response implements IResponse {
   totalBytes: number;
   headers: Headers;
   constructor(private body?: string | Object | ArrayBuffer | JSON | FormData | Blob,
-              {status, statusText, headers, type, url}: IResponseOptions = baseResponseOptions) {
+              {status, statusText, headers, type, url}: ResponseOptions = baseResponseOptions) {
     if (isJsObject(headers)) {
       headers = new Headers(headers);
     }
@@ -32,16 +32,11 @@ export class Response implements IResponse {
   }
 
   json(): JSON {
-    var parsed;
     if (isJsObject(this.body)) {
       return <JSON>this.body;
     } else if (isString(this.body)) {
-      try {
-        parsed = global.JSON.parse(<string>this.body);
-      } catch (e) {
-      }
+      return global.JSON.parse(<string>this.body);
     }
-    return parsed;
   }
 
   text(): string { return this.body.toString(); }
