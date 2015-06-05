@@ -14,7 +14,7 @@ void initReflector(reflector) {
       'parameters': const [const []],
       'annotations': const [
         const Component(selector: 'hello-app'),
-        const View(template: '{{greeting}}')
+        const View(template: '<div [a]="b">{{greeting}}</div>')
       ]
     });
 }

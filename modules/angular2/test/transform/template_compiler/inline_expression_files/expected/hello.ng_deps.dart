@@ -14,9 +14,13 @@ void initReflector(reflector) {
       'parameters': const [const []],
       'annotations': const [
         const Component(selector: 'hello-app'),
-        const View(template: '{{greeting}}')
+        const View(template: '<div [a]="b">{{greeting}}</div>')
       ]
     })
-    ..registerGetters({'greeting': (o) => o.greeting})
-    ..registerSetters({'greeting': (o, v) => o.greeting = v});
+    ..registerGetters({'b': (o) => o.b, 'greeting': (o) => o.greeting})
+    ..registerSetters({
+      'b': (o, v) => o.b = v,
+      'greeting': (o, v) => o.greeting = v,
+      'a': (o, v) => o.a = v
+    });
 }

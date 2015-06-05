@@ -92,6 +92,18 @@ void allTests() {
       output = await process(new AssetId('a', inputPath));
       _formatThenExpectEquals(output, expected);
     });
+
+    it('should create the same output for multiple calls.', () async {
+      var inputPath =
+          'template_compiler/inline_expression_files/hello.ng_deps.dart';
+      var expected = readFile(
+          'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
+      var output = await process(new AssetId('a', inputPath));
+      _formatThenExpectEquals(output, expected);
+      output = await process(new AssetId('a', inputPath));
+      _formatThenExpectEquals(output, expected);
+    });
+
   });
 }
 
