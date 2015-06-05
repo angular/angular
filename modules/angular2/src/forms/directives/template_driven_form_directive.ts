@@ -58,7 +58,8 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     this._later(_ => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
-        container.removeControl(dir.name) container.updateValidity();
+        container.removeControl(dir.name);
+        container.updateValidity();
       }
     });
   }
@@ -76,7 +77,8 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     this._later(_ => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
-        container.removeControl(dir.name) container.updateValidity();
+        container.removeControl(dir.name);
+        container.updateValidity();
       }
     });
   }

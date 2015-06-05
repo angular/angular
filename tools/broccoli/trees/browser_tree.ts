@@ -38,7 +38,8 @@ const kServedPaths = [
 
   // Relative (to /modules) paths to example directories
   'examples/src/benchpress',
-  'examples/src/forms',
+  'examples/src/model_driven_forms',
+  'examples/src/template_driven_forms',
   'examples/src/gestures',
   'examples/src/hello_world',
   'examples/src/http',
