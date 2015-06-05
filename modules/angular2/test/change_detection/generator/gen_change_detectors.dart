@@ -10,7 +10,7 @@ import '../simple_watch_config.dart';
 void main(List<String> args) {
   var buf = new StringBuffer('var $_MAP_NAME = {');
   var codegen = new Codegen();
-  var allDefs = getAllDefinitions('propName');
+  var allDefs = getAllDefinitions();
   for (var i = 0; i < allDefs.length; ++i) {
     var className = 'ChangeDetector${i}';
     codegen.generate('dynamic', className, allDefs[i]);

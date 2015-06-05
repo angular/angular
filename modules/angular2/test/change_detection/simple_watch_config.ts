@@ -5,11 +5,10 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 
 var _parser = new Parser(new Lexer());
 
-function _createChangeDetectorDefinition(id: string, propName: string,
-                                         expression: string): ChangeDetectorDefinition {
+function _createChangeDetectorDefinition(id: string, expression: string): ChangeDetectorDefinition {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var ast = _parser.parseBinding(expression, 'location');
-  var bindingRecords = [BindingRecord.createForElement(ast, 0, propName)];
+  var bindingRecords = [BindingRecord.createForElement(ast, 0, PROP_NAME)];
 
   var strategy = null;
   var variableBindings = [];
@@ -18,23 +17,24 @@ function _createChangeDetectorDefinition(id: string, propName: string,
                                       directiveRecords);
 }
 
+export var PROP_NAME = 'propName';
+
 /**
  * In this case, we expect `id` and `expression` to be the same string.
  */
-export function getDefinition(id: string, propName: string): ChangeDetectorDefinition {
-  // TODO(kegluneq): Remove `propName`?
+export function getDefinition(id: string): ChangeDetectorDefinition {
   if (ListWrapper.indexOf(_availableDefinitions, id) < 0) {
     throw `No ChangeDetectorDefinition for ${id} available. Please modify this file if necessary.`;
   }
-  return _createChangeDetectorDefinition(id, propName, id);
+  return _createChangeDetectorDefinition(id, id);
 }
 
 /**
  * Get all available ChangeDetectorDefinition objects. Used to pre-generate Dart
  * `ChangeDetector` classes.
  */
-export function getAllDefinitions(propName: string): List<ChangeDetectorDefinition> {
-  return ListWrapper.map(_availableDefinitions, (id) => getDefinition(id, propName));
+export function getAllDefinitions(): List<ChangeDetectorDefinition> {
+  return ListWrapper.map(_availableDefinitions, (id) => getDefinition(id));
 }
 
 var _availableDefinitions = [

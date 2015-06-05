@@ -74,7 +74,7 @@ export function main() {
 
       function _bindSimpleValue(expression: string, context = null) {
         var dispatcher = new TestDispatcher();
-        var protoCd = _getProtoChangeDetector(getDefinition(expression, 'propName'));
+        var protoCd = _getProtoChangeDetector(getDefinition(expression));
         var cd = protoCd.instantiate(dispatcher);
 
         var locals = null;
