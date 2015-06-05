@@ -1,4 +1,4 @@
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive} from 'angular2/src/core/annotations/decorators';
@@ -15,11 +15,16 @@ const formDirectiveBinding = CONST_EXPR(new Binding(
 
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
-  hostInjector: [formDirectiveBinding]
+  hostInjector: [formDirectiveBinding],
+  hostListeners: {
+    'submit': 'onSubmit()',
+  },
+  events: ['ngSubmit']
 })
 export class TemplateDrivenFormDirective extends ControlContainerDirective implements
     FormDirective {
   form: ControlGroup;
+  ngSubmit = new EventEmitter();
 
   constructor() {
     super();
@@ -34,12 +39,15 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
 
   get value(): any { return this.form.value; }
 
+  get errors(): any { return this.form.errors; }
+
   addControl(dir: ControlDirective): void {
     this._later(_ => {
-      var group = this._findContainer(dir.path);
+      var container = this._findContainer(dir.path);
       var c = new Control("");
       setUpControl(c, dir);
-      group.addControl(dir.name, c);
+      container.addControl(dir.name, c);
+      c.updateValidity();
     });
   }
 
@@ -47,23 +55,28 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
 
   removeControl(dir: ControlDirective): void {
     this._later(_ => {
-      var c = this._findContainer(dir.path);
-      if (isPresent(c)) c.removeControl(dir.name)
+      var container = this._findContainer(dir.path);
+      if (isPresent(container)) {
+        container.removeControl(dir.name) container.updateValidity();
+      }
     });
   }
 
   addControlGroup(dir: ControlGroupDirective): void {
     this._later(_ => {
-      var group = this._findContainer(dir.path);
+      var container = this._findContainer(dir.path);
       var c = new ControlGroup({});
-      group.addControl(dir.name, c);
+      container.addControl(dir.name, c);
+      c.updateValidity();
     });
   }
 
   removeControlGroup(dir: ControlGroupDirective): void {
     this._later(_ => {
-      var c = this._findContainer(dir.path);
-      if (isPresent(c)) c.removeControl(dir.name)
+      var container = this._findContainer(dir.path);
+      if (isPresent(container)) {
+        container.removeControl(dir.name) container.updateValidity();
+      }
     });
   }
 
@@ -72,6 +85,11 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
       var c = <Control>this.form.find(dir.path);
       c.updateValue(value);
     });
+  }
+
+  onSubmit() {
+    ObservableWrapper.callNext(this.ngSubmit, null);
+    return false;
   }
 
   _findContainer(path: List<string>): ControlGroup {

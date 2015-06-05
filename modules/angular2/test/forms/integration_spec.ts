@@ -74,6 +74,25 @@ export function main() {
              });
        }));
 
+    it("should emit ng-submit event on submit",
+       inject([TestBed], fakeAsync(tb => {
+                var form = new ControlGroup({});
+                var ctx = MyComp.create({form: form, name: 'old'});
+
+                var t =
+                    `<div><form [ng-form-model]="form" (ng-submit)="name='updated'"></form></div>`;
+
+                tb.createView(MyComp, {context: ctx, html: t})
+                    .then((view) => {
+                      var form = view.querySelector("form");
+
+                      dispatchEvent(form, "submit");
+                      tick();
+
+                      expect(ctx.name).toEqual("updated");
+                    });
+              })));
+
     it("should work with single controls", inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var control = new Control("loginValue");
          var ctx = MyComp.create({form: control});
@@ -470,6 +489,23 @@ export function main() {
 
                         expect(form.controls['user']).toBeDefined();
                         expect(form.controls['user'].controls['login']).toBeDefined();
+                      });
+                })));
+
+      it("should emit ng-submit event on submit",
+         inject([TestBed], fakeAsync(tb => {
+                  var ctx = MyComp.create({name: 'old'});
+
+                  var t = `<div><form (ng-submit)="name='updated'"></form></div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        var form = view.querySelector("form");
+
+                        dispatchEvent(form, "submit");
+                        tick();
+
+                        expect(ctx.name).toEqual("updated");
                       });
                 })));
 

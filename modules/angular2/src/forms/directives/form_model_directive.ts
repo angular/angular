@@ -1,5 +1,7 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+
 import {Directive, onChange} from 'angular2/angular2';
 import {FORWARD_REF, Binding} from 'angular2/di';
 import {ControlDirective} from './control_directive';
@@ -57,11 +59,16 @@ const formDirectiveBinding = CONST_EXPR(
   selector: '[ng-form-model]',
   hostInjector: [formDirectiveBinding],
   properties: ['form: ng-form-model'],
-  lifecycle: [onChange]
+  lifecycle: [onChange],
+  hostListeners: {
+    'submit': 'onSubmit()',
+  },
+  events: ['ngSubmit']
 })
 export class FormModelDirective extends ControlContainerDirective implements FormDirective {
   form: ControlGroup = null;
   directives: List<ControlDirective>;
+  ngSubmit = new EventEmitter();
 
   constructor() {
     super();
@@ -92,6 +99,11 @@ export class FormModelDirective extends ControlContainerDirective implements For
   updateModel(dir: ControlDirective, value: any): void {
     var c  = <Control>this.form.find(dir.path);
     c.updateValue(value);
+  }
+
+  onSubmit() {
+    ObservableWrapper.callNext(this.ngSubmit, null);
+    return false;
   }
 
   _updateDomValue() {
