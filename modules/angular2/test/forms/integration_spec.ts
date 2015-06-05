@@ -24,7 +24,6 @@ import {NgIf} from 'angular2/directives';
 import {
   Control,
   ControlGroup,
-  RequiredValidatorDirective,
   TemplateDrivenFormDirective,
   formDirectives,
   Validators,
@@ -752,7 +751,7 @@ class WrappedValue implements ControlValueAccessor {
 }
 
 @Component({selector: "my-comp"})
-@View({directives: [formDirectives, WrappedValue, RequiredValidatorDirective, NgIf]})
+@View({directives: [formDirectives, WrappedValue, NgIf]})
 class MyComp {
   form: any;
   name: string;

@@ -8,6 +8,7 @@ import {TemplateDrivenFormDirective} from './directives/template_driven_form_dir
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {SelectControlValueAccessor} from './directives/select_control_value_accessor';
+import {RequiredValidatorDirective} from './validator_directives';
 
 export {ControlNameDirective} from './directives/control_name_directive';
 export {FormControlDirective} from './directives/form_control_directive';
@@ -20,6 +21,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {SelectControlValueAccessor} from './directives/select_control_value_accessor';
+export {RequiredValidatorDirective} from './validator_directives';
 
 /**
  *
@@ -40,5 +42,7 @@ export const formDirectives: List<Type> = CONST_EXPR([
 
   DefaultValueAccessor,
   CheckboxControlValueAccessor,
-  SelectControlValueAccessor
+  SelectControlValueAccessor,
+
+  RequiredValidatorDirective
 ]);
