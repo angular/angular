@@ -1,4 +1,4 @@
-import {isBlank, isPresent, CONST, Json} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Json} from 'angular2/src/facade/lang';
 import {Pipe, PipeFactory} from './pipe';
 
 /**
@@ -27,48 +27,9 @@ import {Pipe, PipeFactory} from './pipe';
  * @exportedAs angular2/pipes
  */
 export class JsonPipe extends Pipe {
-  _latestRef: any;
-  _latestValue: any;
-  constructor() {
-    super();
-    this._latestRef = null;
-    this._latestValue = null;
-  }
-
-  onDestroy(): void {
-    if (isPresent(this._latestValue)) {
-      this._latestRef = null;
-      this._latestValue = null;
-    }
-  }
-
   supports(obj): boolean { return true; }
 
-  transform(value): any {
-    if (value === this._latestRef) {
-      return this._latestValue;
-    } else {
-      return this._prettyPrint(value);
-    }
-  }
+  transform(value): string { return Json.stringify(value); }
 
-  _prettyPrint(value) {
-    this._latestRef = value;
-    this._latestValue = Json.stringify(value);
-    return this._latestValue;
-  }
-}
-
-/**
- * Provides a factory for [JsonPipeFactory].
- *
- * @exportedAs angular2/pipes
- */
-@CONST()
-export class JsonPipeFactory extends PipeFactory {
-  constructor() { super(); }
-
-  supports(obj): boolean { return true; }
-
-  create(cdRef): Pipe { return new JsonPipe(); }
+  create(cdRef): Pipe { return this }
 }

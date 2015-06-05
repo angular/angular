@@ -14,6 +14,7 @@ import {
   IS_DARTIUM
 } from 'angular2/test_lib';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {JsonPipe} from 'angular2/src/change_detection/pipes/json_pipe';
 
@@ -25,6 +26,7 @@ export function main() {
     var inceptionObjString;
     var catString;
     var pipe;
+    var collection;
 
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 
@@ -38,6 +40,7 @@ export function main() {
 
       catString = 'Inception Cat';
       pipe = new JsonPipe();
+      collection = [];
     });
 
     describe("supports", () => {
@@ -72,9 +75,23 @@ export function main() {
         expect(dream1).toEqual(dream2);
       });
 
-      it("should return same value when nothing has changed since the last call", () => {
+      it("should return same ref when nothing has changed since the last call", () => {
         expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString);
         expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString);
+      });
+
+
+      it("should return a new value when something changed but the ref hasn't", () => {
+        var stringCollection = '[]';
+        var stringCollectionWith1 = '[\n' +
+                                    '  1' +
+                                    '\n]';
+
+        expect(pipe.transform(collection)).toEqual(stringCollection);
+
+        ListWrapper.push(collection, 1);
+
+        expect(pipe.transform(collection)).toEqual(stringCollectionWith1);
       });
 
     });

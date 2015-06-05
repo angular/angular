@@ -1,5 +1,5 @@
 import {DynamicProtoChangeDetector, JitProtoChangeDetector} from './proto_change_detector';
-import {PipeFactory} from './pipes/pipe';
+import {PipeFactory, Pipe} from './pipes/pipe';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
@@ -7,7 +7,7 @@ import {ObservablePipeFactory} from './pipes/observable_pipe';
 import {PromisePipeFactory} from './pipes/promise_pipe';
 import {UpperCaseFactory} from './pipes/uppercase_pipe';
 import {LowerCaseFactory} from './pipes/lowercase_pipe';
-import {JsonPipeFactory} from './pipes/json_pipe';
+import {JsonPipe} from './pipes/json_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Injectable} from 'angular2/src/di/decorators';
@@ -55,7 +55,7 @@ export var lowercase: List<PipeFactory> = [new LowerCaseFactory(), new NullPipeF
  *
  * @exportedAs angular2/pipes
  */
-export var json: List<PipeFactory> = [new JsonPipeFactory(), new NullPipeFactory()];
+export var json: List<PipeFactory | Pipe> = [new JsonPipe(), new NullPipeFactory()];
 
 export var defaultPipes = {
   "iterableDiff": iterableDiff,
