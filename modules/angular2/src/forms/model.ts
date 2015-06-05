@@ -1,4 +1,4 @@
-import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {Validators} from './validators';
@@ -21,6 +21,24 @@ export function isControl(c: Object): boolean {
   return c instanceof AbstractControl;
 }
 
+function _find(c: AbstractControl, path: List<string | number>| string) {
+  if (isBlank(path)) return null;
+  if (!(path instanceof List)) {
+    path = StringWrapper.split(<string>path, new RegExp("/"));
+  }
+  if (ListWrapper.isEmpty(path)) return null;
+
+  return ListWrapper.reduce(<List<string | number>>path, (v, name) => {
+    if (v instanceof ControlGroup) {
+      return isPresent(v.controls[name]) ? v.controls[name] : null;
+    } else if (v instanceof ControlArray) {
+      var index = <number>name;
+      return isPresent(v.at(index)) ? v.at(index) : null;
+    } else {
+      return null;
+    }
+  }, c);
+}
 
 /**
  * Omitting from external API doc as this is really an abstract internal concept.
@@ -31,7 +49,7 @@ export class AbstractControl {
   _errors: StringMap<string, any>;
   _pristine: boolean;
   _touched: boolean;
-  _parent: any; /* ControlGroup | ControlArray */
+  _parent: ControlGroup | ControlArray;
   validator: Function;
 
   _valueChanges: EventEmitter;
@@ -78,6 +96,7 @@ export class AbstractControl {
 
     this._errors = this.validator(this);
     this._status = isPresent(this._errors) ? INVALID : VALID;
+
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValidity({onlySelf: onlySelf});
     }
@@ -99,6 +118,21 @@ export class AbstractControl {
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
     }
+  }
+
+  find(path: List<string | number>| string): AbstractControl { return _find(this, path); }
+
+  getError(errorCode: string, path: List<string> = null) {
+    var c = this.find(path);
+    if (isPresent(c) && isPresent(c._errors)) {
+      return StringMapWrapper.get(c._errors, errorCode);
+    } else {
+      return null;
+    }
+  }
+
+  hasError(errorCode: string, path: List<string> = null) {
+    return isPresent(this.getError(errorCode, path));
   }
 
   _updateValue(): void {}
@@ -168,7 +202,10 @@ export class ControlGroup extends AbstractControl {
     this.updateValidity({onlySelf: true});
   }
 
-  addControl(name: string, c: AbstractControl) { this.controls[name] = c; }
+  addControl(name: string, c: AbstractControl) {
+    this.controls[name] = c;
+    c.setParent(this);
+  }
 
   removeControl(name: string) { StringMapWrapper.delete(this.controls, name); }
 
@@ -185,18 +222,6 @@ export class ControlGroup extends AbstractControl {
   contains(controlName: string): boolean {
     var c = StringMapWrapper.contains(this.controls, controlName);
     return c && this._included(controlName);
-  }
-
-  find(path: string | List<string>): AbstractControl {
-    if (!(path instanceof List)) {
-      path = StringWrapper.split(<string>path, new RegExp("/"));
-    }
-
-    return ListWrapper.reduce(
-        <List<string>>path, (v, name) => v instanceof ControlGroup && isPresent(v.controls[name]) ?
-                                                          v.controls[name] :
-                                                          null,
-                                                      this);
   }
 
   _setParentForControls() {

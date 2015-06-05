@@ -148,25 +148,6 @@ export function main() {
         });
       });
 
-      describe("find", () => {
-        var g;
-        beforeEach(() => {
-          g = new ControlGroup(
-              {"one": new Control("111"), "nested": new ControlGroup({"two": new Control("222")})});
-        });
-
-        it("should return a control if it is present", () => {
-          expect(g.find(["nested", "two"]).value).toEqual("222");
-          expect(g.find(["one"]).value).toEqual("111");
-          expect(g.find("nested/two").value).toEqual("222");
-          expect(g.find("one").value).toEqual("111");
-        });
-
-        it("should return null otherwise", () => {
-          expect(g.find("invalid")).toBeNull();
-          expect(g.find("one/invalid")).toBeNull();
-        });
-      });
 
       describe("validator", () => {
         it("should run the validator with the initial value (valid)", () => {
@@ -349,164 +330,211 @@ export function main() {
                                                // hard to test without hacking zones
                                            }));
         });
+
+        describe("getError", () => {
+          it("should return the error when it is present", () => {
+            var c = new Control("", Validators.required);
+            var g = new ControlGroup({"one": c});
+            expect(g.getError("required", ["one"])).toEqual(true);
+          });
+
+          it("should return null otherwise", () => {
+            var c = new Control("not empty", Validators.required);
+            var g = new ControlGroup({"one": c});
+            expect(g.getError("required", ["one"])).toEqual(null);
+            expect(g.getError("required", ["invalid"])).toEqual(null);
+          });
+        });
+      });
+    });
+
+    describe("ControlArray", () => {
+      describe("adding/removing", () => {
+        var a;
+        var c1, c2, c3;
+
+        beforeEach(() => {
+          a = new ControlArray([]);
+          c1 = new Control(1);
+          c2 = new Control(2);
+          c3 = new Control(3);
+        });
+
+        it("should support pushing", () => {
+          a.push(c1);
+          expect(a.length).toEqual(1);
+          expect(a.controls).toEqual([c1]);
+        });
+
+        it("should support removing", () => {
+          a.push(c1);
+          a.push(c2);
+          a.push(c3);
+
+          a.removeAt(1);
+
+          expect(a.controls).toEqual([c1, c3]);
+        });
+
+        it("should support inserting", () => {
+          a.push(c1);
+          a.push(c3);
+
+          a.insert(1, c2);
+
+          expect(a.controls).toEqual([c1, c2, c3]);
+        });
       });
 
-      describe("ControlArray", () => {
-        describe("adding/removing", () => {
-          var a;
-          var c1, c2, c3;
-
-          beforeEach(() => {
-            a = new ControlArray([]);
-            c1 = new Control(1);
-            c2 = new Control(2);
-            c3 = new Control(3);
-          });
-
-          it("should support pushing", () => {
-            a.push(c1);
-            expect(a.length).toEqual(1);
-            expect(a.controls).toEqual([c1]);
-          });
-
-          it("should support removing", () => {
-            a.push(c1);
-            a.push(c2);
-            a.push(c3);
-
-            a.removeAt(1);
-
-            expect(a.controls).toEqual([c1, c3]);
-          });
-
-          it("should support inserting", () => {
-            a.push(c1);
-            a.push(c3);
-
-            a.insert(1, c2);
-
-            expect(a.controls).toEqual([c1, c2, c3]);
-          });
+      describe("value", () => {
+        it("should be the reduced value of the child controls", () => {
+          var a = new ControlArray([new Control(1), new Control(2)]);
+          expect(a.value).toEqual([1, 2]);
         });
 
-        describe("value", () => {
-          it("should be the reduced value of the child controls", () => {
-            var a = new ControlArray([new Control(1), new Control(2)]);
-            expect(a.value).toEqual([1, 2]);
-          });
+        it("should be an empty array when there are no child controls", () => {
+          var a = new ControlArray([]);
+          expect(a.value).toEqual([]);
+        });
+      });
 
-          it("should be an empty array when there are no child controls", () => {
-            var a = new ControlArray([]);
-            expect(a.value).toEqual([]);
-          });
+      describe("validator", () => {
+        it("should run the validator with the initial value (valid)", () => {
+          var a = new ControlArray(
+              [new Control(1, Validators.required), new Control(2, Validators.required)]);
+
+          expect(a.valid).toBe(true);
+          expect(a.errors).toBe(null);
         });
 
-        describe("validator", () => {
-          it("should run the validator with the initial value (valid)", () => {
-            var a = new ControlArray(
-                [new Control(1, Validators.required), new Control(2, Validators.required)]);
+        it("should run the validator with the initial value (invalid)", () => {
+          var a = new ControlArray([
+            new Control(1, Validators.required),
+            new Control(null, Validators.required),
+            new Control(2, Validators.required)
+          ]);
 
-            expect(a.valid).toBe(true);
-            expect(a.errors).toBe(null);
-          });
-
-          it("should run the validator with the initial value (invalid)", () => {
-            var a = new ControlArray([
-              new Control(1, Validators.required),
-              new Control(null, Validators.required),
-              new Control(2, Validators.required)
-            ]);
-
-            expect(a.valid).toBe(false);
-            expect(a.errors).toEqual({"required": [a.controls[1]]});
-          });
-
-          it("should run the validator when the value changes", () => {
-            var a = new ControlArray([]);
-            var c = new Control(null, Validators.required);
-            a.push(c);
-            expect(a.valid).toBe(false);
-
-            c.updateValue("some value");
-
-            expect(a.valid).toBe(true);
-            expect(a.errors).toBe(null);
-          });
+          expect(a.valid).toBe(false);
+          expect(a.errors).toEqual({"required": [a.controls[1]]});
         });
 
-        describe("dirty", () => {
-          var c, a;
+        it("should run the validator when the value changes", () => {
+          var a = new ControlArray([]);
+          var c = new Control(null, Validators.required);
+          a.push(c);
+          expect(a.valid).toBe(false);
 
-          beforeEach(() => {
-            c = new Control('value');
-            a = new ControlArray([c]);
-          });
+          c.updateValue("some value");
 
-          it("should be false after creating a control", () => { expect(a.dirty).toEqual(false); });
+          expect(a.valid).toBe(true);
+          expect(a.errors).toBe(null);
+        });
+      });
 
-          it("should be false after changing the value of the control", () => {
-            c.markAsDirty();
+      describe("dirty", () => {
+        var c, a;
 
-            expect(a.dirty).toEqual(true);
-          });
+        beforeEach(() => {
+          c = new Control('value');
+          a = new ControlArray([c]);
         });
 
-        describe("valueChanges", () => {
-          var a, c1, c2;
+        it("should be false after creating a control", () => { expect(a.dirty).toEqual(false); });
 
-          beforeEach(() => {
-            c1 = new Control("old1");
-            c2 = new Control("old2");
-            a = new ControlArray([c1, c2]);
-          });
+        it("should be false after changing the value of the control", () => {
+          c.markAsDirty();
 
-          it("should fire an event after the value has been updated",
-             inject([AsyncTestCompleter], (async) => {
-               ObservableWrapper.subscribe(a.valueChanges, (value) => {
-                 expect(a.value).toEqual(['new1', 'old2']);
-                 expect(value).toEqual(['new1', 'old2']);
-                 async.done();
-               });
-               c1.updateValue("new1");
-             }));
-
-          it("should fire an event after the control's observable fired an event",
-             inject([AsyncTestCompleter], (async) => {
-               var controlCallbackIsCalled = false;
-
-               ObservableWrapper.subscribe(c1.valueChanges,
-                                           (value) => { controlCallbackIsCalled = true; });
-
-               ObservableWrapper.subscribe(a.valueChanges, (value) => {
-                 expect(controlCallbackIsCalled).toBe(true);
-                 async.done();
-               });
-
-               c1.updateValue("new1");
-             }));
-
-          it("should fire an event when a control is removed",
-             inject([AsyncTestCompleter], (async) => {
-               ObservableWrapper.subscribe(a.valueChanges, (value) => {
-                 expect(value).toEqual(['old1']);
-                 async.done();
-               });
-
-               a.removeAt(1);
-             }));
-
-          it("should fire an event when a control is added",
-             inject([AsyncTestCompleter], (async) => {
-               a.removeAt(1);
-
-               ObservableWrapper.subscribe(a.valueChanges, (value) => {
-                 expect(value).toEqual(['old1', 'old2']);
-                 async.done();
-               });
-
-               a.push(c2);
-             }));
+          expect(a.dirty).toEqual(true);
         });
+      });
+
+      describe("valueChanges", () => {
+        var a, c1, c2;
+
+        beforeEach(() => {
+          c1 = new Control("old1");
+          c2 = new Control("old2");
+          a = new ControlArray([c1, c2]);
+        });
+
+        it("should fire an event after the value has been updated",
+           inject([AsyncTestCompleter], (async) => {
+             ObservableWrapper.subscribe(a.valueChanges, (value) => {
+               expect(a.value).toEqual(['new1', 'old2']);
+               expect(value).toEqual(['new1', 'old2']);
+               async.done();
+             });
+             c1.updateValue("new1");
+           }));
+
+        it("should fire an event after the control's observable fired an event",
+           inject([AsyncTestCompleter], (async) => {
+             var controlCallbackIsCalled = false;
+
+             ObservableWrapper.subscribe(c1.valueChanges,
+                                         (value) => { controlCallbackIsCalled = true; });
+
+             ObservableWrapper.subscribe(a.valueChanges, (value) => {
+               expect(controlCallbackIsCalled).toBe(true);
+               async.done();
+             });
+
+             c1.updateValue("new1");
+           }));
+
+        it("should fire an event when a control is removed",
+           inject([AsyncTestCompleter], (async) => {
+             ObservableWrapper.subscribe(a.valueChanges, (value) => {
+               expect(value).toEqual(['old1']);
+               async.done();
+             });
+
+             a.removeAt(1);
+           }));
+
+        it("should fire an event when a control is added", inject([AsyncTestCompleter], (async) => {
+             a.removeAt(1);
+
+             ObservableWrapper.subscribe(a.valueChanges, (value) => {
+               expect(value).toEqual(['old1', 'old2']);
+               async.done();
+             });
+
+             a.push(c2);
+           }));
+      });
+    });
+
+    describe("find", () => {
+      it("should return null when path is null", () => {
+        var g = new ControlGroup({});
+        expect(g.find(null)).toEqual(null);
+      });
+
+      it("should return null when path is empty", () => {
+        var g = new ControlGroup({});
+        expect(g.find([])).toEqual(null);
+      });
+
+      it("should return null when path is invalid", () => {
+        var g = new ControlGroup({});
+        expect(g.find(["one", "two"])).toEqual(null);
+      });
+
+      it("should return a child of a control group", () => {
+        var g = new ControlGroup(
+            {"one": new Control("111"), "nested": new ControlGroup({"two": new Control("222")})});
+
+        expect(g.find(["nested", "two"]).value).toEqual("222");
+        expect(g.find(["one"]).value).toEqual("111");
+        expect(g.find("nested/two").value).toEqual("222");
+        expect(g.find("one").value).toEqual("111");
+      });
+
+      it("should return an element of an array", () => {
+        var g = new ControlGroup({"array": new ControlArray([new Control("111")])});
+
+        expect(g.find(["array", 0]).value).toEqual("111");
       });
     });
   });
