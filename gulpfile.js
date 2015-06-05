@@ -497,6 +497,33 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
 });
 
 
+gulp.task('test.unit.dartvm', function (done) {
+  runSequence(
+    'build/tree.dart',
+    'build/pubspec.dart',
+    '!build/change_detect.dart',
+    '!test.unit.dartvm/run',
+    function(error) {
+      // if initial build failed (likely due to build or formatting step) then exit
+      // otherwise karma server doesn't start and we can't continue running properly
+      if (error) {
+        done(error);
+        return;
+      }
+
+      watch('modules/angular2/**', { ignoreInitial: true }, [
+        '!build/tree.dart',
+        '!test.unit.dartvm/run'
+      ]);
+    }
+  );
+});
+
+gulp.task('!test.unit.dartvm/run', runServerDartTests(gulp, gulpPlugins, {
+  dir: 'dist/dart/angular2'
+}));
+
+
 gulp.task('test.unit.tools/ci', function(done) {
   runJasmineTests(['dist/tools/**/*.spec.js', 'tools/**/*.spec.js'], done);
 });
