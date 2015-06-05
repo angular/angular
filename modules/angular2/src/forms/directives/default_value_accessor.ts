@@ -1,6 +1,7 @@
 import {Directive} from 'angular2/angular2';
 import {ControlDirective} from './control_directive';
 import {ControlValueAccessor} from './control_value_accessor';
+import {isBlank} from 'angular2/src/facade/lang';
 
 /**
  * The default accessor for writing a value and listening to changes that is used by a
@@ -34,7 +35,7 @@ import {ControlValueAccessor} from './control_value_accessor';
   }
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
-  value = null;
+  value: string = null;
   onChange: Function;
   onTouched: Function;
 
@@ -44,7 +45,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     cd.valueAccessor = this;
   }
 
-  writeValue(value) { this.value = value; }
+  writeValue(value) { this.value = isBlank(value) ? "" : value; }
 
   registerOnChange(fn): void { this.onChange = fn; }
 
