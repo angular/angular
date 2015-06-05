@@ -93,8 +93,8 @@ export class PropertySetterFactory {
     var dashCasedClassName;
     if (isBlank(setterFn)) {
       dashCasedClassName = camelCaseToDashCase(className);
-      setterFn = (element, value) => {
-        if (value) {
+      setterFn = (element, isAdd) => {
+        if (isAdd) {
           DOM.addClass(element, dashCasedClassName);
         } else {
           DOM.removeClass(element, dashCasedClassName);

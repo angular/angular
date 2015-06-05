@@ -16,16 +16,14 @@ import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
-import {
-  PropertySetterFactory
-} from '../view/property_setter_factory'
+import {PropertySetterFactory} from '../view/property_setter_factory';
 
-    /**
-     * The compiler loads and translates the html templates of components into
-     * nested ProtoViews. To decompose its functionality it uses
-     * the CompilePipeline and the CompileSteps.
-     */
-    export class DomCompiler extends RenderCompiler {
+/**
+ * The compiler loads and translates the html templates of components into
+ * nested ProtoViews. To decompose its functionality it uses
+ * the CompilePipeline and the CompileSteps.
+ */
+export class DomCompiler extends RenderCompiler {
   _templateLoader: TemplateLoader;
   _stepFactory: CompileStepFactory;
   _propertySetterFactory: PropertySetterFactory;
