@@ -64,16 +64,12 @@ class DiffingPluginWrapper implements BroccoliTree {
 
 
   private calculateDiff(firstRun: boolean): (DiffResult | DiffResult[]) {
+    // TODO(caitp): optionally log trees based on environment variable or command line option
     if (this.treeDiffer) {
       let diffResult = this.treeDiffer.diffTree();
-      diffResult.log(!firstRun);
       return diffResult;
     } else if (this.treeDiffers) {
-      return this.treeDiffers.map((treeDiffer) => treeDiffer.diffTree())
-          .map((diffResult) => {
-            diffResult.log(!firstRun);
-            return diffResult;
-          });
+      return this.treeDiffers.map((treeDiffer) => treeDiffer.diffTree());
     } else {
       throw new Error("Missing TreeDiffer");
     }
