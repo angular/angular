@@ -136,7 +136,12 @@ class DiffingPluginWrapper implements BroccoliTree {
 
 
   private stabilizeTrees(trees: BroccoliTree[]) {
-    return trees.map((tree) => this.stabilizeTree(tree));
+    // Prevent extensions to prevent array from being mutated from the outside.
+    // For-loop used to avoid re-allocating a new array.
+    for (let i = 0; i < trees.length; ++i) {
+      trees[i] = this.stabilizeTree(trees[i]);
+    }
+    return Object.freeze(trees);
   }
 
 
