@@ -1,6 +1,6 @@
 import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive} from 'angular2/src/core/annotations/decorators';
 import {FORWARD_REF, Binding} from 'angular2/di';
 import {ControlDirective} from './control_directive';
@@ -97,7 +97,7 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
 
   _findContainer(path: List<string>): ControlGroup {
     ListWrapper.removeLast(path);
-    return <ControlGroup>this.form.find(path);
+    return ListWrapper.isEmpty(path) ? this.form : <ControlGroup>this.form.find(path);
   }
 
   _later(fn) {

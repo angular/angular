@@ -7,7 +7,6 @@ import {
   FormBuilder
 } from 'angular2/forms';
 
-import {ObservableWrapper} from 'angular2/src/facade/async';
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
 import {reflector} from 'angular2/src/reflection/reflection';
