@@ -63,9 +63,7 @@ var angularBuilder = {
   rebuildBrowserProdTree: throwToolsBuildMissingError,
   rebuildNodeTree: throwToolsBuildMissingError,
   rebuildDartTree: throwToolsBuildMissingError,
-  cleanup: function() {
-    return Promise.resolve();
-  }
+  mock: true
 };
 
 
@@ -886,9 +884,11 @@ gulp.task('cleanup.builder', function(done) {
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)
 process.on('SIGINT', function() {
-  runSequence('cleanup.builder', function() {
-    process.exit();
-  });
+  if (!angularBuilder.mock) {
+    runSequence('cleanup.builder', function () {
+      process.exit();
+    });
+  }
 });
 
 
@@ -899,5 +899,8 @@ process.on('beforeExit', function() {
   if (beforeExitRan) return;
 
   beforeExitRan = true;
-  gulp.start('cleanup.builder');
+
+  if (!angularBuilder.mock) {
+    gulp.start('cleanup.builder');
+  }
 });
