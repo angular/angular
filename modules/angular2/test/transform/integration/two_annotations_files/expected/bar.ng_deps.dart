@@ -34,6 +34,9 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
       : super();
 
   void detectChangesInRecords(throwOnChange) {
+    if (!hydrated()) {
+      _gen.ChangeDetectionUtil.throwDehydrated();
+    }
     var context = null;
     var change_context = false;
     var isChanged = false;
@@ -56,7 +59,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _locals = null;
   }
 
-  hydrated() => _context == null;
+  hydrated() => _context != null;
 
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {

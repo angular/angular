@@ -98,6 +98,9 @@ export class ChangeDetectorJITGenerator {
       ${this.typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 
       ${this.typeName}.prototype.detectChangesInRecords = function(throwOnChange) {
+        if (!this.hydrated()) {
+          ${UTIL}.throwDehydrated();
+        }
         ${this._genLocalDefinitions()}
         ${this._genChangeDefinitions()}
         var ${IS_CHANGED_LOCAL} = false;
@@ -131,7 +134,7 @@ export class ChangeDetectorJITGenerator {
       }
 
       ${this.typeName}.prototype.hydrated = function() {
-        return Boolean(${CONTEXT_ACCESSOR});
+        return ${CONTEXT_ACCESSOR} !== null;
       }
 
       return function(dispatcher, pipeRegistry) {

@@ -44,7 +44,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.prevContexts = ListWrapper.createFixedSize(protos.length + 1);
     this.changes = ListWrapper.createFixedSize(protos.length + 1);
 
-    ListWrapper.fill(this.values, uninitialized);
+    this.values[0] = null;
+    ListWrapper.fill(this.values, uninitialized, 1);
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
     ListWrapper.fill(this.changes, false);
@@ -60,7 +61,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   dehydrate() {
     this._destroyPipes();
-    ListWrapper.fill(this.values, uninitialized);
+    this.values[0] = null;
+    ListWrapper.fill(this.values, uninitialized, 1);
     ListWrapper.fill(this.changes, false);
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
@@ -75,9 +77,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  hydrated(): boolean { return this.values[0] !== uninitialized; }
+  hydrated(): boolean { return this.values[0] !== null; }
 
   detectChangesInRecords(throwOnChange: boolean) {
+    if (!this.hydrated()) {
+      ChangeDetectionUtil.throwDehydrated();
+    }
     var protos: List<ProtoRecord> = this.protos;
 
     var changes = null;

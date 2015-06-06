@@ -113,6 +113,9 @@ class _CodegenState {
             this.$_DIRECTIVES_ACCESSOR) : super();
 
         void detectChangesInRecords(throwOnChange) {
+          if (!hydrated()) {
+            $_UTIL.throwDehydrated();
+          }
           ${_genLocalDefinitions()}
           ${_genChangeDefinitons()}
           var $_IS_CHANGED_LOCAL = false;
@@ -145,7 +148,7 @@ class _CodegenState {
           $_LOCALS_ACCESSOR = null;
         }
 
-        hydrated() => $_CONTEXT_ACCESSOR == null;
+        hydrated() => $_CONTEXT_ACCESSOR != null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(

@@ -11,6 +11,7 @@ import {
 } from 'angular2/test_lib';
 
 import {
+  CONST_EXPR,
   isPresent,
   isBlank,
   isJsObject,
@@ -21,6 +22,7 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {
   ChangeDispatcher,
+  DehydratedException,
   DynamicChangeDetector,
   ChangeDetectionError,
   BindingRecord,
@@ -47,6 +49,7 @@ import {
 import {getDefinition} from './simple_watch_config';
 import {getFactoryById} from './generated/simple_watch_classes';
 
+const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 
 export function main() {
   // These tests also run against pre-generated Dart Change Detectors. We will move tests up from
@@ -72,7 +75,7 @@ export function main() {
         }
       }
 
-      function _bindSimpleValue(expression: string, context = null) {
+      function _bindSimpleValue(expression: string, context = _DEFAULT_CONTEXT) {
         var dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
         var protoCd = _getProtoChangeDetector(testDef.cdDef);
@@ -297,7 +300,7 @@ export function main() {
 
           function dirs(directives: List<any>) { return new FakeDirectives(directives, []); }
 
-          function createChangeDetector(propName: string, exp: string, context = null,
+          function createChangeDetector(propName: string, exp: string, context = _DEFAULT_CONTEXT,
                                         registry = null) {
             var dispatcher = new TestDispatcher();
 
@@ -444,7 +447,7 @@ export function main() {
 
                   var cd = pcd.instantiate(dispatcher);
 
-                  cd.hydrate(null, null, dirs([directive1]));
+                  cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
 
                   cd.detectChanges();
 
@@ -465,7 +468,7 @@ export function main() {
 
                     var cd = pcd.instantiate(dispatcher);
 
-                    cd.hydrate(null, null, dirs([directive1, directive2]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1, directive2]));
 
                     cd.detectChanges();
 
@@ -482,7 +485,7 @@ export function main() {
 
                     var cd = pcd.instantiate(dispatcher);
 
-                    cd.hydrate(null, null, dirs([directive1]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
 
                     cd.detectChanges();
 
@@ -502,7 +505,7 @@ export function main() {
 
                     var cd = pcd.instantiate(dispatcher);
 
-                    cd.hydrate(null, null, dirs([directive1]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
 
                     cd.checkNoChanges();
 
@@ -518,7 +521,7 @@ export function main() {
 
                     var cd = pcd.instantiate(dispatcher);
 
-                    cd.hydrate(null, null, dirs([directive1]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
 
                     cd.detectChanges();
 
@@ -538,7 +541,7 @@ export function main() {
 
                     var cd = pcd.instantiate(dispatcher);
 
-                    cd.hydrate(null, null, dirs([directive1]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
 
                     cd.checkNoChanges();
 
@@ -551,7 +554,7 @@ export function main() {
                     var pcd = createProtoChangeDetector([], [], [dirRecord1, dirRecord2]);
 
                     var cd = pcd.instantiate(dispatcher);
-                    cd.hydrate(null, null, dirs([directive1, directive2]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1, directive2]));
 
                     cd.detectChanges();
 
@@ -582,7 +585,7 @@ export function main() {
 
                     var cd = pcd.instantiate(dispatcher);
 
-                    cd.hydrate(null, null, dirs([directive1]));
+                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
 
                     cd.detectChanges();
 
@@ -599,7 +602,7 @@ export function main() {
                        td1 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td1));
                        var td2;
                        td2 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td2));
-                       cd.hydrate(null, null, dirs([td1, td2]));
+                       cd.hydrate(_DEFAULT_CONTEXT, null, dirs([td1, td2]));
 
                        cd.detectChanges();
 
@@ -620,8 +623,8 @@ export function main() {
                     var parentDirective =
                         new TestDirective(() => { expect(directiveInShadowDom.a).toBe(null); });
 
-                    parent.hydrate(null, null, dirs([parentDirective]));
-                    child.hydrate(null, null, dirs([directiveInShadowDom]));
+                    parent.hydrate(_DEFAULT_CONTEXT, null, dirs([parentDirective]));
+                    child.hydrate(_DEFAULT_CONTEXT, null, dirs([directiveInShadowDom]));
 
                     parent.detectChanges();
                   });
@@ -641,7 +644,7 @@ export function main() {
                     [BindingRecord.createForHostProperty(index, ast("a"), "prop")], null,
                     [dirRecord]);
                 var cd = pcd.instantiate(dispatcher);
-                cd.hydrate(null, null, dirs([directive]));
+                cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive]));
 
                 cd.detectChanges();
 
@@ -688,7 +691,7 @@ export function main() {
                 var cd = pcd.instantiate(
                     new TestDispatcher(),
                     [BindingRecord.createForElement(ast("invalidProp"), 0, "a")], null, []);
-                cd.hydrate(null, null);
+                cd.hydrate(_DEFAULT_CONTEXT, null);
 
                 try {
                   cd.detectChanges();
@@ -747,7 +750,7 @@ export function main() {
 
                  expect(cd.mode).toEqual(null);
 
-                 cd.hydrate(null, null, null);
+                 cd.hydrate(_DEFAULT_CONTEXT, null, null);
 
                  expect(cd.mode).toEqual(CHECK_ALWAYS);
                });
@@ -755,7 +758,7 @@ export function main() {
             it("should set the mode to CHECK_ONCE when the push change detection is used", () => {
               var proto = createProtoChangeDetector([], [], [], null, ON_PUSH);
               var cd = proto.instantiate(null);
-              cd.hydrate(null, null, null);
+              cd.hydrate(_DEFAULT_CONTEXT, null, null);
 
               expect(cd.mode).toEqual(CHECK_ONCE);
             });
@@ -765,6 +768,7 @@ export function main() {
               var cd = c["changeDetector"];
               var dispatcher = c["dispatcher"];
 
+              cd.hydrate(_DEFAULT_CONTEXT, null, null);
               cd.mode = DETACHED;
               cd.detectChanges();
 
@@ -776,6 +780,7 @@ export function main() {
               var cd = c["changeDetector"];
               var dispatcher = c["dispatcher"];
 
+              cd.hydrate(_DEFAULT_CONTEXT, null, null);
               cd.mode = CHECKED;
               cd.detectChanges();
 
@@ -784,6 +789,7 @@ export function main() {
 
             it("should change CHECK_ONCE to CHECKED", () => {
               var cd = createProtoChangeDetector([]).instantiate(null);
+              cd.hydrate(_DEFAULT_CONTEXT, null, null);
               cd.mode = CHECK_ONCE;
 
               cd.detectChanges();
@@ -793,6 +799,7 @@ export function main() {
 
             it("should not change the CHECK_ALWAYS", () => {
               var cd = createProtoChangeDetector([]).instantiate(null);
+              cd.hydrate(_DEFAULT_CONTEXT, null, null);
               cd.mode = CHECK_ALWAYS;
 
               cd.detectChanges();
@@ -809,7 +816,7 @@ export function main() {
               beforeEach(() => {
                 var proto = createProtoChangeDetector([], [], [], null, ON_PUSH);
                 checkedDetector = proto.instantiate(null);
-                checkedDetector.hydrate(null, null, null);
+                checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null);
                 checkedDetector.mode = CHECKED;
 
                 // this directive is a component with ON_PUSH change detection
@@ -829,7 +836,7 @@ export function main() {
                                                       [dirRecordWithOnPush]);
 
                 var cd = proto.instantiate(null);
-                cd.hydrate(null, null, directives);
+                cd.hydrate(_DEFAULT_CONTEXT, null, directives);
 
                 expect(checkedDetector.mode).toEqual(CHECKED);
 
@@ -897,6 +904,21 @@ export function main() {
               cd.dehydrate();
 
               expect(pipe.destroyCalled).toBe(true);
+            });
+
+            it("should throw when detectChanges is called on a dehydrated detector", () => {
+              var context = new Person('Bob');
+              var c = createChangeDetector("propName", "name", context);
+              var cd = c["changeDetector"];
+              var log = c["dispatcher"].log;
+
+              cd.detectChanges();
+              expect(log).toEqual(["propName=Bob"]);
+
+              cd.dehydrate();
+              var dehydratedException = new DehydratedException();
+              expect(() => {cd.detectChanges()}).toThrowError(dehydratedException.toString());
+              expect(log).toEqual(["propName=Bob"]);
             });
           });
 
@@ -1098,13 +1120,8 @@ class TestDirective {
 }
 
 class Person {
-  name: string;
   age: number;
-  address: Address;
-  constructor(name: string, address: Address = null) {
-    this.name = name;
-    this.address = address;
-  }
+  constructor(public name: string, public address: Address = null) {}
 
   sayHi(m) { return `Hi, ${m}`; }
 

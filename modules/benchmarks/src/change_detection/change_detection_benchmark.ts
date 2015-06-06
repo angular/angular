@@ -280,6 +280,7 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
       new ChangeDetectorDefinition("proto", null, [], bindings, [directiveRecord]));
 
   var targetObj = new Obj();
+  parentCd.hydrate(object, null, new FakeDirectives(targetObj));
   for (var i = 0; i < iterations; ++i) {
     var cd = proto.instantiate(dispatcher);
     cd.hydrate(object, null, new FakeDirectives(targetObj));

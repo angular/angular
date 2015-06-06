@@ -28,3 +28,7 @@ export class ChangeDetectionError extends BaseException {
 
   toString(): string { return this.message; }
 }
+
+export class DehydratedException extends BaseException {
+  constructor() { super('Attempt to detect changes on a dehydrated detector.'); }
+}

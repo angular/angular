@@ -19,6 +19,7 @@ export {Parser} from './src/change_detection/parser/parser';
 export {Locals} from './src/change_detection/parser/locals';
 
 export {
+  DehydratedException,
   ExpressionChangedAfterItHasBeenChecked,
   ChangeDetectionError
 } from './src/change_detection/exceptions';
