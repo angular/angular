@@ -223,7 +223,8 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 // formatting
 
 function doCheckFormat() {
-  return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
+  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts',
+                   '!**/*.spec.ts', '!**/*_spec.ts' /* angular/clang-format#/11 */])
       .pipe(format.checkFormat('file'));
 }
 
