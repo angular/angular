@@ -13,11 +13,11 @@ void main(List<String> args) {
   var allDefs = getAllDefinitions();
   for (var i = 0; i < allDefs.length; ++i) {
     var className = 'ChangeDetector${i}';
-    codegen.generate('dynamic', className, allDefs[i]);
+    codegen.generate('dynamic', className, allDefs[i].cdDef);
     if (i > 0) {
       buf.write(',');
     }
-    buf.write(" '''${allDefs[i].id}''': "
+    buf.write(" '''${allDefs[i].cdDef.id}''': "
         "$className.$PROTO_CHANGE_DETECTOR_FACTORY_METHOD");
   }
   buf.write('};');

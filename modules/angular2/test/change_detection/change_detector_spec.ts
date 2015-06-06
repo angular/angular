@@ -74,11 +74,11 @@ export function main() {
 
       function _bindSimpleValue(expression: string, context = null) {
         var dispatcher = new TestDispatcher();
-        var protoCd = _getProtoChangeDetector(getDefinition(expression));
+        var testDef = getDefinition(expression);
+        var protoCd = _getProtoChangeDetector(testDef.cdDef);
         var cd = protoCd.instantiate(dispatcher);
 
-        var locals = null;
-        cd.hydrate(context, locals, null);
+        cd.hydrate(context, testDef.locals, null);
         cd.detectChanges();
         return dispatcher.log;
       }
@@ -231,6 +231,34 @@ export function main() {
         var td = new TestData(person);
         expect(_bindSimpleValue('a.sayHi("Jim")', td)).toEqual(['propName=Hi, Jim']);
       });
+
+      describe("Locals", () => {
+        it('should read a value from locals',
+           () => { expect(_bindSimpleValue('valueFromLocals')).toEqual(['propName=value']); });
+
+        it('should invoke a function from local',
+           () => { expect(_bindSimpleValue('functionFromLocals')).toEqual(['propName=value']); });
+
+        it('should handle nested locals',
+           () => { expect(_bindSimpleValue('nestedLocals')).toEqual(['propName=value']); });
+
+        it("should fall back to a regular field read when the locals map" +
+               "does not have the requested field",
+           () => {
+             expect(_bindSimpleValue('fallbackLocals', new Person("Jim")))
+                 .toEqual(['propName=Jim']);
+           });
+
+        it('should correctly handle nested properties', () => {
+          var address = new Address('Grenoble');
+          var person = new Person('Victor', address);
+
+          expect(_bindSimpleValue('contextNestedPropertyWithLocals', person))
+              .toEqual(['propName=Grenoble']);
+          expect(_bindSimpleValue('localPropertyWithSimilarContext', person))
+              .toEqual(['propName=MTV']);
+        });
+      });
     });
   });
 
@@ -269,21 +297,12 @@ export function main() {
 
           function dirs(directives: List<any>) { return new FakeDirectives(directives, []); }
 
-          function convertLocalsToVariableBindings(locals) {
-            var variableBindings = [];
-            var loc = locals;
-            while (isPresent(loc)) {
-              MapWrapper.forEach(loc.current, (v, k) => ListWrapper.push(variableBindings, k));
-              loc = loc.parent;
-            }
-            return variableBindings;
-          }
-
           function createChangeDetector(propName: string, exp: string, context = null,
-                                        locals = null, registry = null) {
+                                        registry = null) {
             var dispatcher = new TestDispatcher();
 
-            var variableBindings = convertLocalsToVariableBindings(locals);
+            var locals = null;
+            var variableBindings = [];
 
             var records = [BindingRecord.createForElement(ast(exp), 0, propName)];
             var pcd = createProtoChangeDetector(records, variableBindings, [], registry);
@@ -291,12 +310,6 @@ export function main() {
             cd.hydrate(context, locals, null);
 
             return {"changeDetector": cd, "dispatcher": dispatcher};
-          }
-
-          function executeWatch(memo: string, exp: string, context = null, locals = null) {
-            var res = createChangeDetector(memo, exp, context, locals);
-            res["changeDetector"].detectChanges();
-            return res["dispatcher"].log;
           }
 
           describe(`${name} change detection`, () => {
@@ -375,7 +388,7 @@ export function main() {
                   var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
 
                   var person = new Person('bob');
-                  var c = createChangeDetector('name', 'name | pipe', person, null, registry);
+                  var c = createChangeDetector('name', 'name | pipe', person, registry);
                   var cd = c["changeDetector"];
                   var dispatcher = c["dispatcher"];
 
@@ -688,46 +701,6 @@ export function main() {
               });
             });
 
-            describe("Locals", () => {
-              it('should read a value from locals', () => {
-                var locals = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-
-                expect(executeWatch('key', 'key', null, locals)).toEqual(['key=value']);
-              });
-
-              it('should invoke a function from local', () => {
-                var locals = new Locals(null, MapWrapper.createFromPairs([["key", () => "value"]]));
-
-                expect(executeWatch('key', 'key()', null, locals)).toEqual(['key=value']);
-              });
-
-              it('should handle nested locals', () => {
-                var nested = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-                var locals = new Locals(nested, MapWrapper.create());
-
-                expect(executeWatch('key', 'key', null, locals)).toEqual(['key=value']);
-              });
-
-              it("should fall back to a regular field read when the locals map" +
-                     "does not have the requested field",
-                 () => {
-                   var locals = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-
-                   expect(executeWatch('name', 'name', new Person("Jim"), locals))
-                       .toEqual(['name=Jim']);
-                 });
-
-              it('should correctly handle nested properties', () => {
-                var address = new Address('Grenoble');
-                var person = new Person('Victor', address);
-                var locals = new Locals(null, MapWrapper.createFromPairs([['city', 'MTV']]));
-                expect(executeWatch('address.city', 'address.city', person, locals))
-                    .toEqual(['address.city=Grenoble']);
-                expect(executeWatch('city', 'city', person, locals)).toEqual(['city=MTV']);
-              });
-
-            });
-
             describe("handle children", () => {
               var parent, child;
 
@@ -916,8 +889,7 @@ export function main() {
             it("should destroy all active pipes during dehyration", () => {
               var pipe = new OncePipe();
               var registry = new FakePipeRegistry('pipe', () => pipe);
-              var c =
-                  createChangeDetector("memo", "name | pipe", new Person('bob'), null, registry);
+              var c = createChangeDetector("memo", "name | pipe", new Person('bob'), registry);
               var cd = c["changeDetector"];
 
               cd.detectChanges();
@@ -933,7 +905,7 @@ export function main() {
               var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
               var ctx = new Person("Megatron");
 
-              var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
+              var c = createChangeDetector("memo", "name | pipe", ctx, registry);
               var cd = c["changeDetector"];
               var dispatcher = c["dispatcher"];
 
@@ -951,7 +923,7 @@ export function main() {
               var registry = new FakePipeRegistry('pipe', () => new OncePipe());
               var ctx = new Person("Megatron");
 
-              var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
+              var c = createChangeDetector("memo", "name | pipe", ctx, registry);
               var cd = c["changeDetector"];
 
               cd.detectChanges();
@@ -969,7 +941,7 @@ export function main() {
               var registry = new FakePipeRegistry('pipe', () => pipe);
               var ctx = new Person("Megatron");
 
-              var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
+              var c = createChangeDetector("memo", "name | pipe", ctx, registry);
               var cd = c["changeDetector"];
 
               cd.detectChanges();
@@ -983,8 +955,7 @@ export function main() {
                () => {
 
                  var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
-                 var c =
-                     createChangeDetector("memo", "name | pipe", new Person('bob'), null, registry);
+                 var c = createChangeDetector("memo", "name | pipe", new Person('bob'), registry);
                  var cd = c["changeDetector"];
 
                  cd.detectChanges();
@@ -997,7 +968,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
             var ctx = new Person("Megatron");
 
-            var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
+            var c = createChangeDetector("memo", "name | pipe", ctx, registry);
             var cd = c["changeDetector"];
             var dispatcher = c["dispatcher"];
 
@@ -1015,7 +986,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => new WrappedPipe());
             var ctx = new Person("Megatron");
 
-            var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
+            var c = createChangeDetector("memo", "name | pipe", ctx, registry);
             var cd = c["changeDetector"];
             var dispatcher = c["dispatcher"];
 
