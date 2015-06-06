@@ -5,12 +5,12 @@ var flatten = require('broccoli-flatten');
 var htmlReplace = require('../html-replace');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
+var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 
 import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
 import {default as transpileWithTraceur, TRACEUR_RUNTIME_PATH} from '../traceur/index';
-import replace from '../broccoli-replace';
 
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
@@ -146,36 +146,25 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     return funnels;
   }
 
-  var scriptPathPatternReplacement = {
-    match: '@@FILENAME_NO_EXT',
-    replacement: function(replacement, relativePath) {
-      return relativePath.replace(/\.\w+$/, '');
-    }
-  };
+  function writeScriptsForPath(relativePath, result) {
+    return result.replace('@@FILENAME_NO_EXT', relativePath.replace(/\.\w+$/, ''));
+  }
 
   var htmlTree = new Funnel(modulesTree, {include: ['*/src/**/*.html'], destDir: '/'});
   htmlTree = replace(htmlTree, {
     files: ['examples*/**'],
-    patterns: [
-      {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
-      scriptPathPatternReplacement
-    ]
+    patterns: [{match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')}],
+    replaceWithPath: writeScriptsForPath
   });
-
   htmlTree = replace(htmlTree, {
     files: ['benchmarks/**'],
-    patterns: [
-      {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
-      scriptPathPatternReplacement
-    ]
+    patterns: [{match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')}],
+    replaceWithPath: writeScriptsForPath
   });
-
   htmlTree = replace(htmlTree, {
     files: ['benchmarks_external/**'],
-    patterns: [
-      {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
-      scriptPathPatternReplacement
-    ]
+    patterns: [{match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')}],
+    replaceWithPath: writeScriptsForPath
   });
 
   var scripts = mergeTrees(servingTrees);
