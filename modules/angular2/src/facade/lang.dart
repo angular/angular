@@ -88,6 +88,8 @@ class StringWrapper {
   static bool contains(String s, String substr) {
     return s.contains(substr);
   }
+
+  static bool isString(s) => s is String;
 }
 
 class StringJoiner {

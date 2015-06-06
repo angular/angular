@@ -75,7 +75,11 @@ export function main() {
 
     it('should support LiteralMap', () => { check('{a: b, c: d}', LiteralMap); });
 
-    it('should support LiteralPrimitive', () => { check('true', LiteralPrimitive); });
+    it('should support LiteralPrimitive', () => {
+      check('true', LiteralPrimitive);
+      check('"a"', LiteralPrimitive);
+      check('1.234', LiteralPrimitive);
+    });
 
     it('should support MethodCall', () => {
       check('a(b, c)', MethodCall);

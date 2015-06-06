@@ -132,6 +132,8 @@ export class StringWrapper {
   }
 
   static contains(s: string, substr: string): boolean { return s.indexOf(substr) != -1; }
+
+  static isString(s: any): boolean { return typeof s === 'string' || s instanceof String; }
 }
 
 export class StringJoiner {

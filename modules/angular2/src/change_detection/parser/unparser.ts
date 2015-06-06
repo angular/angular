@@ -133,7 +133,13 @@ export class Unparser implements AstVisitor {
     this._expression += '}';
   }
 
-  visitLiteralPrimitive(ast: LiteralPrimitive) { this._expression += `${ast.value}`; }
+  visitLiteralPrimitive(ast: LiteralPrimitive) {
+    if (StringWrapper.isString(ast.value)) {
+      this._expression += `"${StringWrapper.replaceAll(ast.value, quoteRegExp, '\"')}"`;
+    } else {
+      this._expression += `${ast.value}`;
+    }
+  }
 
   visitMethodCall(ast: MethodCall) {
     this._visit(ast.receiver);

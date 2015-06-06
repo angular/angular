@@ -122,7 +122,6 @@ class ProtoRecordBuilder {
 
   _appendRecords(b: BindingRecord, variableNames: List<string>) {
     if (b.isDirectiveLifecycle()) {
-      ;
       ListWrapper.push(
           this.records,
           new ProtoRecord(RECORD_TYPE_DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [], [], -1, null,
@@ -133,7 +132,7 @@ class ProtoRecordBuilder {
   }
 }
 
-class _ConvertAstIntoProtoRecords {
+class _ConvertAstIntoProtoRecords implements AstVisitor {
   constructor(private _records: List<ProtoRecord>, private _bindingRecord: BindingRecord,
               private _expressionAsString: string, private _variableNames: List<any>) {}
 
@@ -239,6 +238,10 @@ class _ConvertAstIntoProtoRecords {
     return this._addRecord(RECORD_TYPE_KEYED_ACCESS, "keyedAccess", ChangeDetectionUtil.keyedAccess,
                            [key], null, obj);
   }
+
+  visitAssignment(ast: Assignment) { throw new BaseException('Not supported'); }
+
+  visitChain(ast: Chain) { throw new BaseException('Not supported'); }
 
   _visitAll(asts: List<any>) {
     var res = ListWrapper.createFixedSize(asts.length);

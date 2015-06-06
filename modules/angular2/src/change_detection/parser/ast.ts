@@ -8,7 +8,7 @@ export class AST {
 
   assign(context, locals, value) { throw new BaseException("Not supported"); }
 
-  visit(visitor): any { return null; }
+  visit(visitor: AstVisitor): any { return null; }
 
   toString(): string { return "AST"; }
 }
@@ -16,7 +16,7 @@ export class AST {
 export class EmptyExpr extends AST {
   eval(context, locals) { return null; }
 
-  visit(visitor) {
+  visit(visitor: AstVisitor) {
     // do nothing
   }
 }
@@ -24,7 +24,7 @@ export class EmptyExpr extends AST {
 export class ImplicitReceiver extends AST {
   eval(context, locals) { return context; }
 
-  visit(visitor) { return visitor.visitImplicitReceiver(this); }
+  visit(visitor: AstVisitor) { return visitor.visitImplicitReceiver(this); }
 }
 
 /**
@@ -42,7 +42,7 @@ export class Chain extends AST {
     return result;
   }
 
-  visit(visitor) { return visitor.visitChain(this); }
+  visit(visitor: AstVisitor) { return visitor.visitChain(this); }
 }
 
 export class Conditional extends AST {
@@ -56,7 +56,7 @@ export class Conditional extends AST {
     }
   }
 
-  visit(visitor) { return visitor.visitConditional(this); }
+  visit(visitor: AstVisitor) { return visitor.visitConditional(this); }
 }
 
 export class AccessMember extends AST {
@@ -88,7 +88,7 @@ export class AccessMember extends AST {
     }
   }
 
-  visit(visitor) { return visitor.visitAccessMember(this); }
+  visit(visitor: AstVisitor) { return visitor.visitAccessMember(this); }
 }
 
 export class SafeAccessMember extends AST {
@@ -102,7 +102,7 @@ export class SafeAccessMember extends AST {
     return isBlank(evaluatedReceiver) ? null : this.getter(evaluatedReceiver);
   }
 
-  visit(visitor) { return visitor.visitSafeAccessMember(this); }
+  visit(visitor: AstVisitor) { return visitor.visitSafeAccessMember(this); }
 }
 
 export class KeyedAccess extends AST {
@@ -123,7 +123,7 @@ export class KeyedAccess extends AST {
     return value;
   }
 
-  visit(visitor) { return visitor.visitKeyedAccess(this); }
+  visit(visitor: AstVisitor) { return visitor.visitKeyedAccess(this); }
 }
 
 export class Pipe extends AST {
@@ -132,7 +132,7 @@ export class Pipe extends AST {
     super();
   }
 
-  visit(visitor) { return visitor.visitPipe(this); }
+  visit(visitor: AstVisitor) { return visitor.visitPipe(this); }
 }
 
 export class LiteralPrimitive extends AST {
@@ -140,7 +140,7 @@ export class LiteralPrimitive extends AST {
 
   eval(context, locals) { return this.value; }
 
-  visit(visitor) { return visitor.visitLiteralPrimitive(this); }
+  visit(visitor: AstVisitor) { return visitor.visitLiteralPrimitive(this); }
 }
 
 export class LiteralArray extends AST {
@@ -150,7 +150,7 @@ export class LiteralArray extends AST {
     return ListWrapper.map(this.expressions, (e) => e.eval(context, locals));
   }
 
-  visit(visitor) { return visitor.visitLiteralArray(this); }
+  visit(visitor: AstVisitor) { return visitor.visitLiteralArray(this); }
 }
 
 export class LiteralMap extends AST {
@@ -164,7 +164,7 @@ export class LiteralMap extends AST {
     return res;
   }
 
-  visit(visitor) { return visitor.visitLiteralMap(this); }
+  visit(visitor: AstVisitor) { return visitor.visitLiteralMap(this); }
 }
 
 export class Interpolation extends AST {
@@ -172,7 +172,7 @@ export class Interpolation extends AST {
 
   eval(context, locals) { throw new BaseException("evaluating an Interpolation is not supported"); }
 
-  visit(visitor) { visitor.visitInterpolation(this); }
+  visit(visitor: AstVisitor) { visitor.visitInterpolation(this); }
 }
 
 export class Binary extends AST {
@@ -223,7 +223,7 @@ export class Binary extends AST {
     throw 'Internal error [$operation] not handled';
   }
 
-  visit(visitor) { return visitor.visitBinary(this); }
+  visit(visitor: AstVisitor) { return visitor.visitBinary(this); }
 }
 
 export class PrefixNot extends AST {
@@ -231,7 +231,7 @@ export class PrefixNot extends AST {
 
   eval(context, locals) { return !this.expression.eval(context, locals); }
 
-  visit(visitor) { return visitor.visitPrefixNot(this); }
+  visit(visitor: AstVisitor) { return visitor.visitPrefixNot(this); }
 }
 
 export class Assignment extends AST {
@@ -241,7 +241,7 @@ export class Assignment extends AST {
     return this.target.assign(context, locals, this.value.eval(context, locals));
   }
 
-  visit(visitor) { return visitor.visitAssignment(this); }
+  visit(visitor: AstVisitor) { return visitor.visitAssignment(this); }
 }
 
 export class MethodCall extends AST {
@@ -262,7 +262,7 @@ export class MethodCall extends AST {
     }
   }
 
-  visit(visitor) { return visitor.visitMethodCall(this); }
+  visit(visitor: AstVisitor) { return visitor.visitMethodCall(this); }
 }
 
 export class SafeMethodCall extends AST {
@@ -278,7 +278,7 @@ export class SafeMethodCall extends AST {
     return this.fn(evaluatedReceiver, evaluatedArgs);
   }
 
-  visit(visitor) { return visitor.visitSafeMethodCall(this); }
+  visit(visitor: AstVisitor) { return visitor.visitSafeMethodCall(this); }
 }
 
 export class FunctionCall extends AST {
@@ -292,7 +292,7 @@ export class FunctionCall extends AST {
     return FunctionWrapper.apply(obj, evalList(context, locals, this.args));
   }
 
-  visit(visitor) { return visitor.visitFunctionCall(this); }
+  visit(visitor: AstVisitor) { return visitor.visitFunctionCall(this); }
 }
 
 export class ASTWithSource extends AST {
@@ -304,7 +304,7 @@ export class ASTWithSource extends AST {
 
   assign(context, locals, value) { return this.ast.assign(context, locals, value); }
 
-  visit(visitor) { return this.ast.visit(visitor); }
+  visit(visitor: AstVisitor) { return this.ast.visit(visitor); }
 
   toString(): string { return `${this.source} in ${this.location}`; }
 }
@@ -314,27 +314,27 @@ export class TemplateBinding {
               public expression: ASTWithSource) {}
 }
 
-// INTERFACE
-export class AstVisitor {
-  visitAccessMember(ast: AccessMember) {}
-  visitAssignment(ast: Assignment) {}
-  visitBinary(ast: Binary) {}
-  visitChain(ast: Chain) {}
-  visitConditional(ast: Conditional) {}
-  visitPipe(ast: Pipe) {}
-  visitFunctionCall(ast: FunctionCall) {}
-  visitImplicitReceiver(ast: ImplicitReceiver) {}
-  visitKeyedAccess(ast: KeyedAccess) {}
-  visitLiteralArray(ast: LiteralArray) {}
-  visitLiteralMap(ast: LiteralMap) {}
-  visitLiteralPrimitive(ast: LiteralPrimitive) {}
-  visitMethodCall(ast: MethodCall) {}
-  visitPrefixNot(ast: PrefixNot) {}
-  visitSafeAccessMember(ast: SafeAccessMember) {}
-  visitSafeMethodCall(ast: SafeMethodCall) {}
+export interface AstVisitor {
+  visitAccessMember(ast: AccessMember): any;
+  visitAssignment(ast: Assignment): any;
+  visitBinary(ast: Binary): any;
+  visitChain(ast: Chain): any;
+  visitConditional(ast: Conditional): any;
+  visitPipe(ast: Pipe): any;
+  visitFunctionCall(ast: FunctionCall): any;
+  visitImplicitReceiver(ast: ImplicitReceiver): any;
+  visitInterpolation(ast: Interpolation): any;
+  visitKeyedAccess(ast: KeyedAccess): any;
+  visitLiteralArray(ast: LiteralArray): any;
+  visitLiteralMap(ast: LiteralMap): any;
+  visitLiteralPrimitive(ast: LiteralPrimitive): any;
+  visitMethodCall(ast: MethodCall): any;
+  visitPrefixNot(ast: PrefixNot): any;
+  visitSafeAccessMember(ast: SafeAccessMember): any;
+  visitSafeMethodCall(ast: SafeMethodCall): any;
 }
 
-export class AstTransformer {
+export class AstTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver) { return ast; }
 
   visitInterpolation(ast: Interpolation) {
@@ -393,6 +393,10 @@ export class AstTransformer {
     }
     return res;
   }
+
+  visitChain(ast: Chain) { throw new BaseException('Not implemented'); }
+
+  visitAssignment(ast: Assignment) { throw new BaseException('Not implemented'); }
 }
 
 var _evalListCache = [
