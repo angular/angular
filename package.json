@@ -21,7 +21,8 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --config modules/angular2/tsd.json && tsd reinstall --config tools/tsd.json",
+    "preinstall": "node tools/npm/check-node-modules --purge",
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --config modules/angular2/tsd.json && tsd reinstall --config tools/tsd.json",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {

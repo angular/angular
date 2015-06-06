@@ -15,7 +15,7 @@ var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
-var semver = require('semver');
+
 var watch = require('./tools/build/watch');
 
 var transpile = require('./tools/build/transpile');
@@ -35,6 +35,11 @@ var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 var shouldLog = require('./tools/build/logging');
+
+require('./tools/check-environment')({
+  requiredNpmVersion: '>=2.9.0',
+  requiredNodeVersion: '>=0.12.2'
+});
 
 // Make it easy to quiet down portions of the build.
 // --logs=all -> log everything (This is the default)
@@ -63,35 +68,6 @@ var angularBuilder = {
   }
 };
 
-(function checkNodeAndNpmVersions() {
-  var requiredNpmVersion = '>=2.9.0';
-  var requiredNodeVersion = '>=0.12.2';
-
-  exec('npm --version', function(e, stdout) {
-    var foundNpmVersion = semver.clean(stdout);
-    var foundNodeVersion = process.version;
-    var issues = [];
-
-
-    if (!semver.satisfies(foundNodeVersion, requiredNodeVersion)) {
-      issues.push('You are running unsupported node version. Found: ' + foundNodeVersion +
-        ' Expected: ' + requiredNodeVersion);
-    }
-
-    if (!semver.satisfies(foundNpmVersion, requiredNpmVersion)) {
-      issues.push('You are running unsupported npm version. Found: ' + foundNpmVersion +
-        ' Expected: ' + requiredNpmVersion);
-    }
-
-    if (issues.length) {
-      // TODO: in the future we should error, but let's just display the warning for a few days first
-      console.warn(Array(80).join('!'));
-      console.warn('Your environment is not in a good shape. Following issues were found:');
-      issues.forEach(function(issue) {console.warn('  - ' + issue)});
-      console.warn(Array(80).join('!'));
-    }
-  });
-}());
 
 function sequenceComplete(done) {
   return function (err) {

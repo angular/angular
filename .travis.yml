@@ -44,8 +44,8 @@ install:
   - npm --version
   # Check the size of caches
   - du -sh ./node_modules || true
-  # Install npm dependecies and ensure that npm cache is not stale
-  - tools/npm/install-dependencies.sh
+  # Install npm dependecies
+  - npm install
 
 before_script:
 - mkdir -p $LOGS_DIR
