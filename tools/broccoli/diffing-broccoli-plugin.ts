@@ -62,7 +62,6 @@ class DiffingPluginWrapper implements BroccoliTree {
     this.description = this.pluginClass.name;
   }
 
-
   private calculateDiff(firstRun: boolean): (DiffResult | DiffResult[]) {
     // TODO(caitp): optionally log trees based on environment variable or
     // command line option. It may be worth logging for trees where elapsed
@@ -146,6 +145,11 @@ class DiffingPluginWrapper implements BroccoliTree {
     // Ignore all DiffingPlugins as they are already stable, for others we don't know for sure
     // so we need to stabilize them.
     // Since it's not safe to use instanceof operator in node, we are checking the constructor.name.
-    return (tree.constructor['name'] === 'DiffingPluginWrapper') ? tree : stabilizeTree(tree);
+    //
+    // New-styler/rebuild trees should always be stable.
+    let isNewStyleTree = !!(tree['newStyleTree'] || typeof tree.rebuild === 'function' ||
+                            tree['isReadAPICompatTree'] || tree.constructor['name'] === 'Funnel');
+
+    return isNewStyleTree ? tree : stabilizeTree(tree);
   }
 }
