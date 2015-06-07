@@ -1,5 +1,6 @@
 /// <reference path="../typings/es6-promise/es6-promise.d.ts" />
 
+declare type BroccoliReadTree = (tree: BroccoliTree) => Promise<string>;
 
 interface BroccoliTree {
   /**
@@ -66,7 +67,7 @@ interface BroccoliTree {
    */
   description?: string;
 
-  rebuild(): (Promise<any>| void);
+  rebuild?(): (Promise<any>| void);
   cleanup(): void;
 }
 
