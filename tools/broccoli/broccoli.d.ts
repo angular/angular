@@ -54,6 +54,12 @@ interface BroccoliTree {
   inputTrees?: BroccoliTree[];
 
   /**
+   * Trees which implement the rebuild api are wrapped automatically for api compat,
+   * and `newStyleTree` keeps a reference to the original unwrapped tree.
+   */
+  newStyleTree?: BroccoliTree;
+
+  /**
    * Description or name of the plugin used for reporting.
    *
    * If missing `tree.constructor.name` is usually used instead.
