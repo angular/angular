@@ -11,6 +11,7 @@ var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
+import map from '../broccoli-map';
 import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
 
@@ -81,7 +82,7 @@ function fixDartFolderLayout(sourceTree) {
 
 function getHtmlSourcesTree() {
   // Replace $SCRIPT$ markers in HTML files.
-  var htmlSrcsTree = stew.map(modulesFunnel(['*/src/**/*.html']), replaceScriptTagInHtml);
+  var htmlSrcsTree = map(modulesFunnel(['*/src/**/*.html']), replaceScriptTagInHtml);
   // Copy a url_params_to_form.js for each benchmark html file.
   var urlParamsToFormTree = new MultiCopy('', {
     srcPath: 'tools/build/snippets/url_params_to_form.js',
