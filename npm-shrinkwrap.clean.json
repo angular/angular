@@ -8459,6 +8459,14 @@
     "parse5": {
       "version": "1.3.2"
     },
+    "promise-map-series": {
+      "version": "0.2.1",
+      "dependencies": {
+        "rsvp": {
+          "version": "3.0.18"
+        }
+      }
+    },
     "protractor": {
       "version": "2.1.0",
       "dependencies": {
