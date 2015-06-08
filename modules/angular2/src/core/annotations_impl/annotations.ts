@@ -550,7 +550,7 @@ export class Directive extends Injectable {
    *   events: ['statusChange']
    * })
    * class TaskComponent {
-   *   statusChange:EventEmitter;
+   *   statusChange: EventEmitter;
    *
    *   constructor() {
    *     this.statusChange = new EventEmitter();
@@ -561,6 +561,26 @@ export class Directive extends Injectable {
    *   }
    * }
    * ```
+   *
+   * Use `propertyName: eventName` when the event emitter property name is different from the name
+   * of the emitted event:
+   *
+   * @Component({
+   *   events: ['status: statusChange']
+   * })
+   * class TaskComponent {
+   *   status: EventEmitter;
+   *
+   *   constructor() {
+   *     this.status = new EventEmitter();
+   *   }
+   *
+   *   onComplete() {
+   *     this.status.next('completed');
+   *   }
+   * }
+   * ```
+   *
    */
   events: List<string>;
 
