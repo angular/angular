@@ -48,7 +48,6 @@
     "broccoli-funnel": "igorminar/broccoli-funnel#perf-files",
     "broccoli-lodash": "^0.1.1",
     "broccoli-merge-trees": "^0.2.1",
-    "broccoli-replace": "alexeagle/broccoli-replace#angular_patch",
     "broccoli-slow-trees": "^1.1.0",
     "broccoli-stew": "^0.2.1",
     "broccoli-writer": "^0.1.1",
