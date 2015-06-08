@@ -50,7 +50,7 @@ export function main() {
     it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();
 
-         router.config({'path': '/', 'component': 'Index'})
+         router.config({'path': '/', 'component': DummyComponent})
              .then((_) => router.registerOutlet(outlet))
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
@@ -65,7 +65,7 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerOutlet(outlet)
-             .then((_) => { return router.config({'path': '/a', 'component': 'A'}); })
+             .then((_) => router.config({'path': '/a', 'component': DummyComponent}))
              .then((_) => router.navigate('/a'))
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
@@ -81,7 +81,7 @@ export function main() {
              .then((_) => router.navigate('/a'))
              .then((_) => {
                expect(outlet.spy('activate')).not.toHaveBeenCalled();
-               return router.config({'path': '/a', 'component': 'A'});
+               return router.config({'path': '/a', 'component': DummyComponent});
              })
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
@@ -96,6 +96,8 @@ export function main() {
 class DummyOutlet extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
+
+class DummyComponent {}
 
 function makeDummyOutlet() {
   var ref = new DummyOutlet();

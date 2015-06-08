@@ -6,7 +6,7 @@ import {List, Map} from 'angular2/src/facade/collection';
  *
  * Supported keys:
  * - `path` (required)
- * - `component`, `components`, `redirectTo` (requires exactly one of these)
+ * - `component`,  `redirectTo` (requires exactly one of these)
  * - `as` (optional)
  */
 @CONST()

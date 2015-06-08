@@ -110,25 +110,6 @@ export function main() {
        }));
 
 
-    it('should work with sibling routers', inject([AsyncTestCompleter], (async) => {
-         compile(
-             'left { <router-outlet name="left"></router-outlet> } | right { <router-outlet name="right"></router-outlet> }')
-             .then((_) => rtr.config({'path': '/ab', 'components': {'left': A, 'right': B}}))
-             .then((_) => rtr.config({'path': '/ba', 'components': {'left': B, 'right': A}}))
-             .then((_) => rtr.navigate('/ab'))
-             .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('left { A } | right { B }');
-             })
-             .then((_) => rtr.navigate('/ba'))
-             .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('left { B } | right { A }');
-               async.done();
-             });
-       }));
-
-
     it('should work with redirects', inject([AsyncTestCompleter, Location], (async, location) => {
          compile()
              .then((_) => rtr.config({'path': '/original', 'redirectTo': '/redirected'}))

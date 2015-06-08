@@ -33,7 +33,8 @@ export class Router {
   previousUrl: string;
 
   private _currentInstruction: Instruction;
-  private _outlets: Map<any, RouterOutlet>;
+  private _currentNavigation: Promise<any>;
+  private _outlet: RouterOutlet;
   private _subject: EventEmitter;
   // todo(jeffbcross): rename _registry to registry since it is accessed from subclasses
   // todo(jeffbcross): rename _pipeline to pipeline since it is accessed from subclasses
@@ -41,9 +42,10 @@ export class Router {
               public hostComponent: any) {
     this.navigating = false;
     this.previousUrl = null;
-    this._outlets = MapWrapper.create();
+    this._outlet = null;
     this._subject = new EventEmitter();
     this._currentInstruction = null;
+    this._currentNavigation = PromiseWrapper.resolve(true);
   }
 
 
@@ -58,11 +60,11 @@ export class Router {
    * Register an object to notify of route changes. You probably don't need to use this unless
    * you're writing a reusable component.
    */
-  registerOutlet(outlet: RouterOutlet, name: string = 'default'): Promise<boolean> {
-    MapWrapper.set(this._outlets, name, outlet);
+  registerOutlet(outlet: RouterOutlet): Promise<boolean> {
+    // TODO: sibling routes
+    this._outlet = outlet;
     if (isPresent(this._currentInstruction)) {
-      var childInstruction = this._currentInstruction.getChild(name);
-      return outlet.activate(childInstruction);
+      return outlet.activate(this._currentInstruction);
     }
     return PromiseWrapper.resolve(true);
   }
@@ -85,7 +87,6 @@ export class Router {
    *   { 'path': '/user/:id', 'component': UserComp },
    * ]);
    * ```
-   *
    */
   config(config: any): Promise<any> {
     if (config instanceof List) {
@@ -99,39 +100,38 @@ export class Router {
 
 
   /**
-   * Navigate to a URL. Returns a promise that resolves to the canonical URL for the route.
+   * Navigate to a URL. Returns a promise that resolves when navigation is complete.
    *
    * If the given URL begins with a `/`, router will navigate absolutely.
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
    */
   navigate(url: string): Promise<any> {
     if (this.navigating) {
-      return PromiseWrapper.resolve(true);
+      return this._currentNavigation;
     }
-
     this.lastNavigationAttempt = url;
+    return this._currentNavigation = this.recognize(url).then((matchedInstruction) => {
+      if (isBlank(matchedInstruction)) {
+        return PromiseWrapper.resolve(false);
+      }
 
-    var matchedInstruction = this.recognize(url);
+      if (isPresent(this._currentInstruction)) {
+        matchedInstruction.reuseComponentsFrom(this._currentInstruction);
+      }
 
-    if (isBlank(matchedInstruction)) {
-      return PromiseWrapper.resolve(false);
-    }
+      this._startNavigating();
 
-    if (isPresent(this._currentInstruction)) {
-      matchedInstruction.reuseComponentsFrom(this._currentInstruction);
-    }
+      var result =
+          this.commit(matchedInstruction)
+              .then((_) => {
+                this._finishNavigating();
+                ObservableWrapper.callNext(this._subject, matchedInstruction.accumulatedUrl);
+              });
 
-    this._startNavigating();
+      PromiseWrapper.catchError(result, (_) => this._finishNavigating());
 
-    var result = this.commit(matchedInstruction)
-                     .then((_) => {
-                       ObservableWrapper.callNext(this._subject, matchedInstruction.accumulatedUrl);
-                       this._finishNavigating();
-                     });
-
-    PromiseWrapper.catchError(result, (_) => this._finishNavigating());
-
-    return result;
+      return result;
+    });
   }
 
   _startNavigating(): void { this.navigating = true; }
@@ -146,49 +146,34 @@ export class Router {
 
 
   /**
-   *
+   * Updates this router and all descendant routers according to the given instruction
    */
-  commit(instruction: Instruction): Promise<List<any>> {
+  commit(instruction: Instruction): Promise<any> {
     this._currentInstruction = instruction;
-
-    // collect all outlets that do not have a corresponding child instruction
-    // and remove them from the internal map of child outlets
-    var toDeactivate = ListWrapper.create();
-    MapWrapper.forEach(this._outlets, (outlet, outletName) => {
-      if (!instruction.hasChild(outletName)) {
-        MapWrapper.delete(this._outlets, outletName);
-        ListWrapper.push(toDeactivate, outlet);
-      }
-    });
-
-    return PromiseWrapper.all(ListWrapper.map(toDeactivate, (outlet) => outlet.deactivate()))
-        .then((_) => this.activate(instruction));
+    if (isPresent(this._outlet)) {
+      return this._outlet.activate(instruction);
+    }
+    return PromiseWrapper.resolve(true);
   }
 
 
   /**
-   * Recursively remove all components contained by this router's outlets.
-   * Calls deactivate hooks on all descendant components
+   * Removes the contents of this router's outlet and all descendant outlets
    */
-  deactivate(): Promise<any> { return this._eachOutletAsync((outlet) => outlet.deactivate); }
-
-
-  /**
-   * Recursively activate.
-   * Calls the "activate" hook on descendant components.
-   */
-  activate(instruction: Instruction): Promise<any> {
-    return this._eachOutletAsync((outlet, name) => outlet.activate(instruction.getChild(name)));
+  deactivate(): Promise<any> {
+    if (isPresent(this._outlet)) {
+      return this._outlet.deactivate();
+    }
+    return PromiseWrapper.resolve(true);
   }
-
-
-  _eachOutletAsync(fn): Promise<any> { return mapObjAsync(this._outlets, fn); }
 
 
   /**
    * Given a URL, returns an instruction representing the component graph
    */
-  recognize(url: string): Instruction { return this._registry.recognize(url, this.hostComponent); }
+  recognize(url: string): Promise<Instruction> {
+    return this._registry.recognize(url, this.hostComponent);
+  }
 
 
   /**
@@ -197,8 +182,8 @@ export class Router {
    */
   renavigate(): Promise<any> {
     var destination = isBlank(this.previousUrl) ? this.lastNavigationAttempt : this.previousUrl;
-    if (this.navigating || isBlank(destination)) {
-      return PromiseWrapper.resolve(false);
+    if (isBlank(destination)) {
+      return this._currentNavigation;
     }
     return this.navigate(destination);
   }
@@ -236,14 +221,4 @@ class ChildRouter extends Router {
     super(parent._registry, parent._pipeline, parent, hostComponent);
     this.parent = parent;
   }
-}
-
-function mapObjAsync(obj: Map<any, any>, fn: Function): Promise<any> {
-  return PromiseWrapper.all(mapObj(obj, fn));
-}
-
-function mapObj(obj: Map<any, any>, fn: Function): List<any> {
-  var result = ListWrapper.create();
-  MapWrapper.forEach(obj, (value, key) => ListWrapper.push(result, fn(value, key)));
-  return result;
 }
