@@ -2,26 +2,15 @@
 /// <reference path="../../../angular2/typings/angular-protractor/angular-protractor.d.ts" />
 /// <reference path="../../../angular2/typings/jasmine/jasmine.d.ts" />
 
-var fs = require('fs');
-
-var validateFile = function() {
-  try {
-    var content = fs.readFileSync(browser.params.profileSavePath, 'utf8');
-    // TODO(hankduan): This check is not very useful. Ideally we want to
-    // validate that the file contains all the events that we are looking for.
-    // Pending on data transformer.
-    expect(content).toContain('forceGC');
-    // Delete file
-    fs.unlinkSync(browser.params.profileSavePath);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      // If files doesn't exist
-      console.error('Error: firefox extension did not save profile JSON');
-    } else {
-      console.error('Error: ' + err);
+var assertEventsContainsName = function(events, eventName) {
+  var found = false;
+  for (var i = 0; i < events.length; ++i) {
+    if (events[i].name == eventName) {
+      found = true;
+      break;
     }
-    throw err;
   }
+  expect(found).toBeTruthy();
 };
 
 describe('firefox extension', function() {
@@ -37,10 +26,10 @@ describe('firefox extension', function() {
 
     browser.executeScript('window.forceGC()');
 
-    var script = 'window.stopAndRecord("' + browser.params.profileSavePath + '")';
-    browser.executeScript(script).then(function() { console.log('stopped measuring perf'); });
-
-    // wait for it to finish, then validate file.
-    browser.sleep(3000).then(validateFile);
+    browser.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);')
+        .then(function(profile) {
+          assertEventsContainsName(profile, 'gc');
+          assertEventsContainsName(profile, 'script');
+        });
   })
 });
