@@ -61,8 +61,7 @@ export function main() {
 
     describe(`${cdType} Change Detector`, () => {
 
-      function _getProtoChangeDetector(def: ChangeDetectorDefinition) {
-        var registry = null;
+      function _getProtoChangeDetector(def: ChangeDetectorDefinition, registry = null) {
         switch (cdType) {
           case 'dynamic':
             return new DynamicProtoChangeDetector(registry, def);
@@ -75,15 +74,20 @@ export function main() {
         }
       }
 
-      function _bindSimpleValue(expression: string, context = _DEFAULT_CONTEXT) {
+      function _createChangeDetector(expression: string, context = _DEFAULT_CONTEXT,
+                                     registry = null) {
         var dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
-        var protoCd = _getProtoChangeDetector(testDef.cdDef);
+        var protoCd = _getProtoChangeDetector(testDef.cdDef, registry);
         var cd = protoCd.instantiate(dispatcher);
-
         cd.hydrate(context, testDef.locals, null);
-        cd.detectChanges();
-        return dispatcher.log;
+        return new _ChangeDetectorAndDispatcher(cd, dispatcher);
+      }
+
+      function _bindSimpleValue(expression: string, context = _DEFAULT_CONTEXT) {
+        var val = _createChangeDetector(expression, context);
+        val.changeDetector.detectChanges();
+        return val.dispatcher.log;
       }
 
       it('should support literals',
@@ -235,7 +239,104 @@ export function main() {
         expect(_bindSimpleValue('a.sayHi("Jim")', td)).toEqual(['propName=Hi, Jim']);
       });
 
-      describe("Locals", () => {
+      it('should do simple watching', () => {
+        var person = new Person('misko');
+        var val = _createChangeDetector('name', person);
+
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual(['propName=misko']);
+        val.dispatcher.clear();
+
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual([]);
+        val.dispatcher.clear();
+
+        person.name = 'Misko';
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual(['propName=Misko']);
+      });
+
+      it('should support literal array', () => {
+        var val = _createChangeDetector('[1, 2]');
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.loggedValues).toEqual([[1, 2]]);
+
+        val = _createChangeDetector('[1, a]', new TestData(2));
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.loggedValues).toEqual([[1, 2]]);
+      });
+
+      it('should support literal maps', () => {
+        var val = _createChangeDetector('{z: 1}');
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.loggedValues[0]['z']).toEqual(1);
+
+        val = _createChangeDetector('{z: a}', new TestData(1));
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.loggedValues[0]['z']).toEqual(1);
+      });
+
+      // TODO(kegluneq): Insert it('should support interpolation', ...) testcase.
+
+      describe('change notification', () => {
+        describe('simple checks', () => {
+          it('should pass a change record to the dispatcher', () => {
+            var person = new Person('bob');
+            var val = _createChangeDetector('name', person);
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual(['bob']);
+          });
+        });
+
+        describe('pipes', () => {
+          it('should pass a change record to the dispatcher', () => {
+            var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
+            var person = new Person('bob');
+            var val = _createChangeDetector('name | pipe', person, registry);
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual(['bob state:0']);
+          });
+        });
+
+        // TODO(kegluneq): Insert describe('change notification', ...) testcases.
+      });
+
+      // TODO(kegluneq): Insert describe('reading directives', ...) testcases.
+
+      describe('enforce no new changes', () => {
+        it('should throw when a record gets changed after it has been checked', () => {
+          var val = _createChangeDetector('a', new TestData('value'));
+          expect(() => { val.changeDetector.checkNoChanges(); })
+              .toThrowError(new RegExp(
+                  'Expression [\'"]a in location[\'"] has changed after it was checked'));
+        });
+
+        it('should not break the next run', () => {
+          var val = _createChangeDetector('a', new TestData('value'));
+          expect(() => val.changeDetector.checkNoChanges())
+              .toThrowError(new RegExp(
+                  'Expression [\'"]a in location[\'"] has changed after it was checked.'));
+
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.loggedValues).toEqual(['value']);
+        });
+      });
+
+      // TODO vsavkin: implement it
+      describe('error handling', () => {
+        xit('should wrap exceptions into ChangeDetectionError', () => {
+          var val = _createChangeDetector('invalidProp');
+          try {
+            val.changeDetector.detectChanges();
+            throw new BaseException('fail');
+          } catch (e) {
+            expect(e).toBeAnInstanceOf(ChangeDetectionError);
+            expect(e.location).toEqual('invalidProp in someComponent');
+          }
+        });
+      });
+
+      describe('Locals', () => {
         it('should read a value from locals',
            () => { expect(_bindSimpleValue('valueFromLocals')).toEqual(['propName=value']); });
 
@@ -245,10 +346,10 @@ export function main() {
         it('should handle nested locals',
            () => { expect(_bindSimpleValue('nestedLocals')).toEqual(['propName=value']); });
 
-        it("should fall back to a regular field read when the locals map" +
-               "does not have the requested field",
+        it('should fall back to a regular field read when the locals map' +
+               'does not have the requested field',
            () => {
-             expect(_bindSimpleValue('fallbackLocals', new Person("Jim")))
+             expect(_bindSimpleValue('fallbackLocals', new Person('Jim')))
                  .toEqual(['propName=Jim']);
            });
 
@@ -261,6 +362,200 @@ export function main() {
           expect(_bindSimpleValue('localPropertyWithSimilarContext', person))
               .toEqual(['propName=MTV']);
         });
+      });
+
+      describe('handle children', () => {
+        var parent, child;
+
+        beforeEach(() => {
+          parent = _createChangeDetector('10').changeDetector;
+          child = _createChangeDetector('"str"').changeDetector;
+        });
+
+        it('should add light dom children', () => {
+          parent.addChild(child);
+
+          expect(parent.lightDomChildren.length).toEqual(1);
+          expect(parent.lightDomChildren[0]).toBe(child);
+        });
+
+        it('should add shadow dom children', () => {
+          parent.addShadowDomChild(child);
+
+          expect(parent.shadowDomChildren.length).toEqual(1);
+          expect(parent.shadowDomChildren[0]).toBe(child);
+        });
+
+        it('should remove light dom children', () => {
+          parent.addChild(child);
+          parent.removeChild(child);
+
+          expect(parent.lightDomChildren).toEqual([]);
+        });
+
+        it('should remove shadow dom children', () => {
+          parent.addShadowDomChild(child);
+          parent.removeShadowDomChild(child);
+
+          expect(parent.shadowDomChildren.length).toEqual(0);
+        });
+      });
+
+      // TODO(kegluneq): Insert describe('mode', ...) testcases.
+
+      describe('markPathToRootAsCheckOnce', () => {
+        function changeDetector(mode, parent) {
+          var val = _createChangeDetector('10');
+          val.changeDetector.mode = mode;
+          if (isPresent(parent)) parent.addChild(val.changeDetector);
+          return val.changeDetector;
+        }
+
+        it('should mark all checked detectors as CHECK_ONCE until reaching a detached one', () => {
+          var root = changeDetector(CHECK_ALWAYS, null);
+          var disabled = changeDetector(DETACHED, root);
+          var parent = changeDetector(CHECKED, disabled);
+          var checkAlwaysChild = changeDetector(CHECK_ALWAYS, parent);
+          var checkOnceChild = changeDetector(CHECK_ONCE, checkAlwaysChild);
+          var checkedChild = changeDetector(CHECKED, checkOnceChild);
+
+          checkedChild.markPathToRootAsCheckOnce();
+
+          expect(root.mode).toEqual(CHECK_ALWAYS);
+          expect(disabled.mode).toEqual(DETACHED);
+          expect(parent.mode).toEqual(CHECK_ONCE);
+          expect(checkAlwaysChild.mode).toEqual(CHECK_ALWAYS);
+          expect(checkOnceChild.mode).toEqual(CHECK_ONCE);
+          expect(checkedChild.mode).toEqual(CHECK_ONCE);
+        });
+      });
+
+      describe('hydration', () => {
+        it('should be able to rehydrate a change detector', () => {
+          var cd = _createChangeDetector('name').changeDetector;
+
+          cd.hydrate('some context', null, null);
+          expect(cd.hydrated()).toBe(true);
+
+          cd.dehydrate();
+          expect(cd.hydrated()).toBe(false);
+
+          cd.hydrate('other context', null, null);
+          expect(cd.hydrated()).toBe(true);
+        });
+
+        it('should destroy all active pipes during dehyration', () => {
+          var pipe = new OncePipe();
+          var registry = new FakePipeRegistry('pipe', () => pipe);
+          var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
+
+          cd.detectChanges();
+          cd.dehydrate();
+
+          expect(pipe.destroyCalled).toBe(true);
+        });
+
+        it('should throw when detectChanges is called on a dehydrated detector', () => {
+          var context = new Person('Bob');
+          var val = _createChangeDetector('name', context);
+
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.log).toEqual(['propName=Bob']);
+
+          val.changeDetector.dehydrate();
+          var dehydratedException = new DehydratedException();
+          expect(() => {val.changeDetector.detectChanges()})
+              .toThrowError(dehydratedException.toString());
+          expect(val.dispatcher.log).toEqual(['propName=Bob']);
+        });
+      });
+
+      describe('pipes', () => {
+        it('should support pipes', () => {
+          var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
+          var ctx = new Person('Megatron');
+
+          var val = _createChangeDetector('name | pipe', ctx, registry);
+
+          val.changeDetector.detectChanges();
+
+          expect(val.dispatcher.log).toEqual(['propName=Megatron state:0']);
+
+          val.dispatcher.clear();
+          val.changeDetector.detectChanges();
+
+          expect(val.dispatcher.log).toEqual(['propName=Megatron state:1']);
+        });
+
+        it('should lookup pipes in the registry when the context is not supported', () => {
+          var registry = new FakePipeRegistry('pipe', () => new OncePipe());
+          var ctx = new Person('Megatron');
+
+          var cd = _createChangeDetector('name | pipe', ctx, registry).changeDetector;
+
+          cd.detectChanges();
+
+          expect(registry.numberOfLookups).toEqual(1);
+
+          ctx.name = 'Optimus Prime';
+          cd.detectChanges();
+
+          expect(registry.numberOfLookups).toEqual(2);
+        });
+
+        it('should invoke onDestroy on a pipe before switching to another one', () => {
+          var pipe = new OncePipe();
+          var registry = new FakePipeRegistry('pipe', () => pipe);
+          var ctx = new Person('Megatron');
+
+          var cd = _createChangeDetector('name | pipe', ctx, registry).changeDetector;
+
+          cd.detectChanges();
+          ctx.name = 'Optimus Prime';
+          cd.detectChanges();
+
+          expect(pipe.destroyCalled).toEqual(true);
+        });
+
+        it('should inject the ChangeDetectorRef ' +
+               'of the encompassing component into a pipe',
+           () => {
+
+             var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
+             var cd =
+                 _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
+
+             cd.detectChanges();
+
+             expect(registry.cdRef).toBe(cd.ref);
+           });
+      });
+
+      it('should do nothing when no change', () => {
+        var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
+        var ctx = new Person('Megatron');
+
+        var val = _createChangeDetector('name | pipe', ctx, registry);
+
+        val.changeDetector.detectChanges();
+
+        expect(val.dispatcher.log).toEqual(['propName=Megatron']);
+
+        val.dispatcher.clear();
+        val.changeDetector.detectChanges();
+
+        expect(val.dispatcher.log).toEqual([]);
+      });
+
+      it('should unwrap the wrapped value', () => {
+        var registry = new FakePipeRegistry('pipe', () => new WrappedPipe());
+        var ctx = new Person('Megatron');
+
+        var val = _createChangeDetector('name | pipe', ctx, registry);
+
+        val.changeDetector.detectChanges();
+
+        expect(val.dispatcher.log).toEqual(['propName=Megatron']);
       });
     });
   });
@@ -320,46 +615,6 @@ export function main() {
 
             beforeEach(() => { dispatcher = new TestDispatcher(); });
 
-            it('should do simple watching', () => {
-              var person = new Person("misko");
-
-              var c = createChangeDetector('name', 'name', person);
-              var cd = c["changeDetector"];
-              var dispatcher = c["dispatcher"];
-
-              cd.detectChanges();
-              expect(dispatcher.log).toEqual(['name=misko']);
-              dispatcher.clear();
-
-              cd.detectChanges();
-              expect(dispatcher.log).toEqual([]);
-              dispatcher.clear();
-
-              person.name = "Misko";
-              cd.detectChanges();
-              expect(dispatcher.log).toEqual(['name=Misko']);
-            });
-
-            it("should support literal array", () => {
-              var c = createChangeDetector('array', '[1,2]');
-              c["changeDetector"].detectChanges();
-              expect(c["dispatcher"].loggedValues).toEqual([[1, 2]]);
-
-              c = createChangeDetector('array', '[1,a]', new TestData(2));
-              c["changeDetector"].detectChanges();
-              expect(c["dispatcher"].loggedValues).toEqual([[1, 2]]);
-            });
-
-            it("should support literal maps", () => {
-              var c = createChangeDetector('map', '{z:1}');
-              c["changeDetector"].detectChanges();
-              expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
-
-              c = createChangeDetector('map', '{z:a}', new TestData(1));
-              c["changeDetector"].detectChanges();
-              expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
-            });
-
             it("should support interpolation", () => {
               var ast = parser.parseInterpolation("B{{a}}A", "location");
               var pcd = createProtoChangeDetector([BindingRecord.createForElement(ast, 0, "memo")]);
@@ -373,34 +628,6 @@ export function main() {
             });
 
             describe("change notification", () => {
-              describe("simple checks", () => {
-                it("should pass a change record to the dispatcher", () => {
-                  var person = new Person('bob');
-                  var c = createChangeDetector('name', 'name', person);
-                  var cd = c["changeDetector"];
-                  var dispatcher = c["dispatcher"];
-
-                  cd.detectChanges();
-
-                  expect(dispatcher.loggedValues).toEqual(['bob']);
-                });
-              });
-
-              describe("pipes", () => {
-                it("should pass a change record to the dispatcher", () => {
-                  var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
-
-                  var person = new Person('bob');
-                  var c = createChangeDetector('name', 'name | pipe', person, registry);
-                  var cd = c["changeDetector"];
-                  var dispatcher = c["dispatcher"];
-
-                  cd.detectChanges();
-
-                  expect(dispatcher.loggedValues).toEqual(['bob state:0']);
-                });
-              });
-
               describe("updating directives", () => {
                 var dirRecord1 = new DirectiveRecord({
                   directiveIndex: new DirectiveIndex(0, 0),
@@ -651,95 +878,6 @@ export function main() {
                 expect(dispatcher.loggedValues).toEqual(['aaa']);
               });
             });
-
-            describe("enforce no new changes", () => {
-              it("should throw when a record gets changed after it has been checked", () => {
-                var pcd =
-                    createProtoChangeDetector([BindingRecord.createForElement(ast("a"), 0, "a")]);
-
-                var dispatcher = new TestDispatcher();
-                var cd = pcd.instantiate(dispatcher);
-                cd.hydrate(new TestData('value'), null, null);
-
-                expect(() => { cd.checkNoChanges(); })
-                    .toThrowError(
-                        new RegExp("Expression 'a in location' has changed after it was checked"));
-              });
-
-              it("should not break the next run", () => {
-                var pcd =
-                    createProtoChangeDetector([BindingRecord.createForElement(ast("a"), 0, "a")]);
-
-                var dispatcher = new TestDispatcher();
-                var cd = pcd.instantiate(dispatcher);
-                cd.hydrate(new TestData('value'), null, null);
-
-                expect(() => cd.checkNoChanges())
-                    .toThrowError(
-                        new RegExp("Expression 'a in location' has changed after it was checked."));
-
-                cd.detectChanges();
-
-                expect(dispatcher.loggedValues).toEqual(['value']);
-              });
-            });
-
-            // TODO vsavkin: implement it
-            describe("error handling", () => {
-              xit("should wrap exceptions into ChangeDetectionError", () => {
-                var pcd = createProtoChangeDetector();
-                var cd = pcd.instantiate(
-                    new TestDispatcher(),
-                    [BindingRecord.createForElement(ast("invalidProp"), 0, "a")], null, []);
-                cd.hydrate(_DEFAULT_CONTEXT, null);
-
-                try {
-                  cd.detectChanges();
-
-                  throw new BaseException("fail");
-                } catch (e) {
-                  expect(e).toBeAnInstanceOf(ChangeDetectionError);
-                  expect(e.location).toEqual("invalidProp in someComponent");
-                }
-              });
-            });
-
-            describe("handle children", () => {
-              var parent, child;
-
-              beforeEach(() => {
-                parent = createProtoChangeDetector([]).instantiate(null);
-                child = createProtoChangeDetector([]).instantiate(null);
-              });
-
-              it("should add light dom children", () => {
-                parent.addChild(child);
-
-                expect(parent.lightDomChildren.length).toEqual(1);
-                expect(parent.lightDomChildren[0]).toBe(child);
-              });
-
-              it("should add shadow dom children", () => {
-                parent.addShadowDomChild(child);
-
-                expect(parent.shadowDomChildren.length).toEqual(1);
-                expect(parent.shadowDomChildren[0]).toBe(child);
-              });
-
-              it("should remove light dom children", () => {
-                parent.addChild(child);
-                parent.removeChild(child);
-
-                expect(parent.lightDomChildren).toEqual([]);
-              });
-
-              it("should remove shadow dom children", () => {
-                parent.addShadowDomChild(child);
-                parent.removeShadowDomChild(child);
-
-                expect(parent.shadowDomChildren.length).toEqual(0);
-              });
-            });
           });
 
           describe("mode", () => {
@@ -847,174 +985,6 @@ export function main() {
                 expect(checkedDetector.mode).toEqual(CHECK_ONCE);
               });
             });
-          });
-
-          describe("markPathToRootAsCheckOnce", () => {
-            function changeDetector(mode, parent) {
-              var cd = createProtoChangeDetector([]).instantiate(null);
-              cd.mode = mode;
-              if (isPresent(parent)) parent.addChild(cd);
-              return cd;
-            }
-
-            it("should mark all checked detectors as CHECK_ONCE " + "until reaching a detached one",
-               () => {
-
-                 var root = changeDetector(CHECK_ALWAYS, null);
-                 var disabled = changeDetector(DETACHED, root);
-                 var parent = changeDetector(CHECKED, disabled);
-                 var checkAlwaysChild = changeDetector(CHECK_ALWAYS, parent);
-                 var checkOnceChild = changeDetector(CHECK_ONCE, checkAlwaysChild);
-                 var checkedChild = changeDetector(CHECKED, checkOnceChild);
-
-                 checkedChild.markPathToRootAsCheckOnce();
-
-                 expect(root.mode).toEqual(CHECK_ALWAYS);
-                 expect(disabled.mode).toEqual(DETACHED);
-                 expect(parent.mode).toEqual(CHECK_ONCE);
-                 expect(checkAlwaysChild.mode).toEqual(CHECK_ALWAYS);
-                 expect(checkOnceChild.mode).toEqual(CHECK_ONCE);
-                 expect(checkedChild.mode).toEqual(CHECK_ONCE);
-               });
-          });
-
-          describe("hydration", () => {
-            it("should be able to rehydrate a change detector", () => {
-              var c = createChangeDetector("memo", "name");
-              var cd = c["changeDetector"];
-
-              cd.hydrate("some context", null, null);
-              expect(cd.hydrated()).toBe(true);
-
-              cd.dehydrate();
-              expect(cd.hydrated()).toBe(false);
-
-              cd.hydrate("other context", null, null);
-              expect(cd.hydrated()).toBe(true);
-            });
-
-            it("should destroy all active pipes during dehyration", () => {
-              var pipe = new OncePipe();
-              var registry = new FakePipeRegistry('pipe', () => pipe);
-              var c = createChangeDetector("memo", "name | pipe", new Person('bob'), registry);
-              var cd = c["changeDetector"];
-
-              cd.detectChanges();
-
-              cd.dehydrate();
-
-              expect(pipe.destroyCalled).toBe(true);
-            });
-
-            it("should throw when detectChanges is called on a dehydrated detector", () => {
-              var context = new Person('Bob');
-              var c = createChangeDetector("propName", "name", context);
-              var cd = c["changeDetector"];
-              var log = c["dispatcher"].log;
-
-              cd.detectChanges();
-              expect(log).toEqual(["propName=Bob"]);
-
-              cd.dehydrate();
-              var dehydratedException = new DehydratedException();
-              expect(() => {cd.detectChanges()}).toThrowError(dehydratedException.toString());
-              expect(log).toEqual(["propName=Bob"]);
-            });
-          });
-
-          describe("pipes", () => {
-            it("should support pipes", () => {
-              var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
-              var ctx = new Person("Megatron");
-
-              var c = createChangeDetector("memo", "name | pipe", ctx, registry);
-              var cd = c["changeDetector"];
-              var dispatcher = c["dispatcher"];
-
-              cd.detectChanges();
-
-              expect(dispatcher.log).toEqual(['memo=Megatron state:0']);
-
-              dispatcher.clear();
-              cd.detectChanges();
-
-              expect(dispatcher.log).toEqual(['memo=Megatron state:1']);
-            });
-
-            it("should lookup pipes in the registry when the context is not supported", () => {
-              var registry = new FakePipeRegistry('pipe', () => new OncePipe());
-              var ctx = new Person("Megatron");
-
-              var c = createChangeDetector("memo", "name | pipe", ctx, registry);
-              var cd = c["changeDetector"];
-
-              cd.detectChanges();
-
-              expect(registry.numberOfLookups).toEqual(1);
-
-              ctx.name = "Optimus Prime";
-              cd.detectChanges();
-
-              expect(registry.numberOfLookups).toEqual(2);
-            });
-
-            it("should invoke onDestroy on a pipe before switching to another one", () => {
-              var pipe = new OncePipe();
-              var registry = new FakePipeRegistry('pipe', () => pipe);
-              var ctx = new Person("Megatron");
-
-              var c = createChangeDetector("memo", "name | pipe", ctx, registry);
-              var cd = c["changeDetector"];
-
-              cd.detectChanges();
-              ctx.name = "Optimus Prime";
-              cd.detectChanges();
-
-              expect(pipe.destroyCalled).toEqual(true);
-            });
-
-            it("should inject the ChangeDetectorRef " + "of the encompassing component into a pipe",
-               () => {
-
-                 var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
-                 var c = createChangeDetector("memo", "name | pipe", new Person('bob'), registry);
-                 var cd = c["changeDetector"];
-
-                 cd.detectChanges();
-
-                 expect(registry.cdRef).toBe(cd.ref);
-               });
-          });
-
-          it("should do nothing when no change", () => {
-            var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
-            var ctx = new Person("Megatron");
-
-            var c = createChangeDetector("memo", "name | pipe", ctx, registry);
-            var cd = c["changeDetector"];
-            var dispatcher = c["dispatcher"];
-
-            cd.detectChanges();
-
-            expect(dispatcher.log).toEqual(['memo=Megatron']);
-
-            dispatcher.clear();
-            cd.detectChanges();
-
-            expect(dispatcher.log).toEqual([]);
-          });
-
-          it("should unwrap the wrapped value", () => {
-            var registry = new FakePipeRegistry('pipe', () => new WrappedPipe());
-            var ctx = new Person("Megatron");
-
-            var c = createChangeDetector("memo", "name | pipe", ctx, registry);
-            var cd = c["changeDetector"];
-            var dispatcher = c["dispatcher"];
-
-            cd.detectChanges();
-
-            expect(dispatcher.log).toEqual(['memo=Megatron']);
           });
         });
   });
@@ -1133,8 +1103,7 @@ class Person {
 }
 
 class Address {
-  city: string;
-  constructor(city: string) { this.city = city; }
+  constructor(public city: string) {}
 
   toString(): string { return isBlank(this.city) ? '-' : this.city }
 }
@@ -1144,9 +1113,7 @@ class Uninitialized {
 }
 
 class TestData {
-  a;
-
-  constructor(a) { this.a = a; }
+  constructor(public a: any) {}
 }
 
 class FakeDirectives {
@@ -1178,4 +1145,8 @@ class TestDispatcher extends ChangeDispatcher {
   }
 
   _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
+}
+
+class _ChangeDetectorAndDispatcher {
+  constructor(public changeDetector: any, public dispatcher: TestDispatcher) {}
 }
