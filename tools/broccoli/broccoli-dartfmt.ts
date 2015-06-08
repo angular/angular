@@ -21,6 +21,7 @@ function processToPromise(process) {
 class DartFormatter implements DiffingBroccoliPlugin {
   private DARTFMT: string;
   private verbose: boolean;
+  private firstBuild: boolean = true;
 
   constructor(public inputPath: string, public cachePath: string, options) {
     if (!options.dartSDK) throw new Error("Missing Dart SDK");
@@ -30,11 +31,23 @@ class DartFormatter implements DiffingBroccoliPlugin {
 
   rebuild(treeDiff: DiffResult): Promise<any> {
     let args = ['-w'];
+    let argsLength = 2;
+    let argPackages = [];
+    let firstBuild = this.firstBuild;
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedFile) => {
           let sourcePath = path.join(this.inputPath, changedFile);
           let destPath = path.join(this.cachePath, changedFile);
-          if (/\.dart$/.test(changedFile)) args.push(destPath);
+          if (!firstBuild && /\.dart$/.test(changedFile)) {
+            if ((argsLength + destPath.length + 2) >= 0x2000) {
+              // Win32 command line arguments length
+              argPackages.push(args);
+              args = ['-w'];
+              argsLength = 2;
+            }
+            args.push(destPath);
+            argsLength += destPath.length + 2;
+          }
           fse.copySync(sourcePath, destPath);
         });
     treeDiff.removedPaths.forEach((removedFile) => {
@@ -42,22 +55,34 @@ class DartFormatter implements DiffingBroccoliPlugin {
       fse.removeSync(destPath);
     });
 
-    if (args.length < 1) {
-      return Promise.resolve();
+    if (!firstBuild && args.length > 1) {
+      argPackages.push(args);
     }
-    return new Promise((resolve, reject) => {
-      exec(this.DARTFMT + ' ' + args.join(' '), (err, stdout, stderr) => {
-        if (this.verbose) {
-          console.log(stdout);
-        }
-        if (err) {
-          console.error(shortenFormatterOutput(stderr));
-          reject('Formatting failed.');
-        } else {
-          resolve();
-        }
+
+    let execute = (args) => {
+      if (args.length < 2) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        exec(this.DARTFMT + ' ' + args.join(' '), (err, stdout, stderr) => {
+          if (this.verbose) {
+            console.log(stdout);
+          }
+          if (err) {
+            console.error(shortenFormatterOutput(stderr));
+            reject('Formatting failed.');
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+    };
+
+    if (firstBuild) {
+      // On firstBuild, format the entire cachePath
+      this.firstBuild = false;
+      return execute(['-w', this.cachePath]);
+    }
+
+    return Promise.all(argPackages.map(execute));
   }
 }
 
