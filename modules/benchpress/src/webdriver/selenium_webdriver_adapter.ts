@@ -30,6 +30,10 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     return this._convertPromise(this._driver.executeScript(script));
   }
 
+  executeAsyncScript(script: string): Promise<any> {
+    return this._convertPromise(this._driver.executeAsyncScript(script));
+  }
+
   capabilities(): Promise<any> {
     return this._convertPromise(
         this._driver.getCapabilities().then((capsObject) => capsObject.toJSON()));
