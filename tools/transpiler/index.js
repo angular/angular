@@ -10,7 +10,7 @@ exports.RUNTIME_PATH = traceur.RUNTIME_PATH;
 var TRACEUR_PATH = traceur.RUNTIME_PATH.replace('traceur-runtime.js', 'traceur.js');
 var SELF_SOURCE_REGEX = /transpiler\/src/;
 var SELF_COMPILE_OPTIONS = {
-  modules: 'register',
+  modules: 'bootstrap',
   memberVariables: false,
   moduleName: true,
   script: false // parse as a module
