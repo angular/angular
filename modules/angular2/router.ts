@@ -16,6 +16,7 @@ export {Location} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
 
+import {RouteParams} from './src/router/instruction';
 import {BrowserLocation} from './src/router/browser_location';
 import {Router, RootRouter} from './src/router/router';
 import {RouterOutlet} from './src/router/router_outlet';
@@ -35,6 +36,7 @@ export var routerInjectables: List<any> = [
   Pipeline,
   BrowserLocation,
   Location,
+  bind(RouteParams).toValue(new RouteParams({})),
   bind(Router)
       .toFactory((registry, pipeline, location,
                   appRoot) => { return new RootRouter(registry, pipeline, location, appRoot);},
