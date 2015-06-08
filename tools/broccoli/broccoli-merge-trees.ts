@@ -4,114 +4,81 @@ import path = require('path');
 var symlinkOrCopySync = require('symlink-or-copy').sync;
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
-interface MergeTreesOptions {
-  overwrite?: boolean;
+function pathExists(filePath) {
+  try {
+    if (fs.statSync(filePath)) {
+      return true;
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") {
+      throw e;
+    }
+  }
+  return false;
 }
 
 function outputFileSync(sourcePath, destPath) {
   let dirname = path.dirname(destPath);
   fse.mkdirsSync(dirname, {fs: fs});
+  fse.removeSync(destPath);
   symlinkOrCopySync(sourcePath, destPath);
 }
 
 export class MergeTrees implements DiffingBroccoliPlugin {
-  private pathCache: {[key: string]: number[]} = Object.create(null);
-  public options: MergeTreesOptions;
-  private firstBuild: boolean = true;
+  private mergedPaths: {[key: string]: number} = Object.create(null);
 
-  constructor(public inputPaths: string[], public cachePath: string,
-              options: MergeTreesOptions = {}) {
-    this.options = options || {};
-  }
+  constructor(public inputPaths: string[], public cachePath: string, public options) {}
 
   rebuild(treeDiffs: DiffResult[]) {
-    let overwrite = this.options.overwrite;
-    let pathsToEmit: string[] = [];
-    let pathsToRemove: string[] = [];
-    let emitted: {[key: string]: boolean} = Object.create(null);
-    let contains = (cache, val) => {
-      for (let i = 0, ii = cache.length; i < ii; ++i) {
-        if (cache[i] === val) return true;
-      }
-      return false;
-    };
-
-    let emit = (relativePath) => {
-      // ASSERT(!emitted[relativePath]);
-      pathsToEmit.push(relativePath);
-      emitted[relativePath] = true;
-    };
-
-    if (this.firstBuild) {
-      // Build initial cache
-      treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
-        index = treeDiffs.length - 1 - index;
-        treeDiff.changedPaths.forEach((changedPath) => {
-          let cache = this.pathCache[changedPath];
-          if (cache === undefined) {
-            this.pathCache[changedPath] = [index];
-            pathsToEmit.push(changedPath);
-          } else if (overwrite) {
-            // ASSERT(contains(pathsToEmit, changedPath));
-            cache.unshift(index);
-          } else {
-            throw new Error("`overwrite` option is required for handling duplicates.");
+    treeDiffs.forEach((treeDiff: DiffResult, index) => {
+      let inputPath = this.inputPaths[index];
+      let existsLater = (relativePath) => {
+        for (let i = treeDiffs.length - 1; i > index; --i) {
+          if (pathExists(path.join(this.inputPaths[i], relativePath))) {
+            return true;
           }
-        });
+        }
+        return false;
+      };
+      let existsSooner = (relativePath) => {
+        for (let i = index - 1; i >= 0; --i) {
+          if (pathExists(path.join(this.inputPaths[i], relativePath))) {
+            return i;
+          }
+        }
+        return -1;
+      };
+      treeDiff.changedPaths.forEach((changedPath) => {
+        let inputTreeIndex = this.mergedPaths[changedPath];
+        if (inputTreeIndex !== index && !existsLater(changedPath)) {
+          inputTreeIndex = this.mergedPaths[changedPath] = index;
+          let sourcePath = path.join(inputPath, changedPath);
+          let destPath = path.join(this.cachePath, changedPath);
+          outputFileSync(sourcePath, destPath);
+        }
       });
-      this.firstBuild = false;
-    } else {
-      // Update cache
-      treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
-        index = treeDiffs.length - 1 - index;
-        treeDiff.removedPaths.forEach((removedPath) => {
-          let cache = this.pathCache[removedPath];
-          // ASSERT(cache !== undefined);
-          // ASSERT(contains(cache, index));
-          if (cache[cache.length - 1] === index) {
-            pathsToRemove.push(path.join(this.cachePath, removedPath));
-            cache.pop();
-            if (cache.length === 0) {
-              this.pathCache[removedPath] = undefined;
-            } else if (!emitted[removedPath]) {
-              if (cache.length === 1 && !overwrite) {
-                throw new Error("`overwrite` option is required for handling duplicates.");
-              }
-              emit(removedPath);
-            }
-          }
-        });
-        treeDiff.changedPaths.forEach((changedPath) => {
-          let cache = this.pathCache[changedPath];
-          if (cache === undefined) {
-            // File was added
-            this.pathCache[changedPath] = [index];
-            emit(changedPath);
-          } else if (!contains(cache, index)) {
-            cache.push(index);
-            cache.sort((a, b) => a - b);
-            if (cache.length > 1 && !overwrite) {
-              throw new Error("`overwrite` option is required for handling duplicates.");
-            }
-            if (cache[cache.length - 1] === index && !emitted[changedPath]) {
-              emit(changedPath);
-            }
-          }
-        });
-      });
-    }
 
-    pathsToRemove.forEach((destPath) => fse.removeSync(destPath));
-    pathsToEmit.forEach((emittedPath) => {
-      let cache = this.pathCache[emittedPath];
-      let destPath = path.join(this.cachePath, emittedPath);
-      let sourceIndex = cache[cache.length - 1];
-      let sourceInputPath = this.inputPaths[sourceIndex];
-      let sourcePath = path.join(sourceInputPath, emittedPath);
-      if (cache.length > 1) {
+      treeDiff.removedPaths.forEach((removedPath) => {
+        let inputTreeIndex = this.mergedPaths[removedPath];
+
+        // if inputTreeIndex !== index, this same file was handled during
+        // changedPaths handling
+        if (inputTreeIndex !== index) return;
+
+        let destPath = path.join(this.cachePath, removedPath);
         fse.removeSync(destPath);
-      }
-      outputFileSync(sourcePath, destPath);
+        let newInputTreeIndex = existsSooner(removedPath);
+
+        // Update cached value (to either newInputTreeIndex value or undefined)
+        this.mergedPaths[removedPath] = newInputTreeIndex;
+
+        if (newInputTreeIndex >= 0) {
+          // Copy the file from the newInputTreeIndex inputPath if necessary.
+          let newInputPath = this.inputPaths[newInputTreeIndex];
+          let sourcePath = path.join(newInputPath, removedPath);
+          outputFileSync(sourcePath, destPath);
+        }
+      });
     });
   }
 }
