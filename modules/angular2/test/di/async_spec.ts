@@ -133,25 +133,26 @@ export function main() {
                 'Cannot instantiate UserList synchronously. It is provided as a promise!');
       });
 
-      it('should throw when instantiating a sync binding with an async dependency', function() {
-        var injector =
-            Injector.resolveAndCreate([bind(UserList).toAsyncFactory(fetchUsers), UserController]);
-
-        expect(() => injector.get(UserController))
-            .toThrowError(new RegExp(
-                'Cannot instantiate UserList synchronously. It is provided as a promise!'));
-      });
-
-      it('should not throw when instantiating a sync binding with a resolved async dependency',
-         inject([AsyncTestCompleter], (async) => {
-           var injector = Injector.resolveAndCreate(
-               [bind(UserList).toAsyncFactory(fetchUsers), UserController]);
-
-           injector.asyncGet(UserList).then((_) => {
-             expect(() => { injector.get(UserController); }).not.toThrow();
-             async.done();
-           });
-         }));
+      // TODO(vicb): Do we want to keep this tests for when assertions are disabled ?
+      //it('should throw when instantiating a sync binding with an async dependency', function() {
+      //  var injector =
+      //      Injector.resolveAndCreate([bind(UserList).toAsyncFactory(fetchUsers), UserController]);
+      //
+      //  expect(() => injector.get(UserController))
+      //      .toThrowError(new RegExp(
+      //          'Cannot instantiate UserList synchronously. It is provided as a promise!'));
+      //});
+      //
+      //it('should not throw when instantiating a sync binding with a resolved async dependency',
+      //   inject([AsyncTestCompleter], (async) => {
+      //     var injector = Injector.resolveAndCreate(
+      //         [bind(UserList).toAsyncFactory(fetchUsers), UserController]);
+      //
+      //     injector.asyncGet(UserList).then((_) => {
+      //       expect(() => { injector.get(UserController); }).not.toThrow();
+      //       async.done();
+      //     });
+      //   }));
 
       it('should resolve synchronously when an async dependency requested as a promise',
          function() {
@@ -172,5 +173,12 @@ export function main() {
         expect(controller.userList).toBePromise();
       });
     });
+
+    it('should throw when a sync binding has an async dependency', () => {
+      expect(() => {
+        Injector.resolveAndCreate([bind(UserList).toAsyncFactory(fetchUsers), UserController]);
+      }).toThrowError("Cannot instantiate UserList synchronously. It is provided as a promise!");
+    });
+
   });
 }

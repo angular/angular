@@ -68,6 +68,7 @@ function _isWaiting(obj): boolean {
  */
 export class Injector {
   private _instances: List<any>;
+  private _asyncKeys: Map<number, boolean>;
   private _asyncStrategy: _AsyncInjectorStrategy;
   private _syncStrategy: _SyncInjectorStrategy;
 
@@ -136,6 +137,59 @@ export class Injector {
     this._instances = this._createInstances();
     this._asyncStrategy = new _AsyncInjectorStrategy(this);
     this._syncStrategy = new _SyncInjectorStrategy(this);
+
+    // TODO(vicb): only check in dev mode
+    this._checkSyncBindingDependencies();
+  }
+
+  /**
+   * Check that no sync binding have an async dependency not provided as a Promise
+   * @returns {boolean}
+   * @private
+   */
+  _checkSyncBindingDependencies(): void {
+    this._asyncKeys = MapWrapper.create();
+
+    // Compute the list of sync bindings with dependencies
+    let syncBindingToCheck = [];
+    this._bindings.forEach(binding => {
+      let id = binding.key.id;
+      if (binding.providedAsPromise) {
+        MapWrapper.set(this._asyncKeys, id, true);
+      } else {
+        MapWrapper.set(this._asyncKeys, id, false);
+        if (binding.dependencies.length > 0) {
+          ListWrapper.push(syncBindingToCheck, binding);
+        }
+      }
+    });
+
+    // assert that sync bindings dependencies are either
+    // - sync
+    // - async and provided as Promise.
+    //
+    // A sync binding with an async dependency (not provided as Promise) is an error
+    syncBindingToCheck.forEach(binding => {
+      binding.dependencies.forEach(dep => {
+        if (this._isAsyncById(dep.key.id) && !dep.providedAsPromise) {
+          throw new AsyncBindingError(dep.key);
+        }
+      });
+    });
+  }
+
+  /**
+   * @param id
+   * @returns {boolean} Returns whether the key is bound to an async factory
+   * @private
+   */
+  _isAsyncById(id: number): boolean {
+    if (MapWrapper.contains(this._asyncKeys, id)) {
+      return MapWrapper.get(this._asyncKeys, id);
+    }
+
+    // Return false when the binding is not present (it could be Optional or Default -> not async)
+    return isPresent(this._parent) ? this._parent._isAsyncById(id) : false;
   }
 
   /**
