@@ -7,7 +7,7 @@ var Funnel = require('broccoli-funnel');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
-var replace = require('broccoli-replace');
+import replace from '../broccoli-replace';
 var stew = require('broccoli-stew');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
@@ -86,17 +86,16 @@ module.exports = function makeNodeTree(destinationPath) {
     files: ['**/*.ts'],
     patterns: [
       {
-        // Empty replacement needed so that replaceWithPath gets triggered...
-        match: /$/g,
-        replacement: ""
+        match: /$/,
+        replacement: function(_, relativePath) {
+          var content = "";  // we're matching an empty line
+          if (!relativePath.endsWith('.d.ts')) {
+            content += '\r\nexport var __esModule = true;\n';
+          }
+          return content;
+        }
       }
-    ],
-    replaceWithPath: function(path, content) {
-      if (!path.endsWith('.d.ts')) {
-        content += '\r\nexport var __esModule = true;\n';
-      }
-      return content;
-    }
+    ]
   });
 
   var typescriptTree = compileWithTypescript(traceurCompatibleTsModulesTree, {
@@ -118,15 +117,14 @@ module.exports = function makeNodeTree(destinationPath) {
   // Transform all tests to make them runnable in node
   nodeTree = replace(nodeTree, {
     files: ['**/test/**/*_spec.js'],
-    replaceWithPath: function(path, content) {
-      return "var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
-             "parse5Adapter.Parse5DomAdapter.makeCurrent();" + content;
-    },
     patterns: [
       {
-        // Append main() to all tests since all of our tests are wrapped in exported main fn
-        match: /$/g,
-        replacement: "\r\n main();"
+        match: /$/,
+        replacement: function(_, relativePath) {
+          return "\r\n main(); \n\r" +
+                 "var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
+                 "parse5Adapter.Parse5DomAdapter.makeCurrent();";
+        }
       }
     ]
   });
