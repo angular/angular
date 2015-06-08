@@ -1,13 +1,12 @@
 /// <reference path="../../../angular2/typings/node/node.d.ts" />
 var testHelper = require('../../src/firefox_extension/lib/test_helper.js');
 
-// Where to save profile results (parent folder must exist)
-var PROFILE_SAVE_PATH = './perfProfile.json';
-
 exports.config = {
-  specs: ['spec.js'],
+  specs: ['spec.js', 'sample_benchmark.js'],
 
-  getMultiCapabilities: function() { return testHelper.getFirefoxProfileWithExtension(); },
+  framework: 'jasmine2',
 
-  params: {profileSavePath: testHelper.getAbsolutePath(PROFILE_SAVE_PATH)}
+  jasmineNodeOpts: {showColors: true, defaultTimeoutInterval: 1200000},
+
+  getMultiCapabilities: function() { return testHelper.getFirefoxProfileWithExtension(); }
 };

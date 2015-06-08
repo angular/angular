@@ -12,6 +12,7 @@ import {Validator} from './validator';
 import {PerflogMetric} from './metric/perflog_metric';
 import {MultiMetric} from './metric/multi_metric';
 import {ChromeDriverExtension} from './webdriver/chrome_driver_extension';
+import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
 import {IOsDriverExtension} from './webdriver/ios_driver_extension';
 import {WebDriverExtension} from './web_driver_extension';
 import {SampleDescription} from './sample_description';
@@ -62,6 +63,7 @@ var _DEFAULT_BINDINGS = [
   RegressionSlopeValidator.BINDINGS,
   SizeValidator.BINDINGS,
   ChromeDriverExtension.BINDINGS,
+  FirefoxDriverExtension.BINDINGS,
   IOsDriverExtension.BINDINGS,
   PerflogMetric.BINDINGS,
   SampleDescription.BINDINGS,
@@ -70,7 +72,7 @@ var _DEFAULT_BINDINGS = [
 
   Reporter.bindTo(MultiReporter),
   Validator.bindTo(RegressionSlopeValidator),
-  WebDriverExtension.bindTo([ChromeDriverExtension, IOsDriverExtension]),
+  WebDriverExtension.bindTo([ChromeDriverExtension, FirefoxDriverExtension, IOsDriverExtension]),
   Metric.bindTo(MultiMetric),
 
   bind(Options.CAPABILITIES)
