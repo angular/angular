@@ -4,8 +4,6 @@ import path = require('path');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 var minimatch = require('minimatch');
-var exec = require('child_process').exec;
-
 var FILE_ENCODING = {encoding: 'utf-8'};
 
 /**
