@@ -585,12 +585,13 @@ export class Directive extends Injectable {
    */
   events: List<string>;
 
-  // TODO(vicb): doc
-
   /**
-   * Specifies which DOM hostListeners a directive listens to.
+   * Specifiy the events, actions, properties and attributes related to the host element.
    *
-   * The `hostListeners` property defines a set of `event` to `method` key-value pairs:
+   * ## Events
+   *
+   * Specifies which DOM hostListeners a directive listens to via a set of `(event)` to `method`
+   * key-value pairs:
    *
    * - `event1`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
@@ -603,17 +604,15 @@ export class Directive extends Injectable {
    * When writing a directive event binding, you can also refer to the following local variables:
    * - `$event`: Current event object which triggered the event.
    * - `$target`: The source of the event. This will be either a DOM element or an Angular
-   * directive.
-   *   (will be implemented in later release)
-   *
+   * directive. (will be implemented in later release)
    *
    * ## Syntax
    *
    * ```
    * @Directive({
-   *   hostListeners: {
-   *     'event1': 'onMethod1(arguments)',
-   *     'target:event2': 'onMethod2(arguments)',
+   *   host: {
+   *     '(event1)': 'onMethod1(arguments)',
+   *     '(target:event2)': 'onMethod2(arguments)',
    *     ...
    *   }
    * }
@@ -621,31 +620,30 @@ export class Directive extends Injectable {
    *
    * ## Basic Event Binding:
    *
-   * Suppose you want to write a directive that triggers on `change` events in the DOM and on
+   * Suppose you want to write a directive that reacts to `change` events in the DOM and on
    * `resize` events in window.
    * You would define the event binding as follows:
    *
    * ```
    * @Directive({
    *   selector: 'input',
-   *   hostListeners: {
-   *     'change': 'onChange($event)',
-   *     'window:resize': 'onResize($event)'
+   *   host: {
+   *     '(change)': 'onChange($event)',
+   *     '(window:resize)': 'onResize($event)'
    *   }
    * })
    * class InputDirective {
    *   onChange(event:Event) {
+   *     // invoked when the input element fires the 'change' event
    *   }
    *   onResize(event:Event) {
+   *     // invoked when the window fires the 'resize' event
    *   }
    * }
    * ```
    *
-   * Here the `onChange` method of `InputDirective` is invoked whenever the DOM element fires the
-   * 'change' event.
+   * ## Properties
    *
-   */
-  /**
    * Specifies which DOM properties a directives updates.
    *
    * ## Syntax
@@ -653,42 +651,41 @@ export class Directive extends Injectable {
    * ```
    * @Directive({
    *   selector: 'input',
-   *   hostProperties: {
-   *     'value': 'value'
+   *   host: {
+   *     '[prop]': 'expression'
    *   }
    * })
    * class InputDirective {
    *   value:string;
    * }
-   *
-   * In this example every time the value property of the decorator changes, Angular will update the
-   * value property of
-   * the host element.
    * ```
-   */
-  /**
+   *
+   * In this example the prop property of the host element is updated with the expression value
+   * every time it changes.
+   *
+   * ## Attributes
+   *
    * Specifies static attributes that should be propagated to a host element. Attributes specified
-   * in `hostAttributes`
-   * are propagated only if a given attribute is not present on a host element.
+   * in `hostAttributes` are propagated only if a given attribute is not present on a host element.
    *
    * ## Syntax
    *
    * ```
    * @Directive({
    *   selector: '[my-button]',
-   *   hostAttributes: {
+   *   host: {
    *     'role': 'button'
    *   }
    * })
    * class MyButton {
    * }
+   * ```
    *
    * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
-   * (here: `<div>` )
-   * will ensure that this element will get the "button" role.
-   * ```
-   */
-  /**
+   * (here: `<div>` ) will ensure that this element will get the "button" role.
+   *
+   * ## Actions
+   *
    * Specifies which DOM methods a directive can invoke.
    *
    * ## Syntax
@@ -696,8 +693,8 @@ export class Directive extends Injectable {
    * ```
    * @Directive({
    *   selector: 'input',
-   *   hostActions: {
-   *     'emitFocus': 'focus()'
+   *   host: {
+   *     '@emitFocus': 'focus()'
    *   }
    * })
    * class InputDirective {
@@ -709,12 +706,10 @@ export class Directive extends Injectable {
    *     this.emitFocus.next();
    *   }
    * }
-   *
-   * In this example calling focus on InputDirective will result in calling focus on the DOM
-   * element.
    * ```
+   *
+   * In this example calling focus on InputDirective will result in calling focus on the input.
    */
-
   host: StringMap<string, string>;
 
   /**
