@@ -6,7 +6,7 @@ import transpileWithTraceur from '../traceur/index';
 var Funnel = require('broccoli-funnel');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
-var renderLodashTemplate = require('broccoli-lodash');
+import renderLodashTemplate from '../broccoli-lodash';
 import replace from '../broccoli-replace';
 var stew = require('broccoli-stew');
 
@@ -73,11 +73,9 @@ module.exports = function makeNodeTree(destinationPath) {
     }
   };
 
-  // Add a .template extension since renderLodashTemplate strips one extension
-  var packageJsons = stew.rename(new Funnel(modulesTree, {include: ['**/package.json']}), '.json',
-                                 '.json.template');
-  packageJsons = renderLodashTemplate(
-      packageJsons, {files: ["**/**"], context: {'packageJson': COMMON_PACKAGE_JSON}});
+  var packageJsons = new Funnel(modulesTree, {include: ['**/package.json']});
+  packageJsons =
+      renderLodashTemplate(packageJsons, {context: {'packageJson': COMMON_PACKAGE_JSON}});
 
   // HACK: workaround for Traceur behavior.
   // It expects all transpiled modules to contain this marker.
