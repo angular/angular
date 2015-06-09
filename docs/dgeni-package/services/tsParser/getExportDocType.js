@@ -1,6 +1,6 @@
 var ts = require('typescript');
 
-module.exports = function getExportDocType() {
+module.exports = function getExportDocType(log) {
 
   return function(symbol) {
     if(symbol.flags & ts.SymbolFlags.FunctionScopedVariable) {
