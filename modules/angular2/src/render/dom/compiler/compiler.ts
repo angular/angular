@@ -7,6 +7,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {
   ViewDefinition,
   ProtoViewDto,
+  ViewType,
   DirectiveMetadata,
   RenderCompiler,
   RenderProtoViewRef
@@ -38,8 +39,7 @@ export class DomCompiler extends RenderCompiler {
   compile(template: ViewDefinition): Promise<ProtoViewDto> {
     var tplPromise = this._templateLoader.load(template);
     return PromiseWrapper.then(
-        tplPromise, (el) => this._compileTemplate(template, el, ProtoViewDto.COMPONENT_VIEW_TYPE),
-        (e) => {
+        tplPromise, (el) => this._compileTemplate(template, el, ViewType.COMPONENT), (e) => {
           throw new BaseException(
               `Failed to load the template for "${template.componentId}" : ${e}`);
         });
@@ -52,11 +52,11 @@ export class DomCompiler extends RenderCompiler {
       directives: [directiveMetadata]
     });
     var element = DOM.createElement(directiveMetadata.selector);
-    return this._compileTemplate(hostViewDef, element, ProtoViewDto.HOST_VIEW_TYPE);
+    return this._compileTemplate(hostViewDef, element, ViewType.HOST);
   }
 
   _compileTemplate(viewDef: ViewDefinition, tplElement,
-                   protoViewType: number): Promise<ProtoViewDto> {
+                   protoViewType: ViewType): Promise<ProtoViewDto> {
     var subTaskPromises = [];
     var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef, subTaskPromises));
     var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);

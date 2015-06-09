@@ -101,7 +101,7 @@ class _TemplateExtractor {
         new CompilePipeline(_factory.createSteps(viewDef, subtaskPromises));
 
     var compileElements = pipeline.process(
-        templateEl, ProtoViewDto.COMPONENT_VIEW_TYPE, viewDef.componentId);
+        templateEl, ViewType.COMPONENT, viewDef.componentId);
     var protoViewDto = compileElements[0].inheritedProtoView
         .build(new PropertySetterFactory());
 
