@@ -1,6 +1,5 @@
 {
   "name": "angular2",
-  "version": "0.0.0",
   "dependencies": {
     "polymer": "dart-lang/polymer_js#0.8.0-preview"
   }
