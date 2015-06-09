@@ -5,22 +5,7 @@ import {AbstractChangeDetector} from './abstract_change_detector';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
-import {
-  ProtoRecord,
-  RECORD_TYPE_SELF,
-  RECORD_TYPE_PROPERTY,
-  RECORD_TYPE_LOCAL,
-  RECORD_TYPE_INVOKE_METHOD,
-  RECORD_TYPE_CONST,
-  RECORD_TYPE_INVOKE_CLOSURE,
-  RECORD_TYPE_PRIMITIVE_OP,
-  RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_PIPE,
-  RECORD_TYPE_BINDING_PIPE,
-  RECORD_TYPE_INTERPOLATE,
-  RECORD_TYPE_SAFE_PROPERTY,
-  RECORD_TYPE_SAFE_INVOKE_METHOD
-} from './proto_record';
+import {ProtoRecord, RecordType} from './proto_record';
 
 
 /**
@@ -163,7 +148,7 @@ export class ChangeDetectorJITGenerator {
   _getNonNullPipeNames(): List<string> {
     var pipes = [];
     this.records.forEach((r) => {
-      if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {
+      if (r.mode === RecordType.PIPE || r.mode === RecordType.BINDING_PIPE) {
         pipes.push(this._pipeNames[r.selfIndex]);
       }
     });
@@ -258,7 +243,7 @@ export class ChangeDetectorJITGenerator {
     var change = this._changeNames[r.selfIndex];
 
     var pipe = this._pipeNames[r.selfIndex];
-    var cdRef = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.ref" : "null";
+    var cdRef = r.mode === RecordType.BINDING_PIPE ? "this.ref" : "null";
 
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
@@ -315,47 +300,47 @@ export class ChangeDetectorJITGenerator {
 
     var rhs;
     switch (r.mode) {
-      case RECORD_TYPE_SELF:
+      case RecordType.SELF:
         rhs = context;
         break;
 
-      case RECORD_TYPE_CONST:
+      case RecordType.CONST:
         rhs = JSON.stringify(r.funcOrValue);
         break;
 
-      case RECORD_TYPE_PROPERTY:
+      case RecordType.PROPERTY:
         rhs = `${context}.${r.name}`;
         break;
 
-      case RECORD_TYPE_SAFE_PROPERTY:
+      case RecordType.SAFE_PROPERTY:
         rhs = `${UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}`;
         break;
 
-      case RECORD_TYPE_LOCAL:
+      case RecordType.LOCAL:
         rhs = `${LOCALS_ACCESSOR}.get('${r.name}')`;
         break;
 
-      case RECORD_TYPE_INVOKE_METHOD:
+      case RecordType.INVOKE_METHOD:
         rhs = `${context}.${r.name}(${argString})`;
         break;
 
-      case RECORD_TYPE_SAFE_INVOKE_METHOD:
+      case RecordType.SAFE_INVOKE_METHOD:
         rhs = `${UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}(${argString})`;
         break;
 
-      case RECORD_TYPE_INVOKE_CLOSURE:
+      case RecordType.INVOKE_CLOSURE:
         rhs = `${context}(${argString})`;
         break;
 
-      case RECORD_TYPE_PRIMITIVE_OP:
+      case RecordType.PRIMITIVE_OP:
         rhs = `${UTIL}.${r.name}(${argString})`;
         break;
 
-      case RECORD_TYPE_INTERPOLATE:
+      case RecordType.INTERPOLATE:
         rhs = this._genInterpolation(r);
         break;
 
-      case RECORD_TYPE_KEYED_ACCESS:
+      case RecordType.KEYED_ACCESS:
         rhs = `${context}[${this._localNames[r.args[0]]}]`;
         break;
 

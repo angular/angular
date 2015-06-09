@@ -7,22 +7,7 @@ import {PipeRegistry} from './pipes/pipe_registry';
 import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
 
 
-import {
-  ProtoRecord,
-  RECORD_TYPE_SELF,
-  RECORD_TYPE_PROPERTY,
-  RECORD_TYPE_LOCAL,
-  RECORD_TYPE_INVOKE_METHOD,
-  RECORD_TYPE_CONST,
-  RECORD_TYPE_INVOKE_CLOSURE,
-  RECORD_TYPE_PRIMITIVE_OP,
-  RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_PIPE,
-  RECORD_TYPE_BINDING_PIPE,
-  RECORD_TYPE_INTERPOLATE,
-  RECORD_TYPE_SAFE_PROPERTY,
-  RECORD_TYPE_SAFE_INVOKE_METHOD
-} from './proto_record';
+import {ProtoRecord, RecordType} from './proto_record';
 
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
@@ -198,29 +183,29 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _calculateCurrValue(proto: ProtoRecord) {
     switch (proto.mode) {
-      case RECORD_TYPE_SELF:
+      case RecordType.SELF:
         return this._readContext(proto);
 
-      case RECORD_TYPE_CONST:
+      case RecordType.CONST:
         return proto.funcOrValue;
 
-      case RECORD_TYPE_PROPERTY:
+      case RecordType.PROPERTY:
         var context = this._readContext(proto);
         return proto.funcOrValue(context);
 
-      case RECORD_TYPE_SAFE_PROPERTY:
+      case RecordType.SAFE_PROPERTY:
         var context = this._readContext(proto);
         return isBlank(context) ? null : proto.funcOrValue(context);
 
-      case RECORD_TYPE_LOCAL:
+      case RecordType.LOCAL:
         return this.locals.get(proto.name);
 
-      case RECORD_TYPE_INVOKE_METHOD:
+      case RecordType.INVOKE_METHOD:
         var context = this._readContext(proto);
         var args = this._readArgs(proto);
         return proto.funcOrValue(context, args);
 
-      case RECORD_TYPE_SAFE_INVOKE_METHOD:
+      case RecordType.SAFE_INVOKE_METHOD:
         var context = this._readContext(proto);
         if (isBlank(context)) {
           return null;
@@ -228,15 +213,15 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         var args = this._readArgs(proto);
         return proto.funcOrValue(context, args);
 
-      case RECORD_TYPE_KEYED_ACCESS:
+      case RecordType.KEYED_ACCESS:
         var arg = this._readArgs(proto)[0];
         return this._readContext(proto)[arg];
 
-      case RECORD_TYPE_INVOKE_CLOSURE:
+      case RecordType.INVOKE_CLOSURE:
         return FunctionWrapper.apply(this._readContext(proto), this._readArgs(proto));
 
-      case RECORD_TYPE_INTERPOLATE:
-      case RECORD_TYPE_PRIMITIVE_OP:
+      case RecordType.INTERPOLATE:
+      case RecordType.PRIMITIVE_OP:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto));
 
       default:
@@ -288,7 +273,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     //
     // In the future, pipes declared in the bind configuration should
     // be able to access the changeDetectorRef of that component.
-    var cdr = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.ref : null;
+    var cdr = proto.mode === RecordType.BINDING_PIPE ? this.ref : null;
     var pipe = this.pipeRegistry.get(proto.name, context, cdr);
     this._writePipe(proto, pipe);
     return pipe;

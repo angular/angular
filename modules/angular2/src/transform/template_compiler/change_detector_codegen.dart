@@ -186,7 +186,7 @@ class _CodegenState {
   List<String> _getNonNullPipeNames() {
     return _records
         .where((r) =>
-            r.mode == RECORD_TYPE_PIPE || r.mode == RECORD_TYPE_BINDING_PIPE)
+            r.mode == RecordType.PIPE || r.mode == RecordType.BINDING_PIPE)
         .map((r) => _pipeNames[r.selfIndex])
         .toList();
   }
@@ -269,7 +269,7 @@ class _CodegenState {
     var change = _changeNames[r.selfIndex];
 
     var pipe = _pipeNames[r.selfIndex];
-    var cdRef = r.mode == RECORD_TYPE_BINDING_PIPE ? 'this.ref' : 'null';
+    var cdRef = r.mode == RecordType.BINDING_PIPE ? 'this.ref' : 'null';
 
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
@@ -327,48 +327,48 @@ class _CodegenState {
 
     var rhs;
     switch (r.mode) {
-      case RECORD_TYPE_SELF:
+      case RecordType.SELF:
         rhs = context;
         break;
 
-      case RECORD_TYPE_CONST:
+      case RecordType.CONST:
         rhs = JSON.encode(r.funcOrValue);
         break;
 
-      case RECORD_TYPE_PROPERTY:
+      case RecordType.PROPERTY:
         rhs = '$context.${r.name}';
         break;
 
-      case RECORD_TYPE_SAFE_PROPERTY:
+      case RecordType.SAFE_PROPERTY:
         rhs = '${_UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}';
         break;
 
-      case RECORD_TYPE_LOCAL:
+      case RecordType.LOCAL:
         rhs = '$_LOCALS_ACCESSOR.get("${r.name}")';
         break;
 
-      case RECORD_TYPE_INVOKE_METHOD:
+      case RecordType.INVOKE_METHOD:
         rhs = '$context.${r.name}($argString)';
         break;
 
-      case RECORD_TYPE_SAFE_INVOKE_METHOD:
+      case RecordType.SAFE_INVOKE_METHOD:
         rhs = '${_UTIL}.isValueBlank(${context}) '
             '? null : ${context}.${r.name}(${argString})';
         break;
 
-      case RECORD_TYPE_INVOKE_CLOSURE:
+      case RecordType.INVOKE_CLOSURE:
         rhs = '$context($argString)';
         break;
 
-      case RECORD_TYPE_PRIMITIVE_OP:
+      case RecordType.PRIMITIVE_OP:
         rhs = '$_UTIL.${r.name}($argString)';
         break;
 
-      case RECORD_TYPE_INTERPOLATE:
+      case RecordType.INTERPOLATE:
         rhs = _genInterpolation(r);
         break;
 
-      case RECORD_TYPE_KEYED_ACCESS:
+      case RecordType.KEYED_ACCESS:
         rhs = '$context[${_localNames[r.args[0]]}]';
         break;
 
