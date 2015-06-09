@@ -27,6 +27,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
+  dynamic _alreadyChecked = false;
   MyComponent _context = null;
 
   _MyComponent_ChangeDetector0(this._dispatcher, this._pipeRegistry,
@@ -44,6 +45,8 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     var changes = null;
 
     context = _context;
+
+    _alreadyChecked = true;
   }
 
   void callOnAllChangesDone() {}
@@ -52,6 +55,8 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     mode = 'ALWAYS_CHECK';
     _context = context;
     _locals = locals;
+
+    _alreadyChecked = false;
   }
 
   void dehydrate() {

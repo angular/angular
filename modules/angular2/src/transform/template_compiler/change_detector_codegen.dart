@@ -7,6 +7,7 @@ import 'package:angular2/src/change_detection/directive_record.dart';
 import 'package:angular2/src/change_detection/interfaces.dart';
 import 'package:angular2/src/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/change_detection/proto_record.dart';
+import 'package:angular2/src/facade/lang.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
 ///
@@ -99,6 +100,7 @@ class _CodegenState {
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
             $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
+        dynamic $_ALREADY_CHECKED_ACCESSOR = false;
         ${_allFields().map((f) {
           if (f == _CONTEXT_ACCESSOR) {
             return '$_contextTypeName $f = null;';
@@ -124,6 +126,8 @@ class _CodegenState {
 
           context = $_CONTEXT_ACCESSOR;
           ${_records.map(_genRecord).join('')}
+
+          $_ALREADY_CHECKED_ACCESSOR = true;
         }
 
         void callOnAllChangesDone() {
@@ -136,6 +140,7 @@ class _CodegenState {
           $_LOCALS_ACCESSOR = locals;
           ${_genHydrateDirectives()}
           ${_genHydrateDetectors()}
+          $_ALREADY_CHECKED_ACCESSOR = false;
         }
 
         void dehydrate() {
@@ -234,10 +239,26 @@ class _CodegenState {
       _changeNames.map((name) => 'var $name = false;').join('');
 
   String _genRecord(ProtoRecord r) {
-    if (r.mode == RECORD_TYPE_PIPE || r.mode == RECORD_TYPE_BINDING_PIPE) {
-      return _genPipeCheck(r);
+    var rec = null;
+    if (r.isLifeCycleRecord()) {
+      rec = _genDirectiveLifecycle(r);
+    } else if (r.isPipeRecord()) {
+      rec = _genPipeCheck(r);
     } else {
-      return _genReferenceCheck(r);
+      rec = _genReferenceCheck(r);
+    }
+    return '$rec${_maybeGenLastInDirective(r)}';
+  }
+
+  String _genDirectiveLifecycle(ProtoRecord r) {
+    if (r.name == 'onCheck') {
+      return _genOnCheck(r);
+    } else if (r.name == 'onInit') {
+      return _genOnInit(r);
+    } else if (r.name == 'onChange') {
+      return _genOnChange(r);
+    } else {
+      throw new BaseException("Unknown lifecycle event '${r.name}'");
     }
   }
 
@@ -269,7 +290,6 @@ class _CodegenState {
         ${_genAddToChanges(r)}
         $oldValue = $newValue;
       }
-      ${_genLastInDirective(r)}
     ''';
   }
 
@@ -287,7 +307,6 @@ class _CodegenState {
         ${_genAddToChanges(r)}
         $oldValue = $newValue;
       }
-      ${_genLastInDirective(r)}
     ''';
     if (r.isPureFunction()) {
       // Add an "if changed guard"
@@ -414,24 +433,32 @@ class _CodegenState {
     ''';
   }
 
-  String _genLastInDirective(ProtoRecord r) {
+  String _maybeGenLastInDirective(ProtoRecord r) {
+    if (!r.lastInDirective) return '';
     return '''
-      ${_genNotifyOnChanges(r)}
+      $_CHANGES_LOCAL = null;
       ${_genNotifyOnPushDetectors(r)}
       $_IS_CHANGED_LOCAL = false;
     ''';
   }
 
-  String _genNotifyOnChanges(ProtoRecord r) {
+  String _genOnCheck(ProtoRecord r) {
     var br = r.bindingRecord;
-    if (!r.lastInDirective || !br.callOnChange()) return '';
-    return '''
-      if($_CHANGES_LOCAL) {
-        ${_genGetDirective(br.directiveRecord.directiveIndex)}
-          .onChange($_CHANGES_LOCAL);
-        $_CHANGES_LOCAL = null;
-      }
-    ''';
+    return 'if (!throwOnChange) '
+        '${_genGetDirective(br.directiveRecord.directiveIndex)}.onCheck();';
+  }
+
+  String _genOnInit(ProtoRecord r) {
+    var br = r.bindingRecord;
+    return 'if (!throwOnChange && !$_ALREADY_CHECKED_ACCESSOR) '
+        '${_genGetDirective(br.directiveRecord.directiveIndex)}.onInit();';
+  }
+
+  String _genOnChange(ProtoRecord r) {
+    var br = r.bindingRecord;
+    return 'if (!throwOnChange && $_CHANGES_LOCAL != null) '
+        '${_genGetDirective(br.directiveRecord.directiveIndex)}'
+        '.onChange($_CHANGES_LOCAL);';
   }
 
   String _genNotifyOnPushDetectors(ProtoRecord r) {
@@ -447,6 +474,7 @@ class _CodegenState {
 
 const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';
 
+const _ALREADY_CHECKED_ACCESSOR = '_alreadyChecked';
 const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';
 const _CONTEXT_ACCESSOR = '_context';

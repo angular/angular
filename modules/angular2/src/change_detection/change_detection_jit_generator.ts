@@ -236,7 +236,7 @@ export class ChangeDetectorJITGenerator {
     } else {
       rec = this._genReferenceCheck(r);
     }
-    return `${rec}${this._genLastInDirective(r)}`;
+    return `${rec}${this._maybeGenLastInDirective(r)}`;
   }
 
   _genDirectiveLifecycle(r: ProtoRecord) {
@@ -419,7 +419,7 @@ export class ChangeDetectorJITGenerator {
     `;
   }
 
-  _genLastInDirective(r: ProtoRecord): string {
+  _maybeGenLastInDirective(r: ProtoRecord): string {
     if (!r.lastInDirective) return "";
     return `
       ${CHANGES_LOCAL} = null;
