@@ -75,15 +75,28 @@ void allTests() {
       expect(metadata.exportAs).toEqual('exportAsName');
     });
 
-    it('should parse host listeners.', () async {
+    it('should parse host.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/host_listeners.ng_deps.dart');
       expect(metadata.hostListeners).toBeNotNull();
-      expect(metadata.hostListeners.length).toBe(2);
+      expect(metadata.hostListeners.length).toBe(1);
       expect(metadata.hostListeners).toContain('change');
       expect(metadata.hostListeners['change']).toEqual('onChange(\$event)');
-      expect(metadata.hostListeners).toContain('keyDown');
-      expect(metadata.hostListeners['keyDown']).toEqual('onKeyDown(\$event)');
+
+      expect(metadata.hostProperties).toBeNotNull();
+      expect(metadata.hostProperties.length).toBe(1);
+      expect(metadata.hostProperties).toContain('value');
+      expect(metadata.hostProperties['value']).toEqual('value');
+
+      expect(metadata.hostAttributes).toBeNotNull();
+      expect(metadata.hostAttributes.length).toBe(1);
+      expect(metadata.hostAttributes).toContain('attName');
+      expect(metadata.hostAttributes['attName']).toEqual('attValue');
+
+      expect(metadata.hostActions).toBeNotNull();
+      expect(metadata.hostActions.length).toBe(1);
+      expect(metadata.hostActions).toContain('actionName');
+      expect(metadata.hostActions['actionName']).toEqual('actionValue');
     });
 
     it('should parse lifecycle events.', () async {
