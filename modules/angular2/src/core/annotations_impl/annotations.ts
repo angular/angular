@@ -565,6 +565,7 @@ export class Directive extends Injectable {
    * Use `propertyName: eventName` when the event emitter property name is different from the name
    * of the emitted event:
    *
+   * ```
    * @Component({
    *   events: ['status: statusChange']
    * })
@@ -771,6 +772,7 @@ export class Directive extends Injectable {
    *
    * ## Simple Example
    *
+   * ```
    * @Directive({
    *   selector: 'child-dir',
    *   exportAs: 'child'
