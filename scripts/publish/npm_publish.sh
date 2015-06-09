@@ -35,8 +35,8 @@ function publishModule {
   cp -r $ROOT_DIR/dist/js/dev/es6/$NAME/$FILES $PUBLISH_DIR/es6/dev
   mkdir -p $PUBLISH_DIR/es6/prod
   cp -r $ROOT_DIR/dist/js/prod/es6/$NAME/$FILES $PUBLISH_DIR/es6/prod
-  mkdir -p $PUBLISH_DIR/atscript
-  cp -r $ROOT_DIR/modules/$NAME/$FILES $PUBLISH_DIR/atscript
+  mkdir -p $PUBLISH_DIR/ts
+  cp -r $ROOT_DIR/modules/$NAME/$FILES $PUBLISH_DIR/ts
 
   cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
 
