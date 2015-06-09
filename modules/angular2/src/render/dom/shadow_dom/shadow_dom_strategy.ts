@@ -19,7 +19,7 @@ export class ShadowDomStrategy {
    */
   processStyleElement(hostComponentId: string, templateUrl: string, styleElement): Promise<any> {
     return null;
-  };
+  }
 
   /**
    * An optional step that can modify the template elements (style elements exlcuded).
