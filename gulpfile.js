@@ -238,7 +238,7 @@ gulp.task('build/checkCircularDependencies', function (done) {
 // ------------------
 // web servers
 gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
-  watch('modules/**', '!broccoli.js.dev');
+  watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
 
   jsserve(gulp, gulpPlugins, {
     path: CONFIG.dest.js.dev.es5,
