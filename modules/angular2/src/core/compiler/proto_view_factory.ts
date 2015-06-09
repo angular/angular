@@ -222,10 +222,10 @@ function _getChangeDetectorDefinitions(
         bindingRecordsCreator.getDirectiveRecords(elementBinders, allRenderDirectiveMetadata);
     var strategyName = DEFAULT;
     var typeString;
-    if (pvWithIndex.renderProtoView.type === renderApi.ProtoViewDto.COMPONENT_VIEW_TYPE) {
+    if (pvWithIndex.renderProtoView.type === renderApi.ViewType.COMPONENT) {
       strategyName = hostComponentMetadata.changeDetection;
       typeString = 'comp';
-    } else if (pvWithIndex.renderProtoView.type === renderApi.ProtoViewDto.HOST_VIEW_TYPE) {
+    } else if (pvWithIndex.renderProtoView.type === renderApi.ViewType.HOST) {
       typeString = 'host';
     } else {
       typeString = 'embedded';

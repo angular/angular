@@ -92,28 +92,29 @@ export class DirectiveBinder {
   }
 }
 
-export class ProtoViewDto {
-  // A view that contains the host element with bound
-  // component directive.
-  // Contains a view of type #COMPONENT_VIEW_TYPE.
-  static get HOST_VIEW_TYPE() { return 0; }
+export enum ViewType {
+  // A view that contains the host element with bound component directive.
+  // Contains a COMPONENT view
+  HOST,
   // The view of the component
-  // Can contain 0 to n views of type #EMBEDDED_VIEW_TYPE
-  static get COMPONENT_VIEW_TYPE() { return 1; }
+  // Can contain 0 to n EMBEDDED views
+  COMPONENT,
   // A view that is embedded into another View via a <template> element
-  // inside of a component view
-  static get EMBEDDED_VIEW_TYPE() { return 2; }
+  // inside of a COMPONENT view
+  EMBEDDED
+}
 
+export class ProtoViewDto {
   render: RenderProtoViewRef;
   elementBinders: List<ElementBinder>;
   variableBindings: Map<string, string>;
-  type: number;
+  type: ViewType;
 
   constructor({render, elementBinders, variableBindings, type}: {
     render?: RenderProtoViewRef,
     elementBinders?: List<ElementBinder>,
     variableBindings?: Map<string, string>,
-    type?: number
+    type?: ViewType
   }) {
     this.render = render;
     this.elementBinders = elementBinders;

@@ -146,9 +146,9 @@ function directiveBinding({metadata}: {metadata?: any} = {}) {
   return new DirectiveBinding(Key.get("dummy"), null, [], false, [], [], [], metadata);
 }
 
-function createRenderProtoView(elementBinders = null, type: number = null) {
+function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {
   if (isBlank(type)) {
-    type = renderApi.ProtoViewDto.COMPONENT_VIEW_TYPE;
+    type = renderApi.ViewType.COMPONENT;
   }
   if (isBlank(elementBinders)) {
     elementBinders = [];

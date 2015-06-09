@@ -17,7 +17,7 @@ import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {DomCompiler} from 'angular2/src/render/dom/compiler/compiler';
-import {ProtoViewDto, ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
+import {ProtoViewDto, ViewDefinition, DirectiveMetadata, ViewType} from 'angular2/src/render/api';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
@@ -140,7 +140,7 @@ export function runCompilerCommonTests() {
            compiler.compile(
                        new ViewDefinition({componentId: 'someId', template: 'inline component'}))
                .then((protoView) => {
-                 expect(protoView.type).toEqual(ProtoViewDto.COMPONENT_VIEW_TYPE);
+                 expect(protoView.type).toEqual(ViewType.COMPONENT);
                  async.done();
                });
          }));
@@ -154,7 +154,7 @@ export function runCompilerCommonTests() {
            var compiler = createCompiler(EMPTY_STEP);
            compiler.compileHost(someComponent)
                .then((protoView) => {
-                 expect(protoView.type).toEqual(ProtoViewDto.HOST_VIEW_TYPE);
+                 expect(protoView.type).toEqual(ViewType.HOST);
                  async.done();
                });
          }));

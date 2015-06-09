@@ -161,8 +161,7 @@ export class Compiler {
     var protoView = protoViews[0];
     // TODO(tbosch): we should be caching host protoViews as well!
     // -> need a separate cache for this...
-    if (renderPv.type === renderApi.ProtoViewDto.COMPONENT_VIEW_TYPE &&
-        isPresent(componentBinding)) {
+    if (renderPv.type === renderApi.ViewType.COMPONENT && isPresent(componentBinding)) {
       // Populate the cache before compiling the nested components,
       // so that components can reference themselves in their template.
       var component = componentBinding.key.token;

@@ -23,7 +23,7 @@ export class ProtoViewBuilder {
   variableBindings: Map<string, string> = MapWrapper.create();
   elements: List<ElementBinderBuilder> = [];
 
-  constructor(public rootElement, public type: number) {}
+  constructor(public rootElement, public type: api.ViewType) {}
 
   bindElement(element, description = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
@@ -187,7 +187,7 @@ export class ElementBinderBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
-    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ProtoViewDto.EMBEDDED_VIEW_TYPE);
+    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ViewType.EMBEDDED);
     return this.nestedProtoView;
   }
 

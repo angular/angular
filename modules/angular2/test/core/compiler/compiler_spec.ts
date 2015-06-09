@@ -317,7 +317,7 @@ export function main() {
            createRenderProtoView([
              createRenderViewportElementBinder(
                  createRenderProtoView([createRenderComponentElementBinder(0)],
-                                       renderApi.ProtoViewDto.EMBEDDED_VIEW_TYPE))
+                                       renderApi.ViewType.EMBEDDED))
            ]),
            createRenderProtoView()
          ],
@@ -379,7 +379,7 @@ export function main() {
          renderCompiler.spy('compileHost')
              .andCallFake((componentId) => {
                return PromiseWrapper.resolve(createRenderProtoView(
-                   [createRenderComponentElementBinder(0)], renderApi.ProtoViewDto.HOST_VIEW_TYPE));
+                   [createRenderComponentElementBinder(0)], renderApi.ViewType.HOST));
              });
          tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
          var rootProtoView =
@@ -429,9 +429,9 @@ function createViewportElementBinder(nestedProtoView) {
   return elBinder;
 }
 
-function createRenderProtoView(elementBinders = null, type: number = null) {
+function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {
   if (isBlank(type)) {
-    type = renderApi.ProtoViewDto.COMPONENT_VIEW_TYPE;
+    type = renderApi.ViewType.COMPONENT;
   }
   if (isBlank(elementBinders)) {
     elementBinders = [];
