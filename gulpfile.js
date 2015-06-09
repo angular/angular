@@ -351,6 +351,17 @@ gulp.task('docs/angular.io', function() {
 // ------------------
 // CI tests suites
 
+function runKarma(configFile, done) {
+  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
+                                           'node node_modules/.bin/karma run ';
+  cmd += configFile;
+  exec(cmd, function(e, stdout) {
+    // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
+    // karma server will print all test failures
+    done();
+  });
+}
+
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
               'test.unit.cjs/ci', sequenceComplete(done));
@@ -396,11 +407,7 @@ gulp.task('!test.unit.js/karma-server', function() {
 gulp.task('!test.unit.js/karma-run', function(done) {
   // run the run command in a new process to avoid duplicate logging by both server and runner from
   // a single process
-  exec('node node_modules/.bin/karma run karma-js.conf.js', function(e, stdout) {
-    // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
-    // karma server will print all test failures
-    done();
-  });
+  runKarma('karma-js.conf.js', done);
 });
 
 
@@ -430,11 +437,7 @@ gulp.task('test.unit.dart', function (done) {
 gulp.task('!test.unit.dart/karma-run', function (done) {
   // run the run command in a new process to avoid duplicate logging by both server and runner from
   // a single process
-  exec('node node_modules/.bin/karma run karma-dart.conf.js', function(e, stdout) {
-    // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
-    // karma server will print all test failures
-    done();
-  });
+  runKarma('karma-dart.conf.js', done);
 });
 
 
