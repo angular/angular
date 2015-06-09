@@ -35,7 +35,8 @@ export class PerflogMetric extends Metric {
    * @param microMetrics Name and description of metrics provided via console.time / console.timeEnd
    **/
   constructor(private _driverExtension: WebDriverExtension, private _setTimeout: Function,
-              private _microMetrics: StringMap<string, any>, private _forceGc: boolean) {
+              private _microMetrics: StringMap<string, any>, private _forceGc: boolean,
+              private _captureFrames: boolean) {
     super();
 
     this._remainingEvents = [];
@@ -60,6 +61,11 @@ export class PerflogMetric extends Metric {
         res['forcedGcAmount'] = 'forced gc amount in kbytes';
       }
     }
+    if (this._captureFrames) {
+      res['meanFrameTime'] = this._perfLogFeatures.frameCapture ?
+                                 'mean frame time in ms (target: 16.6ms for 60fps)' :
+                                 'WARNING: Metric requested, but not supported by driver';
+    }
     StringMapWrapper.forEach(this._microMetrics,
                              (desc, name) => { StringMapWrapper.set(res, name, desc); });
     return res;
@@ -83,9 +89,13 @@ export class PerflogMetric extends Metric {
 
   _endPlainMeasureAndMeasureForceGc(restartMeasure: boolean) {
     return this._endMeasure(true).then((measureValues) => {
+      // disable frame capture for measurments during forced gc
+      var originalFrameCaptureValue = this._captureFrames;
+      this._captureFrames = false;
       return this._driverExtension.gc()
           .then((_) => this._endMeasure(restartMeasure))
           .then((forceGcMeasureValues) => {
+            this._captureFrames = originalFrameCaptureValue;
             StringMapWrapper.set(measureValues, 'forcedGcTime', forceGcMeasureValues['gcTime']);
             StringMapWrapper.set(measureValues, 'forcedGcAmount', forceGcMeasureValues['gcAmount']);
             return measureValues;
@@ -161,12 +171,20 @@ export class PerflogMetric extends Metric {
     if (this._perfLogFeatures.render) {
       result['renderTime'] = 0;
     }
+    if (this._captureFrames) {
+      result['meanFrameTime'] = 0;
+    }
     StringMapWrapper.forEach(this._microMetrics, (desc, name) => { result[name] = 0; });
 
     var markStartEvent = null;
     var markEndEvent = null;
     var gcTimeInScript = 0;
     var renderTimeInScript = 0;
+
+    var frameTimestamps = [];
+    var frameTimes = [];
+    var frameCaptureStartEvent = null;
+    var frameCaptureEndEvent = null;
 
     var intervalStarts: StringMap<string, any> = {};
     var intervalStartCount: StringMap<string, number> = {};
@@ -185,8 +203,37 @@ export class PerflogMetric extends Metric {
       } else if (StringWrapper.equals(ph, 'e') && StringWrapper.equals(name, markName)) {
         markEndEvent = event;
       }
+
       if (isPresent(markStartEvent) && isBlank(markEndEvent) &&
           event['pid'] === markStartEvent['pid']) {
+        if (StringWrapper.equals(ph, 'b') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
+          if (isPresent(frameCaptureStartEvent)) {
+            throw new BaseException('can capture frames only once per benchmark run');
+          }
+          if (!this._captureFrames) {
+            throw new BaseException(
+                'found start event for frame capture, but frame capture was not requested in benchpress')
+          }
+          frameCaptureStartEvent = event;
+        } else if (StringWrapper.equals(ph, 'e') &&
+                   StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
+          if (isBlank(frameCaptureStartEvent)) {
+            throw new BaseException('missing start event for frame capture');
+          }
+          frameCaptureEndEvent = event;
+        }
+
+        if (StringWrapper.equals(ph, 'I') || StringWrapper.equals(ph, 'i')) {
+          if (isPresent(frameCaptureStartEvent) && isBlank(frameCaptureEndEvent) &&
+              StringWrapper.equals(name, 'frame')) {
+            ListWrapper.push(frameTimestamps, event['ts']);
+            if (frameTimestamps.length >= 2) {
+              ListWrapper.push(frameTimes, frameTimestamps[frameTimestamps.length - 1] -
+                                               frameTimestamps[frameTimestamps.length - 2]);
+            }
+          }
+        }
+
         if (StringWrapper.equals(ph, 'B') || StringWrapper.equals(ph, 'b')) {
           if (isBlank(intervalStarts[name])) {
             intervalStartCount[name] = 1;
@@ -227,8 +274,25 @@ export class PerflogMetric extends Metric {
         }
       }
     });
+    if (!isPresent(markStartEvent) || !isPresent(markEndEvent)) {
+      // not all events have been received, no further processing for now
+      return null;
+    }
+
+    if (isPresent(markEndEvent) && isPresent(frameCaptureStartEvent) &&
+        isBlank(frameCaptureEndEvent)) {
+      throw new BaseException('missing end event for frame capture');
+    }
+    if (this._captureFrames && isBlank(frameCaptureStartEvent)) {
+      throw new BaseException(
+          'frame capture requested in benchpress, but no start event was found');
+    }
+    if (frameTimes.length > 0) {
+      result['meanFrameTime'] =
+          ListWrapper.reduce(frameTimes, (a, b) => a + b, 0) / frameTimes.length;
+    }
     result['pureScriptTime'] = result['scriptTime'] - gcTimeInScript - renderTimeInScript;
-    return isPresent(markStartEvent) && isPresent(markEndEvent) ? result : null;
+    return result;
   }
 
   _markName(index) { return `${_MARK_NAME_PREFIX}${index}`; }
@@ -239,10 +303,19 @@ var _MAX_RETRY_COUNT = 20;
 var _MARK_NAME_PREFIX = 'benchpress';
 var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 
+var _MARK_NAME_FRAME_CAPUTRE = 'frameCapture';
+
 var _BINDINGS = [
   bind(PerflogMetric)
-      .toFactory((driverExtension, setTimeout, microMetrics, forceGc) =>
-                     new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc),
-                 [WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC]),
+      .toFactory(
+          (driverExtension, setTimeout, microMetrics, forceGc, captureFrames) =>
+              new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc, captureFrames),
+          [
+            WebDriverExtension,
+            _SET_TIMEOUT,
+            Options.MICRO_METRICS,
+            Options.FORCE_GC,
+            Options.CAPTURE_FRAMES
+          ]),
   bind(_SET_TIMEOUT).toValue((fn, millis) => TimerWrapper.setTimeout(fn, millis))
 ];

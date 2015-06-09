@@ -31,10 +31,11 @@ export function main() {
   var commandLog;
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
-  function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null, forceGc = null) {
+  function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null, forceGc = null,
+                        captureFrames = null) {
     commandLog = [];
     if (isBlank(perfLogFeatures)) {
-      perfLogFeatures = new PerfLogFeatures({render: true, gc: true});
+      perfLogFeatures = new PerfLogFeatures({render: true, gc: true, frameCapture: true});
     }
     if (isBlank(microMetrics)) {
       microMetrics = StringMapWrapper.create();
@@ -53,6 +54,9 @@ export function main() {
     ];
     if (isPresent(forceGc)) {
       ListWrapper.push(bindings, bind(Options.FORCE_GC).toValue(forceGc));
+    }
+    if (isPresent(captureFrames)) {
+      ListWrapper.push(bindings, bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
     }
     return Injector.resolveAndCreate(bindings).get(PerflogMetric);
   }
@@ -96,6 +100,20 @@ export function main() {
     it('should describe itself based on micro metrics', () => {
       var description = createMetric([[]], {'myMicroMetric': 'someDesc'}).describe();
       expect(description['myMicroMetric']).toEqual('someDesc');
+    });
+
+    it('should describe itself if frame capture is requested and available', () => {
+      var description =
+          createMetric([[]], null, new PerfLogFeatures({frameCapture: true}), null, true)
+              .describe();
+      expect(description['meanFrameTime']).not.toContain('WARNING');
+    });
+
+    it('should describe itself if frame capture is requested and not available', () => {
+      var description =
+          createMetric([[]], null, new PerfLogFeatures({frameCapture: false}), null, true)
+              .describe();
+      expect(description['meanFrameTime']).toContain('WARNING');
     });
 
     describe('beginMeasure', () => {
@@ -300,13 +318,88 @@ export function main() {
 
     describe('aggregation', () => {
 
-      function aggregate(events, microMetrics = null) {
+      function aggregate(events, microMetrics = null, captureFrames = null) {
         ListWrapper.insert(events, 0, eventFactory.markStart('benchpress0', 0));
         ListWrapper.push(events, eventFactory.markEnd('benchpress0', 10));
-        var metric = createMetric([events], microMetrics);
+        var metric = createMetric([events], microMetrics, null, null, captureFrames);
         return metric.beginMeasure().then((_) => metric.endMeasure(false));
       }
 
+      describe('frame metrics', () => {
+        it('should calculate mean frame time', inject([AsyncTestCompleter], (async) => {
+             aggregate([
+               eventFactory.markStart('frameCapture', 0),
+               eventFactory.instant('frame', 1),
+               eventFactory.instant('frame', 3),
+               eventFactory.instant('frame', 4),
+               eventFactory.markEnd('frameCapture', 5)
+             ],
+                       null, true)
+                 .then((data) => {
+                   expect(data['meanFrameTime']).toBe(((3 - 1) + (4 - 3)) / 2);
+                   async.done();
+                 });
+           }));
+
+        it('should throw if no start event', inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(
+                 aggregate(
+                     [eventFactory.instant('frame', 4), eventFactory.markEnd('frameCapture', 5)],
+                     null, true),
+                 (err) => {
+                   expect(() => { throw err; })
+                       .toThrowError('missing start event for frame capture');
+                   async.done();
+                 });
+           }));
+
+        it('should throw if no end event', inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(
+                 aggregate(
+                     [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
+                     null, true),
+                 (err) => {
+                   expect(() => { throw err; }).toThrowError('missing end event for frame capture');
+                   async.done();
+                 });
+           }));
+
+        it('should throw if trying to capture twice', inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(
+                 aggregate([
+                   eventFactory.markStart('frameCapture', 3),
+                   eventFactory.markStart('frameCapture', 4)
+                 ],
+                           null, true),
+                 (err) => {
+                   expect(() => { throw err; })
+                       .toThrowError('can capture frames only once per benchmark run');
+                   async.done();
+                 });
+           }));
+
+        it('should throw if trying to capture when frame capture is disabled',
+           inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(aggregate([eventFactory.markStart('frameCapture', 3)]), (err) => {
+               expect(() => { throw err; })
+                   .toThrowError(
+                       'found start event for frame capture, but frame capture was not requested in benchpress');
+               async.done();
+             });
+           }));
+
+        it('should throw if frame capture is enabled, but nothing is captured',
+           inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(aggregate([], null, true), (err) => {
+               expect(() => { throw err; })
+                   .toThrowError(
+                       'frame capture requested in benchpress, but no start event was found');
+               async.done();
+             });
+           }));
+
+
+      });
 
       it('should report a single interval', inject([AsyncTestCompleter], (async) => {
            aggregate([eventFactory.start('script', 0), eventFactory.end('script', 5)])

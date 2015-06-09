@@ -35,6 +35,7 @@ export function main() {
     var v8EventsOtherProcess = new TraceEventFactory('v8', 'pid1');
     var chromeTimelineEvents =
         new TraceEventFactory('disabled-by-default-devtools.timeline', 'pid0');
+    var benchmarkEvents = new TraceEventFactory('benchmark', 'pid0');
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(perfRecords = null, messageMethod = 'Tracing.dataCollected') {
@@ -111,6 +112,49 @@ export function main() {
                  async.done();
                });
          }));
+      describe('frame metrics', () => {
+        it('should report ImplThreadRenderingStats as frame event',
+           inject([AsyncTestCompleter], (async) => {
+             createExtension([
+               benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
+                                       {'data': {'frame_count': 1}})
+             ])
+                 .readPerfLog()
+                 .then((events) => {
+                   expect(events).toEqual([
+                     normEvents.create('i', 'frame', 1.1),
+                   ]);
+                   async.done();
+                 });
+           }));
+
+        it('should not report ImplThreadRenderingStats with zero frames',
+           inject([AsyncTestCompleter], (async) => {
+             createExtension([
+               benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
+                                       {'data': {'frame_count': 0}})
+             ])
+                 .readPerfLog()
+                 .then((events) => {
+                   expect(events).toEqual([]);
+                   async.done();
+                 });
+           }));
+
+        it('should throw when ImplThreadRenderingStats contains more than one frame',
+           inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(
+                 createExtension([
+                   benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats',
+                                           1100, {'data': {'frame_count': 2}})
+                 ]).readPerfLog(),
+                 (err) => {
+                   expect(() => { throw err; })
+                       .toThrowError('multi-frame render stats not supported');
+                   async.done();
+                 });
+           }));
+      });
 
       it('should normalize "tdur" to "dur"', inject([AsyncTestCompleter], (async) => {
            var event = chromeTimelineEvents.create('X', 'FunctionCall', 1100, null);
