@@ -66,10 +66,15 @@ export class WebDriverExtension {
 export class PerfLogFeatures {
   render: boolean;
   gc: boolean;
+  frameCapture: boolean;
 
-  constructor({render = false, gc = false}: {render?: boolean, gc?: boolean} = {}) {
+  constructor({render = false, gc = false,
+               frameCapture = false}: {render?: boolean,
+                                       gc?: boolean,
+                                       frameCapture?: boolean} = {}) {
     this.render = render;
     this.gc = gc;
+    this.frameCapture = frameCapture;
   }
 }
 

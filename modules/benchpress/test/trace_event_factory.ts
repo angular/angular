@@ -25,6 +25,8 @@ export class TraceEventFactory {
 
   end(name, time, args = null) { return this.create('E', name, time, args); }
 
+  instant(name, time, args = null) { return this.create('i', name, time, args); }
+
   complete(name, time, duration, args = null) {
     var res = this.create('X', name, time, args);
     res['dur'] = duration;

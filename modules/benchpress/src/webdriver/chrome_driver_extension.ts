@@ -14,6 +14,13 @@ import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {Promise} from 'angular2/src/facade/async';
 
+/**
+ * Set the following 'traceCategories' to collect metrics in Chrome:
+ * 'v8,blink.console,disabled-by-default-devtools.timeline'
+ *
+ * In order to collect the frame rate related metrics, add 'benchmark'
+ * to the list above.
+ */
 export class ChromeDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
   static get BINDINGS(): List<Binding> { return _BINDINGS; }
@@ -73,12 +80,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
             (isBlank(args) || isBlank(args['data']) ||
              !StringWrapper.equals(args['data']['scriptName'], 'InjectedScript'))) {
           ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': 'script'}));
+
         } else if (StringWrapper.equals(name, 'RecalculateStyles') ||
                    StringWrapper.equals(name, 'Layout') ||
                    StringWrapper.equals(name, 'UpdateLayerTree') ||
                    StringWrapper.equals(name, 'Paint') || StringWrapper.equals(name, 'Rasterize') ||
                    StringWrapper.equals(name, 'CompositeLayers')) {
           ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': 'render'}));
+
         } else if (StringWrapper.equals(name, 'GCEvent')) {
           var normArgs = {
             'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] :
@@ -91,20 +100,42 @@ export class ChromeDriverExtension extends WebDriverExtension {
           ListWrapper.push(normalizedEvents,
                            normalizeEvent(event, {'name': 'gc', 'args': normArgs}));
         }
+
       } else if (StringWrapper.equals(cat, 'blink.console')) {
         ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': name}));
+
       } else if (StringWrapper.equals(cat, 'v8')) {
         if (StringWrapper.equals(name, 'majorGC')) {
           if (StringWrapper.equals(ph, 'B')) {
             majorGCPids[pid] = true;
           }
         }
+
+      } else if (StringWrapper.equals(cat, 'benchmark')) {
+        if (StringWrapper.equals(name, 'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
+          var frameCount = event['args']['data']['frame_count'];
+          if (frameCount > 1) {
+            throw new BaseException('multi-frame render stats not supported');
+          }
+          if (frameCount == 1) {
+            ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': 'frame'}));
+          }
+        } else if (StringWrapper.equals(name, 'BenchmarkInstrumentation::DisplayRenderingStats') ||
+                   StringWrapper.equals(name, 'vsync_before')) {
+          // TODO(goderbauer): If present, these events should be used instead of
+          // BenchmarkInstrumentation::ImplThreadRenderingStats.
+          // However, they never seem to appear in practice. Maybe they appear on a different
+          // platform?
+          throw new BaseException('NYI');
+        }
       }
     });
     return normalizedEvents;
   }
 
-  perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true, gc: true}); }
+  perfLogFeatures(): PerfLogFeatures {
+    return new PerfLogFeatures({render: true, gc: true, frameCapture: true});
+  }
 
   supports(capabilities: StringMap<string, any>): boolean {
     return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');

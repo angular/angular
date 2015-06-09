@@ -25,6 +25,8 @@ export class Options {
   static get WRITE_FILE() { return _WRITE_FILE; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get MICRO_METRICS() { return _MICRO_METRICS; }
+  // TODO(tbosch): use static values when our transpiler supports them
+  static get CAPTURE_FRAMES() { return _CAPTURE_FRAMES; }
 }
 
 var _SAMPLE_ID = new OpaqueToken('Options.sampleId');
@@ -38,6 +40,7 @@ var _USER_AGENT = new OpaqueToken('Options.userAgent');
 var _MICRO_METRICS = new OpaqueToken('Options.microMetrics');
 var _NOW = new OpaqueToken('Options.now');
 var _WRITE_FILE = new OpaqueToken('Options.writeFile');
+var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 
 var _DEFAULT_BINDINGS = [
   bind(_DEFAULT_DESCRIPTION)
@@ -46,5 +49,6 @@ var _DEFAULT_BINDINGS = [
   bind(_FORCE_GC).toValue(false),
   bind(_PREPARE).toValue(false),
   bind(_MICRO_METRICS).toValue({}),
-  bind(_NOW).toValue(() => DateWrapper.now())
+  bind(_NOW).toValue(() => DateWrapper.now()),
+  bind(_CAPTURE_FRAMES).toValue(false)
 ];
