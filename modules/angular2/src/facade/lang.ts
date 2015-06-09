@@ -98,9 +98,9 @@ export function stringify(token): string {
 export class StringWrapper {
   static fromCharCode(code: int): string { return String.fromCharCode(code); }
 
-  static charCodeAt(s: string, index: int) { return s.charCodeAt(index); }
+  static charCodeAt(s: string, index: int): number { return s.charCodeAt(index); }
 
-  static split(s: string, regExp) { return s.split(regExp); }
+  static split(s: string, regExp): List<string> { return s.split(regExp); }
 
   static equals(s: string, s2: string): boolean { return s === s2; }
 
@@ -116,9 +116,9 @@ export class StringWrapper {
 
   static toLowerCase(s: string): string { return s.toLowerCase(); }
 
-  static startsWith(s: string, start: string) { return s.startsWith(start); }
+  static startsWith(s: string, start: string): boolean { return s.startsWith(start); }
 
-  static substring(s: string, start: int, end: int = null) {
+  static substring(s: string, start: int, end: int = null): string {
     return s.substring(start, end === null ? undefined : end);
   }
 
@@ -139,7 +139,7 @@ export class StringWrapper {
 export class StringJoiner {
   constructor(public parts = []) {}
 
-  add(part: string) { this.parts.push(part); }
+  add(part: string): void { this.parts.push(part); }
 
   toString(): string { return this.parts.join(""); }
 }
