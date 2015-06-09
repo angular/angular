@@ -14,9 +14,11 @@ void initReflector(reflector) {
       'parameters': const [const []],
       'annotations': const [
         const Component(
-            hostListeners: const {
-          'change': 'onChange(\$event)',
-          'keyDown': 'onKeyDown(\$event)'
+            host: const {
+          '(change)': 'onChange(\$event)',
+          '[value]': 'value',
+          '@actionName': 'actionValue',
+          'attName': 'attValue'
         })
       ]
     });

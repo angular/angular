@@ -53,13 +53,11 @@ class _DirectiveMetadataVisitor extends Object
 
   void _createEmptyMetadata(num type) {
     assert(type >= 0);
-    meta = new DirectiveMetadata(
+    meta = DirectiveMetadata.create(
         type: type,
         compileChildren: true,
         properties: [],
-        hostListeners: {},
-        hostProperties: {},
-        hostAttributes: {},
+        host: {},
         readAttributes: [],
         exportAs: null,
         callOnDestroy: false,
@@ -124,14 +122,8 @@ class _DirectiveMetadataVisitor extends Object
       case 'properties':
         _populateProperties(node.expression);
         break;
-      case 'hostProperties':
-        _populateHostProperties(node.expression);
-        break;
-      case 'hostAttributes':
-        _populateHostAttributes(node.expression);
-        break;
-      case 'hostListeners':
-        _populateHostListeners(node.expression);
+      case 'host':
+        _populateHost(node.expression);
         break;
       case 'lifecycle':
         _populateLifecycle(node.expression);
@@ -210,22 +202,17 @@ class _DirectiveMetadataVisitor extends Object
     _populateList(propertiesValue, meta.properties, 'Directive#properties');
   }
 
-  void _populateHostListeners(Expression hostListenersValue) {
+  void _populateHost(Expression hostValue) {
     _checkMeta();
-    _populateMap(
-        hostListenersValue, meta.hostListeners, 'Directive#hostListeners');
-  }
+    var host = new Map();
+    _populateMap(hostValue, host, 'Directive#host');
 
-  void _populateHostProperties(Expression hostPropertyValue) {
-    _checkMeta();
-    _populateMap(
-        hostPropertyValue, meta.hostProperties, 'Directive#hostProperties');
-  }
+    var hostConfig = DirectiveMetadata.parseHostConfig(host);
 
-  void _populateHostAttributes(Expression hostAttributeValue) {
-    _checkMeta();
-    _populateMap(
-        hostAttributeValue, meta.hostAttributes, 'Directive#hostAttributes');
+    meta.hostListeners = hostConfig['hostListeners'];
+    meta.hostProperties = hostConfig['hostProperties'];
+    meta.hostActions = hostConfig['hostActions'];
+    meta.hostAttributes = hostConfig['hostAttributes'];
   }
 
   void _populateExportAs(Expression exportAsValue) {
