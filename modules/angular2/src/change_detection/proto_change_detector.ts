@@ -39,23 +39,7 @@ import {DirectiveRecord, DirectiveIndex} from './directive_record';
 
 import {coalesce} from './coalesce';
 
-import {
-  ProtoRecord,
-  RECORD_TYPE_SELF,
-  RECORD_TYPE_PROPERTY,
-  RECORD_TYPE_LOCAL,
-  RECORD_TYPE_INVOKE_METHOD,
-  RECORD_TYPE_CONST,
-  RECORD_TYPE_INVOKE_CLOSURE,
-  RECORD_TYPE_PRIMITIVE_OP,
-  RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_PIPE,
-  RECORD_TYPE_BINDING_PIPE,
-  RECORD_TYPE_INTERPOLATE,
-  RECORD_TYPE_SAFE_PROPERTY,
-  RECORD_TYPE_SAFE_INVOKE_METHOD,
-  RECORD_TYPE_DIRECTIVE_LIFECYCLE
-} from './proto_record';
+import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _records: List<ProtoRecord>;
@@ -124,7 +108,7 @@ class ProtoRecordBuilder {
     if (b.isDirectiveLifecycle()) {
       ListWrapper.push(
           this.records,
-          new ProtoRecord(RECORD_TYPE_DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [], [], -1, null,
+          new ProtoRecord(RecordType.DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [], [], -1, null,
                           this.records.length + 1, b, null, false, false));
     } else {
       _ConvertAstIntoProtoRecords.append(this.records, b, variableNames);
@@ -145,12 +129,12 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
 
   visitInterpolation(ast: Interpolation) {
     var args = this._visitAll(ast.expressions);
-    return this._addRecord(RECORD_TYPE_INTERPOLATE, "interpolate", _interpolationFn(ast.strings),
+    return this._addRecord(RecordType.INTERPOLATE, "interpolate", _interpolationFn(ast.strings),
                            args, ast.strings, 0);
   }
 
   visitLiteralPrimitive(ast: LiteralPrimitive) {
-    return this._addRecord(RECORD_TYPE_CONST, "literal", ast.value, [], null, 0);
+    return this._addRecord(RecordType.CONST, "literal", ast.value, [], null, 0);
   }
 
   visitAccessMember(ast: AccessMember) {
@@ -158,49 +142,48 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name) &&
             ast.receiver instanceof
             ImplicitReceiver) {
-      return this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
+      return this._addRecord(RecordType.LOCAL, ast.name, ast.name, [], null, receiver);
     } else {
-      return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
+      return this._addRecord(RecordType.PROPERTY, ast.name, ast.getter, [], null, receiver);
     }
   }
 
   visitSafeAccessMember(ast: SafeAccessMember) {
     var receiver = ast.receiver.visit(this);
-    return this._addRecord(RECORD_TYPE_SAFE_PROPERTY, ast.name, ast.getter, [], null, receiver);
+    return this._addRecord(RecordType.SAFE_PROPERTY, ast.name, ast.getter, [], null, receiver);
   }
 
   visitMethodCall(ast: MethodCall) {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
     if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name)) {
-      var target = this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
-      return this._addRecord(RECORD_TYPE_INVOKE_CLOSURE, "closure", null, args, null, target);
+      var target = this._addRecord(RecordType.LOCAL, ast.name, ast.name, [], null, receiver);
+      return this._addRecord(RecordType.INVOKE_CLOSURE, "closure", null, args, null, target);
     } else {
-      return this._addRecord(RECORD_TYPE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
+      return this._addRecord(RecordType.INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
     }
   }
 
   visitSafeMethodCall(ast: SafeMethodCall) {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
-    return this._addRecord(RECORD_TYPE_SAFE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
+    return this._addRecord(RecordType.SAFE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
   }
 
   visitFunctionCall(ast: FunctionCall) {
     var target = ast.target.visit(this);
     var args = this._visitAll(ast.args);
-    return this._addRecord(RECORD_TYPE_INVOKE_CLOSURE, "closure", null, args, null, target);
+    return this._addRecord(RecordType.INVOKE_CLOSURE, "closure", null, args, null, target);
   }
 
   visitLiteralArray(ast: LiteralArray) {
     var primitiveName = `arrayFn${ast.expressions.length}`;
-    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, primitiveName,
-                           _arrayFn(ast.expressions.length), this._visitAll(ast.expressions), null,
-                           0);
+    return this._addRecord(RecordType.PRIMITIVE_OP, primitiveName, _arrayFn(ast.expressions.length),
+                           this._visitAll(ast.expressions), null, 0);
   }
 
   visitLiteralMap(ast: LiteralMap) {
-    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, _mapPrimitiveName(ast.keys),
+    return this._addRecord(RecordType.PRIMITIVE_OP, _mapPrimitiveName(ast.keys),
                            ChangeDetectionUtil.mapFn(ast.keys), this._visitAll(ast.values), null,
                            0);
   }
@@ -208,13 +191,13 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   visitBinary(ast: Binary) {
     var left = ast.left.visit(this);
     var right = ast.right.visit(this);
-    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, _operationToPrimitiveName(ast.operation),
+    return this._addRecord(RecordType.PRIMITIVE_OP, _operationToPrimitiveName(ast.operation),
                            _operationToFunction(ast.operation), [left, right], null, 0);
   }
 
   visitPrefixNot(ast: PrefixNot) {
     var exp = ast.expression.visit(this);
-    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, "operation_negate",
+    return this._addRecord(RecordType.PRIMITIVE_OP, "operation_negate",
                            ChangeDetectionUtil.operation_negate, [exp], null, 0);
   }
 
@@ -222,20 +205,20 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     var c = ast.condition.visit(this);
     var t = ast.trueExp.visit(this);
     var f = ast.falseExp.visit(this);
-    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, "cond", ChangeDetectionUtil.cond, [c, t, f],
+    return this._addRecord(RecordType.PRIMITIVE_OP, "cond", ChangeDetectionUtil.cond, [c, t, f],
                            null, 0);
   }
 
   visitPipe(ast: Pipe) {
     var value = ast.exp.visit(this);
-    var type = ast.inBinding ? RECORD_TYPE_BINDING_PIPE : RECORD_TYPE_PIPE;
+    var type = ast.inBinding ? RecordType.BINDING_PIPE : RecordType.PIPE;
     return this._addRecord(type, ast.name, ast.name, [], null, value);
   }
 
   visitKeyedAccess(ast: KeyedAccess) {
     var obj = ast.obj.visit(this);
     var key = ast.key.visit(this);
-    return this._addRecord(RECORD_TYPE_KEYED_ACCESS, "keyedAccess", ChangeDetectionUtil.keyedAccess,
+    return this._addRecord(RecordType.KEYED_ACCESS, "keyedAccess", ChangeDetectionUtil.keyedAccess,
                            [key], null, obj);
   }
 

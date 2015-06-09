@@ -1,14 +1,11 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
 import {coalesce} from 'angular2/src/change_detection/coalesce';
-import {
-  RECORD_TYPE_SELF,
-  RECORD_TYPE_DIRECTIVE_LIFECYCLE,
-  ProtoRecord
-} from 'angular2/src/change_detection/proto_record';
+import {RecordType, ProtoRecord} from 'angular2/src/change_detection/proto_record';
 
 export function main() {
-  function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false, mode = 99) {
+  function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false,
+             mode = RecordType.PROPERTY) {
     return new ProtoRecord(mode, "name", funcOrValue, args, null, contextIndex, null, selfIndex,
                            null, null, lastInBinding, false);
   }
@@ -51,14 +48,14 @@ export function main() {
 
       var rs = coalesce([r("user", [], 0, 1, true), r("user", [], 0, 2, true)]);
 
-      expect(rs[1]).toEqual(new ProtoRecord(RECORD_TYPE_SELF, "self", null, [], null, 1, null, 2,
+      expect(rs[1]).toEqual(new ProtoRecord(RecordType.SELF, "self", null, [], null, 1, null, 2,
                                             null, null, true, false));
     });
 
     it("should not coalesce directive lifecycle records", () => {
       var rs = coalesce([
-        r("onCheck", [], 0, 1, true, RECORD_TYPE_DIRECTIVE_LIFECYCLE),
-        r("onCheck", [], 0, 1, true, RECORD_TYPE_DIRECTIVE_LIFECYCLE)
+        r("onCheck", [], 0, 1, true, RecordType.DIRECTIVE_LIFECYCLE),
+        r("onCheck", [], 0, 1, true, RecordType.DIRECTIVE_LIFECYCLE)
       ]);
 
       expect(rs.length).toEqual(2);
