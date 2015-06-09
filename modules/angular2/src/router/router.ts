@@ -128,7 +128,10 @@ export class Router {
                 ObservableWrapper.callNext(this._subject, matchedInstruction.accumulatedUrl);
               });
 
-      PromiseWrapper.catchError(result, (_) => this._finishNavigating());
+      PromiseWrapper.catchError(result, (err) => {
+        this._finishNavigating();
+        return err;
+      });
 
       return result;
     });
