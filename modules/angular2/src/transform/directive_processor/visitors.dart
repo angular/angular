@@ -2,7 +2,7 @@ library angular2.transform.directive_processor.visitors;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
-import 'package:angular2/src/services/xhr.dart' show XHR;
+import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 

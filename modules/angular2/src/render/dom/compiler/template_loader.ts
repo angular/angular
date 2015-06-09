@@ -4,7 +4,7 @@ import {Map, MapWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {XHR} from 'angular2/src/services/xhr';
+import {XHR} from 'angular2/src/render/xhr';
 
 import {ViewDefinition} from '../../api';
 import {UrlResolver} from 'angular2/src/services/url_resolver';

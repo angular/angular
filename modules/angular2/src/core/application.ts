@@ -33,8 +33,8 @@ import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_s
 import {
   EmulatedUnscopedShadowDomStrategy
 } from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
-import {XHR} from 'angular2/src/services/xhr';
-import {XHRImpl} from 'angular2/src/services/xhr_impl';
+import {XHR} from 'angular2/src/render/xhr';
+import {XHRImpl} from 'angular2/src/render/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';

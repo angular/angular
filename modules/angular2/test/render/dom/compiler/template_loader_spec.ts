@@ -16,7 +16,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 import {ViewDefinition} from 'angular2/src/render/api';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {MockXHR} from 'angular2/src/mock/xhr_mock';
+import {MockXHR} from 'angular2/src/render/xhr_mock';
 
 export function main() {
   describe('TemplateLoader', () => {

@@ -19,7 +19,7 @@ import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_s
 import {
   EmulatedUnscopedShadowDomStrategy
 } from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
-import {XHR} from 'angular2/src/services/xhr';
+import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
@@ -31,7 +31,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
-import {MockXHR} from 'angular2/src/mock/xhr_mock';
+import {MockXHR} from 'angular2/src/render/xhr_mock';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestBed} from './test_bed';

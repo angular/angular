@@ -3,7 +3,7 @@ library angular2.transform.directive_processor.rewriter;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/services/xhr.dart' show XHR;
+import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';

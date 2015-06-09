@@ -17,7 +17,7 @@ import {isBlank} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 
-import {XHR} from 'angular2/src/services/xhr';
+import {XHR} from 'angular2/src/render/xhr';
 
 import {bind} from 'angular2/di';
 

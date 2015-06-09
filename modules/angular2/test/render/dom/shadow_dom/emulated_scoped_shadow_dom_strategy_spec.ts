@@ -18,7 +18,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
-import {XHR} from 'angular2/src/services/xhr';
+import {XHR} from 'angular2/src/render/xhr';
 
 import {
   EmulatedScopedShadowDomStrategy,

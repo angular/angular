@@ -10,7 +10,7 @@ import {
   IS_DARTIUM,
   it,
 } from 'angular2/test_lib';
-import {MockXHR} from 'angular2/src/mock/xhr_mock';
+import {MockXHR} from 'angular2/src/render/xhr_mock';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
 

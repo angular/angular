@@ -9,7 +9,7 @@ import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compile_pipeline.dart';
 import 'package:angular2/src/render/dom/compiler/template_loader.dart';
 import 'package:angular2/src/render/dom/view/property_setter_factory.dart';
-import 'package:angular2/src/services/xhr.dart' show XHR;
+import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
