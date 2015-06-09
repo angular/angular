@@ -401,7 +401,95 @@ export function main() {
         });
       });
 
-      // TODO(kegluneq): Insert describe('mode', ...) testcases.
+      describe('mode', () => {
+        var _createWithoutHydrate = function(expression: string) {
+          var registry = null;
+          return _getProtoChangeDetector(getDefinition(expression).cdDef, registry).instantiate(new TestDispatcher());
+        };
+
+        it('should set the mode to CHECK_ALWAYS when the default change detection is used',
+           () => {
+             var cd = _createWithoutHydrate('emptyUsingDefaultStrategy');
+             expect(cd.mode).toEqual(null);
+
+             cd.hydrate(_DEFAULT_CONTEXT, null, null);
+             expect(cd.mode).toEqual(CHECK_ALWAYS);
+           });
+
+        it('should set the mode to CHECK_ONCE when the push change detection is used', () => {
+          var cd = _createWithoutHydrate('emptyUsingOnPushStrategy');
+          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+
+          expect(cd.mode).toEqual(CHECK_ONCE);
+        });
+
+        it('should not check a detached change detector', () => {
+          var val = _createChangeDetector('a', new TestData('value'));
+
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null);
+          val.changeDetector.mode = DETACHED;
+          val.changeDetector.detectChanges();
+
+          expect(val.dispatcher.log).toEqual([]);
+        });
+
+        it('should not check a checked change detector', () => {
+          var val = _createChangeDetector('a', new TestData('value'));
+
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null);
+          val.changeDetector.mode = CHECKED;
+          val.changeDetector.detectChanges();
+
+          expect(val.dispatcher.log).toEqual([]);
+        });
+
+        it('should change CHECK_ONCE to CHECKED', () => {
+          var cd = _createChangeDetector('10').changeDetector;
+          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          cd.mode = CHECK_ONCE;
+
+          cd.detectChanges();
+
+          expect(cd.mode).toEqual(CHECKED);
+        });
+
+        it('should not change the CHECK_ALWAYS', () => {
+          var cd = _createChangeDetector('10').changeDetector;
+          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          cd.mode = CHECK_ALWAYS;
+
+          cd.detectChanges();
+
+          expect(cd.mode).toEqual(CHECK_ALWAYS);
+        });
+
+        describe('marking ON_PUSH detectors as CHECK_ONCE after an update', () => {
+          var checkedDetector;
+          var directives;
+
+          beforeEach(() => {
+            checkedDetector = _createWithoutHydrate('emptyUsingOnPushStrategy');
+            checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null);
+            checkedDetector.mode = CHECKED;
+
+            var targetDirective = new TestData(null);
+            directives = new FakeDirectives([targetDirective], [checkedDetector]);
+          });
+
+          it('should set the mode to CHECK_ONCE when a binding is updated', () => {
+            var cd = _createWithoutHydrate('onPushRecordsUsingDefaultStrategy');
+            cd.hydrate(_DEFAULT_CONTEXT, null, directives);
+
+            expect(checkedDetector.mode).toEqual(CHECKED);
+
+            // evaluate the record, update the targetDirective, and mark its detector as
+            // CHECK_ONCE
+            cd.detectChanges();
+
+            expect(checkedDetector.mode).toEqual(CHECK_ONCE);
+          });
+        });
+      });
 
       describe('markPathToRootAsCheckOnce', () => {
         function changeDetector(mode, parent) {
@@ -594,21 +682,6 @@ export function main() {
           }
 
           function dirs(directives: List<any>) { return new FakeDirectives(directives, []); }
-
-          function createChangeDetector(propName: string, exp: string, context = _DEFAULT_CONTEXT,
-                                        registry = null) {
-            var dispatcher = new TestDispatcher();
-
-            var locals = null;
-            var variableBindings = [];
-
-            var records = [BindingRecord.createForElement(ast(exp), 0, propName)];
-            var pcd = createProtoChangeDetector(records, variableBindings, [], registry);
-            var cd = pcd.instantiate(dispatcher);
-            cd.hydrate(context, locals, null);
-
-            return {"changeDetector": cd, "dispatcher": dispatcher};
-          }
 
           describe(`${name} change detection`, () => {
             var dispatcher;
@@ -876,113 +949,6 @@ export function main() {
                 cd.detectChanges();
 
                 expect(dispatcher.loggedValues).toEqual(['aaa']);
-              });
-            });
-          });
-
-          describe("mode", () => {
-            it("should set the mode to CHECK_ALWAYS when the default change detection is used",
-               () => {
-                 var proto = createProtoChangeDetector([], [], [], null, DEFAULT);
-                 var cd = proto.instantiate(null);
-
-                 expect(cd.mode).toEqual(null);
-
-                 cd.hydrate(_DEFAULT_CONTEXT, null, null);
-
-                 expect(cd.mode).toEqual(CHECK_ALWAYS);
-               });
-
-            it("should set the mode to CHECK_ONCE when the push change detection is used", () => {
-              var proto = createProtoChangeDetector([], [], [], null, ON_PUSH);
-              var cd = proto.instantiate(null);
-              cd.hydrate(_DEFAULT_CONTEXT, null, null);
-
-              expect(cd.mode).toEqual(CHECK_ONCE);
-            });
-
-            it("should not check a detached change detector", () => {
-              var c = createChangeDetector('name', 'a', new TestData("value"));
-              var cd = c["changeDetector"];
-              var dispatcher = c["dispatcher"];
-
-              cd.hydrate(_DEFAULT_CONTEXT, null, null);
-              cd.mode = DETACHED;
-              cd.detectChanges();
-
-              expect(dispatcher.log).toEqual([]);
-            });
-
-            it("should not check a checked change detector", () => {
-              var c = createChangeDetector('name', 'a', new TestData("value"));
-              var cd = c["changeDetector"];
-              var dispatcher = c["dispatcher"];
-
-              cd.hydrate(_DEFAULT_CONTEXT, null, null);
-              cd.mode = CHECKED;
-              cd.detectChanges();
-
-              expect(dispatcher.log).toEqual([]);
-            });
-
-            it("should change CHECK_ONCE to CHECKED", () => {
-              var cd = createProtoChangeDetector([]).instantiate(null);
-              cd.hydrate(_DEFAULT_CONTEXT, null, null);
-              cd.mode = CHECK_ONCE;
-
-              cd.detectChanges();
-
-              expect(cd.mode).toEqual(CHECKED);
-            });
-
-            it("should not change the CHECK_ALWAYS", () => {
-              var cd = createProtoChangeDetector([]).instantiate(null);
-              cd.hydrate(_DEFAULT_CONTEXT, null, null);
-              cd.mode = CHECK_ALWAYS;
-
-              cd.detectChanges();
-
-              expect(cd.mode).toEqual(CHECK_ALWAYS);
-            });
-
-            describe("marking ON_PUSH detectors as CHECK_ONCE after an update", () => {
-              var checkedDetector;
-              var dirRecordWithOnPush;
-              var updateDirWithOnPushRecord;
-              var directives;
-
-              beforeEach(() => {
-                var proto = createProtoChangeDetector([], [], [], null, ON_PUSH);
-                checkedDetector = proto.instantiate(null);
-                checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null);
-                checkedDetector.mode = CHECKED;
-
-                // this directive is a component with ON_PUSH change detection
-                dirRecordWithOnPush = new DirectiveRecord(
-                    {directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
-
-                // a record updating a component
-                updateDirWithOnPushRecord = BindingRecord.createForDirective(
-                    ast("42"), "a", (o, v) => o.a = v, dirRecordWithOnPush);
-
-                var targetDirective = new TestData(null);
-                directives = new FakeDirectives([targetDirective], [checkedDetector]);
-              });
-
-              it("should set the mode to CHECK_ONCE when a binding is updated", () => {
-                var proto = createProtoChangeDetector([updateDirWithOnPushRecord], [],
-                                                      [dirRecordWithOnPush]);
-
-                var cd = proto.instantiate(null);
-                cd.hydrate(_DEFAULT_CONTEXT, null, directives);
-
-                expect(checkedDetector.mode).toEqual(CHECKED);
-
-                // evaluate the record, update the targetDirective, and mark its detector as
-                // CHECK_ONCE
-                cd.detectChanges();
-
-                expect(checkedDetector.mode).toEqual(CHECK_ONCE);
               });
             });
           });

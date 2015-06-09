@@ -208,7 +208,7 @@ class _CodegenState {
     var detectorFieldNames = _genGetDetectorFieldNames();
     for (var i = 0; i < detectorFieldNames.length; ++i) {
       buf.writeln('${detectorFieldNames[i]} = directives.getDetectorFor('
-          '$_DIRECTIVES_ACCESSOR[$i].directiveIndex)');
+          '$_DIRECTIVES_ACCESSOR[$i].directiveIndex);');
     }
     return '$buf';
   }

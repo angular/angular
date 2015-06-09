@@ -1,8 +1,12 @@
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {
+  DEFAULT,
+  ON_PUSH,
   BindingRecord,
   ChangeDetectorDefinition,
+  DirectiveIndex,
+  DirectiveRecord,
   Lexer,
   Locals,
   Parser
@@ -34,26 +38,31 @@ export var PROP_NAME = 'propName';
  * In this case, we expect `id` and `expression` to be the same string.
  */
 export function getDefinition(id: string): TestDefinition {
-  var expression = null;
-  var locals = null;
-  if (MapWrapper.contains(_availableDefinitionsWithLocals, id)) {
-    var val = MapWrapper.get(_availableDefinitionsWithLocals, id);
-    expression = val.expression;
-    locals = val.locals;
+  var testDef = null;
+  if (StringMapWrapper.contains(_ExpressionWithLocals.availableDefinitions, id)) {
+    let val = StringMapWrapper.get(_ExpressionWithLocals.availableDefinitions, id);
+    let cdDef = val.createChangeDetectorDefinition();
+    cdDef.id = id;
+    testDef = new TestDefinition(id, cdDef, val.locals);
+  } else if (StringMapWrapper.contains(_ExpressionWithMode.availableDefinitions, id)) {
+    let val = StringMapWrapper.get(_ExpressionWithMode.availableDefinitions, id);
+    let cdDef = val.createChangeDetectorDefinition();
+    cdDef.id = id;
+    testDef = new TestDefinition(id, cdDef, null);
   } else if (ListWrapper.indexOf(_availableDefinitions, id) >= 0) {
-    expression = id;
+    var strategy = null;
+    var variableBindings = [];
+    var bindingRecords = _createBindingRecords(id);
+    var directiveRecords = [];
+    let cdDef = new ChangeDetectorDefinition(id, strategy, variableBindings, bindingRecords,
+                                             directiveRecords);
+    testDef = new TestDefinition(id, cdDef, null);
   }
-  if (isBlank(expression)) {
+  if (isBlank(testDef)) {
     throw `No ChangeDetectorDefinition for ${id} available. Please modify this file if necessary.`;
   }
 
-  var strategy = null;
-  var variableBindings = isPresent(locals) ? _convertLocalsToVariableBindings(locals) : [];
-  var bindingRecords = _createBindingRecords(expression);
-  var directiveRecords = [];
-  var cdDef = new ChangeDetectorDefinition(id, strategy, variableBindings, bindingRecords,
-                                           directiveRecords);
-  return new TestDefinition(id, cdDef, locals);
+  return testDef;
 }
 
 export class TestDefinition {
@@ -68,106 +77,128 @@ export function getAllDefinitions(): List<TestDefinition> {
   return ListWrapper.map(_availableDefinitions, (id) => getDefinition(id));
 }
 
+class _ExpressionWithLocals {
+  constructor(private _expression: string, public locals: Locals) {}
+
+  createChangeDetectorDefinition(): ChangeDetectorDefinition {
+    var strategy = null;
+    var variableBindings = _convertLocalsToVariableBindings(this.locals);
+    var bindingRecords = _createBindingRecords(this._expression);
+    var directiveRecords = [];
+    return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings, bindingRecords,
+                                        directiveRecords);
+  }
+
+  /**
+   * Map from test id to _ExpressionWithLocals.
+   * Tests in this map define an expression and local values which those expressions refer to.
+   */
+  static availableDefinitions: StringMap<string, _ExpressionWithLocals> = {
+    'valueFromLocals': new _ExpressionWithLocals(
+        'key', new Locals(null, MapWrapper.createFromPairs([['key', 'value']]))),
+    'functionFromLocals': new _ExpressionWithLocals(
+        'key()', new Locals(null, MapWrapper.createFromPairs([['key', () => 'value']]))),
+    'nestedLocals': new _ExpressionWithLocals(
+        'key', new Locals(new Locals(null, MapWrapper.createFromPairs([['key', 'value']])),
+                          MapWrapper.create())),
+    'fallbackLocals': new _ExpressionWithLocals(
+        'name', new Locals(null, MapWrapper.createFromPairs([['key', 'value']]))),
+    'contextNestedPropertyWithLocals': new _ExpressionWithLocals(
+        'address.city', new Locals(null, MapWrapper.createFromPairs([['city', 'MTV']]))),
+    'localPropertyWithSimilarContext': new _ExpressionWithLocals(
+        'city', new Locals(null, MapWrapper.createFromPairs([['city', 'MTV']])))
+  };
+}
+
+class _ExpressionWithMode {
+  constructor(private _strategy: string, private _withRecords: boolean) {}
+
+  createChangeDetectorDefinition(): ChangeDetectorDefinition {
+    var variableBindings = [];
+    var bindingRecords = null;
+    var directiveRecords = null;
+    if (this._withRecords) {
+      var dirRecordWithOnPush =
+          new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
+      var updateDirWithOnPushRecord =
+          BindingRecord.createForDirective(_parser.parseBinding('42', 'location'), 'a',
+                                           (o, v) => (<any>o).a = v, dirRecordWithOnPush);
+      bindingRecords = [updateDirWithOnPushRecord];
+      directiveRecords = [dirRecordWithOnPush];
+    } else {
+      bindingRecords = [];
+      directiveRecords = [];
+    }
+    return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
+                                        bindingRecords, directiveRecords);
+  }
+
+  /**
+   * Map from test id to _ExpressionWithMode.
+   * Definitions in this map define conditions which allow testing various change detector modes.
+   */
+  static availableDefinitions: StringMap<string, _ExpressionWithMode> = {
+    'emptyUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, false),
+    'emptyUsingOnPushStrategy': new _ExpressionWithMode(ON_PUSH, false),
+    'onPushRecordsUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, true)
+  };
+}
+
 /**
  * The list of all test definitions this config supplies.
  * Items in this list that do not appear in other structures define tests with expressions
  * equivalent to their ids.
  */
-var _availableDefinitions = [
-  '10',
-  '"str"',
-  '"a\n\nb"',
-  '10 + 2',
-  '10 - 2',
-  '10 * 2',
-  '10 / 2',
-  '11 % 2',
-  '1 == 1',
-  '1 != 1',
-  '1 == true',
-  '1 === 1',
-  '1 !== 1',
-  '1 === true',
-  '1 < 2',
-  '2 < 1',
-  '1 > 2',
-  '2 > 1',
-  '1 <= 2',
-  '2 <= 2',
-  '2 <= 1',
-  '2 >= 1',
-  '2 >= 2',
-  '1 >= 2',
-  'true && true',
-  'true && false',
-  'true || false',
-  'false || false',
-  '!true',
-  '!!true',
-  '1 < 2 ? 1 : 2',
-  '1 > 2 ? 1 : 2',
-  '["foo", "bar"][0]',
-  '{"foo": "bar"}["foo"]',
-  'name',
-  '[1, 2]',
-  '[1, a]',
-  '{z: 1}',
-  '{z: a}',
-  'name | pipe',
-  'value',
-  'a',
-  'address.city',
-  'address?.city',
-  'address?.toString()',
-  'sayHi("Jim")',
-  'a()(99)',
-  'a.sayHi("Jim")',
-  'valueFromLocals',
-  'functionFromLocals',
-  'nestedLocals',
-  'fallbackLocals',
-  'contextNestedPropertyWithLocals',
-  'localPropertyWithSimilarContext'
-];
-
-class _ExpressionWithLocals {
-  constructor(public expression: string, public locals: Locals) {}
-}
-
-/**
- * Map from test id to _ExpressionWithLocals.
- * Tests in this map define an expression and local values which those expressions refer to.
- */
-var _availableDefinitionsWithLocals = MapWrapper.createFromPairs([
-  [
-    'valueFromLocals',
-    new _ExpressionWithLocals('key',
-                              new Locals(null, MapWrapper.createFromPairs([['key', 'value']])))
-  ],
-  [
-    'functionFromLocals',
-    new _ExpressionWithLocals(
-        'key()', new Locals(null, MapWrapper.createFromPairs([['key', () => 'value']])))
-  ],
-  [
-    'nestedLocals',
-    new _ExpressionWithLocals(
-        'key', new Locals(new Locals(null, MapWrapper.createFromPairs([['key', 'value']])),
-                          MapWrapper.create()))
-  ],
-  [
-    'fallbackLocals',
-    new _ExpressionWithLocals('name',
-                              new Locals(null, MapWrapper.createFromPairs([['key', 'value']])))
-  ],
-  [
-    'contextNestedPropertyWithLocals',
-    new _ExpressionWithLocals('address.city',
-                              new Locals(null, MapWrapper.createFromPairs([['city', 'MTV']])))
-  ],
-  [
-    'localPropertyWithSimilarContext',
-    new _ExpressionWithLocals('city',
-                              new Locals(null, MapWrapper.createFromPairs([['city', 'MTV']])))
-  ]
-]);
+var _availableDefinitions = ListWrapper.concat(
+    [
+      '10',
+      '"str"',
+      '"a\n\nb"',
+      '10 + 2',
+      '10 - 2',
+      '10 * 2',
+      '10 / 2',
+      '11 % 2',
+      '1 == 1',
+      '1 != 1',
+      '1 == true',
+      '1 === 1',
+      '1 !== 1',
+      '1 === true',
+      '1 < 2',
+      '2 < 1',
+      '1 > 2',
+      '2 > 1',
+      '1 <= 2',
+      '2 <= 2',
+      '2 <= 1',
+      '2 >= 1',
+      '2 >= 2',
+      '1 >= 2',
+      'true && true',
+      'true && false',
+      'true || false',
+      'false || false',
+      '!true',
+      '!!true',
+      '1 < 2 ? 1 : 2',
+      '1 > 2 ? 1 : 2',
+      '["foo", "bar"][0]',
+      '{"foo": "bar"}["foo"]',
+      'name',
+      '[1, 2]',
+      '[1, a]',
+      '{z: 1}',
+      '{z: a}',
+      'name | pipe',
+      'value',
+      'a',
+      'address.city',
+      'address?.city',
+      'address?.toString()',
+      'sayHi("Jim")',
+      'a()(99)',
+      'a.sayHi("Jim")'
+    ],
+    ListWrapper.concat(StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions),
+                       StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions)));
