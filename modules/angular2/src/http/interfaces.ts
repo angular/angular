@@ -58,6 +58,27 @@ export interface Connection {
   dispose(): void;
 }
 
+/**
+ * Provides an interface to provide type information for {@link HttpFactory} when injecting.
+ *
+ * #Example
+ *
+ * ```
+ * * import {httpInjectables, HttpFactory, IHttp} from 'angular2/http';
+ * @Component({
+ *   appInjector: [httpInjectables]
+ * })
+ * @View({
+ *   templateUrl: 'people.html'
+ * })
+ * class MyComponent {
+ *  constructor(@Inject(HttpFactory) http:IHttp) {
+ *    http('people.json').subscribe(res => this.people = res.json());
+ *  }
+ * }
+ * ```
+ *
+ */
 // Prefixed as IHttp because used in conjunction with Http class, but interface is callable
 // constructor(@Inject(Http) http:IHttp)
 export interface IHttp { (url: string, options?: IRequestOptions): Rx.Observable<Response> }

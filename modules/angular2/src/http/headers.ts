@@ -14,9 +14,11 @@ import {
   ListWrapper
 } from 'angular2/src/facade/collection';
 
-// (@jeffbcross): This is implemented mostly to spec, except that the entries method has been
-// removed because it doesn't exist in dart, and it doesn't seem worth adding it to the facade.
-
+/**
+ * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
+ * specified in the [Fetch Spec](https://fetch.spec.whatwg.org/#headers-class). The only known
+ * difference from the spec is the lack of an `entries` method.
+ */
 export class Headers {
   _headersMap: Map<string, List<string>>;
   constructor(headers?: Headers | Object) {

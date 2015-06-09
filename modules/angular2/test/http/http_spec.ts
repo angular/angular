@@ -80,9 +80,13 @@ export function main() {
            connection.mockRespond(baseResponse)
          }));
 
+
       it('should accept a fully-qualified request as its only parameter', () => {
         var req = new Request('https://google.com');
-        backend.connections.subscribe(c => { expect(c.request.url).toBe('https://google.com'); });
+        backend.connections.subscribe(c => {
+          expect(c.request.url).toBe('https://google.com');
+          c.mockRespond(new Response('Thank you'));
+        });
         httpFactory(req).subscribe(() => {});
       });
 
@@ -116,15 +120,16 @@ export function main() {
 
     describe('Http', () => {
       describe('.request()', () => {
-        it('should return an Observable', () => {
-          expect(typeof http.request(url).subscribe).toBe('function');
-          backend.resolveAllConnections();
-        });
+        it('should return an Observable',
+           () => { expect(typeof http.request(url).subscribe).toBe('function'); });
 
 
         it('should accept a fully-qualified request as its only parameter', () => {
           var req = new Request('https://google.com');
-          backend.connections.subscribe(c => { expect(c.request.url).toBe('https://google.com'); });
+          backend.connections.subscribe(c => {
+            expect(c.request.url).toBe('https://google.com');
+            c.mockRespond(new Response('Thank you'));
+          });
           http.request(req).subscribe(() => {});
         });
       });
