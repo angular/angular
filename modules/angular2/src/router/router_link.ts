@@ -33,7 +33,8 @@ import {Location} from './location';
 @Directive({
   selector: '[router-link]',
   properties: ['route: routerLink', 'params: routerParams'],
-  lifecycle: [onAllChangesDone]
+  lifecycle: [onAllChangesDone],
+  hostListeners: {'^click': 'onClick()'}
 })
 export class RouterLink {
   private _domEl;
@@ -48,15 +49,16 @@ export class RouterLink {
   constructor(elementRef: ElementRef, private _router: Router, private _location: Location) {
     this._domEl = elementRef.domElement;
     this._params = StringMapWrapper.create();
-    DOM.on(this._domEl, 'click', (evt) => {
-      DOM.preventDefault(evt);
-      this._router.navigate(this._navigationHref);
-    });
   }
 
   set route(changes: string) { this._route = changes; }
 
   set params(changes: StringMap<string, string>) { this._params = changes; }
+
+  onClick() {
+    this._router.navigate(this._navigationHref);
+    return false;
+  }
 
   onAllChangesDone(): void {
     if (isPresent(this._route) && isPresent(this._params)) {
