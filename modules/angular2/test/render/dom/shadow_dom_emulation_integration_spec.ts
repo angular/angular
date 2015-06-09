@@ -399,52 +399,52 @@ export function main() {
 
 
 var mainDir =
-    new DirectiveMetadata({selector: 'main', id: 'main', type: DirectiveMetadata.COMPONENT_TYPE});
+    DirectiveMetadata.create({selector: 'main', id: 'main', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var simple = new DirectiveMetadata(
+var simple = DirectiveMetadata.create(
     {selector: 'simple', id: 'simple', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var empty =
-    new DirectiveMetadata({selector: 'empty', id: 'empty', type: DirectiveMetadata.COMPONENT_TYPE});
+    DirectiveMetadata.create({selector: 'empty', id: 'empty', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var dynamicComponent = new DirectiveMetadata(
+var dynamicComponent = DirectiveMetadata.create(
     {selector: 'dynamic', id: 'dynamic', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var multipleContentTagsComponent = new DirectiveMetadata({
+var multipleContentTagsComponent = DirectiveMetadata.create({
   selector: 'multiple-content-tags',
   id: 'multiple-content-tags',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var manualViewportDirective = new DirectiveMetadata(
+var manualViewportDirective = DirectiveMetadata.create(
     {selector: '[manual]', id: 'manual', type: DirectiveMetadata.DIRECTIVE_TYPE});
 
-var outerWithIndirectNestedComponent = new DirectiveMetadata({
+var outerWithIndirectNestedComponent = DirectiveMetadata.create({
   selector: 'outer-with-indirect-nested',
   id: 'outer-with-indirect-nested',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
 var outerComponent =
-    new DirectiveMetadata({selector: 'outer', id: 'outer', type: DirectiveMetadata.COMPONENT_TYPE});
+    DirectiveMetadata.create({selector: 'outer', id: 'outer', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var innerComponent =
-    new DirectiveMetadata({selector: 'inner', id: 'inner', type: DirectiveMetadata.COMPONENT_TYPE});
+    DirectiveMetadata.create({selector: 'inner', id: 'inner', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var innerInnerComponent = new DirectiveMetadata(
+var innerInnerComponent = DirectiveMetadata.create(
     {selector: 'innerinner', id: 'innerinner', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var conditionalContentComponent = new DirectiveMetadata({
+var conditionalContentComponent = DirectiveMetadata.create({
   selector: 'conditional-content',
   id: 'conditional-content',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var autoViewportDirective = new DirectiveMetadata(
+var autoViewportDirective = DirectiveMetadata.create(
     {selector: '[auto]', id: '[auto]', type: DirectiveMetadata.DIRECTIVE_TYPE});
 
 var tabComponent =
-    new DirectiveMetadata({selector: 'tab', id: 'tab', type: DirectiveMetadata.COMPONENT_TYPE});
+    DirectiveMetadata.create({selector: 'tab', id: 'tab', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var simpleTemplate = new ViewDefinition(
     {componentId: 'simple', template: 'SIMPLE(<content></content>)', directives: []});

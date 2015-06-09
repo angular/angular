@@ -9,9 +9,12 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 @Component({
   selector: 'md-switch',
   properties: ['checked', 'disabled'],
-  hostListeners: {'keydown': 'onKeydown($event)'},
-  hostProperties:
-      {'checked': 'attr.aria-checked', 'disabled_': 'attr.aria-disabled', 'role': 'attr.role'}
+  host: {
+    '(keydown)': 'onKeydown($event)',
+    '[attr.aria-checked]': 'checked',
+    '[attr.aria-disabled]': 'disabled_',
+    '[attr.role]': 'role'
+  }
 })
 @View({templateUrl: 'angular2_material/src/components/switcher/switch.html', directives: []})
 export class MdSwitch {

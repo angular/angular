@@ -27,15 +27,13 @@ var _uniqueIdCounter: number = 0;
   lifecycle: [onChange],
   events: ['change'],
   properties: ['disabled', 'value'],
-  hostListeners: {
+  host: {
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
-    '^keydown': 'onKeydown($event)'
-  },
-  hostProperties: {
-    'tabindex': 'tabindex',
-    'role': 'attr.role',
-    'disabled': 'attr.aria-disabled',
-    'activedescendant': 'attr.aria-activedescendant'
+    '(^keydown)': 'onKeydown($event)',
+    '[tabindex]': 'tabindex',
+    '[attr.role]': 'role',
+    '[attr.aria-disabled]': 'disabled',
+    '[attr.aria-activedescendant]': 'activedescendant'
   }
 })
 @View({templateUrl: 'angular2_material/src/components/radio/radio_group.html'})
@@ -187,13 +185,13 @@ export class MdRadioGroup {
   selector: 'md-radio-button',
   lifecycle: [onChange],
   properties: ['id', 'name', 'value', 'checked', 'disabled'],
-  hostListeners: {'keydown': 'onKeydown($event)'},
-  hostProperties: {
-    'id': 'id',
-    'tabindex': 'tabindex',
-    'role': 'attr.role',
-    'checked': 'attr.aria-checked',
-    'disabled': 'attr.aria-disabled'
+  host: {
+    '(keydown)': 'onKeydown($event)',
+    '[id]': 'id',
+    '[tabindex]': 'tabindex',
+    '[attr.role]': 'role',
+    '[attr.aria-checked]': 'checked',
+    '[attr.aria-disabled]': 'disabled'
   }
 })
 @View({templateUrl: 'angular2_material/src/components/radio/radio_button.html', directives: []})

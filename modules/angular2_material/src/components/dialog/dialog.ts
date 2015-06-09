@@ -209,7 +209,7 @@ export class MdDialogConfig {
  */
 @Component({
   selector: 'md-dialog-container',
-  hostListeners: {'body:^keydown': 'documentKeypress($event)'},
+  host: {'(body:^keydown)': 'documentKeypress($event)'},
 })
 @View({
   templateUrl: 'angular2_material/src/components/dialog/dialog.html',
@@ -253,7 +253,7 @@ class MdDialogContent {
 /** Component for the dialog "backdrop", a transparent overlay over the rest of the page. */
 @Component({
   selector: 'md-backdrop',
-  hostListeners: {'click': 'onClick()'},
+  host: {'(click)': 'onClick()'},
 })
 @View({template: ''})
 class MdBackdrop {

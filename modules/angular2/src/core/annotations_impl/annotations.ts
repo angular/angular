@@ -585,6 +585,8 @@ export class Directive extends Injectable {
    */
   events: List<string>;
 
+  // TODO(vicb): doc
+
   /**
    * Specifies which DOM hostListeners a directive listens to.
    *
@@ -643,9 +645,6 @@ export class Directive extends Injectable {
    * 'change' event.
    *
    */
-  hostListeners: StringMap<string, string>;
-
-
   /**
    * Specifies which DOM properties a directives updates.
    *
@@ -667,8 +666,6 @@ export class Directive extends Injectable {
    * the host element.
    * ```
    */
-  hostProperties: StringMap<string, string>;
-
   /**
    * Specifies static attributes that should be propagated to a host element. Attributes specified
    * in `hostAttributes`
@@ -691,8 +688,6 @@ export class Directive extends Injectable {
    * will ensure that this element will get the "button" role.
    * ```
    */
-  hostAttributes: StringMap<string, string>;
-
   /**
    * Specifies which DOM methods a directive can invoke.
    *
@@ -719,7 +714,8 @@ export class Directive extends Injectable {
    * element.
    * ```
    */
-  hostActions: StringMap<string, string>;
+
+  host: StringMap<string, string>;
 
   /**
    * Specifies which lifecycle should be notified to the directive.
@@ -795,16 +791,13 @@ export class Directive extends Injectable {
   exportAs: string;
 
   constructor({
-                  selector, properties, events, hostListeners, hostProperties, hostAttributes,
-                  hostActions, lifecycle, hostInjector, exportAs, compileChildren = true,
+                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
+                  compileChildren = true,
               }: {
     selector?: string,
     properties?: List<string>,
     events?: List<string>,
-    hostListeners?: StringMap<string, string>,
-    hostProperties?: StringMap<string, string>,
-    hostAttributes?: StringMap<string, string>,
-    hostActions?: StringMap<string, string>,
+    host?: StringMap<string, string>,
     lifecycle?: List<LifecycleEvent>,
     hostInjector?: List<any>,
     exportAs?: string,
@@ -814,10 +807,7 @@ export class Directive extends Injectable {
     this.selector = selector;
     this.properties = properties;
     this.events = events;
-    this.hostListeners = hostListeners;
-    this.hostProperties = hostProperties;
-    this.hostAttributes = hostAttributes;
-    this.hostActions = hostActions;
+    this.host = host;
     this.exportAs = exportAs;
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
@@ -1022,16 +1012,12 @@ export class Component extends Directive {
    */
   viewInjector: List<any>;
 
-  constructor({selector, properties, events, hostListeners, hostProperties, hostAttributes,
-               hostActions, exportAs, appInjector, lifecycle, hostInjector, viewInjector,
-               changeDetection = DEFAULT, compileChildren = true}: {
+  constructor({selector, properties, events, host, exportAs, appInjector, lifecycle, hostInjector,
+               viewInjector, changeDetection = DEFAULT, compileChildren = true}: {
     selector?: string,
     properties?: List<string>,
     events?: List<string>,
-    hostListeners?: StringMap<string, string>,
-    hostProperties?: StringMap<string, string>,
-    hostAttributes?: StringMap<string, string>,
-    hostActions?: StringMap<string, string>,
+    host?: StringMap<string, string>,
     exportAs?: string,
     appInjector?: List<any>,
     lifecycle?: List<LifecycleEvent>,
@@ -1044,10 +1030,7 @@ export class Component extends Directive {
       selector: selector,
       properties: properties,
       events: events,
-      hostListeners: hostListeners,
-      hostProperties: hostProperties,
-      hostAttributes: hostAttributes,
-      hostActions: hostActions,
+      host: host,
       exportAs: exportAs,
       hostInjector: hostInjector,
       lifecycle: lifecycle,

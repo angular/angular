@@ -48,11 +48,11 @@ export class ProtoViewBuilder {
 
     var apiElementBinders = [];
     var transitiveContentTagCount = 0;
-    ListWrapper.forEach(this.elements, (ebb) => {
+    ListWrapper.forEach(this.elements, (ebb: ElementBinderBuilder) => {
       var propertySetters = MapWrapper.create();
       var hostActions = MapWrapper.create();
 
-      var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb) => {
+      var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb: DirectiveBuilder) => {
         ebb.eventBuilder.merge(dbb.eventBuilder);
 
         MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {

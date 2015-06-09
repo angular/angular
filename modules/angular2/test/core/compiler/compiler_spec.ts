@@ -210,7 +210,7 @@ export function main() {
            captureDirective(DirectiveWithProperties)
                .then((renderDir) => {
                  expect(renderDir.hostProperties)
-                     .toEqual(MapWrapper.createFromStringMap({'someField': 'someProp'}));
+                     .toEqual(MapWrapper.createFromStringMap({'someProp': 'someExp'}));
                  async.done();
                });
          }));
@@ -470,11 +470,11 @@ class SomeDirective {
 class IgnoreChildrenDirective {
 }
 
-@Directive({hostListeners: {'someEvent': 'someAction'}})
+@Directive({host: {'(someEvent)': 'someAction'}})
 class DirectiveWithEvents {
 }
 
-@Directive({hostProperties: {'someField': 'someProp'}})
+@Directive({host: {'[someProp]': 'someExp'}})
 class DirectiveWithProperties {
 }
 

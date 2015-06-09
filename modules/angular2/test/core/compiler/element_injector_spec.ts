@@ -432,7 +432,7 @@ export function main() {
 
       it('should return a list of hostAction accessors', () => {
         var binding = DirectiveBinding.createFromType(
-            HasEventEmitter, new dirAnn.Directive({hostActions: {'hostActionName': 'onAction'}}));
+            HasEventEmitter, new dirAnn.Directive({host: {'@hostActionName': 'onAction'}}));
 
         var inj = createPei(null, 0, [binding]);
         expect(inj.hostActionAccessors.length).toEqual(1);

@@ -1,6 +1,6 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
-import {List, Map} from 'angular2/src/facade/collection';
+import {List, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ASTWithSource} from 'angular2/change_detection';
 
 /**
@@ -123,6 +123,11 @@ export class ProtoViewDto {
   }
 }
 
+// group 1: property from "[property]"
+// group 2: event from "(event)"
+// group 3: action from "@action"
+var hostRegExp = RegExpWrapper.create('^(?:(?:\\[([^\\]]+)\\])|(?:\\(([^\\)]+)\\))|(?:@(.+)))$');
+
 export class DirectiveMetadata {
   static get DIRECTIVE_TYPE() { return 0; }
   static get COMPONENT_TYPE() { return 1; }
@@ -130,10 +135,6 @@ export class DirectiveMetadata {
   selector: string;
   compileChildren: boolean;
   events: List<string>;
-  hostListeners: Map<string, string>;
-  hostProperties: Map<string, string>;
-  hostAttributes: Map<string, string>;
-  hostActions: Map<string, string>;
   properties: List<string>;
   readAttributes: List<string>;
   type: number;
@@ -144,6 +145,11 @@ export class DirectiveMetadata {
   callOnAllChangesDone: boolean;
   changeDetection: string;
   exportAs: string;
+  hostListeners: Map<string, string>;
+  hostProperties: Map<string, string>;
+  hostAttributes: Map<string, string>;
+  hostActions: Map<string, string>;
+
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
                hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
                callOnCheck, callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
@@ -171,8 +177,8 @@ export class DirectiveMetadata {
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
     this.events = events;
     this.hostListeners = hostListeners;
-    this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
+    this.hostProperties = hostProperties;
     this.hostActions = hostActions;
     this.properties = properties;
     this.readAttributes = readAttributes;
@@ -184,6 +190,76 @@ export class DirectiveMetadata {
     this.callOnAllChangesDone = callOnAllChangesDone;
     this.changeDetection = changeDetection;
     this.exportAs = exportAs;
+  }
+
+  static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
+                 callOnDestroy, callOnChange, callOnCheck, callOnInit, callOnAllChangesDone,
+                 changeDetection, exportAs}: {
+    id?: string,
+    selector?: string,
+    compileChildren?: boolean,
+    events?: List<string>,
+    host?: Map<string, string>,
+    properties?: List<string>,
+    readAttributes?: List<string>,
+    type?: number,
+    callOnDestroy?: boolean,
+    callOnChange?: boolean,
+    callOnCheck?: boolean,
+    callOnInit?: boolean,
+    callOnAllChangesDone?: boolean,
+    changeDetection?: string,
+    exportAs?: string
+  }) {
+    let hostConfig = DirectiveMetadata.parseHostConfig(host);
+
+    return new DirectiveMetadata({
+      id: id,
+      selector: selector,
+      compileChildren: compileChildren,
+      events: events,
+      hostListeners: StringMapWrapper.get(hostConfig, 'hostListeners'),
+      hostProperties: StringMapWrapper.get(hostConfig, 'hostProperties'),
+      hostAttributes: StringMapWrapper.get(hostConfig, 'hostAttributes'),
+      hostActions: StringMapWrapper.get(hostConfig, 'hostActions'),
+      properties: properties,
+      readAttributes: readAttributes,
+      type: type,
+      callOnDestroy: callOnDestroy,
+      callOnChange: callOnChange,
+      callOnCheck: callOnCheck,
+      callOnInit: callOnInit,
+      callOnAllChangesDone: callOnAllChangesDone,
+      changeDetection: changeDetection,
+      exportAs: exportAs
+    });
+  }
+
+  static parseHostConfig(host?: Map<string, string>): StringMap<string, Map<string, string>> {
+    let hostListeners = MapWrapper.create();
+    let hostProperties = MapWrapper.create();
+    let hostAttributes = MapWrapper.create();
+    let hostActions = MapWrapper.create();
+
+    if (isPresent(host)) {
+      MapWrapper.forEach(host, (value: string, key: string) => {
+        var matches = RegExpWrapper.firstMatch(hostRegExp, key);
+        if (isBlank(matches)) {
+          MapWrapper.set(hostAttributes, key, value);
+        } else if (isPresent(matches[1])) {
+          MapWrapper.set(hostProperties, matches[1], value);
+        } else if (isPresent(matches[2])) {
+          MapWrapper.set(hostListeners, matches[2], value);
+        } else if (isPresent(matches[3])) {
+          MapWrapper.set(hostActions, matches[3], value);
+        }
+      });
+    }
+
+    return {
+      hostListeners: hostListeners, hostProperties: hostProperties, hostAttributes: hostAttributes,
+          hostActions: hostActions
+    }
   }
 }
 

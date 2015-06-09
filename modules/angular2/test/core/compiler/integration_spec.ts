@@ -1432,12 +1432,12 @@ class DirectiveEmitingEvent {
   fireEvent(msg: string) { ObservableWrapper.callNext(this.event, msg); }
 }
 
-@Directive({selector: '[update-host-attributes]', hostAttributes: {'role': 'button'}})
+@Directive({selector: '[update-host-attributes]', host: {'role': 'button'}})
 @Injectable()
 class DirectiveUpdatingHostAttributes {
 }
 
-@Directive({selector: '[update-host-properties]', hostProperties: {'id': 'id'}})
+@Directive({selector: '[update-host-properties]', host: {'[id]': 'id'}})
 @Injectable()
 class DirectiveUpdatingHostProperties {
   id: string;
@@ -1447,7 +1447,7 @@ class DirectiveUpdatingHostProperties {
 
 @Directive({
   selector: '[update-host-actions]',
-  hostActions: {'setAttr': 'setAttribute("key", $action["attrValue"])'}
+  host: {'@setAttr': 'setAttribute("key", $action["attrValue"])'}
 })
 @Injectable()
 class DirectiveUpdatingHostActions {
@@ -1458,7 +1458,7 @@ class DirectiveUpdatingHostActions {
   triggerSetAttr(attrValue) { ObservableWrapper.callNext(this.setAttr, {'attrValue': attrValue}); }
 }
 
-@Directive({selector: '[listener]', hostListeners: {'event': 'onEvent($event)'}})
+@Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningEvent {
   msg: string;
@@ -1470,11 +1470,11 @@ class DirectiveListeningEvent {
 
 @Directive({
   selector: '[listener]',
-  hostListeners: {
-    'domEvent': 'onEvent($event.type)',
-    'window:domEvent': 'onWindowEvent($event.type)',
-    'document:domEvent': 'onDocumentEvent($event.type)',
-    'body:domEvent': 'onBodyEvent($event.type)'
+  host: {
+    '(domEvent)': 'onEvent($event.type)',
+    '(window:domEvent)': 'onWindowEvent($event.type)',
+    '(document:domEvent)': 'onDocumentEvent($event.type)',
+    '(body:domEvent)': 'onBodyEvent($event.type)'
   }
 })
 @Injectable()
@@ -1489,7 +1489,7 @@ class DirectiveListeningDomEvent {
 
 var globalCounter = 0;
 @Directive(
-    {selector: '[listenerother]', hostListeners: {'window:domEvent': 'onEvent($event.type)'}})
+    {selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
 @Injectable()
 class DirectiveListeningDomEventOther {
   eventType: string;
@@ -1501,13 +1501,13 @@ class DirectiveListeningDomEventOther {
   }
 }
 
-@Directive({selector: '[listenerprevent]', hostListeners: {'click': 'onEvent($event)'}})
+@Directive({selector: '[listenerprevent]', host: {'(click)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningDomEventPrevent {
   onEvent(event) { return false; }
 }
 
-@Directive({selector: '[listenernoprevent]', hostListeners: {'click': 'onEvent($event)'}})
+@Directive({selector: '[listenernoprevent]', host: {'(click)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningDomEventNoPrevent {
   onEvent(event) { return true; }

@@ -16,8 +16,8 @@ const formDirectiveBinding = CONST_EXPR(new Binding(
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
   hostInjector: [formDirectiveBinding],
-  hostListeners: {
-    'submit': 'onSubmit()',
+  host: {
+    '(submit)': 'onSubmit()',
   },
   events: ['ngSubmit'],
   exportAs: 'form'

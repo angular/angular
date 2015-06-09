@@ -303,7 +303,7 @@ class DynamicallyLoaded {
 class DynamicallyLoaded2 {
 }
 
-@Component({selector: 'dummy', hostProperties: {'id': 'id'}})
+@Component({selector: 'dummy', host: {'[id]': 'id'}})
 @View({template: "DynamicallyLoadedWithHostProps;"})
 class DynamicallyLoadedWithHostProps {
   id: string;

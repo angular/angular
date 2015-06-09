@@ -180,12 +180,12 @@ export function main() {
   });
 }
 
-var someComponent = new DirectiveMetadata(
+var someComponent = DirectiveMetadata.create(
     {id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'some-comp'});
 
-var directiveWithHostActions = new DirectiveMetadata({
+var directiveWithHostActions = DirectiveMetadata.create({
   id: 'withHostActions',
   type: DirectiveMetadata.DIRECTIVE_TYPE,
   selector: '[with-host-actions]',
-  hostActions: MapWrapper.createFromStringMap({'setValue': 'value = "val"'})
+  host: MapWrapper.createFromStringMap({'@setValue': 'value = "val"'})
 });

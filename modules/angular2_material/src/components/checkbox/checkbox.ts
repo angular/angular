@@ -7,12 +7,12 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 @Component({
   selector: 'md-checkbox',
   properties: ['checked', 'disabled'],
-  hostListeners: {'keydown': 'onKeydown($event)'},
-  hostProperties: {
-    'tabindex': 'tabindex',
-    'role': 'attr.role',
-    'checked': 'attr.aria-checked',
-    'disabled': 'attr.aria-disabled'
+  host: {
+    '(keydown)': 'onKeydown($event)',
+    '[tabindex]': 'tabindex',
+    '[attr.role]': 'role',
+    '[attr.aria-checked]': 'checked',
+    '[attr.aria-disabled]': 'disabled'
   }
 })
 @View({templateUrl: 'angular2_material/src/components/checkbox/checkbox.html', directives: []})

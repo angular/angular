@@ -62,7 +62,7 @@ export function runCompilerCommonTests() {
              current.inheritedProtoView.bindVariable('b', 'a');
            });
 
-           var dirMetadata = new DirectiveMetadata(
+           var dirMetadata = DirectiveMetadata.create(
                {id: 'id', selector: 'CUSTOM', type: DirectiveMetadata.COMPONENT_TYPE});
            compiler.compileHost(dirMetadata)
                .then((protoView) => {
@@ -218,5 +218,5 @@ class FakeTemplateLoader extends TemplateLoader {
   }
 }
 
-var someComponent = new DirectiveMetadata(
+var someComponent = DirectiveMetadata.create(
     {selector: 'some-comp', id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE});
