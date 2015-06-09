@@ -34,6 +34,7 @@ var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
+var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
 
 require('./tools/check-environment')({
@@ -721,7 +722,6 @@ gulp.task('bundle.js.prod', ['build.js.prod'], function() {
 });
 
 // minified production build
-// TODO: minify zone.js
 gulp.task('bundle.js.min', ['build.js.prod'], function() {
   return bundler.bundle(
       bundleConfig,
@@ -781,16 +781,20 @@ gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
 
 gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
   return bundler.modify(
-      ['node_modules/zone.js/dist/zone-microtask.js', 'dist/build/angular2.js'],
+      ['node_modules/zone.js/dist/zone-microtask.js', 'node_modules/reflect-metadata/Reflect.js', 
+      'dist/build/angular2.js'],
       'angular2.js'
   ).pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
+gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() { 
   return bundler.modify(
-      ['node_modules/zone.js/dist/zone-microtask.js', 'dist/build/angular2.min.js'],
+      ['node_modules/zone.js/dist/zone-microtask.min.js', 
+      'node_modules/reflect-metadata/Reflect.js', 'dist/build/angular2.min.js'],
       'angular2.min.js'
-  ).pipe(gulp.dest('dist/bundle'));
+  )
+  .pipe(uglify())
+  .pipe(gulp.dest('dist/bundle'));
 });
 
 var JS_DEV_DEPS = [

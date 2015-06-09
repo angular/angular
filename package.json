@@ -78,6 +78,7 @@
     "gulp-template": "^3.0.0",
     "gulp-traceur": "0.17.*",
     "gulp-typescript": "^2.6.0",
+    "gulp-uglify": "^1.2.0",
     "gulp-webserver": "^0.8.7",
     "html2jade": "^0.8.3",
     "indent-string": "^1.2.1",
