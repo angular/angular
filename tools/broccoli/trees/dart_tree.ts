@@ -5,7 +5,6 @@
 import {MultiCopy} from './../multi_copy';
 import destCopy from '../broccoli-dest-copy';
 var Funnel = require('broccoli-funnel');
-var glob = require('glob');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
@@ -25,7 +24,7 @@ function modulesFunnel(include: string[], exclude?: string[]) {
 /**
  * Replaces $SCRIPT$ in .html files with actual <script> tags.
  */
-function replaceScriptTagInHtml(content: string, relativePath: string): string {
+function replaceScriptTagInHtml(placeholder: string, relativePath: string): string {
   var scriptTags = '';
   if (relativePath.match(/^benchmarks/)) {
     scriptTags += '<script src="url_params_to_form.js" type="text/javascript"></script>\n';
@@ -33,7 +32,7 @@ function replaceScriptTagInHtml(content: string, relativePath: string): string {
   var scriptName = relativePath.replace(/.*\/([^/]+)\.html$/, '$1.dart');
   scriptTags += '<script src="' + scriptName + '" type="application/dart"></script>\n' +
                 '<script src="packages/browser/dart.js" type="text/javascript"></script>';
-  return content.replace('$SCRIPTS$', scriptTags);
+  return scriptTags;
 }
 
 function stripModulePrefix(relativePath: string): string {
@@ -81,7 +80,11 @@ function fixDartFolderLayout(sourceTree) {
 
 function getHtmlSourcesTree() {
   // Replace $SCRIPT$ markers in HTML files.
-  var htmlSrcsTree = stew.map(modulesFunnel(['*/src/**/*.html']), replaceScriptTagInHtml);
+  var htmlSrcsTree = modulesFunnel(['*/src/**/*.html']);
+  htmlSrcsTree = replace(
+      htmlSrcsTree,
+      {files: ['*/**'], patterns: [{match: '$SCRIPTS$', replacement: replaceScriptTagInHtml}]});
+
   // Copy a url_params_to_form.js for each benchmark html file.
   var urlParamsToFormTree = new MultiCopy('', {
     srcPath: 'tools/build/snippets/url_params_to_form.js',

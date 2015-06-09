@@ -121,19 +121,13 @@ function writeBuildLog(result: BuildResult, name: string) {
 function broccoliNodeToBuildNode(broccoliNode) {
   let tree = broccoliNode.tree.newStyleTree || broccoliNode.tree;
 
-  return new BuildNode(
-    tree.description || tree.constructor.name,
-    tree.inputPath ? [tree.inputPath] : tree.inputPaths,
-    tree.cachePath,
-    tree.outputPath,
-    broccoliNode.subtrees.map(broccoliNodeToBuildNode)
-  );
+  return new BuildNode(tree.description || tree.constructor.name,
+                       tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
+                       tree.outputPath, broccoliNode.subtrees.map(broccoliNodeToBuildNode));
 }
 
 
 class BuildNode {
-
-  constructor(public pluginName:string, public inputPaths: string[], public cachePath: string,
-              public outputPath: string, public inputNodes: BroccoliNode[]) {
-  }
+  constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
+              public outputPath: string, public inputNodes: BroccoliNode[]) {}
 }
