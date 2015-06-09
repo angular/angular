@@ -1,7 +1,7 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {List} from 'angular2/src/facade/collection';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
 
 import {ElementBinder} from './element_binder';
 import {NG_BINDING_CLASS} from '../util';
@@ -27,6 +27,8 @@ export class DomProtoView {
   rootBindingOffset: number;
   // the number of content tags seen in this or any child proto view.
   transitiveContentTagCount: number;
+  boundTextNodeCount: number;
+  rootNodeCount: number;
 
   constructor({elementBinders, element, transitiveContentTagCount}) {
     this.element = element;
@@ -35,5 +37,11 @@ export class DomProtoView {
     this.isTemplateElement = DOM.isTemplateElement(this.element);
     this.rootBindingOffset =
         (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
+    this.boundTextNodeCount =
+        ListWrapper.reduce(elementBinders, (prevCount: number, elementBinder: ElementBinder) =>
+                                                   prevCount + elementBinder.textNodeIndices.length,
+                           0);
+    this.rootNodeCount =
+        this.isTemplateElement ? DOM.childNodes(DOM.content(this.element)).length : 1;
   }
 }
