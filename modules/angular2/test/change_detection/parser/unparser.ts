@@ -18,7 +18,7 @@ import {
   PrefixNot,
   SafeAccessMember,
   SafeMethodCall
-} from './ast';
+} from 'angular2/src/change_detection/parser/ast';
 
 
 import {StringWrapper, RegExpWrapper} from 'angular2/src/facade/lang';

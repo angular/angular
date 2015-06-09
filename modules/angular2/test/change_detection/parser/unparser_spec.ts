@@ -20,9 +20,10 @@ import {
   SafeAccessMember,
   SafeMethodCall
 } from 'angular2/src/change_detection/parser/ast';
+
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
-import {Unparser} from 'angular2/src/change_detection/parser/unparser';
+import {Unparser} from './unparser';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 
