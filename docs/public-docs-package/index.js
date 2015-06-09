@@ -10,8 +10,9 @@ module.exports = new Package('angular-public', [basePackage])
     'angular2/core.ts',
     'angular2/di.ts',
     'angular2/directives.ts',
+    'angular2/http.ts',
     'angular2/forms.ts',
-    'angular2/router.js',
+    'angular2/router.ts',
     'angular2/test.ts',
     'angular2/pipes.ts'
   ];

@@ -1,30 +1,21 @@
-import {bootstrap, Component, View, NgFor, NgIf, Inject} from 'angular2/angular2';
-import {httpInjectables} from 'angular2/http';
-import {HttpFactory} from 'angular2/src/http/http';
-import {IHttp} from 'angular2/src/http/interfaces';
-import {Response} from 'angular2/src/http/static_response';
-import {LocalVariable} from './assign_local_directive';
+import {bootstrap, Component, View, NgFor, Inject} from 'angular2/angular2';
+import {Http, httpInjectables} from 'angular2/http';
 
-@Component({selector: 'http-app', appInjector: [httpInjectables]})
+@Component({selector: 'http-app'})
 @View({
-  directives: [NgFor, NgIf, LocalVariable],
+  directives: [NgFor],
   template: `
     <h1>people</h1>
-    <div *assign-local="#unwrappedPeople to people | rx">
-      <ul *ng-if="unwrappedPeople" class="people">
-        <li *ng-for="#person of unwrappedPeople">
-          hello, {{person.name}}
-        </li>
-      </ul>
-      <span *ng-if="!unwrappedPeople">
-        Fetching people...
-      </span>
-    </div>
+    <ul class="people">
+      <li *ng-for="#person of people">
+        hello, {{person.name}}
+      </li>
+    </ul>
   `
 })
 export class HttpCmp {
-  people: Rx.Observable<Object>;
-  constructor(@Inject(HttpFactory) http: IHttp) {
-    this.people = http('./people.json').map(res => res.json());
+  people: Object;
+  constructor(http: Http) {
+    http.get('./people.json').map(res => res.json()).subscribe(people => this.people = people);
   }
 }
