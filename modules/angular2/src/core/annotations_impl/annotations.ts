@@ -1037,7 +1037,13 @@ export class Component extends Directive {
   }
 }
 
-
+/**
+ * Lifecycle events are guaranteed to be called in the following order:
+ * - `onChange` (optional if any bindings have changed),
+ * - `onInit` (optional after the first check only),
+ * - `onCheck`,
+ * - `onAllChangesDone`
+ */
 @CONST()
 export class LifecycleEvent {
   constructor(public name: string) {}
@@ -1150,7 +1156,8 @@ export const onCheck = CONST_EXPR(new LifecycleEvent("onCheck"));
 export const onInit = CONST_EXPR(new LifecycleEvent("onInit"));
 
 /**
- * Notify a directive when the bindings of all its children have been changed.
+ * Notify a directive when the bindings of all its children have been checked (whether they have
+ * changed or not).
  *
  * ## Example:
  *
