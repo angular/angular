@@ -7,7 +7,7 @@ import destCopy from '../broccoli-dest-copy';
 var Funnel = require('broccoli-funnel');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
-var renderLodashTemplate = require('broccoli-lodash');
+import renderLodashTemplate from '../broccoli-lodash';
 var stew = require('broccoli-stew');
 import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
@@ -124,13 +124,9 @@ function getTemplatedPubspecsTree() {
     }
   };
   // Generate pubspec.yaml from templates.
-  // Lodash insists on dropping one level of extension, so first artificially rename the yaml
-  // files to .yaml.template.
-  var pubspecs = stew.rename(modulesFunnel(['**/pubspec.yaml']), '.yaml', '.yaml.template');
+  var pubspecs = modulesFunnel(['**/pubspec.yaml']);
   // Then render the templates.
-  return renderLodashTemplate(
-      pubspecs,
-      {files: ['**/pubspec.yaml.template'], context: {'packageJson': COMMON_PACKAGE_JSON}});
+  return renderLodashTemplate(pubspecs, {context: {'packageJson': COMMON_PACKAGE_JSON}});
 }
 
 function getDocsTree() {
