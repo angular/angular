@@ -6340,6 +6340,208 @@
         }
       }
     },
+    "gulp-uglify": {
+      "version": "1.2.0",
+      "dependencies": {
+        "deap": {
+          "version": "1.0.0"
+        },
+        "gulp-util": {
+          "version": "3.0.5",
+          "dependencies": {
+            "array-differ": {
+              "version": "1.0.0"
+            },
+            "array-uniq": {
+              "version": "1.0.2"
+            },
+            "beeper": {
+              "version": "1.1.0"
+            },
+            "chalk": {
+              "version": "1.0.0",
+              "dependencies": {
+                "ansi-styles": {
+                  "version": "2.0.1"
+                },
+                "escape-string-regexp": {
+                  "version": "1.0.3"
+                },
+                "has-ansi": {
+                  "version": "1.0.3",
+                  "dependencies": {
+                    "ansi-regex": {
+                      "version": "1.1.1"
+                    },
+                    "get-stdin": {
+                      "version": "4.0.1"
+                    }
+                  }
+                },
+                "supports-color": {
+                  "version": "1.3.1"
+                }
+              }
+            },
+            "dateformat": {
+              "version": "1.0.11",
+              "dependencies": {
+                "get-stdin": {
+                  "version": "4.0.1"
+                },
+                "meow": {
+                  "version": "3.1.0",
+                  "dependencies": {
+                    "camelcase-keys": {
+                      "version": "1.0.0",
+                      "dependencies": {
+                        "camelcase": {
+                          "version": "1.1.0"
+                        },
+                        "map-obj": {
+                          "version": "1.0.1"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "lodash._reescape": {
+              "version": "3.0.0"
+            },
+            "lodash._reevaluate": {
+              "version": "3.0.0"
+            },
+            "lodash._reinterpolate": {
+              "version": "3.0.0"
+            },
+            "lodash.template": {
+              "version": "3.6.1",
+              "dependencies": {
+                "lodash._basecopy": {
+                  "version": "3.0.1"
+                },
+                "lodash._basetostring": {
+                  "version": "3.0.0"
+                },
+                "lodash._basevalues": {
+                  "version": "3.0.0"
+                },
+                "lodash._isiterateecall": {
+                  "version": "3.0.9"
+                },
+                "lodash.escape": {
+                  "version": "3.0.0"
+                },
+                "lodash.keys": {
+                  "version": "3.1.1",
+                  "dependencies": {
+                    "lodash._getnative": {
+                      "version": "3.9.0"
+                    },
+                    "lodash.isarguments": {
+                      "version": "3.0.3"
+                    },
+                    "lodash.isarray": {
+                      "version": "3.0.3"
+                    }
+                  }
+                },
+                "lodash.restparam": {
+                  "version": "3.6.1"
+                },
+                "lodash.templatesettings": {
+                  "version": "3.1.0"
+                }
+              }
+            },
+            "multipipe": {
+              "version": "0.1.2",
+              "dependencies": {
+                "duplexer2": {
+                  "version": "0.0.2",
+                  "dependencies": {
+                    "readable-stream": {
+                      "version": "1.1.13",
+                      "dependencies": {
+                        "core-util-is": {
+                          "version": "1.0.1"
+                        },
+                        "isarray": {
+                          "version": "0.0.1"
+                        },
+                        "string_decoder": {
+                          "version": "0.10.31"
+                        },
+                        "inherits": {
+                          "version": "2.0.1"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "object-assign": {
+              "version": "2.1.1"
+            },
+            "replace-ext": {
+              "version": "0.0.1"
+            }
+          }
+        },
+        "uglify-js": {
+          "version": "2.4.19",
+          "dependencies": {
+            "async": {
+              "version": "0.2.10"
+            },
+            "source-map": {
+              "version": "0.1.34",
+              "dependencies": {
+                "amdefine": {
+                  "version": "0.1.1"
+                }
+              }
+            },
+            "yargs": {
+              "version": "3.5.4",
+              "dependencies": {
+                "camelcase": {
+                  "version": "1.1.0"
+                },
+                "decamelize": {
+                  "version": "1.0.0"
+                },
+                "window-size": {
+                  "version": "0.1.0"
+                },
+                "wordwrap": {
+                  "version": "0.0.2"
+                }
+              }
+            },
+            "uglify-to-browserify": {
+              "version": "1.0.2"
+            }
+          }
+        },
+        "vinyl-sourcemaps-apply": {
+          "version": "0.1.4",
+          "dependencies": {
+            "source-map": {
+              "version": "0.1.43",
+              "dependencies": {
+                "amdefine": {
+                  "version": "0.1.1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "gulp-webserver": {
       "version": "0.8.8",
       "dependencies": {
