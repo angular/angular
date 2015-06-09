@@ -722,10 +722,10 @@ export class Directive extends Injectable {
   hostActions: StringMap<string, string>;
 
   /**
-   * Specifies a set of lifecycle hostListeners in which the directive participates.
+   * Specifies which lifecycle should be notified to the directive.
    *
-   * See {@link annotations/onChange}, {@link annotations/onDestroy},
-   * {@link annotations/onAllChangesDone} for details.
+   * See {@link annotations/onChange}, {@link annotations/onDestroy}, {@link annotations/onCheck},
+   * {@link annotations/onInit}, {@link annotations/onAllChangesDone} for details.
    */
   lifecycle: List<LifecycleEvent>;
 
