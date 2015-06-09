@@ -76,9 +76,9 @@ export function main() {
                 {variableBindings: MapWrapper.createFromStringMap({"exportName": "templateName"})}),
             [
               directiveBinding(
-                  {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})}),
+                  {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})}),
               directiveBinding(
-                  {metadata: new renderApi.DirectiveMetadata({exportAs: 'otherName'})})
+                  {metadata: renderApi.DirectiveMetadata.create({exportAs: 'otherName'})})
             ]);
 
         expect(dvbs).toEqual(MapWrapper.createFromStringMap({"templateName": 0}));
@@ -90,7 +90,7 @@ export function main() {
                 {variableBindings: MapWrapper.createFromStringMap({"$implicit": "templateName"})}),
             [
               directiveBinding({
-                metadata: new renderApi.DirectiveMetadata(
+                metadata: renderApi.DirectiveMetadata.create(
                     {exportAs: null, type: renderApi.DirectiveMetadata.COMPONENT_TYPE})
               })
             ]);
@@ -107,7 +107,7 @@ export function main() {
               }),
               [
                 directiveBinding(
-                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})})
+                    {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})})
               ]);
         }).toThrowError(new RegExp("Cannot find directive with exportAs = 'someInvalidName'"));
       });
@@ -120,9 +120,9 @@ export function main() {
               }),
               [
                 directiveBinding(
-                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})}),
+                    {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})}),
                 directiveBinding(
-                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})})
+                    {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})})
               ]);
         }).toThrowError(new RegExp("More than one directive have exportAs = 'exportName'"));
       });
@@ -132,9 +132,9 @@ export function main() {
           createDirectiveVariableBindings(
               new renderApi.ElementBinder({variableBindings: MapWrapper.create()}), [
                 directiveBinding(
-                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})}),
+                    {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})}),
                 directiveBinding(
-                    {metadata: new renderApi.DirectiveMetadata({exportAs: 'exportName'})})
+                    {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})})
               ]);
         }).not.toThrow();
       });

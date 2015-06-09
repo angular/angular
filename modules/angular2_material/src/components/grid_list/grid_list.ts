@@ -218,14 +218,14 @@ export class MdGridList {
 @Component({
   selector: 'md-grid-tile',
   properties: ['rowspan', 'colspan'],
-  hostProperties: {
-    'styleHeight': 'style.height',
-    'styleWidth': 'style.width',
-    'styleTop': 'style.top',
-    'styleLeft': 'style.left',
-    'styleMarginTop': 'style.marginTop',
-    'stylePaddingTop': 'style.paddingTop',
-    'role': 'role'
+  host: {
+    '[style.height]': 'styleHeight',
+    '[style.width]': 'styleWidth',
+    '[style.top]': 'styleTop',
+    '[style.left]': 'styleLeft',
+    '[style.marginTop]': 'styleMarginTop',
+    '[style.paddingTop]': 'stylePaddingTop',
+    '[role]': 'role'
   },
   lifecycle: [onDestroy, onChange]
 })

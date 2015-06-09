@@ -733,8 +733,7 @@ export function main() {
 
 @Directive({
   selector: '[wrapped-value]',
-  hostListeners: {'change': 'handleOnChange($event.target.value)'},
-  hostProperties: {'value': 'value'}
+  host: {'(change)': 'handleOnChange($event.target.value)', '[value]': 'value'}
 })
 class WrappedValue implements ControlValueAccessor {
   value;

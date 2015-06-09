@@ -34,7 +34,7 @@ import {Location} from './location';
   selector: '[router-link]',
   properties: ['route: routerLink', 'params: routerParams'],
   lifecycle: [onAllChangesDone],
-  hostListeners: {'^click': 'onClick()'}
+  host: {'(^click)': 'onClick()'}
 })
 export class RouterLink {
   private _domEl;

@@ -11,10 +11,10 @@ export function directiveMetadataToMap(meta: DirectiveMetadata): Map<string, any
     ['id', meta.id],
     ['selector', meta.selector],
     ['compileChildren', meta.compileChildren],
-    ['hostListeners', _cloneIfPresent(meta.hostListeners)],
     ['hostProperties', _cloneIfPresent(meta.hostProperties)],
-    ['hostAttributes', _cloneIfPresent(meta.hostAttributes)],
+    ['hostListeners', _cloneIfPresent(meta.hostListeners)],
     ['hostActions', _cloneIfPresent(meta.hostActions)],
+    ['hostAttributes', _cloneIfPresent(meta.hostAttributes)],
     ['properties', _cloneIfPresent(meta.properties)],
     ['readAttributes', _cloneIfPresent(meta.readAttributes)],
     ['type', meta.type],
@@ -38,8 +38,8 @@ export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetada
     id:<string>MapWrapper.get(map, 'id'),
     selector:<string>MapWrapper.get(map, 'selector'),
     compileChildren:<boolean>MapWrapper.get(map, 'compileChildren'),
-    hostListeners:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostListeners')),
     hostProperties:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostProperties')),
+    hostListeners:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostListeners')),
     hostActions:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostActions')),
     hostAttributes:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostAttributes')),
     properties:<List<string>>_cloneIfPresent(MapWrapper.get(map, 'properties')),
@@ -57,7 +57,7 @@ export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetada
 /**
  * Clones the [List] or [Map] `o` if it is present.
  */
-function _cloneIfPresent(o) {
+function _cloneIfPresent(o): any {
   if (!isPresent(o)) return null;
   return ListWrapper.isList(o) ? ListWrapper.clone(o) : MapWrapper.clone(o);
 }

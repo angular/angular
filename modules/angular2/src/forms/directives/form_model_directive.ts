@@ -60,8 +60,8 @@ const formDirectiveBinding = CONST_EXPR(
   hostInjector: [formDirectiveBinding],
   properties: ['form: ng-form-model'],
   lifecycle: [onChange],
-  hostListeners: {
-    'submit': 'onSubmit()',
+  host: {
+    '(submit)': 'onSubmit()',
   },
   events: ['ngSubmit'],
   exportAs: 'form'

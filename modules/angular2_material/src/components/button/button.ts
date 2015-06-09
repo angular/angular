@@ -12,8 +12,7 @@ export class MdButton {
 @Component({
   selector: '[md-button][href]',
   properties: ['disabled'],
-  hostListeners: {'click': 'onClick($event)'},
-  hostProperties: {'tabIndex': 'tabIndex'},
+  host: {'(click)': 'onClick($event)', '[tabIndex]': 'tabIndex'},
   lifecycle: [onChange]
 })
 @View({templateUrl: 'angular2_material/src/components/button/button.html'})

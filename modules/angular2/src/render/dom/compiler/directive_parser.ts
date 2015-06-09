@@ -85,37 +85,36 @@ import {
       }
     });
     ListWrapper.forEach(foundDirectiveIndices, (directiveIndex) => {
-      var directive = this._directives[directiveIndex];
+      var dirMetadata = this._directives[directiveIndex];
       var directiveBinderBuilder = elementBinder.bindDirective(directiveIndex);
-      current.compileChildren = current.compileChildren && directive.compileChildren;
-      if (isPresent(directive.properties)) {
-        ListWrapper.forEach(directive.properties, (bindConfig) => {
+      current.compileChildren = current.compileChildren && dirMetadata.compileChildren;
+      if (isPresent(dirMetadata.properties)) {
+        ListWrapper.forEach(dirMetadata.properties, (bindConfig) => {
           this._bindDirectiveProperty(bindConfig, current, directiveBinderBuilder);
         });
       }
-      if (isPresent(directive.hostListeners)) {
-        MapWrapper.forEach(directive.hostListeners, (action, eventName) => {
+      if (isPresent(dirMetadata.hostListeners)) {
+        MapWrapper.forEach(dirMetadata.hostListeners, (action, eventName) => {
           this._bindDirectiveEvent(eventName, action, current, directiveBinderBuilder);
         });
       }
-      if (isPresent(directive.hostActions)) {
-        MapWrapper.forEach(directive.hostActions, (action, actionName) => {
+      if (isPresent(dirMetadata.hostActions)) {
+        MapWrapper.forEach(dirMetadata.hostActions, (action, actionName) => {
           this._bindHostAction(actionName, action, current, directiveBinderBuilder);
         });
       }
-      if (isPresent(directive.hostProperties)) {
-        MapWrapper.forEach(directive.hostProperties, (hostPropertyName, directivePropertyName) => {
-          this._bindHostProperty(hostPropertyName, directivePropertyName, current,
-                                 directiveBinderBuilder);
+      if (isPresent(dirMetadata.hostProperties)) {
+        MapWrapper.forEach(dirMetadata.hostProperties, (expression, hostPropertyName) => {
+          this._bindHostProperty(hostPropertyName, expression, current, directiveBinderBuilder);
         });
       }
-      if (isPresent(directive.hostAttributes)) {
-        MapWrapper.forEach(directive.hostAttributes, (hostAttrValue, hostAttrName) => {
+      if (isPresent(dirMetadata.hostAttributes)) {
+        MapWrapper.forEach(dirMetadata.hostAttributes, (hostAttrValue, hostAttrName) => {
           this._addHostAttribute(hostAttrName, hostAttrValue, current);
         });
       }
-      if (isPresent(directive.readAttributes)) {
-        ListWrapper.forEach(directive.readAttributes,
+      if (isPresent(dirMetadata.readAttributes)) {
+        ListWrapper.forEach(dirMetadata.readAttributes,
                             (attrName) => { elementBinder.readAttribute(attrName); });
       }
     });
@@ -176,9 +175,8 @@ import {
     directiveBinderBuilder.bindHostAction(actionName, actionExpression, ast);
   }
 
-  _bindHostProperty(hostPropertyName, directivePropertyName, compileElement,
-                    directiveBinderBuilder) {
-    var ast = this._parser.parseBinding(directivePropertyName,
+  _bindHostProperty(hostPropertyName, expression, compileElement, directiveBinderBuilder) {
+    var ast = this._parser.parseBinding(expression,
                                         `hostProperties of ${compileElement.elementDescription}`);
     directiveBinderBuilder.bindHostProperty(hostPropertyName, ast);
   }

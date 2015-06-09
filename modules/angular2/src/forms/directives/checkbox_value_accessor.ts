@@ -16,15 +16,16 @@ import {ControlValueAccessor} from './control_value_accessor';
 @Directive({
   selector:
       'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
-  hostListeners: {'change': 'onChange($event.target.checked)', 'blur': 'onTouched()'},
-  hostProperties: {
-    'checked': 'checked',
-    'cd.control?.untouched == true': 'class.ng-untouched',
-    'cd.control?.touched == true': 'class.ng-touched',
-    'cd.control?.pristine == true': 'class.ng-pristine',
-    'cd.control?.dirty == true': 'class.ng-dirty',
-    'cd.control?.valid == true': 'class.ng-valid',
-    'cd.control?.valid == false': 'class.ng-invalid'
+  host: {
+    '(change)': 'onChange($event.target.checked)',
+    '(blur)': 'onTouched()',
+    '[checked]': 'checked',
+    '[class.ng-untouched]': 'cd.control?.untouched == true',
+    '[class.ng-touched]': 'cd.control?.touched == true',
+    '[class.ng-pristine]': 'cd.control?.pristine == true',
+    '[class.ng-dirty]': 'cd.control?.dirty == true',
+    '[class.ng-valid]': 'cd.control?.valid == true',
+    '[class.ng-invalid]': 'cd.control?.valid == false'
   }
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {

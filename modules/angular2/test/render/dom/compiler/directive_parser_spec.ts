@@ -111,7 +111,7 @@ export function main() {
 
       var directiveBinding = results[0].directives[0];
 
-      var ast = MapWrapper.get(directiveBinding.hostPropertyBindings, 'hostProperty');
+      var ast = MapWrapper.get(directiveBinding.hostPropertyBindings, 'hostProp');
       expect(ast.source).toEqual('dirProp');
     });
 
@@ -211,63 +211,63 @@ class MockStep implements CompileStep {
   }
 }
 
-var someComponent = new DirectiveMetadata(
+var someComponent = DirectiveMetadata.create(
     {selector: 'some-comp', id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var someComponentDup = new DirectiveMetadata(
+var someComponentDup = DirectiveMetadata.create(
     {selector: 'some-comp', id: 'someComponentDup', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var someComponent2 = new DirectiveMetadata(
+var someComponent2 = DirectiveMetadata.create(
     {selector: 'some-comp2', id: 'someComponent2', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var someDirective = new DirectiveMetadata(
+var someDirective = DirectiveMetadata.create(
     {selector: '[some-decor]', id: 'someDirective', type: DirectiveMetadata.DIRECTIVE_TYPE});
 
-var someDirectiveIgnoringChildren = new DirectiveMetadata({
+var someDirectiveIgnoringChildren = DirectiveMetadata.create({
   selector: '[some-decor-ignoring-children]',
   compileChildren: false,
   type: DirectiveMetadata.DIRECTIVE_TYPE
 
 });
 
-var decoratorWithMultipleAttrs = new DirectiveMetadata({
+var decoratorWithMultipleAttrs = DirectiveMetadata.create({
   selector: 'input[type=text][control]',
   id: 'decoratorWithMultipleAttrs',
   type: DirectiveMetadata.DIRECTIVE_TYPE
 });
 
-var someDirectiveWithProps = new DirectiveMetadata({
+var someDirectiveWithProps = DirectiveMetadata.create({
   selector: '[some-decor-props]',
   properties: ['dirProp: elProp', 'doubleProp: elProp | double'],
   readAttributes: ['some-attr']
 });
 
-var someDirectiveWithHostProperties = new DirectiveMetadata({
+var someDirectiveWithHostProperties = DirectiveMetadata.create({
   selector: '[some-decor-with-host-props]',
-  hostProperties: MapWrapper.createFromStringMap({'dirProp': 'hostProperty'})
+  host: MapWrapper.createFromStringMap({'[hostProp]' : 'dirProp'})
 });
 
-var someDirectiveWithHostAttributes = new DirectiveMetadata({
+var someDirectiveWithHostAttributes = DirectiveMetadata.create({
   selector: '[some-decor-with-host-attrs]',
-  hostAttributes: MapWrapper.createFromStringMap({'attr_name': 'attr_val', 'class': 'foo bar'})
+  host: MapWrapper.createFromStringMap({'attr_name': 'attr_val', 'class': 'foo bar'})
 });
 
-var someDirectiveWithEvents = new DirectiveMetadata({
+var someDirectiveWithEvents = DirectiveMetadata.create({
   selector: '[some-decor-events]',
-  hostListeners: MapWrapper.createFromStringMap({'click': 'doIt()'})
+  host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})
 });
 
-var someDirectiveWithHostActions = new DirectiveMetadata({
+var someDirectiveWithHostActions = DirectiveMetadata.create({
   selector: '[some-decor-host-actions]',
-  hostActions: MapWrapper.createFromStringMap({'focus': 'focus()'})
+  host: MapWrapper.createFromStringMap({'@focus': 'focus()'})
 });
 
-var someDirectiveWithGlobalEvents = new DirectiveMetadata({
+var someDirectiveWithGlobalEvents = DirectiveMetadata.create({
   selector: '[some-decor-globalevents]',
-  hostListeners: MapWrapper.createFromStringMap({'window:resize': 'doItGlobal()'})
+  host: MapWrapper.createFromStringMap({'(window:resize)': 'doItGlobal()'})
 });
 
-var componentWithNonElementSelector = new DirectiveMetadata({
+var componentWithNonElementSelector = DirectiveMetadata.create({
   id: 'componentWithNonElementSelector',
   selector: '[attr]',
   type: DirectiveMetadata.COMPONENT_TYPE

@@ -10,8 +10,8 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 @Directive({
   selector: 'md-input-container',
   lifecycle: [onAllChangesDone],
-  hostProperties:
-      {'inputHasValue': 'class.md-input-has-value', 'inputHasFocus': 'class.md-input-focused'}
+  host:
+      {'[class.md-input-has-value]': 'inputHasValue', '[class.md-input-focused]': 'inputHasFocus'}
 })
 export class MdInputContainer {
   // The MdInput or MdTextarea inside of this container.
@@ -57,9 +57,12 @@ export class MdInputContainer {
 @Directive({
   selector: 'md-input-container input',
   events: ['mdChange', 'mdFocusChange'],
-  hostProperties: {'yes': 'class.md-input'},
-  hostListeners:
-      {'input': 'updateValue($event)', 'focus': 'setHasFocus(true)', 'blur': 'setHasFocus(false)'}
+  host: {
+    '[class.md-input]': 'yes',
+    '(input)': 'updateValue($event)',
+    '(focus)': 'setHasFocus(true)',
+    '(blur)': 'setHasFocus(false)'
+  }
 })
 export class MdInput {
   value: string;

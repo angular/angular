@@ -7,11 +7,11 @@ import {Math} from 'angular2/src/facade/math';
   selector: 'md-progress-linear',
   lifecycle: [onChange],
   properties: ['value', 'bufferValue'],
-  hostProperties: {
-    'role': 'attr.role',
-    'ariaValuemin': 'attr.aria-valuemin',
-    'ariaValuemax': 'attr.aria-valuemax',
-    'value': 'attr.aria-valuenow'
+  host: {
+    '[attr.role]': 'role',
+    '[attr.aria-valuemin]': 'ariaValuemin',
+    '[attr.aria-valuemax]': 'ariaValuemax',
+    '[attr.aria-valuenow]': 'value'
   }
 })
 @View({

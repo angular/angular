@@ -8,9 +8,10 @@ export function main() {
     it('directiveMetadataToMap', () => {
       var someComponent = new DirectiveMetadata({
         compileChildren: false,
-        hostListeners: MapWrapper.createFromPairs([['listenKey', 'listenVal']]),
-        hostProperties: MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]),
-        hostActions: MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]),
+        hostListeners: MapWrapper.createFromPairs([['LKey', 'LVal']]),
+        hostProperties: MapWrapper.createFromPairs([['PKey', 'PVal']]),
+        hostActions: MapWrapper.createFromPairs([['AcKey', 'AcVal']]),
+        hostAttributes: MapWrapper.createFromPairs([['AtKey', 'AtVal']]),
         id: 'someComponent',
         properties: ['propKey: propVal'],
         readAttributes: ['read1', 'read2'],
@@ -25,12 +26,10 @@ export function main() {
       });
       var map = directiveMetadataToMap(someComponent);
       expect(MapWrapper.get(map, 'compileChildren')).toEqual(false);
-      expect(MapWrapper.get(map, 'hostListeners'))
-          .toEqual(MapWrapper.createFromPairs([['listenKey', 'listenVal']]));
-      expect(MapWrapper.get(map, 'hostProperties'))
-          .toEqual(MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]));
-      expect(MapWrapper.get(map, 'hostActions'))
-          .toEqual(MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]));
+      expect(MapWrapper.get(map, 'hostListeners')).toEqual(MapWrapper.createFromPairs([['LKey', 'LVal']]));
+      expect(MapWrapper.get(map, 'hostProperties')).toEqual(MapWrapper.createFromPairs([['PKey', 'PVal']]));
+      expect(MapWrapper.get(map, 'hostActions')).toEqual(MapWrapper.createFromPairs([['AcKey', 'AcVal']]));
+      expect(MapWrapper.get(map, 'hostAttributes')).toEqual(MapWrapper.createFromPairs([['AtKey', 'AtVal']]));
       expect(MapWrapper.get(map, 'id')).toEqual('someComponent');
       expect(MapWrapper.get(map, 'properties')).toEqual(['propKey: propVal']);
       expect(MapWrapper.get(map, 'readAttributes')).toEqual(['read1', 'read2']);
@@ -47,9 +46,10 @@ export function main() {
     it('mapToDirectiveMetadata', () => {
       var map = MapWrapper.createFromPairs([
         ['compileChildren', false],
-        ['hostListeners', MapWrapper.createFromPairs([['testKey', 'testVal']])],
-        ['hostProperties', MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']])],
-        ['hostActions', MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']])],
+        ['hostProperties', MapWrapper.createFromPairs([['PKey', 'testVal']])],
+        ['hostListeners', MapWrapper.createFromPairs([['LKey', 'testVal']])],
+        ['hostActions', MapWrapper.createFromPairs([['AcKey', 'testVal']])],
+        ['hostAttributes', MapWrapper.createFromPairs([['AtKey', 'testVal']])],
         ['id', 'testId'],
         ['properties', ['propKey: propVal']],
         ['readAttributes', ['readTest1', 'readTest2']],
@@ -64,11 +64,10 @@ export function main() {
       ]);
       var meta = directiveMetadataFromMap(map);
       expect(meta.compileChildren).toEqual(false);
-      expect(meta.hostListeners).toEqual(MapWrapper.createFromPairs([['testKey', 'testVal']]));
-      expect(meta.hostProperties)
-          .toEqual(MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]));
-      expect(meta.hostActions)
-          .toEqual(MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]));
+      expect(meta.hostProperties).toEqual(MapWrapper.createFromPairs([['PKey', 'testVal']]));
+      expect(meta.hostListeners).toEqual(MapWrapper.createFromPairs([['LKey', 'testVal']]));
+      expect(meta.hostActions).toEqual(MapWrapper.createFromPairs([['AcKey', 'testVal']]));
+      expect(meta.hostAttributes).toEqual(MapWrapper.createFromPairs([['AtKey', 'testVal']]));
       expect(meta.id).toEqual('testId');
       expect(meta.properties).toEqual(['propKey: propVal']);
       expect(meta.readAttributes).toEqual(['readTest1', 'readTest2']);
