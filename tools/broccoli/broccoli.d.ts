@@ -1,5 +1,6 @@
 /// <reference path="../typings/es6-promise/es6-promise.d.ts" />
 
+declare type BroccoliReadTree = (tree: BroccoliTree) => Promise<string>;
 
 interface BroccoliTree {
   /**
@@ -54,13 +55,19 @@ interface BroccoliTree {
   inputTrees?: BroccoliTree[];
 
   /**
+   * Trees which implement the rebuild api are wrapped automatically for api compat,
+   * and `newStyleTree` keeps a reference to the original unwrapped tree.
+   */
+  newStyleTree?: BroccoliTree;
+
+  /**
    * Description or name of the plugin used for reporting.
    *
    * If missing `tree.constructor.name` is usually used instead.
    */
   description?: string;
 
-  rebuild(): (Promise<any>| void);
+  rebuild?(): (Promise<any>| void);
   cleanup(): void;
 }
 

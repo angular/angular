@@ -12954,6 +12954,18 @@
       "from": "https://registry.npmjs.org/parse5/-/parse5-1.3.2.tgz",
       "resolved": "https://registry.npmjs.org/parse5/-/parse5-1.3.2.tgz"
     },
+    "promise-map-series": {
+      "version": "0.2.1",
+      "from": "promise-map-series@*",
+      "resolved": "https://registry.npmjs.org/promise-map-series/-/promise-map-series-0.2.1.tgz",
+      "dependencies": {
+        "rsvp": {
+          "version": "3.0.18",
+          "from": "rsvp@>=3.0.14 <4.0.0",
+          "resolved": "https://registry.npmjs.org/rsvp/-/rsvp-3.0.18.tgz"
+        }
+      }
+    },
     "protractor": {
       "version": "2.1.0",
       "from": "https://registry.npmjs.org/protractor/-/protractor-2.1.0.tgz",
