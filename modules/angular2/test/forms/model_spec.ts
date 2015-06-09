@@ -335,12 +335,14 @@ export function main() {
           it("should return the error when it is present", () => {
             var c = new Control("", Validators.required);
             var g = new ControlGroup({"one": c});
+            expect(c.getError("required")).toEqual(true);
             expect(g.getError("required", ["one"])).toEqual(true);
           });
 
           it("should return null otherwise", () => {
             var c = new Control("not empty", Validators.required);
             var g = new ControlGroup({"one": c});
+            expect(c.getError("invalid")).toEqual(null);
             expect(g.getError("required", ["one"])).toEqual(null);
             expect(g.getError("required", ["invalid"])).toEqual(null);
           });

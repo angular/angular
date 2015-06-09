@@ -123,7 +123,7 @@ export class AbstractControl {
   find(path: List<string | number>| string): AbstractControl { return _find(this, path); }
 
   getError(errorCode: string, path: List<string> = null) {
-    var c = this.find(path);
+    var c = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
     if (isPresent(c) && isPresent(c._errors)) {
       return StringMapWrapper.get(c._errors, errorCode);
     } else {
