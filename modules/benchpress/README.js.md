@@ -10,7 +10,7 @@ This package contains different sources for different users:
    es5 using any transpiler. This contains:
     * `dev/`: a development version that includes runtime type assertions
     * `prod/`: a production version that does not include runtime type assertions
-3. The files under `/atscript` are the AtScript source files
+3. The files under `/ts` are the Typescript source files
 
 As a convenience, we provide you with `/es6/{dev|prod}/es5build.js`, a script to transpile the es6 sources into es5
 using [Google Traceur](https://github.com/google/traceur-compiler/).
