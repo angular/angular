@@ -1,16 +1,16 @@
 'use strict';
 
 var Funnel = require('broccoli-funnel');
-var flatten = require('broccoli-flatten');
 var htmlReplace = require('../html-replace');
-import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 var stew = require('broccoli-stew');
 
 import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
-import {default as transpileWithTraceur, TRACEUR_RUNTIME_PATH} from '../traceur/index';
+import flatten from '../broccoli-flatten';
+import mergeTrees from '../broccoli-merge-trees';
 import replace from '../broccoli-replace';
+import {default as transpileWithTraceur, TRACEUR_RUNTIME_PATH} from '../traceur/index';
 
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
