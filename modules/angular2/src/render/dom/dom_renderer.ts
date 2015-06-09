@@ -237,10 +237,6 @@ export class DomRenderer extends Renderer {
       elementsWithBindingsDynamic = DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
       viewRootNodes = [rootElementClone];
     }
-    var elementsWithBindings = ListWrapper.createFixedSize(elementsWithBindingsDynamic.length);
-    for (var binderIdx = 0; binderIdx < elementsWithBindingsDynamic.length; ++binderIdx) {
-      elementsWithBindings[binderIdx] = elementsWithBindingsDynamic[binderIdx];
-    }
 
     var binders = protoView.elementBinders;
     var boundTextNodes = [];
@@ -258,7 +254,7 @@ export class DomRenderer extends Renderer {
         element = protoView.isTemplateElement ? null : rootElementClone;
         childNodes = DOM.childNodes(rootElementClone);
       } else {
-        element = elementsWithBindings[binderIdx - protoView.rootBindingOffset];
+        element = elementsWithBindingsDynamic[binderIdx - protoView.rootBindingOffset];
         childNodes = DOM.childNodes(element);
       }
 
