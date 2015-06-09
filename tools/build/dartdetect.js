@@ -10,7 +10,7 @@ module.exports = function(gulp) {
         ANALYZER: 'dartanalyzer.bat',
         DARTFMT: 'dartfmt.bat',
         PUB: 'pub.bat',
-        VM: 'dart.bat'
+        VM: 'dart.exe'
       };
     } else {
       DART_SDK = {
