@@ -21,6 +21,8 @@ import {routerInjectables, Router} from 'angular2/router';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {BaseException} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('router injectables', () => {
@@ -47,6 +49,19 @@ export function main() {
              });
        }));
 
+    it('should rethrow exceptions from component constructors',
+       inject([AsyncTestCompleter], (async) => {
+         bootstrap(BrokenAppCmp, testBindings)
+             .then((applicationRef) => {
+               var router = applicationRef.hostComponent.router;
+               PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
+                 expect(el).toHaveText('outer { oh no }');
+                 expect(error.message).toBe('oops!');
+                 async.done();
+               });
+             });
+       }));
+
     // TODO: add a test in which the child component has bindings
   });
 }
@@ -57,11 +72,24 @@ export function main() {
 class HelloCmp {
 }
 
-
 @Component({selector: 'app-cmp'})
 @View({template: "outer { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
 @RouteConfig([{path: '/', component: HelloCmp}])
 class AppCmp {
+  router: Router;
+  constructor(router: Router) { this.router = router; }
+}
+
+@Component({selector: 'oops-cmp'})
+@View({template: "oh no"})
+class BrokenCmp {
+  constructor() { throw new BaseException('oops!'); }
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: "outer { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@RouteConfig([{path: '/cause-error', component: BrokenCmp}])
+class BrokenAppCmp {
   router: Router;
   constructor(router: Router) { this.router = router; }
 }
