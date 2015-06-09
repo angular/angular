@@ -102,7 +102,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   content(node) {
-    throw 'not implemented';
+    return node;
   }
 
   firstChild(el) => el is NodeList ? el.first : el.firstChild;

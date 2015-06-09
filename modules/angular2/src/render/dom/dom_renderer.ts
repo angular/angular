@@ -224,13 +224,11 @@ export class DomRenderer extends Renderer {
       rootElementClone = DOM.importIntoDoc(DOM.content(protoView.element));
       elementsWithBindingsDynamic =
           DOM.querySelectorAll(rootElementClone, NG_BINDING_CLASS_SELECTOR);
-      var childNode = DOM.firstChild(rootElementClone);
-      // TODO(perf): Should be fixed size, since we could pre-compute in in DomProtoView
-      viewRootNodes = [];
+      viewRootNodes = ListWrapper.createFixedSize(protoView.rootNodeCount);
       // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
-      while (childNode != null) {
-        ListWrapper.push(viewRootNodes, childNode);
-        childNode = DOM.nextSibling(childNode);
+      var childNode = DOM.firstChild(rootElementClone);
+      for (var i = 0; i < protoView.rootNodeCount; i++, childNode = DOM.nextSibling(childNode)) {
+        viewRootNodes[i] = childNode;
       }
     } else {
       rootElementClone = DOM.importIntoDoc(protoView.element);
@@ -239,8 +237,9 @@ export class DomRenderer extends Renderer {
     }
 
     var binders = protoView.elementBinders;
-    var boundTextNodes = [];
+    var boundTextNodes = ListWrapper.createFixedSize(protoView.boundTextNodeCount);
     var boundElements = ListWrapper.createFixedSize(binders.length);
+    var boundTextNodeIdx = 0;
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -261,7 +260,7 @@ export class DomRenderer extends Renderer {
       // boundTextNodes
       var textNodeIndices = binder.textNodeIndices;
       for (var i = 0; i < textNodeIndices.length; i++) {
-        ListWrapper.push(boundTextNodes, childNodes[textNodeIndices[i]]);
+        boundTextNodes[boundTextNodeIdx++] = childNodes[textNodeIndices[i]];
       }
 
       // contentTags
