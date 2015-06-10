@@ -178,11 +178,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     ]
   });
 
-  var assetsTree = new Funnel(modulesTree,{
-    include: ['**/*'],
-    exclude: ['**/*.{html,ts,dart}'],
-    destDir: '/'
-  });
+  var assetsTree =
+      new Funnel(modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
 
   var scripts = mergeTrees(servingTrees);
   var polymerFiles = new Funnel('.', {
