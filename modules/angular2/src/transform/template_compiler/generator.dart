@@ -88,7 +88,7 @@ class _TemplateExtractor {
 
   Future<_ExtractResult> extractTemplates(ViewDefinition viewDef) async {
     // Check for "imperative views".
-    if (viewDef.template == null && viewDef.absUrl == null) return null;
+    if (viewDef.template == null && viewDef.templateAbsUrl == null) return null;
 
     var templateEl = await _loader.load(viewDef);
 

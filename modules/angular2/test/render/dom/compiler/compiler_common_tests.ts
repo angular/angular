@@ -13,7 +13,7 @@ import {
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
+import {Type, isBlank, stringify, isPresent, BaseException} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {DomCompiler} from 'angular2/src/render/dom/compiler/compiler';
@@ -90,7 +90,7 @@ export function runCompilerCommonTests() {
       it('should load url templates', inject([AsyncTestCompleter], (async) => {
            var urlData = MapWrapper.createFromStringMap({'someUrl': 'url component'});
            var compiler = createCompiler(EMPTY_STEP, urlData);
-           compiler.compile(new ViewDefinition({componentId: 'someId', absUrl: 'someUrl'}))
+           compiler.compile(new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'}))
                .then((protoView) => {
                  expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).element))
                      .toEqual('url component');
@@ -101,7 +101,8 @@ export function runCompilerCommonTests() {
       it('should report loading errors', inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler(EMPTY_STEP, MapWrapper.create());
            PromiseWrapper.catchError(
-               compiler.compile(new ViewDefinition({componentId: 'someId', absUrl: 'someUrl'})),
+               compiler.compile(
+                   new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'})),
                (e) => {
                  expect(e.message).toEqual(
                      'Failed to load the template for "someId" : Failed to fetch url "someUrl"');
@@ -207,14 +208,14 @@ class FakeTemplateLoader extends TemplateLoader {
       return PromiseWrapper.resolve(DOM.createTemplate(template.template));
     }
 
-    if (isPresent(template.absUrl)) {
-      var content = MapWrapper.get(this._urlData, template.absUrl);
+    if (isPresent(template.templateAbsUrl)) {
+      var content = MapWrapper.get(this._urlData, template.templateAbsUrl);
       return isPresent(content) ?
                  PromiseWrapper.resolve(DOM.createTemplate(content)) :
-                 PromiseWrapper.reject(`Failed to fetch url "${template.absUrl}"`, null);
+                 PromiseWrapper.reject(`Failed to fetch url "${template.templateAbsUrl}"`, null);
     }
 
-    return PromiseWrapper.reject('Load failed', null);
+    throw new BaseException('View should have either the templateUrl or template property set');
   }
 }
 

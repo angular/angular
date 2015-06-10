@@ -43,7 +43,9 @@ export class DomCompiler extends RenderCompiler {
   compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> {
     var hostViewDef = new ViewDefinition({
       componentId: directiveMetadata.id,
-      absUrl: null, template: null,
+      templateAbsUrl: null, template: null,
+      styles: null,
+      styleAbsUrls: null,
       directives: [directiveMetadata]
     });
     var element = DOM.createElement(directiveMetadata.selector);

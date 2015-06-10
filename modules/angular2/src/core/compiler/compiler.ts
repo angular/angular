@@ -205,6 +205,7 @@ export class Compiler {
     var componentUrl =
         this._urlResolver.resolve(this._appUrl, this._componentUrlMapper.getUrl(component));
     var templateAbsUrl = null;
+    var styleAbsUrls = null;
     if (isPresent(view.templateUrl)) {
       templateAbsUrl = this._urlResolver.resolve(componentUrl, view.templateUrl);
     } else if (isPresent(view.template)) {
@@ -213,9 +214,15 @@ export class Compiler {
       // is able to resolve urls in stylesheets.
       templateAbsUrl = componentUrl;
     }
+    if (isPresent(view.styleUrls)) {
+      styleAbsUrls =
+          ListWrapper.map(view.styleUrls, url => this._urlResolver.resolve(componentUrl, url));
+    }
     return new renderApi.ViewDefinition({
       componentId: stringify(component),
-      absUrl: templateAbsUrl, template: view.template,
+      templateAbsUrl: templateAbsUrl, template: view.template,
+      styleAbsUrls: styleAbsUrls,
+      styles: view.styles,
       directives: ListWrapper.map(directives, directiveBinding => directiveBinding.metadata)
     });
   }

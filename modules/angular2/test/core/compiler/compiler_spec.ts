@@ -100,30 +100,45 @@ export function main() {
                });
          }));
 
-      it('should fill absUrl given inline templates', inject([AsyncTestCompleter], (async) => {
+      it('should fill templateAbsUrl given inline templates',
+         inject([AsyncTestCompleter], (async) => {
            cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
            captureTemplate(new viewAnn.View({template: '<div></div>'}))
                .then((renderTpl) => {
-                 expect(renderTpl.absUrl).toEqual('http://www.app.com/mainComponent');
+                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/mainComponent');
                  async.done();
                });
          }));
 
-      it('should not fill absUrl given no inline template or template url',
+      it('should not fill templateAbsUrl given no inline template or template url',
          inject([AsyncTestCompleter], (async) => {
            cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
            captureTemplate(new viewAnn.View({template: null, templateUrl: null}))
                .then((renderTpl) => {
-                 expect(renderTpl.absUrl).toBe(null);
+                 expect(renderTpl.templateAbsUrl).toBe(null);
                  async.done();
                });
          }));
 
-      it('should fill absUrl given url template', inject([AsyncTestCompleter], (async) => {
+      it('should fill templateAbsUrl given url template', inject([AsyncTestCompleter], (async) => {
            cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
            captureTemplate(new viewAnn.View({templateUrl: '/someTemplate'}))
                .then((renderTpl) => {
-                 expect(renderTpl.absUrl).toEqual('http://www.app.com/mainComponent/someTemplate');
+                 expect(renderTpl.templateAbsUrl)
+                     .toEqual('http://www.app.com/mainComponent/someTemplate');
+                 async.done();
+               });
+         }));
+
+      it('should fill styleAbsUrls given styleUrls', inject([AsyncTestCompleter], (async) => {
+           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
+           captureTemplate(new viewAnn.View({styleUrls: ['/1.css', '/2.css']}))
+               .then((renderTpl) => {
+                 expect(renderTpl.styleAbsUrls)
+                     .toEqual([
+                       'http://www.app.com/mainComponent/1.css',
+                       'http://www.app.com/mainComponent/2.css'
+                     ]);
                  async.done();
                });
          }));

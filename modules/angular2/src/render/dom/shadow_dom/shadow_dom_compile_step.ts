@@ -29,7 +29,7 @@ export class ShadowDomCompileStep implements CompileStep {
 
   _processStyleElement(current: CompileElement, control: CompileControl) {
     var stylePromise = this._shadowDomStrategy.processStyleElement(
-        this._template.componentId, this._template.absUrl, current.element);
+        this._template.componentId, this._template.templateAbsUrl, current.element);
     if (isPresent(stylePromise) && PromiseWrapper.isPromise(stylePromise)) {
       ListWrapper.push(this._subTaskPromises, stylePromise);
     }
