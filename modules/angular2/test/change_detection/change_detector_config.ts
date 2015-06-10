@@ -14,6 +14,11 @@ import {
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
+/*
+ * This file defines `ChangeDetectorDefinition` objects which are used in the tests defined in
+ * the change_detector_spec library. Please see that library for more information.
+ */
+
 var _parser = new Parser(new Lexer());
 
 function _getParser() {

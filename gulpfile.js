@@ -831,7 +831,7 @@ gulp.task('!build/change_detect.dart', function(done) {
   var srcDir = path.join(changeDetectDir, 'generator');
   var destDir = path.join(changeDetectDir, 'generated');
 
-  var dartStream = fs.createWriteStream(path.join(destDir, 'simple_watch_classes.dart'));
+  var dartStream = fs.createWriteStream(path.join(destDir, 'change_detector_classes.dart'));
   var genMain = path.join(srcDir, 'gen_change_detectors.dart');
   var proc = spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
   proc.on('error', function(code) {
