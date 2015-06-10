@@ -299,9 +299,12 @@ class _CodegenState {
   }
 
   String _genUpdateCurrentValue(ProtoRecord r) {
-    var context = r.contextIndex == -1
-        ? _genGetDirective(r.directiveIndex)
-        : _localNames[r.contextIndex];
+    var context = null;
+    if (r.contextIndex >= 0 && r.contextIndex < _localNames.length) {
+      context = _localNames[r.contextIndex];
+    } else if (r.directiveIndex != null) {
+      context = _genGetDirective(r.directiveIndex);
+    }
 
     var newValue = _localNames[r.selfIndex];
     var argString = r.args.map((arg) => _localNames[arg]).join(', ');

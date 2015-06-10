@@ -308,8 +308,13 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genUpdateCurrentValue(r: ProtoRecord): string {
-    var context = (r.contextIndex == -1) ? this._genGetDirective(r.directiveIndex) :
-                                           this._localNames[r.contextIndex];
+    var context = null;
+    if (r.contextIndex >= 0 && r.contextIndex < this._localNames.length) {
+      context = this._localNames[r.contextIndex];
+    } else if (r.directiveIndex != null) {
+      context = this._genGetDirective(r.directiveIndex);
+    }
+
     var newValue = this._localNames[r.selfIndex];
     var argString = r.args.map((arg) => this._localNames[arg]).join(", ");
 
