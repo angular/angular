@@ -37,7 +37,8 @@ Future<Map<String, DirectiveMetadata>> _extractDirectiveMetadataRecursive(
     if (uri.startsWith('dart:')) return _nullFuture;
 
     uri = toDepsExtension(uri);
-    var assetId = uriToAssetId(entryPoint, uri, logger, null /* span */);
+    var assetId = uriToAssetId(entryPoint, uri, logger, null /* span */,
+        errorOnAbsolute: false);
     if (assetId == entryPoint) return _nullFuture;
     return _extractDirectiveMetadataRecursive(reader, assetId)
         .then((exportMap) {
