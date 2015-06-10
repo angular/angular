@@ -247,6 +247,16 @@ gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
   })();
 });
 
+gulp.task('serve.e2e.dev', ['build.js.dev', 'build.js.cjs', 'build.css.material'], function(neverDone) {
+  watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
+  watch('modules/**', { ignoreInitial: true }, '!build.js.cjs');
+
+  jsserve(gulp, gulpPlugins, {
+    path: CONFIG.dest.js.dev.es5,
+    port: 8000
+  })();
+});
+
 gulp.task('serve.js.prod', jsserve(gulp, gulpPlugins, {
   path: CONFIG.dest.js.prod.es5,
   port: 8001
