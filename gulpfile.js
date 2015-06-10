@@ -695,7 +695,7 @@ gulp.task('!build.js.cjs', function() {
 
 var bundleConfig = {
   paths: {
-    "*": "dist/js/prod/es6/*.es6",
+    "*": "dist/js/prod/es6/*.js",
     "rx": "node_modules/rx/dist/rx.js"
   },
   meta: {
@@ -735,7 +735,7 @@ gulp.task('bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
       merge(true, devBundleConfig.paths, {
-       "*": "dist/js/dev/es6/*.es6"
+       "*": "dist/js/dev/es6/*.js"
       });
   return bundler.bundle(
       devBundleConfig,
@@ -748,7 +748,7 @@ gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
     merge(true, devBundleConfig.paths, {
-      "*": "dist/js/dev/es6/*.es6"
+      "*": "dist/js/dev/es6/*.js"
     });
   return bundler.bundle(
     devBundleConfig,
@@ -766,7 +766,7 @@ gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
       merge(true, devBundleConfig.paths, {
-       '*': 'dist/js/dev/es6/*.es6'
+       '*': 'dist/js/dev/es6/*.js'
       });
   return bundler.bundle(
       devBundleConfig,
