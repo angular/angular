@@ -60,6 +60,20 @@ export class Conditional extends AST {
   visit(visitor: AstVisitor) { return visitor.visitConditional(this); }
 }
 
+export class If extends AST {
+  constructor(public condition: AST, public trueExp: AST, public falseExp?: AST) { super(); }
+
+  eval(context, locals) {
+    if (this.condition.eval(context, locals)) {
+      this.trueExp.eval(context, locals);
+    } else if (isPresent(this.falseExp)) {
+      this.falseExp.eval(context, locals);
+    }
+  }
+
+  visit(visitor: AstVisitor) { return visitor.visitIf(this); }
+}
+
 export class AccessMember extends AST {
   constructor(public receiver: AST, public name: string, public getter: Function,
               public setter: Function) {
@@ -321,6 +335,7 @@ export interface AstVisitor {
   visitBinary(ast: Binary): any;
   visitChain(ast: Chain): any;
   visitConditional(ast: Conditional): any;
+  visitIf(ast: If): any;
   visitPipe(ast: Pipe): any;
   visitFunctionCall(ast: FunctionCall): any;
   visitImplicitReceiver(ast: ImplicitReceiver): any;
@@ -398,6 +413,8 @@ export class AstTransformer implements AstVisitor {
   visitChain(ast: Chain) { throw new BaseException('Not implemented'); }
 
   visitAssignment(ast: Assignment) { throw new BaseException('Not implemented'); }
+
+  visitIf(ast: If) { throw new BaseException('Not implemented'); }
 }
 
 var _evalListCache = [

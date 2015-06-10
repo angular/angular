@@ -8,6 +8,8 @@ import {
   Binary,
   Chain,
   Conditional,
+  EmptyExpr,
+  If,
   Pipe,
   ImplicitReceiver,
   Interpolation,
@@ -59,7 +61,7 @@ export function main() {
 
     it('should support Binary', () => { check('a && b', Binary); });
 
-    it('should support Chain', () => { check('a;b;', Chain); });
+    it('should support Chain', () => { check('a; b;', Chain); });
 
     it('should support Conditional', () => { check('a ? b : c', Conditional); });
 
@@ -93,6 +95,17 @@ export function main() {
 
     it('should support SafeMethodCall', () => { check('a?.b(c, d)', SafeMethodCall); });
 
+    it('should support if statements', () => {
+      var ifs = [
+        'if (true) a()',
+        'if (true) a() else b()',
+        'if (a()) { b = 1; c = 2; }',
+        'if (a()) b = 1 else { c = 2; d = e(); }'
+      ];
+
+      ifs.forEach(ifStmt => check(ifStmt, If));
+    });
+
     it('should support complex expression', () => {
       var originalExp = 'a + 3 * fn([(c + d | e).f], {a: 3})[g].h && i';
       var ast = parseBinding(originalExp).ast;
@@ -107,6 +120,13 @@ export function main() {
       ast = parser.parseInterpolation('a {{ b }} c', null).ast;
       expect(ast).toBeAnInstanceOf(Interpolation);
       expect(unparser.unparse(ast)).toEqual('a {{ b }} c');
+    });
+
+    it('should support EmptyExpr', () => {
+      var ast = parser.parseAction('if (true) { }', null).ast;
+      expect(ast).toBeAnInstanceOf(If);
+      expect((<If>ast).trueExp).toBeAnInstanceOf(EmptyExpr);
+      expect(unparser.unparse(ast)).toEqual('if (true) {  }');
     });
   });
 }

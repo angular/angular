@@ -33,6 +33,7 @@ import {
   Binary,
   PrefixNot,
   Conditional,
+  If,
   Pipe,
   Assignment,
   Chain,
@@ -412,6 +413,19 @@ class _ParseAST {
       this.advance();
       return new LiteralPrimitive(false);
 
+    } else if (this.parseAction && this.next.isKeywordIf()) {
+      this.advance();
+      this.expectCharacter($LPAREN);
+      let condition = this.parseExpression();
+      this.expectCharacter($RPAREN);
+      let ifExp = this.parseExpressionOrBlock();
+      let elseExp;
+      if (this.next.isKeywordElse()) {
+        this.advance();
+        elseExp = this.parseExpressionOrBlock();
+      }
+      return new If(condition, ifExp, elseExp)
+
     } else if (this.optionalCharacter($LBRACKET)) {
       var elements = this.parseExpressionList($RBRACKET);
       this.expectCharacter($RBRACKET);
@@ -493,6 +507,37 @@ class _ParseAST {
     } while (this.optionalCharacter($COMMA));
     return positionals;
   }
+
+  parseExpressionOrBlock(): AST {
+    if (this.optionalCharacter($LBRACE)) {
+      let block = this.parseBlockContent();
+      this.expectCharacter($RBRACE);
+      return block;
+    }
+
+    return this.parseExpression();
+  }
+
+  parseBlockContent(): AST {
+    if (!this.parseAction) {
+      this.error("Binding expression cannot contain chained expression");
+    }
+    var exprs = [];
+    while (this.index < this.tokens.length && !this.next.isCharacter($RBRACE)) {
+      var expr = this.parseExpression();
+      ListWrapper.push(exprs, expr);
+
+      if (this.optionalCharacter($SEMICOLON)) {
+        while (this.optionalCharacter($SEMICOLON)) {
+        }  // read all semicolons
+      }
+    }
+    if (exprs.length == 0) return new EmptyExpr();
+    if (exprs.length == 1) return exprs[0];
+
+    return new Chain(exprs);
+  }
+
 
   /**
    * An identifier, a keyword, a string with an optional `-` inbetween.

@@ -59,6 +59,10 @@ export class Token {
 
   isKeywordTrue(): boolean { return (this.type == TOKEN_TYPE_KEYWORD && this.strValue == "true"); }
 
+  isKeywordIf(): boolean { return (this.type == TOKEN_TYPE_KEYWORD && this.strValue == "if"); }
+
+  isKeywordElse(): boolean { return (this.type == TOKEN_TYPE_KEYWORD && this.strValue == "else"); }
+
   isKeywordFalse(): boolean {
     return (this.type == TOKEN_TYPE_KEYWORD && this.strValue == "false");
   }
@@ -463,4 +467,5 @@ var OPERATORS = SetWrapper.createFromList([
 ]);
 
 
-var KEYWORDS = SetWrapper.createFromList(['var', 'null', 'undefined', 'true', 'false']);
+var KEYWORDS =
+    SetWrapper.createFromList(['var', 'null', 'undefined', 'true', 'false', 'if', 'else']);
