@@ -3,11 +3,11 @@ import {Inject, FORWARD_REF, Binding} from 'angular2/di';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-import {ControlContainerDirective} from './control_container_directive';
+import {ControlContainer} from './control_container';
 import {controlPath} from './shared';
 
-const controlGroupBinding = CONST_EXPR(
-    new Binding(ControlContainerDirective, {toAlias: FORWARD_REF(() => ControlGroupDirective)}));
+const controlGroupBinding =
+    CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgControlGroup)}));
 
 /**
  * Binds a ng-control group to a DOM element.
@@ -18,7 +18,7 @@ const controlGroupBinding = CONST_EXPR(
  * password controls to the login and password elements.
  *
  * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
- * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ * `NgControl`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -61,9 +61,9 @@ const controlGroupBinding = CONST_EXPR(
   lifecycle: [onInit, onDestroy],
   exportAs: 'form'
 })
-export class ControlGroupDirective extends ControlContainerDirective {
-  _parent: ControlContainerDirective;
-  constructor(@Ancestor() _parent: ControlContainerDirective) {
+export class NgControlGroup extends ControlContainer {
+  _parent: ControlContainer;
+  constructor(@Ancestor() _parent: ControlContainer) {
     super();
     this._parent = _parent;
   }

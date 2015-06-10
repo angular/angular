@@ -1,10 +1,5 @@
 import {bootstrap, onChange, NgIf, Component, Directive, View, Ancestor} from 'angular2/angular2';
-import {
-  formDirectives,
-  ControlDirective,
-  Validators,
-  TemplateDrivenFormDirective
-} from 'angular2/forms';
+import {formDirectives, NgControl, Validators, NgForm} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
@@ -30,7 +25,7 @@ class CheckoutModel {
  */
 @Directive({selector: '[credit-card]'})
 class CreditCardValidator {
-  constructor(c: ControlDirective) {
+  constructor(c: NgControl) {
     c.validator = Validators.compose([c.validator, CreditCardValidator.validate]);
   }
 
@@ -70,7 +65,7 @@ class ShowError {
   controlPath: string;
   errorTypes: List<string>;
 
-  constructor(@Ancestor() formDir: TemplateDrivenFormDirective) { this.formDir = formDir; }
+  constructor(@Ancestor() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage() {
     var c = this.formDir.form.find(this.controlPath);

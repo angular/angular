@@ -3,15 +3,15 @@ import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collectio
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive} from 'angular2/src/core/annotations/decorators';
 import {FORWARD_REF, Binding} from 'angular2/di';
-import {ControlDirective} from './control_directive';
-import {FormDirective} from './form_directive';
-import {ControlGroupDirective} from './control_group_directive';
-import {ControlContainerDirective} from './control_container_directive';
+import {NgControl} from './ng_control';
+import {Form} from './form_interface';
+import {NgControlGroup} from './ng_control_group';
+import {ControlContainer} from './control_container';
 import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl} from './shared';
 
-const formDirectiveBinding = CONST_EXPR(new Binding(
-    ControlContainerDirective, {toAlias: FORWARD_REF(() => TemplateDrivenFormDirective)}));
+const formDirectiveBinding =
+    CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgForm)}));
 
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
@@ -22,8 +22,7 @@ const formDirectiveBinding = CONST_EXPR(new Binding(
   events: ['ngSubmit'],
   exportAs: 'form'
 })
-export class TemplateDrivenFormDirective extends ControlContainerDirective implements
-    FormDirective {
+export class NgForm extends ControlContainer implements Form {
   form: ControlGroup;
   ngSubmit = new EventEmitter();
 
@@ -32,7 +31,7 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     this.form = new ControlGroup({});
   }
 
-  get formDirective(): FormDirective { return this; }
+  get formDirective(): Form { return this; }
 
   get path(): List<string> { return []; }
 
@@ -42,7 +41,7 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
 
   get errors(): any { return this.form.errors; }
 
-  addControl(dir: ControlDirective): void {
+  addControl(dir: NgControl): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
       var c = new Control("");
@@ -52,9 +51,9 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     });
   }
 
-  getControl(dir: ControlDirective): Control { return <Control>this.form.find(dir.path); }
+  getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }
 
-  removeControl(dir: ControlDirective): void {
+  removeControl(dir: NgControl): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
@@ -64,7 +63,7 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     });
   }
 
-  addControlGroup(dir: ControlGroupDirective): void {
+  addControlGroup(dir: NgControlGroup): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
       var c = new ControlGroup({});
@@ -73,7 +72,7 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     });
   }
 
-  removeControlGroup(dir: ControlGroupDirective): void {
+  removeControlGroup(dir: NgControlGroup): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
@@ -83,7 +82,7 @@ export class TemplateDrivenFormDirective extends ControlContainerDirective imple
     });
   }
 
-  updateModel(dir: ControlDirective, value: any): void {
+  updateModel(dir: NgControl, value: any): void {
     this._later(_ => {
       var c = <Control>this.form.find(dir.path);
       c.updateValue(value);

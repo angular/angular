@@ -24,10 +24,10 @@ import {NgIf} from 'angular2/directives';
 import {
   Control,
   ControlGroup,
-  TemplateDrivenFormDirective,
+  NgForm,
   formDirectives,
   Validators,
-  ControlDirective,
+  NgControl,
   ControlValueAccessor
 } from 'angular2/forms';
 
@@ -481,7 +481,7 @@ export function main() {
                       .then((view) => {
                         view.detectChanges();
                         var form =
-                            view.rawView.elementInjectors[0].get(TemplateDrivenFormDirective);
+                            view.rawView.elementInjectors[0].get(NgForm);
                         expect(form.controls['user']).not.toBeDefined();
 
                         tick();
@@ -536,7 +536,7 @@ export function main() {
                                                 .then((view) => {
                                                   view.detectChanges();
                                                   var form = view.rawView.elementInjectors[0].get(
-                                                      TemplateDrivenFormDirective);
+                                                      NgForm);
 
                                                   tick();
 
@@ -566,7 +566,7 @@ export function main() {
                       .then((view) => {
                         view.detectChanges();
                         var form =
-                            view.rawView.elementInjectors[0].get(TemplateDrivenFormDirective);
+                            view.rawView.elementInjectors[0].get(NgForm);
                         flushMicrotasks();
 
                         expect(form.controls['user']).toBeDefined();
@@ -739,7 +739,7 @@ class WrappedValue implements ControlValueAccessor {
   value;
   onChange: Function;
 
-  constructor(cd: ControlDirective) { cd.valueAccessor = this; }
+  constructor(cd: NgControl) { cd.valueAccessor = this; }
 
   writeValue(value) { this.value = `!${value}!`; }
 

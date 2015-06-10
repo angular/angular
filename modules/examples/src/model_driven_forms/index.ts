@@ -1,11 +1,5 @@
 import {bootstrap, onChange, NgIf, Component, Directive, View, Ancestor} from 'angular2/angular2';
-import {
-  formDirectives,
-  ControlDirective,
-  Validators,
-  FormModelDirective,
-  FormBuilder
-} from 'angular2/forms';
+import {formDirectives, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
@@ -50,7 +44,7 @@ class ShowError {
   controlPath: string;
   errorTypes: List<string>;
 
-  constructor(@Ancestor() formDir: FormModelDirective) { this.formDir = formDir; }
+  constructor(@Ancestor() formDir: NgFormModel) { this.formDir = formDir; }
 
   get errorMessage() {
     var c = this.formDir.form.find(this.controlPath);

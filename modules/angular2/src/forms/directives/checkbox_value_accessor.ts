@@ -1,5 +1,5 @@
 import {Directive} from 'angular2/angular2';
-import {ControlDirective} from './control_directive';
+import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
 
 /**
@@ -33,7 +33,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   onChange: Function;
   onTouched: Function;
 
-  constructor(private cd: ControlDirective) {
+  constructor(private cd: NgControl) {
     this.onChange = (_) => {};
     this.onTouched = (_) => {};
     cd.valueAccessor = this;

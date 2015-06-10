@@ -4,15 +4,15 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
 import {Directive, onChange} from 'angular2/angular2';
 import {FORWARD_REF, Binding} from 'angular2/di';
-import {ControlDirective} from './control_directive';
-import {ControlGroupDirective} from './control_group_directive';
-import {ControlContainerDirective} from './control_container_directive';
-import {FormDirective} from './form_directive';
+import {NgControl} from './ng_control';
+import {NgControlGroup} from './ng_control_group';
+import {ControlContainer} from './control_container';
+import {Form} from './form_interface';
 import {Control, ControlGroup} from '../model';
 import {setUpControl} from './shared';
 
-const formDirectiveBinding = CONST_EXPR(
-    new Binding(ControlContainerDirective, {toAlias: FORWARD_REF(() => FormModelDirective)}));
+const formDirectiveBinding =
+    CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgFormModel)}));
 
 /**
  * Binds a control group to a DOM element.
@@ -24,7 +24,7 @@ const formDirectiveBinding = CONST_EXPR(
  * login and password elements.
  *
  * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
- * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ * `NgControl`, `NgControlGroup`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -66,9 +66,9 @@ const formDirectiveBinding = CONST_EXPR(
   events: ['ngSubmit'],
   exportAs: 'form'
 })
-export class FormModelDirective extends ControlContainerDirective implements FormDirective {
+export class NgFormModel extends ControlContainer implements Form {
   form: ControlGroup = null;
-  directives: List<ControlDirective>;
+  directives: List<NgControl>;
   ngSubmit = new EventEmitter();
 
   constructor() {
@@ -78,26 +78,26 @@ export class FormModelDirective extends ControlContainerDirective implements For
 
   onChange(_) { this._updateDomValue(); }
 
-  get formDirective(): FormDirective { return this; }
+  get formDirective(): Form { return this; }
 
   get path(): List<string> { return []; }
 
-  addControl(dir: ControlDirective): void {
+  addControl(dir: NgControl): void {
     var c: any = this.form.find(dir.path);
     setUpControl(c, dir);
     c.updateValidity();
     ListWrapper.push(this.directives, dir);
   }
 
-  getControl(dir: ControlDirective): Control { return <Control>this.form.find(dir.path); }
+  getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }
 
-  removeControl(dir: ControlDirective): void { ListWrapper.remove(this.directives, dir); }
+  removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
-  addControlGroup(dir: ControlGroupDirective) {}
+  addControlGroup(dir: NgControlGroup) {}
 
-  removeControlGroup(dir: ControlGroupDirective) {}
+  removeControlGroup(dir: NgControlGroup) {}
 
-  updateModel(dir: ControlDirective, value: any): void {
+  updateModel(dir: NgControl, value: any): void {
     var c  = <Control>this.form.find(dir.path);
     c.updateValue(value);
   }

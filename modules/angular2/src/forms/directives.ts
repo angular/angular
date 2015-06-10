@@ -1,27 +1,27 @@
 import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
-import {ControlNameDirective} from './directives/control_name_directive';
-import {FormControlDirective} from './directives/form_control_directive';
-import {NgModelDirective} from './directives/ng_model_directive';
-import {ControlGroupDirective} from './directives/control_group_directive';
-import {FormModelDirective} from './directives/form_model_directive';
-import {TemplateDrivenFormDirective} from './directives/template_driven_form_directive';
+import {NgControlName} from './directives/ng_control_name';
+import {NgFormControl} from './directives/ng_form_control';
+import {NgModel} from './directives/ng_model';
+import {NgControlGroup} from './directives/ng_control_group';
+import {NgFormModel} from './directives/ng_form_model';
+import {NgForm} from './directives/ng_form';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {SelectControlValueAccessor} from './directives/select_control_value_accessor';
-import {RequiredValidatorDirective} from './validator_directives';
+import {NgRequiredValidator} from './directives/validators';
 
-export {ControlNameDirective} from './directives/control_name_directive';
-export {FormControlDirective} from './directives/form_control_directive';
-export {NgModelDirective} from './directives/ng_model_directive';
-export {ControlDirective} from './directives/control_directive';
-export {ControlGroupDirective} from './directives/control_group_directive';
-export {FormModelDirective} from './directives/form_model_directive';
-export {TemplateDrivenFormDirective} from './directives/template_driven_form_directive';
+export {NgControlName} from './directives/ng_control_name';
+export {NgFormControl} from './directives/ng_form_control';
+export {NgModel} from './directives/ng_model';
+export {NgControl} from './directives/ng_control';
+export {NgControlGroup} from './directives/ng_control_group';
+export {NgFormModel} from './directives/ng_form_model';
+export {NgForm} from './directives/ng_form';
 export {ControlValueAccessor} from './directives/control_value_accessor';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {SelectControlValueAccessor} from './directives/select_control_value_accessor';
-export {RequiredValidatorDirective} from './validator_directives';
+export {NgRequiredValidator} from './directives/validators';
 
 /**
  *
@@ -32,17 +32,17 @@ export {RequiredValidatorDirective} from './validator_directives';
  * @exportedAs angular2/forms
  */
 export const formDirectives: List<Type> = CONST_EXPR([
-  ControlNameDirective,
-  ControlGroupDirective,
+  NgControlName,
+  NgControlGroup,
 
-  FormControlDirective,
-  NgModelDirective,
-  FormModelDirective,
-  TemplateDrivenFormDirective,
+  NgFormControl,
+  NgModel,
+  NgFormModel,
+  NgForm,
 
   DefaultValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
 
-  RequiredValidatorDirective
+  NgRequiredValidator
 ]);

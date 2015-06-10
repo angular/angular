@@ -4,13 +4,13 @@ import {List, StringMapWrapper, StringMap} from 'angular2/src/facade/collection'
 import {Directive, Ancestor, onDestroy, onChange} from 'angular2/angular2';
 import {FORWARD_REF, Binding, Inject} from 'angular2/di';
 
-import {ControlContainerDirective} from './control_container_directive';
-import {ControlDirective} from './control_directive';
+import {ControlContainer} from './control_container';
+import {NgControl} from './ng_control';
 import {controlPath} from './shared';
 import {Control} from '../model';
 
 const controlNameBinding =
-    CONST_EXPR(new Binding(ControlDirective, {toAlias: FORWARD_REF(() => ControlNameDirective)}));
+    CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgControlName)}));
 
 /**
  * Binds a control with the specified name to a DOM element.
@@ -25,7 +25,7 @@ const controlNameBinding =
  * change.
  *
  * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
- * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ * `NgControl`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -63,13 +63,13 @@ const controlNameBinding =
   lifecycle: [onDestroy, onChange],
   exportAs: 'form'
 })
-export class ControlNameDirective extends ControlDirective {
-  _parent: ControlContainerDirective;
+export class NgControlName extends NgControl {
+  _parent: ControlContainer;
   ngModel: EventEmitter;
   model: any;
   _added: boolean;
 
-  constructor(@Ancestor() _parent: ControlContainerDirective) {
+  constructor(@Ancestor() _parent: ControlContainer) {
     super();
     this._parent = _parent;
     this.ngModel = new EventEmitter();

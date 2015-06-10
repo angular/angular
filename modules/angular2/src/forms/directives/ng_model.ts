@@ -5,12 +5,12 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Directive, Ancestor, onChange} from 'angular2/angular2';
 import {FORWARD_REF, Binding} from 'angular2/di';
 
-import {ControlDirective} from './control_directive';
+import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {setUpControl} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Binding(ControlDirective, {toAlias: FORWARD_REF(() => NgModelDirective)}));
+    CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgModel)}));
 
 @Directive({
   selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
@@ -20,7 +20,7 @@ const formControlBinding =
   lifecycle: [onChange],
   exportAs: 'form'
 })
-export class NgModelDirective extends ControlDirective {
+export class NgModel extends NgControl {
   control: Control;
   ngModel: EventEmitter;
   model: any;

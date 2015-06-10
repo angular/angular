@@ -7,7 +7,7 @@ import {Control} from '../model';
  *
  * @exportedAs angular2/forms
  */
-export class ControlDirective {
+export class NgControl {
   name: string = null;
   valueAccessor: ControlValueAccessor = null;
   validator: Function;

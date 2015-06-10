@@ -16,13 +16,13 @@ import {
 import {
   ControlGroup,
   Control,
-  ControlNameDirective,
-  ControlGroupDirective,
-  FormModelDirective,
+  NgControlName,
+  NgControlGroup,
+  NgFormModel,
   ControlValueAccessor,
   Validators,
-  TemplateDrivenFormDirective,
-  FormControlDirective
+  NgForm,
+  NgFormControl
 } from 'angular2/forms';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -36,24 +36,24 @@ class DummyControlValueAccessor implements ControlValueAccessor {
 
 export function main() {
   describe("Form Directives", () => {
-    describe("FormModelDirective", () => {
+    describe("NgFormModel", () => {
       var form;
       var formModel;
       var loginControlDir;
 
       beforeEach(() => {
-        form = new FormModelDirective();
+        form = new NgFormModel();
         formModel = new ControlGroup({"login": new Control(null)});
         form.form = formModel;
 
-        loginControlDir = new ControlNameDirective(form);
+        loginControlDir = new NgControlName(form);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
       describe("addControl", () => {
         it("should throw when no control found", () => {
-          var dir = new ControlNameDirective(form);
+          var dir = new NgControlName(form);
           dir.name = "invalidName";
 
           expect(() => form.addControl(dir))
@@ -61,7 +61,7 @@ export function main() {
         });
 
         it("should throw when no value accessor", () => {
-          var dir = new ControlNameDirective(form);
+          var dir = new NgControlName(form);
           dir.name = "login";
 
           expect(() => form.addControl(dir))
@@ -114,20 +114,20 @@ export function main() {
       });
     });
 
-    describe("TemplateDrivenFormDirective", () => {
+    describe("NgForm", () => {
       var form;
       var formModel;
       var loginControlDir;
       var personControlGroupDir;
 
       beforeEach(() => {
-        form = new TemplateDrivenFormDirective();
+        form = new NgForm();
         formModel = form.form;
 
-        personControlGroupDir = new ControlGroupDirective(form);
+        personControlGroupDir = new NgControlGroup(form);
         personControlGroupDir.name = "person";
 
-        loginControlDir = new ControlNameDirective(personControlGroupDir);
+        loginControlDir = new NgControlName(personControlGroupDir);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -163,12 +163,12 @@ export function main() {
       });
     });
 
-    describe("FormControlDirective", () => {
+    describe("NgFormControl", () => {
       var controlDir;
       var control;
 
       beforeEach(() => {
-        controlDir = new FormControlDirective();
+        controlDir = new NgFormControl();
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new Control(null);

@@ -5,12 +5,12 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Directive, Ancestor, onChange} from 'angular2/angular2';
 import {FORWARD_REF, Binding} from 'angular2/di';
 
-import {ControlDirective} from './control_directive';
+import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {setUpControl} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Binding(ControlDirective, {toAlias: FORWARD_REF(() => FormControlDirective)}));
+    CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgFormControl)}));
 
 /**
  * Binds a control to a DOM element.
@@ -24,7 +24,7 @@ const formControlBinding =
  * change.
  *
  * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
- * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ * `NgControl`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -52,7 +52,7 @@ const formControlBinding =
   lifecycle: [onChange],
   exportAs: 'form'
 })
-export class FormControlDirective extends ControlDirective {
+export class NgFormControl extends NgControl {
   form: Control;
   ngModel: EventEmitter;
   _added: boolean;

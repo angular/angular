@@ -18,8 +18,8 @@ export * from './src/core/compiler/element_injector';
 // We export the Directive *annotation* instead of the *decorator*.
 // But it breaks the build.
 export {Directive, LifecycleEvent} from './src/core/annotations_impl/annotations';
-export {FormDirective} from './src/forms/directives/form_directive';
-export {ControlContainerDirective} from './src/forms/directives/control_container_directive';
+export {Form} from './src/forms/directives/form_interface';
+export {ControlContainer} from './src/forms/directives/control_container';
 export {Injectable} from './src/di/annotations_impl';
 export {BaseQueryList} from './src/core/compiler/base_query_list';
 export {AppProtoView, AppView, AppViewContainer} from './src/core/compiler/view';

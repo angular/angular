@@ -1,18 +1,18 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, BaseException} from 'angular2/src/facade/lang';
 
-import {ControlContainerDirective} from './control_container_directive';
-import {ControlDirective} from './control_directive';
+import {ControlContainer} from './control_container';
+import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators} from '../validators';
 
-export function controlPath(name, parent: ControlContainerDirective) {
+export function controlPath(name, parent: ControlContainer) {
   var p = ListWrapper.clone(parent.path);
   ListWrapper.push(p, name);
   return p;
 }
 
-export function setUpControl(c: Control, dir: ControlDirective) {
+export function setUpControl(c: Control, dir: NgControl) {
   if (isBlank(c)) _throwError(dir, "Cannot find control");
   if (isBlank(dir.valueAccessor)) _throwError(dir, "No value accessor for");
 
@@ -33,7 +33,7 @@ export function setUpControl(c: Control, dir: ControlDirective) {
   dir.valueAccessor.registerOnTouched(() => c.markAsTouched());
 }
 
-function _throwError(dir: ControlDirective, message: string): void {
+function _throwError(dir: NgControl, message: string): void {
   var path = ListWrapper.join(dir.path, " -> ");
   throw new BaseException(`${message} '${path}'`);
 }
