@@ -27,8 +27,16 @@ module.exports = function getExportDocType(log) {
     if(symbol.flags & ts.SymbolFlags.Property) {
       return 'module-property';
     }
+    if(symbol.flags & ts.SymbolFlags.TypeAlias) {
+      return 'type-alias';
+    }
 
-    log.warn('Unknown symbol type', symbol.name, symbol.flags, symbol.target);
+    log.warn('getExportDocType(): Unknown symbol type', {
+      symbolName: symbol.name,
+      symbolType: symbol.flags,
+      symbolTarget: symbol.target,
+      file: ts.getSourceFileOfNode(symbol.declarations[0]).fileName
+    });
     return 'unknown';
   }
 
