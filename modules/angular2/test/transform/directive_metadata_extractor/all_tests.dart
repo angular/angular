@@ -5,7 +5,7 @@ import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/parser.dart';
+import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:angular2/src/transform/directive_metadata_extractor/'
     'extractor.dart';
 import 'package:barback/barback.dart';
@@ -18,12 +18,11 @@ var formatter = new DartFormatter();
 
 void allTests() {
   var reader = new TestAssetReader();
-  var parser = new Parser(reader);
 
   beforeEach(() => setLogger(new PrintLogger()));
 
   Future<DirectiveMetadata> readMetadata(inputPath) async {
-    var ngDeps = await parser.parse(new AssetId('a', inputPath));
+    var ngDeps = await NgDeps.parse(reader, new AssetId('a', inputPath));
     return ngDeps.registeredTypes.first.directiveMetadata;
   }
 
@@ -36,7 +35,7 @@ void allTests() {
     });
 
     it('should parse compile children values', () async {
-      var ngDeps = await parser.parse(new AssetId('a',
+      var ngDeps = await NgDeps.parse(reader, new AssetId('a',
           'directive_metadata_extractor/'
           'directive_metadata_files/compile_children.ng_deps.dart'));
       var it = ngDeps.registeredTypes.iterator;
@@ -96,7 +95,7 @@ void allTests() {
 
     it('should fail when a class is annotated with multiple Directives.',
         () async {
-      var ngDeps = await parser.parse(new AssetId('a',
+      var ngDeps = await NgDeps.parse(reader, new AssetId('a',
           'directive_metadata_extractor/'
           'directive_metadata_files/too_many_directives.ng_deps.dart'));
       expect(() => ngDeps.registeredTypes.first.directiveMetadata).toThrowWith(

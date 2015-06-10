@@ -7,7 +7,7 @@ import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/parser.dart';
+import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
@@ -20,17 +20,16 @@ import 'package:code_transformers/assets.dart';
 /// `entryPoint`.
 Future<Map<String, DirectiveMetadata>> extractDirectiveMetadata(
     AssetReader reader, AssetId entryPoint) async {
-  return _extractDirectiveMetadataRecursive(
-      reader, new Parser(reader), entryPoint);
+  return _extractDirectiveMetadataRecursive(reader, entryPoint);
 }
 
 var _nullFuture = new Future.value(null);
 
 Future<Map<String, DirectiveMetadata>> _extractDirectiveMetadataRecursive(
-    AssetReader reader, Parser parser, AssetId entryPoint) async {
+    AssetReader reader, AssetId entryPoint) async {
   if (!(await reader.hasInput(entryPoint))) return null;
 
-  var ngDeps = await parser.parse(entryPoint);
+  var ngDeps = await NgDeps.parse(reader, entryPoint);
   var baseMap = _metadataMapFromNgDeps(ngDeps);
 
   return Future.wait(ngDeps.exports.map((export) {
@@ -40,7 +39,7 @@ Future<Map<String, DirectiveMetadata>> _extractDirectiveMetadataRecursive(
     uri = toDepsExtension(uri);
     var assetId = uriToAssetId(entryPoint, uri, logger, null /* span */);
     if (assetId == entryPoint) return _nullFuture;
-    return _extractDirectiveMetadataRecursive(reader, parser, assetId)
+    return _extractDirectiveMetadataRecursive(reader, assetId)
         .then((exportMap) {
       if (exportMap != null) {
         if (baseMap == null) {

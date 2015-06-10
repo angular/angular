@@ -6,7 +6,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/parser.dart';
+import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
@@ -23,8 +23,7 @@ import 'package:path/path.dart' as path;
 /// Since `@Directive` and `@Component` inherit from `@Injectable`, we know
 /// we will not miss processing any classes annotated with those tags.
 Future<bool> isNecessary(AssetReader reader, AssetId entryPoint) async {
-  var parser = new Parser(reader);
-  NgDeps ngDeps = await parser.parse(entryPoint);
+  NgDeps ngDeps = await NgDeps.parse(reader, entryPoint);
 
   if (ngDeps.registeredTypes.isNotEmpty) return true;
 
@@ -49,8 +48,7 @@ Future<bool> isNecessary(AssetReader reader, AssetId entryPoint) async {
 /// }
 /// ```
 Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
-  var parser = new Parser(reader);
-  NgDeps ngDeps = await parser.parse(entryPoint);
+  NgDeps ngDeps = await NgDeps.parse(reader, entryPoint);
 
   if (ngDeps == null) return null;
 

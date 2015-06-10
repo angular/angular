@@ -3,15 +3,14 @@ library angular2.transform.bind_generator.generator;
 import 'dart:async';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/parser.dart';
+import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:angular2/src/transform/common/property_utils.dart' as prop;
 import 'package:barback/barback.dart';
 
 import 'visitor.dart';
 
 Future<String> createNgSetters(AssetReader reader, AssetId entryPoint) async {
-  var parser = new Parser(reader);
-  NgDeps ngDeps = await parser.parse(entryPoint);
+  NgDeps ngDeps = await NgDeps.parse(reader, entryPoint);
 
   String code = ngDeps.code;
   var setters = _generateSetters(_createBindMap(ngDeps));
@@ -41,7 +40,7 @@ List<String> _generateSetters(Map<String, String> bindMap) {
   return setters;
 }
 
-/// Collapses all `bindProperties` in {@link ngDeps} into a map where the keys are
+/// Collapses all `properties` in {@link ngDeps} into a map where the keys are
 /// the bind properties and the values are either the one and only type
 /// binding to that property or the empty string.
 Map<String, String> _createBindMap(NgDeps ngDeps) {
@@ -51,6 +50,8 @@ Map<String, String> _createBindMap(NgDeps ngDeps) {
     visitor.bindConfig.clear();
     t.annotations.accept(visitor);
     visitor.bindConfig.forEach((String config) {
+      // See comments for `Directive` in annotations_impl/annotations.ts for
+      // details on how `properties` is specified.
       var prop;
       var idx = config.indexOf(':');
       if (idx > 0) {

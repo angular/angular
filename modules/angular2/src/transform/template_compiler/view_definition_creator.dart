@@ -9,7 +9,7 @@ import 'package:angular2/src/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/parser.dart';
+import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
@@ -50,7 +50,7 @@ class _ViewDefinitionCreator {
   _ViewDefinitionCreator(AssetReader reader, AssetId entryPoint)
       : this.reader = reader,
         this.entryPoint = entryPoint,
-        ngDepsFuture = new Parser(reader).parse(entryPoint);
+        ngDepsFuture = NgDeps.parse(reader, entryPoint);
 
   Future<ViewDefinitionResults> createViewDefs() async {
     var ngDeps = await ngDepsFuture;
