@@ -46,14 +46,24 @@ import {
   ProtoChangeDetector
 } from 'angular2/change_detection';
 
-import {getDefinition} from './simple_watch_config';
-import {getFactoryById} from './generated/simple_watch_classes';
+import {getDefinition} from './change_detector_config';
+import {getFactoryById} from './generated/change_detector_classes';
 
 const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 
+/**
+ * Tests in this spec run against three different implementations of `AbstractChangeDetector`,
+ * `dynamic` (which use reflection to inspect objects), `JIT` (which are generated only for
+ * Javascript at runtime using `eval` to avoid the need for reflection) and `Pregen` (which are
+ * generated only for Dart prior to app deploy to avoid the need for reflection).
+ *
+ * Pre-generated classes require knowledge of the shape of the change detector at the time of Dart
+ * transformation, so in these tests we abstract a `ChangeDetectorDefinition` out into the
+ * change_detector_config library and define a build step which pre-generates the necessary change
+ * detectors to execute these tests. Once that built step has run, those generated change detectors
+ * can be found in the generated/change_detector_classes library.
+ */
 export function main() {
-  // These tests also run against pre-generated Dart Change Detectors. We will move tests up from
-  // the loop below as they are converted.
   ListWrapper.forEach(['dynamic', 'JIT', 'Pregen'], (cdType) => {
 
     if (cdType == "JIT" && IS_DARTIUM) return;

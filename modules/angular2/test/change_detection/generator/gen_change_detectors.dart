@@ -5,8 +5,12 @@ import 'dart:io';
 
 import 'package:dart_style/dart_style.dart';
 import 'package:angular2/src/transform/template_compiler/change_detector_codegen.dart';
-import '../simple_watch_config.dart';
+import '../change_detector_config.dart';
 
+/// This tool consumes pre-defined `ChangeDetectorDefinition` objects and
+/// outputs code defining `AbstractChangeDetector` implementations corresponding
+/// to those definitions. These are used by the tests in
+/// ../change_detector_spec. Please see that library for more details.
 void main(List<String> args) {
   var buf = new StringBuffer('var $_MAP_NAME = {');
   var codegen = new Codegen();
