@@ -57,7 +57,8 @@ export class ProtoViewBuilder {
 
         MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {
           MapWrapper.set(propertySetters, hostPropertyName,
-                         setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), hostPropertyName));
+                         setterFactory.createSetter(ebb.element, isPresent(ebb.componentId),
+                                                    hostPropertyName));
         });
 
         ListWrapper.forEach(dbb.hostActions, (hostAction) => {
@@ -73,7 +74,9 @@ export class ProtoViewBuilder {
       });
 
       MapWrapper.forEach(ebb.propertyBindings, (_, propertyName) => {
-        MapWrapper.set(propertySetters, propertyName, setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), propertyName));
+        MapWrapper.set(
+            propertySetters, propertyName,
+            setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), propertyName));
       });
 
       var nestedProtoView =
@@ -99,6 +102,7 @@ export class ProtoViewBuilder {
         textBindings: ebb.textBindings,
         readAttributes: ebb.readAttributes
       }));
+      var elementIsEmpty = this._isEmptyElement(ebb.element);
       ListWrapper.push(renderElementBinders, new ElementBinder({
                          textNodeIndices: ebb.textBindingIndices,
                          contentTagSelector: ebb.contentTagSelector,
@@ -112,7 +116,8 @@ export class ProtoViewBuilder {
                          localEvents: ebb.eventBuilder.buildLocalEvents(),
                          globalEvents: ebb.eventBuilder.buildGlobalEvents(),
                          hostActions: hostActions,
-                         propertySetters: propertySetters
+                         propertySetters: propertySetters,
+                         elementIsEmpty: elementIsEmpty
                        }));
     });
     return new api.ProtoViewDto({
@@ -125,6 +130,18 @@ export class ProtoViewBuilder {
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings
     });
+  }
+
+  _isEmptyElement(el) {
+    var childNodes = DOM.childNodes(el);
+    for (var i = 0; i < childNodes.length; i++) {
+      var node = childNodes[i];
+      if ((DOM.isTextNode(node) && DOM.getText(node).trim().length > 0) ||
+          (DOM.isElementNode(node))) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
