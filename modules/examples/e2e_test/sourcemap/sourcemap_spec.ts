@@ -29,12 +29,12 @@ describe('sourcemaps', function() {
       expect(errorColumn).not.toBeNull();
 
 
-      var sourceMapData = fs.readFileSync('dist/js/prod/es5/examples/src/sourcemap/index.js.map');
+      var sourceMapData = fs.readFileSync('dist/js/prod/examples/src/sourcemap/index.js.map');
       var decoder = new sourceMap.SourceMapConsumer(JSON.parse(sourceMapData));
 
       var originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
 
-      var finalMapData = fs.readFileSync('dist/js/prod/es6/examples/src/sourcemap/index.es6.map');
+      var finalMapData = fs.readFileSync('dist/js/es6/prod/examples/src/sourcemap/index.js.map');
       var finalDecoder = new sourceMap.SourceMapConsumer(JSON.parse(finalMapData));
 
       var finalPosition = finalDecoder.originalPositionFor(originalPosition);
