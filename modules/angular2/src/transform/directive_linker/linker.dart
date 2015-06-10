@@ -113,7 +113,8 @@ Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
           .map((UriBasedDirective directive) {
     var ngDepsUri = _toDepsUri(stringLiteralToString(directive.uri));
     var spanArg = null;
-    var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger, spanArg);
+    var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger, spanArg,
+        errorOnAbsolute: false);
     if (ngDepsAsset == entryPoint) return nullFuture;
     return reader.hasInput(ngDepsAsset).then((hasInput) {
       if (hasInput) {

@@ -97,8 +97,9 @@ class _ViewDefinitionCreator {
         var prefix = node.prefix != null && node.prefix.name != null
             ? '${node.prefix.name}'
             : null;
-        importAssetToPrefix[
-            uriToAssetId(entryPoint, uri, logger, null /* span */)] = prefix;
+        importAssetToPrefix[uriToAssetId(
+            entryPoint, uri, logger, null /* span */,
+            errorOnAbsolute: false)] = prefix;
       }
     }
     return importAssetToPrefix;
