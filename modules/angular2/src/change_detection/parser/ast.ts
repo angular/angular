@@ -410,11 +410,16 @@ export class AstTransformer implements AstVisitor {
     return res;
   }
 
-  visitChain(ast: Chain) { throw new BaseException('Not implemented'); }
+  visitChain(ast: Chain) { return new Chain(this.visitAll(ast.expressions)); }
 
-  visitAssignment(ast: Assignment) { throw new BaseException('Not implemented'); }
+  visitAssignment(ast: Assignment) {
+    return new Assignment(ast.target.visit(this), ast.value.visit(this));
+  }
 
-  visitIf(ast: If) { throw new BaseException('Not implemented'); }
+  visitIf(ast: If) {
+    let falseExp = isPresent(ast.falseExp) ? ast.falseExp.visit(this) : null;
+    return new If(ast.condition.visit(this), ast.trueExp.visit(this), falseExp);
+  }
 }
 
 var _evalListCache = [
