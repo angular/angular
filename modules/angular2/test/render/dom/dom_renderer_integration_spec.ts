@@ -70,6 +70,25 @@ export function main() {
              });
        }));
 
+    it('should not create LightDom instances if the host element is empty',
+       inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+         tb.compileAll([
+             someComponent,
+             new ViewDefinition({
+                 componentId: 'someComponent', template: '<some-comp>  <!-- comment -->\n </some-comp>',
+                 directives: [someComponent]
+             })
+           ])
+             .then((protoViewDtos) => {
+               var rootView = tb.createRootView(protoViewDtos[0]);
+               var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
+               expect(cmpView.rawView.proto.elementBinders[0].componentId).toBe('someComponent');
+               expect(cmpView.rawView.boundElements[0].lightDom).toBe(null);
+
+               async.done();
+             });
+       }));
+
     it('should update text nodes', inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compileAll([
              someComponent,

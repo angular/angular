@@ -276,11 +276,15 @@ export class DomRenderer extends Renderer {
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
       var element = boundElements[binderIdx];
+      var domEl = element.element;
 
       // lightDoms
       var lightDom = null;
-      if (isPresent(binder.componentId)) {
-        lightDom = this._shadowDomStrategy.constructLightDom(view, element.element);
+      // Note: for the root element we can't use the binder.elementIsEmpty
+      // information as we don't use the element from the ProtoView
+      // but an element from the document.
+      if (isPresent(binder.componentId) && (!binder.elementIsEmpty || isPresent(inplaceElement))) {
+        lightDom = this._shadowDomStrategy.constructLightDom(view, domEl);
       }
       element.lightDom = lightDom;
 
@@ -294,7 +298,7 @@ export class DomRenderer extends Renderer {
       // events
       if (isPresent(binder.eventLocals) && isPresent(binder.localEvents)) {
         for (var i = 0; i < binder.localEvents.length; i++) {
-          this._createEventListener(view, element.element, binderIdx, binder.localEvents[i].name,
+          this._createEventListener(view, domEl, binderIdx, binder.localEvents[i].name,
                                     binder.eventLocals);
         }
       }

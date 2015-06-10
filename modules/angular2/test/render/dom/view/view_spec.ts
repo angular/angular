@@ -48,20 +48,24 @@ export function main() {
       return new DomView(pv, [DOM.childNodes(root)[0]], [], boundElements);
     }
 
+    function createElementBinder(parentIndex:number = 0, distanceToParent:number = 1) {
+      return new ElementBinder({parentIndex: parentIndex, distanceToParent:distanceToParent, textNodeIndices:[]});
+    }
+
     describe('getDirectParentElement', () => {
 
       it('should return the DomElement of the direct parent', () => {
         var pv = createProtoView(
-            [new ElementBinder(), new ElementBinder({parentIndex: 0, distanceToParent: 1})]);
+            [createElementBinder(), createElementBinder(0, 1)]);
         var view = createView(pv, 2);
         expect(view.getDirectParentElement(1)).toBe(view.boundElements[0]);
       });
 
       it('should return null if the direct parent is not bound', () => {
         var pv = createProtoView([
-          new ElementBinder(),
-          new ElementBinder(),
-          new ElementBinder({parentIndex: 0, distanceToParent: 2})
+          createElementBinder(),
+          createElementBinder(),
+          createElementBinder(0,2)
         ]);
         var view = createView(pv, 3);
         expect(view.getDirectParentElement(2)).toBe(null);
