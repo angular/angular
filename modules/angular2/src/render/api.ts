@@ -256,19 +256,25 @@ export class RenderViewRef {}
 
 export class ViewDefinition {
   componentId: string;
-  absUrl: string;
+  templateAbsUrl: string;
   template: string;
   directives: List<DirectiveMetadata>;
+  styleAbsUrls: List<string>;
+  styles: List<string>;
 
-  constructor({componentId, absUrl, template, directives}: {
+  constructor({componentId, templateAbsUrl, template, styleAbsUrls, styles, directives}: {
     componentId?: string,
-    absUrl?: string,
+    templateAbsUrl?: string,
     template?: string,
+    styleAbsUrls?: List<string>,
+    styles?: List<string>,
     directives?: List<DirectiveMetadata>
   }) {
     this.componentId = componentId;
-    this.absUrl = absUrl;
+    this.templateAbsUrl = templateAbsUrl;
     this.template = template;
+    this.styleAbsUrls = styleAbsUrls;
+    this.styles = styles;
     this.directives = directives;
   }
 }

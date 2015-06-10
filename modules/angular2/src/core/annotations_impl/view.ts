@@ -50,6 +50,16 @@ export class View {
   template: string;
 
   /**
+   * Specifies stylesheet URLs for an angular component.
+   */
+  styleUrls: List<string>;
+
+  /**
+   * Specifies an inline stylesheet for an angular component.
+   */
+  styles: List<string>;
+
+  /**
    * Specifies a list of directives that can be used within a template.
    *
    * Directives must be listed explicitly to provide proper component encapsulation.
@@ -78,13 +88,16 @@ export class View {
 
   /**
    * Specify a custom renderer for this View.
-   * If this is set, neither `template`, `templateURL` nor `directives` are used.
+   * If this is set, neither `template`, `templateUrl`, `styles`, `styleUrls` nor `directives` are
+   * used.
    */
   renderer: string;
 
-  constructor({templateUrl, template, directives, renderer}: ViewArgs = {}) {
+  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: ViewArgs = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
+    this.styleUrls = styleUrls;
+    this.styles = styles;
     this.directives = directives;
     this.renderer = renderer;
   }
@@ -94,4 +107,6 @@ export interface ViewArgs {
   template?: string;
   directives?: List<Type | any | List<any>>;
   renderer?: string;
+  styles?: List<string>;
+  styleUrls?: List<string>;
 }

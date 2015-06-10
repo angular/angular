@@ -8,7 +8,7 @@ import {NG_BINDING_CLASS} from '../util';
 
 import {RenderProtoViewRef} from '../../api';
 
-export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef) {
+export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef): DomProtoView {
   return (<DomProtoViewRef>protoViewRef)._protoView;
 }
 

@@ -210,11 +210,11 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
         return null;
       }
       if (keyString == 'templateUrl') {
-        if (viewDef.absUrl != null) {
+        if (viewDef.templateAbsUrl != null) {
           logger.error(
               'Found multiple values for "templateUrl". Source: ${node}');
         }
-        viewDef.absUrl = valueString;
+        viewDef.templateAbsUrl = valueString;
       } else {
         // keyString == 'template'
         if (viewDef.template != null) {
