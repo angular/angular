@@ -43,10 +43,14 @@ export function main() {
 
   function emptyLocals() { return new Locals(null, MapWrapper.create()); }
 
-  function expectEval(text, passedInContext = null, passedInLocals = null) {
+  function evalAction(text, passedInContext = null, passedInLocals = null) {
     var c = isBlank(passedInContext) ? td() : passedInContext;
     var l = isBlank(passedInLocals) ? emptyLocals() : passedInLocals;
-    return expect(parseAction(text).eval(c, l));
+    return parseAction(text).eval(c, l);
+  }
+
+  function expectEval(text, passedInContext = null, passedInLocals = null) {
+    return expect(evalAction(text, passedInContext, passedInLocals));
   }
 
   function expectEvalError(text, passedInContext = null, passedInLocals = null) {
@@ -277,6 +281,28 @@ export function main() {
         it('should throw on incorrect ternary operator syntax', () => {
           expectEvalError("true?1").toThrowError(new RegExp(
               'Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
+        });
+      });
+
+      describe("if", () => {
+        it('should parse if statements', () => {
+
+          var fixtures = [
+            ['if (true) a = 0', 0, null],
+            ['if (false) a = 0', null, null],
+            ['if (a == null) b = 0', null, 0],
+            ['if (true) { a = 0; b = 0 }', 0, 0],
+            ['if (true) { a = 0; b = 0 } else { a = 1; b = 1; }', 0, 0],
+            ['if (false) { a = 0; b = 0 } else { a = 1; b = 1; }', 1, 1],
+            ['if (false) { } else { a = 1; b = 1; }', 1, 1],
+          ];
+
+          fixtures.forEach(fix => {
+            var testData = td(null, null);
+            evalAction(fix[0], testData);
+            expect(testData.a).toEqual(fix[1]);
+            expect(testData.b).toEqual(fix[2]);
+          });
         });
       });
 

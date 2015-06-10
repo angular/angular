@@ -10,6 +10,7 @@ import {
   Binary,
   Chain,
   Conditional,
+  If,
   Pipe,
   FunctionCall,
   ImplicitReceiver,
@@ -200,6 +201,8 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   visitAssignment(ast: Assignment) { throw new BaseException('Not supported'); }
 
   visitChain(ast: Chain) { throw new BaseException('Not supported'); }
+
+  visitIf(ast: If) { throw new BaseException('Not supported'); }
 
   _visitAll(asts: List<any>) {
     var res = ListWrapper.createFixedSize(asts.length);

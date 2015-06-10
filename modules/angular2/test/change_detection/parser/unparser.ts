@@ -6,6 +6,8 @@ import {
   Binary,
   Chain,
   Conditional,
+  EmptyExpr,
+  If,
   Pipe,
   FunctionCall,
   ImplicitReceiver,
@@ -21,7 +23,7 @@ import {
 } from 'angular2/src/change_detection/parser/ast';
 
 
-import {StringWrapper, RegExpWrapper} from 'angular2/src/facade/lang';
+import {StringWrapper, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
 
 var quoteRegExp = RegExpWrapper.create('"');
 
@@ -53,10 +55,11 @@ export class Unparser implements AstVisitor {
   }
 
   visitChain(ast: Chain) {
-    ast.expressions.forEach(expression => {
-      this._visit(expression);
-      this._expression += ';'
-    });
+    var len = ast.expressions.length;
+    for (let i = 0; i < len; i++) {
+      this._visit(ast.expressions[i]);
+      this._expression += i == len - 1 ? ';' : '; ';
+    }
   }
 
   visitConditional(ast: Conditional) {
@@ -65,6 +68,17 @@ export class Unparser implements AstVisitor {
     this._visit(ast.trueExp);
     this._expression += ' : ';
     this._visit(ast.falseExp);
+  }
+
+  visitIf(ast: If) {
+    this._expression += 'if (';
+    this._visit(ast.condition);
+    this._expression += ') ';
+    this._visitExpOrBlock(ast.trueExp);
+    if (isPresent(ast.falseExp)) {
+      this._expression += ' else ';
+      this._visitExpOrBlock(ast.falseExp);
+    }
   }
 
   visitPipe(ast: Pipe) {
@@ -179,4 +193,11 @@ export class Unparser implements AstVisitor {
   }
 
   private _visit(ast: AST) { ast.visit(this); }
+
+  private _visitExpOrBlock(ast: AST) {
+    var isBlock = ast instanceof Chain || ast instanceof EmptyExpr;
+    if (isBlock) this._expression += '{ ';
+    this._visit(ast);
+    if (isBlock) this._expression += ' }';
+  }
 }
