@@ -512,7 +512,7 @@ export class Directive extends Injectable {
    * For example, we could write a binding that updates the directive on structural changes, rather
    * than on reference changes, as normally occurs in change detection.
    *
-   * See {@link Pipe} and {@link pipes/keyValDiff} documentation for more details.
+   * See {@link Pipe} and {@link KeyValueChanges} documentation for more details.
    *
    * ```
    * @Directive({
@@ -724,8 +724,8 @@ export class Directive extends Injectable {
   /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
-   * See {@link annotations/onChange}, {@link annotations/onDestroy},
-   * {@link annotations/onAllChangesDone} for details.
+   * See {@link /angular2/annotations/onChange}, {@link /angular2/annotations/onDestroy},
+   * {@link /angular2/annotations/onAllChangesDone} for details.
    */
   lifecycle: List<LifecycleEvent>;
 

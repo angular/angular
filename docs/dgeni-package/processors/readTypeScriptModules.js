@@ -139,11 +139,23 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       }
     });
 
+    /**
+     * Fixes issue where @link aliases in docs are referring to the token name (i.e. QueryList),
+     * but the name variable contains the token name plus generic information and heritage, (i.e.
+     * QueryList<T> extends List<T>). See https://github.com/angular/angular/issues/2452
+     */
+    var exportAliasNames = [name];
+    var simpleAliasRegexp = /^([a-zA-Z0-9]+).*$/i;
+    var simpleNameMatch = simpleAliasRegexp.exec(name);
+    if (simpleNameMatch && simpleNameMatch.length > 1 && simpleNameMatch[1] !== name) {
+      exportAliasNames.push(simpleNameMatch[1]);
+    }
+
     var exportDoc = {
       docType: getExportDocType(exportSymbol),
       name: name,
       id: name,
-      aliases: [name],
+      aliases: exportAliasNames,
       moduleDoc: moduleDoc,
       content: getContent(exportSymbol),
       fileInfo: getFileInfo(exportSymbol, basePath),
