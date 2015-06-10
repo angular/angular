@@ -16,9 +16,13 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 
 var _parser = new Parser(new Lexer());
 
-function _createBindingRecords(expression: string): List<BindingRecord> {
+function _getParser() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var ast = _parser.parseBinding(expression, 'location');
+  return _parser;
+}
+
+function _createBindingRecords(expression: string): List<BindingRecord> {
+  var ast = _getParser().parseBinding(expression, 'location');
   return [BindingRecord.createForElement(ast, 0, PROP_NAME)];
 }
 
@@ -49,6 +53,11 @@ export function getDefinition(id: string): TestDefinition {
     let cdDef = val.createChangeDetectorDefinition();
     cdDef.id = id;
     testDef = new TestDefinition(id, cdDef, null);
+  } else if (StringMapWrapper.contains(_DirectiveUpdating.availableDefinitions, id)) {
+    let val = StringMapWrapper.get(_DirectiveUpdating.availableDefinitions, id);
+    let cdDef = val.createChangeDetectorDefinition();
+    cdDef.id = id;
+    testDef = new TestDefinition(id, cdDef, null);
   } else if (ListWrapper.indexOf(_availableDefinitions, id) >= 0) {
     var strategy = null;
     var variableBindings = [];
@@ -74,7 +83,11 @@ export class TestDefinition {
  * `ChangeDetector` classes.
  */
 export function getAllDefinitions(): List<TestDefinition> {
-  return ListWrapper.map(_availableDefinitions, (id) => getDefinition(id));
+  var allDefs = _availableDefinitions;
+  allDefs = ListWrapper.concat(allDefs, StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions));
+  allDefs = ListWrapper.concat(allDefs, StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions));
+  allDefs = ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
+  return ListWrapper.map(allDefs, (id) => getDefinition(id));
 }
 
 class _ExpressionWithLocals {
@@ -121,7 +134,7 @@ class _ExpressionWithMode {
       var dirRecordWithOnPush =
           new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
       var updateDirWithOnPushRecord =
-          BindingRecord.createForDirective(_parser.parseBinding('42', 'location'), 'a',
+          BindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
                                            (o, v) => (<any>o).a = v, dirRecordWithOnPush);
       bindingRecords = [updateDirWithOnPushRecord];
       directiveRecords = [dirRecordWithOnPush];
@@ -144,61 +157,143 @@ class _ExpressionWithMode {
   };
 }
 
+class _DirectiveUpdating {
+  constructor(private _bindingRecords: List<BindingRecord>,
+              private _directiveRecords: List<DirectiveRecord>) {}
+
+  createChangeDetectorDefinition(): ChangeDetectorDefinition {
+    var strategy = null;
+    var variableBindings = [];
+
+    return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings,
+                                        this._bindingRecords, this._directiveRecords);
+  }
+
+  static updateA(expression: string, dirRecord): BindingRecord {
+    return BindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'a',
+                                            (o, v) => (<any>o).a = v, dirRecord);
+  }
+
+  static updateB(expression: string, dirRecord): BindingRecord {
+    return BindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'b',
+                                            (o, v) => (<any>o).b = v, dirRecord);
+  }
+
+  static basicRecords: List<DirectiveRecord> = [
+    new DirectiveRecord({
+      directiveIndex: new DirectiveIndex(0, 0),
+      callOnChange: true,
+      callOnCheck: true,
+      callOnAllChangesDone: true
+    }),
+    new DirectiveRecord({
+      directiveIndex: new DirectiveIndex(0, 1),
+      callOnChange: true,
+      callOnCheck: true,
+      callOnAllChangesDone: true
+    })
+  ];
+
+  static recordNoCallbacks = new DirectiveRecord({
+    directiveIndex: new DirectiveIndex(0, 0),
+    callOnChange: false,
+    callOnCheck: false,
+    callOnAllChangesDone: false
+  });
+
+  /**
+   * Map from test id to _DirectiveUpdating.
+   * Definitions in this map define definitions which allow testing directive updating.
+   */
+  static availableDefinitions: StringMap<string, _DirectiveUpdating> = {
+    'directNoDispatcher': new _DirectiveUpdating(
+        [_DirectiveUpdating.updateA('42', _DirectiveUpdating.basicRecords[0])],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'groupChanges': new _DirectiveUpdating(
+        [
+          _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
+          _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
+          BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
+          _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
+          BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
+        ],
+        [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+    'directiveOnCheck': new _DirectiveUpdating(
+        [BindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'directiveOnInit': new _DirectiveUpdating(
+        [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'emptyWithDirectiveRecords': new _DirectiveUpdating(
+        [], [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+    'noCallbacks': new _DirectiveUpdating(
+        [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
+        [_DirectiveUpdating.recordNoCallbacks]),
+    'readingDirectives': new _DirectiveUpdating([
+      BindingRecord.createForHostProperty(new DirectiveIndex(0, 0),
+                                          _getParser().parseBinding('a', 'location'), PROP_NAME)
+    ],
+                                                [_DirectiveUpdating.basicRecords[0]]),
+    'interpolation': new _DirectiveUpdating([
+      BindingRecord.createForElement(_getParser().parseInterpolation('B{{a}}A', 'location'), 0,
+                                     PROP_NAME)
+    ],
+                                            [])
+  };
+}
+
 /**
  * The list of all test definitions this config supplies.
  * Items in this list that do not appear in other structures define tests with expressions
  * equivalent to their ids.
  */
-var _availableDefinitions = ListWrapper.concat(
-    [
-      '10',
-      '"str"',
-      '"a\n\nb"',
-      '10 + 2',
-      '10 - 2',
-      '10 * 2',
-      '10 / 2',
-      '11 % 2',
-      '1 == 1',
-      '1 != 1',
-      '1 == true',
-      '1 === 1',
-      '1 !== 1',
-      '1 === true',
-      '1 < 2',
-      '2 < 1',
-      '1 > 2',
-      '2 > 1',
-      '1 <= 2',
-      '2 <= 2',
-      '2 <= 1',
-      '2 >= 1',
-      '2 >= 2',
-      '1 >= 2',
-      'true && true',
-      'true && false',
-      'true || false',
-      'false || false',
-      '!true',
-      '!!true',
-      '1 < 2 ? 1 : 2',
-      '1 > 2 ? 1 : 2',
-      '["foo", "bar"][0]',
-      '{"foo": "bar"}["foo"]',
-      'name',
-      '[1, 2]',
-      '[1, a]',
-      '{z: 1}',
-      '{z: a}',
-      'name | pipe',
-      'value',
-      'a',
-      'address.city',
-      'address?.city',
-      'address?.toString()',
-      'sayHi("Jim")',
-      'a()(99)',
-      'a.sayHi("Jim")'
-    ],
-    ListWrapper.concat(StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions),
-                       StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions)));
+var _availableDefinitions = [
+  '10',
+  '"str"',
+  '"a\n\nb"',
+  '10 + 2',
+  '10 - 2',
+  '10 * 2',
+  '10 / 2',
+  '11 % 2',
+  '1 == 1',
+  '1 != 1',
+  '1 == true',
+  '1 === 1',
+  '1 !== 1',
+  '1 === true',
+  '1 < 2',
+  '2 < 1',
+  '1 > 2',
+  '2 > 1',
+  '1 <= 2',
+  '2 <= 2',
+  '2 <= 1',
+  '2 >= 1',
+  '2 >= 2',
+  '1 >= 2',
+  'true && true',
+  'true && false',
+  'true || false',
+  'false || false',
+  '!true',
+  '!!true',
+  '1 < 2 ? 1 : 2',
+  '1 > 2 ? 1 : 2',
+  '["foo", "bar"][0]',
+  '{"foo": "bar"}["foo"]',
+  'name',
+  '[1, 2]',
+  '[1, a]',
+  '{z: 1}',
+  '{z: a}',
+  'name | pipe',
+  'value',
+  'a',
+  'address.city',
+  'address?.city',
+  'address?.toString()',
+  'sayHi("Jim")',
+  'a()(99)',
+  'a.sayHi("Jim")'
+];

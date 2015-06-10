@@ -74,6 +74,14 @@ export function main() {
         }
       }
 
+      function _createWithoutHydrate(expression: string) {
+        var dispatcher = new TestDispatcher();
+        var registry = null;
+        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef, registry).instantiate(dispatcher);
+        return new _ChangeDetectorAndDispatcher(cd, dispatcher);
+      }
+
+
       function _createChangeDetector(expression: string, context = _DEFAULT_CONTEXT,
                                      registry = null) {
         var dispatcher = new TestDispatcher();
@@ -223,17 +231,17 @@ export function main() {
         expect(_bindSimpleValue('address?.toString()', person)).toEqual(['propName=MTV']);
       });
 
-      it("should support method calls", () => {
+      it('should support method calls', () => {
         var person = new Person('Victor');
         expect(_bindSimpleValue('sayHi("Jim")', person)).toEqual(['propName=Hi, Jim']);
       });
 
-      it("should support function calls", () => {
+      it('should support function calls', () => {
         var td = new TestData(() => (a) => a);
         expect(_bindSimpleValue('a()(99)', td)).toEqual(['propName=99']);
       });
 
-      it("should support chained method calls", () => {
+      it('should support chained method calls', () => {
         var person = new Person('Victor');
         var td = new TestData(person);
         expect(_bindSimpleValue('a.sayHi("Jim")', td)).toEqual(['propName=Hi, Jim']);
@@ -276,7 +284,14 @@ export function main() {
         expect(val.dispatcher.loggedValues[0]['z']).toEqual(1);
       });
 
-      // TODO(kegluneq): Insert it('should support interpolation', ...) testcase.
+      it('should support interpolation', () => {
+        var val = _createChangeDetector('interpolation', new TestData('value'));
+        val.changeDetector.hydrate(new TestData('value'), null, null);
+
+        val.changeDetector.detectChanges();
+
+        expect(val.dispatcher.log).toEqual(['propName=BvalueA']);
+      });
 
       describe('change notification', () => {
         describe('simple checks', () => {
@@ -298,10 +313,177 @@ export function main() {
           });
         });
 
-        // TODO(kegluneq): Insert describe('change notification', ...) testcases.
+        describe('updating directives', () => {
+          var directive1;
+          var directive2;
+
+          beforeEach(() => {
+            directive1 = new TestDirective();
+            directive2 = new TestDirective();
+          });
+
+          it('should happen directly, without invoking the dispatcher', () => {
+            var val = _createWithoutHydrate('directNoDispatcher');
+            val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual([]);
+            expect(directive1.a).toEqual(42);
+          });
+
+          describe('onChange', () => {
+            it('should notify the directive when a group of records changes', () => {
+              var cd = _createWithoutHydrate('groupChanges').changeDetector;
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []));
+              cd.detectChanges();
+              expect(directive1.changes).toEqual({'a': 1, 'b': 2});
+              expect(directive2.changes).toEqual({'a': 3});
+            });
+          });
+
+          describe('onCheck', () => {
+            it('should notify the directive when it is checked', () => {
+              var cd = _createWithoutHydrate('directiveOnCheck').changeDetector;
+
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+              cd.detectChanges();
+
+              expect(directive1.onCheckCalled).toBe(true);
+              directive1.onCheckCalled = false;
+
+              cd.detectChanges();
+              expect(directive1.onCheckCalled).toBe(true);
+            });
+
+            it('should not call onCheck in detectNoChanges', () => {
+              var cd = _createWithoutHydrate('directiveOnCheck').changeDetector;
+
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+
+              cd.checkNoChanges();
+
+              expect(directive1.onCheckCalled).toBe(false);
+            });
+          });
+
+          describe('onInit', () => {
+            it('should notify the directive after it has been checked the first time', () => {
+              var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
+
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+
+              cd.detectChanges();
+
+              expect(directive1.onInitCalled).toBe(true);
+
+              directive1.onInitCalled = false;
+
+              cd.detectChanges();
+
+              expect(directive1.onInitCalled).toBe(false);
+            });
+
+            it('should not call onInit in detectNoChanges', () => {
+              var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
+
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+
+              cd.checkNoChanges();
+
+              expect(directive1.onInitCalled).toBe(false);
+            });
+          });
+
+          describe('onAllChangesDone', () => {
+            it('should be called after processing all the children', () => {
+              var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []));
+
+              cd.detectChanges();
+
+              expect(directive1.onChangesDoneCalled).toBe(true);
+              expect(directive2.onChangesDoneCalled).toBe(true);
+
+              // reset directives
+              directive1.onChangesDoneCalled = false;
+              directive2.onChangesDoneCalled = false;
+
+              // Verify that checking should not call them.
+              cd.checkNoChanges();
+
+              expect(directive1.onChangesDoneCalled).toBe(false);
+              expect(directive2.onChangesDoneCalled).toBe(false);
+
+              // re-verify that changes are still detected
+              cd.detectChanges();
+
+              expect(directive1.onChangesDoneCalled).toBe(true);
+              expect(directive2.onChangesDoneCalled).toBe(true);
+            });
+
+
+            it('should not be called when onAllChangesDone is false', () => {
+              var cd = _createWithoutHydrate('noCallbacks').changeDetector;
+
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+
+              cd.detectChanges();
+
+              expect(directive1.onChangesDoneCalled).toEqual(false);
+            });
+
+            it('should be called in reverse order so the child is always notified before the parent',
+               () => {
+                 var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
+
+                 var onChangesDoneCalls = [];
+                 var td1;
+                 td1 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td1));
+                 var td2;
+                 td2 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td2));
+                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([td1, td2], []));
+
+                 cd.detectChanges();
+
+                 expect(onChangesDoneCalls).toEqual([td2, td1]);
+               });
+
+            it('should be called before processing shadow dom children', () => {
+              var parent = _createWithoutHydrate('directNoDispatcher').changeDetector;
+              var child = _createWithoutHydrate('directNoDispatcher').changeDetector;
+              parent.addShadowDomChild(child);
+
+              var orderOfOperations = [];
+
+              var directiveInShadowDom = null;
+              directiveInShadowDom =
+                  new TestDirective(() => { ListWrapper.push(orderOfOperations, directiveInShadowDom); });
+              var parentDirective = null;
+              parentDirective =
+                  new TestDirective(() => { ListWrapper.push(orderOfOperations, parentDirective); });
+
+              parent.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([parentDirective], []));
+              child.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directiveInShadowDom], []));
+
+              parent.detectChanges();
+              expect(orderOfOperations).toEqual([parentDirective, directiveInShadowDom]);
+            });
+          });
+        });
       });
 
-      // TODO(kegluneq): Insert describe('reading directives', ...) testcases.
+      describe('reading directives', () => {
+        it('should read directive properties', () => {
+          var directive = new TestDirective();
+          directive.a = 'aaa';
+
+          var val = _createWithoutHydrate('readingDirectives');
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive], []));
+
+          val.changeDetector.detectChanges();
+
+          expect(val.dispatcher.loggedValues).toEqual(['aaa']);
+        });
+      });
 
       describe('enforce no new changes', () => {
         it('should throw when a record gets changed after it has been checked', () => {
@@ -402,14 +584,9 @@ export function main() {
       });
 
       describe('mode', () => {
-        var _createWithoutHydrate = function(expression: string) {
-          var registry = null;
-          return _getProtoChangeDetector(getDefinition(expression).cdDef, registry).instantiate(new TestDispatcher());
-        };
-
         it('should set the mode to CHECK_ALWAYS when the default change detection is used',
            () => {
-             var cd = _createWithoutHydrate('emptyUsingDefaultStrategy');
+             var cd = _createWithoutHydrate('emptyUsingDefaultStrategy').changeDetector;
              expect(cd.mode).toEqual(null);
 
              cd.hydrate(_DEFAULT_CONTEXT, null, null);
@@ -417,7 +594,7 @@ export function main() {
            });
 
         it('should set the mode to CHECK_ONCE when the push change detection is used', () => {
-          var cd = _createWithoutHydrate('emptyUsingOnPushStrategy');
+          var cd = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
           cd.hydrate(_DEFAULT_CONTEXT, null, null);
 
           expect(cd.mode).toEqual(CHECK_ONCE);
@@ -468,7 +645,7 @@ export function main() {
           var directives;
 
           beforeEach(() => {
-            checkedDetector = _createWithoutHydrate('emptyUsingOnPushStrategy');
+            checkedDetector = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
             checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null);
             checkedDetector.mode = CHECKED;
 
@@ -477,7 +654,7 @@ export function main() {
           });
 
           it('should set the mode to CHECK_ONCE when a binding is updated', () => {
-            var cd = _createWithoutHydrate('onPushRecordsUsingDefaultStrategy');
+            var cd = _createWithoutHydrate('onPushRecordsUsingDefaultStrategy').changeDetector;
             cd.hydrate(_DEFAULT_CONTEXT, null, directives);
 
             expect(checkedDetector.mode).toEqual(CHECKED);
@@ -646,313 +823,6 @@ export function main() {
         expect(val.dispatcher.log).toEqual(['propName=Megatron']);
       });
     });
-  });
-
-  describe("change detection", () => {
-    StringMapWrapper.forEach(
-        {
-          "dynamic": (bindingRecords, variableBindings = null, directiveRecords = null,
-                      registry = null, strategy = null) =>
-                             new DynamicProtoChangeDetector(
-                                 registry, new ChangeDetectorDefinition(
-                                               null, strategy,
-                                               isBlank(variableBindings) ? [] : variableBindings,
-                                               isBlank(bindingRecords) ? [] : bindingRecords,
-                                               isBlank(directiveRecords) ? [] : directiveRecords)),
-
-          "JIT": (bindingRecords, variableBindings = null, directiveRecords = null, registry = null,
-                  strategy = null) =>
-                         new JitProtoChangeDetector(
-                             registry, new ChangeDetectorDefinition(
-                                           null,
-                                           strategy, isBlank(variableBindings) ? [] :
-                                                                                 variableBindings,
-                                           isBlank(bindingRecords) ? [] : bindingRecords,
-                                           isBlank(directiveRecords) ? [] : directiveRecords))
-
-        },
-        (createProtoChangeDetector, name) => {
-
-          if (name == "JIT" && IS_DARTIUM) return;
-
-          var parser = new Parser(new Lexer());
-
-          function ast(exp: string, location: string = 'location') {
-            return parser.parseBinding(exp, location);
-          }
-
-          function dirs(directives: List<any>) { return new FakeDirectives(directives, []); }
-
-          describe(`${name} change detection`, () => {
-            var dispatcher;
-
-            beforeEach(() => { dispatcher = new TestDispatcher(); });
-
-            it("should support interpolation", () => {
-              var ast = parser.parseInterpolation("B{{a}}A", "location");
-              var pcd = createProtoChangeDetector([BindingRecord.createForElement(ast, 0, "memo")]);
-
-              var cd = pcd.instantiate(dispatcher);
-              cd.hydrate(new TestData("value"), null, null);
-
-              cd.detectChanges();
-
-              expect(dispatcher.log).toEqual(["memo=BvalueA"]);
-            });
-
-            describe("change notification", () => {
-              describe("updating directives", () => {
-                var dirRecord1 = new DirectiveRecord({
-                  directiveIndex: new DirectiveIndex(0, 0),
-                  callOnChange: true,
-                  callOnCheck: true,
-                  callOnAllChangesDone: true
-                });
-
-                var dirRecord2 = new DirectiveRecord({
-                  directiveIndex: new DirectiveIndex(0, 1),
-                  callOnChange: true,
-                  callOnCheck: true,
-                  callOnAllChangesDone: true
-                });
-
-                var dirRecordNoCallbacks = new DirectiveRecord({
-                  directiveIndex: new DirectiveIndex(0, 0),
-                  callOnChange: false,
-                  callOnCheck: false,
-                  callOnAllChangesDone: false
-                });
-
-                function updateA(exp: string, dirRecord) {
-                  return BindingRecord.createForDirective(ast(exp), "a", (o, v) => o.a = v,
-                                                          dirRecord);
-                }
-
-                function updateB(exp: string, dirRecord) {
-                  return BindingRecord.createForDirective(ast(exp), "b", (o, v) => o.b = v,
-                                                          dirRecord);
-                }
-
-                var directive1;
-                var directive2;
-
-                beforeEach(() => {
-                  directive1 = new TestDirective();
-                  directive2 = new TestDirective();
-                });
-
-                it("should happen directly, without invoking the dispatcher", () => {
-                  var pcd =
-                      createProtoChangeDetector([updateA("42", dirRecord1)], [], [dirRecord1]);
-
-                  var cd = pcd.instantiate(dispatcher);
-
-                  cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
-
-                  cd.detectChanges();
-
-                  expect(dispatcher.loggedValues).toEqual([]);
-                  expect(directive1.a).toEqual(42);
-                });
-
-                describe("onChange", () => {
-                  it("should notify the directive when a group of records changes", () => {
-                    var pcd = createProtoChangeDetector([
-                      updateA("1", dirRecord1),
-                      updateB("2", dirRecord1),
-                      BindingRecord.createDirectiveOnChange(dirRecord1),
-                      updateA("3", dirRecord2),
-                      BindingRecord.createDirectiveOnChange(dirRecord2)
-                    ],
-                                                        [], [dirRecord1, dirRecord2]);
-
-                    var cd = pcd.instantiate(dispatcher);
-
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1, directive2]));
-
-                    cd.detectChanges();
-
-                    expect(directive1.changes).toEqual({'a': 1, 'b': 2});
-                    expect(directive2.changes).toEqual({'a': 3});
-                  });
-                });
-
-                describe("onCheck", () => {
-                  it("should notify the directive when it is checked", () => {
-                    var pcd = createProtoChangeDetector(
-                        [BindingRecord.createDirectiveOnCheck(dirRecord1)], [], [dirRecord1]);
-
-
-                    var cd = pcd.instantiate(dispatcher);
-
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
-
-                    cd.detectChanges();
-
-                    expect(directive1.onCheckCalled).toBe(true);
-
-                    directive1.onCheckCalled = false;
-
-                    cd.detectChanges();
-
-                    expect(directive1.onCheckCalled).toBe(true);
-                  });
-
-                  it("should not call onCheck in detectNoChanges", () => {
-                    var pcd = createProtoChangeDetector(
-                        [BindingRecord.createDirectiveOnCheck(dirRecord1)], [], [dirRecord1]);
-
-
-                    var cd = pcd.instantiate(dispatcher);
-
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
-
-                    cd.checkNoChanges();
-
-                    expect(directive1.onCheckCalled).toBe(false);
-                  });
-                });
-
-                describe("onInit", () => {
-                  it("should notify the directive after it has been checked the first time", () => {
-                    var pcd = createProtoChangeDetector(
-                        [BindingRecord.createDirectiveOnInit(dirRecord1)], [], [dirRecord1]);
-
-
-                    var cd = pcd.instantiate(dispatcher);
-
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
-
-                    cd.detectChanges();
-
-                    expect(directive1.onInitCalled).toBe(true);
-
-                    directive1.onInitCalled = false;
-
-                    cd.detectChanges();
-
-                    expect(directive1.onInitCalled).toBe(false);
-                  });
-
-                  it("should not call onInit in detectNoChanges", () => {
-                    var pcd = createProtoChangeDetector(
-                        [BindingRecord.createDirectiveOnInit(dirRecord1)], [], [dirRecord1]);
-
-
-                    var cd = pcd.instantiate(dispatcher);
-
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
-
-                    cd.checkNoChanges();
-
-                    expect(directive1.onInitCalled).toBe(false);
-                  });
-                });
-
-                describe("onAllChangesDone", () => {
-                  it("should be called after processing all the children", () => {
-                    var pcd = createProtoChangeDetector([], [], [dirRecord1, dirRecord2]);
-
-                    var cd = pcd.instantiate(dispatcher);
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1, directive2]));
-
-                    cd.detectChanges();
-
-                    expect(directive1.onChangesDoneCalled).toBe(true);
-                    expect(directive2.onChangesDoneCalled).toBe(true);
-
-                    // reset directives
-                    directive1.onChangesDoneCalled = false;
-                    directive2.onChangesDoneCalled = false;
-
-                    // Verify that checking should not call them.
-                    cd.checkNoChanges();
-
-                    expect(directive1.onChangesDoneCalled).toBe(false);
-                    expect(directive2.onChangesDoneCalled).toBe(false);
-
-                    // re-verify that changes are still detected
-                    cd.detectChanges();
-
-                    expect(directive1.onChangesDoneCalled).toBe(true);
-                    expect(directive2.onChangesDoneCalled).toBe(true);
-                  });
-
-
-                  it("should not be called when onAllChangesDone is false", () => {
-                    var pcd = createProtoChangeDetector([updateA("1", dirRecordNoCallbacks)], [],
-                                                        [dirRecordNoCallbacks]);
-
-                    var cd = pcd.instantiate(dispatcher);
-
-                    cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive1]));
-
-                    cd.detectChanges();
-
-                    expect(directive1.onChangesDoneCalled).toEqual(false);
-                  });
-
-                  it("should be called in reverse order so the child is always notified before the parent",
-                     () => {
-                       var pcd = createProtoChangeDetector([], [], [dirRecord1, dirRecord2]);
-                       var cd = pcd.instantiate(dispatcher);
-
-                       var onChangesDoneCalls = [];
-                       var td1;
-                       td1 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td1));
-                       var td2;
-                       td2 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td2));
-                       cd.hydrate(_DEFAULT_CONTEXT, null, dirs([td1, td2]));
-
-                       cd.detectChanges();
-
-                       expect(onChangesDoneCalls).toEqual([td2, td1]);
-                     });
-
-                  it("should be called before processing shadow dom children", () => {
-                    var pcd = createProtoChangeDetector([], null, [dirRecord1]);
-                    var shadowDomChildPCD =
-                        createProtoChangeDetector([updateA("1", dirRecord1)], null, [dirRecord1]);
-
-                    var parent = pcd.instantiate(dispatcher);
-
-                    var child = shadowDomChildPCD.instantiate(dispatcher);
-                    parent.addShadowDomChild(child);
-
-                    var directiveInShadowDom = new TestDirective();
-                    var parentDirective =
-                        new TestDirective(() => { expect(directiveInShadowDom.a).toBe(null); });
-
-                    parent.hydrate(_DEFAULT_CONTEXT, null, dirs([parentDirective]));
-                    child.hydrate(_DEFAULT_CONTEXT, null, dirs([directiveInShadowDom]));
-
-                    parent.detectChanges();
-                  });
-                });
-              });
-            });
-
-            describe("reading directives", () => {
-              var index = new DirectiveIndex(0, 0);
-              var dirRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
-
-              it("should read directive properties", () => {
-                var directive = new TestDirective();
-                directive.a = "aaa";
-
-                var pcd = createProtoChangeDetector(
-                    [BindingRecord.createForHostProperty(index, ast("a"), "prop")], null,
-                    [dirRecord]);
-                var cd = pcd.instantiate(dispatcher);
-                cd.hydrate(_DEFAULT_CONTEXT, null, dirs([directive]));
-
-                cd.detectChanges();
-
-                expect(dispatcher.loggedValues).toEqual(['aaa']);
-              });
-            });
-          });
-        });
   });
 }
 
