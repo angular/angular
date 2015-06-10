@@ -13,7 +13,7 @@ let xtend = require('xtend');
 class DiffingTraceurCompiler implements DiffingBroccoliPlugin {
   constructor(public inputPath: string, public cachePath: string, public options) {}
 
-  static includeExtensions = ['.js', '.es6', '.cjs'];
+  static includeExtensions = ['.js', '.cjs'];
 
   rebuild(treeDiff: DiffResult) {
     treeDiff.addedPaths.concat(treeDiff.changedPaths)

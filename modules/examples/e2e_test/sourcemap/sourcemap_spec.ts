@@ -34,7 +34,7 @@ describe('sourcemaps', function() {
 
       var originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
 
-      var finalMapData = fs.readFileSync('dist/js/prod/es6/examples/src/sourcemap/index.es6.map');
+      var finalMapData = fs.readFileSync('dist/js/prod/es6/examples/src/sourcemap/index.js.map');
       var finalDecoder = new sourceMap.SourceMapConsumer(JSON.parse(finalMapData));
 
       var finalPosition = finalDecoder.originalPositionFor(originalPosition);

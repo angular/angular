@@ -64,7 +64,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   // Use Traceur to transpile *.js sources to ES6
   var traceurTree = transpileWithTraceur(modulesTree, {
-    destExtension: '.es6',
+    destExtension: '.js',
     destSourceMapExtension: '.map',
     traceurOptions: {
       sourceMaps: true,
@@ -93,7 +93,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     sourceRoot: '.',
     target: 'ES6'
   });
-  typescriptTree = stew.rename(typescriptTree, '.js', '.es6');
 
   var es6Tree = mergeTrees([traceurTree, typescriptTree]);
 

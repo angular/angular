@@ -3,7 +3,7 @@
 A run-time type assertion library for JavaScript.
 Designed to be used with [Traceur](https://github.com/google/traceur-compiler).
 
-All sources are in ES6 format and have the suffix `.es6`. They don't depend on any runtime
+All sources are in ES6 format. They don't depend on any runtime
 and can be used by any modern ES6 -> ES5 transpiler.
 
 As a convenience, we provide you with `es5build.js`, a script to transpile the sources into es5
