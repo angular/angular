@@ -178,8 +178,13 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     ]
   });
 
+  var assetsTree = new Funnel(modulesTree,{
+    include: ['**/*'],
+    exclude: ['**/*.{html,ts,dart}'],
+    destDir: '/'
+  });
+
   var scripts = mergeTrees(servingTrees);
-  var css = new Funnel(modulesTree, {include: ["**/*.css"]});
   var polymerFiles = new Funnel('.', {
     files: [
       'bower_components/polymer/lib/polymer.html',
@@ -191,9 +196,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   var reactFiles = new Funnel('.', {files: ['node_modules/react/dist/react.min.js']});
   var react = stew.mv(flatten(reactFiles), 'benchmarks_external/src/tree/react');
 
-  htmlTree = mergeTrees([htmlTree, scripts, polymer, css, react]);
+  htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
 
-  es5Tree = mergeTrees([es5Tree, htmlTree]);
+  es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree]);
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
 
