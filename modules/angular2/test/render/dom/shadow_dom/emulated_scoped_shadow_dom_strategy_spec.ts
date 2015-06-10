@@ -97,6 +97,20 @@ export function main() {
       expect(DOM.getText(styleElement)).not.toEqual(DOM.getText(styleElement2));
     });
 
+    it('should move the style element to the style host when @imports are present', inject([AsyncTestCompleter], (async) => {
+      xhr.reply('http://base/one.css', '.one {}');
+
+      var compileElement = el('<div><style>@import "one.css";</style></div>');
+      var styleElement = DOM.firstChild(compileElement);
+      var stylePromise = strategy.processStyleElement('someComponent', 'http://base', styleElement);
+
+      stylePromise.then((_) => {
+        expect(compileElement).toHaveText('');
+        expect(styleHost).toHaveText('.one[_ngcontent-0] {\n\n}');
+        async.done();
+      });
+    }));
+
     it('should move the style element to the style host', () => {
       var compileElement = el('<div><style>.one {}</style></div>');
       var styleElement = DOM.firstChild(compileElement);
