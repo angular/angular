@@ -16,7 +16,6 @@ function killServer () {
 serverPid=$!
 
 ./node_modules/.bin/gulp build.css.material&
-./node_modules/.bin/gulp build.http.example&
 
 trap killServer EXIT
 

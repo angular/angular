@@ -247,7 +247,6 @@ gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
   })();
 });
 
-
 gulp.task('serve.js.prod', jsserve(gulp, gulpPlugins, {
   path: CONFIG.dest.js.prod.es5,
   port: 8001
@@ -850,16 +849,6 @@ gulp.task('!build/change_detect.dart', function(done) {
     done();
   });
   proc.stdout.pipe(dartStream);
-});
-
-// ------------
-// additional tasks for building examples
-gulp.task('build.http.example', function() {
-  //Copy over people.json used in http example
-  return gulp.src('modules/examples/src/http/people.json')
-      .pipe(gulp.dest(CONFIG.dest.js.prod.es5 + '/examples/src/http/'))
-      .pipe(gulp.dest(CONFIG.dest.js.dev.es5 + '/examples/src/http/'))
-      .pipe(gulp.dest(CONFIG.dest.js.dart2js + '/examples/src/http/'));
 });
 
 // ------------
