@@ -222,7 +222,7 @@ gulp.task('build/checkCircularDependencies', function (done) {
   var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
     format: 'es6',
     paths: [CONFIG.dest.js.dev.es6],
-    extensions: ['.js', '.es6'],
+    extensions: ['.js'],
     onParseFile: function(data) {
       data.src = data.src.replace(/import \* as/g, "//import * as");
     }

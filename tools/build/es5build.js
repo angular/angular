@@ -46,11 +46,8 @@ if (!module.parent) {
 }
 
 function run(config) {
-  var src = ['!node_modules', '!node_modules/**', './**/*.es6'];
+  var src = ['!node_modules', '!node_modules/**', './**/*.js'];
   return gulp.src(src, {cwd: config.src})
-    .pipe(rename(function(file) {
-      file.extname = file.extname.replace('.es6', '.js');
-    }))
     // TODO(tbosch): Using sourcemaps.init({loadMaps:true}) does not combine
     // the sourcemaps correctly!
     .pipe(sourcemaps.init())
