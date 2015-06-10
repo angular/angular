@@ -18,3 +18,7 @@ export * from './src/forms/directives';
 export * from './src/forms/validators';
 export * from './src/forms/validator_directives';
 export * from './src/forms/form_builder';
+
+import {FormBuilder} from './src/forms/form_builder';
+import {CONST_EXPR, Type} from './src/facade/lang';
+export const formInjectables: List<Type> = CONST_EXPR([FormBuilder]);
