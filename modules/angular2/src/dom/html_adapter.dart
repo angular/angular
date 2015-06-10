@@ -142,7 +142,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   getText(el) {
-    throw 'not implemented';
+    return el.text;
   }
   setText(el, String value) => el.text = value;
 
@@ -183,7 +183,8 @@ class Html5LibDomAdapter implements DomAdapter {
   clone(node) => node.clone(true);
 
   hasProperty(element, String name) {
-    throw 'not implemented';
+    // This is needed for serverside compile to generate the right getters/setters...
+    return true;
   }
   getElementsByClassName(element, String name) {
     throw 'not implemented';
