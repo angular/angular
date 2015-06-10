@@ -205,7 +205,7 @@ export class Parse5DomAdapter extends DomAdapter {
   getText(el) {
     if (this.isTextNode(el)) {
       return el.data;
-    } else if (el.childNodes.length == 0) {
+    } else if (isBlank(el.childNodes) || el.childNodes.length == 0) {
       return "";
     } else {
       var textContent = "";

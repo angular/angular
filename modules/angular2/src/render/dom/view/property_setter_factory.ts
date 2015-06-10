@@ -18,13 +18,18 @@ const CLASS_PREFIX = 'class.';
 const STYLE_PREFIX = 'style.';
 
 export class PropertySetterFactory {
-  private _propertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
+  private static _noopSetter(el, value) {}
+
+  private _lazyPropertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
+  private _eagerPropertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _innerHTMLSetterCache: Function;
   private _attributeSettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _classSettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _styleSettersCache: StringMap<string, Function> = StringMapWrapper.create();
 
-  createSetter(property: string): Function {
+  constructor() { this._innerHTMLSetterCache = (el, value) => DOM.setInnerHTML(el, value); }
+
+  createSetter(protoElement: /*element*/ any, isNgComponent: boolean, property: string): Function {
     var setterFn, styleParts, styleSuffix;
     if (StringWrapper.startsWith(property, ATTRIBUTE_PREFIX)) {
       setterFn =
@@ -36,13 +41,21 @@ export class PropertySetterFactory {
       styleSuffix = styleParts.length > 2 ? ListWrapper.get(styleParts, 2) : '';
       setterFn = this._styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
     } else if (StringWrapper.equals(property, 'innerHtml')) {
-      if (isBlank(this._innerHTMLSetterCache)) {
-        this._innerHTMLSetterCache = (el, value) => DOM.setInnerHTML(el, value);
-      }
       setterFn = this._innerHTMLSetterCache;
     } else {
       property = this._resolvePropertyName(property);
-      setterFn = StringMapWrapper.get(this._propertySettersCache, property);
+      setterFn = this._propertySetterFactory(protoElement, isNgComponent, property);
+    }
+    return setterFn;
+  }
+
+  private _propertySetterFactory(protoElement, isNgComponent: boolean, property: string): Function {
+    var setterFn;
+    var tagName = DOM.tagName(protoElement);
+    var possibleCustomElement = tagName.indexOf('-') !== -1;
+    if (possibleCustomElement && !isNgComponent) {
+      // need to use late check to be able to set properties on custom elements
+      setterFn = StringMapWrapper.get(this._lazyPropertySettersCache, property);
       if (isBlank(setterFn)) {
         var propertySetterFn = reflector.setter(property);
         setterFn = (receiver, value) => {
@@ -50,7 +63,17 @@ export class PropertySetterFactory {
             return propertySetterFn(receiver, value);
           }
         };
-        StringMapWrapper.set(this._propertySettersCache, property, setterFn);
+        StringMapWrapper.set(this._lazyPropertySettersCache, property, setterFn);
+      }
+    } else {
+      setterFn = StringMapWrapper.get(this._eagerPropertySettersCache, property);
+      if (isBlank(setterFn)) {
+        if (DOM.hasProperty(protoElement, property)) {
+          setterFn = reflector.setter(property);
+        } else {
+          setterFn = PropertySetterFactory._noopSetter;
+        }
+        StringMapWrapper.set(this._eagerPropertySettersCache, property, setterFn);
       }
     }
     return setterFn;

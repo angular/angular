@@ -57,7 +57,7 @@ export class ProtoViewBuilder {
 
         MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {
           MapWrapper.set(propertySetters, hostPropertyName,
-                         setterFactory.createSetter(hostPropertyName));
+                         setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), hostPropertyName));
         });
 
         ListWrapper.forEach(dbb.hostActions, (hostAction) => {
@@ -73,7 +73,7 @@ export class ProtoViewBuilder {
       });
 
       MapWrapper.forEach(ebb.propertyBindings, (_, propertyName) => {
-        MapWrapper.set(propertySetters, propertyName, setterFactory.createSetter(propertyName));
+        MapWrapper.set(propertySetters, propertyName, setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), propertyName));
       });
 
       var nestedProtoView =
