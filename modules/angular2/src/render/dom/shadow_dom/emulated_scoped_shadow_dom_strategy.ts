@@ -46,14 +46,19 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
           .then((css) => {
             css = shimCssForComponent(css, hostComponentId);
             DOM.setText(styleEl, css);
+            this._moveToStyleHost(styleEl);
           });
     } else {
       var css = shimCssForComponent(<string>inlinedCss, hostComponentId);
       DOM.setText(styleEl, css);
-      DOM.remove(styleEl);
-      insertStyleElement(this.styleHost, styleEl);
+      this._moveToStyleHost(styleEl);
       return null;
     }
+  }
+
+  _moveToStyleHost(styleEl) {
+    DOM.remove(styleEl);
+    insertStyleElement(this.styleHost, styleEl);
   }
 
   processElement(hostComponentId: string, elementComponentId: string, element) {
