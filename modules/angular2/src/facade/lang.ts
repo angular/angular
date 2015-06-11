@@ -75,8 +75,16 @@ export function isType(obj): boolean {
   return isFunction(obj);
 }
 
-export function isMap(obj): boolean {
+export function isStringMap(obj): boolean {
   return typeof obj === 'object' && obj !== null;
+}
+
+export function isPromise(obj): boolean {
+  return obj instanceof (<any>_global).Promise;
+}
+
+export function isArray(obj): boolean {
+  return Array.isArray(obj);
 }
 
 export function stringify(token): string {
@@ -132,8 +140,6 @@ export class StringWrapper {
   }
 
   static contains(s: string, substr: string): boolean { return s.indexOf(substr) != -1; }
-
-  static isString(s: any): boolean { return typeof s === 'string' || s instanceof String; }
 }
 
 export class StringJoiner {

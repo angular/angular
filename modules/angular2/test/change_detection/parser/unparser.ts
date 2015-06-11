@@ -23,7 +23,7 @@ import {
 } from 'angular2/src/change_detection/parser/ast';
 
 
-import {StringWrapper, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
+import {StringWrapper, RegExpWrapper, isPresent, isString} from 'angular2/src/facade/lang';
 
 var quoteRegExp = RegExpWrapper.create('"');
 
@@ -150,7 +150,7 @@ export class Unparser implements AstVisitor {
   }
 
   visitLiteralPrimitive(ast: LiteralPrimitive) {
-    if (StringWrapper.isString(ast.value)) {
+    if (isString(ast.value)) {
       this._expression += `"${StringWrapper.replaceAll(ast.value, quoteRegExp, '\"')}"`;
     } else {
       this._expression += `${ast.value}`;

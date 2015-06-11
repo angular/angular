@@ -12,6 +12,7 @@ import {
   RegExpWrapper,
   StringWrapper,
   normalizeBlank,
+  isPromise
 } from 'angular2/src/facade/lang';
 import {
   Promise,
@@ -76,7 +77,7 @@ export class StyleInliner {
         promise = PromiseWrapper.then(this._xhr.get(url), (rawCss) => {
           // resolve nested @import rules
           var inlinedCss = this._inlineImports(rawCss, url, inlinedUrls);
-          if (PromiseWrapper.isPromise(inlinedCss)) {
+          if (isPromise(inlinedCss)) {
             // wait until nested @import are inlined
             return (<Promise<string>>inlinedCss)
                 .then((css) => {return prefix + this._transformImportedCss(css, mediaQuery, url) +

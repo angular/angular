@@ -12,6 +12,7 @@ import {
   stringify,
   getMapKey,
   looseIdentical,
+  isArray
 } from 'angular2/src/facade/lang';
 
 import {WrappedValue, Pipe, PipeFactory} from './pipe';
@@ -123,7 +124,7 @@ export class IterableChanges extends Pipe {
     var index: int;
     var item;
 
-    if (ListWrapper.isList(collection)) {
+    if (isArray(collection)) {
       var list = collection;
       this._length = collection.length;
 

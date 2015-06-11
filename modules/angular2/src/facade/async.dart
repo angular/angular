@@ -26,10 +26,6 @@ class PromiseWrapper {
   }
 
   static CompleterWrapper completer() => new CompleterWrapper(new Completer());
-
-  static bool isPromise(maybePromise) {
-    return maybePromise is Future;
-  }
 }
 
 class TimerWrapper {

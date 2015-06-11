@@ -3,6 +3,7 @@ library angular.core.facade.lang;
 export 'dart:core' show Type, RegExp, print, DateTime;
 import 'dart:math' as math;
 import 'dart:convert' as convert;
+import 'dart:async' show Future;
 
 class Math {
   static final _random = new math.Random();
@@ -26,7 +27,9 @@ bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;
 bool isFunction(obj) => obj is Function;
 bool isType(obj) => obj is Type;
-bool isMap(obj) => obj is Map;
+bool isStringMap(obj) => obj is Map;
+bool isArray(obj) => obj is List;
+bool isPromise(obj) => obj is Future;
 
 String stringify(obj) => obj.toString();
 
@@ -88,8 +91,6 @@ class StringWrapper {
   static bool contains(String s, String substr) {
     return s.contains(substr);
   }
-
-  static bool isString(s) => s is String;
 }
 
 class StringJoiner {

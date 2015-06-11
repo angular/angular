@@ -1,4 +1,4 @@
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isPromise} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -37,7 +37,7 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
     cssText = this.styleUrlResolver.resolveUrls(cssText, templateUrl);
     var inlinedCss = this.styleInliner.inlineImports(cssText, templateUrl);
 
-    if (PromiseWrapper.isPromise(inlinedCss)) {
+    if (isPromise(inlinedCss)) {
       DOM.setText(styleEl, '');
       return (<Promise<string>>inlinedCss)
           .then((css) => {

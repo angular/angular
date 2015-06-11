@@ -1,4 +1,4 @@
-import {isBlank, isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, assertionsEnabled, isPromise} from 'angular2/src/facade/lang';
 import {MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -30,7 +30,7 @@ export class ShadowDomCompileStep implements CompileStep {
   _processStyleElement(current: CompileElement, control: CompileControl) {
     var stylePromise = this._shadowDomStrategy.processStyleElement(
         this._template.componentId, this._template.templateAbsUrl, current.element);
-    if (isPresent(stylePromise) && PromiseWrapper.isPromise(stylePromise)) {
+    if (isPresent(stylePromise) && isPromise(stylePromise)) {
       ListWrapper.push(this._subTaskPromises, stylePromise);
     }
 

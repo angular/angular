@@ -5,7 +5,9 @@ import {
   isPresent,
   BaseException,
   normalizeBlank,
-  stringify
+  stringify,
+  isArray,
+  isPromise
 } from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
@@ -103,8 +105,8 @@ export class Compiler {
     var componentBinding = this._bindDirective(component);
     Compiler._assertTypeIsComponent(componentBinding);
     var pvOrPromise = this._compile(componentBinding);
-    var pvPromise = PromiseWrapper.isPromise(pvOrPromise) ? <Promise<AppProtoView>>pvOrPromise :
-                                                            PromiseWrapper.resolve(pvOrPromise);
+    var pvPromise = isPromise(pvOrPromise) ? <Promise<AppProtoView>>pvOrPromise :
+                                             PromiseWrapper.resolve(pvOrPromise);
     return pvPromise.then((appProtoView) => { return new ProtoViewRef(appProtoView); });
   }
 
@@ -174,7 +176,7 @@ export class Compiler {
       var elementBinderDone =
           (nestedPv: AppProtoView) => { elementBinder.nestedProtoView = nestedPv; };
       var nestedCall = this._compile(nestedComponent);
-      if (PromiseWrapper.isPromise(nestedCall)) {
+      if (isPromise(nestedCall)) {
         ListWrapper.push(nestedPVPromises,
                          (<Promise<AppProtoView>>nestedCall).then(elementBinderDone));
       } else if (isPresent(nestedCall)) {
@@ -239,7 +241,7 @@ export class Compiler {
   private _flattenList(tree: List<any>, out: List<Type | Binding | List<any>>): void {
     for (var i = 0; i < tree.length; i++) {
       var item = resolveForwardRef(tree[i]);
-      if (ListWrapper.isList(item)) {
+      if (isArray(item)) {
         this._flattenList(item, out);
       } else {
         ListWrapper.push(out, item);

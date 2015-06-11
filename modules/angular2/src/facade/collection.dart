@@ -135,7 +135,6 @@ class ListWrapper {
       ..setRange(0, a.length, a)
       ..setRange(a.length, a.length + b.length, b);
   }
-  static bool isList(l) => l is List;
   static void insert(List l, int index, value) {
     l.insert(index, value);
   }
