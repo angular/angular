@@ -30,6 +30,20 @@ export function main() {
       expect(log).toEqual('one again, two again');
     });
 
+    it('should support length', () => {
+      queryList.add('one');
+      queryList.add('two');
+      expect(queryList.length).toEqual(2);
+    });
+
+    it('should support first and last', () => {
+      queryList.add('one');
+      queryList.add('two');
+      queryList.add('three');
+      expect(queryList.first).toEqual('one');
+      expect(queryList.last).toEqual('three');
+    });
+
     describe('simple observable interface', () => {
       it('should fire callbacks on change', () => {
         var fires = 0;

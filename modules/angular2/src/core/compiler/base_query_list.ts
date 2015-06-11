@@ -1,4 +1,4 @@
-import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 /**
  * Injectable Objects that contains a live list of child directives in the light Dom of a directive.
@@ -10,9 +10,9 @@ import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
  * @exportedAs angular2/view
  */
 export class BaseQueryList<T> {
-  _results: List<T>;
-  _callbacks;
-  _dirty;
+  protected _results: List<T>;
+  protected _callbacks;
+  protected _dirty;
 
   constructor() {
     this._results = [];
@@ -43,4 +43,10 @@ export class BaseQueryList<T> {
   onChange(callback) { ListWrapper.push(this._callbacks, callback); }
 
   removeCallback(callback) { ListWrapper.remove(this._callbacks, callback); }
+
+  get length() { return this._results.length; }
+
+  get first() { return ListWrapper.first(this._results); }
+
+  get last() { return ListWrapper.last(this._results); }
 }

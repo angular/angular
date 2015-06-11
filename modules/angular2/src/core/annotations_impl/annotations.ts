@@ -231,14 +231,13 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * ### Injecting a live collection of descendant directives
  *
- * Note: This is will be implemented in later release. ()
- *
- * Similar to `@Query` above, but also includes the children of the child elements.
+ * By passing the descendant flag to `@Query` above, we can include the children of the child
+ * elements.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
- *   constructor(@QueryDescendents(Dependency) dependencies:QueryList<Dependency>) {
+ *   constructor(@Query(Dependency, {descendants: true}) dependencies:QueryList<Dependency>) {
  *   }
  * }
  * ```

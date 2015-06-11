@@ -46,4 +46,8 @@ class BaseQueryList<T> extends Object with IterableMixin<T> {
   removeCallback(callback) {
     this._callbacks.remove(callback);
   }
+
+  get length => this._results.length;
+  get first => this._results.first;
+  get last => this._results.last;
 }

@@ -82,35 +82,6 @@ export class TreeNode<T extends TreeNode<any>> {
     if (isPresent(parent)) parent.addChild(this);
   }
 
-  _assertConsistency(): void {
-    this._assertHeadBeforeTail();
-    this._assertTailReachable();
-    this._assertPresentInParentList();
-  }
-
-  _assertHeadBeforeTail(): void {
-    if (isBlank(this._tail) && isPresent(this._head))
-      throw new BaseException('null tail but non-null head');
-  }
-
-  _assertTailReachable(): void {
-    if (isBlank(this._tail)) return;
-    if (isPresent(this._tail._next)) throw new BaseException('node after tail');
-    var p = this._head;
-    while (isPresent(p) && p != this._tail) p = p._next;
-    if (isBlank(p) && isPresent(this._tail)) throw new BaseException('tail not reachable.')
-  }
-
-  _assertPresentInParentList(): void {
-    var p = this._parent;
-    if (isBlank(p)) {
-      return;
-    }
-    var cur = p._head;
-    while (isPresent(cur) && cur != this) cur = cur._next;
-    if (isBlank(cur)) throw new BaseException('node not reachable through parent.')
-  }
-
   /**
    * Adds a child to the parent node. The child MUST NOT be a part of a tree.
    */
@@ -123,7 +94,6 @@ export class TreeNode<T extends TreeNode<any>> {
     }
     child._next = null;
     child._parent = this;
-    this._assertConsistency();
   }
 
   /**
@@ -131,7 +101,6 @@ export class TreeNode<T extends TreeNode<any>> {
    * The child MUST NOT be a part of a tree and the sibling must be present.
    */
   addChildAfter(child: T, prevSibling: T): void {
-    this._assertConsistency();
     if (isBlank(prevSibling)) {
       var prevHead = this._head;
       this._head = child;
@@ -141,19 +110,16 @@ export class TreeNode<T extends TreeNode<any>> {
       this.addChild(child);
       return;
     } else {
-      prevSibling._assertPresentInParentList();
       child._next = prevSibling._next;
       prevSibling._next = child;
     }
     child._parent = this;
-    this._assertConsistency();
   }
 
   /**
    * Detaches a node from the parent's tree.
    */
   remove(): void {
-    this._assertConsistency();
     if (isBlank(this.parent)) return;
     var nextSibling = this._next;
     var prevSibling = this._findPrev();
@@ -165,10 +131,8 @@ export class TreeNode<T extends TreeNode<any>> {
     if (isBlank(nextSibling)) {
       this._parent._tail = prevSibling;
     }
-    this._parent._assertConsistency();
     this._parent = null;
     this._next = null;
-    this._assertConsistency();
   }
 
   /**
@@ -217,14 +181,14 @@ export class DependencyWithVisibility extends Dependency {
 
 export class DirectiveDependency extends DependencyWithVisibility {
   constructor(key: Key, asPromise: boolean, lazy: boolean, optional: boolean, properties: List<any>,
-              visibility: Visibility, public attributeName: string, public queryDirective) {
+              visibility: Visibility, public attributeName: string, public queryDecorator: Query) {
     super(key, asPromise, lazy, optional, properties, visibility);
     this._verify();
   }
 
   _verify(): void {
     var count = 0;
-    if (isPresent(this.queryDirective)) count++;
+    if (isPresent(this.queryDecorator)) count++;
     if (isPresent(this.attributeName)) count++;
     if (count > 1)
       throw new BaseException(
@@ -243,10 +207,7 @@ export class DirectiveDependency extends DependencyWithVisibility {
     return isPresent(p) ? p.attributeName : null;
   }
 
-  static _query(properties) {
-    var p = ListWrapper.find(properties, (p) => p instanceof Query);
-    return isPresent(p) ? resolveForwardRef(p.directive) : null;
-  }
+  static _query(properties) { return ListWrapper.find(properties, (p) => p instanceof Query); }
 }
 
 export class DirectiveBinding extends ResolvedBinding {
@@ -706,6 +667,8 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   private _query1: QueryRef;
   private _query2: QueryRef;
 
+  hydrated: boolean;
+
   _strategy: _ElementInjectorStrategy;
 
   constructor(public _proto: ProtoElementInjector, parent: ElementInjector) {
@@ -713,12 +676,14 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._strategy = _proto._strategy.createElementInjectorStrategy(this);
 
     this._constructionCounter = 0;
+    this.hydrated = false;
 
-    this._inheritQueries(parent);
     this._buildQueries();
+    this._addParentQueries();
   }
 
   dehydrate(): void {
+    this.hydrated = false;
     this._host = null;
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
@@ -755,6 +720,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._checkShadowDomAppInjector(this._shadowDomAppInjector);
 
     this._strategy.hydrate();
+    this.hydrated = true;
   }
 
   private _createShadowDomAppInjector(componentDirective: DirectiveBinding,
@@ -906,7 +872,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     var dirDep = <DirectiveDependency>dep;
 
     if (isPresent(dirDep.attributeName)) return this._buildAttribute(dirDep);
-    if (isPresent(dirDep.queryDirective)) return this._findQuery(dirDep.queryDirective).list;
+    if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
     if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
       var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
       return componentView.changeDetector.ref;
@@ -942,47 +908,33 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   _buildQueriesForDeps(deps: List<DirectiveDependency>): void {
     for (var i = 0; i < deps.length; i++) {
       var dep = deps[i];
-      if (isPresent(dep.queryDirective)) {
-        this._createQueryRef(dep.queryDirective);
+      if (isPresent(dep.queryDecorator)) {
+        this._createQueryRef(dep.queryDecorator);
       }
     }
   }
 
-  private _createQueryRef(directive): void {
+  private _createQueryRef(query: Query): void {
     var queryList = new QueryList<any>();
     if (isBlank(this._query0)) {
-      this._query0 = new QueryRef(directive, queryList, this);
+      this._query0 = new QueryRef(query, queryList, this);
     } else if (isBlank(this._query1)) {
-      this._query1 = new QueryRef(directive, queryList, this);
+      this._query1 = new QueryRef(query, queryList, this);
     } else if (isBlank(this._query2)) {
-      this._query2 = new QueryRef(directive, queryList, this);
+      this._query2 = new QueryRef(query, queryList, this);
     } else
       throw new QueryError();
   }
 
   private _addToQueries(obj, token): void {
-    if (isPresent(this._query0) && (this._query0.directive === token)) {
+    if (isPresent(this._query0) && (this._query0.query.directive === token)) {
       this._query0.list.add(obj);
     }
-    if (isPresent(this._query1) && (this._query1.directive === token)) {
+    if (isPresent(this._query1) && (this._query1.query.directive === token)) {
       this._query1.list.add(obj);
     }
-    if (isPresent(this._query2) && (this._query2.directive === token)) {
+    if (isPresent(this._query2) && (this._query2.query.directive === token)) {
       this._query2.list.add(obj);
-    }
-  }
-
-  // TODO(rado): unify with _addParentQueries.
-  private _inheritQueries(parent: ElementInjector): void {
-    if (isBlank(parent)) return;
-    if (isPresent(parent._query0)) {
-      this._query0 = parent._query0;
-    }
-    if (isPresent(parent._query1)) {
-      this._query1 = parent._query1;
-    }
-    if (isPresent(parent._query2)) {
-      this._query2 = parent._query2;
     }
   }
 
@@ -992,17 +944,21 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  private _findQuery(token): QueryRef {
-    if (isPresent(this._query0) && this._query0.directive === token) {
+  private _findQuery(query): QueryRef {
+    if (isPresent(this._query0) && this._query0.query === query) {
       return this._query0;
     }
-    if (isPresent(this._query1) && this._query1.directive === token) {
+    if (isPresent(this._query1) && this._query1.query === query) {
       return this._query1;
     }
-    if (isPresent(this._query2) && this._query2.directive === token) {
+    if (isPresent(this._query2) && this._query2.query === query) {
       return this._query2;
     }
-    throw new BaseException(`Cannot find query for directive ${token}.`);
+    throw new BaseException(`Cannot find query for directive ${query}.`);
+  }
+
+  _hasQuery(query: QueryRef): boolean {
+    return this._query0 == query || this._query1 == query || this._query2 == query;
   }
 
   link(parent: ElementInjector): void {
@@ -1016,38 +972,39 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   private _addParentQueries(): void {
+    if (isBlank(this.parent)) return;
     if (isPresent(this.parent._query0)) {
       this._addQueryToTree(this.parent._query0);
-      this.parent._query0.update();
+      if (this.hydrated) this.parent._query0.update();
     }
     if (isPresent(this.parent._query1)) {
       this._addQueryToTree(this.parent._query1);
-      this.parent._query1.update();
+      if (this.hydrated) this.parent._query1.update();
     }
     if (isPresent(this.parent._query2)) {
       this._addQueryToTree(this.parent._query2);
-      this.parent._query2.update();
+      if (this.hydrated) this.parent._query2.update();
     }
   }
 
   unlink(): void {
-    var queriesToUpDate = [];
+    var queriesToUpdate = [];
     if (isPresent(this.parent._query0)) {
       this._pruneQueryFromTree(this.parent._query0);
-      ListWrapper.push(queriesToUpDate, this.parent._query0);
+      ListWrapper.push(queriesToUpdate, this.parent._query0);
     }
     if (isPresent(this.parent._query1)) {
       this._pruneQueryFromTree(this.parent._query1);
-      ListWrapper.push(queriesToUpDate, this.parent._query1);
+      ListWrapper.push(queriesToUpdate, this.parent._query1);
     }
     if (isPresent(this.parent._query2)) {
       this._pruneQueryFromTree(this.parent._query2);
-      ListWrapper.push(queriesToUpDate, this.parent._query2);
+      ListWrapper.push(queriesToUpdate, this.parent._query2);
     }
 
     this.remove();
 
-    ListWrapper.forEach(queriesToUpDate, (q) => q.update());
+    ListWrapper.forEach(queriesToUpdate, (q) => q.update());
   }
 
   private _pruneQueryFromTree(query: QueryRef): void {
@@ -1060,12 +1017,24 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  private _addQueryToTree(query: QueryRef): void {
-    this._assignQueryRef(query);
+  private _addQueryToTree(queryRef: QueryRef): void {
+    if (queryRef.query.descendants == false) {
+      if (this == queryRef.originator) {
+        this._addQueryToTreeSelfAndRecurse(queryRef);
+      } else if (this.parent == queryRef.originator && this._proto.distanceToParent == 1) {
+        this._assignQueryRef(queryRef);
+      }
+    } else {
+      this._addQueryToTreeSelfAndRecurse(queryRef);
+    }
+  }
+
+  private _addQueryToTreeSelfAndRecurse(queryRef: QueryRef): void {
+    this._assignQueryRef(queryRef);
 
     var child = this._head;
     while (isPresent(child)) {
-      child._addQueryToTree(query);
+      child._addQueryToTree(queryRef);
       child = child._next;
     }
   }
@@ -1507,15 +1476,8 @@ class QueryError extends BaseException {
 }
 
 class QueryRef {
-  directive;
-  list: QueryList<any>;
-  originator: ElementInjector;
-
-  constructor(directive, list: QueryList<any>, originator: ElementInjector) {
-    this.directive = directive;
-    this.list = list;
-    this.originator = originator;
-  }
+  constructor(public query: Query, public list: QueryList<any>,
+              public originator: ElementInjector) {}
 
   update(): void {
     var aggregator = [];
@@ -1524,9 +1486,9 @@ class QueryRef {
   }
 
   visit(inj: ElementInjector, aggregator): void {
-    if (isBlank(inj)) return;
-    if (inj.hasDirective(this.directive)) {
-      ListWrapper.push(aggregator, inj.get(this.directive));
+    if (isBlank(inj) || !inj._hasQuery(this)) return;
+    if (inj.hasDirective(this.query.directive)) {
+      ListWrapper.push(aggregator, inj.get(this.query.directive));
     }
     var child = inj._head;
     while (isPresent(child)) {
