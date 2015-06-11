@@ -13,7 +13,7 @@ import {
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
-import {Injectable} from 'angular2/di';
+import {Injectable, Optional} from 'angular2/di';
 import {QueryList} from 'angular2/core';
 import {Query, Component, Directive, View} from 'angular2/annotations';
 
@@ -25,10 +25,12 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   describe('Query API', () => {
 
-    it('should contain all directives in the light dom',
+    it('should contain all direct child directives in the light dom',
        inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var template = '<div text="1"></div>' +
-                        '<needs-query text="2"><div text="3"></div></needs-query>' +
+                        '<needs-query text="2"><div text="3">' +
+                          '<div text="too-deep"></div>' +
+                        '</div></needs-query>' +
                         '<div text="4"></div>';
 
          tb.createView(MyComp, {html: template})
@@ -40,11 +42,46 @@ export function main() {
              });
        }));
 
+    it('should contain all directives in the light dom when descendants flag is used',
+      inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        var template = '<div text="1"></div>' +
+          '<needs-query-desc text="2"><div text="3">' +
+            '<div text="4"></div>' +
+          '</div></needs-query-desc>' +
+          '<div text="5"></div>';
+
+        tb.createView(MyComp, {html: template})
+          .then((view) => {
+            view.detectChanges();
+            expect(view.rootNodes).toHaveText('2|3|4|');
+
+            async.done();
+          });
+      }));
+
+    it('should contain all directives in the light dom',
+      inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        var template = '<div text="1"></div>' +
+          '<needs-query text="2"><div text="3"></div></needs-query>' +
+          '<div text="4"></div>';
+
+        tb.createView(MyComp, {html: template})
+          .then((view) => {
+            view.detectChanges();
+            expect(view.rootNodes).toHaveText('2|3|');
+
+            async.done();
+          });
+      }));
+
+    // TODO(rado): The test below should be using descendants: false,
+    // but due to a bug with how injectors are hooked up query considers the
+    // directives to be distances 2 instead of direct children.
     it('should reflect dynamically inserted directives',
        inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var template =
              '<div text="1"></div>' +
-             '<needs-query text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query>' +
+             '<needs-query-desc text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query-desc>' +
              '<div text="4"></div>';
 
          tb.createView(MyComp, {html: template})
@@ -55,8 +92,6 @@ export function main() {
 
                view.context.shouldShow = true;
                view.detectChanges();
-               // TODO(rado): figure out why the second tick is necessary.
-               view.detectChanges();
                expect(view.rootNodes).toHaveText('2|3|');
 
                async.done();
@@ -66,7 +101,7 @@ export function main() {
     it('should reflect moved directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var template =
              '<div text="1"></div>' +
-             '<needs-query text="2"><div *ng-for="var i of list" [text]="i"></div></needs-query>' +
+             '<needs-query-desc text="2"><div *ng-for="var i of list" [text]="i"></div></needs-query-desc>' +
              '<div text="4"></div>';
 
          tb.createView(MyComp, {html: template})
@@ -102,10 +137,16 @@ class NeedsQuery {
   constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
 }
 
-var _constructiontext = 0;
+@Component({selector: 'needs-query-desc'})
+@View({directives: [NgFor], template: '<div *ng-for="var dir of query">{{dir.text}}|</div>'})
+@Injectable()
+class NeedsQueryDesc {
+  query: QueryList<TextDirective>;
+  constructor(@Query(TextDirective, {descendants: true}) query: QueryList<TextDirective>) { this.query = query; }
+}
 
 @Component({selector: 'my-comp'})
-@View({directives: [NeedsQuery, TextDirective, NgIf, NgFor]})
+@View({directives: [NeedsQuery, NeedsQueryDesc, TextDirective, NgIf, NgFor]})
 @Injectable()
 class MyComp {
   shouldShow: boolean;

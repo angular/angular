@@ -35,9 +35,9 @@ import {BaseQueryList} from './base_query_list';
  * with `<tabs>`
  * component's on `hydrate` and deregister on `dehydrate` event. While a reasonable approach, this
  * would only work
- * partialy since `*ng-for` could rearange the list of `<pane>` components which would not be
+ * partialy since `*ng-for` could rearrange the list of `<pane>` components which would not be
  * reported to `<tabs>`
- * component and thus the list of `<pane>` componets would be out of sync with respect to the list
+ * component and thus the list of `<pane>` components would be out of sync with respect to the list
  * of `<pane>` elements.
  *
  * A preferred solution is to inject a `QueryList` which is a live list of directives in the

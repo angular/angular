@@ -1,5 +1,6 @@
-import {CONST, stringify} from 'angular2/src/facade/lang';
+import {CONST, stringify, isPresent} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
+import {resolveForwardRef} from 'angular2/di';
 
 /**
  * Specifies that a constant attribute value should be injected.
@@ -53,6 +54,13 @@ export class Attribute extends DependencyAnnotation {
  */
 @CONST()
 export class Query extends DependencyAnnotation {
-  constructor(public directive: any) { super(); }
+  descendants: boolean;
+  constructor(private _directive: any, {descendants = false}: {descendants?: boolean} = {}) {
+    super();
+    this.descendants = descendants;
+  }
+
+  get directive() { return resolveForwardRef(this._directive); }
+
   toString() { return `@Query(${stringify(this.directive)})`; }
 }
