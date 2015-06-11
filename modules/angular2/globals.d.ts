@@ -29,3 +29,5 @@ interface BrowserNodeGlobal {
   setInterval: Function;
   clearInterval: Function;
 }
+
+declare var global: any;
