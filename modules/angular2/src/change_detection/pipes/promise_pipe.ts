@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isPromise} from 'angular2/src/facade/lang';
 import {Pipe, WrappedValue} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -41,7 +41,7 @@ export class PromisePipe extends Pipe {
     this._latestReturnedValue = null;
   }
 
-  supports(promise): boolean { return PromiseWrapper.isPromise(promise); }
+  supports(promise): boolean { return isPromise(promise); }
 
   onDestroy(): void {
     if (isPresent(this._sourcePromise)) {
@@ -87,7 +87,7 @@ export class PromisePipe extends Pipe {
  * @exportedAs angular2/pipes
  */
 export class PromisePipeFactory {
-  supports(promise): boolean { return PromiseWrapper.isPromise(promise); }
+  supports(promise): boolean { return isPromise(promise); }
 
   create(cdRef): Pipe { return new PromisePipe(cdRef); }
 }

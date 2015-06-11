@@ -1,5 +1,5 @@
 import {StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isArray} from 'angular2/src/facade/lang';
 import * as modelModule from './model';
 
 
@@ -113,7 +113,7 @@ export class FormBuilder {
                                          modelModule.ControlArray) {
       return controlConfig;
 
-    } else if (ListWrapper.isList(controlConfig)) {
+    } else if (isArray(controlConfig)) {
       var value = ListWrapper.get(controlConfig, 0);
       var validator = controlConfig.length > 1 ? controlConfig[1] : null;
       return this.control(value, validator);

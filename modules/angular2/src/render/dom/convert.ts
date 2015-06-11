@@ -1,5 +1,5 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isArray} from 'angular2/src/facade/lang';
 import {DirectiveMetadata} from 'angular2/src/render/api';
 
 /**
@@ -63,5 +63,5 @@ export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetada
  */
 function _cloneIfPresent(o): any {
   if (!isPresent(o)) return null;
-  return ListWrapper.isList(o) ? ListWrapper.clone(o) : MapWrapper.clone(o);
+  return isArray(o) ? ListWrapper.clone(o) : MapWrapper.clone(o);
 }

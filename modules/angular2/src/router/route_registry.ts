@@ -13,7 +13,7 @@ import {
   isPresent,
   isBlank,
   isType,
-  isMap,
+  isStringMap,
   isFunction,
   StringWrapper,
   BaseException
@@ -180,7 +180,7 @@ var VALID_COMPONENT_TYPES = ['constructor', 'loader'];
 function normalizeComponentDeclaration(config: any): StringMap<string, any> {
   if (isType(config)) {
     return {'constructor': config, 'type': 'constructor'};
-  } else if (isMap(config)) {
+  } else if (isStringMap(config)) {
     if (isBlank(config['type'])) {
       throw new BaseException(
           `Component declaration when provided as a map should include a 'type' property`);

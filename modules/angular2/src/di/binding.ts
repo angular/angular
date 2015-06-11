@@ -1,4 +1,12 @@
-import {Type, isBlank, isPresent, CONST, BaseException, stringify} from 'angular2/src/facade/lang';
+import {
+  Type,
+  isBlank,
+  isPresent,
+  CONST,
+  BaseException,
+  stringify,
+  isArray
+} from 'angular2/src/facade/lang';
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
@@ -464,7 +472,7 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
   var lazy = false;
   var asPromise = false;
 
-  if (!ListWrapper.isList(annotations)) {
+  if (!isArray(annotations)) {
     return _createDependency(annotations, asPromise, lazy, optional, depProps);
   }
 

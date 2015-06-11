@@ -1,4 +1,4 @@
-import {isJsObject, global, isPresent} from 'angular2/src/facade/lang';
+import {isJsObject, global, isPresent, isArray} from 'angular2/src/facade/lang';
 
 export var List = global.Array;
 export var Map = global.Map;
@@ -192,7 +192,6 @@ export class ListWrapper {
     return a.reverse();
   }
   static concat(a, b) { return a.concat(b); }
-  static isList(list) { return Array.isArray(list); }
   static insert(list, index: int, value) { list.splice(index, 0, value); }
   static removeAt(list, index: int) {
     var res = list[index];
@@ -243,13 +242,13 @@ export class ListWrapper {
 
 export function isListLikeIterable(obj): boolean {
   if (!isJsObject(obj)) return false;
-  return ListWrapper.isList(obj) ||
+  return isArray(obj) ||
          (!(obj instanceof Map) &&  // JS Map are iterables but return entries as [k, v]
           Symbol.iterator in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
 export function iterateListLike(obj, fn: Function) {
-  if (ListWrapper.isList(obj)) {
+  if (isArray(obj)) {
     for (var i = 0; i < obj.length; i++) {
       fn(obj[i]);
     }

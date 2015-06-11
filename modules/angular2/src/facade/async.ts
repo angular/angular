@@ -39,7 +39,6 @@ export class PromiseWrapper {
 
     return {promise: p, resolve: resolve, reject: reject};
   }
-  static isPromise(maybePromise): boolean { return maybePromise instanceof Promise; }
 }
 
 export class TimerWrapper {
