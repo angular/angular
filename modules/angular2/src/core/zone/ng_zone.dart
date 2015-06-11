@@ -39,6 +39,8 @@ class NgZone {
   // });                      // we should only check for the end of a turn once the top-level run ends
   int _nestedRun = 0;
 
+  bool _inVmTurnDone = false;
+
   /**
    * Associates with this
    *
@@ -143,12 +145,14 @@ class NgZone {
     } finally {
       _nestedRun--;
       // If there are no more pending microtasks and we are not in a recursive call, this is the end of a turn
-      if (_pendingMicrotasks == 0 && _nestedRun == 0) {
+      if (_pendingMicrotasks == 0 && _nestedRun == 0 && !_inVmTurnDone) {
         if (_onTurnDone != null && _hasExecutedCodeInInnerZone) {
           // Trigger onTurnDone at the end of a turn if _innerZone has executed some code
           try {
+            _inVmTurnDone = true;
             parent.run(_innerZone, _onTurnDone);
           } finally {
+            _inVmTurnDone = false;
             _hasExecutedCodeInInnerZone = false;
           }
         }

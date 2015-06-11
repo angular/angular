@@ -39,6 +39,8 @@ export class NgZone {
   // This disabled flag is only here to please cjs tests
   _disabled: boolean;
 
+  _inVmTurnDone: boolean = false;
+
   /**
    * Associates with this
    *
@@ -166,11 +168,14 @@ export class NgZone {
                 // _nestedRun will be 0 at the end of a macrotasks (it could be > 0 when there are
                 // nested calls
                 // to run()).
-                if (ngZone._pendingMicrotasks == 0 && ngZone._nestedRun == 0) {
+                if (ngZone._pendingMicrotasks == 0 && ngZone._nestedRun == 0 &&
+                    !this._inVmTurnDone) {
                   if (ngZone._onTurnDone && ngZone._hasExecutedCodeInInnerZone) {
                     try {
+                      this._inVmTurnDone = true;
                       parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
                     } finally {
+                      this._inVmTurnDone = false;
                       ngZone._hasExecutedCodeInInnerZone = false;
                     }
                   }

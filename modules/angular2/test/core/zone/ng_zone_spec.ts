@@ -200,6 +200,30 @@ function commonTests() {
          }, 50);
        }));
 
+    it('should not run onTurnStart and onTurnDone for nested Zone.run invoked from onTurnDone',
+       inject([AsyncTestCompleter], (async) => {
+         _zone.initCallbacks({
+           onTurnDone: () => {
+             _log.add('onTurnDone:started');
+             _zone.run(() => _log.add('nested run'))
+             _log.add('onTurnDone:finished');
+           }
+         });
+
+         macroTask(() => {
+           _zone.run(() => {
+             _log.add('start run');
+           });
+         });
+
+         macroTask(() => {
+           expect(_log.result())
+               .toEqual(
+                   'start run; onTurnDone:started; nested run; onTurnDone:finished');
+           async.done();
+         }, 50);
+       }));
+
     it('should call onTurnStart and onTurnDone before and after each top-level run',
        inject([AsyncTestCompleter], (async) => {
          macroTask(() => { _zone.run(_log.fn('run1')); });
