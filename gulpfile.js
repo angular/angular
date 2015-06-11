@@ -62,6 +62,8 @@ function throwToolsBuildMissingError() {
 var angularBuilder = {
   rebuildBrowserDevTree: throwToolsBuildMissingError,
   rebuildBrowserProdTree: throwToolsBuildMissingError,
+  rebuildES6DevTree: throwToolsBuildMissingError,
+  rebuildES6ProdTree: throwToolsBuildMissingError,
   rebuildNodeTree: throwToolsBuildMissingError,
   rebuildDartTree: throwToolsBuildMissingError,
   mock: true
@@ -110,15 +112,16 @@ var CONFIG = {
   dest: {
     js: {
       all: 'dist/js',
-      dev: {
-        es6: 'dist/js/dev/es6',
-        es5: 'dist/js/dev/es5'
+      dev: 'dist/js/dev',
+      prod: 'dist/js/prod',
+      es6: {
+        dev: 'dist/js/es6/dev',
+        prod: 'dist/js/es6/prod'
       },
-      prod: {
-        es6: 'dist/js/prod/es6',
-        es5: 'dist/js/prod/es5'
+      cjs: {
+        dev: 'dist/js/cjs/dev',
+        prod: 'dist/js/cjs/prod'
       },
-      cjs: 'dist/js/cjs',
       dart2js: 'dist/js/dart2js'
     },
     dart: 'dist/dart',
@@ -217,24 +220,6 @@ gulp.task('enforce-format', function() {
   });
 });
 
-// ------------
-// check circular dependencies in Node.js context
-gulp.task('build/checkCircularDependencies', function (done) {
-  var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
-    format: 'es6',
-    paths: [CONFIG.dest.js.dev.es6],
-    extensions: ['.js', '.es6'],
-    onParseFile: function(data) {
-      data.src = data.src.replace(/import \* as/g, "//import * as");
-    }
-  });
-  var circularDependencies = dependencyObject.circular().getArray();
-  if (circularDependencies.length > 0) {
-    console.log(circularDependencies);
-    process.exit(1);
-  }
-  done();
-});
 
 // ------------------
 // web servers
@@ -242,14 +227,14 @@ gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
 
   jsserve(gulp, gulpPlugins, {
-    path: CONFIG.dest.js.dev.es5,
+    path: CONFIG.dest.js.dev,
     port: 8000
   })();
 });
 
 
 gulp.task('serve.js.prod', jsserve(gulp, gulpPlugins, {
-  path: CONFIG.dest.js.prod.es5,
+  path: CONFIG.dest.js.prod,
   port: 8001
 }));
 
@@ -459,7 +444,7 @@ gulp.task('test.unit.dart/ci', function (done) {
 
 
 gulp.task('test.unit.cjs/ci', function(done) {
-  runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
+  runJasmineTests(['dist/js/cjs/dev/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
 
@@ -468,7 +453,7 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
   treatTestErrorsAsFatal = false;
 
   var buildAndTest = [
-    '!build.js.cjs',
+    '!build.js.cjs.dev',
     'test.unit.cjs/ci'
   ];
 
@@ -659,7 +644,6 @@ gulp.task('!broccoli.js.dev', function() {
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
     'broccoli.js.dev',
-    'build/checkCircularDependencies',
     'check-format',
     sequenceComplete(done)
   );
@@ -674,32 +658,27 @@ gulp.task('build.js.prod', ['build.tools'], function() {
  * public task
  */
 gulp.task('build.js.cjs', ['build.tools'], function(done) {
-  runSequence('!build.js.cjs', sequenceComplete(done));
+  runSequence('!build.js.cjs.dev', sequenceComplete(done));
 });
 
-
-var firstBuildJsCjs = true;
 
 /**
  * private task
  */
-gulp.task('!build.js.cjs', function() {
-  return angularBuilder.rebuildNodeTree().then(function() {
-    if (firstBuildJsCjs) {
-      firstBuildJsCjs = false;
-      console.log('creating node_modules symlink hack');
-      // linknodemodules is all sync
-      linknodemodules(gulp, gulpPlugins, {
-        dir: CONFIG.dest.js.cjs
-      })();
-    }
+gulp.task('!build.js.cjs.dev', function() {
+  return angularBuilder.rebuildNodeDevTree().then(function() {
+    console.log('creating node_modules symlink hack');
+    // linknodemodules is all sync
+    linknodemodules(gulp, gulpPlugins, {
+      dir: CONFIG.dest.js.cjs.dev
+    })();
   });
 });
 
 
 var bundleConfig = {
   paths: {
-    "*": "dist/js/prod/es6/*.es6",
+    "*": "dist/js/es6/prod/*.js",
     "rx": "node_modules/rx/dist/rx.js"
   },
   meta: {
@@ -738,7 +717,7 @@ gulp.task('bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
       merge(true, devBundleConfig.paths, {
-       "*": "dist/js/dev/es6/*.es6"
+       "*": "dist/js/es6/dev/*.js"
       });
   return bundler.bundle(
       devBundleConfig,
@@ -751,7 +730,7 @@ gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
     merge(true, devBundleConfig.paths, {
-      "*": "dist/js/dev/es6/*.es6"
+      "*": "dist/js/es6/dev/*.js"
     });
   return bundler.bundle(
     devBundleConfig,
@@ -769,7 +748,7 @@ gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
       merge(true, devBundleConfig.paths, {
-       '*': 'dist/js/dev/es6/*.es6'
+       '*': 'dist/js/es6/dev/*.js'
       });
   return bundler.bundle(
       devBundleConfig,
@@ -857,8 +836,8 @@ gulp.task('!build/change_detect.dart', function(done) {
 gulp.task('build.http.example', function() {
   //Copy over people.json used in http example
   return gulp.src('modules/examples/src/http/people.json')
-      .pipe(gulp.dest(CONFIG.dest.js.prod.es5 + '/examples/src/http/'))
-      .pipe(gulp.dest(CONFIG.dest.js.dev.es5 + '/examples/src/http/'))
+      .pipe(gulp.dest(CONFIG.dest.js.prod + '/examples/src/http/'))
+      .pipe(gulp.dest(CONFIG.dest.js.dev + '/examples/src/http/'))
       .pipe(gulp.dest(CONFIG.dest.js.dart2js + '/examples/src/http/'));
 });
 
@@ -868,8 +847,8 @@ gulp.task('build.css.material', function() {
   return gulp.src('modules/*/src/**/*.scss')
       .pipe(sass())
       .pipe(autoprefixer())
-      .pipe(gulp.dest(CONFIG.dest.js.prod.es5))
-      .pipe(gulp.dest(CONFIG.dest.js.dev.es5))
+      .pipe(gulp.dest(CONFIG.dest.js.prod))
+      .pipe(gulp.dest(CONFIG.dest.js.dev))
       .pipe(gulp.dest(CONFIG.dest.js.dart2js + '/examples/packages'));
 });
 

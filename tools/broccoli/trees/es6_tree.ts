@@ -3,7 +3,7 @@
 var Funnel = require('broccoli-funnel');
 var htmlReplace = require('../html-replace');
 var path = require('path');
-var stew = require('broccoli-stew');
+var stew = require('broccoli-stew')
 
 import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
@@ -12,9 +12,7 @@ import mergeTrees from '../broccoli-merge-trees';
 import replace from '../broccoli-replace';
 import {TRACEUR_RUNTIME_PATH} from '../traceur/index';
 
-
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
-
 
 const kServedPaths = [
   // Relative (to /modules) paths to benchmark directories
@@ -57,11 +55,11 @@ const kServedPaths = [
 ];
 
 
-module.exports = function makeBrowserTree(options, destinationPath) {
+module.exports = function makeES6Tree(options, destinationPath) {
   var modulesTree = new Funnel(
       'modules', {include: ['**/**'], exclude: ['benchmarks/e2e_test/**'], destDir: '/'});
 
-  // Use TypeScript to transpile the *.ts files to ES5
+  // Use TypeScript to transpile the *.ts files to ES6
   var typescriptTree = compileWithTypescript(modulesTree, {
     allowNonTsExtensions: false,
     declaration: true,
@@ -71,7 +69,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     rootDir: '.',
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES5'
+    target: 'ES6'
   });
 
   var vendorScriptsTree = flatten(new Funnel('.', {
@@ -156,7 +154,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   htmlTree = mergeTrees([htmlTree, scripts, polymer, css, react]);
 
-  var es5Tree = mergeTrees([typescriptTree, htmlTree]);
+  var es6Tree = mergeTrees([typescriptTree, htmlTree]);
 
-  return destCopy(es5Tree, destinationPath);
+  return destCopy(es6Tree, destinationPath);
 };

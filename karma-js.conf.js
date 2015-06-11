@@ -8,7 +8,7 @@ module.exports = function(config) {
     files: [
       // Sources and specs.
       // Loaded through the es6-module-loader, in `test-main.js`.
-      {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
+      {pattern: 'dist/js/dev/**', included: false, watched: false},
 
       // zone-microtask must be included first as it contains a Promise monkey patch
       'node_modules/zone.js/dist/zone-microtask.js',
@@ -29,7 +29,7 @@ module.exports = function(config) {
     ],
 
     exclude: [
-      'dist/js/dev/es5/**/e2e_test/**',
+      'dist/js/dev/**/e2e_test/**',
     ],
 
     customLaunchers: {

@@ -1,6 +1,7 @@
 var broccoli = require('broccoli');
 var fs = require('fs');
 var makeBrowserTree = require('./trees/browser_tree');
+var makeES6Tree = require('./trees/es6_tree');
 var makeNodeTree = require('./trees/node_tree');
 var makeDartTree = require('./trees/dart_tree');
 var path = require('path');
@@ -11,9 +12,12 @@ var Q = require('q');
  * BroccoliBuilder facade for all of our build pipelines.
  */
 export class AngularBuilder {
-  private nodeBuilder: BroccoliBuilder;
+  private nodeDevBuilder: BroccoliBuilder;
+  private nodeProdBuilder: BroccoliBuilder;
   private browserDevBuilder: BroccoliBuilder;
   private browserProdBuilder: BroccoliBuilder;
+  private es6DevBuilder: BroccoliBuilder;
+  private es6ProdBuilder: BroccoliBuilder;
   private dartBuilder: BroccoliBuilder;
   private outputPath: string;
   private firstResult: BuildResult;
@@ -31,11 +35,26 @@ export class AngularBuilder {
     this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder();
     return this.rebuild(this.browserProdBuilder, 'js.prod');
   }
+  
+  public rebuildES6DevTree(): Promise<BuildResult> {
+    this.es6DevBuilder = this.es6DevBuilder || this.makeES6DevBuilder();
+    return this.rebuild(this.es6DevBuilder, 'js.es6.dev');
+  }
+  
+  public rebuildES6ProdTree(): Promise<BuildResult> {
+    this.es6ProdBuilder = this.es6ProdBuilder || this.makeES6ProdBuilder();
+    return this.rebuild(this.es6ProdBuilder, 'js.es6.prod');
+  }
+
+  public rebuildNodeDevTree(): Promise<BuildResult> {
+    this.nodeDevBuilder = this.nodeDevBuilder || this.makeNodeDevBuilder();
+    return this.rebuild(this.nodeDevBuilder, 'js.cjs.dev');
+  }
 
 
-  public rebuildNodeTree(): Promise<BuildResult> {
-    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder();
-    return this.rebuild(this.nodeBuilder, 'js.cjs');
+  public rebuildNodeProdTree(): Promise<BuildResult> {
+    this.nodeProdBuilder = this.nodeProdBuilder || this.makeNodeProdBuilder();
+    return this.rebuild(this.nodeProdBuilder, 'js.cjs.prod');
   }
 
 
@@ -47,9 +66,12 @@ export class AngularBuilder {
 
   cleanup(): Promise<any> {
     return Q.all([
-      this.nodeBuilder && this.nodeBuilder.cleanup(),
+      this.nodeDevBuilder && this.nodeDevBuilder.cleanup(),
+      this.nodeProdBuilder && this.nodeProdBuilder.cleanup(),
       this.browserDevBuilder && this.browserDevBuilder.cleanup(),
-      this.browserProdBuilder && this.browserProdBuilder.cleanup()
+      this.browserProdBuilder && this.browserProdBuilder.cleanup(),
+      this.es6DevBuilder && this.es6DevBuilder.cleanup(),
+      this.es6ProdBuilder && this.es6ProdBuilder.cleanup()
     ]);
   }
 
@@ -66,10 +88,29 @@ export class AngularBuilder {
                                path.join(this.outputPath, 'js', 'prod'));
     return new broccoli.Builder(tree);
   }
+  
+  
+  private makeES6DevBuilder(): BroccoliBuilder {
+    let tree = makeES6Tree({name: 'dev', typeAssertions: true},
+                               path.join(this.outputPath, 'js', 'es6', 'dev'));
+    return new broccoli.Builder(tree);
+  }
 
 
-  private makeNodeBuilder(): BroccoliBuilder {
-    let tree = makeNodeTree(path.join(this.outputPath, 'js', 'cjs'));
+  private makeES6ProdBuilder(): BroccoliBuilder {
+    let tree = makeES6Tree({name: 'prod', typeAssertions: false},
+                               path.join(this.outputPath, 'js', 'es6', 'prod'));
+    return new broccoli.Builder(tree);
+  }
+
+
+  private makeNodeDevBuilder(): BroccoliBuilder {
+    let tree = makeNodeTree(path.join(this.outputPath, 'js', 'cjs', 'dev'));
+    return new broccoli.Builder(tree);
+  }
+
+  private makeNodeProdBuilder(): BroccoliBuilder {
+    let tree = makeNodeTree(path.join(this.outputPath, 'js', 'cjs', 'prod'));
     return new broccoli.Builder(tree);
   }
 
