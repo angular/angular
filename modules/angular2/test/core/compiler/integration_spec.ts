@@ -973,28 +973,6 @@ export function main() {
                });
          }));
 
-
-      it('should prioritze hostInjector over viewInjector for the same binding',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           tb.overrideView(MyComp, new viewAnn.View({
-             template: `
-                  <directive-providing-injectable>
-                    <directive-consuming-injectable #consuming>
-                    </directive-consuming-injectable>
-                  </directive-providing-injectable>
-                `,
-             directives:
-                 [DirectiveProvidingInjectableInHostAndView, DirectiveConsumingInjectable]
-           }));
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
-                 var comp = view.rawView.locals.get("consuming");
-                 expect(comp.injectable).toEqual("host");
-
-                 async.done();
-               });
-         }));
-
       it("should support viewInjector",
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(DirectiveProvidingInjectableInView, new viewAnn.View({
@@ -1688,23 +1666,15 @@ class GrandParentProvidingEventBus {
   constructor(bus: EventBus) { this.bus = bus; }
 }
 
-function createParentBusHost(peb) {
+function createParentBus(peb) {
   return new EventBus(peb, "parent");
 }
 
-function createParentBusView(p) {
-  return p.bus;
-}
 @Component({
   selector: 'parent-providing-event-bus',
   hostInjector: [
     new Binding(EventBus,
-                {toFactory: createParentBusHost, deps: [[EventBus, new visAnn.Unbounded()]]})
-  ],
-  viewInjector: [
-    new Binding(
-        EventBus,
-        {toFactory: createParentBusView, deps: [[forwardRef(() => ParentProvidingEventBus)]]})
+                {toFactory: createParentBus, deps: [[EventBus, new visAnn.Unbounded()]]})
   ]
 })
 @View({
@@ -1718,7 +1688,6 @@ class ParentProvidingEventBus {
   grandParentBus: EventBus;
 
   constructor(bus: EventBus, @Unbounded() grandParentBus: EventBus) {
-    // constructor(bus: EventBus) {
     this.bus = bus;
     this.grandParentBus = grandParentBus;
   }

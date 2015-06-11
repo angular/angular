@@ -398,39 +398,43 @@ export class ProtoElementInjector {
     var bd = [];
 
     ProtoElementInjector._createDirectiveBindingData(bindings, bd, firstBindingIsComponent);
-    ProtoElementInjector._createHostInjectorBindingData(bindings, bd);
     if (firstBindingIsComponent) {
       ProtoElementInjector._createViewInjectorBindingData(bindings, bd);
     }
-
+    ProtoElementInjector._createHostInjectorBindingData(bindings, bd, firstBindingIsComponent);
     return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent);
   }
 
-  private static _createDirectiveBindingData(bindings: List<ResolvedBinding>, bd: List<BindingData>,
+  private static _createDirectiveBindingData(dirBindings: List<ResolvedBinding>,
+                                             bd: List<BindingData>,
                                              firstBindingIsComponent: boolean) {
-    if (firstBindingIsComponent) {
-      ListWrapper.push(bd, new BindingData(bindings[0], LIGHT_DOM_AND_SHADOW_DOM));
-      for (var i = 1; i < bindings.length; ++i) {
-        ListWrapper.push(bd, new BindingData(bindings[i], LIGHT_DOM));
-      }
-    } else {
-      ListWrapper.forEach(bindings, b => {ListWrapper.push(bd, new BindingData(b, LIGHT_DOM))});
-    }
+    ListWrapper.forEach(dirBindings, dirBinding => {
+      ListWrapper.push(bd, ProtoElementInjector._createBindingData(
+                               firstBindingIsComponent, dirBinding, dirBindings, dirBinding));
+    });
   }
 
-  private static _createHostInjectorBindingData(bindings: List<ResolvedBinding>,
-                                                bd: List<BindingData>) {
+  private static _createHostInjectorBindingData(dirBindings: List<ResolvedBinding>,
+                                                bd: List<BindingData>,
+                                                firstBindingIsComponent: boolean) {
     var visitedIds: Map<number, boolean> = MapWrapper.create();
-    ListWrapper.forEach(bindings, b => {
-      ListWrapper.forEach(b.resolvedHostInjectables, b => {
+    ListWrapper.forEach(dirBindings, dirBinding => {
+      ListWrapper.forEach(dirBinding.resolvedHostInjectables, b => {
         if (MapWrapper.contains(visitedIds, b.key.id)) {
           throw new BaseException(
               `Multiple directives defined the same host injectable: "${stringify(b.key.token)}"`);
         }
         MapWrapper.set(visitedIds, b.key.id, true);
-        ListWrapper.push(bd, new BindingData(ProtoElementInjector._createBinding(b), LIGHT_DOM));
+        ListWrapper.push(bd, ProtoElementInjector._createBindingData(
+                                 firstBindingIsComponent, dirBinding, dirBindings,
+                                 ProtoElementInjector._createBinding(b)));
       });
     });
+  }
+
+  private static _createBindingData(firstBindingIsComponent, dirBinding, dirBindings, binding) {
+    var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
+    return new BindingData(binding, isComponent ? LIGHT_DOM_AND_SHADOW_DOM : LIGHT_DOM);
   }
 
   private static _createViewInjectorBindingData(bindings: List<ResolvedBinding>,

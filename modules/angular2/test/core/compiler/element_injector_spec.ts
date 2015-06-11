@@ -625,15 +625,38 @@ export function main() {
             expect(inj.get(NeedsService).service).toEqual('service');
           });
 
-          it("should prioritize hostInjector over viewInjector for the same binding", () => {
+          it("should prioritize viewInjector over hostInjector for the same binding", () => {
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(NeedsService, new dirAnn.Component({
                       hostInjector: [bind('service').toValue('hostService')],
                       viewInjector: [bind('service').toValue('viewService')]})
                     )], extraBindings), null, true);
-            expect(inj.get(NeedsService).service).toEqual('hostService');
+            expect(inj.get(NeedsService).service).toEqual('viewService');
           });
 
+          it("should instantiate a directive in a view that depends on hostInjector bindings of the component", () => {
+            var shadowInj = hostShadowInjectors(
+                ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
+                      hostInjector: [bind('service').toValue('hostService')]})
+                    )], extraBindings),
+                ListWrapper.concat([NeedsService], extraBindings)
+            );
+            expect(shadowInj.get(NeedsService).service).toEqual('hostService');
+          });
+
+          it("should not instantiate a directive in a view that depends on hostInjector bindings of a decorator directive", () => {
+            expect(() => {
+              hostShadowInjectors(
+                ListWrapper.concat([
+                  SimpleDirective,
+                  DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Directive({
+                      hostInjector: [bind('service').toValue('hostService')]})
+                  )], extraBindings),
+
+                ListWrapper.concat([NeedsService], extraBindings)
+              );
+            }).toThrowError(new RegExp("No provider for service!"));
+          });
 
           it("should instantiate directives that depend on app services", () => {
             var appInjector = Injector.resolveAndCreate(
