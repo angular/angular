@@ -2,7 +2,7 @@ import {Injectable} from 'angular2/di';
 import {ChangeDetector} from 'angular2/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, BaseException} from 'angular2/src/facade/lang';
 
 /**
  * Provides access to explicitly trigger change detection in an application.
@@ -36,6 +36,7 @@ export class LifeCycle {
   _errorHandler;
   _changeDetector: ChangeDetector;
   _enforceNoNewChanges: boolean;
+  _runningTick: boolean = false;
 
   constructor(exceptionHandler: ExceptionHandler, changeDetector: ChangeDetector = null,
               enforceNoNewChanges: boolean = false) {
@@ -75,9 +76,18 @@ export class LifeCycle {
    *
    */
   tick() {
-    this._changeDetector.detectChanges();
-    if (this._enforceNoNewChanges) {
-      this._changeDetector.checkNoChanges();
+    if (this._runningTick) {
+      throw new BaseException("LifeCycle.tick is called recursively");
+    }
+
+    try {
+      this._runningTick = true;
+      this._changeDetector.detectChanges();
+      if (this._enforceNoNewChanges) {
+        this._changeDetector.checkNoChanges();
+      }
+    } finally {
+      this._runningTick = false;
     }
   }
 }
