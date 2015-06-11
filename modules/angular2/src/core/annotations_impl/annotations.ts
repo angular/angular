@@ -511,7 +511,7 @@ export class Directive extends Injectable {
    * For example, we could write a binding that updates the directive on structural changes, rather
    * than on reference changes, as normally occurs in change detection.
    *
-   * See {@link Pipe} and {@link pipes/keyValDiff} documentation for more details.
+   * See {@link Pipe} and {@link KeyValueChanges} documentation for more details.
    *
    * ```
    * @Directive({
@@ -714,8 +714,8 @@ export class Directive extends Injectable {
   /**
    * Specifies which lifecycle should be notified to the directive.
    *
-   * See {@link annotations/onChange}, {@link annotations/onDestroy}, {@link annotations/onCheck},
-   * {@link annotations/onInit}, {@link annotations/onAllChangesDone} for details.
+   * See {@link onChange}, {@link onDestroy}, {@link onCheck},
+   * {@link onInit}, {@link onAllChangesDone} for details.
    */
   lifecycle: List<LifecycleEvent>;
 
