@@ -47,7 +47,7 @@ declare module "{$ module.id $}" {
   {%- if export.content -%}
     {$ commentBlock(export, 3) $}
   {%- endif %}
-  {$ export.docType $} {$ export.name $}
+  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{$ export.heritage $}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
   {%- for member in export.members -%}
     {$ commentBlock(member, 5) $}

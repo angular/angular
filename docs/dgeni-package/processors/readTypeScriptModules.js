@@ -65,7 +65,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
 
           // Generate docs for each of the export's members
           if (resolvedExport.flags & ts.SymbolFlags.HasMembers) {
-            
+
             exportDoc.members = [];
             for(var memberName in resolvedExport.members) {
               log.silly('>>>>>> member: ' + memberName + ' from ' + exportDoc.id + ' in ' + moduleDoc.id);
@@ -116,23 +116,30 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
   }
 
   function createExportDoc(name, exportSymbol, moduleDoc, basePath, typeChecker) {
+    var typeParamString = '';
+    var heritageString = '';
+
     exportSymbol.declarations.forEach(function(decl) {
       var sourceFile = ts.getSourceFileOfNode(decl);
+
       if (decl.typeParameters) {
-        name = name + '<' + getText(sourceFile, decl.typeParameters) + '>';
+        typeParamString = '<' + getText(sourceFile, decl.typeParameters) + '>';
       }
+
       if (decl.heritageClauses) {
         decl.heritageClauses.forEach(function(heritage) {
+
           if (heritage.token == ts.SyntaxKind.ExtendsKeyword) {
-            name = name + " extends ";
+            heritageString += " extends ";
             heritage.types.forEach(function(typ, idx) {
-              name = name + (idx > 0 ? ', ' : '') + typ.getFullText();
+              heritageString += (idx > 0 ? ', ' : '') + typ.getFullText();
             });
           }
+
           if (heritage.token == ts.SyntaxKind.ImplementsKeyword) {
-            name = name + " implements ";
+            heritageString += " implements ";
             heritage.types.forEach(function(typ, idx) {
-              name = name + (idx > 0 ? ', ' : '') + typ.getFullText();
+              heritageString += (idx > 0 ? ', ' : '') + typ.getFullText();
             });
           }
         });
@@ -143,7 +150,9 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       docType: getExportDocType(exportSymbol),
       name: name,
       id: name,
-      aliases: [name],
+      typeParams: typeParamString,
+      heritage: heritageString,
+      aliases: [name, name + typeParamString],
       moduleDoc: moduleDoc,
       content: getContent(exportSymbol),
       fileInfo: getFileInfo(exportSymbol, basePath),
