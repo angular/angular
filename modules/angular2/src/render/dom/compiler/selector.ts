@@ -285,6 +285,11 @@ export class SelectorMatcher {
                  result;
 
         var partialValuesMap = MapWrapper.get(this._attrValuePartialMap, attrName);
+        if (!StringWrapper.equals(attrValue, _EMPTY_ATTR_VALUE)) {
+          result = this._matchPartial(partialValuesMap, _EMPTY_ATTR_VALUE, cssSelector,
+                                      matchedCallback) ||
+                   result;
+        }
         result =
             this._matchPartial(partialValuesMap, attrValue, cssSelector, matchedCallback) || result;
       }
