@@ -1656,14 +1656,6 @@
               }
             }
           }
-        },
-        "fsevents": {
-          "version": "0.3.6",
-          "dependencies": {
-            "nan": {
-              "version": "1.8.4"
-            }
-          }
         }
       }
     },
@@ -1917,10 +1909,10 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.13",
+      "version": "0.10.14",
       "dependencies": {
         "catharsis": {
-          "version": "0.8.6",
+          "version": "0.8.7",
           "dependencies": {
             "underscore-contrib": {
               "version": "0.3.0",
@@ -1936,10 +1928,10 @@
           "version": "2.3.0",
           "dependencies": {
             "camel-case": {
-              "version": "1.1.1"
+              "version": "1.1.2"
             },
             "constant-case": {
-              "version": "1.1.0"
+              "version": "1.1.1"
             },
             "dot-case": {
               "version": "1.1.1"
@@ -1960,7 +1952,7 @@
               "version": "1.1.1"
             },
             "pascal-case": {
-              "version": "1.1.0"
+              "version": "1.1.1"
             },
             "path-case": {
               "version": "1.1.1"
@@ -1972,10 +1964,10 @@
               "version": "1.1.1"
             },
             "swap-case": {
-              "version": "1.1.0"
+              "version": "1.1.1"
             },
             "title-case": {
-              "version": "1.1.0"
+              "version": "1.1.1"
             },
             "upper-case": {
               "version": "1.1.2"
@@ -2000,7 +1992,7 @@
           }
         },
         "htmlparser2": {
-          "version": "3.8.2",
+          "version": "3.8.3",
           "dependencies": {
             "domhandler": {
               "version": "2.3.0"
@@ -2050,10 +2042,10 @@
           "version": "0.3.0",
           "dependencies": {
             "lru-cache": {
-              "version": "2.6.2"
+              "version": "2.6.4"
             },
             "sigmund": {
-              "version": "1.0.0"
+              "version": "1.0.1"
             }
           }
         },
@@ -2084,10 +2076,10 @@
                       "version": "0.2.14",
                       "dependencies": {
                         "lru-cache": {
-                          "version": "2.6.2"
+                          "version": "2.6.4"
                         },
                         "sigmund": {
-                          "version": "1.0.0"
+                          "version": "1.0.1"
                         }
                       }
                     },
@@ -2112,14 +2104,6 @@
                 },
                 "async-each": {
                   "version": "0.1.6"
-                },
-                "fsevents": {
-                  "version": "0.3.6",
-                  "dependencies": {
-                    "nan": {
-                      "version": "1.8.4"
-                    }
-                  }
                 }
               }
             }
@@ -8822,28 +8806,6 @@
             },
             "ultron": {
               "version": "1.0.1"
-            },
-            "bufferutil": {
-              "version": "1.0.1",
-              "dependencies": {
-                "bindings": {
-                  "version": "1.2.1"
-                },
-                "nan": {
-                  "version": "1.6.2"
-                }
-              }
-            },
-            "utf-8-validate": {
-              "version": "1.0.1",
-              "dependencies": {
-                "bindings": {
-                  "version": "1.2.1"
-                },
-                "nan": {
-                  "version": "1.6.2"
-                }
-              }
             }
           }
         },
