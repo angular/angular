@@ -2,6 +2,7 @@ import {describe, it, iit, ddescribe, expect, beforeEach, IS_DARTIUM} from 'angu
 import {Reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
+import {List} from 'angular2/src/facade/collection';
 
 class AType {
   value;
@@ -22,10 +23,6 @@ class ClassWithDecorators {
 
 class ClassWithoutDecorators {
   constructor(a, b) {}
-}
-
-class TestObjWith11Args {
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {}
 }
 
 class TestObj {
@@ -58,8 +55,37 @@ export function main() {
         expect(obj.b).toEqual(2);
       });
 
-      it("should throw when more than 10 arguments", () => {
-        expect(() => reflector.factory(TestObjWith11Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
+      it("should check args from no to max", () => {
+        var f = t => reflector.factory(t);
+        var checkArgs = (obj, args) => expect(obj.args).toEqual(args);
+
+        // clang-format off
+        checkArgs(f(TestObjWith00Args)(), []);
+        checkArgs(f(TestObjWith01Args)(1), [1]);
+        checkArgs(f(TestObjWith02Args)(1, 2), [1, 2]);
+        checkArgs(f(TestObjWith03Args)(1, 2, 3), [1, 2, 3]);
+        checkArgs(f(TestObjWith04Args)(1, 2, 3, 4), [1, 2, 3, 4]);
+        checkArgs(f(TestObjWith05Args)(1, 2, 3, 4, 5), [1, 2, 3, 4, 5]);
+        checkArgs(f(TestObjWith06Args)(1, 2, 3, 4, 5, 6), [1, 2, 3, 4, 5, 6]);
+        checkArgs(f(TestObjWith07Args)(1, 2, 3, 4, 5, 6, 7), [1, 2, 3, 4, 5, 6, 7]);
+        checkArgs(f(TestObjWith08Args)(1, 2, 3, 4, 5, 6, 7, 8), [1, 2, 3, 4, 5, 6, 7, 8]);
+        checkArgs(f(TestObjWith09Args)(1, 2, 3, 4, 5, 6, 7, 8, 9), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        checkArgs(f(TestObjWith10Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        checkArgs(f(TestObjWith11Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+        checkArgs(f(TestObjWith12Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+        checkArgs(f(TestObjWith13Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+        checkArgs(f(TestObjWith14Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+        checkArgs(f(TestObjWith15Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+        checkArgs(f(TestObjWith16Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+        checkArgs(f(TestObjWith17Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
+        checkArgs(f(TestObjWith18Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]);
+        checkArgs(f(TestObjWith19Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]);
+        checkArgs(f(TestObjWith20Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+        // clang-format on
+      });
+
+      it("should throw when more than 20 arguments", () => {
+        expect(() => reflector.factory(TestObjWith21Args))
             .toThrowError();
       });
 
@@ -164,4 +190,159 @@ export function main() {
       });
     });
   });
+}
+
+
+class TestObjWith00Args {
+  args: List<any>;
+  constructor() {
+    this.args = [];
+  }
+}
+
+class TestObjWith01Args {
+  args: List<any>;
+  constructor(a1) {
+    this.args = [a1];
+  }
+}
+
+class TestObjWith02Args {
+  args: List<any>;
+  constructor(a1, a2) {
+    this.args = [a1, a2];
+  }
+}
+
+class TestObjWith03Args {
+  args: List<any>;
+  constructor(a1, a2, a3) {
+    this.args = [a1, a2, a3];
+  }
+}
+
+class TestObjWith04Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4) {
+    this.args = [a1, a2, a3, a4];
+  }
+}
+
+class TestObjWith05Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5) {
+    this.args = [a1, a2, a3, a4, a5];
+  }
+}
+
+class TestObjWith06Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6) {
+    this.args = [a1, a2, a3, a4, a5, a6];
+  }
+}
+
+class TestObjWith07Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7];
+  }
+}
+
+class TestObjWith08Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8];
+  }
+}
+
+class TestObjWith09Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9];
+  }
+}
+
+class TestObjWith10Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10];
+  }
+}
+
+class TestObjWith11Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11];
+  }
+}
+
+class TestObjWith12Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12];
+  }
+}
+
+class TestObjWith13Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13];
+  }
+}
+
+class TestObjWith14Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14];
+  }
+}
+
+class TestObjWith15Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15];
+  }
+}
+
+class TestObjWith16Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16];
+  }
+}
+
+class TestObjWith17Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17];
+  }
+}
+
+class TestObjWith18Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18];
+  }
+}
+
+class TestObjWith19Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19];
+  }
+}
+
+class TestObjWith20Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20];
+  }
+}
+
+class TestObjWith21Args {
+  args: List<any>;
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21];
+  }
 }
