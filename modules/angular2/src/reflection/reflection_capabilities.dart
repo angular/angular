@@ -40,7 +40,7 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
             create(name, [a1, a2, a3, a4, a5, a6, a7, a8]).reflectee;
       case 9:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9) =>
-            create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9]).reflectee;
+           create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9]).reflectee;
       case 10:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) =>
             create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10]).reflectee;
