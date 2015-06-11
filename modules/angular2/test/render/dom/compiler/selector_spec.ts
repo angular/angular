@@ -68,6 +68,24 @@ export function main() {
       expect(matcher.match(CssSelector.parse('[someAttr][someAttr2]')[0], selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+
+      reset();
+      expect(matcher.match(CssSelector.parse('[someAttr=someValue][someAttr2]')[0],
+                           selectableCollector))
+          .toEqual(true);
+      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+
+      reset();
+      expect(matcher.match(CssSelector.parse('[someAttr2][someAttr=someValue]')[0],
+                           selectableCollector))
+          .toEqual(true);
+      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
+
+      reset();
+      expect(matcher.match(CssSelector.parse('[someAttr2=someValue][someAttr]')[0],
+                           selectableCollector))
+          .toEqual(true);
+      expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
 
     it('should select by attr name only once if the value is from the DOM', () => {
