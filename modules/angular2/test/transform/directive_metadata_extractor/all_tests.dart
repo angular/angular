@@ -17,9 +17,12 @@ import '../common/read_file.dart';
 var formatter = new DartFormatter();
 
 void allTests() {
-  var reader = new TestAssetReader();
+  TestAssetReader reader = null;
 
-  beforeEach(() => setLogger(new PrintLogger()));
+  beforeEach(() {
+    setLogger(new PrintLogger());
+    reader = new TestAssetReader();
+  });
 
   Future<DirectiveMetadata> readMetadata(inputPath) async {
     var ngDeps = await NgDeps.parse(reader, new AssetId('a', inputPath));
@@ -146,6 +149,20 @@ void allTests() {
       expect(extracted['FooComponent'].selector).toEqual('[foo]');
       expect(extracted['BarComponent'].selector).toEqual('[bar]');
       expect(extracted['BazComponent'].selector).toEqual('[baz]');
+    });
+
+    it('should include `DirectiveMetadata` from exported files '
+        'expressed as absolute uris', () async {
+      reader.addAsset(new AssetId('bar', 'lib/bar.ng_deps.dart'), readFile(
+          'directive_metadata_extractor/absolute_export_files/bar.ng_deps.dart'));
+
+      var extracted = await extractDirectiveMetadata(reader, new AssetId('a',
+          'directive_metadata_extractor/absolute_export_files/foo.ng_deps.dart'));
+      expect(extracted).toContain('FooComponent');
+      expect(extracted).toContain('BarComponent');
+
+      expect(extracted['FooComponent'].selector).toEqual('[foo]');
+      expect(extracted['BarComponent'].selector).toEqual('[bar]');
     });
   });
 }
