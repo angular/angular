@@ -13,6 +13,40 @@ import {setUpControl} from './shared';
 const formDirectiveBinding =
     CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgForm)}));
 
+/**
+ * Creates and binds a form object to a DOM element.
+ *
+ * # Example
+ *
+ *  ```
+ * @Component({selector: "signup-comp"})
+ * @View({
+ *      directives: [formDirectives],
+ *      template: `
+ *              <form #f="form" (submit)='onSignUp(f.value)'>
+ *                <div ng-control-group='credentials' #credentials="form">
+ *                  Login <input type='text' ng-control='login'>
+ *                  Password <input type='password' ng-control='password'>
+ *                </div>
+ *                <div *ng-if="!credentials.valid">Credentials are invalid</div>
+ *
+ *                <div ng-control-group='personal'>
+ *                  Name <input type='text' ng-control='name'>
+ *                </div>
+ *                <button type='submit'>Sign Up!</button>
+ *              </form>
+ *      `})
+ * class SignupComp {
+ *  onSignUp(value) {
+ *    // value === {personal: {name: 'some name'},
+ *    //  credentials: {login: 'some login', password: 'some password'}}
+ *  }
+ * }
+ *
+ *  ```
+ *
+ * @exportedAs angular2/forms
+ */
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
   hostInjector: [formDirectiveBinding],

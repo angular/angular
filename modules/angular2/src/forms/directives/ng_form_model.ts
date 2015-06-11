@@ -15,16 +15,13 @@ const formDirectiveBinding =
     CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgFormModel)}));
 
 /**
- * Binds a control group to a DOM element.
+ * Binds an existing control group to a DOM element.
  *
  * # Example
  *
  * In this example, we bind the control group to the form element, and we bind the login and
  * password controls to the
  * login and password elements.
- *
- * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
- * `NgControl`, `NgControlGroup`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -51,6 +48,36 @@ const formDirectiveBinding =
  *  }
  * }
  *
+ *  ```
+ *
+ * We can also use ng-model to bind a domain model to the form.
+ *
+ *  ```
+ * @Component({selector: "login-comp"})
+ * @View({
+ *      directives: [formDirectives],
+ *      template: "<form [ng-form-model]='loginForm'>" +
+ *              "Login <input type='text' ng-control='login' [(ng-model)]='login'>" +
+ *              "Password <input type='password' ng-control='password' [(ng-model)]='password'>" +
+ *              "<button (click)="onLogin()">Login</button>" +
+ *              "</form>"
+ *      })
+ * class LoginComp {
+ *  credentials:{login:string, password:string}
+ *  loginForm:ControlGroup;
+ *
+ *  constructor() {
+ *    this.loginForm = new ControlGroup({
+ *      login: new Control(""),
+ *      password: new Control("")
+ *    });
+ *  }
+ *
+ *  onLogin() {
+ *    // this.credentials.login === 'some login'
+ *    // this.credentials.password === 'some password'
+ *  }
+ * }
  *  ```
  *
  * @exportedAs angular2/forms

@@ -3,7 +3,9 @@ import {Validators} from '../validators';
 import {Control} from '../model';
 
 /**
- * A directive that bind a [ng-control] object to a DOM element.
+ * An abstract class that all control directive extend.
+ *
+ * It binds a {@link Control} object to a DOM element.
  *
  * @exportedAs angular2/forms
  */

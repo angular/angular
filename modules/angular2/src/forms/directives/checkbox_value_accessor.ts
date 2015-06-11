@@ -5,7 +5,6 @@ import {ControlValueAccessor} from './control_value_accessor';
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.
  *
- *
  *  # Example
  *  ```
  *  <input type="checkbox" [ng-control]="rememberLogin">

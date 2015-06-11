@@ -13,7 +13,7 @@ const formControlBinding =
     CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgFormControl)}));
 
 /**
- * Binds a control to a DOM element.
+ * Binds an existing control to a DOM element.
  *
  * # Example
  *
@@ -22,9 +22,6 @@ const formControlBinding =
  * the control will reflect that change. Likewise, if the value of the control changes, the input
  * element reflects that
  * change.
- *
- * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
- * `NgControl`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -40,6 +37,24 @@ const formControlBinding =
  *  }
  * }
  *
+ *  ```
+ *
+ * We can also use ng-model to bind a domain model to the form.
+ *
+ *  ```
+ * @Component({selector: "login-comp"})
+ * @View({
+ *      directives: [formDirectives],
+ *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
+ *      })
+ * class LoginComp {
+ *  loginControl:Control;
+ *  login:string;
+ *
+ *  constructor() {
+ *    this.loginControl = new Control('');
+ *  }
+ * }
  *  ```
  *
  * @exportedAs angular2/forms

@@ -12,6 +12,24 @@ import {setUpControl} from './shared';
 const formControlBinding =
     CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgModel)}));
 
+/**
+ * Binds a domain model to the form.
+ *
+ * # Example
+ *  ```
+ * @Component({selector: "search-comp"})
+ * @View({
+ *      directives: [formDirectives],
+ *      template: `
+              <input type='text' [(ng-model)]="searchQuery">
+ *      `})
+ * class SearchComp {
+ *  searchQuery: string;
+ * }
+ *  ```
+ *
+ * @exportedAs angular2/forms
+ */
 @Directive({
   selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
   hostInjector: [formControlBinding],

@@ -4,14 +4,12 @@ import {ControlValueAccessor} from './control_value_accessor';
 import {isBlank} from 'angular2/src/facade/lang';
 
 /**
- * The default accessor for writing a value and listening to changes that is used by a
- * {@link Control} directive.
- *
- * This is the default strategy that Angular uses when no other accessor is applied.
+ * The default accessor for writing a value and listening to changes that is used by the
+ * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
  *
  *  # Example
  *  ```
- *  <input type="text" [ng-form-control]="loginControl">
+ *  <input type="text" [(ng-model)]="searchQuery">
  *  ```
  *
  * @exportedAs angular2/forms

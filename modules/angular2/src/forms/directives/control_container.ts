@@ -4,7 +4,7 @@ import {List} from 'angular2/src/facade/collection';
 /**
  * A directive that contains a group of [NgControl].
  *
- * @exportedAs angular2/forms
+ * Only used by the forms module.
  */
 export class ControlContainer {
   name: string;
