@@ -11,37 +11,66 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   factory(t: Type): Function {
     switch (t.length) {
       case 0:
-        return function() { return new t(); };
+        return () => new t();
       case 1:
-        return function(a1) { return new t(a1); };
+        return (a1) => new t(a1);
       case 2:
-        return function(a1, a2) { return new t(a1, a2); };
+        return (a1, a2) => new t(a1, a2);
       case 3:
-        return function(a1, a2, a3) { return new t(a1, a2, a3); };
+        return (a1, a2, a3) => new t(a1, a2, a3);
       case 4:
-        return function(a1, a2, a3, a4) { return new t(a1, a2, a3, a4); };
+        return (a1, a2, a3, a4) => new t(a1, a2, a3, a4);
       case 5:
-        return function(a1, a2, a3, a4, a5) { return new t(a1, a2, a3, a4, a5); };
+        return (a1, a2, a3, a4, a5) => new t(a1, a2, a3, a4, a5);
       case 6:
-        return function(a1, a2, a3, a4, a5, a6) { return new t(a1, a2, a3, a4, a5, a6); };
+        return (a1, a2, a3, a4, a5, a6) => new t(a1, a2, a3, a4, a5, a6);
       case 7:
-        return function(a1, a2, a3, a4, a5, a6, a7) { return new t(a1, a2, a3, a4, a5, a6, a7); };
+        return (a1, a2, a3, a4, a5, a6, a7) => new t(a1, a2, a3, a4, a5, a6, a7);
       case 8:
-        return function(a1, a2, a3, a4, a5, a6, a7, a8) {
-          return new t(a1, a2, a3, a4, a5, a6, a7, a8);
-        };
+        return (a1, a2, a3, a4, a5, a6, a7, a8) => new t(a1, a2, a3, a4, a5, a6, a7, a8);
       case 9:
-        return function(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
-          return new t(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-        };
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9);
       case 10:
-        return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
-          return new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-        };
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+      case 11:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
+      case 12:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
+      case 13:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
+      case 14:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
+      case 15:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
+      case 16:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
+      case 17:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16,
+                         a17);
+      case 18:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) =>
+                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
+                         a18);
+      case 19:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18,
+                a19) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16,
+                              a17, a18, a19);
+      case 20:
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18,
+                a19, a20) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15,
+                                   a16, a17, a18, a19, a20);
     };
 
     throw new Error(
-        `Cannot create a factory for '${stringify(t)}' because its constructor has more than 10 arguments`);
+        `Cannot create a factory for '${stringify(t)}' because its constructor has more than 20 arguments`);
   }
 
   _zipTypesAndAnnotaions(paramTypes, paramAnnotations): List<List<any>> {
