@@ -1020,17 +1020,8 @@ export class Component extends Directive {
     changeDetection?: string,
     compileChildren?: boolean
   } = {}) {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      host: host,
-      exportAs: exportAs,
-      hostInjector: hostInjector,
-      lifecycle: lifecycle,
-      compileChildren: compileChildren
-    });
-
+    super({selector, properties, events, host, exportAs, hostInjector, lifecycle,
+      compileChildren});
     this.changeDetection = changeDetection;
     this.appInjector = appInjector;
     this.viewInjector = viewInjector;
