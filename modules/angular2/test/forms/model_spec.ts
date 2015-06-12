@@ -352,7 +352,7 @@ export function main() {
 
     describe("ControlArray", () => {
       describe("adding/removing", () => {
-        var a;
+        var a: ControlArray;
         var c1, c2, c3;
 
         beforeEach(() => {
@@ -434,7 +434,8 @@ export function main() {
       });
 
       describe("dirty", () => {
-        var c, a;
+        var c: Control;
+        var a: ControlArray;
 
         beforeEach(() => {
           c = new Control('value');
@@ -451,7 +452,8 @@ export function main() {
       });
 
       describe("valueChanges", () => {
-        var a, c1, c2;
+        var a: ControlArray;
+        var c1, c2;
 
         beforeEach(() => {
           c1 = new Control("old1");

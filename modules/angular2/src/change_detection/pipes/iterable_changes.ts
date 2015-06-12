@@ -609,7 +609,7 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  map: Map<any, any>;
+  map: Map<any, _DuplicateItemRecordList>;
   constructor() { this.map = MapWrapper.create(); }
 
   put(record: CollectionChangeRecord) {

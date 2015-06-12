@@ -34,7 +34,7 @@ import {
 export function main() {
   describe("integration tests", () => {
     it("should initialize DOM elements with the given form object",
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var ctx = MyComp.create({form: new ControlGroup({"login": new Control("loginValue")})});
 
          var t = `<div [ng-form-model]="form">
@@ -52,7 +52,7 @@ export function main() {
        }));
 
     it("should update the control group values on DOM change",
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
          var ctx = MyComp.create({form: form});
 
@@ -92,7 +92,8 @@ export function main() {
                     });
               })));
 
-    it("should work with single controls", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it("should work with single controls",
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var control = new Control("loginValue");
          var ctx = MyComp.create({form: control});
 
@@ -113,7 +114,7 @@ export function main() {
        }));
 
     it("should update DOM elements when rebinding the control group",
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
          var ctx = MyComp.create({form: form});
 
@@ -134,7 +135,7 @@ export function main() {
        }));
 
     it("should update DOM elements when updating the value of a control",
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
          var ctx = MyComp.create({form: form});
@@ -158,7 +159,7 @@ export function main() {
        }));
 
     it("should mark controls as touched after interacting with the DOM control",
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
          var ctx = MyComp.create({form: form});
@@ -184,7 +185,8 @@ export function main() {
        }));
 
     describe("different control types", () => {
-      it("should support <input type=text>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support <input type=text>",
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
 
            var t = `<div [ng-form-model]="form">
@@ -206,7 +208,7 @@ export function main() {
          }));
 
       it("should support <input> without type",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
 
            var t = `<div [ng-form-model]="form">
@@ -227,7 +229,8 @@ export function main() {
                });
          }));
 
-      it("should support <textarea>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support <textarea>",
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"text": new Control('old')})});
 
            var t = `<div [ng-form-model]="form">
@@ -248,7 +251,8 @@ export function main() {
                });
          }));
 
-      it("should support <type=checkbox>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support <type=checkbox>",
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"checkbox": new Control(true)})});
 
            var t = `<div [ng-form-model]="form">
@@ -269,7 +273,7 @@ export function main() {
                });
          }));
 
-      it("should support <select>", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support <select>", inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"city": new Control("SF")})});
 
            var t = `<div [ng-form-model]="form">
@@ -297,7 +301,7 @@ export function main() {
          }));
 
       it("should support custom value accessors",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var ctx = MyComp.create({form: new ControlGroup({"name": new Control("aa")})});
 
            var t = `<div [ng-form-model]="form">
@@ -321,7 +325,7 @@ export function main() {
 
     describe("validations", () => {
       it("should use validators defined in html",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var form = new ControlGroup({"login": new Control("aa")});
            var ctx = MyComp.create({form: form});
 
@@ -345,7 +349,7 @@ export function main() {
          }));
 
       it("should use validators defined in the model",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
            var ctx = MyComp.create({form: form});
 
@@ -371,7 +375,7 @@ export function main() {
 
     describe("nested forms", () => {
       it("should init DOM with the given form object",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
            var ctx = MyComp.create({form: form});
@@ -392,7 +396,7 @@ export function main() {
          }));
 
       it("should update the control group values on DOM change",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
            var ctx = MyComp.create({form: form});
@@ -468,7 +472,7 @@ export function main() {
 
     describe("template-driven forms", () => {
       it("should add new controls and control groups",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: null});
 
                   var t = `<form>
@@ -491,7 +495,7 @@ export function main() {
                 })));
 
       it("should emit ng-submit event on submit",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: 'old'});
 
                   var t = `<div><form (ng-submit)="name='updated'"></form></div>`;
@@ -508,7 +512,7 @@ export function main() {
                 })));
 
       it("should not create a template-driven form when ng-no-form is used",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: null});
 
                   var t = `<form ng-no-form>
@@ -522,7 +526,7 @@ export function main() {
                       });
                 })));
 
-      it("should remove controls", inject([TestBed], fakeAsync(tb => {
+      it("should remove controls", inject([TestBed], fakeAsync((tb: TestBed) => {
                                             var ctx = MyComp.create({name: 'show'});
 
                                             var t = `<form>
@@ -550,7 +554,7 @@ export function main() {
                                           })));
 
       it("should remove control groups",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: 'show'});
 
 
@@ -579,7 +583,7 @@ export function main() {
                 })));
 
       it("should support ng-model for complex forms",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: "oldValue"});
 
                   var t = `<form>
@@ -606,7 +610,7 @@ export function main() {
 
 
       it("should support ng-model for single fields",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: "oldValue"});
 
                   var t = `<div><input type="text" [(ng-model)]="name"></div>`;
@@ -632,7 +636,7 @@ export function main() {
 
     describe("setting status classes", () => {
       it("should work with single fields",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var form = new Control("", Validators.required);
                   var ctx = MyComp.create({form: form});
 
@@ -664,7 +668,7 @@ export function main() {
                 })));
 
       it("should work with complex model-driven forms",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var form = new ControlGroup({"name": new Control("", Validators.required)});
                   var ctx = MyComp.create({form: form});
 
@@ -697,7 +701,7 @@ export function main() {
                 })));
 
       it("should work with ng-model",
-         inject([TestBed], fakeAsync(tb => {
+         inject([TestBed], fakeAsync((tb: TestBed) => {
                   var ctx = MyComp.create({name: ""});
 
                   var t = `<div><input [(ng-model)]="name" required></div>`;

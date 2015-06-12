@@ -18,7 +18,7 @@ import {Type} from 'angular2/src/facade/lang';
 export function main() {
   describe("forwardRef integration", function() {
     it('should instantiate components which are declared using forwardRef',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(App).then((view) => {
            view.detectChanges();
            expect(view.rootNodes).toHaveText('frame(lock)');

@@ -26,7 +26,7 @@ export function main() {
   describe('Query API', () => {
 
     it('should contain all direct child directives in the light dom',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div text="1"></div>' +
                         '<needs-query text="2"><div text="3">' +
                         '<div text="too-deep"></div>' +
@@ -43,7 +43,7 @@ export function main() {
        }));
 
     it('should contain all directives in the light dom when descendants flag is used',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div text="1"></div>' +
                         '<needs-query-desc text="2"><div text="3">' +
                         '<div text="4"></div>' +
@@ -60,7 +60,7 @@ export function main() {
        }));
 
     it('should contain all directives in the light dom',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div text="1"></div>' +
                         '<needs-query text="2"><div text="3"></div></needs-query>' +
                         '<div text="4"></div>';
@@ -78,7 +78,7 @@ export function main() {
     // but due to a bug with how injectors are hooked up query considers the
     // directives to be distances 2 instead of direct children.
     it('should reflect dynamically inserted directives',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template =
              '<div text="1"></div>' +
              '<needs-query-desc text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query-desc>' +
@@ -98,7 +98,8 @@ export function main() {
              });
        }));
 
-    it('should reflect moved directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should reflect moved directives',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template =
              '<div text="1"></div>' +
              '<needs-query-desc text="2"><div *ng-for="var i of list" [text]="i"></div></needs-query-desc>' +

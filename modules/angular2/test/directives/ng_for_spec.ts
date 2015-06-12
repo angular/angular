@@ -27,7 +27,8 @@ export function main() {
     var TEMPLATE =
         '<div><copy-me template="ng-for #item of items">{{item.toString()}};</copy-me></div>';
 
-    it('should reflect initial elements', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should reflect initial elements',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.detectChanges();
@@ -36,7 +37,8 @@ export function main() {
              });
        }));
 
-    it('should reflect added elements', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should reflect added elements',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.detectChanges();
@@ -49,7 +51,8 @@ export function main() {
              });
        }));
 
-    it('should reflect removed elements', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should reflect removed elements',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.detectChanges();
@@ -62,7 +65,8 @@ export function main() {
              });
        }));
 
-    it('should reflect moved elements', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should reflect moved elements',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.detectChanges();
@@ -77,7 +81,7 @@ export function main() {
        }));
 
     it('should reflect a mix of all changes (additions/removals/moves)',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.context.items = [0, 1, 2, 3, 4, 5];
@@ -92,7 +96,7 @@ export function main() {
        }));
 
     it('should iterate over an array of objects',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<ul><li template="ng-for #item of items">{{item["name"]}};</li></ul>';
 
          tb.createView(TestComponent, {html: template})
@@ -119,7 +123,8 @@ export function main() {
              });
        }));
 
-    it('should gracefully handle nulls', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should gracefully handle nulls',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<ul><li template="ng-for #item of null">{{item}};</li></ul>';
          tb.createView(TestComponent, {html: template})
              .then((view) => {
@@ -130,7 +135,7 @@ export function main() {
        }));
 
     it('should gracefully handle ref changing to null and back',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.detectChanges();
@@ -148,7 +153,7 @@ export function main() {
        }));
 
     it('should throw on ref changing to string',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                view.detectChanges();
@@ -160,7 +165,8 @@ export function main() {
              });
        }));
 
-    it('should works with duplicates', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should works with duplicates',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.createView(TestComponent, {html: TEMPLATE})
              .then((view) => {
                var a = new Foo();
@@ -171,7 +177,8 @@ export function main() {
              });
        }));
 
-    it('should repeat over nested arrays', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should repeat over nested arrays',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div>' +
                         '<div template="ng-for #item of items">' +
                         '<div template="ng-for #subitem of item">' +
@@ -197,7 +204,7 @@ export function main() {
        }));
 
     it('should repeat over nested arrays with no intermediate element',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div><template [ng-for] #item [ng-for-of]="items">' +
                         '<div template="ng-for #subitem of item">' +
                         '{{subitem}}-{{item.length}};' +
@@ -216,7 +223,8 @@ export function main() {
              });
        }));
 
-    it('should display indices correctly', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should display indices correctly',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template =
              '<div><copy-me template="ng-for: var item of items; var i=index">{{i.toString()}}</copy-me></div>';
 

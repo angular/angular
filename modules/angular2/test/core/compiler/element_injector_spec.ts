@@ -236,7 +236,7 @@ export function main() {
     return ProtoElementInjector.create(parent, index, directiveBinding, hasShadowRoot, distance);
   }
 
-  function humanize(tree, names: List<List<any>>) {
+  function humanize(tree: TreeNode<any>, names: List<List<any>>) {
     var lookupName = (item) =>
         ListWrapper.last(ListWrapper.find(names, (pair) => pair[0] === item));
 

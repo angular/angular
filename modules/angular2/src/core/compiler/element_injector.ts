@@ -150,7 +150,7 @@ export class TreeNode<T extends TreeNode<any>> {
   get parent() { return this._parent; }
 
   // TODO(rado): replace with a function call, does too much work for a getter.
-  get children() {
+  get children(): TreeNode<any>[] {
     var res = [];
     var child = this._head;
     while (child != null) {

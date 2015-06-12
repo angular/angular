@@ -22,7 +22,8 @@ import {NgIf} from 'angular2/src/directives/ng_if';
 
 export function main() {
   describe('if directive', () => {
-    it('should work in a template attribute', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should work in a template attribute',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
 
          tb.createView(TestComponent, {html: html})
@@ -34,7 +35,8 @@ export function main() {
              });
        }));
 
-    it('should work in a template element', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should work in a template element',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var html =
              '<div><template [ng-if]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
 
@@ -48,7 +50,7 @@ export function main() {
        }));
 
     it('should toggle node when condition changes',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
 
          tb.createView(TestComponent, {html: html})
@@ -72,7 +74,8 @@ export function main() {
              });
        }));
 
-    it('should handle nested if correctly', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should handle nested if correctly',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var html =
              '<div><template [ng-if]="booleanCondition"><copy-me *ng-if="nestedBooleanCondition">hello</copy-me></template></div>';
 
@@ -107,7 +110,8 @@ export function main() {
              });
        }));
 
-    it('should update several nodes with if', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should update several nodes with if',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var html =
              '<div>' +
              '<copy-me template="ng-if numberCondition + 1 >= 2">helloNumber</copy-me>' +
@@ -139,7 +143,7 @@ export function main() {
 
     if (!IS_DARTIUM) {
       it('should not add the element twice if the condition goes from true to true (JS)',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
            tb.createView(TestComponent, {html: html})
@@ -158,7 +162,7 @@ export function main() {
          }));
 
       it('should not recreate the element if the condition goes from true to true (JS)',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
            tb.createView(TestComponent, {html: html})
@@ -177,7 +181,7 @@ export function main() {
 
     if (IS_DARTIUM) {
       it('should not create the element if the condition is not a boolean (DART)',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
            tb.createView(TestComponent, {html: html})

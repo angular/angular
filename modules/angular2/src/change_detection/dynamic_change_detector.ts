@@ -1,5 +1,6 @@
 import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {Locals} from 'angular2/src/change_detection/parser/locals';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {BindingRecord} from './binding_record';
@@ -12,7 +13,7 @@ import {ProtoRecord, RecordType} from './proto_record';
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
 export class DynamicChangeDetector extends AbstractChangeDetector {
-  locals: any = null;
+  locals: Locals = null;
   values: List<any>;
   changes: List<any>;
   pipes: List<any>;
@@ -36,7 +37,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.changes, false);
   }
 
-  hydrate(context: any, locals: any, directives: any) {
+  hydrate(context: any, locals: Locals, directives: any) {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.changeControlStrategy);
     this.values[0] = context;
     this.locals = locals;

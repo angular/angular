@@ -27,7 +27,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe('runner', () => {
-    var injector;
+    var injector: Injector;
     var runner;
 
     function createRunner(defaultBindings = null) {

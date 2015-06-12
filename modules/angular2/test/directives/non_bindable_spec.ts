@@ -22,7 +22,8 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 
 export function main() {
   describe('non-bindable', () => {
-    it('should not interpolate children', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should not interpolate children',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div>{{text}}<span ng-non-bindable>{{text}}</span></div>';
          tb.createView(TestComponent, {html: template})
              .then((view) => {
@@ -33,7 +34,7 @@ export function main() {
        }));
 
     it('should ignore directives on child nodes',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div ng-non-bindable><span id=child test-dec>{{text}}</span></div>';
          tb.createView(TestComponent, {html: template})
              .then((view) => {
@@ -45,7 +46,7 @@ export function main() {
        }));
 
     it('should trigger directives on the same node',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div><span id=child ng-non-bindable test-dec>{{text}}</span></div>';
          tb.createView(TestComponent, {html: template})
              .then((view) => {

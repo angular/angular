@@ -161,7 +161,7 @@ export class PerflogMetric extends Metric {
     }
   }
 
-  _aggregateEvents(events, markName): StringMap<string, any> {
+  _aggregateEvents(events: List<StringMap<string, any>>, markName): StringMap<string, any> {
     var result = {'scriptTime': 0, 'pureScriptTime': 0};
     if (this._perfLogFeatures.gc) {
       result['gcTime'] = 0;

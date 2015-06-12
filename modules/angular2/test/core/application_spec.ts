@@ -16,7 +16,7 @@ import {bootstrap} from 'angular2/src/core/application';
 import {Component, Directive, View} from 'angular2/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {bind, Inject} from 'angular2/di';
+import {bind, Inject, Injector} from 'angular2/di';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
@@ -181,7 +181,7 @@ export function main() {
 
          PromiseWrapper.all([refPromise1, refPromise2])
              .then((refs) => {
-               var registry = refs[0].injector.get(TestabilityRegistry);
+               var registry = (<Injector>refs[0].injector).get(TestabilityRegistry);
                PromiseWrapper.all([
                                refs[0]
                                    .injector.asyncGet(Testability),

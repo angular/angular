@@ -21,7 +21,8 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 export function main() {
   describe('switch', () => {
     describe('switch value changes', () => {
-      it('should switch amongst when values', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should switch amongst when values',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="\'a\'"><li>when a</li></template>' +
@@ -46,7 +47,7 @@ export function main() {
          }));
 
       it('should switch amongst when values with fallback to default',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<li template="ng-switch-when \'a\'">when a</li>' +
@@ -71,7 +72,7 @@ export function main() {
          }));
 
       it('should support multiple whens with the same value',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="\'a\'"><li>when a1;</li></template>' +
@@ -101,7 +102,8 @@ export function main() {
     });
 
     describe('when values changes', () => {
-      it('should switch amongst when values', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should switch amongst when values',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="when1"><li>when 1;</li></template>' +
