@@ -9,6 +9,7 @@ dev_dependencies:
     path: ../angular2
 transformers:
 - angular:
+    $exclude: "web/e2e_test"
     html_files:
       - web/src/naive_infinite_scroll/scroll_area.html
       - web/src/naive_infinite_scroll/scroll_item.html
