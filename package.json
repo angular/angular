@@ -120,7 +120,7 @@
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
-    "ts2dart": "^0.5.9",
+    "ts2dart": "^0.6.0",
     "tsd": "^0.6.0",
     "typescript": "alexeagle/TypeScript#error_is_class",
     "vinyl": "^0.4.6",

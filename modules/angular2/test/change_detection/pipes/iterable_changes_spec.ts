@@ -12,7 +12,6 @@ export function main() {
   describe('collection_changes', function() {
     describe('CollectionChanges', function() {
       var changes;
-      var l;
 
       beforeEach(() => { changes = new IterableChanges(); });
 
@@ -26,7 +25,7 @@ export function main() {
       });
 
       it('should support iterables', () => {
-        l = new TestIterable();
+        let l = new TestIterable();
 
         changes.check(l);
         expect(changes.toString()).toEqual(iterableChangesAsString({collection: []}));
@@ -49,17 +48,17 @@ export function main() {
       });
 
       it('should detect additions', () => {
-        l = [];
+        let l = [];
         changes.check(l);
         expect(changes.toString()).toEqual(iterableChangesAsString({collection: []}));
 
-        ListWrapper.push(l, 'a');
+        l.push('a');
         changes.check(l);
         expect(changes.toString())
             .toEqual(
                 iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
-        ListWrapper.push(l, 'b');
+        l.push('b');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString(
@@ -67,7 +66,7 @@ export function main() {
       });
 
       it('should support changing the reference', () => {
-        l = [0];
+        let l = [0];
         changes.check(l);
 
         l = [1, 0];
@@ -92,12 +91,12 @@ export function main() {
       });
 
       it('should handle swapping element', () => {
-        l = [1, 2];
+        let l = [1, 2];
         changes.check(l);
 
         ListWrapper.clear(l);
-        ListWrapper.push(l, 2);
-        ListWrapper.push(l, 1);
+        l.push(2);
+        l.push(1);
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString({
@@ -108,7 +107,7 @@ export function main() {
       });
 
       it('should handle swapping element', () => {
-        l = ['a', 'b', 'c'];
+        let l = ['a', 'b', 'c'];
         changes.check(l);
 
         ListWrapper.removeAt(l, 1);
@@ -122,7 +121,7 @@ export function main() {
             }));
 
         ListWrapper.removeAt(l, 1);
-        ListWrapper.push(l, 'a');
+        l.push('a');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString({
@@ -133,23 +132,23 @@ export function main() {
       });
 
       it('should detect changes in list', () => {
-        l = [];
+        let l = [];
         changes.check(l);
 
-        ListWrapper.push(l, 'a');
+        l.push('a');
         changes.check(l);
         expect(changes.toString())
             .toEqual(
                 iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
-        ListWrapper.push(l, 'b');
+        l.push('b');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString(
                 {collection: ['a', 'b[null->1]'], previous: ['a'], additions: ['b[null->1]']}));
 
-        ListWrapper.push(l, 'c');
-        ListWrapper.push(l, 'd');
+        l.push('c');
+        l.push('d');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString({
@@ -169,10 +168,10 @@ export function main() {
             }));
 
         ListWrapper.clear(l);
-        ListWrapper.push(l, 'd');
-        ListWrapper.push(l, 'c');
-        ListWrapper.push(l, 'b');
-        ListWrapper.push(l, 'a');
+        l.push('d');
+        l.push('c');
+        l.push('b');
+        l.push('a');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString({
@@ -184,7 +183,7 @@ export function main() {
       });
 
       it('should test string by value rather than by reference (Dart)', () => {
-        l = ['a', 'boo'];
+        let l = ['a', 'boo'];
         changes.check(l);
 
         var b = 'b';
@@ -196,7 +195,7 @@ export function main() {
       });
 
       it('should ignore [NaN] != [NaN] (JS)', () => {
-        l = [NumberWrapper.NaN];
+        let l = [NumberWrapper.NaN];
         changes.check(l);
         changes.check(l);
         expect(changes.toString())
@@ -205,7 +204,7 @@ export function main() {
       });
 
       it('should detect [NaN] moves', () => {
-        l = [NumberWrapper.NaN, NumberWrapper.NaN];
+        let l = [NumberWrapper.NaN, NumberWrapper.NaN];
         changes.check(l);
 
         ListWrapper.insert(l, 0, 'foo');
@@ -220,7 +219,7 @@ export function main() {
       });
 
       it('should remove and add same item', () => {
-        l = ['a', 'b', 'c'];
+        let l = ['a', 'b', 'c'];
         changes.check(l);
 
         ListWrapper.removeAt(l, 1);
@@ -245,7 +244,7 @@ export function main() {
       });
 
       it('should support duplicates', () => {
-        l = ['a', 'a', 'a', 'b', 'b'];
+        let l = ['a', 'a', 'a', 'b', 'b'];
         changes.check(l);
 
         ListWrapper.removeAt(l, 0);
@@ -260,7 +259,7 @@ export function main() {
       });
 
       it('should support insertions/moves', () => {
-        l = ['a', 'a', 'b', 'b'];
+        let l = ['a', 'a', 'b', 'b'];
         changes.check(l);
 
         ListWrapper.insert(l, 0, 'b');
@@ -275,13 +274,13 @@ export function main() {
       });
 
       it('should not report unnecessary moves', () => {
-        l = ['a', 'b', 'c'];
+        let l = ['a', 'b', 'c'];
         changes.check(l);
 
         ListWrapper.clear(l);
-        ListWrapper.push(l, 'b');
-        ListWrapper.push(l, 'a');
-        ListWrapper.push(l, 'c');
+        l.push('b');
+        l.push('a');
+        l.push('c');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString({

@@ -16,7 +16,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('MockXHR', () => {
-    var xhr;
+    var xhr: MockXHR;
 
     beforeEach(() => { xhr = new MockXHR(); });
 

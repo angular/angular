@@ -25,7 +25,7 @@ export function main() {
   describe('binding to CSS class list', () => {
 
     it('should add classes specified in an object literal',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div [class]="{foo: true, bar: false}"></div>';
 
          tb.createView(TestComponent, {html: template})
@@ -38,7 +38,7 @@ export function main() {
        }));
 
     it('should add and remove classes based on changes in object literal values',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div [class]="{foo: condition, bar: !condition}"></div>';
 
          tb.createView(TestComponent, {html: template})
@@ -55,7 +55,7 @@ export function main() {
        }));
 
     it('should add and remove classes based on changes to the expression object',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div [class]="expr"></div>';
 
          tb.createView(TestComponent, {html: template})
@@ -80,7 +80,7 @@ export function main() {
        }));
 
     it('should retain existing classes when expression evaluates to null',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div [class]="expr"></div>';
 
          tb.createView(TestComponent, {html: template})
@@ -101,7 +101,7 @@ export function main() {
        }));
 
     it('should co-operate with the class attribute',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div [class]="expr" class="init foo"></div>';
 
          tb.createView(TestComponent, {html: template})
@@ -119,7 +119,7 @@ export function main() {
        }));
 
     it('should co-operate with the class attribute and class.name binding',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var template = '<div class="init foo" [class]="expr" [class.baz]="condition"></div>';
 
          tb.createView(TestComponent, {html: template})

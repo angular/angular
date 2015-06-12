@@ -32,7 +32,7 @@ export function main() {
     beforeEach(() => { ctx = new MyComp(); });
 
     it('should invoke lifecycle methods onChange > onInit > onCheck > onAllChangesDone',
-       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.overrideView(
              MyComp,
              new viewAnn.View(

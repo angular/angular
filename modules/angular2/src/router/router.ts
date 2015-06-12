@@ -90,8 +90,8 @@ export class Router {
    */
   config(config: any): Promise<any> {
     if (config instanceof List) {
-      config.forEach(
-          (configObject) => { this._registry.config(this.hostComponent, configObject); });
+      (<List<any>>config)
+          .forEach((configObject) => { this._registry.config(this.hostComponent, configObject); });
     } else {
       this._registry.config(this.hostComponent, config);
     }

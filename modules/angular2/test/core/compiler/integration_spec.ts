@@ -83,7 +83,8 @@ export function main() {
 
 
     describe('react to record changes', function() {
-      it('should consume text node changes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should consume text node changes',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({template: '<div>{{ctxProp}}</div>'}));
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -96,7 +97,7 @@ export function main() {
          }));
 
       it('should consume element binding changes',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({template: '<div [id]="ctxProp"></div>'}));
 
            tb.createView(MyComp, {context: ctx})
@@ -111,7 +112,7 @@ export function main() {
          }));
 
       it('should consume binding to aria-* attributes',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp,
                            new viewAnn.View({template: '<div [attr.aria-label]="ctxProp"></div>'}));
 
@@ -133,7 +134,7 @@ export function main() {
          }));
 
       it('should consume binding to property names where attr name and property name do not match',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp,
                            new viewAnn.View({template: '<div [tabindex]="ctxNumProp"></div>'}));
 
@@ -152,7 +153,7 @@ export function main() {
          }));
 
       it('should consume binding to camel-cased properties using dash-cased syntax in templates',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp,
                            new viewAnn.View({template: '<input [read-only]="ctxBoolProp">'}));
 
@@ -171,7 +172,7 @@ export function main() {
          }));
 
       it('should consume binding to inner-html',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp,
                            new viewAnn.View({template: '<div inner-html="{{ctxProp}}"></div>'}));
 
@@ -191,7 +192,7 @@ export function main() {
          }));
 
       it('should ignore bindings to unknown properties',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp,
                            new viewAnn.View({template: '<div unknown="{{ctxProp}}"></div>'}));
 
@@ -207,7 +208,7 @@ export function main() {
          }));
 
       it('should consume directive watch expression change.',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var tpl = '<div>' +
                      '<div my-dir [elprop]="ctxProp"></div>' +
                      '<div my-dir elprop="Hi there!"></div>' +
@@ -243,7 +244,7 @@ export function main() {
         });
 
         it("should support pipes in bindings and bind config",
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template:
                    '<component-with-pipes #comp [prop]="ctxProp | double"></component-with-pipes>',
@@ -264,7 +265,8 @@ export function main() {
            }));
       });
 
-      it('should support nested components.', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should support nested components.',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View({template: '<child-cmp></child-cmp>', directives: [ChildComp]}));
@@ -281,7 +283,7 @@ export function main() {
 
       // GH issue 328 - https://github.com/angular/angular/issues/328
       it('should support different directive types on a single node',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<child-cmp my-dir [elprop]="ctxProp"></child-cmp>',
              directives: [MyDir, ChildComp]
@@ -302,7 +304,7 @@ export function main() {
          }));
 
       it('should support directives where a binding attribute is not given',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              // No attribute "el-prop" specified.
              template: '<p my-dir></p>',
@@ -313,7 +315,7 @@ export function main() {
          }));
 
       it('should support directives where a selector matches property binding',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(
                MyComp, new viewAnn.View({template: '<p [id]="ctxProp"></p>', directives: [IdDir]}));
 
@@ -334,7 +336,7 @@ export function main() {
          }));
 
       it('should allow specifying directives as bindings',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<child-cmp></child-cmp>',
              directives: [bind(ChildComp).toClass(ChildComp)]
@@ -350,7 +352,7 @@ export function main() {
          }));
 
       it('should read directives metadata from their binding token',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<div public-api><div needs-public-api></div></div>',
              directives: [bind(PublicApi).toClass(PrivateImpl), NeedsPublicApi]
@@ -360,7 +362,7 @@ export function main() {
          }));
 
       it('should support template directives via `<template>` elements.',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template:
                  '<div><template some-viewport var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template></div>',
@@ -382,7 +384,7 @@ export function main() {
          }));
 
       it('should support template directives via `template` attribute.',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template:
                  '<div><copy-me template="some-viewport: var greeting=some-tmpl">{{greeting}}</copy-me></div>',
@@ -403,7 +405,7 @@ export function main() {
          }));
 
       it('should allow to transplant embedded ProtoViews into other ViewContainers',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template:
                  '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-parent></cmp-with-parent></template></toolbar></some-directive>',
@@ -424,7 +426,7 @@ export function main() {
 
       describe("variable bindings", () => {
         it('should assign a component to a var-',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<p><child-cmp var-alice></child-cmp></p>',
                directives: [ChildComp]
@@ -440,7 +442,7 @@ export function main() {
            }));
 
         it('should assign a directive to a var-',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<p><div [export-dir] #localdir="dir"></div></p>',
                directives: [ExportDir]
@@ -456,7 +458,7 @@ export function main() {
            }));
 
         it('should make the assigned component accessible in property bindings',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<p><child-cmp var-alice></child-cmp>{{alice.ctxProp}}</p>',
                directives: [ChildComp]
@@ -474,7 +476,7 @@ export function main() {
            }));
 
         it('should assign two component instances each with a var-',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>',
                directives: [ChildComp]
@@ -494,7 +496,7 @@ export function main() {
            }));
 
         it('should assign the component instance to a var- with shorthand syntax',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(
                  MyComp,
                  new viewAnn.View(
@@ -511,7 +513,7 @@ export function main() {
            }));
 
         it('should assign the element instance to a user-defined variable',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(
                  MyComp, new viewAnn.View({template: '<p><div var-alice><i>Hello</i></div></p>'}));
 
@@ -528,7 +530,7 @@ export function main() {
            }));
 
         it('should change dash-case to camel-case',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<p><child-cmp var-super-alice></child-cmp></p>',
                directives: [ChildComp]
@@ -546,7 +548,7 @@ export function main() {
 
       describe("ON_PUSH components", () => {
         it("should use ChangeDetectorRef to manually request a check",
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<push-cmp-with-ref #cmp></push-cmp-with-ref>',
@@ -573,7 +575,7 @@ export function main() {
            }));
 
         it("should be checked when its bindings got updated",
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<push-cmp [prop]="ctxProp" #cmp></push-cmp>',
@@ -597,7 +599,7 @@ export function main() {
            }));
 
         it('should not affect updating properties on the component',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<push-cmp-with-ref [prop]="ctxProp" #cmp></push-cmp-with-ref>',
                directives: [[[PushCmpWithRef]]]
@@ -622,7 +624,7 @@ export function main() {
       });
 
       it('should create a component that injects a @Parent',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template:
                  '<some-directive><cmp-with-parent #child></cmp-with-parent></some-directive>',
@@ -640,7 +642,7 @@ export function main() {
          }));
 
       it('should create a component that injects an @Ancestor',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: `
             <some-directive>
@@ -662,7 +664,7 @@ export function main() {
          }));
 
       it('should create a component that injects an @Ancestor through viewcontainer directive',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: `
             <some-directive>
@@ -686,7 +688,7 @@ export function main() {
          }));
 
       it('should support events via EventEmitter',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<div emitter listener></div>',
              directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
@@ -711,7 +713,8 @@ export function main() {
                });
          }));
 
-      it('should support [()] syntax', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should support [()] syntax',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<div [(control)]="ctxProp" two-way></div>',
              directives: [DirectiveWithTwoWayBinding]
@@ -738,7 +741,7 @@ export function main() {
 
       if (DOM.supportsDOMEvents()) {
         it("should support invoking methods on the host element via hostActions",
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<div update-host-actions></div>',
                directives: [DirectiveUpdatingHostActions]
@@ -760,7 +763,8 @@ export function main() {
            }));
       }
 
-      it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should support render events',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View(
@@ -782,7 +786,7 @@ export function main() {
          }));
 
       it('should support render global events',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View(
@@ -810,7 +814,7 @@ export function main() {
          }));
 
       it('should support updating host element via hostAttributes',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<div update-host-attributes></div>',
              directives: [DirectiveUpdatingHostAttributes]
@@ -827,7 +831,7 @@ export function main() {
          }));
 
       it('should support updating host element via hostProperties',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<div update-host-properties></div>',
              directives: [DirectiveUpdatingHostProperties]
@@ -851,7 +855,7 @@ export function main() {
 
       if (DOM.supportsDOMEvents()) {
         it('should support preventing default on render events',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template:
                    '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
@@ -873,7 +877,7 @@ export function main() {
       }
 
       it('should support render global events from multiple directives',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<div *ng-if="ctxBoolProp" listener listenerother></div>',
              directives: [NgIf, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
@@ -911,7 +915,7 @@ export function main() {
       describe('dynamic ViewContainers', () => {
 
         it('should allow to create a ViewContainerRef at any bound location',
-           inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
+           inject([TestBed, AsyncTestCompleter, Compiler], (tb: TestBed, async, compiler) => {
              tb.overrideView(MyComp, new viewAnn.View({
                template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
                directives: [DynamicViewport]
@@ -929,7 +933,8 @@ export function main() {
 
       });
 
-      it('should support static attributes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should support static attributes',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View(
@@ -948,7 +953,8 @@ export function main() {
     });
 
     describe("dependency injection", () => {
-      it("should support hostInjector", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support hostInjector",
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: `
             <directive-providing-injectable>
@@ -969,7 +975,7 @@ export function main() {
 
 
       it('should prioritze hostInjector over viewInjector for the same binding',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: `
                   <directive-providing-injectable>
@@ -989,7 +995,8 @@ export function main() {
                });
          }));
 
-      it("should support viewInjector", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support viewInjector",
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(DirectiveProvidingInjectableInView, new viewAnn.View({
              template: `
               <directive-consuming-injectable #consuming>
@@ -1007,7 +1014,8 @@ export function main() {
                });
          }));
 
-      it("should support unbounded lookup", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it("should support unbounded lookup",
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: `
             <directive-providing-injectable>
@@ -1038,7 +1046,7 @@ export function main() {
          }));
 
       it("should support the event-bus scenario",
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: `
             <grand-parent-providing-event-bus>
@@ -1074,7 +1082,7 @@ export function main() {
 
     describe("error handling", () => {
       it('should report a meaningful error when a directive is missing annotation',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp,
                            new viewAnn.View({directives: [SomeDirectiveMissingAnnotation]}));
 
@@ -1082,11 +1090,12 @@ export function main() {
              expect(e.message).toEqual(
                  `No Directive annotation found on ${stringify(SomeDirectiveMissingAnnotation)}`);
              async.done();
+             return null;
            });
          }));
 
       it('should report a meaningful error when a directive is null',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
            tb.overrideView(MyComp, new viewAnn.View({directives: [[null]]}));
 
@@ -1094,12 +1103,13 @@ export function main() {
              expect(e.message).toEqual(
                  `Unexpected directive value 'null' on the View of component '${stringify(MyComp)}'`);
              async.done();
+             return null;
            });
          }));
 
       if (!IS_DARTIUM) {
         it('should report a meaningful error when a directive is undefined',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
              var undefinedValue;
 
@@ -1109,12 +1119,13 @@ export function main() {
                expect(e.message).toEqual(
                    `Unexpected directive value 'undefined' on the View of component '${stringify(MyComp)}'`);
                async.done();
+               return null;
              });
            }));
       }
 
       it('should specify a location of an error that happened during change detection (text)',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
            tb.overrideView(MyComp, new viewAnn.View({template: '{{a.b}}'}));
 
@@ -1127,7 +1138,7 @@ export function main() {
          }));
 
       it('should specify a location of an error that happened during change detection (element property)',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
            tb.overrideView(MyComp, new viewAnn.View({template: '<div [prop]="a.b"></div>'}));
 
@@ -1140,7 +1151,7 @@ export function main() {
          }));
 
       it('should specify a location of an error that happened during change detection (directive property)',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
            tb.overrideView(
                MyComp,
@@ -1156,7 +1167,8 @@ export function main() {
          }));
     });
 
-    it('should support imperative views', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+    it('should support imperative views',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          tb.overrideView(MyComp, new viewAnn.View({
            template: '<simple-imp-cmp></simple-imp-cmp>',
            directives: [SimpleImperativeViewComponent]
@@ -1210,27 +1222,27 @@ export function main() {
         }
 
         it('should raise an error if no directive is registered for a template with template bindings',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              expectCompileError(tb, '<div><div template="if: foo"></div></div>',
                                 'Missing directive to handle \'if\' in <div template="if: foo">',
                                 () => async.done());
            }));
 
         it('should raise an error for missing template directive (1)',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              expectCompileError(tb, '<div><template foo></template></div>',
                                 'Missing directive to handle: <template foo>', () => async.done());
            }));
 
         it('should raise an error for missing template directive (2)',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              expectCompileError(tb, '<div><template *ng-if="condition"></template></div>',
                                 'Missing directive to handle: <template *ng-if="condition">',
                                 () => async.done());
            }));
 
         it('should raise an error for missing template directive (3)',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              expectCompileError(
                  tb, '<div *ng-if="condition"></div>',
                  'Missing directive to handle \'if\' in MyComp: <div *ng-if="condition">',

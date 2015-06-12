@@ -23,7 +23,7 @@ export function viewRootNodes(view): List</*node*/ any> {
   return resolveInternalDomView(view.render).rootNodes;
 }
 
-export function queryView(view, selector: string) {
+export function queryView(view, selector: string): any {
   var rootNodes = viewRootNodes(view);
   for (var i = 0; i < rootNodes.length; ++i) {
     var res = DOM.querySelector(rootNodes[i], selector);

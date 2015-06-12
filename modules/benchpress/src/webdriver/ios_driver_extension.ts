@@ -51,7 +51,7 @@ export class IOsDriverExtension extends WebDriverExtension {
         });
   }
 
-  _convertPerfRecordsToEvents(records, events = null) {
+  _convertPerfRecordsToEvents(records: any[], events = null) {
     if (isBlank(events)) {
       events = [];
     }

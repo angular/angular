@@ -6,7 +6,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 
 export function main() {
   describe('Locals', () => {
-    var locals;
+    var locals: Locals;
     beforeEach(() => {
       locals = new Locals(null, MapWrapper.createFromPairs([['key', 'value'], ['nullKey', null]]));
     });

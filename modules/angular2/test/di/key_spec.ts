@@ -3,7 +3,7 @@ import {Key, KeyRegistry} from 'angular2/di';
 
 export function main() {
   describe("key", function() {
-    var registry;
+    var registry: KeyRegistry;
 
     beforeEach(function() { registry = new KeyRegistry(); });
 

@@ -6,6 +6,7 @@ export interface TranspilerOptions {
   generateLibraryName?: boolean;
   generateSourceMap?: boolean;
   basePath?: string;
+  translateBuiltins?: boolean;
 }
 
 export class Transpiler {

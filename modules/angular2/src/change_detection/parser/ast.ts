@@ -1,12 +1,13 @@
 import {isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/facade/lang";
 import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/collection";
+import {Locals} from "./locals";
 
 export class AST {
-  eval(context, locals) { throw new BaseException("Not supported"); }
+  eval(context, locals: Locals) { throw new BaseException("Not supported"); }
 
   get isAssignable(): boolean { return false; }
 
-  assign(context, locals, value) { throw new BaseException("Not supported"); }
+  assign(context, locals: Locals, value) { throw new BaseException("Not supported"); }
 
   visit(visitor: AstVisitor): any { return null; }
 
@@ -14,7 +15,7 @@ export class AST {
 }
 
 export class EmptyExpr extends AST {
-  eval(context, locals) { return null; }
+  eval(context, locals: Locals) { return null; }
 
   visit(visitor: AstVisitor) {
     // do nothing
@@ -22,7 +23,7 @@ export class EmptyExpr extends AST {
 }
 
 export class ImplicitReceiver extends AST {
-  eval(context, locals) { return context; }
+  eval(context, locals: Locals) { return context; }
 
   visit(visitor: AstVisitor) { return visitor.visitImplicitReceiver(this); }
 }
@@ -33,7 +34,7 @@ export class ImplicitReceiver extends AST {
 export class Chain extends AST {
   constructor(public expressions: List<any>) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var result;
     for (var i = 0; i < this.expressions.length; i++) {
       var last = this.expressions[i].eval(context, locals);
@@ -48,7 +49,7 @@ export class Chain extends AST {
 export class Conditional extends AST {
   constructor(public condition: AST, public trueExp: AST, public falseExp: AST) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     if (this.condition.eval(context, locals)) {
       return this.trueExp.eval(context, locals);
     } else {
@@ -65,7 +66,7 @@ export class AccessMember extends AST {
     super();
   }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
                                      locals.contains(this.name)) {
       return locals.get(this.name);
@@ -77,7 +78,7 @@ export class AccessMember extends AST {
 
   get isAssignable(): boolean { return true; }
 
-  assign(context, locals, value) {
+  assign(context, locals: Locals, value) {
     var evaluatedContext = this.receiver.eval(context, locals);
 
     if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
@@ -97,7 +98,7 @@ export class SafeAccessMember extends AST {
     super();
   }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var evaluatedReceiver = this.receiver.eval(context, locals);
     return isBlank(evaluatedReceiver) ? null : this.getter(evaluatedReceiver);
   }
@@ -108,7 +109,7 @@ export class SafeAccessMember extends AST {
 export class KeyedAccess extends AST {
   constructor(public obj: AST, public key: AST) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var obj: any = this.obj.eval(context, locals);
     var key: any = this.key.eval(context, locals);
     return obj[key];
@@ -116,7 +117,7 @@ export class KeyedAccess extends AST {
 
   get isAssignable(): boolean { return true; }
 
-  assign(context, locals, value) {
+  assign(context, locals: Locals, value) {
     var obj: any = this.obj.eval(context, locals);
     var key: any = this.key.eval(context, locals);
     obj[key] = value;
@@ -138,7 +139,7 @@ export class Pipe extends AST {
 export class LiteralPrimitive extends AST {
   constructor(public value) { super(); }
 
-  eval(context, locals) { return this.value; }
+  eval(context, locals: Locals) { return this.value; }
 
   visit(visitor: AstVisitor) { return visitor.visitLiteralPrimitive(this); }
 }
@@ -146,7 +147,7 @@ export class LiteralPrimitive extends AST {
 export class LiteralArray extends AST {
   constructor(public expressions: List<any>) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     return ListWrapper.map(this.expressions, (e) => e.eval(context, locals));
   }
 
@@ -156,7 +157,7 @@ export class LiteralArray extends AST {
 export class LiteralMap extends AST {
   constructor(public keys: List<any>, public values: List<any>) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var res = StringMapWrapper.create();
     for (var i = 0; i < this.keys.length; ++i) {
       StringMapWrapper.set(res, this.keys[i], this.values[i].eval(context, locals));
@@ -178,7 +179,7 @@ export class Interpolation extends AST {
 export class Binary extends AST {
   constructor(public operation: string, public left: AST, public right: AST) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var left: any = this.left.eval(context, locals);
     switch (this.operation) {
       case '&&':
@@ -229,7 +230,7 @@ export class Binary extends AST {
 export class PrefixNot extends AST {
   constructor(public expression: AST) { super(); }
 
-  eval(context, locals) { return !this.expression.eval(context, locals); }
+  eval(context, locals: Locals) { return !this.expression.eval(context, locals); }
 
   visit(visitor: AstVisitor) { return visitor.visitPrefixNot(this); }
 }
@@ -237,7 +238,7 @@ export class PrefixNot extends AST {
 export class Assignment extends AST {
   constructor(public target: AST, public value: AST) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     return this.target.assign(context, locals, this.value.eval(context, locals));
   }
 
@@ -250,7 +251,7 @@ export class MethodCall extends AST {
     super();
   }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var evaluatedArgs = evalList(context, locals, this.args);
     if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
                                      locals.contains(this.name)) {
@@ -271,7 +272,7 @@ export class SafeMethodCall extends AST {
     super();
   }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var evaluatedReceiver = this.receiver.eval(context, locals);
     if (isBlank(evaluatedReceiver)) return null;
     var evaluatedArgs = evalList(context, locals, this.args);
@@ -284,7 +285,7 @@ export class SafeMethodCall extends AST {
 export class FunctionCall extends AST {
   constructor(public target: AST, public args: List<any>) { super(); }
 
-  eval(context, locals) {
+  eval(context, locals: Locals) {
     var obj: any = this.target.eval(context, locals);
     if (!(obj instanceof Function)) {
       throw new BaseException(`${obj} is not a function`);
@@ -298,11 +299,11 @@ export class FunctionCall extends AST {
 export class ASTWithSource extends AST {
   constructor(public ast: AST, public source: string, public location: string) { super(); }
 
-  eval(context, locals) { return this.ast.eval(context, locals); }
+  eval(context, locals: Locals) { return this.ast.eval(context, locals); }
 
   get isAssignable(): boolean { return this.ast.isAssignable; }
 
-  assign(context, locals, value) { return this.ast.assign(context, locals, value); }
+  assign(context, locals: Locals, value) { return this.ast.assign(context, locals, value); }
 
   visit(visitor: AstVisitor) { return this.ast.visit(visitor); }
 
@@ -413,7 +414,7 @@ var _evalListCache = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
-function evalList(context, locals, exps: List<any>) {
+function evalList(context, locals: Locals, exps: List<any>) {
   var length = exps.length;
   if (length > 10) {
     throw new BaseException("Cannot have more than 10 argument");

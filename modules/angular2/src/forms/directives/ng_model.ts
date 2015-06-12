@@ -9,8 +9,7 @@ import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {setUpControl} from './shared';
 
-const formControlBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgModel)}));
+const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgModel)}));
 
 /**
  * Binds a domain model to the form.

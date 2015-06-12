@@ -29,7 +29,11 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 export function main() {
   describe('DynamicComponentLoader', function() {
     describe("loading into existing location", () => {
-      it('should work', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      function ijTestBed(fn: (ts: TestBed, async: AsyncTestCompleter) => void) {
+        return inject([TestBed, AsyncTestCompleter], fn);
+      }
+
+      it('should work', ijTestBed((tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<dynamic-comp #dynamic></dynamic-comp>',
              directives: [DynamicComp]
@@ -48,7 +52,7 @@ export function main() {
          }));
 
       it('should inject dependencies of the dynamically-loaded component',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         ijTestBed((tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<dynamic-comp #dynamic></dynamic-comp>',
              directives: [DynamicComp]
@@ -65,7 +69,7 @@ export function main() {
          }));
 
       it('should allow to destroy and create them via viewcontainer directives',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         ijTestBed((tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template:
                  '<div><dynamic-comp #dynamic template="ng-if: ctxBoolProp"></dynamic-comp></div>',
@@ -103,7 +107,8 @@ export function main() {
 
     describe("loading next to an existing location", () => {
       it('should work',
-         inject([DynamicComponentLoader, TestBed, AsyncTestCompleter], (loader, tb, async) => {
+         inject([DynamicComponentLoader, TestBed, AsyncTestCompleter], (loader, tb: TestBed,
+                                                                        async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View(
@@ -121,7 +126,8 @@ export function main() {
          }));
 
       it('should return a disposable component ref',
-         inject([DynamicComponentLoader, TestBed, AsyncTestCompleter], (loader, tb, async) => {
+         inject([DynamicComponentLoader, TestBed, AsyncTestCompleter], (loader, tb: TestBed,
+                                                                        async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View(
@@ -148,7 +154,8 @@ export function main() {
          }));
 
       it('should update host properties',
-         inject([DynamicComponentLoader, TestBed, AsyncTestCompleter], (loader, tb, async) => {
+         inject([DynamicComponentLoader, TestBed, AsyncTestCompleter], (loader, tb: TestBed,
+                                                                        async) => {
            tb.overrideView(
                MyComp,
                new viewAnn.View(
@@ -175,7 +182,7 @@ export function main() {
 
     describe('loading into a new location', () => {
       it('should allow to create, update and destroy components',
-         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(MyComp, new viewAnn.View({
              template: '<imp-ng-cmp #impview></imp-ng-cmp>',
              directives: [ImperativeViewComponentUsingNgComponent]
@@ -206,10 +213,9 @@ export function main() {
     });
 
     describe('loadAsRoot', () => {
-
       it('should allow to create, update and destroy components',
          inject([TestBed, AsyncTestCompleter, DynamicComponentLoader, DOCUMENT_TOKEN, Injector],
-                (tb, async, dcl, doc, injector) => {
+                (tb: TestBed, async, dcl, doc, injector) => {
                   var rootEl = el('<child-cmp></child-cmp>');
                   DOM.appendChild(doc.body, rootEl);
                   dcl.loadAsRoot(ChildComp, null, injector)

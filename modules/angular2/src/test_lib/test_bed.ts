@@ -128,7 +128,7 @@ export class ViewProxy {
     this._view.changeDetector.checkNoChanges();
   }
 
-  querySelector(selector) { return queryView(this._view, selector); }
+  querySelector(selector): any { return queryView(this._view, selector); }
 
   destroy() { this._componentRef.dispose(); }
 
