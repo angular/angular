@@ -62,5 +62,8 @@ function stripIndexHtml(url: string): string {
   if (url.length > 10 && StringWrapper.substring(url, url.length - 11) == '/index.html') {
     return StringWrapper.substring(url, 0, url.length - 11);
   }
+  if (url.length > 1 && url[url.length - 1] == '/') {
+    url = StringWrapper.substring(url, 0, url.length - 1);
+  }
   return url;
 }
