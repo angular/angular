@@ -1574,7 +1574,7 @@
                       "version": "0.2.0"
                     },
                     "is-dotfile": {
-                      "version": "1.0.0"
+                      "version": "1.0.1"
                     },
                     "is-extglob": {
                       "version": "1.0.0"
@@ -1611,10 +1611,10 @@
           "version": "1.2.0"
         },
         "is-binary-path": {
-          "version": "1.0.0",
+          "version": "1.0.1",
           "dependencies": {
             "binary-extensions": {
-              "version": "1.3.0"
+              "version": "1.3.1"
             }
           }
         },
@@ -1631,10 +1631,10 @@
               "version": "0.2.14",
               "dependencies": {
                 "lru-cache": {
-                  "version": "2.6.2"
+                  "version": "2.6.4"
                 },
                 "sigmund": {
-                  "version": "1.0.0"
+                  "version": "1.0.1"
                 }
               }
             },
@@ -1654,6 +1654,14 @@
                   "version": "2.0.1"
                 }
               }
+            }
+          }
+        },
+        "fsevents": {
+          "version": "0.3.6",
+          "dependencies": {
+            "nan": {
+              "version": "1.8.4"
             }
           }
         }
