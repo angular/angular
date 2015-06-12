@@ -3,7 +3,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
 import {Directive, onChange} from 'angular2/angular2';
-import {FORWARD_REF, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
@@ -12,7 +12,7 @@ import {Control, ControlGroup} from '../model';
 import {setUpControl} from './shared';
 
 const formDirectiveBinding =
-    CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgFormModel)}));
+    CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgFormModel)}));
 
 /**
  * Binds an existing control group to a DOM element.

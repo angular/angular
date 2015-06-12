@@ -3,14 +3,14 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 import {Directive, Ancestor, onChange} from 'angular2/angular2';
-import {FORWARD_REF, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {setUpControl} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgFormControl)}));
+    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
 
 /**
  * Binds an existing control to a DOM element.

@@ -1,5 +1,5 @@
 import {Directive, Ancestor, onDestroy, onInit} from 'angular2/angular2';
-import {Inject, FORWARD_REF, Binding} from 'angular2/di';
+import {Inject, forwardRef, Binding} from 'angular2/di';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -7,7 +7,7 @@ import {ControlContainer} from './control_container';
 import {controlPath} from './shared';
 
 const controlGroupBinding =
-    CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgControlGroup)}));
+    CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgControlGroup)}));
 
 /**
  * Creates and binds a control group to a DOM element.

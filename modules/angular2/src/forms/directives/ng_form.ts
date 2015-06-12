@@ -2,7 +2,7 @@ import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/faca
 import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive} from 'angular2/src/core/annotations/decorators';
-import {FORWARD_REF, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
@@ -11,7 +11,7 @@ import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl} from './shared';
 
 const formDirectiveBinding =
-    CONST_EXPR(new Binding(ControlContainer, {toAlias: FORWARD_REF(() => NgForm)}));
+    CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgForm)}));
 
 /**
  * Creates and binds a form object to a DOM element.
