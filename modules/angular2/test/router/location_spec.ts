@@ -38,6 +38,14 @@ export function main() {
     it('should not prepend urls with starting slash when an empty URL is provided',
        () => { expect(location.normalizeAbsolutely('')).toEqual(browserLocation.baseHref); });
 
+    it('should not prepend path with an extra slash when a baseHref has a trailing slash', () => {
+      browserLocation = new DummyBrowserLocation();
+      browserLocation.spy('pushState');
+      browserLocation.baseHref = '/my/slashed/app/';
+      location = new Location(browserLocation);
+      expect(location.normalizeAbsolutely('/page')).toEqual('/my/slashed/app/page');
+    });
+
     it('should not append urls with leading slash on navigate', () => {
       location.go('/my/app/user/btford');
       expect(browserLocation.spy('pushState'))
