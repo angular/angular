@@ -35,6 +35,9 @@ export function main() {
           .toHaveBeenCalledWith(null, '', '/my/app/user/btford');
     });
 
+    it('should not prepend urls with starting slash when an empty URL is provided',
+       () => { expect(location.normalizeAbsolutely('')).toEqual(browserLocation.baseHref); });
+
     it('should not append urls with leading slash on navigate', () => {
       location.go('/my/app/user/btford');
       expect(browserLocation.spy('pushState'))
