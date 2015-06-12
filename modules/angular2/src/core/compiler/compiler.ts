@@ -30,8 +30,7 @@ import * as renderApi from 'angular2/src/render/api';
  */
 @Injectable()
 export class CompilerCache {
-  _cache: Map<Type, AppProtoView>;
-  constructor() { this._cache = MapWrapper.create(); }
+  _cache: Map<Type, AppProtoView> = MapWrapper.create();
 
   set(component: Type, protoView: AppProtoView): void {
     MapWrapper.set(this._cache, component, protoView);

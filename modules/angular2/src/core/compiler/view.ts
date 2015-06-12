@@ -33,24 +33,24 @@ export class AppViewContainer {
  *
  */
 export class AppView implements ChangeDispatcher, EventDispatcher {
-  render: renderApi.RenderViewRef;
+  render: renderApi.RenderViewRef = null;
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors: List<ElementInjector>;
-  elementInjectors: List<ElementInjector>;
-  changeDetector: ChangeDetector;
-  componentChildViews: List<AppView>;
+  elementInjectors: List<ElementInjector> = null;
+  changeDetector: ChangeDetector = null;
+  componentChildViews: List<AppView> = null;
   /// Host views that were added by an imperative view.
   /// This is a dynamically growing / shrinking array.
-  freeHostViews: List<AppView>;
+  freeHostViews: List<AppView> = [];
   viewContainers: List<AppViewContainer>;
-  preBuiltObjects: List<PreBuiltObjects>;
+  preBuiltObjects: List<PreBuiltObjects> = null;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
    * This is always a component instance.
    */
 
-  context: any;
+  context: any = null;
 
   /**
    * Variables, local to this view, that can be used in binding expressions (in addition to the
@@ -61,16 +61,8 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
 
   constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
               protoLocals: Map<string, any>) {
-    this.render = null;
-    this.changeDetector = null;
-    this.elementInjectors = null;
-    this.rootElementInjectors = null;
-    this.componentChildViews = null;
     this.viewContainers = ListWrapper.createFixedSize(this.proto.elementBinders.length);
-    this.preBuiltObjects = null;
-    this.context = null;
     this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
-    this.freeHostViews = [];
   }
 
   init(changeDetector: ChangeDetector, elementInjectors: List<ElementInjector>,
@@ -166,14 +158,12 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
  *
  */
 export class AppProtoView {
-  elementBinders: List<ElementBinder>;
-  protoLocals: Map<string, any>;
+  elementBinders: List<ElementBinder> = [];
+  protoLocals: Map<string, any> = MapWrapper.create();
 
   constructor(public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>) {
-    this.elementBinders = [];
-    this.protoLocals = MapWrapper.create();
     if (isPresent(variableBindings)) {
       MapWrapper.forEach(variableBindings, (templateName, _) => {
         MapWrapper.set(this.protoLocals, templateName, null);

@@ -10,15 +10,9 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
  * @exportedAs angular2/view
  */
 export class BaseQueryList<T> {
-  protected _results: List<T>;
-  protected _callbacks;
-  protected _dirty;
-
-  constructor() {
-    this._results = [];
-    this._callbacks = [];
-    this._dirty = false;
-  }
+  protected _results: List<T> = [];
+  protected _callbacks = [];
+  protected _dirty = false;
 
   [Symbol.iterator]() { return this._results[Symbol.iterator](); }
 

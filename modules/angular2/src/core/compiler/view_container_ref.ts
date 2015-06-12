@@ -26,7 +26,7 @@ export class ViewContainerRef {
 
   get(index: number): ViewRef { return new ViewRef(this._getViews()[index]); }
 
-  get length() /* :int */ { return this._getViews().length; }
+  get length(): number { return this._getViews().length; }
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.

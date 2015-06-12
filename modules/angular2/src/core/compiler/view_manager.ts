@@ -16,18 +16,8 @@ import {AppViewListener} from './view_listener';
  */
 @Injectable()
 export class AppViewManager {
-  _viewPool: AppViewPool;
-  _viewListener: AppViewListener;
-  _utils: AppViewManagerUtils;
-  _renderer: Renderer;
-
-  constructor(viewPool: AppViewPool, viewListener: AppViewListener, utils: AppViewManagerUtils,
-              renderer: Renderer) {
-    this._viewPool = viewPool;
-    this._viewListener = viewListener;
-    this._utils = utils;
-    this._renderer = renderer;
-  }
+  constructor(public _viewPool: AppViewPool, public _viewListener: AppViewListener,
+              public _utils: AppViewManagerUtils, public _renderer: Renderer) {}
 
   getComponentView(hostLocation: ElementRef): ViewRef {
     var hostView = internalView(hostLocation.parentView);
