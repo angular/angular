@@ -11,9 +11,7 @@ import {RenderViewRef} from 'angular2/src/render/api';
 
 @Injectable()
 export class AppViewManagerUtils {
-  _directiveResolver: DirectiveResolver;
-
-  constructor(metadataReader: DirectiveResolver) { this._directiveResolver = metadataReader; }
+  constructor(public _directiveResolver: DirectiveResolver) {}
 
   getComponentInstance(parentView: viewModule.AppView, boundElementIndex: number): any {
     var binder = parentView.proto.elementBinders[boundElementIndex];

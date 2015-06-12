@@ -10,14 +10,9 @@ import 'dart:collection';
  * For now it uses a plain list of observable callbacks.
  */
 class BaseQueryList<T> extends Object with IterableMixin<T> {
-  List<T> _results;
-  List _callbacks;
-  bool _dirty;
-
-  BaseQueryList()
-      : _results = [],
-        _callbacks = [],
-        _dirty = false;
+  List<T> _results = [];
+  List _callbacks = [];
+  bool _dirty = false;
 
   Iterator<T> get iterator => _results.iterator;
 
@@ -40,14 +35,14 @@ class BaseQueryList<T> extends Object with IterableMixin<T> {
   }
 
   onChange(callback) {
-    this._callbacks.add(callback);
+    _callbacks.add(callback);
   }
 
   removeCallback(callback) {
-    this._callbacks.remove(callback);
+    _callbacks.remove(callback);
   }
 
-  get length => this._results.length;
-  get first => this._results.first;
-  get last => this._results.last;
+  get length => _results.length;
+  get first => _results.first;
+  get last => _results.last;
 }

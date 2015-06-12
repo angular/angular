@@ -6,8 +6,10 @@ import {List, StringMap} from 'angular2/src/facade/collection';
 import * as viewModule from './view';
 
 export class ElementBinder {
-  nestedProtoView: viewModule.AppProtoView;
-  hostListeners: StringMap<string, Map<number, AST>>;
+  // updated later when events are bound
+  nestedProtoView: viewModule.AppProtoView = null;
+  // updated later, so we are able to resolve cycles
+  hostListeners: StringMap<string, Map<number, AST>> = null;
 
   constructor(public index: int, public parent: ElementBinder, public distanceToParent: int,
               public protoElementInjector: eiModule.ProtoElementInjector,
@@ -16,10 +18,6 @@ export class ElementBinder {
     if (isBlank(index)) {
       throw new BaseException('null index not allowed.');
     }
-    // updated later when events are bound
-    this.hostListeners = null;
-    // updated later, so we are able to resolve cycles
-    this.nestedProtoView = null;
   }
 
   hasStaticComponent() {

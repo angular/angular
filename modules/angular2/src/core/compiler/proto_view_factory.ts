@@ -20,13 +20,8 @@ import {ElementBinder} from './element_binder';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 
 class BindingRecordsCreator {
-  _directiveRecordsMap: Map<number, DirectiveRecord>;
-  _textNodeIndex: number;
-
-  constructor() {
-    this._directiveRecordsMap = MapWrapper.create();
-    this._textNodeIndex = 0;
-  }
+  _directiveRecordsMap: Map<number, DirectiveRecord> = MapWrapper.create();
+  _textNodeIndex: number = 0;
 
   getBindingRecords(elementBinders: List<renderApi.ElementBinder>,
                     allDirectiveMetadatas: List<renderApi.DirectiveMetadata>): List<BindingRecord> {
@@ -139,9 +134,7 @@ class BindingRecordsCreator {
 
 @Injectable()
 export class ProtoViewFactory {
-  _changeDetection: ChangeDetection;
-
-  constructor(changeDetection: ChangeDetection) { this._changeDetection = changeDetection; }
+  constructor(public _changeDetection: ChangeDetection) {}
 
   createAppProtoViews(hostComponentBinding: DirectiveBinding,
                       rootRenderProtoView: renderApi.ProtoViewDto,
@@ -432,24 +425,10 @@ function _bindDirectiveEvents(protoView, elementBinders: List<renderApi.ElementB
 
 
 class RenderProtoViewWithIndex {
-  renderProtoView: renderApi.ProtoViewDto;
-  index: number;
-  parentIndex: number;
-  boundElementIndex: number;
-  constructor(renderProtoView: renderApi.ProtoViewDto, index: number, parentIndex: number,
-              boundElementIndex: number) {
-    this.renderProtoView = renderProtoView;
-    this.index = index;
-    this.parentIndex = parentIndex;
-    this.boundElementIndex = boundElementIndex;
-  }
+  constructor(public renderProtoView: renderApi.ProtoViewDto, public index: number,
+              public parentIndex: number, public boundElementIndex: number) {}
 }
 
 class ParentProtoElementInjectorWithDistance {
-  protoElementInjector: ProtoElementInjector;
-  distance: number;
-  constructor(protoElementInjector: ProtoElementInjector, distance: number) {
-    this.protoElementInjector = protoElementInjector;
-    this.distance = distance;
-  }
+  constructor(public protoElementInjector: ProtoElementInjector, public distance: number) {}
 }

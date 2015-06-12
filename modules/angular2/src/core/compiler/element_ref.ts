@@ -7,13 +7,7 @@ import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
  * @exportedAs angular2/view
  */
 export class ElementRef {
-  parentView: ViewRef;
-  boundElementIndex: number;
-
-  constructor(parentView: ViewRef, boundElementIndex: number) {
-    this.parentView = parentView;
-    this.boundElementIndex = boundElementIndex;
-  }
+  constructor(public parentView: ViewRef, public boundElementIndex: number) {}
 
   /**
    * Exposes the underlying DOM element.

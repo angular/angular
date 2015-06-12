@@ -23,13 +23,7 @@ export class ComponentRef {
  */
 @Injectable()
 export class DynamicComponentLoader {
-  private _compiler: Compiler;
-  private _viewManager: AppViewManager;
-
-  constructor(compiler: Compiler, viewManager: AppViewManager) {
-    this._compiler = compiler;
-    this._viewManager = viewManager;
-  }
+  constructor(private _compiler: Compiler, private _viewManager: AppViewManager) {}
 
   /**
    * Loads a component into the location given by the provided ElementRef. The loaded component
@@ -53,7 +47,7 @@ export class DynamicComponentLoader {
    * component's selector.
    * The loaded component receives injection normally as a hosted view.
    */
-  loadAsRoot(typeOrBinding, overrideSelector = null,
+  loadAsRoot(typeOrBinding, overrideSelector: string = null,
              injector: Injector = null): Promise<ComponentRef> {
     return this._compiler.compileInHost(this._getBinding(typeOrBinding))
         .then(hostProtoViewRef => {

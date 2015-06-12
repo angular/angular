@@ -16,9 +16,7 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
  * @exportedAs angular2/view
  */
 export class ViewRef {
-  _view: viewModule.AppView;
-
-  constructor(view: viewModule.AppView) { this._view = view; }
+  constructor(public _view: viewModule.AppView) {}
 
   get render(): RenderViewRef { return this._view.render; }
 
@@ -29,7 +27,5 @@ export class ViewRef {
  * @exportedAs angular2/view
  */
 export class ProtoViewRef {
-  _protoView: viewModule.AppProtoView;
-
-  constructor(protoView) { this._protoView = protoView; }
+  constructor(public _protoView: viewModule.AppProtoView) {}
 }
