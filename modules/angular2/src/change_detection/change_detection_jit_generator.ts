@@ -285,7 +285,7 @@ export class ChangeDetectorJITGenerator {
     `;
 
     if (r.isPureFunction()) {
-      var condition = `${this._changeNames.join(" || ")}`;
+      var condition = r.args.map((a) => this._changeNames[a]).join(" || ");
       return `if (${condition}) { ${check} }`;
     } else {
       return check;
