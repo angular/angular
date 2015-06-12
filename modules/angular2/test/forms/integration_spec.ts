@@ -480,8 +480,7 @@ export function main() {
                   tb.createView(MyComp, {context: ctx, html: t})
                       .then((view) => {
                         view.detectChanges();
-                        var form =
-                            view.rawView.elementInjectors[0].get(NgForm);
+                        var form = view.rawView.elementInjectors[0].get(NgForm);
                         expect(form.controls['user']).not.toBeDefined();
 
                         tick();
@@ -535,8 +534,8 @@ export function main() {
                                             tb.createView(MyComp, {context: ctx, html: t})
                                                 .then((view) => {
                                                   view.detectChanges();
-                                                  var form = view.rawView.elementInjectors[0].get(
-                                                      NgForm);
+                                                  var form =
+                                                      view.rawView.elementInjectors[0].get(NgForm);
 
                                                   tick();
 
@@ -565,8 +564,7 @@ export function main() {
                   tb.createView(MyComp, {context: ctx, html: t})
                       .then((view) => {
                         view.detectChanges();
-                        var form =
-                            view.rawView.elementInjectors[0].get(NgForm);
+                        var form = view.rawView.elementInjectors[0].get(NgForm);
                         flushMicrotasks();
 
                         expect(form.controls['user']).toBeDefined();
