@@ -38,7 +38,7 @@ String _getComponentId(AssetId assetId, String className) =>
 
 // TODO(kegluenq): Improve this test.
 bool _isViewAnnotation(InstanceCreationExpression node) =>
-    '${node.constructorName.type}' == 'View';
+    '${node.constructorName.type}' == 'BaseView' || '${node.constructorName.type}' == 'View';
 
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
 /// `entryPoint`.
