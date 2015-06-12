@@ -9140,13 +9140,13 @@
       }
     },
     "ts2dart": {
-      "version": "0.5.9",
+      "version": "0.6.1",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
           "dependencies": {
             "amdefine": {
-              "version": "0.1.0"
+              "version": "0.1.1"
             }
           }
         },
@@ -9157,14 +9157,15 @@
               "version": "0.1.32",
               "dependencies": {
                 "amdefine": {
-                  "version": "0.1.0"
+                  "version": "0.1.1"
                 }
               }
             }
           }
         },
         "typescript": {
-          "version": "1.5.0-beta"
+          "version": "1.5.0",
+          "resolved": "git://github.com/alexeagle/TypeScript.git#be9a7edff73ac2592e508732c771c85357041385"
         }
       }
     },

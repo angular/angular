@@ -14129,45 +14129,44 @@
       }
     },
     "ts2dart": {
-      "version": "0.5.9",
-      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.5.9.tgz",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.5.9.tgz",
+      "version": "0.6.1",
+      "from": "ts2dart@0.6.1",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
-          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.2.tgz",
+          "from": "source-map@>=0.4.2 <0.5.0",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.2.tgz",
           "dependencies": {
             "amdefine": {
-              "version": "0.1.0",
-              "from": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.0.tgz",
-              "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.0.tgz"
+              "version": "0.1.1",
+              "from": "amdefine@>=0.0.4",
+              "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz"
             }
           }
         },
         "source-map-support": {
           "version": "0.3.1",
-          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.1.tgz",
+          "from": "source-map-support@>=0.3.1 <0.4.0",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.1.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
+              "from": "source-map@0.1.32",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "dependencies": {
                 "amdefine": {
-                  "version": "0.1.0",
-                  "from": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.0.tgz",
-                  "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.0.tgz"
+                  "version": "0.1.1",
+                  "from": "amdefine@>=0.0.4",
+                  "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz"
                 }
               }
             }
           }
         },
         "typescript": {
-          "version": "1.5.0-beta",
-          "from": "https://registry.npmjs.org/typescript/-/typescript-1.5.0-beta.tgz",
-          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.5.0-beta.tgz"
+          "version": "1.5.0",
+          "from": "alexeagle/TypeScript#error_is_class",
+          "resolved": "git://github.com/alexeagle/TypeScript.git#be9a7edff73ac2592e508732c771c85357041385"
         }
       }
     },
