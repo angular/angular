@@ -109,6 +109,18 @@ void allTests() {
       expect(metadata.callOnAllChangesDone).toBe(true);
     });
 
+    it('should parse events.', () async {
+      var metadata = await readMetadata('directive_metadata_extractor/'
+          'directive_metadata_files/events.ng_deps.dart');
+      expect(metadata.events).toEqual(['onFoo', 'onBar']);
+    });
+
+    it('should parse changeDetection.', () async {
+      var metadata = await readMetadata('directive_metadata_extractor/'
+          'directive_metadata_files/changeDetection.ng_deps.dart');
+      expect(metadata.changeDetection).toEqual('CHECK_ONCE');
+    });
+
     it('should fail when a class is annotated with multiple Directives.',
         () async {
       var ngDeps = await NgDeps.parse(reader, new AssetId('a',

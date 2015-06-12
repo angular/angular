@@ -63,8 +63,8 @@ class _DirectiveMetadataVisitor extends Object
   bool _callOnCheck;
   bool _callOnInit;
   bool _callOnAllChangesDone;
-  String changeDetection;
-  List<String> events;
+  String _changeDetection;
+  List<String> _events;
 
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
@@ -83,8 +83,8 @@ class _DirectiveMetadataVisitor extends Object
     _callOnCheck = false;
     _callOnInit = false;
     _callOnAllChangesDone = false;
-    changeDetection = null;
-    events = [];
+    _changeDetection = null;
+    _events = [];
   }
 
   DirectiveMetadata get meta => DirectiveMetadata.create(
@@ -100,8 +100,8 @@ class _DirectiveMetadataVisitor extends Object
     callOnCheck: _callOnCheck,
     callOnInit: _callOnInit,
     callOnAllChangesDone: _callOnAllChangesDone,
-    changeDetection: changeDetection,
-    events: events);
+    changeDetection: _changeDetection,
+    events: _events);
 
   @override
   Object visitAnnotation(Annotation node) {
@@ -145,7 +145,6 @@ class _DirectiveMetadataVisitor extends Object
           '$node' /* source */);
     }
     var keyString = '${node.name.label}';
-    // TODO(kegluneq): Populate the other values in [DirectiveMetadata]
     switch (keyString) {
       case 'selector':
         _populateSelector(node.expression);
@@ -164,6 +163,12 @@ class _DirectiveMetadataVisitor extends Object
         break;
       case 'exportAs':
         _populateExportAs(node.expression);
+        break;
+      case 'changeDetection':
+        _populateChangeDetection(node.expression);
+        break;
+      case 'events':
+        _populateEvents(node.expression);
         break;
     }
     return null;
@@ -262,5 +267,15 @@ class _DirectiveMetadataVisitor extends Object
     _callOnCheck = lifecycleEvents.contains("onCheck");
     _callOnInit = lifecycleEvents.contains("onInit");
     _callOnAllChangesDone = lifecycleEvents.contains("onAllChangesDone");
+  }
+
+  void _populateEvents(Expression eventsValue) {
+    _checkMeta();
+    _populateList(eventsValue, _events, 'Directive#events');
+  }
+
+  void _populateChangeDetection(Expression value) {
+    _checkMeta();
+    _changeDetection = _expressionToString(value, 'Directive#changeDetection');
   }
 }

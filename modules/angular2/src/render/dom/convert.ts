@@ -24,6 +24,8 @@ export function directiveMetadataToMap(meta: DirectiveMetadata): Map<string, any
     ['callOnInit', meta.callOnInit],
     ['callOnChange', meta.callOnChange],
     ['callOnAllChangesDone', meta.callOnAllChangesDone],
+    ['events', meta.events],
+    ['changeDetection', meta.changeDetection],
     ['version', 1],
   ]);
 }
@@ -50,7 +52,9 @@ export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetada
     callOnCheck:<boolean>MapWrapper.get(map, 'callOnCheck'),
     callOnChange:<boolean>MapWrapper.get(map, 'callOnChange'),
     callOnInit:<boolean>MapWrapper.get(map, 'callOnInit'),
-    callOnAllChangesDone:<boolean>MapWrapper.get(map, 'callOnAllChangesDone')
+    callOnAllChangesDone:<boolean>MapWrapper.get(map, 'callOnAllChangesDone'),
+    events:<List<string>>_cloneIfPresent(MapWrapper.get(map, 'events')),
+    changeDetection:<string>MapWrapper.get(map, 'changeDetection'),
   });
 }
 

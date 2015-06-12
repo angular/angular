@@ -22,7 +22,9 @@ export function main() {
         callOnChange: true,
         callOnCheck: true,
         callOnInit: true,
-        callOnAllChangesDone: true
+        callOnAllChangesDone: true,
+        events: ['onFoo', 'onBar'],
+        changeDetection: 'CHECK_ONCE'
       });
       var map = directiveMetadataToMap(someComponent);
       expect(MapWrapper.get(map, 'compileChildren')).toEqual(false);
@@ -45,6 +47,8 @@ export function main() {
       expect(MapWrapper.get(map, 'callOnInit')).toEqual(true);
       expect(MapWrapper.get(map, 'callOnAllChangesDone')).toEqual(true);
       expect(MapWrapper.get(map, 'exportAs')).toEqual('aaa');
+      expect(MapWrapper.get(map, 'events')).toEqual(['onFoo', 'onBar']);
+      expect(MapWrapper.get(map, 'changeDetection')).toEqual('CHECK_ONCE');
     });
 
     it('mapToDirectiveMetadata', () => {
@@ -64,7 +68,9 @@ export function main() {
         ['callOnCheck', true],
         ['callOnInit', true],
         ['callOnChange', true],
-        ['callOnAllChangesDone', true]
+        ['callOnAllChangesDone', true],
+        ['events', ['onFoo', 'onBar']],
+        ['changeDetection', 'CHECK_ONCE']
       ]);
       var meta = directiveMetadataFromMap(map);
       expect(meta.compileChildren).toEqual(false);
@@ -83,6 +89,8 @@ export function main() {
       expect(meta.callOnInit).toEqual(true);
       expect(meta.callOnChange).toEqual(true);
       expect(meta.callOnAllChangesDone).toEqual(true);
+      expect(meta.events).toEqual(['onFoo', 'onBar']);
+      expect(meta.changeDetection).toEqual('CHECK_ONCE');
     });
   });
 }
