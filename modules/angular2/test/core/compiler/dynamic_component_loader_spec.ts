@@ -18,6 +18,7 @@ import {
 import {TestBed, ViewProxy} from 'angular2/src/test_lib/test_bed';
 import {Injector} from 'angular2/di';
 import {Component, View, onDestroy} from 'angular2/annotations';
+import {Locals} from 'angular2/change_detection';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -76,7 +77,7 @@ export function main() {
            }));
 
            tb.createView(MyComp).then((view) => {
-             var dynamicComponent = view.rawView.locals.get("dynamic");
+             var dynamicComponent = (<Locals>view.rawView.locals).get("dynamic");
              dynamicComponent.done.then((ref) => {
                view.detectChanges();
                expect(view.rootNodes).toHaveText("hello");
