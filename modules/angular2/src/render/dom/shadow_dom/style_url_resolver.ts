@@ -10,9 +10,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
  */
 @Injectable()
 export class StyleUrlResolver {
-  _resolver: UrlResolver;
-
-  constructor(resolver: UrlResolver) { this._resolver = resolver; }
+  constructor(public _resolver: UrlResolver) {}
 
   resolveUrls(cssText: string, baseUrl: string) {
     cssText = this._replaceUrls(cssText, _cssUrlRe, baseUrl);

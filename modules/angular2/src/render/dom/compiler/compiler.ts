@@ -25,15 +25,10 @@ import {PropertySetterFactory} from '../view/property_setter_factory';
  * the CompilePipeline and the CompileSteps.
  */
 export class DomCompiler extends RenderCompiler {
-  _templateLoader: TemplateLoader;
-  _stepFactory: CompileStepFactory;
-  _propertySetterFactory: PropertySetterFactory;
+  _propertySetterFactory: PropertySetterFactory = new PropertySetterFactory();
 
-  constructor(stepFactory: CompileStepFactory, templateLoader: TemplateLoader) {
+  constructor(public _stepFactory: CompileStepFactory, public _templateLoader: TemplateLoader) {
     super();
-    this._templateLoader = templateLoader;
-    this._stepFactory = stepFactory;
-    this._propertySetterFactory = new PropertySetterFactory();
   }
 
   compile(template: ViewDefinition): Promise<ProtoViewDto> {

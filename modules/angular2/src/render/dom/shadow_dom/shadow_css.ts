@@ -137,9 +137,9 @@ import {
 */
 
 export class ShadowCss {
-  strictStyling: boolean;
+  strictStyling: boolean = true;
 
-  constructor() { this.strictStyling = true; }
+  constructor() {}
 
   /*
   * Shim a style element with the given selector. Returns cssText that can

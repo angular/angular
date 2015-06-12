@@ -14,12 +14,7 @@ import {ShadowDomStrategy} from './shadow_dom_strategy';
  */
 @Injectable()
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
-  styleUrlResolver: StyleUrlResolver;
-
-  constructor(styleUrlResolver: StyleUrlResolver) {
-    super();
-    this.styleUrlResolver = styleUrlResolver;
-  }
+  constructor(public styleUrlResolver: StyleUrlResolver) { super(); }
 
   prepareShadowRoot(el) { return DOM.createShadowRoot(el); }
 

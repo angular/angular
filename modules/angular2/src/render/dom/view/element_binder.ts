@@ -49,25 +49,9 @@ export class ElementBinder {
 }
 
 export class Event {
-  name: string;
-  target: string;
-  fullName: string;
-
-  constructor(name: string, target: string, fullName: string) {
-    this.name = name;
-    this.target = target;
-    this.fullName = fullName;
-  }
+  constructor(public name: string, public target: string, public fullName: string) {}
 }
 
 export class HostAction {
-  actionName: string;
-  actionExpression: string;
-  expression: AST;
-
-  constructor(actionName: string, actionExpression: string, expression: AST) {
-    this.actionName = actionName;
-    this.actionExpression = actionExpression;
-    this.expression = expression;
-  }
+  constructor(public actionName: string, public actionExpression: string, public expression: AST) {}
 }

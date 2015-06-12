@@ -14,11 +14,7 @@ export function resolveInternalDomView(viewRef: RenderViewRef) {
 }
 
 export class DomViewRef extends RenderViewRef {
-  _view: DomView;
-  constructor(view: DomView) {
-    super();
-    this._view = view;
-  }
+  constructor(public _view: DomView) { super(); }
 }
 
 
@@ -28,20 +24,14 @@ const NG_BINDING_CLASS = 'ng-binding';
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
 export class DomView {
-  hostLightDom: LightDom;
-  shadowRoot;
-  hydrated: boolean;
-  eventDispatcher: EventDispatcher;
-  eventHandlerRemovers: List<Function>;
+  hostLightDom: LightDom = null;
+  shadowRoot = null;
+  hydrated: boolean = false;
+  eventDispatcher: EventDispatcher = null;
+  eventHandlerRemovers: List<Function> = [];
 
   constructor(public proto: DomProtoView, public rootNodes: List</*node*/ any>,
-              public boundTextNodes: List</*node*/ any>, public boundElements: List<DomElement>) {
-    this.hostLightDom = null;
-    this.hydrated = false;
-    this.eventHandlerRemovers = [];
-    this.eventDispatcher = null;
-    this.shadowRoot = null;
-  }
+              public boundTextNodes: List</*node*/ any>, public boundElements: List<DomElement>) {}
 
   getDirectParentElement(boundElementIndex: number): DomElement {
     var binder = this.proto.elementBinders[boundElementIndex];

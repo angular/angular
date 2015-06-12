@@ -23,9 +23,7 @@ var BIND_NAME_REGEXP = RegExpWrapper.create(
  * Parses the property bindings on a single element.
  */
 export class PropertyBindingParser implements CompileStep {
-  _parser: Parser;
-
-  constructor(parser: Parser) { this._parser = parser; }
+  constructor(public _parser: Parser) {}
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();

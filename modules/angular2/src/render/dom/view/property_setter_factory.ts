@@ -22,12 +22,10 @@ export class PropertySetterFactory {
 
   private _lazyPropertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _eagerPropertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
-  private _innerHTMLSetterCache: Function;
+  private _innerHTMLSetterCache: Function = (el, value) => DOM.setInnerHTML(el, value);
   private _attributeSettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _classSettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _styleSettersCache: StringMap<string, Function> = StringMapWrapper.create();
-
-  constructor() { this._innerHTMLSetterCache = (el, value) => DOM.setInnerHTML(el, value); }
 
   createSetter(protoElement: /*element*/ any, isNgComponent: boolean, property: string): Function {
     var setterFn, styleParts, styleSuffix;

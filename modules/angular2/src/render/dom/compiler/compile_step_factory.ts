@@ -18,14 +18,7 @@ export class CompileStepFactory {
 }
 
 export class DefaultStepFactory extends CompileStepFactory {
-  _parser: Parser;
-  _shadowDomStrategy: ShadowDomStrategy;
-
-  constructor(parser: Parser, shadowDomStrategy) {
-    super();
-    this._parser = parser;
-    this._shadowDomStrategy = shadowDomStrategy;
-  }
+  constructor(public _parser: Parser, public _shadowDomStrategy: ShadowDomStrategy) { super(); }
 
   createSteps(template: ViewDefinition, subTaskPromises: List<Promise<any>>) {
     return [

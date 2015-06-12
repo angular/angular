@@ -11,16 +11,8 @@ import {ViewDefinition} from '../../api';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 
 export class ShadowDomCompileStep implements CompileStep {
-  _shadowDomStrategy: ShadowDomStrategy;
-  _template: ViewDefinition;
-  _subTaskPromises: List<Promise<any>>;
-
-  constructor(shadowDomStrategy: ShadowDomStrategy, template: ViewDefinition,
-              subTaskPromises: List<Promise<any>>) {
-    this._shadowDomStrategy = shadowDomStrategy;
-    this._template = template;
-    this._subTaskPromises = subTaskPromises;
-  }
+  constructor(public _shadowDomStrategy: ShadowDomStrategy, public _template: ViewDefinition,
+              public _subTaskPromises: List<Promise<any>>) {}
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var tagName = DOM.tagName(current.element).toUpperCase();

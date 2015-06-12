@@ -15,13 +15,9 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
  */
 @Injectable()
 export class TemplateLoader {
-  _xhr: XHR;
-  _htmlCache: StringMap<string, /*element*/ any>;
+  _htmlCache: StringMap<string, /*element*/ any> = StringMapWrapper.create();
 
-  constructor(xhr: XHR, urlResolver: UrlResolver) {
-    this._xhr = xhr;
-    this._htmlCache = StringMapWrapper.create();
-  }
+  constructor(public _xhr: XHR, urlResolver: UrlResolver) {}
 
   load(template: ViewDefinition): Promise</*element*/ any> {
     if (isPresent(template.template)) {

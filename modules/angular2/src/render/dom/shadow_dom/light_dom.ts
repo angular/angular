@@ -18,17 +18,14 @@ export class LightDom {
   // The light DOM of the element is enclosed inside the lightDomView
   lightDomView: viewModule.DomView;
   // The shadow DOM
-  shadowDomView: viewModule.DomView;
+  shadowDomView: viewModule.DomView = null;
   // The nodes of the light DOM
   nodes: List</*node*/ any>;
-  private _roots: List<_Root>;
+  private _roots: List<_Root> = null;
 
   constructor(lightDomView: viewModule.DomView, element) {
     this.lightDomView = lightDomView;
     this.nodes = DOM.childNodesAsList(element);
-
-    this._roots = null;
-    this.shadowDomView = null;
   }
 
   attachShadowDomView(shadowDomView: viewModule.DomView) { this.shadowDomView = shadowDomView; }

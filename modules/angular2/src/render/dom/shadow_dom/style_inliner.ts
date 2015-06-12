@@ -25,15 +25,8 @@ import {
  */
 @Injectable()
 export class StyleInliner {
-  _xhr: XHR;
-  _urlResolver: UrlResolver;
-  _styleUrlResolver: StyleUrlResolver;
-
-  constructor(xhr: XHR, styleUrlResolver: StyleUrlResolver, urlResolver: UrlResolver) {
-    this._xhr = xhr;
-    this._urlResolver = urlResolver;
-    this._styleUrlResolver = styleUrlResolver;
-  }
+  constructor(public _xhr: XHR, public _styleUrlResolver: StyleUrlResolver,
+              public _urlResolver: UrlResolver) {}
 
   /**
    * Inline the @imports rules in the given CSS text.

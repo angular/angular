@@ -11,9 +11,7 @@ import {CompileControl} from './compile_control';
  * Parses interpolations in direct text child nodes of the current element.
  */
 export class TextInterpolationParser implements CompileStep {
-  _parser: Parser;
-
-  constructor(parser: Parser) { this._parser = parser; }
+  constructor(public _parser: Parser) {}
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     if (!current.compileChildren) {

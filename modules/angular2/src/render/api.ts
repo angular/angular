@@ -20,13 +20,7 @@ import {ASTWithSource} from 'angular2/change_detection';
  *   its output will be stored in precompiled templates.
  */
 export class EventBinding {
-  fullName: string;  // name/target:name, e.g "click", "window:resize"
-  source: ASTWithSource;
-
-  constructor(fullName: string, source: ASTWithSource) {
-    this.fullName = fullName;
-    this.source = source;
-  }
+  constructor(public fullName: string, public source: ASTWithSource) {}
 }
 
 export class ElementBinder {

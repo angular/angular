@@ -19,14 +19,7 @@ import {insertSharedStyleText} from './util';
  * - you can **not** use shadow DOM specific selectors in the styles
  */
 export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
-  styleUrlResolver: StyleUrlResolver;
-  styleHost;
-
-  constructor(styleUrlResolver: StyleUrlResolver, styleHost) {
-    super();
-    this.styleUrlResolver = styleUrlResolver;
-    this.styleHost = styleHost;
-  }
+  constructor(public styleUrlResolver: StyleUrlResolver, public styleHost) { super(); }
 
   hasNativeContentElement(): boolean { return false; }
 
