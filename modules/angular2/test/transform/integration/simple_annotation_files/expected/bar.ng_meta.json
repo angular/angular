@@ -16,6 +16,8 @@
     "callOnInit": false,
     "callOnChange": false,
     "callOnAllChangesDone": false,
+    "events": [],
+    "changeDetection": null,
     "version": 1
   }
 }
