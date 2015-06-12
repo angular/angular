@@ -12,7 +12,7 @@ import {
   IS_DARTIUM
 } from 'angular2/test_lib';
 import {isPresent, stringify} from 'angular2/src/facade/lang';
-import {bootstrap} from 'angular2/src/core/application';
+import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
 import {Component, Directive, View} from 'angular2/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -180,14 +180,12 @@ export function main() {
          var refPromise2 = bootstrap(HelloRootCmp2, testBindings);
 
          PromiseWrapper.all([refPromise1, refPromise2])
-             .then((refs) => {
-               var registry = (<Injector>refs[0].injector).get(TestabilityRegistry);
-               PromiseWrapper.all([
-                               refs[0]
-                                   .injector.asyncGet(Testability),
-                               refs[1].injector.asyncGet(Testability)
-                             ])
-                   .then((testabilities) => {
+             .then((refs: ApplicationRef[]) => {
+               var registry = refs[0].injector.get(TestabilityRegistry);
+               var testabilities =
+                   [refs[0].injector.asyncGet(Testability), refs[1].injector.asyncGet(Testability)];
+               PromiseWrapper.all(testabilities)
+                   .then((testabilities: Testability[]) => {
                      expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
                      expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
                      async.done();
