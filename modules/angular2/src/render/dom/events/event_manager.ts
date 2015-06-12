@@ -6,14 +6,9 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 var BUBBLE_SYMBOL = '^';
 
 export class EventManager {
-  _plugins: List<EventManagerPlugin>;
-  _zone: NgZone;
-
-  constructor(plugins: List<EventManagerPlugin>, zone: NgZone) {
-    this._zone = zone;
-    this._plugins = plugins;
-    for (var i = 0; i < plugins.length; i++) {
-      plugins[i].manager = this;
+  constructor(public _plugins: List<EventManagerPlugin>, public _zone: NgZone) {
+    for (var i = 0; i < _plugins.length; i++) {
+      _plugins[i].manager = this;
     }
   }
 

@@ -14,7 +14,7 @@ class ContentStrategy {
  * and thus does not affect redistribution.
  */
 class RenderedContent extends ContentStrategy {
-  beginScript;
+  beginScript: any;
   endScript;
 
   constructor(contentEl) {
@@ -47,12 +47,9 @@ class RenderedContent extends ContentStrategy {
  * and thus does not get rendered but only affect the distribution of its parent component.
  */
 class IntermediateContent extends ContentStrategy {
-  destinationLightDom: ldModule.LightDom;
-
-  constructor(destinationLightDom: ldModule.LightDom) {
+  constructor(public destinationLightDom: ldModule.LightDom) {
     super();
     this.nodes = [];
-    this.destinationLightDom = destinationLightDom;
   }
 
   insert(nodes: List</*node*/ any>) {
@@ -63,15 +60,9 @@ class IntermediateContent extends ContentStrategy {
 
 
 export class Content {
-  select: string;
-  private _strategy: ContentStrategy;
-  contentStartElement;
+  private _strategy: ContentStrategy = null;
 
-  constructor(contentStartEl, selector: string) {
-    this.select = selector;
-    this.contentStartElement = contentStartEl;
-    this._strategy = null;
-  }
+  constructor(public contentStartElement, public select: string) {}
 
   init(destinationLightDom: ldModule.LightDom) {
     this._strategy = isPresent(destinationLightDom) ? new IntermediateContent(destinationLightDom) :

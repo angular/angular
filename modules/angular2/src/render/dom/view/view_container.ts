@@ -3,12 +3,8 @@ import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import * as viewModule from './view';
 
 export class DomViewContainer {
-  views: List<viewModule.DomView>;
-
-  constructor() {
-    // The order in this list matches the DOM order.
-    this.views = [];
-  }
+  // The order in this list matches the DOM order.
+  views: List<viewModule.DomView> = [];
 
   contentTagContainers() { return this.views; }
 

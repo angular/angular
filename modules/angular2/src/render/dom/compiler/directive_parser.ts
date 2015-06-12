@@ -18,25 +18,18 @@ import {CompileControl} from './compile_control';
 
 import {DirectiveMetadata} from '../../api';
 import {dashCaseToCamelCase, camelCaseToDashCase, EVENT_TARGET_SEPARATOR} from '../util';
-import {
-  DirectiveBuilder
-} from '../view/proto_view_builder'
+import {DirectiveBuilder} from '../view/proto_view_builder';
 
-    /**
-     * Parses the directives on a single element. Assumes ViewSplitter has already created
-     * <template> elements for template directives.
-     */
-    export class DirectiveParser implements CompileStep {
-  _selectorMatcher: SelectorMatcher;
-  _directives: List<DirectiveMetadata>;
-  _parser: Parser;
+/**
+ * Parses the directives on a single element. Assumes ViewSplitter has already created
+ * <template> elements for template directives.
+ */
+export class DirectiveParser implements CompileStep {
+  _selectorMatcher: SelectorMatcher = new SelectorMatcher();
 
-  constructor(parser: Parser, directives: List<DirectiveMetadata>) {
-    this._parser = parser;
-    this._selectorMatcher = new SelectorMatcher();
-    this._directives = directives;
-    for (var i = 0; i < directives.length; i++) {
-      var directive = directives[i];
+  constructor(public _parser: Parser, public _directives: List<DirectiveMetadata>) {
+    for (var i = 0; i < _directives.length; i++) {
+      var directive = _directives[i];
       var selector = CssSelector.parse(directive.selector);
       this._ensureComponentOnlyHasElementSelector(selector, directive);
       this._selectorMatcher.addSelectables(selector, i);

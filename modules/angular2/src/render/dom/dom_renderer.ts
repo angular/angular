@@ -26,15 +26,11 @@ export const DOCUMENT_TOKEN = CONST_EXPR(new OpaqueToken('DocumentToken'));
 
 @Injectable()
 export class DomRenderer extends Renderer {
-  _eventManager: EventManager;
-  _shadowDomStrategy: ShadowDomStrategy;
   _document;
 
-  constructor(eventManager: EventManager, shadowDomStrategy: ShadowDomStrategy,
+  constructor(public _eventManager: EventManager, public _shadowDomStrategy: ShadowDomStrategy,
               @Inject(DOCUMENT_TOKEN) document) {
     super();
-    this._eventManager = eventManager;
-    this._shadowDomStrategy = shadowDomStrategy;
     this._document = document;
   }
 

@@ -27,11 +27,8 @@ import {
  * - see `ShadowCss` for more information and limitations.
  */
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
-  styleInliner: StyleInliner;
-
-  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
+  constructor(public styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
     super(styleUrlResolver, styleHost);
-    this.styleInliner = styleInliner;
   }
 
   processStyleElement(hostComponentId: string, templateUrl: string, styleEl): Promise<any> {

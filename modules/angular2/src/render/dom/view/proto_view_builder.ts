@@ -146,39 +146,21 @@ export class ProtoViewBuilder {
 }
 
 export class ElementBinderBuilder {
-  element;
-  index: number;
-  parent: ElementBinderBuilder;
-  distanceToParent: number;
-  directives: List<DirectiveBuilder>;
-  nestedProtoView: ProtoViewBuilder;
-  propertyBindings: Map<string, ASTWithSource>;
-  variableBindings: Map<string, string>;
-  eventBindings: List<api.EventBinding>;
-  eventBuilder: EventBuilder;
-  textBindingIndices: List<number>;
-  textBindings: List<ASTWithSource>;
-  contentTagSelector: string;
-  readAttributes: Map<string, string>;
-  componentId: string;
+  parent: ElementBinderBuilder = null;
+  distanceToParent: number = 0;
+  directives: List<DirectiveBuilder> = [];
+  nestedProtoView: ProtoViewBuilder = null;
+  propertyBindings: Map<string, ASTWithSource> = MapWrapper.create();
+  variableBindings: Map<string, string> = MapWrapper.create();
+  eventBindings: List<api.EventBinding> = [];
+  eventBuilder: EventBuilder = new EventBuilder();
+  textBindingIndices: List<number> = [];
+  textBindings: List<ASTWithSource> = [];
+  contentTagSelector: string = null;
+  readAttributes: Map<string, string> = MapWrapper.create();
+  componentId: string = null;
 
-  constructor(index, element, description) {
-    this.element = element;
-    this.index = index;
-    this.parent = null;
-    this.distanceToParent = 0;
-    this.directives = [];
-    this.nestedProtoView = null;
-    this.propertyBindings = MapWrapper.create();
-    this.variableBindings = MapWrapper.create();
-    this.eventBindings = ListWrapper.create();
-    this.eventBuilder = new EventBuilder();
-    this.textBindings = [];
-    this.textBindingIndices = [];
-    this.contentTagSelector = null;
-    this.componentId = null;
-    this.readAttributes = MapWrapper.create();
-  }
+  constructor(public index: number, public element, description: string) {}
 
   setParent(parent: ElementBinderBuilder, distanceToParent): ElementBinderBuilder {
     this.parent = parent;
@@ -243,21 +225,13 @@ export class ElementBinderBuilder {
 }
 
 export class DirectiveBuilder {
-  directiveIndex: number;
-  propertyBindings: Map<string, ASTWithSource>;
-  hostPropertyBindings: Map<string, ASTWithSource>;
-  hostActions: List<HostAction>;
-  eventBindings: List<api.EventBinding>;
-  eventBuilder: EventBuilder;
+  propertyBindings: Map<string, ASTWithSource> = MapWrapper.create();
+  hostPropertyBindings: Map<string, ASTWithSource> = MapWrapper.create();
+  hostActions: List<HostAction> = [];
+  eventBindings: List<api.EventBinding> = [];
+  eventBuilder: EventBuilder = new EventBuilder();
 
-  constructor(directiveIndex) {
-    this.directiveIndex = directiveIndex;
-    this.propertyBindings = MapWrapper.create();
-    this.hostPropertyBindings = MapWrapper.create();
-    this.hostActions = ListWrapper.create();
-    this.eventBindings = ListWrapper.create();
-    this.eventBuilder = new EventBuilder();
-  }
+  constructor(public directiveIndex: number) {}
 
   bindProperty(name, expression) { MapWrapper.set(this.propertyBindings, name, expression); }
 
@@ -275,18 +249,12 @@ export class DirectiveBuilder {
 }
 
 export class EventBuilder extends AstTransformer {
-  locals: List<AST>;
-  localEvents: List<Event>;
-  globalEvents: List<Event>;
-  _implicitReceiver: AST;
+  locals: List<AST> = [];
+  localEvents: List<Event> = [];
+  globalEvents: List<Event> = [];
+  _implicitReceiver: AST = new ImplicitReceiver();
 
-  constructor() {
-    super();
-    this.locals = [];
-    this.localEvents = [];
-    this.globalEvents = [];
-    this._implicitReceiver = new ImplicitReceiver();
-  }
+  constructor() { super(); }
 
   add(name: string, source: ASTWithSource, target: string): api.EventBinding {
     // TODO(tbosch): reenable this when we are parsing element properties

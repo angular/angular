@@ -8,20 +8,13 @@ import {CompileStep} from './compile_step';
  * Right now it only allows to add a parent element.
  */
 export class CompileControl {
-  _steps: List<CompileStep>;
-  _currentStepIndex: number;
-  _parent: CompileElement;
-  _results;
-  _additionalChildren;
+  _currentStepIndex: number = 0;
+  _parent: CompileElement = null;
+  _results = null;
+  _additionalChildren = null;
   _ignoreCurrentElement: boolean;
 
-  constructor(steps) {
-    this._steps = steps;
-    this._currentStepIndex = 0;
-    this._parent = null;
-    this._results = null;
-    this._additionalChildren = null;
-  }
+  constructor(public _steps: List<CompileStep>) {}
 
   // only public so that it can be used by compile_pipeline
   internalProcess(results, startStepIndex, parent: CompileElement, current: CompileElement) {

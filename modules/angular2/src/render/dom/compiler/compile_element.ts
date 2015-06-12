@@ -10,30 +10,19 @@ import {ProtoViewBuilder, ElementBinderBuilder} from '../view/proto_view_builder
  * by the CompileSteps starting out with the pure HTMLElement.
  */
 export class CompileElement {
-  element;
-  _attrs: Map<string, string>;
-  _classList: List<string>;
-  isViewRoot: boolean;
-  inheritedProtoView: ProtoViewBuilder;
-  distanceToInheritedBinder: number;
-  inheritedElementBinder: ElementBinderBuilder;
-  compileChildren: boolean;
+  _attrs: Map<string, string> = null;
+  _classList: List<string> = null;
+  isViewRoot: boolean = false;
+  // inherited down to children if they don't have an own protoView
+  inheritedProtoView: ProtoViewBuilder = null;
+  distanceToInheritedBinder: number = 0;
+  // inherited down to children if they don't have an own elementBinder
+  inheritedElementBinder: ElementBinderBuilder = null;
+  compileChildren: boolean = true;
   elementDescription: string;  // e.g. '<div [class]="foo">' : used to provide context in case of
                                // error
 
-  constructor(element, compilationUnit = '') {
-    this.element = element;
-    this._attrs = null;
-    this._classList = null;
-    this.isViewRoot = false;
-    // inherited down to children if they don't have
-    // an own protoView
-    this.inheritedProtoView = null;
-    // inherited down to children if they don't have
-    // an own elementBinder
-    this.inheritedElementBinder = null;
-    this.distanceToInheritedBinder = 0;
-    this.compileChildren = true;
+  constructor(public element, compilationUnit: string = '') {
     // description is calculated here as compilation steps may change the element
     var tplDesc = assertionsEnabled() ? getElementDescription(element) : null;
     if (compilationUnit !== '') {

@@ -13,11 +13,7 @@ export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef) {
 }
 
 export class DomProtoViewRef extends RenderProtoViewRef {
-  _protoView: DomProtoView;
-  constructor(protoView: DomProtoView) {
-    super();
-    this._protoView = protoView;
-  }
+  constructor(public _protoView: DomProtoView) { super(); }
 }
 
 export class DomProtoView {

@@ -26,9 +26,7 @@ import {dashCaseToCamelCase} from '../util';
  * which should not descend into the nested view.
  */
 export class ViewSplitter implements CompileStep {
-  _parser: Parser;
-
-  constructor(parser: Parser) { this._parser = parser; }
+  constructor(public _parser: Parser) {}
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();

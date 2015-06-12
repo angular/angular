@@ -26,10 +26,11 @@ var _SELECTOR_REGEXP = RegExpWrapper.create(
  * of selecting subsets out of them.
  */
 export class CssSelector {
-  element: string;
-  classNames: List<string>;
-  attrs: List<string>;
-  notSelectors: List<CssSelector>;
+  element: string = null;
+  classNames: List<string> = [];
+  attrs: List<string> = [];
+  notSelectors: List<CssSelector> = [];
+
   static parse(selector: string): List<CssSelector> {
     var results = ListWrapper.create();
     var _addResult = (res, cssSel) => {
@@ -76,13 +77,6 @@ export class CssSelector {
     }
     _addResult(results, cssSelector);
     return results;
-  }
-
-  constructor() {
-    this.element = null;
-    this.classNames = ListWrapper.create();
-    this.attrs = ListWrapper.create();
-    this.notSelectors = ListWrapper.create();
   }
 
   isElementSelector(): boolean {
@@ -147,26 +141,13 @@ export class SelectorMatcher {
     return notMatcher;
   }
 
-  private _elementMap: Map<string, List<string>>;
-  private _elementPartialMap: Map<string, SelectorMatcher>;
-  private _classMap: Map<string, List<string>>;
-  private _classPartialMap: Map<string, SelectorMatcher>;
-  private _attrValueMap: Map<string, Map<string, List<string>>>;
-  private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>>;
-  private _listContexts: List<SelectorListContext>;
-
-  constructor() {
-    this._elementMap = MapWrapper.create();
-    this._elementPartialMap = MapWrapper.create();
-
-    this._classMap = MapWrapper.create();
-    this._classPartialMap = MapWrapper.create();
-
-    this._attrValueMap = MapWrapper.create();
-    this._attrValuePartialMap = MapWrapper.create();
-
-    this._listContexts = ListWrapper.create();
-  }
+  private _elementMap: Map<string, List<string>> = MapWrapper.create();
+  private _elementPartialMap: Map<string, SelectorMatcher> = MapWrapper.create();
+  private _classMap: Map<string, List<string>> = MapWrapper.create();
+  private _classPartialMap: Map<string, SelectorMatcher> = MapWrapper.create();
+  private _attrValueMap: Map<string, Map<string, List<string>>> = MapWrapper.create();
+  private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>> = MapWrapper.create();
+  private _listContexts: List<SelectorListContext> = [];
 
   addSelectables(cssSelectors: List<CssSelector>, callbackCtxt?: any) {
     var listContext = null;
@@ -191,7 +172,6 @@ export class SelectorMatcher {
     var classNames = cssSelector.classNames;
     var attrs = cssSelector.attrs;
     var selectable = new SelectorContext(cssSelector, callbackCtxt, listContext);
-
 
     if (isPresent(element)) {
       var isTerminal = attrs.length === 0 && classNames.length === 0;
@@ -353,27 +333,18 @@ export class SelectorMatcher {
 
 
 class SelectorListContext {
-  selectors: List<CssSelector>;
-  alreadyMatched: boolean;
+  alreadyMatched: boolean = false;
 
-  constructor(selectors: List<CssSelector>) {
-    this.selectors = selectors;
-    this.alreadyMatched = false;
-  }
+  constructor(public selectors: List<CssSelector>) {}
 }
 
 // Store context to pass back selector and context when a selector is matched
 class SelectorContext {
-  selector: CssSelector;
   notSelectors: List<CssSelector>;
-  cbContext;  // callback context
-  listContext: SelectorListContext;
 
-  constructor(selector: CssSelector, cbContext: any, listContext: SelectorListContext) {
-    this.selector = selector;
+  constructor(public selector: CssSelector, public cbContext: any,
+              public listContext: SelectorListContext) {
     this.notSelectors = selector.notSelectors;
-    this.cbContext = cbContext;
-    this.listContext = listContext;
   }
 
   finalize(cssSelector: CssSelector, callback /*: (CssSelector, any) => void*/) {
