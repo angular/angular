@@ -87,7 +87,8 @@ export function main() {
       function _createWithoutHydrate(expression: string) {
         var dispatcher = new TestDispatcher();
         var registry = null;
-        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef, registry).instantiate(dispatcher);
+        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef, registry)
+                     .instantiate(dispatcher);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }
 
@@ -334,7 +335,8 @@ export function main() {
 
           it('should happen directly, without invoking the dispatcher', () => {
             var val = _createWithoutHydrate('directNoDispatcher');
-            val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+            val.changeDetector.hydrate(_DEFAULT_CONTEXT, null,
+                                       new FakeDirectives([directive1], []));
             val.changeDetector.detectChanges();
             expect(val.dispatcher.loggedValues).toEqual([]);
             expect(directive1.a).toEqual(42);
@@ -465,11 +467,11 @@ export function main() {
               var orderOfOperations = [];
 
               var directiveInShadowDom = null;
-              directiveInShadowDom =
-                  new TestDirective(() => { ListWrapper.push(orderOfOperations, directiveInShadowDom); });
+              directiveInShadowDom = new TestDirective(
+                  () => { ListWrapper.push(orderOfOperations, directiveInShadowDom); });
               var parentDirective = null;
-              parentDirective =
-                  new TestDirective(() => { ListWrapper.push(orderOfOperations, parentDirective); });
+              parentDirective = new TestDirective(
+                  () => { ListWrapper.push(orderOfOperations, parentDirective); });
 
               parent.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([parentDirective], []));
               child.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directiveInShadowDom], []));
@@ -594,14 +596,13 @@ export function main() {
       });
 
       describe('mode', () => {
-        it('should set the mode to CHECK_ALWAYS when the default change detection is used',
-           () => {
-             var cd = _createWithoutHydrate('emptyUsingDefaultStrategy').changeDetector;
-             expect(cd.mode).toEqual(null);
+        it('should set the mode to CHECK_ALWAYS when the default change detection is used', () => {
+          var cd = _createWithoutHydrate('emptyUsingDefaultStrategy').changeDetector;
+          expect(cd.mode).toEqual(null);
 
-             cd.hydrate(_DEFAULT_CONTEXT, null, null);
-             expect(cd.mode).toEqual(CHECK_ALWAYS);
-           });
+          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          expect(cd.mode).toEqual(CHECK_ALWAYS);
+        });
 
         it('should set the mode to CHECK_ONCE when the push change detection is used', () => {
           var cd = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;

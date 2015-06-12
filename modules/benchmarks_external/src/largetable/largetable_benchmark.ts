@@ -49,12 +49,7 @@ angular.module('app', [])
                   for (var i = 0; i < totalRows; i++) {
                     data[i] = [];
                     for (var j = 0; j < totalColumns; j++) {
-                      data[i][j] = {
-                        i: i,
-                        j: j,
-                        iFn: iGetter,
-                        jFn: jGetter
-                      };
+                      data[i][j] = {i: i, j: j, iFn: iGetter, jFn: jGetter};
                     }
                   }
                 })

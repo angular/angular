@@ -84,10 +84,8 @@ export function main() {
         // clang-format on
       });
 
-      it("should throw when more than 20 arguments", () => {
-        expect(() => reflector.factory(TestObjWith21Args))
-            .toThrowError();
-      });
+      it("should throw when more than 20 arguments",
+         () => { expect(() => reflector.factory(TestObjWith21Args)).toThrowError(); });
 
       it("should return a registered factory if available", () => {
         reflector.registerType(TestObj, {"factory": () => "fake"});
@@ -195,65 +193,47 @@ export function main() {
 
 class TestObjWith00Args {
   args: List<any>;
-  constructor() {
-    this.args = [];
-  }
+  constructor() { this.args = []; }
 }
 
 class TestObjWith01Args {
   args: List<any>;
-  constructor(a1) {
-    this.args = [a1];
-  }
+  constructor(a1) { this.args = [a1]; }
 }
 
 class TestObjWith02Args {
   args: List<any>;
-  constructor(a1, a2) {
-    this.args = [a1, a2];
-  }
+  constructor(a1, a2) { this.args = [a1, a2]; }
 }
 
 class TestObjWith03Args {
   args: List<any>;
-  constructor(a1, a2, a3) {
-    this.args = [a1, a2, a3];
-  }
+  constructor(a1, a2, a3) { this.args = [a1, a2, a3]; }
 }
 
 class TestObjWith04Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4) {
-    this.args = [a1, a2, a3, a4];
-  }
+  constructor(a1, a2, a3, a4) { this.args = [a1, a2, a3, a4]; }
 }
 
 class TestObjWith05Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5) {
-    this.args = [a1, a2, a3, a4, a5];
-  }
+  constructor(a1, a2, a3, a4, a5) { this.args = [a1, a2, a3, a4, a5]; }
 }
 
 class TestObjWith06Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5, a6) {
-    this.args = [a1, a2, a3, a4, a5, a6];
-  }
+  constructor(a1, a2, a3, a4, a5, a6) { this.args = [a1, a2, a3, a4, a5, a6]; }
 }
 
 class TestObjWith07Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5, a6, a7) {
-    this.args = [a1, a2, a3, a4, a5, a6, a7];
-  }
+  constructor(a1, a2, a3, a4, a5, a6, a7) { this.args = [a1, a2, a3, a4, a5, a6, a7]; }
 }
 
 class TestObjWith08Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8) {
-    this.args = [a1, a2, a3, a4, a5, a6, a7, a8];
-  }
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8) { this.args = [a1, a2, a3, a4, a5, a6, a7, a8]; }
 }
 
 class TestObjWith09Args {
@@ -328,21 +308,48 @@ class TestObjWith18Args {
 
 class TestObjWith19Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19) {
-    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19];
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18,
+              a19) {
+    this.args =
+        [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19];
   }
 }
 
 class TestObjWith20Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20) {
-    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20];
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
+              a20) {
+    this.args =
+        [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20];
   }
 }
 
 class TestObjWith21Args {
   args: List<any>;
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21) {
-    this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21];
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
+              a20, a21) {
+    this.args = [
+      a1,
+      a2,
+      a3,
+      a4,
+      a5,
+      a6,
+      a7,
+      a8,
+      a9,
+      a10,
+      a11,
+      a12,
+      a13,
+      a14,
+      a15,
+      a16,
+      a17,
+      a18,
+      a19,
+      a20,
+      a21
+    ];
   }
 }

@@ -42,8 +42,7 @@ export function main() {
       var pipeline = new CompilePipeline([
         new MockStep((parent, current, control) => {
           if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
-            current.inheritedProtoView =
-                new ProtoViewBuilder(current.element, ViewType.EMBEDDED);
+            current.inheritedProtoView = new ProtoViewBuilder(current.element, ViewType.EMBEDDED);
           }
         })
       ]);

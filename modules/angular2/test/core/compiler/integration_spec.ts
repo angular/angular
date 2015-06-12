@@ -1488,8 +1488,7 @@ class DirectiveListeningDomEvent {
 }
 
 var globalCounter = 0;
-@Directive(
-    {selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
+@Directive({selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
 @Injectable()
 class DirectiveListeningDomEventOther {
   eventType: string;

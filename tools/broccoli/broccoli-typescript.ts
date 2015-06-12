@@ -10,7 +10,9 @@ import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-br
 
 type FileRegistry = ts.Map<{version: number}>;
 
-const FS_OPTS = {encoding: 'utf-8'};
+const FS_OPTS = {
+  encoding: 'utf-8'
+};
 
 
 /**

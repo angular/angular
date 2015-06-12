@@ -39,7 +39,7 @@ export class DomProtoView {
         (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
     this.boundTextNodeCount =
         ListWrapper.reduce(elementBinders, (prevCount: number, elementBinder: ElementBinder) =>
-                                                   prevCount + elementBinder.textNodeIndices.length,
+                                               prevCount + elementBinder.textNodeIndices.length,
                            0);
     this.rootNodeCount =
         this.isTemplateElement ? DOM.childNodes(DOM.content(this.element)).length : 1;

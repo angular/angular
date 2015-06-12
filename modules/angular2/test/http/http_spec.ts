@@ -39,14 +39,15 @@ export function main() {
     var baseResponse;
     var sampleObserver;
     beforeEach(() => {
-      injector = Injector.resolveAndCreate([MockBackend, bind(Http).toFactory(HttpFactory, [MockBackend])]);
+      injector = Injector.resolveAndCreate(
+          [MockBackend, bind(Http).toFactory(HttpFactory, [MockBackend])]);
       http = injector.get(Http);
       backend = injector.get(MockBackend);
       baseResponse = new Response('base response');
       sampleObserver = new SpyObserver();
     });
 
-    afterEach(() => { /*backend.verifyNoPendingRequests();*/ });
+    afterEach(() => {/*backend.verifyNoPendingRequests();*/});
 
 
     it('should return an Observable', () => {

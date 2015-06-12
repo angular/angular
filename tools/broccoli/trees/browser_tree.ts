@@ -133,10 +133,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   // Get scripts for each benchmark or example
   let servingTrees = kServedPaths.reduce(getServedFunnels, []);
   function getServedFunnels(funnels, destDir) {
-    let options = {
-      srcDir: '/',
-      destDir: destDir
-    };
+    let options = {srcDir: '/', destDir: destDir};
     funnels.push(new Funnel(vendorScriptsTree, options));
     if (destDir.indexOf('benchmarks') > -1) {
       funnels.push(new Funnel(vendorScripts_benchmark, options));

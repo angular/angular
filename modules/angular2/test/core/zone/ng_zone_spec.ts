@@ -205,21 +205,15 @@ function commonTests() {
          _zone.initCallbacks({
            onTurnDone: () => {
              _log.add('onTurnDone:started');
-             _zone.run(() => _log.add('nested run'))
-             _log.add('onTurnDone:finished');
+             _zone.run(() => _log.add('nested run')) _log.add('onTurnDone:finished');
            }
          });
 
-         macroTask(() => {
-           _zone.run(() => {
-             _log.add('start run');
-           });
-         });
+         macroTask(() => { _zone.run(() => { _log.add('start run'); }); });
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual(
-                   'start run; onTurnDone:started; nested run; onTurnDone:finished');
+               .toEqual('start run; onTurnDone:started; nested run; onTurnDone:finished');
            async.done();
          }, 50);
        }));

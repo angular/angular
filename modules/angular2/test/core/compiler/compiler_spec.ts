@@ -315,9 +315,8 @@ export function main() {
          var nestedProtoView = createProtoView();
          var compiler = createCompiler([
            createRenderProtoView([
-             createRenderViewportElementBinder(
-                 createRenderProtoView([createRenderComponentElementBinder(0)],
-                                       renderApi.ViewType.EMBEDDED))
+             createRenderViewportElementBinder(createRenderProtoView(
+                 [createRenderComponentElementBinder(0)], renderApi.ViewType.EMBEDDED))
            ]),
            createRenderProtoView()
          ],

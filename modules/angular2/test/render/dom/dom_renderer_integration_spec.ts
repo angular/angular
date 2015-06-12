@@ -75,8 +75,9 @@ export function main() {
          tb.compileAll([
              someComponent,
              new ViewDefinition({
-                 componentId: 'someComponent', template: '<some-comp>  <!-- comment -->\n </some-comp>',
-                 directives: [someComponent]
+               componentId: 'someComponent',
+               template: '<some-comp>  <!-- comment -->\n </some-comp>',
+               directives: [someComponent]
              })
            ])
              .then((protoViewDtos) => {

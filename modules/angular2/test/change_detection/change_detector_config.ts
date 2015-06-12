@@ -89,9 +89,12 @@ export class TestDefinition {
  */
 export function getAllDefinitions(): List<TestDefinition> {
   var allDefs = _availableDefinitions;
-  allDefs = ListWrapper.concat(allDefs, StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions));
-  allDefs = ListWrapper.concat(allDefs, StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions));
-  allDefs = ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
+  allDefs = ListWrapper.concat(allDefs,
+                               StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions));
+  allDefs =
+      ListWrapper.concat(allDefs, StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions));
+  allDefs =
+      ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
   return ListWrapper.map(allDefs, (id) => getDefinition(id));
 }
 

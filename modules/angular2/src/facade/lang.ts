@@ -240,7 +240,7 @@ export function normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
 }
 
-export function normalizeBool(obj:boolean):boolean {
+export function normalizeBool(obj: boolean): boolean {
   return isBlank(obj) ? false : obj;
 }
 

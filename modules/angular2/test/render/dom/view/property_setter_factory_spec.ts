@@ -33,32 +33,35 @@ export function main() {
       });
 
       if (!IS_DARTIUM) {
-        it('should use a noop setter if the property did not exist when the setter was created', () => {
-          var setterFn = setterFactory.createSetter(div, false, 'someProp');
-          div.someProp = '';
-          setterFn(div, 'Hello');
-          expect(div.someProp).toEqual('');
-        });
+        it('should use a noop setter if the property did not exist when the setter was created',
+           () => {
+             var setterFn = setterFactory.createSetter(div, false, 'someProp');
+             div.someProp = '';
+             setterFn(div, 'Hello');
+             expect(div.someProp).toEqual('');
+           });
 
-        it('should use a noop setter if the property did not exist when the setter was created for ng components', () => {
-          var ce = el('<some-ce></some-ce>');
-          var setterFn = setterFactory.createSetter(ce, true, 'someProp');
-          ce.someProp = '';
-          setterFn(ce, 'Hello');
-          expect(ce.someProp).toEqual('');
-        });
+        it('should use a noop setter if the property did not exist when the setter was created for ng components',
+           () => {
+             var ce = el('<some-ce></some-ce>');
+             var setterFn = setterFactory.createSetter(ce, true, 'someProp');
+             ce.someProp = '';
+             setterFn(ce, 'Hello');
+             expect(ce.someProp).toEqual('');
+           });
 
-        it('should set the property for custom elements even if it was not present when the setter was created', () => {
-          var ce = el('<some-ce></some-ce>');
-          var setterFn = setterFactory.createSetter(ce, false, 'someProp');
-          ce.someProp = '';
-          // Our CJS DOM adapter does not support custom properties,
-          // need to exclude here.
-          if (DOM.hasProperty(ce, 'someProp')) {
-            setterFn(ce, 'Hello');
-            expect(ce.someProp).toEqual('Hello');
-          }
-        });
+        it('should set the property for custom elements even if it was not present when the setter was created',
+           () => {
+             var ce = el('<some-ce></some-ce>');
+             var setterFn = setterFactory.createSetter(ce, false, 'someProp');
+             ce.someProp = '';
+             // Our CJS DOM adapter does not support custom properties,
+             // need to exclude here.
+             if (DOM.hasProperty(ce, 'someProp')) {
+               setterFn(ce, 'Hello');
+               expect(ce.someProp).toEqual('Hello');
+             }
+           });
       }
 
     });

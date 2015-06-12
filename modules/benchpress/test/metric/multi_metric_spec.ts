@@ -72,9 +72,7 @@ class MockMetric extends Metric {
 
   endMeasure(restart: boolean): Promise<StringMap<string, any>> {
     var result = {};
-    result[this._id] = {
-      'restart': restart
-    };
+    result[this._id] = {'restart': restart};
     return PromiseWrapper.resolve(result);
   }
 

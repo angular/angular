@@ -101,7 +101,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
             [NgZone]),
     bind(ShadowDomStrategy)
         .toFactory((styleUrlResolver, doc) =>
-                           new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
+                       new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
                    [StyleUrlResolver, DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,

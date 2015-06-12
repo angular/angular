@@ -42,7 +42,8 @@ export function el(html: string) {
   return DOM.firstChild(DOM.content(DOM.createTemplate(html)));
 }
 
-var _RE_SPECIAL_CHARS = ['-', '[', ']', '/', '{', '}', '\\', '(', ')', '*', '+', '?', '.', '^', '$', '|'];
+var _RE_SPECIAL_CHARS =
+    ['-', '[', ']', '/', '{', '}', '\\', '(', ')', '*', '+', '?', '.', '^', '$', '|'];
 var _ESCAPE_RE = RegExpWrapper.create(`[\\${_RE_SPECIAL_CHARS.join('\\')}]`);
 export function containsRegexp(input: string): RegExp {
   return RegExpWrapper.create(

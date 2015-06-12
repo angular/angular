@@ -244,7 +244,7 @@ var someDirectiveWithProps = DirectiveMetadata.create({
 
 var someDirectiveWithHostProperties = DirectiveMetadata.create({
   selector: '[some-decor-with-host-props]',
-  host: MapWrapper.createFromStringMap({'[hostProp]' : 'dirProp'})
+  host: MapWrapper.createFromStringMap({'[hostProp]': 'dirProp'})
 });
 
 var someDirectiveWithHostAttributes = DirectiveMetadata.create({
@@ -252,10 +252,8 @@ var someDirectiveWithHostAttributes = DirectiveMetadata.create({
   host: MapWrapper.createFromStringMap({'attr_name': 'attr_val', 'class': 'foo bar'})
 });
 
-var someDirectiveWithEvents = DirectiveMetadata.create({
-  selector: '[some-decor-events]',
-  host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})
-});
+var someDirectiveWithEvents = DirectiveMetadata.create(
+    {selector: '[some-decor-events]', host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})});
 
 var someDirectiveWithHostActions = DirectiveMetadata.create({
   selector: '[some-decor-host-actions]',

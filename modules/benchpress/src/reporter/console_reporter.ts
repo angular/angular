@@ -100,7 +100,7 @@ var _COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidth');
 var _BINDINGS = [
   bind(ConsoleReporter)
       .toFactory((columnWidth, sampleDescription, print) =>
-                         new ConsoleReporter(columnWidth, sampleDescription, print),
+                     new ConsoleReporter(columnWidth, sampleDescription, print),
                  [_COLUMN_WIDTH, SampleDescription, _PRINT]),
   bind(_COLUMN_WIDTH).toValue(18),
   bind(_PRINT).toValue(print)

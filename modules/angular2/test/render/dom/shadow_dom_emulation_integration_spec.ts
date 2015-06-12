@@ -43,8 +43,8 @@ export function main() {
                              styleInliner, styleUrlResolver, null),
                          [StyleInliner, StyleUrlResolver]),
       "unscoped": bind(ShadowDomStrategy)
-                      .toFactory((styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
-                                     styleUrlResolver, null),
+                      .toFactory((styleUrlResolver) =>
+                                     new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
                                  [StyleUrlResolver])
     };
     if (DOM.supportsNativeShadowDOM()) {
@@ -398,14 +398,14 @@ export function main() {
 }
 
 
-var mainDir =
-    DirectiveMetadata.create({selector: 'main', id: 'main', type: DirectiveMetadata.COMPONENT_TYPE});
+var mainDir = DirectiveMetadata.create(
+    {selector: 'main', id: 'main', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var simple = DirectiveMetadata.create(
     {selector: 'simple', id: 'simple', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var empty =
-    DirectiveMetadata.create({selector: 'empty', id: 'empty', type: DirectiveMetadata.COMPONENT_TYPE});
+var empty = DirectiveMetadata.create(
+    {selector: 'empty', id: 'empty', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var dynamicComponent = DirectiveMetadata.create(
     {selector: 'dynamic', id: 'dynamic', type: DirectiveMetadata.COMPONENT_TYPE});
@@ -425,11 +425,11 @@ var outerWithIndirectNestedComponent = DirectiveMetadata.create({
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var outerComponent =
-    DirectiveMetadata.create({selector: 'outer', id: 'outer', type: DirectiveMetadata.COMPONENT_TYPE});
+var outerComponent = DirectiveMetadata.create(
+    {selector: 'outer', id: 'outer', type: DirectiveMetadata.COMPONENT_TYPE});
 
-var innerComponent =
-    DirectiveMetadata.create({selector: 'inner', id: 'inner', type: DirectiveMetadata.COMPONENT_TYPE});
+var innerComponent = DirectiveMetadata.create(
+    {selector: 'inner', id: 'inner', type: DirectiveMetadata.COMPONENT_TYPE});
 
 var innerInnerComponent = DirectiveMetadata.create(
     {selector: 'innerinner', id: 'innerinner', type: DirectiveMetadata.COMPONENT_TYPE});

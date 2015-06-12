@@ -9,9 +9,7 @@ import {DiffingFlatten} from './broccoli-flatten';
 describe('Flatten', () => {
   afterEach(() => mockfs.restore());
 
-  function flatten(inputPaths) {
-    return new DiffingFlatten(inputPaths, 'output', null);
-  }
+  function flatten(inputPaths) { return new DiffingFlatten(inputPaths, 'output', null); }
 
   function read(path) { return fs.readFileSync(path, {encoding: "utf-8"}); }
   function rm(path) { return fs.unlinkSync(path); }
@@ -40,7 +38,7 @@ describe('Flatten', () => {
 
     expect(fs.readdirSync('output')).toEqual(['file-1.1.txt', 'file-1.txt', 'file-2.txt']);
     // fails  due to a mock-fs bug related to reading symlinks?
-    //expect(read('output/file-1.1.txt')).toBe('file-1.1.txt content');
+    // expect(read('output/file-1.1.txt')).toBe('file-1.1.txt content');
 
 
     // delete a file
@@ -59,9 +57,8 @@ describe('Flatten', () => {
       'input': {
         'dir1': {
           'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
-          'subdir-1': {
-            'file-1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)})
-          },
+          'subdir-1':
+              {'file-1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)})},
           'empty-dir': {}
         },
       },
@@ -71,7 +68,7 @@ describe('Flatten', () => {
 
     let differ = new TreeDiffer('testLabel', 'input');
     let flattenedTree = flatten('input');
-    expect(() => flattenedTree.rebuild(differ.diffTree())).
-      toThrowError("Duplicate file 'file-1.txt' found in path 'dir1/subdir-1/file-1.txt'");
+    expect(() => flattenedTree.rebuild(differ.diffTree()))
+        .toThrowError("Duplicate file 'file-1.txt' found in path 'dir1/subdir-1/file-1.txt'");
   });
 });

@@ -11,7 +11,11 @@ interface LodashRendererOptions {
   files?: string[];
 }
 
-const kDefaultOptions: LodashRendererOptions = {encoding: 'utf-8', context: {}, files: []};
+const kDefaultOptions: LodashRendererOptions = {
+  encoding: 'utf-8',
+  context: {},
+  files: []
+};
 
 
 /**

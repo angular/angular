@@ -29,7 +29,7 @@ export function main() {
        inject([TestBed, AsyncTestCompleter], (tb, async) => {
          var template = '<div text="1"></div>' +
                         '<needs-query text="2"><div text="3">' +
-                          '<div text="too-deep"></div>' +
+                        '<div text="too-deep"></div>' +
                         '</div></needs-query>' +
                         '<div text="4"></div>';
 
@@ -43,36 +43,36 @@ export function main() {
        }));
 
     it('should contain all directives in the light dom when descendants flag is used',
-      inject([TestBed, AsyncTestCompleter], (tb, async) => {
-        var template = '<div text="1"></div>' +
-          '<needs-query-desc text="2"><div text="3">' +
-            '<div text="4"></div>' +
-          '</div></needs-query-desc>' +
-          '<div text="5"></div>';
+       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         var template = '<div text="1"></div>' +
+                        '<needs-query-desc text="2"><div text="3">' +
+                        '<div text="4"></div>' +
+                        '</div></needs-query-desc>' +
+                        '<div text="5"></div>';
 
-        tb.createView(MyComp, {html: template})
-          .then((view) => {
-            view.detectChanges();
-            expect(view.rootNodes).toHaveText('2|3|4|');
+         tb.createView(MyComp, {html: template})
+             .then((view) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText('2|3|4|');
 
-            async.done();
-          });
-      }));
+               async.done();
+             });
+       }));
 
     it('should contain all directives in the light dom',
-      inject([TestBed, AsyncTestCompleter], (tb, async) => {
-        var template = '<div text="1"></div>' +
-          '<needs-query text="2"><div text="3"></div></needs-query>' +
-          '<div text="4"></div>';
+       inject([TestBed, AsyncTestCompleter], (tb, async) => {
+         var template = '<div text="1"></div>' +
+                        '<needs-query text="2"><div text="3"></div></needs-query>' +
+                        '<div text="4"></div>';
 
-        tb.createView(MyComp, {html: template})
-          .then((view) => {
-            view.detectChanges();
-            expect(view.rootNodes).toHaveText('2|3|');
+         tb.createView(MyComp, {html: template})
+             .then((view) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText('2|3|');
 
-            async.done();
-          });
-      }));
+               async.done();
+             });
+       }));
 
     // TODO(rado): The test below should be using descendants: false,
     // but due to a bug with how injectors are hooked up query considers the
@@ -142,7 +142,9 @@ class NeedsQuery {
 @Injectable()
 class NeedsQueryDesc {
   query: QueryList<TextDirective>;
-  constructor(@Query(TextDirective, {descendants: true}) query: QueryList<TextDirective>) { this.query = query; }
+  constructor(@Query(TextDirective, {descendants: true}) query: QueryList<TextDirective>) {
+    this.query = query;
+  }
 }
 
 @Component({selector: 'my-comp'})

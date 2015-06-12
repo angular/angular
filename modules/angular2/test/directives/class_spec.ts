@@ -92,10 +92,7 @@ export function main() {
                view.detectChanges();
                expect(view.rootNodes[0].className).toEqual('ng-binding foo');
 
-               view.context.expr = {
-                 'foo': false,
-                 'bar': true
-               };
+               view.context.expr = {'foo': false, 'bar': true};
                view.detectChanges();
                expect(view.rootNodes[0].className).toEqual('ng-binding bar');
 

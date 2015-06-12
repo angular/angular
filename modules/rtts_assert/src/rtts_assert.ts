@@ -34,8 +34,7 @@ if (typeof _global['$traceurRuntime'] === 'object') {
 }
 Object.keys(primitives).forEach(function(name) { primitives[name].__assertName = name; });
 
-export function proxy() {
-}
+export function proxy() {}
 
 function assertArgumentTypes(...params) {
   var actual, type;

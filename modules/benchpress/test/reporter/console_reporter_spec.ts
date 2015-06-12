@@ -18,9 +18,8 @@ export function main() {
     var reporter;
     var log;
 
-    function createReporter({columnWidth = null, sampleId = null, descriptions = null, metrics = null}:{
-      columnWidth?, sampleId?, descriptions?, metrics?
-      }) {
+    function createReporter({columnWidth = null, sampleId = null, descriptions = null,
+                             metrics = null}: {columnWidth?, sampleId?, descriptions?, metrics?}) {
       log = [];
       if (isBlank(descriptions)) {
         descriptions = [];

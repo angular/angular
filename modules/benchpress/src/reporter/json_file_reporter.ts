@@ -52,7 +52,7 @@ var _PATH = new OpaqueToken('JsonFileReporter.path');
 var _BINDINGS = [
   bind(JsonFileReporter)
       .toFactory((sampleDescription, path, writeFile, now) =>
-                         new JsonFileReporter(sampleDescription, path, writeFile, now),
+                     new JsonFileReporter(sampleDescription, path, writeFile, now),
                  [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]),
   bind(_PATH).toValue('.')
 ];

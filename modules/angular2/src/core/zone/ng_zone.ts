@@ -143,9 +143,7 @@ export class NgZone {
       errorHandling = StringMapWrapper.merge(Zone.longStackTraceZone,
                                              {onError: function(e) { ngZone._onError(this, e) }});
     } else {
-      errorHandling = {
-        onError: function(e) { ngZone._onError(this, e) }
-      };
+      errorHandling = {onError: function(e) { ngZone._onError(this, e) }};
     }
 
     return zone.fork(errorHandling)

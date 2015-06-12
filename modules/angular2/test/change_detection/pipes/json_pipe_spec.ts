@@ -31,9 +31,7 @@ export function main() {
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 
     beforeEach(() => {
-      inceptionObj = {
-        dream: {dream: {dream: 'Limbo'}}
-      };
+      inceptionObj = {dream: {dream: {dream: 'Limbo'}}};
       inceptionObjString = "{\n" + "  \"dream\": {\n" + "    \"dream\": {\n" +
                            "      \"dream\": \"Limbo\"\n" + "    }\n" + "  }\n" + "}";
 

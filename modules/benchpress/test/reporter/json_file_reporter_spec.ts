@@ -31,10 +31,7 @@ export function main() {
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
         bind(Options.WRITE_FILE)
             .toValue((filename, content) => {
-              loggedFile = {
-                'filename': filename,
-                'content': content
-              };
+              loggedFile = {'filename': filename, 'content': content};
               return PromiseWrapper.resolve(null);
             })
       ];

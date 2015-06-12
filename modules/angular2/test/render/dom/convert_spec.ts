@@ -26,10 +26,14 @@ export function main() {
       });
       var map = directiveMetadataToMap(someComponent);
       expect(MapWrapper.get(map, 'compileChildren')).toEqual(false);
-      expect(MapWrapper.get(map, 'hostListeners')).toEqual(MapWrapper.createFromPairs([['LKey', 'LVal']]));
-      expect(MapWrapper.get(map, 'hostProperties')).toEqual(MapWrapper.createFromPairs([['PKey', 'PVal']]));
-      expect(MapWrapper.get(map, 'hostActions')).toEqual(MapWrapper.createFromPairs([['AcKey', 'AcVal']]));
-      expect(MapWrapper.get(map, 'hostAttributes')).toEqual(MapWrapper.createFromPairs([['AtKey', 'AtVal']]));
+      expect(MapWrapper.get(map, 'hostListeners'))
+          .toEqual(MapWrapper.createFromPairs([['LKey', 'LVal']]));
+      expect(MapWrapper.get(map, 'hostProperties'))
+          .toEqual(MapWrapper.createFromPairs([['PKey', 'PVal']]));
+      expect(MapWrapper.get(map, 'hostActions'))
+          .toEqual(MapWrapper.createFromPairs([['AcKey', 'AcVal']]));
+      expect(MapWrapper.get(map, 'hostAttributes'))
+          .toEqual(MapWrapper.createFromPairs([['AtKey', 'AtVal']]));
       expect(MapWrapper.get(map, 'id')).toEqual('someComponent');
       expect(MapWrapper.get(map, 'properties')).toEqual(['propKey: propVal']);
       expect(MapWrapper.get(map, 'readAttributes')).toEqual(['read1', 'read2']);

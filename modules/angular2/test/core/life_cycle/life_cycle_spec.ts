@@ -14,7 +14,7 @@ import {
   SpyObject,
   inject,
   proxy
-  } from 'angular2/test_lib';
+} from 'angular2/test_lib';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {ChangeDetector} from 'angular2/change_detection';
 import {IMPLEMENTS} from 'angular2/src/facade/lang';

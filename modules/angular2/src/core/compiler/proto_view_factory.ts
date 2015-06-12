@@ -348,15 +348,18 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
 }
 
 function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
-                              protoElementInjector, componentDirectiveBinding, directiveBindings): ElementBinder {
+                              protoElementInjector, componentDirectiveBinding,
+                              directiveBindings): ElementBinder {
   var parent = null;
   if (renderElementBinder.parentIndex !== -1) {
     parent = protoView.elementBinders[renderElementBinder.parentIndex];
   }
 
-  var directiveVariableBindings = createDirectiveVariableBindings(renderElementBinder, directiveBindings);
-  var elBinder = protoView.bindElement(parent, renderElementBinder.distanceToParent,
-                                       protoElementInjector, directiveVariableBindings, componentDirectiveBinding);
+  var directiveVariableBindings =
+      createDirectiveVariableBindings(renderElementBinder, directiveBindings);
+  var elBinder =
+      protoView.bindElement(parent, renderElementBinder.distanceToParent, protoElementInjector,
+                            directiveVariableBindings, componentDirectiveBinding);
   protoView.bindEvent(renderElementBinder.eventBindings, boundElementIndex, -1);
   // variables
   // The view's locals needs to have a full set of variable names at construction time
@@ -369,8 +372,9 @@ function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
   return elBinder;
 }
 
-export function createDirectiveVariableBindings(renderElementBinder:renderApi.ElementBinder,
-                                         directiveBindings:List<DirectiveBinding>): Map<String, number> {
+export function createDirectiveVariableBindings(
+    renderElementBinder: renderApi.ElementBinder,
+    directiveBindings: List<DirectiveBinding>): Map<String, number> {
   var directiveVariableBindings = MapWrapper.create();
   MapWrapper.forEach(renderElementBinder.variableBindings, (templateName, exportAs) => {
     var dirIndex = _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, exportAs);
@@ -388,7 +392,8 @@ function _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, e
 
     if (_directiveExportAs(directive) == exportAs) {
       if (isPresent(matchedDirective)) {
-        throw new BaseException(`More than one directive have exportAs = '${exportAs}'. Directives: [${matchedDirective.displayName}, ${directive.displayName}]`);
+        throw new BaseException(
+            `More than one directive have exportAs = '${exportAs}'. Directives: [${matchedDirective.displayName}, ${directive.displayName}]`);
       }
 
       matchedDirectiveIndex = i;
@@ -403,9 +408,10 @@ function _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, e
   return matchedDirectiveIndex;
 }
 
-function _directiveExportAs(directive):string {
+function _directiveExportAs(directive): string {
   var directiveExportAs = directive.metadata.exportAs;
-  if (isBlank(directiveExportAs) && directive.metadata.type === renderApi.DirectiveMetadata.COMPONENT_TYPE) {
+  if (isBlank(directiveExportAs) &&
+      directive.metadata.type === renderApi.DirectiveMetadata.COMPONENT_TYPE) {
     return "$implicit";
   } else {
     return directiveExportAs;

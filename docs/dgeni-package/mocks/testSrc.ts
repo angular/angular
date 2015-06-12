@@ -20,19 +20,15 @@ export class MyClass {
    * Create a new MyClass
    * @param {String} name The name to say hello to
    */
-  constructor(name) {
-    this.message = 'hello ' + name;
-  }
+  constructor(name) { this.message = 'hello ' + name; }
 
   /**
    * Return a greeting message
    */
-  greet() {
-    return this.message;
-  }
+  greet() { return this.message; }
 }
 
 /**
  * An exported function
  */
-export var myFn = (val:number) => return val*2;
+export var myFn = (val: number) => return val * 2;
