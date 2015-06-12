@@ -48,35 +48,71 @@ num _getDirectiveType(String annotationName, Element element) {
 /// [RegisterType] object and pulling out [DirectiveMetadata].
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
-  DirectiveMetadata meta;
+  bool get _hasMeta => _type != null;
+
+  // Annotation fields
+  num _type;
+  String _selector;
+  bool _compileChildren;
+  List<String> _properties;
+  Map<String, String> _host;
+  List<String> _readAttributes;
+  String _exportAs;
+  bool _callOnDestroy;
+  bool _callOnChange;
+  bool _callOnCheck;
+  bool _callOnInit;
+  bool _callOnAllChangesDone;
+  String changeDetection;
+  List<String> events;
+
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
-  void _createEmptyMetadata(num type) {
-    assert(type >= 0);
-    meta = DirectiveMetadata.create(
-        type: type,
-        compileChildren: true,
-        properties: [],
-        host: {},
-        readAttributes: [],
-        exportAs: null,
-        callOnDestroy: false,
-        callOnChange: false,
-        callOnCheck: false,
-        callOnInit: false,
-        callOnAllChangesDone: false);
+  void _initializeMetadata(num directiveType) {
+    assert(directiveType >= 0);
+
+    _type = directiveType;
+    _selector = '';
+    _compileChildren = true;
+    _properties = [];
+    _host = {};
+    _readAttributes = [];
+    _exportAs = null;
+    _callOnDestroy = false;
+    _callOnChange = false;
+    _callOnCheck = false;
+    _callOnInit = false;
+    _callOnAllChangesDone = false;
+    changeDetection = null;
+    events = [];
   }
+
+  DirectiveMetadata get meta => DirectiveMetadata.create(
+    type: _type,
+    selector: _selector,
+    compileChildren: _compileChildren,
+    properties: _properties,
+    host: _host,
+    readAttributes: _readAttributes,
+    exportAs: _exportAs,
+    callOnDestroy: _callOnDestroy,
+    callOnChange: _callOnChange,
+    callOnCheck: _callOnCheck,
+    callOnInit: _callOnInit,
+    callOnAllChangesDone: _callOnAllChangesDone,
+    changeDetection: changeDetection,
+    events: events);
 
   @override
   Object visitAnnotation(Annotation node) {
     var directiveType = _getDirectiveType('${node.name}', node.element);
     if (directiveType >= 0) {
-      if (meta != null) {
+      if (_hasMeta) {
         throw new FormatException('Only one Directive is allowed per class. '
             'Found "$node" but already processed "$meta".',
             '$node' /* source */);
       }
-      _createEmptyMetadata(directiveType);
+      _initializeMetadata(directiveType);
       super.visitAnnotation(node);
     }
     // Annotation we do not recognize - no need to visit.
@@ -88,12 +124,12 @@ class _DirectiveMetadataVisitor extends Object
     var directiveType = _getDirectiveType(
         '${node.constructorName.type.name}', node.staticElement);
     if (directiveType >= 0) {
-      if (meta != null) {
+      if (_hasMeta) {
         throw new FormatException('Only one Directive is allowed per class. '
             'Found "$node" but already processed "$meta".',
             '$node' /* source */);
       }
-      _createEmptyMetadata(directiveType);
+      _initializeMetadata(directiveType);
       super.visitInstanceCreationExpression(node);
     }
     // Annotation we do not recognize - no need to visit.
@@ -109,9 +145,7 @@ class _DirectiveMetadataVisitor extends Object
           '$node' /* source */);
     }
     var keyString = '${node.name.label}';
-    // TODO(kegluneq): Populate the other values in [DirectiveMetadata] once
-    // they are specified as `hostAttributes` and `hostSetters`.
-    // See [https://github.com/angular/angular/issues/1244]
+    // TODO(kegluneq): Populate the other values in [DirectiveMetadata]
     switch (keyString) {
       case 'selector':
         _populateSelector(node.expression);
@@ -145,14 +179,16 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   void _populateSelector(Expression selectorValue) {
-    meta.selector = _expressionToString(selectorValue, 'Directive#selector');
+    _checkMeta();
+    _selector = _expressionToString(selectorValue, 'Directive#selector');
   }
 
   void _checkMeta() {
-    if (meta == null) {
+    if (!_hasMeta) {
       throw new ArgumentError(
           'Incorrect value passed to readDirectiveMetadata. '
-          'Expected types are Annotation and InstanceCreationExpression');
+          'Expected types are Annotation, InstanceCreationExpression, '
+          'NodeList or ListLiteral');
     }
   }
 
@@ -164,7 +200,7 @@ class _DirectiveMetadataVisitor extends Object
           'Angular 2 expects a bool but could not understand the value for '
           'Directive#compileChildren.', '$compileChildrenValue' /* source */);
     }
-    meta.compileChildren = evaluated;
+    _compileChildren = evaluated;
   }
 
   /// Evaluates the [Map] represented by `expression` and adds all `key`,
@@ -199,25 +235,17 @@ class _DirectiveMetadataVisitor extends Object
 
   void _populateProperties(Expression propertiesValue) {
     _checkMeta();
-    _populateList(propertiesValue, meta.properties, 'Directive#properties');
+    _populateList(propertiesValue, _properties, 'Directive#properties');
   }
 
   void _populateHost(Expression hostValue) {
     _checkMeta();
-    var host = new Map();
-    _populateMap(hostValue, host, 'Directive#host');
-
-    var hostConfig = DirectiveMetadata.parseHostConfig(host);
-
-    meta.hostListeners = hostConfig['hostListeners'];
-    meta.hostProperties = hostConfig['hostProperties'];
-    meta.hostActions = hostConfig['hostActions'];
-    meta.hostAttributes = hostConfig['hostAttributes'];
+    _populateMap(hostValue, _host, 'Directive#host');
   }
 
   void _populateExportAs(Expression exportAsValue) {
     _checkMeta();
-    meta.exportAs = _expressionToString(exportAsValue, 'Directive#exportAs');
+    _exportAs = _expressionToString(exportAsValue, 'Directive#exportAs');
   }
 
   void _populateLifecycle(Expression lifecycleValue) {
@@ -229,10 +257,10 @@ class _DirectiveMetadataVisitor extends Object
     }
     ListLiteral l = lifecycleValue;
     var lifecycleEvents = l.elements.map((s) => s.toSource());
-    meta.callOnDestroy = lifecycleEvents.contains("onDestroy");
-    meta.callOnChange = lifecycleEvents.contains("onChange");
-    meta.callOnCheck = lifecycleEvents.contains("onCheck");
-    meta.callOnInit = lifecycleEvents.contains("onInit");
-    meta.callOnAllChangesDone = lifecycleEvents.contains("onAllChangesDone");
+    _callOnDestroy = lifecycleEvents.contains("onDestroy");
+    _callOnChange = lifecycleEvents.contains("onChange");
+    _callOnCheck = lifecycleEvents.contains("onCheck");
+    _callOnInit = lifecycleEvents.contains("onInit");
+    _callOnAllChangesDone = lifecycleEvents.contains("onAllChangesDone");
   }
 }

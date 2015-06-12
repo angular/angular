@@ -211,31 +211,6 @@ export class DirectiveMetadata {
     changeDetection?: string,
     exportAs?: string
   }) {
-    let hostConfig = DirectiveMetadata.parseHostConfig(host);
-
-    return new DirectiveMetadata({
-      id: id,
-      selector: selector,
-      compileChildren: compileChildren,
-      events: events,
-      hostListeners: StringMapWrapper.get(hostConfig, 'hostListeners'),
-      hostProperties: StringMapWrapper.get(hostConfig, 'hostProperties'),
-      hostAttributes: StringMapWrapper.get(hostConfig, 'hostAttributes'),
-      hostActions: StringMapWrapper.get(hostConfig, 'hostActions'),
-      properties: properties,
-      readAttributes: readAttributes,
-      type: type,
-      callOnDestroy: callOnDestroy,
-      callOnChange: callOnChange,
-      callOnCheck: callOnCheck,
-      callOnInit: callOnInit,
-      callOnAllChangesDone: callOnAllChangesDone,
-      changeDetection: changeDetection,
-      exportAs: exportAs
-    });
-  }
-
-  static parseHostConfig(host?: Map<string, string>): StringMap<string, Map<string, string>> {
     let hostListeners = MapWrapper.create();
     let hostProperties = MapWrapper.create();
     let hostAttributes = MapWrapper.create();
@@ -256,10 +231,26 @@ export class DirectiveMetadata {
       });
     }
 
-    return {
-      hostListeners: hostListeners, hostProperties: hostProperties, hostAttributes: hostAttributes,
-          hostActions: hostActions
-    }
+    return new DirectiveMetadata({
+      id: id,
+      selector: selector,
+      compileChildren: compileChildren,
+      events: events,
+      hostListeners: hostListeners,
+      hostProperties: hostProperties,
+      hostAttributes: hostAttributes,
+      hostActions: hostActions,
+      properties: properties,
+      readAttributes: readAttributes,
+      type: type,
+      callOnDestroy: callOnDestroy,
+      callOnChange: callOnChange,
+      callOnCheck: callOnCheck,
+      callOnInit: callOnInit,
+      callOnAllChangesDone: callOnAllChangesDone,
+      changeDetection: changeDetection,
+      exportAs: exportAs
+    });
   }
 }
 
