@@ -324,6 +324,12 @@ export function main() {
           });
         });
 
+        it('should notify the dispatcher on all changes done', () => {
+          var val = _createChangeDetector('name', new Person('bob'));
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.onAllChangesDoneCalled).toEqual(true);
+        });
+
         describe('updating directives', () => {
           var directive1;
           var directive2;
@@ -975,6 +981,7 @@ class FakeDirectives {
 class TestDispatcher extends ChangeDispatcher {
   log: List<string>;
   loggedValues: List<any>;
+  onAllChangesDoneCalled: boolean = false;
 
   constructor() {
     super();
@@ -984,12 +991,15 @@ class TestDispatcher extends ChangeDispatcher {
   clear() {
     this.log = ListWrapper.create();
     this.loggedValues = ListWrapper.create();
+    this.onAllChangesDoneCalled = true;
   }
 
   notifyOnBinding(binding, value) {
     ListWrapper.push(this.log, `${binding.propertyName}=${this._asString(value)}`);
     ListWrapper.push(this.loggedValues, value);
   }
+
+  notifyOnAllChangesDone() { this.onAllChangesDoneCalled = true; }
 
   _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
 }

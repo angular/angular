@@ -110,6 +110,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   }
 
   callOnAllChangesDone() {
+    this.dispatcher.notifyOnAllChangesDone();
     var dirs = this.directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];

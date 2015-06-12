@@ -262,11 +262,15 @@ class _CodegenState {
   /// them.
   String _getCallOnAllChangesDoneBody() {
     // NOTE(kegluneq): Order is important!
-    return _directiveRecords.reversed
+    var directiveNotifications = _directiveRecords.reversed
         .where((rec) => rec.callOnAllChangesDone)
         .map((rec) =>
             '${_genGetDirective(rec.directiveIndex)}.onAllChangesDone();')
         .join('');
+    return '''
+      _dispatcher.notifyOnAllChangesDone();
+      ${directiveNotifications}
+    ''';
   }
 
   String _genLocalDefinitions() =>

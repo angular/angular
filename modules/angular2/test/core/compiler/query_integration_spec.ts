@@ -18,6 +18,7 @@ import {QueryList} from 'angular2/core';
 import {Query, Component, Directive, View} from 'angular2/annotations';
 
 import {NgIf, NgFor} from 'angular2/angular2';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
@@ -118,6 +119,55 @@ export function main() {
                expect(view.rootNodes).toHaveText('2|3d|2d|');
 
                async.done();
+             });
+       }));
+
+
+    it('should notify query on change',
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         var template = '<needs-query-desc #q>' +
+                        '<div text="1"></div>' +
+                        '<div *ng-if="shouldShow" text="2"></div>' +
+                        '</needs-query-desc>';
+
+         tb.createView(MyComp, {html: template})
+             .then((view) => {
+               var q = view.rawView.locals.get("q");
+               view.detectChanges();
+
+               q.query.onChange(() => {
+                 expect(q.query.first.text).toEqual("1");
+                 expect(q.query.last.text).toEqual("2");
+                 async.done();
+               });
+
+               view.context.shouldShow = true;
+               view.detectChanges();
+             });
+       }));
+
+    it("should notify child's query before notifying parent's query",
+       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         var template = '<needs-query-desc #q1>' +
+                        '<needs-query-desc #q2>' +
+                        '<div text="1"></div>' +
+                        '</needs-query-desc>' +
+                        '</needs-query-desc>';
+
+         tb.createView(MyComp, {html: template})
+             .then((view) => {
+               var q1 = view.rawView.locals.get("q1");
+               var q2 = view.rawView.locals.get("q2");
+
+               var firedQ2 = false;
+
+               q2.query.onChange(() => { firedQ2 = true; });
+               q1.query.onChange(() => {
+                 expect(firedQ2).toBe(true);
+                 async.done();
+               });
+
+               view.detectChanges();
              });
        }));
   });

@@ -381,4 +381,5 @@ class FakeDirectives {
 
 class DummyDispatcher extends ChangeDispatcher {
   notifyOnBinding(bindingRecord, newValue) { throw "Should not be used"; }
+  notifyOnAllChangesDone() {}
 }

@@ -111,6 +111,13 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
     }
   }
 
+  notifyOnAllChangesDone(): void {
+    var ei = this.elementInjectors;
+    for (var i = ei.length - 1; i >= 0; i--) {
+      if (isPresent(ei[i])) ei[i].onAllChangesDone();
+    }
+  }
+
   getDirectiveFor(directive: DirectiveIndex) {
     var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);

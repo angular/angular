@@ -26,7 +26,6 @@ export class BaseQueryList<T> {
     this._dirty = true;
   }
 
-  // TODO(rado): hook up with change detection after #995.
   fireCallbacks() {
     if (this._dirty) {
       ListWrapper.forEach(this._callbacks, (c) => c());

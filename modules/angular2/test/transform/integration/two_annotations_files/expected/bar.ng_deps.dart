@@ -51,7 +51,9 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _alreadyChecked = true;
   }
 
-  void callOnAllChangesDone() {}
+  void callOnAllChangesDone() {
+    _dispatcher.notifyOnAllChangesDone();
+  }
 
   void hydrate(MyComponent context, locals, directives) {
     mode = 'ALWAYS_CHECK';

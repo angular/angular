@@ -203,7 +203,12 @@ export class ChangeDetectorJITGenerator {
       }
     }
 
-    return notifications.join("\n");
+    var directiveNotifications = notifications.join("\n");
+
+    return `
+      this.dispatcher.notifyOnAllChangesDone();
+      ${directiveNotifications}
+    `;
   }
 
   _genLocalDefinitions(): string { return this._localNames.map((n) => `var ${n};`).join("\n"); }

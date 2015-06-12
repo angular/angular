@@ -12,6 +12,8 @@ import {
   beforeEach,
   SpyObject,
   proxy,
+  inject,
+  AsyncTestCompleter,
   el,
   containsRegexp
 } from 'angular2/test_lib';
@@ -730,7 +732,7 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should throw when a depenency cannot be resolved", () => {
+          it("should throw when a dependency cannot be resolved", () => {
             expect(() => injector(ListWrapper.concat([NeedsDirectiveFromParent], extraBindings)))
                 .toThrowError(containsRegexp(
                     `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirectiveFromParent) } -> ${stringify(SimpleDirective) })`));
@@ -818,7 +820,7 @@ export function main() {
         });
 
         describe("lifecycle", () => {
-          it("should call onDestroy on directives subscribed to this event", function() {
+          it("should call onDestroy on directives subscribed to this event", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(DirectiveWithDestroy,
                                                  new dirAnn.Directive({lifecycle: [onDestroy]}))],
@@ -828,13 +830,45 @@ export function main() {
             expect(destroy.onDestroyCounter).toBe(1);
           });
 
-          it("should work with services", function() {
+          it("should work with services", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(
                     SimpleDirective, new dirAnn.Directive({hostInjector: [SimpleService]}))],
                 extraBindings));
             inj.dehydrate();
           });
+
+          it("should notify queries", inject([AsyncTestCompleter], (async) => {
+            var inj = injector(ListWrapper.concat([NeedsQuery], extraBindings));
+            var query = inj.get(NeedsQuery).query;
+            query.add(new CountingDirective()); // this marks the query as dirty
+
+            query.onChange(() => async.done());
+
+            inj.onAllChangesDone();
+          }));
+
+          it("should not notify inherited queries", inject([AsyncTestCompleter], (async) => {
+            var child = parentChildInjectors(ListWrapper.concat([NeedsQuery], extraBindings), []);
+
+            var query = child.parent.get(NeedsQuery).query;
+
+            var calledOnChange = false;
+            query.onChange(() => {
+              // make sure the callback is called only once
+              expect(calledOnChange).toEqual(false);
+              expect(query.length).toEqual(2);
+
+              calledOnChange = true;
+              async.done()
+            });
+
+            query.add(new CountingDirective());
+            child.onAllChangesDone(); // this does not notify the query
+
+            query.add(new CountingDirective());
+            child.parent.onAllChangesDone();
+          }));
         });
 
         describe("dynamicallyCreateComponent", () => {

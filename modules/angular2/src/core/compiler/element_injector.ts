@@ -707,6 +707,15 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
+  onAllChangesDone(): void {
+    if (isPresent(this._query0) && this._query0.originator === this)
+      this._query0.list.fireCallbacks();
+    if (isPresent(this._query1) && this._query1.originator === this)
+      this._query1.list.fireCallbacks();
+    if (isPresent(this._query2) && this._query2.originator === this)
+      this._query2.list.fireCallbacks();
+  }
+
   hydrate(injector: Injector, host: ElementInjector, preBuiltObjects: PreBuiltObjects): void {
     var p = this._proto;
 
