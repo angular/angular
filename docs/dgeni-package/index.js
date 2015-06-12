@@ -29,7 +29,8 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
     'interface',
     'function',
     'var',
-    'const'
+    'const',
+    'enum'
   ];
 })
 
