@@ -43,7 +43,7 @@ export class DynamicComponentLoader {
           this._viewManager.createDynamicComponentView(location, componentProtoViewRef, binding,
                                                        injector);
           var component = this._viewManager.getComponent(location);
-          var dispose = () => { throw new BaseException("Not implemented"); };
+          var dispose = () => { this._viewManager.destroyDynamicComponent(location); };
           return new ComponentRef(location, component, dispose);
         });
   }

@@ -133,6 +133,14 @@ export class AppViewManager {
     this._destroyFreeEmbeddedView(parentView, boundElementIndex, internalView(viewRef));
   }
 
+  destroyDynamicComponent(location: ElementRef) {
+    var hostView = internalView(location.parentView);
+    var ei = hostView.elementInjectors[location.boundElementIndex];
+    var componentView = hostView.componentChildViews[location.boundElementIndex];
+    ei.destroyDynamicComponent();
+    this._destroyComponentView(hostView, location.boundElementIndex, componentView);
+  }
+
   createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         protoViewRef: ProtoViewRef, context: ElementRef = null,
                         injector: Injector = null): ViewRef {

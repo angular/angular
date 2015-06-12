@@ -17,7 +17,7 @@ import {
 
 import {TestBed, ViewProxy} from 'angular2/src/test_lib/test_bed';
 import {Injector} from 'angular2/di';
-import {Component, View} from 'angular2/annotations';
+import {Component, View, onDestroy} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -63,6 +63,28 @@ export function main() {
              dynamicComponent.done.then((ref) => {
                expect(ref.instance.dynamicallyCreatedComponentService)
                    .toBeAnInstanceOf(DynamicallyCreatedComponentService);
+               async.done();
+             });
+           });
+         }));
+
+      it('should allow destroying dynamically-loaded components',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           tb.overrideView(MyComp, new viewAnn.View({
+             template: '<dynamic-comp #dynamic></dynamic-comp>',
+             directives: [DynamicComp]
+           }));
+
+           tb.createView(MyComp).then((view) => {
+             var dynamicComponent = view.rawView.locals.get("dynamic");
+             dynamicComponent.done.then((ref) => {
+               view.detectChanges();
+               expect(view.rootNodes).toHaveText("hello");
+
+               ref.dispose();
+
+               expect(ref.instance.destroyed).toBe(true);
+               expect(view.rootNodes).toHaveText("");
                async.done();
              });
            });
@@ -287,16 +309,23 @@ class DynamicComp {
   }
 }
 
-@Component({selector: 'hello-cmp', appInjector: [DynamicallyCreatedComponentService]})
+@Component({
+  selector: 'hello-cmp',
+  appInjector: [DynamicallyCreatedComponentService],
+  lifecycle: [onDestroy]
+})
 @View({template: "{{greeting}}"})
 class DynamicallyCreatedCmp {
   greeting: string;
   dynamicallyCreatedComponentService: DynamicallyCreatedComponentService;
+  destroyed: boolean = false;
 
   constructor(a: DynamicallyCreatedComponentService) {
     this.greeting = "hello";
     this.dynamicallyCreatedComponentService = a;
   }
+
+  onDestroy() { this.destroyed = true; }
 }
 
 @Component({selector: 'dummy'})

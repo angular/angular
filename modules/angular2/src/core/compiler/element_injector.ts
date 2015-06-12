@@ -688,22 +688,20 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
-
     this._strategy.callOnDestroy();
-
-    if (isPresent(this._dynamicallyCreatedComponentBinding) &&
-        this._dynamicallyCreatedComponentBinding.callOnDestroy) {
-      this._dynamicallyCreatedComponent.onDestroy();
-    }
-
+    this.destroyDynamicComponent();
     this._strategy.clearInstances();
-
-    this._dynamicallyCreatedComponent = null;
-    this._dynamicallyCreatedComponentBinding = null;
-
     this._constructionCounter = 0;
   }
 
+  destroyDynamicComponent(): void {
+    if (isPresent(this._dynamicallyCreatedComponentBinding) &&
+        this._dynamicallyCreatedComponentBinding.callOnDestroy) {
+      this._dynamicallyCreatedComponent.onDestroy();
+      this._dynamicallyCreatedComponentBinding = null;
+      this._dynamicallyCreatedComponent = null;
+    }
+  }
 
   hydrate(injector: Injector, host: ElementInjector, preBuiltObjects: PreBuiltObjects): void {
     var p = this._proto;
