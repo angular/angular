@@ -3,14 +3,14 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {Directive, Ancestor, onChange} from 'angular2/angular2';
-import {FORWARD_REF, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {setUpControl} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgModel)}));
+    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgModel)}));
 
 /**
  * Binds a domain model to the form.

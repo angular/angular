@@ -2,7 +2,7 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 import {Directive, Ancestor, onDestroy, onChange} from 'angular2/angular2';
-import {FORWARD_REF, Binding, Inject} from 'angular2/di';
+import {forwardRef, Binding, Inject} from 'angular2/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
@@ -10,7 +10,7 @@ import {controlPath} from './shared';
 import {Control} from '../model';
 
 const controlNameBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: FORWARD_REF(() => NgControlName)}));
+    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgControlName)}));
 
 /**
  * Creates and binds a control with a specified name to a DOM element.

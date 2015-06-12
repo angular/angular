@@ -8,7 +8,7 @@ import {
   ComponentRef,
   DomRenderer
 } from 'angular2/angular2';
-import {bind, Injector, Injectable, FORWARD_REF} from 'angular2/di';
+import {bind, Injector, Injectable, forwardRef} from 'angular2/di';
 
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, Type} from 'angular2/src/facade/lang';
@@ -213,7 +213,7 @@ export class MdDialogConfig {
 })
 @View({
   templateUrl: 'angular2_material/src/components/dialog/dialog.html',
-  directives: [FORWARD_REF(() => MdDialogContent)]
+  directives: [forwardRef(() => MdDialogContent)]
 })
 class MdDialogContainer {
   // Ref to the dialog content. Used by the DynamicComponentLoader to load the dialog content.

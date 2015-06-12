@@ -34,8 +34,6 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type {
   return (<Type><any>forwardRefFn);
 }
 
-export var FORWARD_REF = forwardRef;
-
 /**
  * Lazily retrieve the reference value.
  *

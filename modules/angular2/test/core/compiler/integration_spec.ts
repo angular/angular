@@ -34,7 +34,7 @@ import {
 } from 'angular2/src/facade/lang';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Injector, bind, Injectable, Binding, FORWARD_REF, OpaqueToken, Inject} from 'angular2/di';
+import {Injector, bind, Injectable, Binding, forwardRef, OpaqueToken, Inject} from 'angular2/di';
 import {
   PipeRegistry,
   defaultPipeRegistry,
@@ -1692,11 +1692,11 @@ function createParentBusView(p) {
   viewInjector: [
     new Binding(
         EventBus,
-        {toFactory: createParentBusView, deps: [[FORWARD_REF(() => ParentProvidingEventBus)]]})
+        {toFactory: createParentBusView, deps: [[forwardRef(() => ParentProvidingEventBus)]]})
   ]
 })
 @View({
-  directives: [FORWARD_REF(() => ChildConsumingEventBus)],
+  directives: [forwardRef(() => ChildConsumingEventBus)],
   template: `
     <child-consuming-event-bus></child-consuming-event-bus>
   `
