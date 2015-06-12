@@ -21,7 +21,7 @@ export class Location {
   normalize(url: string): string { return this._stripBaseHref(stripIndexHtml(url)); }
 
   normalizeAbsolutely(url: string): string {
-    if (url[0] != '/') {
+    if (url.length > 0 && url[0] != '/') {
       url = '/' + url;
     }
     return this._addBaseHref(url);
