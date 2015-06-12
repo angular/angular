@@ -3935,7 +3935,7 @@
       "version": "1.0.19",
       "dependencies": {
         "clang-format": {
-          "version": "1.0.17"
+          "version": "1.0.19"
         },
         "gulp-util": {
           "version": "3.0.5",

@@ -198,8 +198,7 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 // formatting
 
 function doCheckFormat() {
-  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts',
-                   '!**/*.spec.ts', '!**/*_spec.ts' /* angular/clang-format#/11 */])
+  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
       .pipe(format.checkFormat('file'));
 }
 
@@ -790,15 +789,15 @@ gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
 
 gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
   return bundler.modify(
-      ['node_modules/zone.js/dist/zone-microtask.js', 'node_modules/reflect-metadata/Reflect.js', 
+      ['node_modules/zone.js/dist/zone-microtask.js', 'node_modules/reflect-metadata/Reflect.js',
       'dist/build/angular2.js'],
       'angular2.js'
   ).pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() { 
+gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
   return bundler.modify(
-      ['node_modules/zone.js/dist/zone-microtask.min.js', 
+      ['node_modules/zone.js/dist/zone-microtask.min.js',
       'node_modules/reflect-metadata/Reflect.js', 'dist/build/angular2.min.js'],
       'angular2.min.js'
   )
