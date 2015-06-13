@@ -24,8 +24,8 @@ export function main() {
     it('should retain previously merged values when merging again', () => {
       var options1 = new BaseRequestOptions();
       var options2 = options1.merge({method: RequestMethods.DELETE});
-      var options3 = options2.merge({mode: RequestModesOpts.NoCors}) expect(options3.mode)
-                         .toBe(RequestModesOpts.NoCors);
+      var options3 = options2.merge({mode: RequestModesOpts.NoCors});
+      expect(options3.mode).toBe(RequestModesOpts.NoCors);
       expect(options3.method).toBe(RequestMethods.DELETE);
     });
   });

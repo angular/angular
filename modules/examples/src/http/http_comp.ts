@@ -1,6 +1,6 @@
 import {bootstrap, Component, View, NgFor, NgIf, Inject} from 'angular2/angular2';
 import {httpInjectables} from 'angular2/http';
-import {Http} from 'angular2/src/http/http';
+import {HttpFactory} from 'angular2/src/http/http';
 import {IHttp} from 'angular2/src/http/interfaces';
 import {Response} from 'angular2/src/http/static_response';
 import {LocalVariable} from './assign_local_directive';
@@ -24,7 +24,7 @@ import {LocalVariable} from './assign_local_directive';
 })
 export class HttpCmp {
   people: Rx.Observable<Object>;
-  constructor(@Inject(Http) http: IHttp) {
+  constructor(@Inject(HttpFactory) http: IHttp) {
     this.people = http('./people.json').map(res => res.json());
   }
 }

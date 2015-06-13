@@ -5,7 +5,7 @@ export enum RequestCacheOpts {Default, NoStore, Reload, NoCache, ForceCache, Onl
 
 export enum RequestCredentialsOpts {Omit, SameOrigin, Include};
 
-export enum RequestMethods {GET, POST, PUT, DELETE, OPTIONS, HEAD};
+export enum RequestMethods {GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH};
 
 export enum ReadyStates {UNSENT, OPEN, HEADERS_RECEIVED, LOADING, DONE, CANCELLED};
 

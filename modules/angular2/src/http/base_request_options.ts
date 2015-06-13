@@ -6,10 +6,10 @@ import {RequestOptions} from './interfaces';
 import {Injectable} from 'angular2/di';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-export class RequestOptionsClass {
+export class RequestOptionsClass implements RequestOptions {
   method: RequestMethods = RequestMethods.GET;
   headers: Headers;
-  body: URLSearchParams | FormData | string;
+  body: URLSearchParams | FormData | Blob | string;
   mode: RequestModesOpts = RequestModesOpts.Cors;
   credentials: RequestCredentialsOpts;
   cache: RequestCacheOpts;

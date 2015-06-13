@@ -14,7 +14,7 @@ import {URLSearchParams} from './url_search_params';
 export interface RequestOptions {
   method?: RequestMethods;
   headers?: Headers;
-  body?: URLSearchParams | FormData | string;
+  body?: URLSearchParams | FormData | Blob | string;
   mode?: RequestModesOpts;
   credentials?: RequestCredentialsOpts;
   cache?: RequestCacheOpts;
