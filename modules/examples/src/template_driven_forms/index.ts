@@ -1,4 +1,13 @@
-import {bootstrap, onChange, NgIf, Component, Directive, View, Ancestor} from 'angular2/angular2';
+import {
+  bootstrap,
+  onChange,
+  NgIf,
+  NgFor,
+  Component,
+  Directive,
+  View,
+  Ancestor
+} from 'angular2/angular2';
 import {formDirectives, NgControl, Validators, NgForm} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
@@ -13,6 +22,7 @@ class CheckoutModel {
   firstName: string;
   middleName: string;
   lastName: string;
+  country: string = "Canada";
 
   creditCard: string;
   amount: number;
@@ -108,6 +118,13 @@ class ShowError {
       </p>
 
       <p>
+        <label for="country">Country</label>
+        <select id="country" ng-control="country" [(ng-model)]="model.country">
+          <option *ng-for="#c of countries" [value]="c">{{c}}</option>
+        </select>
+      </p>
+
+      <p>
         <label for="creditCard">Credit Card</label>
         <input type="text" id="creditCard" ng-control="creditCard" [(ng-model)]="model.creditCard" required credit-card>
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
@@ -134,10 +151,11 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [formDirectives, CreditCardValidator, ShowError]
+  directives: [formDirectives, NgFor, CreditCardValidator, ShowError]
 })
 class TemplateDrivenForms {
   model = new CheckoutModel();
+  countries = ['US', 'Canada'];
 
   onSubmit() {
     print("Submitting:");

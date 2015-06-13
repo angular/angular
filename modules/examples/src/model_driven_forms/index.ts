@@ -1,4 +1,13 @@
-import {bootstrap, onChange, NgIf, Component, Directive, View, Ancestor} from 'angular2/angular2';
+import {
+  bootstrap,
+  onChange,
+  NgIf,
+  NgFor,
+  Component,
+  Directive,
+  View,
+  Ancestor
+} from 'angular2/angular2';
 import {formDirectives, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
@@ -87,6 +96,13 @@ class ShowError {
       </p>
 
       <p>
+        <label for="country">Country</label>
+        <select id="country" ng-control="country">
+          <option *ng-for="#c of countries" [value]="c">{{c}}</option>
+        </select>
+      </p>
+
+      <p>
         <label for="creditCard">Credit Card</label>
         <input type="text" id="creditCard" ng-control="creditCard">
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
@@ -113,16 +129,18 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [formDirectives, ShowError]
+  directives: [formDirectives, NgFor, ShowError]
 })
 class ModelDrivenForms {
   form;
+  countries = ['US', 'Canada'];
 
   constructor(fb: FormBuilder) {
     this.form = fb.group({
       "firstName": ["", Validators.required],
       "middleName": [""],
       "lastName": ["", Validators.required],
+      "country": ["Canada", Validators.required],
       "creditCard": ["", Validators.compose([Validators.required, creditCardValidator])],
       "amount": [0, Validators.required],
       "email": ["", Validators.required],
