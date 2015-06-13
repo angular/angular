@@ -1,3 +1,1 @@
-export {
-  View as ViewAnnotation,
-} from '../annotations_impl/view';
+export {View as ViewAnnotation, ViewArgs} from '../annotations_impl/view';

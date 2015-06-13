@@ -787,16 +787,7 @@ export class Directive extends Injectable {
   constructor({
                   selector, properties, events, host, lifecycle, hostInjector, exportAs,
                   compileChildren = true,
-              }: {
-    selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
-    host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    hostInjector?: List<any>,
-    exportAs?: string,
-    compileChildren?: boolean
-  } = {}) {
+              }: ComponentArgs = {}) {
     super();
     this.selector = selector;
     this.properties = properties;
@@ -807,6 +798,17 @@ export class Directive extends Injectable {
     this.compileChildren = compileChildren;
     this.hostInjector = hostInjector;
   }
+}
+
+export interface ComponentArgs {
+  selector?: string;
+  properties?: List<string>;
+  events?: List<string>;
+  host?: StringMap<string, string>;
+  lifecycle?: List<LifecycleEvent>;
+  hostInjector?: List<any>;
+  exportAs?: string;
+  compileChildren?: boolean;
 }
 
 /**
@@ -1007,19 +1009,8 @@ export class Component extends Directive {
   viewInjector: List<any>;
 
   constructor({selector, properties, events, host, exportAs, appInjector, lifecycle, hostInjector,
-               viewInjector, changeDetection = DEFAULT, compileChildren = true}: {
-    selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
-    host?: StringMap<string, string>,
-    exportAs?: string,
-    appInjector?: List<any>,
-    lifecycle?: List<LifecycleEvent>,
-    hostInjector?: List<any>,
-    viewInjector?: List<any>,
-    changeDetection?: string,
-    compileChildren?: boolean
-  } = {}) {
+               viewInjector, changeDetection = DEFAULT,
+               compileChildren = true}: DirectiveArgs = {}) {
     super({
       selector: selector,
       properties: properties,
@@ -1036,6 +1027,20 @@ export class Component extends Directive {
     this.viewInjector = viewInjector;
   }
 }
+export interface DirectiveArgs {
+  selector?: string;
+  properties?: List<string>;
+  events?: List<string>;
+  host?: StringMap<string, string>;
+  exportAs?: string;
+  appInjector?: List<any>;
+  lifecycle?: List<LifecycleEvent>;
+  hostInjector?: List<any>;
+  viewInjector?: List<any>;
+  changeDetection?: string;
+  compileChildren?: boolean;
+}
+
 
 /**
  * Lifecycle events are guaranteed to be called in the following order:

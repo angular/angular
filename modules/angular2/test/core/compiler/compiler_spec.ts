@@ -451,17 +451,17 @@ function createRenderViewportElementBinder(nestedProtoView) {
 class MainComponent {
 }
 
-@Component()
+@Component({selector: 'nested'})
 class NestedComponent {
 }
 
 class RecursiveComponent {}
 
-@Component()
+@Component({selector: 'some-dynamic'})
 class SomeDynamicComponentDirective {
 }
 
-@Directive()
+@Directive({selector: 'some'})
 class SomeDirective {
 }
 
@@ -481,7 +481,7 @@ class DirectiveWithProperties {
 class DirectiveWithBind {
 }
 
-@Directive()
+@Directive({selector: 'directive-with-accts'})
 class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr: String) {}
 }

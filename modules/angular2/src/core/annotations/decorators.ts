@@ -1,5 +1,10 @@
-import {ComponentAnnotation, DirectiveAnnotation} from './annotations';
-import {ViewAnnotation} from './view';
+import {
+  ComponentAnnotation,
+  DirectiveAnnotation,
+  ComponentArgs,
+  DirectiveArgs
+} from './annotations';
+import {ViewAnnotation, ViewArgs} from './view';
 import {
   SelfAnnotation,
   ParentAnnotation,
@@ -7,14 +12,39 @@ import {
   UnboundedAnnotation
 } from './visibility';
 import {AttributeAnnotation, QueryAnnotation} from './di';
-import {makeDecorator, makeParamDecorator} from '../../util/decorators';
+import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
+import {Type} from 'angular2/src/facade/lang';
+
+export interface DirectiveTypeDecorator extends TypeDecorator {}
+
+export interface ComponentTypeDecorator extends TypeDecorator {
+  View(obj: ViewArgs): ViewTypeDecorator;
+}
+
+export interface ViewTypeDecorator extends TypeDecorator { View(obj: ViewArgs): ViewTypeDecorator }
+
+export interface Directive {
+  (obj: any): DirectiveTypeDecorator;
+  new (obj: DirectiveAnnotation): DirectiveAnnotation;
+}
+
+export interface Component {
+  (obj: any): ComponentTypeDecorator;
+  new (obj: ComponentAnnotation): ComponentAnnotation;
+}
+
+export interface View {
+  (obj: ViewArgs): ViewTypeDecorator;
+  new (obj: ViewArgs): ViewAnnotation;
+}
+
 
 /* from annotations */
-export var Component = makeDecorator(ComponentAnnotation);
-export var Directive = makeDecorator(DirectiveAnnotation);
+export var Component = <Component>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
+export var Directive = <Directive>makeDecorator(DirectiveAnnotation);
 
 /* from view */
-export var View = makeDecorator(ViewAnnotation);
+export var View = <View>makeDecorator(ViewAnnotation, (fn: any) => fn.View = View);
 
 /* from visibility */
 export var Self = makeParamDecorator(SelfAnnotation);

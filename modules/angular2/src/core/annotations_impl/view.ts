@@ -82,15 +82,16 @@ export class View {
    */
   renderer: string;
 
-  constructor({templateUrl, template, directives, renderer}: {
-    templateUrl?: string,
-    template?: string,
-    directives?: List<Type | any | List<any>>,
-    renderer?: string
-  } = {}) {
+  constructor({templateUrl, template, directives, renderer}: ViewArgs = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
     this.directives = directives;
     this.renderer = renderer;
   }
+}
+export interface ViewArgs {
+  templateUrl?: string;
+  template?: string;
+  directives?: List<Type | any | List<any>>;
+  renderer?: string;
 }
