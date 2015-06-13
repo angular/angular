@@ -17,6 +17,7 @@ import {MockBackend} from 'angular2/src/http/backends/mock_backend';
 import {Response} from 'angular2/src/http/static_response';
 import {RequestMethods} from 'angular2/src/http/enums';
 import {BaseRequestOptions} from 'angular2/src/http/base_request_options';
+import {Request} from 'angular2/src/http/static_request';
 
 class SpyObserver extends SpyObject {
   onNext: Function;
@@ -79,6 +80,12 @@ export function main() {
            connection.mockRespond(baseResponse)
          }));
 
+      it('should accept a fully-qualified request as its only parameter', () => {
+        var req = new Request('https://google.com');
+        backend.connections.subscribe(c => { expect(c.request.url).toBe('https://google.com'); });
+        httpFactory(req).subscribe(() => {});
+      });
+
 
       it('should perform a get request for given url if passed a ConnectionConfig instance',
          inject([AsyncTestCompleter], async => {
@@ -108,9 +115,20 @@ export function main() {
 
 
     describe('Http', () => {
-      it('should return an Observable', () => {
-        expect(typeof http.request(url).subscribe).toBe('function');
-        backend.resolveAllConnections();
+      describe('.request()', () => {
+        it('should return an Observable', () => {
+          expect(typeof http.request(url).subscribe).toBe('function');
+          backend.resolveAllConnections();
+        });
+
+
+        it('should accept a fully-qualified request as its only parameter', () => {
+          var req = new Request('https://google.com');
+          backend.connections.subscribe(c => {
+            expect(c.request.url).toBe('https://google.com');
+          });
+          http.request(req).subscribe(() =>{});
+        });
       });
 
 
