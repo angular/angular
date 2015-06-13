@@ -61,8 +61,12 @@ function httpRequest(backend: XHRBackend, request: Request) {
 export class Http {
   constructor(private backend: XHRBackend, private defaultOptions: BaseRequestOptions) {}
 
-  request(url: string, options?: RequestOptions): Rx.Observable<Response> {
-    return httpRequest(this.backend, new Request(url, this.defaultOptions.merge(options)));
+  request(url: string|Request, options?: RequestOptions): Rx.Observable<Response> {
+    if (typeof url === 'string') {
+      return httpRequest(this.backend, new Request(url, this.defaultOptions.merge(options)));
+    } else if (url instanceof Request) {
+      return httpRequest(this.backend, url);
+    }
   }
 
   get(url: string, options?: RequestOptions) {
@@ -107,7 +111,11 @@ if (Rx.hasOwnProperty('default')) {
   Observable = Rx.Observable;
 }
 export function HttpFactory(backend: XHRBackend, defaultOptions: BaseRequestOptions) {
-  return function(url: string, options?: RequestOptions) {
-    return httpRequest(backend, new Request(url, defaultOptions.merge(options)));
+  return function(url: string | Request, options?: RequestOptions) {
+    if (typeof url === 'string') {
+      return httpRequest(backend, new Request(url, defaultOptions.merge(options)));
+    } else if (url instanceof Request) {
+      return httpRequest(backend, url);
+    }
   }
 }
