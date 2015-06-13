@@ -1,6 +1,7 @@
-import {Directive} from 'angular2/angular2';
+import {Directive, Renderer, ElementRef} from 'angular2/angular2';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
+import {setProperty} from './shared';
 
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.
@@ -32,13 +33,18 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   onChange: Function;
   onTouched: Function;
 
-  constructor(private cd: NgControl) {
+  constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
     this.onChange = (_) => {};
     this.onTouched = (_) => {};
     cd.valueAccessor = this;
   }
 
-  writeValue(value) { this.checked = value; }
+  writeValue(value) {
+    // both this.checked and setProperty are required at the moment
+    // remove when a proper imperative API is provided
+    this.checked = value;
+    setProperty(this.renderer, this.elementRef, "checked", value);
+  }
 
   registerOnChange(fn): void { this.onChange = fn; }
   registerOnTouched(fn): void { this.onTouched = fn; }

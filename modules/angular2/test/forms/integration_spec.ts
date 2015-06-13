@@ -19,7 +19,7 @@ import {
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {TestBed} from 'angular2/src/test_lib/test_bed';
-import {NgIf} from 'angular2/directives';
+import {NgIf, NgFor} from 'angular2/directives';
 
 import {
   Control,
@@ -299,6 +299,28 @@ export function main() {
                  async.done();
                });
          }));
+
+      it("should support <select> with a dynamic list of options",
+         inject([TestBed], fakeAsync((tb: TestBed) => {
+                  var ctx = MyComp.create(
+                      {form: new ControlGroup({"city": new Control("NYC")}), data: ['SF', 'NYC']});
+
+                  var t = `<div [ng-form-model]="form">
+                      <select ng-control="city">
+                        <option *ng-for="#c of data" [value]="c"></option>
+                      </select>
+                  </div>`;
+
+                  tb.createView(MyComp, {context: ctx, html: t})
+                      .then((view) => {
+                        view.detectChanges();
+                        tick();
+
+                        var select = view.querySelector('select');
+
+                        expect(select.value).toEqual('NYC');
+                      });
+                })));
 
       it("should support custom value accessors",
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
@@ -752,15 +774,17 @@ class WrappedValue implements ControlValueAccessor {
 }
 
 @Component({selector: "my-comp"})
-@View({directives: [formDirectives, WrappedValue, NgIf]})
+@View({directives: [formDirectives, WrappedValue, NgIf, NgFor]})
 class MyComp {
   form: any;
   name: string;
+  data: any;
 
-  static create({form, name}: {form?: any, name?: any}) {
+  static create({form, name, data}: {form?: any, name?: any, data?: any}) {
     var mc = new MyComp();
     mc.form = form;
     mc.name = name;
+    mc.data = data;
     return mc;
   }
 }

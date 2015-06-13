@@ -5,6 +5,8 @@ import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators} from '../validators';
+import {Renderer, ElementRef} from 'angular2/angular2';
+
 
 export function controlPath(name, parent: ControlContainer) {
   var p = ListWrapper.clone(parent.path);
@@ -36,4 +38,10 @@ export function setUpControl(c: Control, dir: NgControl) {
 function _throwError(dir: NgControl, message: string): void {
   var path = ListWrapper.join(dir.path, " -> ");
   throw new BaseException(`${message} '${path}'`);
+}
+
+export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
+                            propValue: any) {
+  renderer.setElementProperty(elementRef.parentView.render, elementRef.boundElementIndex, propName,
+                              propValue);
 }

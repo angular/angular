@@ -1,6 +1,22 @@
-import {Directive} from 'angular2/angular2';
+import {Directive, Query, QueryList, Renderer, ElementRef} from 'angular2/angular2';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
+import {setProperty} from './shared';
+
+/**
+ * Marks <option> as dynamic, so Angular can be notified when options change.
+ *
+ * #Example:
+ * ```
+ * <select ng-control="city">
+ *   <option *ng-for="#c of cities" [value]="c"></option>
+ * </select>
+ * ``
+ * @exportedAs angular2/forms
+ */
+@Directive({selector: 'option'})
+export class NgSelectOption {
+}
 
 /**
  * The accessor for writing a value and listening to changes on a select element.
@@ -23,19 +39,30 @@ import {ControlValueAccessor} from './control_value_accessor';
   }
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
-  value = null;
+  value = '';
   onChange: Function;
   onTouched: Function;
 
-  constructor(private cd: NgControl) {
+  constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef,
+              @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
     this.onChange = (_) => {};
     this.onTouched = (_) => {};
-    this.value = '';
     cd.valueAccessor = this;
+
+    this._updateValueWhenListOfOptionsChanges(query);
   }
 
-  writeValue(value) { this.value = value; }
+  writeValue(value) {
+    // both this.value and setProperty are required at the moment
+    // remove when a proper imperative API is provided
+    this.value = value;
+    setProperty(this.renderer, this.elementRef, "value", value);
+  }
 
   registerOnChange(fn): void { this.onChange = fn; }
   registerOnTouched(fn): void { this.onTouched = fn; }
+
+  private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {
+    query.onChange(() => this.writeValue(this.value));
+  }
 }
