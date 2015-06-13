@@ -6,6 +6,8 @@
 export {
   Component as ComponentAnnotation,
   Directive as DirectiveAnnotation,
+  ComponentArgs,
+  DirectiveArgs,
   onDestroy,
   onChange,
   onCheck,
