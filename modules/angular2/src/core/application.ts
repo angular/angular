@@ -69,11 +69,12 @@ var _rootBindings = [bind(Reflector).toValue(reflector), TestabilityRegistry];
 
 function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
   var bestChangeDetection: Type = DynamicChangeDetection;
-  if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = PreGeneratedChangeDetection;
-  } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = JitChangeDetection;
-  }
+  // Re-enable once all e2e tests pass
+  // if (PreGeneratedChangeDetection.isSupported()) {
+  //  bestChangeDetection = PreGeneratedChangeDetection;
+  //} else if (JitChangeDetection.isSupported()) {
+  //  bestChangeDetection = JitChangeDetection;
+  //}
   return [
     bind(DOCUMENT_TOKEN)
         .toValue(DOM.defaultDoc()),
