@@ -6,3 +6,4 @@ export * from './directives';
 export * from './http';
 export * from './forms';
 export * from './render';
+export * from './profile';

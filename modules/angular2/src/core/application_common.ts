@@ -71,6 +71,7 @@ import {
 } from 'angular2/src/render/dom/view/shared_styles_host';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {appComponentRefPromiseToken, appComponentTypeToken} from './application_tokens';
+import {wtfInit} from '../profile/wtf_init';
 
 var _rootInjector: Injector;
 
@@ -290,6 +291,7 @@ export function commonBootstrap(
     appComponentType: /*Type*/ any,
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
+  wtfInit();
   var bootstrapProcess = PromiseWrapper.completer();
   var zone = createNgZone(new ExceptionHandler(DOM, isDart ? false : true));
   zone.run(() => {

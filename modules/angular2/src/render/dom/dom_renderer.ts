@@ -22,6 +22,7 @@ import {
   cloneAndQueryProtoView,
   camelCaseToDashCase
 } from './util';
+import {WtfScopeFn, wtfLeave, wtfCreateScope} from '../../profile/profile';
 
 import {
   Renderer,
@@ -38,6 +39,7 @@ import {DOCUMENT_TOKEN, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
+
 @Injectable()
 export class DomRenderer extends Renderer {
   _document;
@@ -53,19 +55,24 @@ export class DomRenderer extends Renderer {
     this._document = document;
   }
 
+  _scope_createRootHostView: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
+    var s = this._scope_createRootHostView();
     var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
+      wtfLeave(s);
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return this._createView(hostProtoView, element);
+    return wtfLeave(s, this._createView(hostProtoView, element));
   }
 
+  _scope_createView = wtfCreateScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
+    var s = this._scope_createView();
     var protoView = resolveInternalDomProtoView(protoViewRef);
-    return this._createView(protoView, null);
+    return wtfLeave(s, this._createView(protoView, null));
   }
 
   destroyView(viewRef: RenderViewRef) {
@@ -109,11 +116,14 @@ export class DomRenderer extends Renderer {
     moveNodesAfterSibling(element, resolveInternalDomFragment(fragmentRef));
   }
 
+  _scope_detachFragment = wtfCreateScope('DomRenderer#detachFragment()');
   detachFragment(fragmentRef: RenderFragmentRef) {
+    var s = this._scope_detachFragment();
     var fragmentNodes = resolveInternalDomFragment(fragmentRef);
     for (var i = 0; i < fragmentNodes.length; i++) {
       DOM.remove(fragmentNodes[i]);
     }
+    wtfLeave(s);
   }
 
   hydrateView(viewRef: RenderViewRef) {
@@ -203,9 +213,12 @@ export class DomRenderer extends Renderer {
     DOM.setText(view.boundTextNodes[textNodeIndex], text);
   }
 
+  _scope_setEventDispatcher = wtfCreateScope('DomRenderer#setEventDispatcher()');
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: any /*api.EventDispatcher*/): void {
+    var s = this._scope_setEventDispatcher();
     var view = resolveInternalDomView(viewRef);
     view.eventDispatcher = dispatcher;
+    wtfLeave(s);
   }
 
   _createView(protoView: DomProtoView, inplaceElement: HTMLElement): RenderViewWithFragments {
