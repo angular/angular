@@ -24,7 +24,7 @@ export class ProtoChangeDetector {
  * `JitChangeDetection` strategy at compile time.
  *
  *
- * See: {@link DynamicChangeDetection}, {@link JitChangeDetection}, {@link PregenChangeDetection}
+ * See: {@link DynamicChangeDetection}, {@link JitChangeDetection}, {@link PreGeneratedChangeDetection}
  *
  * # Example
  * ```javascript
