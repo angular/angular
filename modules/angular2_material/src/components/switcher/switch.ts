@@ -13,7 +13,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     '(keydown)': 'onKeydown($event)',
     '[attr.aria-checked]': 'checked',
     '[attr.aria-disabled]': 'disabled_',
-    '[attr.role]': 'role'
+    '[attr.role]': '"checkbox"'
   }
 })
 @View({templateUrl: 'angular2_material/src/components/switcher/switch.html', directives: []})
@@ -25,10 +25,8 @@ export class MdSwitch {
   disabled_: boolean;
 
   tabindex: number;
-  role: string;
 
   constructor(@Attribute('tabindex') tabindex: string) {
-    this.role = 'checkbox';
     this.checked = false;
     this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
   }
