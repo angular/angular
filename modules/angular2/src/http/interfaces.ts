@@ -11,7 +11,7 @@ import {
 import {Headers} from './headers';
 import {URLSearchParams} from './url_search_params';
 
-export interface RequestOptions {
+export interface IRequestOptions {
   method?: RequestMethods;
   headers?: Headers;
   body?: URLSearchParams | FormData | Blob | string;
@@ -60,4 +60,4 @@ export interface Connection {
 
 // Prefixed as IHttp because used in conjunction with Http class, but interface is callable
 // constructor(@Inject(Http) http:IHttp)
-export interface IHttp { (url: string, options?: RequestOptions): Rx.Observable<Response> }
+export interface IHttp { (url: string, options?: IRequestOptions): Rx.Observable<Response> }
