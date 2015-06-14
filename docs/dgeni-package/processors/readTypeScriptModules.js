@@ -147,15 +147,16 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     });
 
     //Make sure duplicate aliases aren't created, so "Ambiguous link" warnings are prevented
-    var aliasNames = [name];
+    var aliasNames = [name, moduleDoc.id + '/' + name];
     if (typeParamString) {
       aliasNames.push(name + typeParamString);
+      aliasNames.push(moduleDoc.id + '/' + name + typeParamString);
     }
 
     var exportDoc = {
       docType: getExportDocType(exportSymbol),
       name: name,
-      id: name,
+      id: moduleDoc.id + '/' + name,
       typeParams: typeParamString,
       heritage: heritageString,
       aliases: aliasNames,
@@ -178,7 +179,6 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       docType: 'member',
       classDoc: classDoc,
       name: memberSymbol.name,
-      id: memberSymbol.name,
       content: getContent(memberSymbol),
       fileInfo: getFileInfo(memberSymbol, basePath),
       location: getLocation(memberSymbol)
