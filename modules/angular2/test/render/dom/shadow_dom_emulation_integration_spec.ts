@@ -10,7 +10,7 @@ import {
   it,
   xit,
   beforeEachBindings,
-  SpyObject,
+  SpyObject
 } from 'angular2/test_lib';
 
 import {bind} from 'angular2/di';
@@ -33,6 +33,10 @@ import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_res
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 
 import {DomTestbed} from './dom_testbed';
+
+import {Injectable} from 'angular2/di';
+
+import {Component, View} from 'angular2/annotations';
 
 export function main() {
   describe('ShadowDom integration tests', function() {
@@ -60,6 +64,26 @@ export function main() {
       beforeEachBindings(() => { return [strategyBinding, DomTestbed]; });
 
       describe(`${name} shadow dom strategy`, () => {
+        // GH-2095 - https://github.com/angular/angular/issues/2095
+        it('should support text nodes after content tags',
+           inject([DomTestbed, AsyncTestCompleter], (tb, async) => {
+             tb.compileAll([
+                 simple,
+                 new ViewDefinition({
+                   componentId: 'simple',
+                   template: '<content></content><p>P,</p>{{a}}',
+                   directives: []
+                 })
+               ])
+                 .then((protoViewDtos) => {
+                   var rootView = tb.createRootView(protoViewDtos[0]);
+                   var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
+
+                   tb.renderer.setText(cmpView.viewRef, 0, 'text');
+                   expect(tb.rootEl).toHaveText('P,text');
+                   async.done();
+                 });
+           }));
 
         it('should support simple components',
            inject([AsyncTestCompleter, DomTestbed], (async, tb) => {

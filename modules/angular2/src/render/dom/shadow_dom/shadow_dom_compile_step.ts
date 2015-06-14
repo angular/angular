@@ -47,13 +47,15 @@ export class ShadowDomCompileStep implements CompileStep {
     var selector = MapWrapper.get(attrs, 'select');
     selector = isPresent(selector) ? selector : '';
 
+    // The content tag should be replaced by a pair of marker tags (start & end).
+    // The end marker creation is delayed to keep the number of elements constant.
+    // Creating the end marker here would invalidate the parent's textNodeIndices for the subsequent
+    // text nodes
     var contentStart = DOM.createScriptTag('type', 'ng/contentStart');
     if (assertionsEnabled()) {
       DOM.setAttribute(contentStart, 'select', selector);
     }
-    var contentEnd = DOM.createScriptTag('type', 'ng/contentEnd');
     DOM.insertBefore(current.element, contentStart);
-    DOM.insertBefore(current.element, contentEnd);
     DOM.remove(current.element);
 
     current.element = contentStart;

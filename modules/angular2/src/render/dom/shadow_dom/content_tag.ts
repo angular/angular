@@ -1,6 +1,6 @@
 import * as ldModule from './light_dom';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 
 class ContentStrategy {
@@ -20,7 +20,6 @@ class RenderedContent extends ContentStrategy {
   constructor(contentEl) {
     super();
     this.beginScript = contentEl;
-    this.endScript = DOM.nextSibling(this.beginScript);
     this.nodes = [];
   }
 
@@ -28,15 +27,23 @@ class RenderedContent extends ContentStrategy {
   // Previous content is removed.
   insert(nodes: List</*node*/ any>) {
     this.nodes = nodes;
+
+    if (isBlank(this.endScript)) {
+      // On first invocation, we need to create the end marker
+      this.endScript = DOM.createScriptTag('type', 'ng/contentEnd');
+      DOM.insertAfter(this.beginScript, this.endScript);
+    } else {
+      // On subsequent invocations, only remove all the nodes between the start end end markers
+      this._removeNodes();
+    }
+
     DOM.insertAllBefore(this.endScript, nodes);
-    this._removeNodesUntil(ListWrapper.isEmpty(nodes) ? this.endScript : nodes[0]);
   }
 
-  _removeNodesUntil(node) {
-    var p = DOM.parentElement(this.beginScript);
-    for (var next = DOM.nextSibling(this.beginScript); next !== node;
-         next = DOM.nextSibling(this.beginScript)) {
-      DOM.removeChild(p, next);
+  _removeNodes() {
+    for (var node = DOM.nextSibling(this.beginScript); node !== this.endScript;
+         node = DOM.nextSibling(this.beginScript)) {
+      DOM.remove(node);
     }
   }
 }
