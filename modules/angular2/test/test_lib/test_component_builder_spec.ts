@@ -28,7 +28,7 @@ import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {NgIf} from 'angular2/src/directives/ng_if';
 
 @Component({selector: 'child-comp'})
-@View({template: `<snap>Original {{childBinding}}</span>`, directives: []})
+@View({template: `<span>Original {{childBinding}}</span>`, directives: []})
 @Injectable()
 class ChildComp {
   childBinding: string;
