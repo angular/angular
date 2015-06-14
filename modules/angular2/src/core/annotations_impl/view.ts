@@ -3,9 +3,9 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
 /**
  * Declares the available HTML templates for an application.
  *
- * Each angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@View` annotation specifies the HTML template to use, and lists the directives that are active
- * within the template.
+ * Each angular component requires a single `@Component` and at least one `@BaseView` annotation.
+ * The `@BaseView` annotation specifies the HTML template to use, and lists the directives that are
+ * active within the template.
  *
  * When a component is instantiated, the template is loaded into the component's shadow root, and
  * the expressions and statements in the template are evaluated against the component.
@@ -18,7 +18,7 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  * @Component({
  *   selector: 'greet'
  * })
- * @View({
+ * @BaseView({
  *   template: 'Hello {{name}}!',
  *   directives: [GreetUser, Bold]
  * })
@@ -34,7 +34,7 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  * @exportedAs angular2/annotations
  */
 @CONST()
-export class View {
+export class BaseView {
   /**
    * Specifies a template URL for an angular component.
    *
@@ -92,5 +92,54 @@ export class View {
     this.template = template;
     this.directives = directives;
     this.renderer = renderer;
+  }
+}
+
+/**
+ * A specialized {@link BaseView} that adds all the built-in directives to the `directives`
+ * property, making them available in a given view. Using `@View`:
+ *
+ * * ```
+ * @Component({
+ *   selector: 'greet'
+ * })
+ * @View({
+ *   template: 'Hello {{name}}!',
+ *   directives: [GreetUser, Bold]
+ * })
+ * class Greet {
+ *   name: string = 'World';
+ * }
+ * ```
+ *
+ * is equivalent to:
+ *
+ * ```
+ * import {coreDirectives} from 'angular2/angular2';
+ *
+ * @Component({
+ *   selector: 'greet'
+ * })
+ * @BaseView({
+ *   template: 'Hello {{name}}!',
+ *   directives: [coreDirectives, GreetUser, Bold]
+ * })
+ * class Greet {
+ *   name: string = 'World';
+ * }
+ * ```
+ *
+ * @exportedAs angular2/annotations
+ */
+@CONST()
+export class View extends BaseView {
+  constructor({templateUrl, template, directives, renderer}: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string
+  } = {}) {
+    super(
+        {templateUrl: templateUrl, template: template, directives: directives, renderer: renderer});
   }
 }
