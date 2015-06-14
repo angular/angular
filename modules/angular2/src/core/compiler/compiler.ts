@@ -25,6 +25,7 @@ import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {ElementBinder} from './element_binder';
+import {wtfStartTimeRange, wtfEndTimeRange} from 'angular2/src/core/wtf';
 
 import * as renderApi from 'angular2/src/render/api';
 
@@ -127,6 +128,7 @@ export class Compiler {
   compileInHost(componentTypeOrBinding: Type | Binding): Promise<ProtoViewRef> {
     var componentType = isType(componentTypeOrBinding) ? componentTypeOrBinding :
                                                          (<Binding>componentTypeOrBinding).token;
+    var r = wtfStartTimeRange('Compiler#compile()', stringify(componentType));
 
     var hostAppProtoView = this._compilerCache.getHost(componentType);
     var hostPvPromise;
@@ -149,7 +151,10 @@ export class Compiler {
                 return appProtoView;
               });
     }
-    return hostPvPromise.then(hostAppProtoView => hostAppProtoView.ref);
+    return hostPvPromise.then((hostAppProtoView) => {
+      wtfEndTimeRange(r);
+      return hostAppProtoView.ref;
+    });
   }
 
   private _compile(componentBinding: DirectiveBinding,

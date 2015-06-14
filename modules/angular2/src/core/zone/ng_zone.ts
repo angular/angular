@@ -1,5 +1,7 @@
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
+import {wtfLeave, wtfCreateScope, ScopeEventFactory} from 'angular2/src/core/wtf';
+
 
 export interface NgZoneZone extends Zone { _innerZone: boolean; }
 
@@ -13,6 +15,9 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  * `Zone`. The default `onTurnDone` runs the Angular change detection.
  */
 export class NgZone {
+  _zone_run_scope: ScopeEventFactory = wtfCreateScope(`NgZone#run()`);
+  _zone_microtask: ScopeEventFactory = wtfCreateScope(`NgZone#microtask()`);
+
   // Code executed in _mountZone does not trigger the onTurnDone.
   _mountZone;
   // _innerZone is the child of _mountZone. Any code executed in this zone will trigger the
@@ -134,7 +139,12 @@ export class NgZone {
    */
   run(fn: () => any): any {
     if (this._disabled) {
-      return fn();
+      var s = this._zone_run_scope();
+      try {
+        return fn();
+      } finally {
+        wtfLeave(s);
+      }
     } else {
       return this._innerZone.run(fn);
     }
@@ -165,6 +175,7 @@ export class NgZone {
   }
 
   _createInnerZone(zone, enableLongStackTrace) {
+    var _zone_microtask = this._zone_microtask;
     var ngZone = this;
     var errorHandling;
 
@@ -217,10 +228,12 @@ export class NgZone {
             return function(fn) {
               ngZone._pendingMicrotasks++;
               var microtask = function() {
+                var s = _zone_microtask();
                 try {
                   fn();
                 } finally {
                   ngZone._pendingMicrotasks--;
+                  wtfLeave(s);
                 }
               };
               parentScheduleMicrotask.call(this, microtask);

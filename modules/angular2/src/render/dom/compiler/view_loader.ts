@@ -16,6 +16,7 @@ import {XHR} from 'angular2/src/render/xhr';
 
 import {StyleInliner} from './style_inliner';
 import {StyleUrlResolver} from './style_url_resolver';
+import {wtfStartTimeRange, wtfEndTimeRange} from 'angular2/src/core/wtf';
 
 export class TemplateAndStyles {
   constructor(public template: string, public styles: string[]) {}
@@ -33,6 +34,7 @@ export class ViewLoader {
               private _styleUrlResolver: StyleUrlResolver) {}
 
   load(viewDef: ViewDefinition): Promise<TemplateAndStyles> {
+    var r = wtfStartTimeRange('ViewLoader#load()', stringify(viewDef.componentId));
     let tplAndStyles: List<Promise<TemplateAndStyles>| Promise<string>| string> =
         [this._loadHtml(viewDef.template, viewDef.templateAbsUrl)];
     if (isPresent(viewDef.styles)) {
@@ -56,8 +58,10 @@ export class ViewLoader {
           let loadedTplAndStyles = <TemplateAndStyles>res[0];
           let styles = <string[]>ListWrapper.slice(res, 1);
 
-          return new TemplateAndStyles(loadedTplAndStyles.template,
+          var templateAndStyles =  new TemplateAndStyles(loadedTplAndStyles.template,
                                        loadedTplAndStyles.styles.concat(styles));
+          wtfEndTimeRange(r);
+          return templateAndStyles
         });
   }
 
