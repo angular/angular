@@ -1,6 +1,6 @@
 import {RequestMethods, RequestModesOpts, RequestCredentialsOpts} from './enums';
 import {URLSearchParams} from './url_search_params';
-import {RequestOptions, Request as IRequest} from './interfaces';
+import {IRequestOptions, Request as IRequest} from './interfaces';
 import {Headers} from './headers';
 import {BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
 
@@ -21,7 +21,7 @@ export class Request implements IRequest {
 
   constructor(public url: string, {body, method = RequestMethods.GET, mode = RequestModesOpts.Cors,
                                    credentials = RequestCredentialsOpts.Omit,
-                                   headers = new Headers()}: RequestOptions = {}) {
+                                   headers = new Headers()}: IRequestOptions = {}) {
     this.body = body;
     // Defaults to 'GET', consistent with browser
     this.method = method;

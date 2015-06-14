@@ -1,7 +1,7 @@
 /// <reference path="../../typings/rx/rx.all.d.ts" />
 
 import {Injectable} from 'angular2/src/di/decorators';
-import {RequestOptions, Connection} from './interfaces';
+import {IRequestOptions, Connection} from './interfaces';
 import {Request} from './static_request';
 import {Response} from './static_response';
 import {XHRBackend} from './backends/xhr_backend';
@@ -61,7 +61,7 @@ function httpRequest(backend: XHRBackend, request: Request) {
 export class Http {
   constructor(private backend: XHRBackend, private defaultOptions: BaseRequestOptions) {}
 
-  request(url: string|Request, options?: RequestOptions): Rx.Observable<Response> {
+  request(url: string | Request, options?: IRequestOptions): Rx.Observable<Response> {
     if (typeof url === 'string') {
       return httpRequest(this.backend, new Request(url, this.defaultOptions.merge(options)));
     } else if (url instanceof Request) {
@@ -69,36 +69,36 @@ export class Http {
     }
   }
 
-  get(url: string, options?: RequestOptions) {
+  get(url: string, options?: IRequestOptions) {
     return httpRequest(this.backend, new Request(url, this.defaultOptions.merge(options)
                                                           .merge({method: RequestMethods.GET})));
   }
 
-  post(url: string, body: URLSearchParams | FormData | Blob | string, options?: RequestOptions) {
+  post(url: string, body: URLSearchParams | FormData | Blob | string, options?: IRequestOptions) {
     return httpRequest(this.backend,
                        new Request(url, this.defaultOptions.merge(options)
 
                                             .merge({body: body, method: RequestMethods.POST})));
   }
 
-  put(url: string, body: URLSearchParams | FormData | Blob | string, options?: RequestOptions) {
+  put(url: string, body: URLSearchParams | FormData | Blob | string, options?: IRequestOptions) {
     return httpRequest(this.backend,
                        new Request(url, this.defaultOptions.merge(options)
                                             .merge({body: body, method: RequestMethods.PUT})));
   }
 
-  delete (url: string, options?: RequestOptions) {
+  delete (url: string, options?: IRequestOptions) {
     return httpRequest(this.backend, new Request(url, this.defaultOptions.merge(options)
                                                           .merge({method: RequestMethods.DELETE})));
   }
 
-  patch(url: string, body: URLSearchParams | FormData | Blob | string, options?: RequestOptions) {
+  patch(url: string, body: URLSearchParams | FormData | Blob | string, options?: IRequestOptions) {
     return httpRequest(this.backend,
                        new Request(url, this.defaultOptions.merge(options)
                                             .merge({body: body, method: RequestMethods.PATCH})));
   }
 
-  head(url: string, options?: RequestOptions) {
+  head(url: string, options?: IRequestOptions) {
     return httpRequest(this.backend, new Request(url, this.defaultOptions.merge(options)
                                                           .merge({method: RequestMethods.HEAD})));
   }
@@ -111,7 +111,7 @@ if (Rx.hasOwnProperty('default')) {
   Observable = Rx.Observable;
 }
 export function HttpFactory(backend: XHRBackend, defaultOptions: BaseRequestOptions) {
-  return function(url: string | Request, options?: RequestOptions) {
+  return function(url: string | Request, options?: IRequestOptions) {
     if (typeof url === 'string') {
       return httpRequest(backend, new Request(url, defaultOptions.merge(options)));
     } else if (url instanceof Request) {

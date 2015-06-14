@@ -124,10 +124,8 @@ export function main() {
 
         it('should accept a fully-qualified request as its only parameter', () => {
           var req = new Request('https://google.com');
-          backend.connections.subscribe(c => {
-            expect(c.request.url).toBe('https://google.com');
-          });
-          http.request(req).subscribe(() =>{});
+          backend.connections.subscribe(c => { expect(c.request.url).toBe('https://google.com'); });
+          http.request(req).subscribe(() => {});
         });
       });
 
