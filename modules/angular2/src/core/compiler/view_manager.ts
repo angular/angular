@@ -8,6 +8,7 @@ import {Renderer, RenderViewRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
+import {enter, leave, createScope} from 'angular2/src/core/wtf';
 
 /**
  * Entry point for creating, moving views in the view hierarchy and destroying views.
@@ -54,8 +55,10 @@ export class AppViewManager {
     return this._utils.getComponentInstance(hostView, boundElementIndex);
   }
 
+  _scope_createRootHostView = createScope('AppViewManager#createRootHostView()');
   createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
                      injector: Injector): ViewRef {
+    var s = enter(this._scope_createRootHostView);
     var hostProtoView = internalProtoView(hostProtoViewRef);
     var hostElementSelector = overrideSelector;
     if (isBlank(hostElementSelector)) {
@@ -69,10 +72,14 @@ export class AppViewManager {
 
     this._utils.hydrateRootHostView(hostView, injector);
     this._viewHydrateRecurse(hostView);
-    return new ViewRef(hostView);
+    var viewRef = new ViewRef(hostView);
+    leave(s);
+    return viewRef;
   }
 
+  _scope_destroyRootHostView = createScope('AppViewManager#destroyRootHostView()');
   destroyRootHostView(hostViewRef: ViewRef) {
+    var s = enter(this._scope_destroyRootHostView);
     // Note: Don't detach the hostView as we want to leave the
     // root element in place. Also don't put the hostView into the view pool
     // as it is depending on the element for which it was created.
@@ -81,11 +88,14 @@ export class AppViewManager {
     this._viewDehydrateRecurse(hostView, true);
     this._renderer.destroyView(hostView.render);
     this._viewListener.viewDestroyed(hostView);
+    leave(s);
   }
 
+  _scope_createViewInContainer = createScope('AppViewManager#createViewInContainer()');
   createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         protoViewRef: ProtoViewRef, context: ElementRef = null,
                         injector: Injector = null): ViewRef {
+    var s = enter(this._scope_createViewInContainer);
     var protoView = internalProtoView(protoViewRef);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
@@ -105,17 +115,24 @@ export class AppViewManager {
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView,
                                        contextBoundElementIndex, atIndex, injector);
     this._viewHydrateRecurse(view);
-    return new ViewRef(view);
+    var viewRef = new ViewRef(view);
+    leave(s);
+    return viewRef;
   }
 
+  _scope_destroyViewInContainer = createScope('AppViewManager#destroyViewInContainer()');
   destroyViewInContainer(viewContainerLocation: ElementRef, atIndex: number) {
+    var s = enter(this._scope_destroyViewInContainer);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
     this._destroyViewInContainer(parentView, boundElementIndex, atIndex);
+    leave(s);
   }
 
+  _scope_attachViewInContainer = createScope('AppViewManager#attachViewInContainer()');
   attachViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         viewRef: ViewRef): ViewRef {
+    var s = enter(this._scope_attachViewInContainer);
     var view = internalView(viewRef);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
@@ -128,10 +145,13 @@ export class AppViewManager {
     this._utils.attachViewInContainer(parentView, boundElementIndex, null, null, atIndex, view);
     this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex,
                                          view.render);
+    leave(s);
     return viewRef;
   }
 
+  _scope_detachViewInContainer = createScope('AppViewManager#detachViewInContainer()');
   detachViewInContainer(viewContainerLocation: ElementRef, atIndex: number): ViewRef {
+    var s = enter(this._scope_detachViewInContainer);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
     var viewContainer = parentView.viewContainers[boundElementIndex];
@@ -139,7 +159,9 @@ export class AppViewManager {
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
     this._renderer.detachViewInContainer(parentView.render, boundElementIndex, atIndex,
                                          view.render);
-    return new ViewRef(view);
+    var viewRef = new ViewRef(view);
+    leave(s);
+    return viewRef;
   }
 
   _createPooledView(protoView: viewModule.AppProtoView): viewModule.AppView {

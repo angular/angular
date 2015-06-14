@@ -19,10 +19,12 @@ import {DomView, DomViewRef, resolveInternalDomView} from './view/view';
 import {DomElement} from './view/element';
 import {DomViewContainer} from './view/view_container';
 import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from './util';
-
 import {Renderer, RenderProtoViewRef, RenderViewRef} from '../api';
+import {enter, leave, createScope} from 'angular2/src/core/wtf';
+
 
 export const DOCUMENT_TOKEN = CONST_EXPR(new OpaqueToken('DocumentToken'));
+
 
 @Injectable()
 export class DomRenderer extends Renderer {
@@ -34,27 +36,40 @@ export class DomRenderer extends Renderer {
     this._document = document;
   }
 
+  _scope_createRootHostView = createScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef,
                      hostElementSelector: string): RenderViewRef {
+    var s = enter(this._scope_createRootHostView);
     var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
+      leave(s);
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return new DomViewRef(this._createView(hostProtoView, element));
+    var rVal = new DomViewRef(this._createView(hostProtoView, element));
+    leave(s);
+    return rVal;
   }
 
+  _scope_createView = createScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef): RenderViewRef {
+    var s = enter(this._scope_createView);
     var protoView = resolveInternalDomProtoView(protoViewRef);
-    return new DomViewRef(this._createView(protoView, null));
+    var rVal = new DomViewRef(this._createView(protoView, null));
+    leave(s);
+    return rVal;
   }
 
+  _scope_destroyView = createScope('DomRenderer#destroyView()');
   destroyView(view: RenderViewRef) {
     // noop for now
+    leave(enter(this._scope_destroyView));
   }
 
+  _scope_attachComponentView = createScope('DomRenderer#attachComponentView()');
   attachComponentView(hostViewRef: RenderViewRef, elementIndex: number,
                       componentViewRef: RenderViewRef) {
+    var s = enter(this._scope_attachComponentView);
     var hostView = resolveInternalDomView(hostViewRef);
     var componentView = resolveInternalDomView(componentViewRef);
     var element = hostView.boundElements[elementIndex].element;
@@ -66,21 +81,31 @@ export class DomRenderer extends Renderer {
     this._moveViewNodesIntoParent(shadowRoot, componentView);
     componentView.hostLightDom = lightDom;
     componentView.shadowRoot = shadowRoot;
+    leave(s);
   }
 
+  _scope_setComponentViewRootNodes = createScope('DomRenderer#setComponentViewRootNodes()');
   setComponentViewRootNodes(componentViewRef: RenderViewRef, rootNodes: List</*node*/ any>) {
+    var s = enter(this._scope_setComponentViewRootNodes);
     var componentView = resolveInternalDomView(componentViewRef);
     this._removeViewNodes(componentView);
     componentView.rootNodes = rootNodes;
     this._moveViewNodesIntoParent(componentView.shadowRoot, componentView);
+    leave(s);
   }
 
+  _scope_getRootNodes = createScope('DomRenderer#getRootNodes()');
   getRootNodes(viewRef: RenderViewRef): List</*node*/ any> {
-    return resolveInternalDomView(viewRef).rootNodes;
+    var s = enter(this._scope_getRootNodes);
+    var rVal = resolveInternalDomView(viewRef).rootNodes;
+    leave(s);
+    return rVal;
   }
 
+  _scope_detachComponentView = createScope('DomRenderer#detachComponentView()');
   detachComponentView(hostViewRef: RenderViewRef, boundElementIndex: number,
                       componentViewRef: RenderViewRef) {
+    var s = enter(this._scope_detachComponentView);
     var hostView = resolveInternalDomView(hostViewRef);
     var componentView = resolveInternalDomView(componentViewRef);
     this._removeViewNodes(componentView);
@@ -90,10 +115,13 @@ export class DomRenderer extends Renderer {
     }
     componentView.hostLightDom = null;
     componentView.shadowRoot = null;
+    leave(s);
   }
 
+  _scope_attachViewInContainer = createScope('DomRenderer#attachViewInContainer()');
   attachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                         viewRef: RenderViewRef) {
+    var s = enter(this._scope_attachViewInContainer);
     var parentView = resolveInternalDomView(parentViewRef);
     var view = resolveInternalDomView(viewRef);
     var viewContainer = this._getOrCreateViewContainer(parentView, boundElementIndex);
@@ -116,10 +144,13 @@ export class DomRenderer extends Renderer {
     if (isPresent(parentView.hostLightDom)) {
       parentView.hostLightDom.redistribute();
     }
+    leave(s);
   }
 
+  _scope_detachViewInContainer = createScope('DomRenderer#detachViewInContainer()');
   detachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                         viewRef: RenderViewRef) {
+    var s = enter(this._scope_detachViewInContainer);
     var parentView = resolveInternalDomView(parentViewRef);
     var view = resolveInternalDomView(viewRef);
     var viewContainer = parentView.boundElements[boundElementIndex].viewContainer;
@@ -136,6 +167,7 @@ export class DomRenderer extends Renderer {
     if (isPresent(parentView.hostLightDom)) {
       parentView.hostLightDom.redistribute();
     }
+    leave(s);
   }
 
   hydrateView(viewRef: RenderViewRef) {
@@ -187,10 +219,13 @@ export class DomRenderer extends Renderer {
     view.setElementProperty(elementIndex, propertyName, propertyValue);
   }
 
+  _scope_callAction = createScope('DomRenderer#callAction()');
   callAction(viewRef: RenderViewRef, elementIndex: number, actionExpression: string,
              actionArgs: any): void {
+    var s = enter(this._scope_callAction);
     var view = resolveInternalDomView(viewRef);
     view.callAction(elementIndex, actionExpression, actionArgs);
+    leave(s);
   }
 
   setText(viewRef: RenderViewRef, textNodeIndex: number, text: string): void {
@@ -198,9 +233,12 @@ export class DomRenderer extends Renderer {
     DOM.setText(view.boundTextNodes[textNodeIndex], text);
   }
 
+  _scope_setEventDispatcher = createScope('DomRenderer#setEventDispatcher()');
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: any /*api.EventDispatcher*/): void {
+    var s = enter(this._scope_setEventDispatcher);
     var view = resolveInternalDomView(viewRef);
     view.eventDispatcher = dispatcher;
+    leave(s);
   }
 
   _createView(protoView: DomProtoView, inplaceElement): DomView {

@@ -7,6 +7,7 @@ import * as avmModule from './view_manager';
 import {Renderer} from 'angular2/src/render/api';
 import {Locals} from 'angular2/change_detection';
 import {RenderViewRef} from 'angular2/src/render/api';
+import {enter, leave, createScope} from 'angular2/src/core/wtf';
 
 @Injectable()
 export class AppViewManagerUtils {
@@ -17,8 +18,10 @@ export class AppViewManagerUtils {
     return eli.getComponent();
   }
 
+  _scope_createView = createScope('AppViewManagerUtils#createView()');
   createView(protoView: viewModule.AppProtoView, renderView: RenderViewRef,
              viewManager: avmModule.AppViewManager, renderer: Renderer): viewModule.AppView {
+    var s = enter(this._scope_createView);
     var view = new viewModule.AppView(renderer, protoView, protoView.protoLocals);
     // TODO(tbosch): pass RenderViewRef as argument to AppView!
     view.render = renderView;
@@ -58,14 +61,18 @@ export class AppViewManagerUtils {
     view.init(changeDetector, elementInjectors, rootElementInjectors, preBuiltObjects,
               componentChildViews);
 
+    leave(s);
     return view;
   }
 
+  _scope_attachComponentView = createScope('AppViewManagerUtils#attachComponentView()');
   attachComponentView(hostView: viewModule.AppView, boundElementIndex: number,
                       componentView: viewModule.AppView) {
+    var s = enter(this._scope_attachComponentView);
     var childChangeDetector = componentView.changeDetector;
     hostView.changeDetector.addShadowDomChild(childChangeDetector);
     hostView.componentChildViews[boundElementIndex] = componentView;
+    leave(s);
   }
 
   detachComponentView(hostView: viewModule.AppView, boundElementIndex: number) {
@@ -74,16 +81,22 @@ export class AppViewManagerUtils {
     hostView.componentChildViews[boundElementIndex] = null;
   }
 
+  _scope_hydrateComponentView = createScope('AppViewManagerUtils#hydrateComponentView()');
   hydrateComponentView(hostView: viewModule.AppView, boundElementIndex: number,
                        injector: Injector = null) {
+    var s = enter(this._scope_hydrateComponentView);
     var elementInjector = hostView.elementInjectors[boundElementIndex];
     var componentView = hostView.componentChildViews[boundElementIndex];
     var component = this.getComponentInstance(hostView, boundElementIndex);
     this._hydrateView(componentView, injector, elementInjector, component, null);
+    leave(s);
   }
 
+  _scope_hydrateRootHostView = createScope('AppViewManagerUtils#hydrateRootHostView()');
   hydrateRootHostView(hostView: viewModule.AppView, injector: Injector = null) {
+    var s = enter(this._scope_hydrateRootHostView);
     this._hydrateView(hostView, injector, null, new Object(), null);
+    leave(s);
   }
 
   attachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
@@ -119,9 +132,11 @@ export class AppViewManagerUtils {
     }
   }
 
+  _scope_hydrateViewInContainer = createScope('AppViewManagerUtils#hydrateViewInContainer()');
   hydrateViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                          contextView: viewModule.AppView, contextBoundElementIndex: number,
                          atIndex: number, injector: Injector) {
+    var s = enter(this._scope_hydrateViewInContainer);
     if (isBlank(contextView)) {
       contextView = parentView;
       contextBoundElementIndex = boundElementIndex;
@@ -134,6 +149,7 @@ export class AppViewManagerUtils {
     }
     this._hydrateView(view, injector, elementInjector.getHost(), contextView.context,
                       contextView.locals);
+    leave(s);
   }
 
   _hydrateView(view: viewModule.AppView, appInjector: Injector,

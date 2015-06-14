@@ -4,6 +4,9 @@ import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
 import {Locals} from './parser/locals';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
+import {enter2, leave, createScope} from 'angular2/src/core/wtf';
+
+var _scope_check = createScope(`ChangeDetector_#check(ascii id, bool throwOnChange)`);
 
 export class AbstractChangeDetector implements ChangeDetector {
   lightDomChildren: List<any> = [];
@@ -37,6 +40,8 @@ export class AbstractChangeDetector implements ChangeDetector {
   _detectChanges(throwOnChange: boolean): void {
     if (this.mode === DETACHED || this.mode === CHECKED) return;
 
+    var s = enter2(_scope_check, '?', throwOnChange);
+
     this.detectChangesInRecords(throwOnChange);
 
     this._detectChangesInLightDomChildren(throwOnChange);
@@ -46,6 +51,7 @@ export class AbstractChangeDetector implements ChangeDetector {
     this._detectChangesInShadowDomChildren(throwOnChange);
 
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
+    leave(s);
   }
 
   detectChangesInRecords(throwOnChange: boolean): void {}

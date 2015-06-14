@@ -1,5 +1,7 @@
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
+import {enter, leave, createScope} from 'angular2/src/core/wtf';
+
 
 export interface NgZoneZone extends Zone { _innerZone: boolean; }
 
@@ -15,6 +17,9 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  * @exportedAs angular2/core
  */
 export class NgZone {
+  _zone_run = createScope(`NgZone#run()`);
+  _zone_microtask = createScope(`NgZone#microtask()`);
+
   // Code executed in _mountZone does not trigger the onTurnDone.
   _mountZone;
   // _innerZone is the child of _mountZone. Any code executed in this zone will trigger the
@@ -105,7 +110,12 @@ export class NgZone {
    */
   run(fn) {
     if (this._disabled) {
-      return fn();
+      var s = enter(this._zone_run);
+      try {
+        return fn();
+      } finally {
+        leave(s);
+      }
     } else {
       return this._innerZone.run(fn);
     }
@@ -136,6 +146,7 @@ export class NgZone {
   }
 
   _createInnerZone(zone, enableLongStackTrace) {
+    var _zone_microtask = this._zone_microtask;
     var ngZone = this;
     var errorHandling;
 
@@ -185,10 +196,12 @@ export class NgZone {
             return function(fn) {
               ngZone._pendingMicrotasks++;
               var microtask = function() {
+                var s = enter(_zone_microtask);
                 try {
                   fn();
                 } finally {
                   ngZone._pendingMicrotasks--;
+                  leave(s);
                 }
               };
               parentScheduleMicrotask.call(this, microtask);

@@ -61,6 +61,7 @@ import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {appComponentRefToken, appComponentTypeToken} from './application_tokens';
+import {detectWTF} from './wtf';
 
 var _rootInjector: Injector;
 
@@ -288,6 +289,7 @@ function _createNgZone(givenReporter: Function): NgZone {
 export function bootstrap(appComponentType: Type,
                           componentInjectableBindings: List<Type | Binding | List<any>> = null,
                           errorReporter: Function = null): Promise<ApplicationRef> {
+  detectWTF();
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
