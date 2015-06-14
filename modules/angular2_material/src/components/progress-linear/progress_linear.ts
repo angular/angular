@@ -8,9 +8,9 @@ import {Math} from 'angular2/src/facade/math';
   lifecycle: [onChange],
   properties: ['value', 'bufferValue'],
   host: {
-    '[attr.role]': 'role',
-    '[attr.aria-valuemin]': 'ariaValuemin',
-    '[attr.aria-valuemax]': 'ariaValuemax',
+    '[attr.role]': '"progressbar"',
+    '[attr.aria-valuemin]': '"0"',
+    '[attr.aria-valuemax]': '"100"',
     '[attr.aria-valuenow]': 'value'
   }
 })
@@ -34,17 +34,9 @@ export class MdProgressLinear {
   /** CSS `transform` property applied to the secondary bar. */
   secondaryBarTransform: string;
 
-  role: string;
-  ariaValuemin: string;
-  ariaValuemax: string;
-
   constructor(@Attribute('md-mode') mode: string) {
     this.primaryBarTransform = '';
     this.secondaryBarTransform = '';
-
-    this.role = 'progressbar';
-    this.ariaValuemin = '0';
-    this.ariaValuemax = '100';
 
     this.mode = isPresent(mode) ? mode : Mode.DETERMINATE;
   }

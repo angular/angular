@@ -31,7 +31,7 @@ var _uniqueIdCounter: number = 0;
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
     '(^keydown)': 'onKeydown($event)',
     '[tabindex]': 'tabindex',
-    '[attr.role]': 'role',
+    '[attr.role]': '"radiogroup"',
     '[attr.aria-disabled]': 'disabled',
     '[attr.aria-activedescendant]': 'activedescendant'
   }
@@ -61,8 +61,6 @@ export class MdRadioGroup {
 
   tabindex: number;
 
-  role: string;
-
   constructor(@Attribute('tabindex') tabindex: string, @Attribute('disabled') disabled: string,
               radioDispatcher: MdRadioDispatcher) {
     this.name_ = `md-radio-group-${_uniqueIdCounter++}`;
@@ -71,8 +69,6 @@ export class MdRadioGroup {
     this.radioDispatcher = radioDispatcher;
     this.selectedRadioId = '';
     this.disabled_ = false;
-
-    this.role = 'radiogroup';
 
     // The simple presence of the `disabled` attribute dictates disabled state.
     this.disabled = isPresent(disabled);

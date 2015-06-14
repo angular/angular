@@ -225,7 +225,7 @@ export class MdGridList {
     '[style.left]': 'styleLeft',
     '[style.marginTop]': 'styleMarginTop',
     '[style.paddingTop]': 'stylePaddingTop',
-    '[role]': 'role'
+    '[role]': '"listitem"'
   },
   lifecycle: [onDestroy, onChange]
 })
@@ -241,14 +241,11 @@ export class MdGridTile {
   styleLeft: string;
   styleMarginTop: string;
   stylePaddingTop: string;
-  role: string;
 
   isRegisteredWithGridList: boolean;
 
   constructor(@Parent() gridList: MdGridList) {
     this.gridList = gridList;
-
-    this.role = 'listitem';
 
     // Tiles default to 1x1, but rowspan and colspan can be changed via binding.
     this.rowspan = 1;

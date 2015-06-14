@@ -10,7 +10,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
   host: {
     '(keydown)': 'onKeydown($event)',
     '[tabindex]': 'tabindex',
-    '[attr.role]': 'role',
+    '[attr.role]': '"checkbox"',
     '[attr.aria-checked]': 'checked',
     '[attr.aria-disabled]': 'disabled'
   }
@@ -23,14 +23,10 @@ export class MdCheckbox {
   /** Whether this checkbox is disabled. */
   _disabled: boolean;
 
-  /** Setter for `role` attribute. */
-  role: string;
-
   /** Setter for tabindex */
   tabindex: number;
 
   constructor(@Attribute('tabindex') tabindex: string) {
-    this.role = 'checkbox';
     this.checked = false;
     this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
     this._disabled = false;
