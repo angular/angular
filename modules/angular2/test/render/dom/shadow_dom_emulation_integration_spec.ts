@@ -60,10 +60,9 @@ export function main() {
     }
 
     StringMapWrapper.forEach(strategies, (strategyBinding, name) => {
-
-      beforeEachBindings(() => { return [strategyBinding, DomTestbed]; });
-
       describe(`${name} shadow dom strategy`, () => {
+        beforeEachBindings(() => { return [strategyBinding, DomTestbed]; });
+
         // GH-2095 - https://github.com/angular/angular/issues/2095
         it('should support text nodes after content tags',
            inject([DomTestbed, AsyncTestCompleter], (tb, async) => {
