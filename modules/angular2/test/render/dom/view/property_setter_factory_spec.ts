@@ -14,9 +14,10 @@ import {PropertySetterFactory} from 'angular2/src/render/dom/view/property_sette
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
-  var div, setterFactory;
+  var div, input, setterFactory;
   beforeEach(() => {
     div = el('<div></div>');
+    input = el('<input>');
     setterFactory = new PropertySetterFactory();
   });
   describe('property setter factory', () => {
@@ -66,59 +67,123 @@ export function main() {
 
     });
 
-    it('should return a setter for an attribute', () => {
-      var setterFn = setterFactory.createSetter(div, false, 'attr.role');
-      setterFn(div, 'button');
-      expect(DOM.getAttribute(div, 'role')).toEqual('button');
-      setterFn(div, null);
-      expect(DOM.getAttribute(div, 'role')).toEqual(null);
-      expect(() => { setterFn(div, 4); })
-          .toThrowError("Invalid role attribute, only string values are allowed, got '4'");
+    describe('non-standard property setters', () => {
 
-      var otherSetterFn = setterFactory.createSetter(div, false, 'attr.role');
-      expect(setterFn).toBe(otherSetterFn);
+      it('should map readonly name to readOnly property', () => {
+        var setterFn = setterFactory.createSetter(input, false, 'readonly');
+        expect(input.readOnly).toBeFalsy();
+        setterFn(input, true);
+        expect(input.readOnly).toBeTruthy();
+
+        var otherSetterFn = setterFactory.createSetter(input, false, 'readonly');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
+      it('should return a setter for innerHtml', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'innerHtml');
+        setterFn(div, '<span></span>');
+        expect(DOM.getInnerHTML(div)).toEqual('<span></span>');
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'innerHtml');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
+      it('should return a setter for tabIndex', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'tabindex');
+        setterFn(div, 1);
+        expect(div.tabIndex).toEqual(1);
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'tabindex');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
     });
 
-    it('should return a setter for a class', () => {
-      var setterFn = setterFactory.createSetter(div, false, 'class.active');
-      setterFn(div, true);
-      expect(DOM.hasClass(div, 'active')).toEqual(true);
-      setterFn(div, false);
-      expect(DOM.hasClass(div, 'active')).toEqual(false);
+    describe('attribute setters', () => {
 
-      var otherSetterFn = setterFactory.createSetter(div, false, 'class.active');
-      expect(setterFn).toBe(otherSetterFn);
+      it('should return a setter for an attribute', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'attr.role');
+        setterFn(div, 'button');
+        expect(DOM.getAttribute(div, 'role')).toEqual('button');
+        setterFn(div, null);
+        expect(DOM.getAttribute(div, 'role')).toEqual(null);
+        expect(() => { setterFn(div, 4); })
+            .toThrowError("Invalid role attribute, only string values are allowed, got '4'");
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'attr.role');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
+      it('should de-normalize attribute names', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'attr.ariaLabel');
+        setterFn(div, 'fancy button');
+        expect(DOM.getAttribute(div, 'aria-label')).toEqual('fancy button');
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'attr.ariaLabel');
+        expect(setterFn).toBe(otherSetterFn);
+      });
     });
 
-    it('should return a setter for a style', () => {
-      var setterFn = setterFactory.createSetter(div, false, 'style.width');
-      setterFn(div, '40px');
-      expect(DOM.getStyle(div, 'width')).toEqual('40px');
-      setterFn(div, null);
-      expect(DOM.getStyle(div, 'width')).toEqual('');
+    describe('classList setters', () => {
 
-      var otherSetterFn = setterFactory.createSetter(div, false, 'style.width');
-      expect(setterFn).toBe(otherSetterFn);
+      it('should return a setter for a class', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'class.active');
+        setterFn(div, true);
+        expect(DOM.hasClass(div, 'active')).toEqual(true);
+        setterFn(div, false);
+        expect(DOM.hasClass(div, 'active')).toEqual(false);
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'class.active');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
+      it('should de-normalize class names', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'class.veryActive');
+        setterFn(div, true);
+        expect(DOM.hasClass(div, 'very-active')).toEqual(true);
+        setterFn(div, false);
+        expect(DOM.hasClass(div, 'very-active')).toEqual(false);
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'class.veryActive');
+        expect(setterFn).toBe(otherSetterFn);
+      });
     });
 
-    it('should return a setter for a style with a unit', () => {
-      var setterFn = setterFactory.createSetter(div, false, 'style.height.px');
-      setterFn(div, 40);
-      expect(DOM.getStyle(div, 'height')).toEqual('40px');
-      setterFn(div, null);
-      expect(DOM.getStyle(div, 'height')).toEqual('');
+    describe('style setters', () => {
 
-      var otherSetterFn = setterFactory.createSetter(div, false, 'style.height.px');
-      expect(setterFn).toBe(otherSetterFn);
-    });
+      it('should return a setter for a style', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'style.width');
+        setterFn(div, '40px');
+        expect(DOM.getStyle(div, 'width')).toEqual('40px');
+        setterFn(div, null);
+        expect(DOM.getStyle(div, 'width')).toEqual('');
 
-    it('should return a setter for innerHtml', () => {
-      var setterFn = setterFactory.createSetter(div, false, 'innerHtml');
-      setterFn(div, '<span></span>');
-      expect(DOM.getInnerHTML(div)).toEqual('<span></span>');
+        var otherSetterFn = setterFactory.createSetter(div, false, 'style.width');
+        expect(setterFn).toBe(otherSetterFn);
+      });
 
-      var otherSetterFn = setterFactory.createSetter(div, false, 'innerHtml');
-      expect(setterFn).toBe(otherSetterFn);
+      it('should de-normalize style names', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'style.textAlign');
+        setterFn(div, 'right');
+        expect(DOM.getStyle(div, 'text-align')).toEqual('right');
+        setterFn(div, null);
+        expect(DOM.getStyle(div, 'text-align')).toEqual('');
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'style.textAlign');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
+      it('should return a setter for a style with a unit', () => {
+        var setterFn = setterFactory.createSetter(div, false, 'style.height.px');
+        setterFn(div, 40);
+        expect(DOM.getStyle(div, 'height')).toEqual('40px');
+        setterFn(div, null);
+        expect(DOM.getStyle(div, 'height')).toEqual('');
+
+        var otherSetterFn = setterFactory.createSetter(div, false, 'style.height.px');
+        expect(setterFn).toBe(otherSetterFn);
+      });
+
     });
 
   });
