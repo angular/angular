@@ -1,4 +1,5 @@
 import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
+import {coreDirectives} from 'angular2/directives';
 
 /**
  * Declares the available HTML templates for an application.
@@ -141,5 +142,6 @@ export class View extends BaseView {
   } = {}) {
     super(
         {templateUrl: templateUrl, template: template, directives: directives, renderer: renderer});
+    console.log(coreDirectives);
   }
 }
