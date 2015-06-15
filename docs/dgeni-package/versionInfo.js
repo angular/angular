@@ -49,7 +49,12 @@ var getGitRepoInfo = function() {
  */
 var getCodeName = function(tagName) {
   var gitCatOutput = shell.exec('git cat-file -p ' + tagName, {silent:true}).output;
-  var tagMessage = gitCatOutput.match(/^.*codename.*$/mg)[0];
+  var tagMatch = gitCatOutput.match(/^.*codename.*$/mg);
+  // The angular repo doesn't have annotated tags.
+  if (!tagMatch) {
+    return '';
+  }
+  var tagMessage = tagMatch[0];
   var codeName = tagMessage && tagMessage.match(/codename\((.*)\)/)[1];
   if (!codeName) {
     throw new Error("Could not extract release code name. The message of tag " + tagName +
@@ -58,14 +63,21 @@ var getCodeName = function(tagName) {
   return codeName;
 };
 
+/**
+ * Grab the commitSHA for the current commit.
+ * @return {String} The commit HASH
+ */
+function getCommitSHA() {
+  var hash = shell.exec('git rev-parse --short HEAD', {silent: true}).output.replace('\n', '');
+  return hash;
+}
 
 /**
  * Compute a build segment for the version, from the Jenkins build number and current commit SHA
  * @return {String} The build segment of the version
  */
 function getBuild() {
-  var hash = shell.exec('git rev-parse --short HEAD', {silent: true}).output.replace('\n', '');
-  return 'sha.' + hash;
+  return 'sha.' + getCommitSHA();
 }
 
 
@@ -74,7 +86,8 @@ function getBuild() {
  * @return {SemVer} The version or null
  */
 var getTaggedVersion = function() {
-  var gitTagResult = shell.exec('git describe --exact-match', {silent:true});
+  // The angular repo doesn't have annotated tags.
+  var gitTagResult = shell.exec('git describe --tags --exact-match', {silent:true});
 
   if (gitTagResult.code === 0) {
     var tag = gitTagResult.output.trim();
@@ -84,6 +97,7 @@ var getTaggedVersion = function() {
       version.codeName = getCodeName(tag);
       version.full = version.version;
       version.branch = 'v' + currentPackage.branchPattern.replace('*', 'x');
+      version.SHA = getCommitSHA();
       return version;
     }
   }
@@ -103,7 +117,7 @@ var getPreviousVersions =  function() {
   var tagResults = shell.exec('git ls-remote --tags ' + repo_url,
                               {silent: true});
   if (tagResults.code === 0) {
-    return _(tagResults.output.match(/v[0-9].*[0-9]$/mg))
+    return _(tagResults.output.match(/[0-9].*[0-9]$/mg))
       .map(function(tag) {
         var version = semver.parse(tag);
         return version;
@@ -165,6 +179,7 @@ var getSnapshotVersion = function() {
   }
   version.prerelease = jenkinsBuild ? ['build', jenkinsBuild] : ['local'];
   version.build = getBuild();
+  version.SHA = getCommitSHA();
   version.codeName = 'snapshot';
   version.isSnapshot = true;
   version.format();
