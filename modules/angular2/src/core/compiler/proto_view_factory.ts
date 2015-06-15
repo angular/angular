@@ -336,9 +336,13 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
   // so that, when hydrating, $implicit can be set to the element.
   var hasVariables = MapWrapper.size(renderElementBinder.variableBindings) > 0;
   if (directiveBindings.length > 0 || hasVariables) {
-    protoElementInjector = ProtoElementInjector.create(
-        parentPeiWithDistance.protoElementInjector, binderIndex, directiveBindings,
-        isPresent(componentDirectiveBinding), parentPeiWithDistance.distance);
+    var directiveVariableBindings =
+        createDirectiveVariableBindings(renderElementBinder, directiveBindings);
+
+    protoElementInjector =
+        ProtoElementInjector.create(parentPeiWithDistance.protoElementInjector, binderIndex,
+                                    directiveBindings, isPresent(componentDirectiveBinding),
+                                    parentPeiWithDistance.distance, directiveVariableBindings);
     protoElementInjector.attributes = renderElementBinder.readAttributes;
   }
   return protoElementInjector;
@@ -351,12 +355,8 @@ function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
   if (renderElementBinder.parentIndex !== -1) {
     parent = protoView.elementBinders[renderElementBinder.parentIndex];
   }
-
-  var directiveVariableBindings =
-      createDirectiveVariableBindings(renderElementBinder, directiveBindings);
-  var elBinder =
-      protoView.bindElement(parent, renderElementBinder.distanceToParent, protoElementInjector,
-                            directiveVariableBindings, componentDirectiveBinding);
+  var elBinder = protoView.bindElement(parent, renderElementBinder.distanceToParent,
+                                       protoElementInjector, componentDirectiveBinding);
   protoView.bindEvent(renderElementBinder.eventBindings, boundElementIndex, -1);
   // variables
   // The view's locals needs to have a full set of variable names at construction time
@@ -371,7 +371,7 @@ function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
 
 export function createDirectiveVariableBindings(
     renderElementBinder: renderApi.ElementBinder,
-    directiveBindings: List<DirectiveBinding>): Map<String, number> {
+    directiveBindings: List<DirectiveBinding>): Map<string, number> {
   var directiveVariableBindings = MapWrapper.create();
   MapWrapper.forEach(renderElementBinder.variableBindings, (templateName, exportAs) => {
     var dirIndex = _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, exportAs);

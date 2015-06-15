@@ -177,11 +177,9 @@ export class AppProtoView {
 
   bindElement(parent: ElementBinder, distanceToParent: int,
               protoElementInjector: ProtoElementInjector,
-              directiveVariableBindings: Map<string, number>,
               componentDirective: DirectiveBinding = null): ElementBinder {
-    var elBinder =
-        new ElementBinder(this.elementBinders.length, parent, distanceToParent,
-                          protoElementInjector, directiveVariableBindings, componentDirective);
+    var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,
+                                     protoElementInjector, componentDirective);
 
     this.elementBinders.push(elBinder);
     return elBinder;

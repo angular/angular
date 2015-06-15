@@ -149,26 +149,28 @@ export class AppViewManagerUtils {
 
     var binders = view.proto.elementBinders;
     for (var i = 0; i < binders.length; ++i) {
-      var binder = binders[i];
       var elementInjector = view.elementInjectors[i];
 
       if (isPresent(elementInjector)) {
         elementInjector.hydrate(appInjector, hostElementInjector, view.preBuiltObjects[i]);
+        this._populateViewLocals(view, elementInjector);
         this._setUpEventEmitters(view, elementInjector, i);
         this._setUpHostActions(view, elementInjector, i);
-
-        if (isPresent(binder.directiveVariableBindings)) {
-          MapWrapper.forEach(binder.directiveVariableBindings, (directiveIndex, name) => {
-            if (isBlank(directiveIndex)) {
-              view.locals.set(name, elementInjector.getElementRef().domElement);
-            } else {
-              view.locals.set(name, elementInjector.getDirectiveAtIndex(directiveIndex));
-            }
-          });
-        }
       }
     }
     view.changeDetector.hydrate(view.context, view.locals, view);
+  }
+
+  _populateViewLocals(view: viewModule.AppView, elementInjector: eli.ElementInjector): void {
+    if (isPresent(elementInjector.getDirectiveVariableBindings())) {
+      MapWrapper.forEach(elementInjector.getDirectiveVariableBindings(), (directiveIndex, name) => {
+        if (isBlank(directiveIndex)) {
+          view.locals.set(name, elementInjector.getElementRef().domElement);
+        } else {
+          view.locals.set(name, elementInjector.getDirectiveAtIndex(directiveIndex));
+        }
+      });
+    }
   }
 
   _getOrCreateViewContainer(parentView: viewModule.AppView, boundElementIndex: number) {

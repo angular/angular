@@ -393,7 +393,8 @@ export class ProtoElementInjector {
   _strategy: _ProtoElementInjectorStrategy;
 
   static create(parent: ProtoElementInjector, index: number, bindings: List<ResolvedBinding>,
-                firstBindingIsComponent: boolean, distanceToParent: number) {
+                firstBindingIsComponent: boolean, distanceToParent: number,
+                directiveVariableBindings: Map<string, number>) {
     var bd = [];
 
     ProtoElementInjector._createDirectiveBindingData(bindings, bd, firstBindingIsComponent);
@@ -401,7 +402,8 @@ export class ProtoElementInjector {
       ProtoElementInjector._createViewInjectorBindingData(bindings, bd);
     }
     ProtoElementInjector._createHostInjectorBindingData(bindings, bd, firstBindingIsComponent);
-    return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent);
+    return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent,
+                                    directiveVariableBindings);
   }
 
   private static _createDirectiveBindingData(dirBindings: List<ResolvedBinding>,
@@ -450,7 +452,8 @@ export class ProtoElementInjector {
   }
 
   constructor(public parent: ProtoElementInjector, public index: int, bd: List<BindingData>,
-              public distanceToParent: number, public _firstBindingIsComponent: boolean) {
+              public distanceToParent: number, public _firstBindingIsComponent: boolean,
+              public directiveVariableBindings: Map<string, number>) {
     var length = bd.length;
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
     this.hostActionAccessors = ListWrapper.createFixedSize(length);
@@ -693,12 +696,15 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   onAllChangesDone(): void {
-    if (isPresent(this._query0) && this._query0.originator === this)
+    if (isPresent(this._query0) && this._query0.originator === this) {
       this._query0.list.fireCallbacks();
-    if (isPresent(this._query1) && this._query1.originator === this)
+    }
+    if (isPresent(this._query1) && this._query1.originator === this) {
       this._query1.list.fireCallbacks();
-    if (isPresent(this._query2) && this._query2.originator === this)
+    }
+    if (isPresent(this._query2) && this._query2.originator === this) {
       this._query2.list.fireCallbacks();
+    }
   }
 
   hydrate(injector: Injector, host: ElementInjector, preBuiltObjects: PreBuiltObjects): void {
@@ -716,7 +722,20 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._checkShadowDomAppInjector(this._shadowDomAppInjector);
 
     this._strategy.hydrate();
+
+    this._addVarBindingsToQueries();
+
     this.hydrated = true;
+  }
+
+  hasVariableBinding(name: string): boolean {
+    var vb = this._proto.directiveVariableBindings;
+    return isPresent(vb) && MapWrapper.contains(vb, name);
+  }
+
+  getVariableBinding(name: string): any {
+    var index = MapWrapper.get(this._proto.directiveVariableBindings, name);
+    return isPresent(index) ? this.getDirectiveAtIndex(<number>index) : this.getElementRef();
   }
 
   private _createShadowDomAppInjector(componentDirective: DirectiveBinding,
@@ -750,6 +769,10 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
   getHostActionAccessors(): List<List<HostActionAccessor>> {
     return this._proto.hostActionAccessors;
+  }
+
+  getDirectiveVariableBindings(): Map<string, number> {
+    return this._proto.directiveVariableBindings;
   }
 
   getComponent(): any { return this._strategy.getComponent(); }
@@ -880,6 +903,23 @@ export class ElementInjector extends TreeNode<ElementInjector> {
       var dep = deps[i];
       if (isPresent(dep.queryDecorator)) {
         this._createQueryRef(dep.queryDecorator);
+      }
+    }
+  }
+
+  private _addVarBindingsToQueries(): void {
+    this._addVarBindingsToQuery(this._query0);
+    this._addVarBindingsToQuery(this._query1);
+    this._addVarBindingsToQuery(this._query2);
+  }
+
+  private _addVarBindingsToQuery(queryRef: QueryRef): void {
+    if (isBlank(queryRef) || !queryRef.query.isVarBindingQuery) return;
+
+    var vb = queryRef.query.varBindings;
+    for (var i = 0; i < vb.length; ++i) {
+      if (this.hasVariableBinding(vb[i])) {
+        queryRef.list.add(this.getVariableBinding(vb[i]));
       }
     }
   }
@@ -1454,13 +1494,32 @@ class QueryRef {
 
   visit(inj: ElementInjector, aggregator: any[]): void {
     if (isBlank(inj) || !inj._hasQuery(this)) return;
-    if (inj.hasDirective(this.query.selector)) {
-      aggregator.push(inj.get(this.query.selector));
+
+    if (this.query.isVarBindingQuery) {
+      this._aggregateVariableBindings(inj, aggregator);
+    } else {
+      this._aggregateDirective(inj, aggregator);
     }
+
     var child = inj._head;
     while (isPresent(child)) {
       this.visit(child, aggregator);
       child = child._next;
+    }
+  }
+
+  private _aggregateVariableBindings(inj: ElementInjector, aggregator: List<any>): void {
+    var vb = this.query.varBindings;
+    for (var i = 0; i < vb.length; ++i) {
+      if (inj.hasVariableBinding(vb[i])) {
+        aggregator.push(inj.getVariableBinding(vb[i]));
+      }
+    }
+  }
+
+  private _aggregateDirective(inj: ElementInjector, aggregator: List<any>): void {
+    if (inj.hasDirective(this.query.selector)) {
+      aggregator.push(inj.get(this.query.selector));
     }
   }
 }

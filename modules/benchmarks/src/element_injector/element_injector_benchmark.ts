@@ -19,7 +19,7 @@ export function main() {
     DirectiveBinding.createFromType(B, null),
     DirectiveBinding.createFromType(C, null)
   ];
-  var proto = ProtoElementInjector.create(null, 0, bindings, false, 0);
+  var proto = ProtoElementInjector.create(null, 0, bindings, false, 0, null);
   var elementInjector = proto.instantiate(null);
 
   function instantiate() {

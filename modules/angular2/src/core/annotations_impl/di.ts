@@ -1,4 +1,4 @@
-import {CONST, Type, stringify, isPresent} from 'angular2/src/facade/lang';
+import {CONST, Type, stringify, isPresent, StringWrapper, isString} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
 import {resolveForwardRef} from 'angular2/di';
 
@@ -55,12 +55,17 @@ export class Attribute extends DependencyAnnotation {
 @CONST()
 export class Query extends DependencyAnnotation {
   descendants: boolean;
-  constructor(private _selector:Type, {descendants = false}: {descendants?: boolean} = {}) {
+  constructor(private _selector: Type | string,
+              {descendants = false}: {descendants?: boolean} = {}) {
     super();
     this.descendants = descendants;
   }
 
   get selector() { return resolveForwardRef(this._selector); }
+
+  get isVarBindingQuery(): boolean { return isString(this.selector); }
+
+  get varBindings(): List<string> { return StringWrapper.split(this.selector, new RegExp(",")); }
 
   toString() { return `@Query(${stringify(this.selector)})`; }
 }

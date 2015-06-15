@@ -164,6 +164,12 @@ class NeedsQuery {
 }
 
 @Injectable()
+class NeedsQueryByVarBindings {
+  query: QueryList<any>;
+  constructor(@Query("one,two") query: QueryList<any>) { this.query = query; }
+}
+
+@Injectable()
 class NeedsElementRef {
   elementRef;
   constructor(ref: ElementRef) { this.elementRef = ref; }
@@ -229,13 +235,13 @@ export function main() {
     dynamicBindings.push(bind(i).toValue(i));
   }
 
-  function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false) {
+  function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false, dirVariableBindings = null) {
     var directiveBinding = ListWrapper.map(bindings, b => {
       if (b instanceof DirectiveBinding) return b;
       if (b instanceof Binding) return DirectiveBinding.createFromBinding(b, null);
       return DirectiveBinding.createFromType(b, null);
     });
-    return ProtoElementInjector.create(parent, index, directiveBinding, hasShadowRoot, distance);
+    return ProtoElementInjector.create(parent, index, directiveBinding, hasShadowRoot, distance, dirVariableBindings);
   }
 
   function humanize(tree: TreeNode<any>, names: List<List<any>>) {
@@ -248,10 +254,10 @@ export function main() {
   }
 
   function injector(bindings, lightDomAppInjector = null, isComponent: boolean = false,
-                    preBuiltObjects = null, attributes = null) {
+                    preBuiltObjects = null, attributes = null, dirVariableBindings = null) {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = appInjector;
 
-    var proto = createPei(null, 0, bindings, 0, isComponent);
+    var proto = createPei(null, 0, bindings, 0, isComponent, dirVariableBindings);
     proto.attributes = attributes;
 
     var inj = proto.instantiate(null);
@@ -942,7 +948,7 @@ export function main() {
           });
         });
 
-        describe('directive queries', () => {
+        describe('queries', () => {
           var preBuildObjects = defaultPreBuiltObjects;
           beforeEach(() => { _constructionCount = 0; });
 
@@ -963,9 +969,39 @@ export function main() {
 
           it('should contain directives on the same injector', () => {
             var inj = injector(ListWrapper.concat([NeedsQuery, CountingDirective], extraBindings), null,
-                               false, preBuildObjects);
+              false, preBuildObjects);
 
             expectDirectives(inj.get(NeedsQuery).query, CountingDirective, [0]);
+          })
+
+          it('should contain the element when no directives are bound to the var binding', () => {
+            var dirs = [NeedsQueryByVarBindings];
+
+            var dirVariableBindings = MapWrapper.createFromStringMap({
+              "one": null // element
+            });
+
+            var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
+                               false, preBuildObjects, null, dirVariableBindings);
+
+            expect(inj.get(NeedsQueryByVarBindings).query.first).toBeAnInstanceOf(ElementRef);
+          });
+
+          it('should contain directives on the same injector when querying by variable bindings' +
+            'in the order of var bindings specified in the query', () => {
+            var dirs = [NeedsQueryByVarBindings, NeedsDirective, SimpleDirective];
+
+            var dirVariableBindings = MapWrapper.createFromStringMap({
+              "one": 2, // 2 is the index of SimpleDirective
+              "two": 1 // 1 is the index of NeedsDirective
+            });
+
+            var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
+                               false, preBuildObjects, null, dirVariableBindings);
+
+            // NeedsQueryByVarBindings queries "one,two", so SimpleDirective should be before NeedsDirective
+            expect(inj.get(NeedsQueryByVarBindings).query.first).toBeAnInstanceOf(SimpleDirective);
+            expect(inj.get(NeedsQueryByVarBindings).query.last).toBeAnInstanceOf(NeedsDirective);
           });
 
           // Dart's restriction on static types in (a is A) makes this feature hard to implement.
