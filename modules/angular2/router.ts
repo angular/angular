@@ -12,7 +12,7 @@ export {RouterLink} from './src/router/router_link';
 export {RouteParams} from './src/router/instruction';
 export {RouteRegistry} from './src/router/route_registry';
 export {BrowserLocation} from './src/router/browser_location';
-export {Location} from './src/router/location';
+export {Location, appBaseHrefToken} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
 

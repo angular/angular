@@ -17,12 +17,11 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';
 import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
 import {RouteConfig} from 'angular2/src/router/route_config_decorator';
-import {routerInjectables, Router} from 'angular2/router';
-import {RouterOutlet} from 'angular2/src/router/router_outlet';
-import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/src/router/location';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
+import {routerInjectables, Router, appBaseHrefToken, routerDirectives} from 'angular2/router';
+import {BrowserLocation} from 'angular2/src/router/browser_location';
+import {DummyBrowserLocation} from 'angular2/src/mock/browser_location_mock';
 
 export function main() {
   describe('router injectables', () => {
@@ -33,17 +32,23 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el);
       testBindings = [
         routerInjectables,
-        bind(Location).toClass(SpyLocation),
+        bind(BrowserLocation)
+            .toFactory(() => {
+              var browserLocation = new DummyBrowserLocation();
+              browserLocation.spy('pushState');
+              return browserLocation;
+            }),
         bind(DOCUMENT_TOKEN).toValue(fakeDoc)
       ];
     });
 
-    it('should support bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
+    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
          bootstrap(AppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.hostComponent.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('outer { hello }');
+                 expect(applicationRef.hostComponent.location.path()).toEqual('/');
                  async.done();
                });
              });
@@ -62,22 +67,64 @@ export function main() {
              });
        }));
 
+    it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async) => {
+         bootstrap(HierarchyAppCmp, testBindings)
+             .then((applicationRef) => {
+               var router = applicationRef.hostComponent.router;
+               router.subscribe((_) => {
+                 expect(el).toHaveText('root { parent { hello } }');
+                 expect(applicationRef.hostComponent.location.path()).toEqual('/parent/child');
+                 async.done();
+               });
+               router.navigate('/parent/child');
+             });
+       }));
+
+    it('should bootstrap an app with a custom app base href',
+       inject([AsyncTestCompleter], (async) => {
+         bootstrap(HierarchyAppCmp, [testBindings, bind(appBaseHrefToken).toValue('/my/app')])
+             .then((applicationRef) => {
+               var router = applicationRef.hostComponent.router;
+               router.subscribe((_) => {
+                 expect(el).toHaveText('root { parent { hello } }');
+                 expect(applicationRef.hostComponent.location.path())
+                     .toEqual('/my/app/parent/child');
+                 async.done();
+               });
+               router.navigate('/parent/child');
+             });
+       }));
+
     // TODO: add a test in which the child component has bindings
   });
 }
 
 
 @Component({selector: 'hello-cmp'})
-@View({template: "hello"})
+@View({template: 'hello'})
 class HelloCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: "outer { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
 @RouteConfig([{path: '/', component: HelloCmp}])
 class AppCmp {
-  router: Router;
-  constructor(router: Router) { this.router = router; }
+  constructor(public router: Router, public location: BrowserLocation) {}
+}
+
+
+@Component({selector: 'parent-cmp'})
+@View({template: `parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@RouteConfig([{path: '/child', component: HelloCmp}])
+class ParentCmp {
+}
+
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@RouteConfig([{path: '/parent', component: ParentCmp}])
+class HierarchyAppCmp {
+  constructor(public router: Router, public location: BrowserLocation) {}
 }
 
 @Component({selector: 'oops-cmp'})
@@ -87,9 +134,8 @@ class BrokenCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: "outer { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
 @RouteConfig([{path: '/cause-error', component: BrokenCmp}])
 class BrokenAppCmp {
-  router: Router;
-  constructor(router: Router) { this.router = router; }
+  constructor(public router: Router, public location: BrowserLocation) {}
 }

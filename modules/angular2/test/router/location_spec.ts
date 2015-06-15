@@ -11,53 +11,50 @@ import {
   beforeEachBindings,
   SpyObject
 } from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
+import {Injector, bind} from 'angular2/di';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {Location, appBaseHrefToken} from 'angular2/src/router/location';
 import {BrowserLocation} from 'angular2/src/router/browser_location';
-import {Location} from 'angular2/src/router/location';
+import {DummyBrowserLocation} from 'angular2/src/mock/browser_location_mock';
 
 export function main() {
   describe('Location', () => {
 
     var browserLocation, location;
 
-    beforeEach(() => {
+    function makeLocation(baseHref: string = '/my/app', binding: any = CONST_EXPR([])): Location {
       browserLocation = new DummyBrowserLocation();
-      browserLocation.spy('pushState');
-      browserLocation.baseHref = '/my/app';
-      location = new Location(browserLocation);
-    });
+      browserLocation.internalBaseHref = baseHref;
+      let injector = Injector.resolveAndCreate(
+          [Location, bind(BrowserLocation).toValue(browserLocation), binding]);
+      return location = injector.get(Location);
+    }
+
+    beforeEach(makeLocation);
 
     it('should normalize relative urls on navigate', () => {
       location.go('user/btford');
-      expect(browserLocation.spy('pushState'))
-          .toHaveBeenCalledWith(null, '', '/my/app/user/btford');
+      expect(browserLocation.path()).toEqual('/my/app/user/btford');
     });
 
     it('should not prepend urls with starting slash when an empty URL is provided',
-       () => { expect(location.normalizeAbsolutely('')).toEqual(browserLocation.baseHref); });
+       () => { expect(location.normalizeAbsolutely('')).toEqual(browserLocation.getBaseHref()); });
 
     it('should not prepend path with an extra slash when a baseHref has a trailing slash', () => {
-      browserLocation = new DummyBrowserLocation();
-      browserLocation.spy('pushState');
-      browserLocation.baseHref = '/my/slashed/app/';
-      location = new Location(browserLocation);
+      let location = makeLocation('/my/slashed/app/');
       expect(location.normalizeAbsolutely('/page')).toEqual('/my/slashed/app/page');
     });
 
     it('should not append urls with leading slash on navigate', () => {
       location.go('/my/app/user/btford');
-      expect(browserLocation.spy('pushState'))
-          .toHaveBeenCalledWith(null, '', '/my/app/user/btford');
+      expect(browserLocation.path()).toEqual('/my/app/user/btford');
     });
 
     it('should remove index.html from base href', () => {
-      browserLocation.baseHref = '/my/app/index.html';
-      location = new Location(browserLocation);
+      let location = makeLocation('/my/app/index.html');
       location.go('user/btford');
-      expect(browserLocation.spy('pushState'))
-          .toHaveBeenCalledWith(null, '', '/my/app/user/btford');
+      expect(browserLocation.path()).toEqual('/my/app/user/btford');
     });
 
     it('should normalize urls on popstate', inject([AsyncTestCompleter], (async) => {
@@ -72,31 +69,11 @@ export function main() {
       browserLocation.internalPath = '/my/app/user/btford';
       expect(location.path()).toEqual('/user/btford');
     });
+
+    it('should use optional base href param', () => {
+      let location = makeLocation('/', bind(appBaseHrefToken).toValue('/my/custom/href'));
+      location.go('user/btford');
+      expect(browserLocation.path()).toEqual('/my/custom/href/user/btford');
+    });
   });
-}
-
-@proxy
-@IMPLEMENTS(BrowserLocation)
-class DummyBrowserLocation extends SpyObject {
-  baseHref;
-  internalPath;
-  _subject: EventEmitter;
-  constructor() {
-    super();
-    this.internalPath = '/';
-    this._subject = new EventEmitter();
-  }
-
-  simulatePopState(url) {
-    this.internalPath = url;
-    ObservableWrapper.callNext(this._subject, null);
-  }
-
-  path() { return this.internalPath; }
-
-  onPopState(fn) { ObservableWrapper.subscribe(this._subject, fn); }
-
-  getBaseHref() { return this.baseHref; }
-
-  noSuchMethod(m) { return super.noSuchMethod(m); }
 }

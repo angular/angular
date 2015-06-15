@@ -1,16 +1,19 @@
 import {BrowserLocation} from './browser_location';
-import {StringWrapper} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {Injectable} from 'angular2/di';
+import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/di';
+
+export const appBaseHrefToken: OpaqueToken = CONST_EXPR(new OpaqueToken('locationHrefToken'));
 
 @Injectable()
 export class Location {
   private _subject: EventEmitter;
   private _baseHref: string;
 
-  constructor(public _browserLocation: BrowserLocation) {
+  constructor(public _browserLocation: BrowserLocation,
+              @Optional() @Inject(appBaseHrefToken) href?: string) {
     this._subject = new EventEmitter();
-    this._baseHref = stripIndexHtml(this._browserLocation.getBaseHref());
+    this._baseHref = stripIndexHtml(isPresent(href) ? href : this._browserLocation.getBaseHref());
     this._browserLocation.onPopState((_) => this._onPopState(_));
   }
 
