@@ -25,6 +25,8 @@ import {
 } from 'angular2/change_detection';
 import {ExceptionHandler} from './exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
@@ -42,8 +44,6 @@ import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {
   ComponentRef,
@@ -105,9 +105,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
             },
             [NgZone]),
     bind(ShadowDomStrategy)
-        .toFactory((styleInliner, styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(
-                       styleInliner, styleUrlResolver, doc.head),
-                   [StyleInliner, StyleUrlResolver, DOCUMENT_TOKEN]),
+        .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),

@@ -29,35 +29,21 @@ import {
 import {
   NativeShadowDomStrategy
 } from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 
 import {DomTestbed, elRef} from './dom_testbed';
 
 export function main() {
   describe('ShadowDom integration tests', function() {
-    var styleHost;
+    var styleHost = DOM.createElement('div');
+
     var strategies = {
-      "scoped":
-          bind(ShadowDomStrategy)
-              .toFactory((styleInliner, styleUrlResolver) => new EmulatedScopedShadowDomStrategy(
-                             styleInliner, styleUrlResolver, styleHost),
-                         [StyleInliner, StyleUrlResolver]),
-      "unscoped":
-          bind(ShadowDomStrategy)
-              .toFactory((styleInliner, styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
-                             styleInliner, styleUrlResolver, null),
-                         [StyleInliner, StyleUrlResolver])
+      "scoped": bind(ShadowDomStrategy).toValue(new EmulatedScopedShadowDomStrategy(styleHost)),
+      "unscoped": bind(ShadowDomStrategy).toValue(new EmulatedUnscopedShadowDomStrategy(styleHost))
     };
     if (DOM.supportsNativeShadowDOM()) {
-      StringMapWrapper.set(
-          strategies, "native",
-          bind(ShadowDomStrategy)
-              .toFactory((styleInliner, styleUrlResolver) =>
-                             new NativeShadowDomStrategy(styleInliner, styleUrlResolver),
-                         [StyleInliner, StyleUrlResolver]));
+      StringMapWrapper.set(strategies, "native",
+                           bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy()));
     }
-    beforeEach(() => { styleHost = el('<div></div>'); });
 
     StringMapWrapper.forEach(strategies, (strategyBinding, name) => {
       describe(`${name} shadow dom strategy`, () => {

@@ -1,10 +1,7 @@
-import {isBlank, isPresent, isPromise} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {EmulatedUnscopedShadowDomStrategy} from './emulated_unscoped_shadow_dom_strategy';
 import {
   getContentAttribute,
@@ -27,39 +24,21 @@ import {
  * - see `ShadowCss` for more information and limitations.
  */
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
-  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
-    super(styleInliner, styleUrlResolver, styleHost);
-  }
+  constructor(styleHost) { super(styleHost); }
 
-  processStyleElement(hostComponentId: string, templateUrl: string, styleEl): Promise<any> {
-    var cssText = DOM.getText(styleEl);
-
-    cssText = this.styleUrlResolver.resolveUrls(cssText, templateUrl);
-    var inlinedCss = this.styleInliner.inlineImports(cssText, templateUrl);
-
-    var ret = null;
-    if (isPromise(inlinedCss)) {
-      DOM.setText(styleEl, '');
-      ret = (<Promise<string>>inlinedCss)
-                .then((css) => {
-                  css = shimCssForComponent(css, hostComponentId);
-                  DOM.setText(styleEl, css);
-                });
-    } else {
-      var css = shimCssForComponent(<string>inlinedCss, hostComponentId);
-      DOM.setText(styleEl, css);
-    }
-
+  processStyleElement(hostComponentId: string, templateUrl: string, styleEl): void {
+    let cssText = DOM.getText(styleEl);
+    cssText = shimCssForComponent(cssText, hostComponentId);
+    DOM.setText(styleEl, cssText);
     this._moveToStyleHost(styleEl);
-    return ret;
   }
 
-  _moveToStyleHost(styleEl) {
+  _moveToStyleHost(styleEl): void {
     DOM.remove(styleEl);
     insertStyleElement(this.styleHost, styleEl);
   }
 
-  processElement(hostComponentId: string, elementComponentId: string, element) {
+  processElement(hostComponentId: string, elementComponentId: string, element): void {
     // Shim the element as a child of the compiled component
     if (isPresent(hostComponentId)) {
       var contentAttribute = getContentAttribute(getComponentId(hostComponentId));

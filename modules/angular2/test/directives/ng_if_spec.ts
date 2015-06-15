@@ -21,7 +21,7 @@ import {Component, View} from 'angular2/angular2';
 import {NgIf} from 'angular2/src/directives/ng_if';
 
 export function main() {
-  describe('if directive', () => {
+  describe('ng-if directive', () => {
     it('should work in a template attribute',
        inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
          var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
