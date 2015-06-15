@@ -8,6 +8,6 @@ SCRIPT_DIR=$(dirname $0)
 source $SCRIPT_DIR/env_dart.sh
 cd $SCRIPT_DIR/../..
 
-./node_modules/.bin/gulp enforce-format
+./node_modules/.bin/gulp enforce-format-all
 ./node_modules/.bin/gulp build.js
 ./node_modules/.bin/gulp docs

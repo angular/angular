@@ -32,6 +32,7 @@
     "gulp-insert": "^0.4.0",
     "gulp-modify": "0.0.5",
     "gulp-replace": "^0.5.3",
+    "micromatch": "^2.1.6",
     "node-uuid": "1.4.x",
     "reflect-metadata": "0.1.0",
     "rx": "2.5.1",
