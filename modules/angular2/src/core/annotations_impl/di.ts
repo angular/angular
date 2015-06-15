@@ -1,4 +1,4 @@
-import {CONST, stringify, isPresent} from 'angular2/src/facade/lang';
+import {CONST, Type, stringify, isPresent} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
 import {resolveForwardRef} from 'angular2/di';
 
@@ -55,12 +55,12 @@ export class Attribute extends DependencyAnnotation {
 @CONST()
 export class Query extends DependencyAnnotation {
   descendants: boolean;
-  constructor(private _directive: any, {descendants = false}: {descendants?: boolean} = {}) {
+  constructor(private _selector:Type, {descendants = false}: {descendants?: boolean} = {}) {
     super();
     this.descendants = descendants;
   }
 
-  get directive() { return resolveForwardRef(this._directive); }
+  get selector() { return resolveForwardRef(this._selector); }
 
-  toString() { return `@Query(${stringify(this.directive)})`; }
+  toString() { return `@Query(${stringify(this.selector)})`; }
 }

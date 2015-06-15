@@ -897,13 +897,13 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   private _addToQueries(obj, token): void {
-    if (isPresent(this._query0) && (this._query0.query.directive === token)) {
+    if (isPresent(this._query0) && (this._query0.query.selector === token)) {
       this._query0.list.add(obj);
     }
-    if (isPresent(this._query1) && (this._query1.query.directive === token)) {
+    if (isPresent(this._query1) && (this._query1.query.selector === token)) {
       this._query1.list.add(obj);
     }
-    if (isPresent(this._query2) && (this._query2.query.directive === token)) {
+    if (isPresent(this._query2) && (this._query2.query.selector === token)) {
       this._query2.list.add(obj);
     }
   }
@@ -1454,8 +1454,8 @@ class QueryRef {
 
   visit(inj: ElementInjector, aggregator: any[]): void {
     if (isBlank(inj) || !inj._hasQuery(this)) return;
-    if (inj.hasDirective(this.query.directive)) {
-      aggregator.push(inj.get(this.query.directive));
+    if (inj.hasDirective(this.query.selector)) {
+      aggregator.push(inj.get(this.query.selector));
     }
     var child = inj._head;
     while (isPresent(child)) {
