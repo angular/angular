@@ -17,7 +17,7 @@ import {Location} from './location';
 
  * ```
  * @RouteConfig({
- *   path: '/user', component: UserCmp, alias: 'user'
+ *   path: '/user', component: UserCmp, as: 'user'
  * });
  * class MyComp {}
  * ```
