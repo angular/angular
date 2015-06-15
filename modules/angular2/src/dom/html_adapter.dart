@@ -67,10 +67,10 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   querySelector(el, String selector) {
-    throw 'not implemented';
+    return el.querySelector(selector);
   }
   List querySelectorAll(el, String selector) {
-    throw 'not implemented';
+    return el.querySelectorAll(selector);
   }
   on(el, evt, listener) {
     throw 'not implemented';
@@ -94,7 +94,7 @@ class Html5LibDomAdapter implements DomAdapter {
     return el.innerHtml;
   }
   getOuterHTML(el) {
-    throw 'not implemented';
+    return el.outerHtml;
   }
   String nodeName(node) {
     switch (node.nodeType) {
@@ -130,12 +130,12 @@ class Html5LibDomAdapter implements DomAdapter {
   }
 
   parentElement(el) {
-    throw 'not implemented';
+    return el.parent;
   }
   List childNodes(el) => el.nodes;
   List childNodesAsList(el) => el.nodes;
   clearNodes(el) {
-    throw 'not implemented';
+    el.nodes.forEach((e) => e.remove());
   }
   appendChild(el, node) => el.append(node.remove());
   removeChild(el, node) {
@@ -153,7 +153,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   setInnerHTML(el, value) {
-    throw 'not implemented';
+    el.innerHtml = value;
   }
   getText(el) {
     return el.text;

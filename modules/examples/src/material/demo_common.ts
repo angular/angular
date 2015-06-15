@@ -27,16 +27,16 @@ export class DemoUrlResolver extends UrlResolver {
 
   constructor() {
     super();
-    if (isBlank(UrlResolver.a)) {
-      UrlResolver.a = DOM.createElement('a');
+    if (isBlank(DemoUrlResolver.a)) {
+      DemoUrlResolver.a = DOM.createElement('a');
     }
     this.isInPubServe = _isInPubServe();
   }
 
   resolve(baseUrl: string, url: string): string {
     if (isBlank(baseUrl)) {
-      DOM.resolveAndSetHref(UrlResolver.a, url, null);
-      return DOM.getHref(UrlResolver.a);
+      DOM.resolveAndSetHref(DemoUrlResolver.a, url, null);
+      return DOM.getHref(DemoUrlResolver.a);
     }
 
     if (isBlank(url) || url == '') {
