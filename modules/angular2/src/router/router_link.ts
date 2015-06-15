@@ -62,7 +62,8 @@ export class RouterLink {
 
   onAllChangesDone(): void {
     if (isPresent(this._route) && isPresent(this._params)) {
-      this._navigationHref = this._router.generate(this._route, this._params);
+      let router = isPresent(this._router.parent) ? this._router.parent : this._router;
+      this._navigationHref = router.generate(this._route, this._params);
       this._visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
       // Keeping the link on the element to support contextual menu `copy link`
       // and other in-browser affordances.
