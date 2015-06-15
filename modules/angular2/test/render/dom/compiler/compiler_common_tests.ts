@@ -24,8 +24,6 @@ import {CompileStepFactory} from 'angular2/src/render/dom/compiler/compile_step_
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 
-import {UrlResolver} from 'angular2/src/services/url_resolver';
-
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
 
 export function runCompilerCommonTests() {
@@ -111,30 +109,6 @@ export function runCompilerCommonTests() {
                });
          }));
 
-      it('should wait for async subtasks to be resolved', inject([AsyncTestCompleter], (async) => {
-           var subTasksCompleted = false;
-
-           var completer = PromiseWrapper.completer();
-
-           var compiler = createCompiler((parent, current, control) => {
-             mockStepFactory.subTaskPromises.push(
-                 completer.promise.then((_) => { subTasksCompleted = true; }));
-           });
-
-           // It should always return a Promise because the subtask is async
-           var pvPromise = compiler.compile(
-               new ViewDefinition({componentId: 'someId', template: 'some component'}));
-           expect(pvPromise).toBePromise();
-           expect(subTasksCompleted).toEqual(false);
-
-           // The Promise should resolve after the subtask is ready
-           completer.resolve(null);
-           pvPromise.then((protoView) => {
-             expect(subTasksCompleted).toEqual(true);
-             async.done();
-           });
-         }));
-
       it('should return ProtoViews of type COMPONENT_VIEW_TYPE',
          inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler(EMPTY_STEP);
@@ -174,10 +148,8 @@ class MockStepFactory extends CompileStepFactory {
     super();
     this.steps = steps;
   }
-  createSteps(viewDef, subTaskPromises) {
+  createSteps(viewDef): List<CompileStep> {
     this.viewDef = viewDef;
-    this.subTaskPromises = subTaskPromises;
-    ListWrapper.forEach(this.subTaskPromises, (p) => this.subTaskPromises.push(p));
     return this.steps;
   }
 }
@@ -199,20 +171,20 @@ var EMPTY_STEP = (parent, current, control) => {
 class FakeTemplateLoader extends TemplateLoader {
   _urlData: Map<string, string>;
   constructor(urlData) {
-    super(null, new UrlResolver());
+    super(null, null, null);
     this._urlData = urlData;
   }
 
-  load(template: ViewDefinition) {
-    if (isPresent(template.template)) {
-      return PromiseWrapper.resolve(DOM.createTemplate(template.template));
+  load(view: ViewDefinition): Promise<any> {
+    if (isPresent(view.template)) {
+      return PromiseWrapper.resolve(DOM.createTemplate(view.template));
     }
 
-    if (isPresent(template.templateAbsUrl)) {
-      var content = this._urlData.get(template.templateAbsUrl);
+    if (isPresent(view.templateAbsUrl)) {
+      var content = this._urlData.get(view.templateAbsUrl);
       return isPresent(content) ?
                  PromiseWrapper.resolve(DOM.createTemplate(content)) :
-                 PromiseWrapper.reject(`Failed to fetch url "${template.templateAbsUrl}"`, null);
+                 PromiseWrapper.reject(`Failed to fetch url "${view.templateAbsUrl}"`, null);
     }
 
     throw new BaseException('View should have either the templateUrl or template property set');

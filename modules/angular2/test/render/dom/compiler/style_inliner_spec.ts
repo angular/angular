@@ -11,7 +11,7 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 
 import {isBlank} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';

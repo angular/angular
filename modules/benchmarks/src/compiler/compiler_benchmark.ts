@@ -16,10 +16,7 @@ import {Component, Directive, View} from 'angular2/angular2';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
-
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -39,11 +36,9 @@ export function main() {
   var templateResolver = new MultipleTemplateResolver(
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
   var urlResolver = new UrlResolver();
-  var styleUrlResolver = new StyleUrlResolver(urlResolver);
-  var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
-  var shadowDomStrategy = new NativeShadowDomStrategy(styleInliner, styleUrlResolver);
+  var shadowDomStrategy = new NativeShadowDomStrategy();
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
-                                                 new TemplateLoader(null, urlResolver));
+                                                 new TemplateLoader(null, null, null));
   var compiler = new Compiler(
       reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
       new ProtoViewFactory(new DynamicChangeDetection(null)), new FakeAppRootUrl());

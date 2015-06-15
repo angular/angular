@@ -23,8 +23,8 @@ import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -88,9 +88,7 @@ function _getAppBindings() {
     bind(DOCUMENT_TOKEN)
         .toValue(appDoc),
     bind(ShadowDomStrategy)
-        .toFactory((styleInliner, styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(
-                       styleInliner, styleUrlResolver, doc.head),
-                   [StyleInliner, StyleUrlResolver, DOCUMENT_TOKEN]),
+        .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),

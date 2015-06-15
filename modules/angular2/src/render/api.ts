@@ -303,7 +303,7 @@ export class RenderCompiler {
    * we don't need to serialize all possible components over the wire,
    * but only the needed ones based on previous calls.
    */
-  compile(template: ViewDefinition): Promise<ProtoViewDto> { return null; }
+  compile(view: ViewDefinition): Promise<ProtoViewDto> { return null; }
 }
 
 export interface RenderElementRef {

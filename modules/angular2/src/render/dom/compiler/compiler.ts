@@ -28,12 +28,11 @@ export class DomCompiler extends RenderCompiler {
     super();
   }
 
-  compile(template: ViewDefinition): Promise<ProtoViewDto> {
-    var tplPromise = this._templateLoader.load(template);
+  compile(view: ViewDefinition): Promise<ProtoViewDto> {
+    var tplPromise = this._templateLoader.load(view);
     return PromiseWrapper.then(
-        tplPromise, (el) => this._compileTemplate(template, el, ViewType.COMPONENT), (e) => {
-          throw new BaseException(
-              `Failed to load the template for "${template.componentId}" : ${e}`);
+        tplPromise, (el) => this._compileTemplate(view, el, ViewType.COMPONENT), (e) => {
+          throw new BaseException(`Failed to load the template for "${view.componentId}" : ${e}`);
         });
   }
 
@@ -51,17 +50,10 @@ export class DomCompiler extends RenderCompiler {
 
   _compileTemplate(viewDef: ViewDefinition, tplElement,
                    protoViewType: ViewType): Promise<ProtoViewDto> {
-    var subTaskPromises = [];
-    var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef, subTaskPromises));
+    var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef));
     var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);
 
-    var protoView = compileElements[0].inheritedProtoView.build();
-
-    if (subTaskPromises.length > 0) {
-      return PromiseWrapper.all(subTaskPromises).then((_) => protoView);
-    } else {
-      return PromiseWrapper.resolve(protoView);
-    }
+    return PromiseWrapper.resolve(compileElements[0].inheritedProtoView.build());
   }
 }
 

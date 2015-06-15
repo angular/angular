@@ -62,8 +62,8 @@ export function main() {
                             protoViewFactoryResults: List<List<AppProtoView>>) {
       var urlResolver = new FakeUrlResolver();
       renderCompileRequests = [];
-      renderCompiler.spy('compile').andCallFake((template) => {
-        renderCompileRequests.push(template);
+      renderCompiler.spy('compile').andCallFake((view) => {
+        renderCompileRequests.push(view);
         return PromiseWrapper.resolve(ListWrapper.removeAt(renderCompileResults, 0));
       });
 
@@ -467,12 +467,12 @@ export function main() {
   });
 }
 
-function createDirectiveBinding(directiveResolver, type) {
+function createDirectiveBinding(directiveResolver, type): DirectiveBinding {
   var annotation = directiveResolver.resolve(type);
   return DirectiveBinding.createFromType(type, annotation);
 }
 
-function createProtoView(elementBinders = null) {
+function createProtoView(elementBinders = null): AppProtoView {
   var pv = new AppProtoView(null, null, new Map(), null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
@@ -481,18 +481,19 @@ function createProtoView(elementBinders = null) {
   return pv;
 }
 
-function createComponentElementBinder(directiveResolver, type) {
+function createComponentElementBinder(directiveResolver, type): ElementBinder {
   var binding = createDirectiveBinding(directiveResolver, type);
   return new ElementBinder(0, null, 0, null, binding);
 }
 
-function createViewportElementBinder(nestedProtoView) {
+function createViewportElementBinder(nestedProtoView): ElementBinder {
   var elBinder = new ElementBinder(0, null, 0, null, null);
   elBinder.nestedProtoView = nestedProtoView;
   return elBinder;
 }
 
-function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {
+function createRenderProtoView(elementBinders = null,
+                               type: renderApi.ViewType = null): renderApi.ProtoViewDto {
   if (isBlank(type)) {
     type = renderApi.ViewType.COMPONENT;
   }
@@ -502,16 +503,16 @@ function createRenderProtoView(elementBinders = null, type: renderApi.ViewType =
   return new renderApi.ProtoViewDto({elementBinders: elementBinders, type: type});
 }
 
-function createRenderComponentElementBinder(directiveIndex) {
+function createRenderComponentElementBinder(directiveIndex): renderApi.ElementBinder {
   return new renderApi.ElementBinder(
       {directives: [new renderApi.DirectiveBinder({directiveIndex: directiveIndex})]});
 }
 
-function createRenderViewportElementBinder(nestedProtoView) {
+function createRenderViewportElementBinder(nestedProtoView): renderApi.ElementBinder {
   return new renderApi.ElementBinder({nestedProtoView: nestedProtoView});
 }
 
-function createRootProtoView(directiveResolver, type) {
+function createRootProtoView(directiveResolver, type): AppProtoView {
   return createProtoView([createComponentElementBinder(directiveResolver, type)]);
 }
 
@@ -577,23 +578,18 @@ class FakeAppRootUrl extends AppRootUrl {
 
 
 class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map<Type, viewAnn.View>;
+  _cmpViews: Map<Type, viewAnn.View> = new Map();
 
-  constructor() {
-    super();
-    this._cmpTemplates = new Map();
-  }
+  constructor() { super(); }
 
   resolve(component: Type): viewAnn.View {
-    var template = this._cmpTemplates.get(component);
-    if (isBlank(template)) {
-      // dynamic component
-      return null;
-    }
-    return template;
+    // returns null for dynamic components
+    return this._cmpViews.has(component) ? this._cmpViews.get(component) : null;
   }
 
-  setView(component: Type, template: viewAnn.View) { this._cmpTemplates.set(component, template); }
+  setView(component: Type, template: viewAnn.View): void {
+    this._cmpViews.set(component, template);
+  }
 }
 
 class FakeProtoViewFactory extends ProtoViewFactory {
