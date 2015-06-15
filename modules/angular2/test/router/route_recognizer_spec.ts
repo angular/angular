@@ -76,6 +76,32 @@ export function main() {
       expect(solution.matchedUrl).toEqual('/b');
     });
 
+    it('should not perform root URL redirect on a non-root route', () => {
+      recognizer.addRedirect('/', '/foo');
+      recognizer.addConfig('/bar', handler);
+      var solutions = recognizer.recognize('/bar');
+      expect(solutions.length).toBe(1);
+
+      var solution = solutions[0];
+      expect(solution.handler).toEqual(handler);
+      expect(solution.matchedUrl).toEqual('/bar');
+    });
+
+    it('should perform a valid redirect when a slash or an empty string is being processed', () => {
+      recognizer.addRedirect('/', '/matias');
+      recognizer.addRedirect('', '/fatias');
+
+      recognizer.addConfig('/matias', handler);
+      recognizer.addConfig('/fatias', handler);
+
+      var solutions;
+
+      solutions = recognizer.recognize('/');
+      expect(solutions[0].matchedUrl).toBe('/matias');
+
+      solutions = recognizer.recognize('');
+      expect(solutions[0].matchedUrl).toBe('/fatias');
+    });
 
     it('should generate URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
