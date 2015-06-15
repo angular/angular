@@ -57,8 +57,12 @@ export class RouteRecognizer {
     var solutions = ListWrapper.create();
 
     MapWrapper.forEach(this.redirects, (target, path) => {
-      // TODO: "/" redirect case
-      if (StringWrapper.startsWith(url, path)) {
+      // "/" redirect case
+      if (path == '/' || path == '') {
+        if (path == url) {
+          url = target;
+        }
+      } else if (StringWrapper.startsWith(url, path)) {
         url = target + StringWrapper.substring(url, path.length);
       }
     });
