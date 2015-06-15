@@ -1,6 +1,7 @@
 'use strict';
 
 var autoprefixer = require('gulp-autoprefixer');
+var gutil = require('gulp-util');
 var del = require('del');
 var format = require('gulp-clang-format');
 var exec = require('child_process').exec;
@@ -204,14 +205,14 @@ function doCheckFormat() {
 
 gulp.task('check-format', function() {
   return doCheckFormat().on('warning', function(e) {
-    console.log("NOTE: this will be promoted to an ERROR in the continuous build");
+    gutil.log("NOTE: this will be promoted to an ERROR in the continuous build");
   });
 });
 
 gulp.task('enforce-format', function() {
   return doCheckFormat().on('warning', function(e) {
-    console.log("ERROR: You forgot to run clang-format on your change.");
-    console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
+    gutil.log("ERROR: You forgot to run clang-format on your change.");
+    gutil.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
     process.exit(1);
   });
 });
@@ -229,7 +230,7 @@ gulp.task('build/checkCircularDependencies', function (done) {
   });
   var circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {
-    console.log(circularDependencies);
+    gutil.log(circularDependencies);
     process.exit(1);
   }
   done();
@@ -290,10 +291,10 @@ var webserver = require('gulp-webserver');
 gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
-    console.log('bower:', result.id, result.data.endpoint.name);
+    gutil.log('bower:', result.id, result.data.endpoint.name);
   });
   bowerTask.on('error', function(error) {
-    console.log(error);
+    gutil.log(error);
   });
   return bowerTask;
 });
@@ -309,8 +310,8 @@ function createDocsTasks(publicBuild) {
       var dgeni = new Dgeni([require(dgeniPackage)]);
       return dgeni.generate();
     } catch(x) {
-      console.log(x);
-      console.log(x.stack);
+      gutil.log(x);
+      gutil.log(x.stack);
       throw x;
     }
   });
@@ -350,8 +351,8 @@ gulp.task('docs/angular.io', function() {
     var dgeni = new Dgeni([require('./docs/angular.io-package')]);
     return dgeni.generate();
   } catch(x) {
-    console.log(x);
-    console.log(x.stack);
+    gutil.log(x);
+    gutil.log(x.stack);
     throw x;
   }
 });
@@ -695,7 +696,7 @@ gulp.task('!build.js.cjs', function() {
   return angularBuilder.rebuildNodeTree().then(function() {
     if (firstBuildJsCjs) {
       firstBuildJsCjs = false;
-      console.log('creating node_modules symlink hack');
+      gutil.log('creating node_modules symlink hack');
       // linknodemodules is all sync
       linknodemodules(gulp, gulpPlugins, {
         dir: CONFIG.dest.js.cjs
