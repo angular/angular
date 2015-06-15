@@ -62,9 +62,19 @@ export class PerflogMetric extends Metric {
       }
     }
     if (this._captureFrames) {
-      res['meanFrameTime'] = this._perfLogFeatures.frameCapture ?
-                                 'mean frame time in ms (target: 16.6ms for 60fps)' :
-                                 'WARNING: Metric requested, but not supported by driver';
+      if (!this._perfLogFeatures.frameCapture) {
+        var warningMsg = 'WARNING: Metric requested, but not supported by driver';
+        // using dot syntax for metric name to keep them grouped together in console reporter
+        res['frameTime.mean'] = warningMsg;
+        res['frameTime.worst'] = warningMsg;
+        res['frameTime.best'] = warningMsg;
+        res['frameTime.smooth'] = warningMsg;
+      } else {
+        res['frameTime.mean'] = 'mean frame time in ms (target: 16.6ms for 60fps)';
+        res['frameTime.worst'] = 'worst frame time in ms';
+        res['frameTime.best'] = 'best frame time in ms';
+        res['frameTime.smooth'] = 'percentage of frames that hit 60fps';
+      }
     }
     StringMapWrapper.forEach(this._microMetrics,
                              (desc, name) => { StringMapWrapper.set(res, name, desc); });
@@ -172,7 +182,10 @@ export class PerflogMetric extends Metric {
       result['renderTime'] = 0;
     }
     if (this._captureFrames) {
-      result['meanFrameTime'] = 0;
+      result['frameTime.mean'] = 0;
+      result['frameTime.best'] = 0;
+      result['frameTime.worst'] = 0;
+      result['frameTime.smooth'] = 0;
     }
     StringMapWrapper.forEach(this._microMetrics, (desc, name) => { result[name] = 0; });
 
@@ -288,15 +301,26 @@ export class PerflogMetric extends Metric {
           'frame capture requested in benchpress, but no start event was found');
     }
     if (frameTimes.length > 0) {
-      result['meanFrameTime'] =
-          ListWrapper.reduce(frameTimes, (a, b) => a + b, 0) / frameTimes.length;
+      this._addFrameMetrics(result, frameTimes);
     }
     result['pureScriptTime'] = result['scriptTime'] - gcTimeInScript - renderTimeInScript;
     return result;
   }
 
+  _addFrameMetrics(result: StringMap<string, any>, frameTimes: any[]) {
+    result['frameTime.mean'] =
+        ListWrapper.reduce(frameTimes, (a, b) => a + b, 0) / frameTimes.length;
+    var firstFrame = ListWrapper.get(frameTimes, 0);
+    result['frameTime.worst'] = ListWrapper.reduce(frameTimes, (a, b) => a > b ? a : b, firstFrame);
+    result['frameTime.best'] = ListWrapper.reduce(frameTimes, (a, b) => a < b ? a : b, firstFrame);
+    result['frameTime.smooth'] =
+        ListWrapper.filter(frameTimes, (a) => a < _FRAME_TIME_SMOOTH_THRESHOLD).length /
+        frameTimes.length;
+  }
+
   _markName(index) { return `${_MARK_NAME_PREFIX}${index}`; }
 }
+
 var _MICRO_ITERATIONS_REGEX = RegExpWrapper.create('(.+)\\*(\\d+)$');
 
 var _MAX_RETRY_COUNT = 20;
@@ -304,6 +328,8 @@ var _MARK_NAME_PREFIX = 'benchpress';
 var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 
 var _MARK_NAME_FRAME_CAPUTRE = 'frameCapture';
+// using 17ms as a somewhat looser threshold, instead of 16.6666ms
+var _FRAME_TIME_SMOOTH_THRESHOLD = 17;
 
 var _BINDINGS = [
   bind(PerflogMetric)

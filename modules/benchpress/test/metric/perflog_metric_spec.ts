@@ -106,14 +106,20 @@ export function main() {
       var description =
           createMetric([[]], null, new PerfLogFeatures({frameCapture: true}), null, true)
               .describe();
-      expect(description['meanFrameTime']).not.toContain('WARNING');
+      expect(description['frameTime.mean']).not.toContain('WARNING');
+      expect(description['frameTime.best']).not.toContain('WARNING');
+      expect(description['frameTime.worst']).not.toContain('WARNING');
+      expect(description['frameTime.smooth']).not.toContain('WARNING');
     });
 
     it('should describe itself if frame capture is requested and not available', () => {
       var description =
           createMetric([[]], null, new PerfLogFeatures({frameCapture: false}), null, true)
               .describe();
-      expect(description['meanFrameTime']).toContain('WARNING');
+      expect(description['frameTime.mean']).toContain('WARNING');
+      expect(description['frameTime.best']).toContain('WARNING');
+      expect(description['frameTime.worst']).toContain('WARNING');
+      expect(description['frameTime.smooth']).toContain('WARNING');
     });
 
     describe('beginMeasure', () => {
@@ -336,7 +342,7 @@ export function main() {
              ],
                        null, true)
                  .then((data) => {
-                   expect(data['meanFrameTime']).toBe(((3 - 1) + (4 - 3)) / 2);
+                   expect(data['frameTime.mean']).toBe(((3 - 1) + (4 - 3)) / 2);
                    async.done();
                  });
            }));
@@ -398,6 +404,58 @@ export function main() {
              });
            }));
 
+        it('should calculate best and worst frame time', inject([AsyncTestCompleter], (async) => {
+             aggregate([
+               eventFactory.markStart('frameCapture', 0),
+               eventFactory.instant('frame', 1),
+               eventFactory.instant('frame', 9),
+               eventFactory.instant('frame', 15),
+               eventFactory.instant('frame', 18),
+               eventFactory.instant('frame', 28),
+               eventFactory.instant('frame', 32),
+               eventFactory.markEnd('frameCapture', 10)
+             ],
+                       null, true)
+                 .then((data) => {
+                   expect(data['frameTime.worst']).toBe(10);
+                   expect(data['frameTime.best']).toBe(3);
+                   async.done();
+                 });
+           }));
+
+        it('should calculate percentage of smoothness to be good',
+           inject([AsyncTestCompleter], (async) => {
+             aggregate([
+               eventFactory.markStart('frameCapture', 0),
+               eventFactory.instant('frame', 1),
+               eventFactory.instant('frame', 2),
+               eventFactory.instant('frame', 3),
+               eventFactory.markEnd('frameCapture', 4)
+             ],
+                       null, true)
+                 .then((data) => {
+                   expect(data['frameTime.smooth']).toBe(1.0);
+                   async.done();
+                 });
+           }));
+
+        it('should calculate percentage of smoothness to be bad',
+           inject([AsyncTestCompleter], (async) => {
+             aggregate([
+               eventFactory.markStart('frameCapture', 0),
+               eventFactory.instant('frame', 1),
+               eventFactory.instant('frame', 2),
+               eventFactory.instant('frame', 22),
+               eventFactory.instant('frame', 23),
+               eventFactory.instant('frame', 24),
+               eventFactory.markEnd('frameCapture', 4)
+             ],
+                       null, true)
+                 .then((data) => {
+                   expect(data['frameTime.smooth']).toBe(0.75);
+                   async.done();
+                 });
+           }));
 
       });
 
