@@ -25,7 +25,6 @@ import {EventDispatcher} from 'angular2/src/render/api';
 export class AppViewContainer {
   // The order in this list matches the DOM order.
   views: List<AppView> = [];
-  freeViews: List<AppView> = [];
 }
 
 /**
@@ -39,9 +38,6 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
   elementInjectors: List<ElementInjector> = null;
   changeDetector: ChangeDetector = null;
   componentChildViews: List<AppView> = null;
-  /// Host views that were added by an imperative view.
-  /// This is a dynamically growing / shrinking array.
-  freeHostViews: List<AppView> = [];
   viewContainers: List<AppViewContainer>;
   preBuiltObjects: List<PreBuiltObjects> = null;
 
@@ -170,7 +166,8 @@ export class AppProtoView {
 
   constructor(public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,
-              public variableBindings: Map<string, string>) {
+              public variableBindings: Map<string, string>,
+              public variableLocations: Map<string, number>) {
     if (isPresent(variableBindings)) {
       MapWrapper.forEach(variableBindings, (templateName, _) => {
         MapWrapper.set(this.protoLocals, templateName, null);

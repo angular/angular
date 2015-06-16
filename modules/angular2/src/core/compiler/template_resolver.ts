@@ -30,7 +30,6 @@ export class TemplateResolver {
         return annotation;
       }
     }
-    // No annotation = dynamic component!
-    return null;
+    throw new BaseException(`No View annotation found on component ${stringify(component)}`);
   }
 }

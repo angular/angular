@@ -59,7 +59,7 @@ export class MdDialog {
     var backdropRefPromise = this._openBackdrop(elementRef, contentInjector);
 
     // First, load the MdDialogContainer, into which the given component will be loaded.
-    return this.componentLoader.loadIntoNewLocation(MdDialogContainer, elementRef)
+    return this.componentLoader.loadNextToLocation(MdDialogContainer, elementRef)
         .then(containerRef => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)
@@ -86,8 +86,8 @@ export class MdDialog {
           dialogRef.containerRef = containerRef;
 
           // Now load the given component into the MdDialogContainer.
-          return this.componentLoader.loadNextToExistingLocation(
-                                         type, containerRef.instance.contentRef, contentInjector)
+          return this.componentLoader.loadNextToLocation(type, containerRef.instance.contentRef,
+                                                         contentInjector)
               .then(contentRef => {
 
                 // Wrap both component refs for the container and the content so that we can return
@@ -107,7 +107,7 @@ export class MdDialog {
 
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
   _openBackdrop(elementRef: ElementRef, injector: Injector): Promise<ComponentRef> {
-    return this.componentLoader.loadIntoNewLocation(MdBackdrop, elementRef, injector)
+    return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, injector)
         .then((componentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)

@@ -58,12 +58,12 @@ export function main() {
 
   function compileNoBindings() {
     cache.clear();
-    return compiler.compile(BenchmarkComponentNoBindings);
+    return compiler.compileInHost(BenchmarkComponentNoBindings);
   }
 
   function compileWithBindings() {
     cache.clear();
-    return compiler.compile(BenchmarkComponentWithBindings);
+    return compiler.compileInHost(BenchmarkComponentWithBindings);
   }
 
   bindAction('#compileNoBindings', measureWrapper(compileNoBindings, 'No Bindings'));
@@ -122,7 +122,7 @@ class MultipleTemplateResolver extends TemplateResolver {
   }
 }
 
-@Component()
+@Component({selector: 'cmp-nobind'})
 @View({
   directives: [Dir0, Dir1, Dir2, Dir3, Dir4],
   template: `
@@ -140,7 +140,7 @@ class MultipleTemplateResolver extends TemplateResolver {
 class BenchmarkComponentNoBindings {
 }
 
-@Component()
+@Component({selector: 'cmp-withbind'})
 @View({
   directives: [Dir0, Dir1, Dir2, Dir3, Dir4],
   template: `

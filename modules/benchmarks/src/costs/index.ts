@@ -61,10 +61,10 @@ class DummyComponent {
 class DummyDirective {
 }
 
-@Component({selector: 'dynamic-dummy'})
+@Directive({selector: 'dynamic-dummy'})
 class DynamicDummy {
   constructor(loader: DynamicComponentLoader, location: ElementRef) {
-    loader.loadIntoExistingLocation(DummyComponent, location);
+    loader.loadNextToLocation(DummyComponent, location);
   }
 }
 

@@ -61,13 +61,14 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      var res = new AppProtoView(null, null, null);
+      var res = new AppProtoView(null, null, null, null);
       res.elementBinders = binders;
       return res;
     }
 
     function createElementInjector() {
       var host = new SpyElementInjector();
+      var appInjector = new SpyInjector();
       return SpyObject.stub(new SpyElementInjector(),
                             {
                               'isExportingComponent': false,
@@ -75,8 +76,8 @@ export function main() {
                               'getEventEmitterAccessors': [],
                               'getHostActionAccessors': [],
                               'getComponent': null,
-                              'getDynamicallyLoadedComponent': null,
-                              'getHost': host
+                              'getHost': host,
+                              'getShadowDomAppInjector': appInjector
                             },
                             {});
     }
@@ -99,21 +100,7 @@ export function main() {
 
     beforeEach(() => {
       directiveResolver = new DirectiveResolver();
-      utils = new AppViewManagerUtils(directiveResolver);
-    });
-
-    describe('hydrateDynamicComponentInElementInjector', () => {
-
-      it('should not allow to overwrite an existing component', () => {
-        var hostView = createView(createProtoView([createComponentElBinder(createProtoView())]));
-        var componentBinding = bind(SomeComponent).toClass(SomeComponent);
-        SpyObject.stub(hostView.elementInjectors[0],
-                       {'getDynamicallyLoadedComponent': new SomeComponent()});
-        expect(() => utils.hydrateDynamicComponentInElementInjector(hostView, 0, componentBinding,
-                                                                    null))
-            .toThrowError('There already is a dynamic component loaded at element 0');
-      });
-
+      utils = new AppViewManagerUtils();
     });
 
     describe("hydrateComponentView", () => {
@@ -246,6 +233,16 @@ export function main() {
                                      childView.preBuiltObjects[0]);
          });
 
+      it('should use the shadowDomAppInjector of the context elementInjector if there is no host',
+         () => {
+           createViews();
+           parentView.elementInjectors[0].spy('getHost').andReturn(null);
+           utils.hydrateViewInContainer(parentView, 0, parentView, 0, 0, null);
+           expect(childView.rootElementInjectors[0].spy('hydrate'))
+               .toHaveBeenCalledWith(parentView.elementInjectors[0].getShadowDomAppInjector(), null,
+                                     childView.preBuiltObjects[0]);
+         });
+
     });
 
     describe('hydrateRootHostView', () => {
@@ -293,5 +290,12 @@ class SpyChangeDetector extends SpyObject {
 @IMPLEMENTS(PreBuiltObjects)
 class SpyPreBuiltObjects extends SpyObject {
   constructor() { super(PreBuiltObjects); }
+  noSuchMethod(m) { return super.noSuchMethod(m) }
+}
+
+@proxy
+@IMPLEMENTS(Injector)
+class SpyInjector extends SpyObject {
+  constructor() { super(Injector); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }

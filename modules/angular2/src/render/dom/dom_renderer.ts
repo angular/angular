@@ -44,11 +44,6 @@ export class DomRenderer extends Renderer {
     return new DomViewRef(this._createView(hostProtoView, element));
   }
 
-  detachFreeView(viewRef: RenderViewRef) {
-    var view = resolveInternalDomView(viewRef);
-    this._removeViewNodes(view);
-  }
-
   createView(protoViewRef: RenderProtoViewRef): RenderViewRef {
     var protoView = resolveInternalDomProtoView(protoViewRef);
     return new DomViewRef(this._createView(protoView, null));

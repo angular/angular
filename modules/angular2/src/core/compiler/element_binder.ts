@@ -24,10 +24,6 @@ export class ElementBinder {
     return isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
   }
 
-  hasDynamicComponent() {
-    return isPresent(this.componentDirective) && isBlank(this.nestedProtoView);
-  }
-
   hasEmbeddedProtoView() {
     return !isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
   }

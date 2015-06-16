@@ -1090,6 +1090,16 @@ export function main() {
            });
          }));
 
+      it('should report a meaningful error when a component is missing view annotation',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+           PromiseWrapper.catchError(tb.createView(ComponentWithoutView, {context: ctx}), (e) => {
+             expect(e.message).toEqual(
+                 `No View annotation found on component ${stringify(ComponentWithoutView)}`);
+             async.done();
+             return null;
+           });
+         }));
+
       it('should report a meaningful error when a directive is null',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
@@ -1175,7 +1185,7 @@ export function main() {
          });
        }));
 
-    it('should support free embedded views',
+    it('should support moving embedded views around',
        inject([TestBed, AsyncTestCompleter, ANCHOR_ELEMENT], (tb, async, anchorElement) => {
          tb.overrideView(MyComp, new viewAnn.View({
            template: '<div><div *some-impvp="ctxBoolProp">hello</div></div>',
@@ -1730,20 +1740,19 @@ class ChildConsumingEventBus {
 class SomeImperativeViewport {
   view: ViewRef;
   anchor;
-  constructor(public element: ElementRef, public protoView: ProtoViewRef,
-              public viewManager: AppViewManager, public renderer: DomRenderer,
-              @Inject(ANCHOR_ELEMENT) anchor) {
+  constructor(public vc: ViewContainerRef, public protoView: ProtoViewRef,
+              public renderer: DomRenderer, @Inject(ANCHOR_ELEMENT) anchor) {
     this.view = null;
     this.anchor = anchor;
   }
 
   set someImpvp(value: boolean) {
     if (isPresent(this.view)) {
-      this.viewManager.destroyFreeEmbeddedView(this.element, this.view);
+      this.vc.clear();
       this.view = null;
     }
     if (value) {
-      this.view = this.viewManager.createFreeEmbeddedView(this.element, this.protoView);
+      this.view = this.vc.create(this.protoView);
       var nodes = this.renderer.getRootNodes(this.view.render);
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
@@ -1754,4 +1763,8 @@ class SomeImperativeViewport {
 
 @Directive({selector: '[export-dir]', exportAs: 'dir'})
 class ExportDir {
+}
+
+@Component({selector: 'comp'})
+class ComponentWithoutView {
 }

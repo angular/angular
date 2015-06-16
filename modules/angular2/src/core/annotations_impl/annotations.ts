@@ -848,54 +848,6 @@ export interface ComponentArgs {
  * ```
  *
  *
- * Dynamically loading a component at runtime:
- *
- * Regular Angular components are statically resolved. Dynamic components allows to resolve a
- * component at runtime
- * instead by providing a placeholder into which a regular Angular component can be dynamically
- * loaded. Once loaded,
- * the dynamically-loaded component becomes permanent and cannot be changed.
- * Dynamic components are declared just like components, but without a `@View` annotation.
- *
- *
- * ## Example
- *
- * Here we have `DynamicComp` which acts as the placeholder for `HelloCmp`. At runtime, the dynamic
- * component
- * `DynamicComp` requests loading of the `HelloCmp` component.
- *
- * There is nothing special about `HelloCmp`, which is a regular Angular component. It can also be
- * used in other static
- * locations.
- *
- * ```
- * @Component({
- *   selector: 'dynamic-comp'
- * })
- * class DynamicComp {
- *   helloCmp:HelloCmp;
- *   constructor(loader:DynamicComponentLoader, location:ElementRef) {
- *     loader.load(HelloCmp, location).then((helloCmp) => {
- *       this.helloCmp = helloCmp;
- *     });
- *   }
- * }
- *
- * @Component({
- *   selector: 'hello-cmp'
- * })
- * @View({
- *   template: "{{greeting}}"
- * })
- * class HelloCmp {
- *   greeting:string;
- *   constructor() {
- *     this.greeting = "hello";
- *   }
- * }
- * ```
- *
- *
  * @exportedAs angular2/annotations
  */
 @CONST()

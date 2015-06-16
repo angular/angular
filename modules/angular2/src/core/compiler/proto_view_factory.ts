@@ -231,7 +231,8 @@ function _createAppProtoView(
     renderProtoView: renderApi.ProtoViewDto, protoChangeDetector: ProtoChangeDetector,
     variableBindings: Map<string, string>, allDirectives: List<DirectiveBinding>): AppProtoView {
   var elementBinders = renderProtoView.elementBinders;
-  var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings);
+  var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings,
+                                   createVariableLocations(elementBinders));
   _createElementBinders(protoView, elementBinders, allDirectives);
   _bindDirectiveEvents(protoView, elementBinders);
 
@@ -274,6 +275,18 @@ function _createVariableNames(parentVariableNames, renderProtoView): List<string
     MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => { res.push(mappedName); });
   });
   return res;
+}
+
+export function createVariableLocations(
+    elementBinders: List<renderApi.ElementBinder>): Map<string, number> {
+  var variableLocations = MapWrapper.create();
+  for (var i = 0; i < elementBinders.length; i++) {
+    var binder = elementBinders[i];
+    MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => {
+      MapWrapper.set(variableLocations, mappedName, i);
+    });
+  }
+  return variableLocations;
 }
 
 function _createElementBinders(protoView, elementBinders, allDirectiveBindings) {

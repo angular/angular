@@ -21,7 +21,8 @@ import {ChangeDetection, ChangeDetectorDefinition} from 'angular2/change_detecti
 import {
   ProtoViewFactory,
   getChangeDetectorDefinitions,
-  createDirectiveVariableBindings
+  createDirectiveVariableBindings,
+  createVariableLocations
 } from 'angular2/src/core/compiler/proto_view_factory';
 import {Component, Directive} from 'angular2/annotations';
 import {Key} from 'angular2/di';
@@ -137,6 +138,18 @@ export function main() {
                     {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})})
               ]);
         }).not.toThrow();
+      });
+    });
+
+    describe('createVariableLocations', () => {
+      it('should merge the names in the template for all ElementBinders', () => {
+        expect(createVariableLocations([
+          new renderApi.ElementBinder(
+              {variableBindings: MapWrapper.createFromStringMap({"x": "a"})}),
+          new renderApi.ElementBinder(
+              {variableBindings: MapWrapper.createFromStringMap({"y": "b"})})
+
+        ])).toEqual(MapWrapper.createFromStringMap({'a': 0, 'b': 1}));
       });
     });
   });

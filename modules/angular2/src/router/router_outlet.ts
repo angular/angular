@@ -64,8 +64,8 @@ export class RouterOutlet {
     ]);
 
     return this.deactivate()
-        .then((_) => this._loader.loadNextToExistingLocation(instruction.component,
-                                                             this._elementRef, outletInjector))
+        .then((_) => this._loader.loadNextToLocation(instruction.component, this._elementRef,
+                                                     outletInjector))
         .then((componentRef) => {
           this._componentRef = componentRef;
           return this._childRouter.commit(instruction.child);

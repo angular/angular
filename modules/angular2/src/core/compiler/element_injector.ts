@@ -662,9 +662,6 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   private _preBuiltObjects = null;
   private _constructionCounter: number = 0;
 
-  private _dynamicallyCreatedComponent: any;
-  private _dynamicallyCreatedComponentBinding: DirectiveBinding;
-
   // Queries are added during construction or linking with a new parent.
   // They are never removed.
   private _query0: QueryRef;
@@ -693,18 +690,8 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
     this._strategy.callOnDestroy();
-    this.destroyDynamicComponent();
     this._strategy.clearInstances();
     this._constructionCounter = 0;
-  }
-
-  destroyDynamicComponent(): void {
-    if (isPresent(this._dynamicallyCreatedComponentBinding) &&
-        this._dynamicallyCreatedComponentBinding.callOnDestroy) {
-      this._dynamicallyCreatedComponent.onDestroy();
-      this._dynamicallyCreatedComponentBinding = null;
-      this._dynamicallyCreatedComponent = null;
-    }
   }
 
   onAllChangesDone(): void {
@@ -743,14 +730,6 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  dynamicallyCreateComponent(componentDirective: DirectiveBinding, parentInjector: Injector): any {
-    this._shadowDomAppInjector =
-        this._createShadowDomAppInjector(componentDirective, parentInjector);
-    this._dynamicallyCreatedComponentBinding = componentDirective;
-    this._dynamicallyCreatedComponent = this._new(this._dynamicallyCreatedComponentBinding);
-    return this._dynamicallyCreatedComponent;
-  }
-
   private _checkShadowDomAppInjector(shadowDomAppInjector: Injector): void {
     if (this._proto._firstBindingIsComponent && isBlank(shadowDomAppInjector)) {
       throw new BaseException(
@@ -761,18 +740,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  get(token): any {
-    if (this._isDynamicallyLoadedComponent(token)) {
-      return this._dynamicallyCreatedComponent;
-    }
-
-    return this._getByKey(Key.get(token), self, false, null);
-  }
-
-  private _isDynamicallyLoadedComponent(token): boolean {
-    return isPresent(this._dynamicallyCreatedComponentBinding) &&
-           Key.get(token) === this._dynamicallyCreatedComponentBinding.key;
-  }
+  get(token): any { return this._getByKey(Key.get(token), self, false, null); }
 
   hasDirective(type: Type): boolean {
     return this._strategy.getObjByKeyId(Key.get(type).id, LIGHT_DOM_AND_SHADOW_DOM) !== _undefined;
@@ -796,16 +764,9 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
   }
 
-  getDynamicallyLoadedComponent(): any { return this._dynamicallyCreatedComponent; }
-
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
   private _isComponentKey(key: Key): boolean { return this._strategy.isComponentKey(key); }
-
-  private _isDynamicallyLoadedComponentKey(key: Key): boolean {
-    return isPresent(this._dynamicallyCreatedComponentBinding) &&
-           key.id === this._dynamicallyCreatedComponentBinding.key.id;
-  }
 
   _new(binding: ResolvedBinding): any {
     if (this._constructionCounter++ > this._strategy.getMaxDirectives()) {
@@ -1113,8 +1074,6 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
-    } else if (isPresent(this._host) && this._host._isDynamicallyLoadedComponentKey(key)) {
-      return this._host.getDynamicallyLoadedComponent();
     } else if (optional) {
       return this._appInjector(requestor).getOptional(key);
     } else {
@@ -1123,8 +1082,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   private _appInjector(requestor: Key): Injector {
-    if (isPresent(requestor) &&
-        (this._isComponentKey(requestor) || this._isDynamicallyLoadedComponentKey(requestor))) {
+    if (isPresent(requestor) && this._isComponentKey(requestor)) {
       return this._shadowDomAppInjector;
     } else {
       return this._lightDomAppInjector;

@@ -8,6 +8,7 @@ import {Renderer, RenderViewRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
+import {MapWrapper} from 'angular2/src/facade/collection';
 
 /**
  * Entry point for creating, moving views in the view hierarchy and destroying views.
@@ -30,31 +31,28 @@ export class AppViewManager {
     return hostView.elementInjectors[location.boundElementIndex].getViewContainerRef();
   }
 
+  /**
+   * Returns an ElementRef for the element with the given variable name
+   * in the component view of the component at the provided ElementRef.
+   */
+  getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef {
+    var hostView = internalView(hostLocation.parentView);
+    var boundElementIndex = hostLocation.boundElementIndex;
+    var componentView = hostView.componentChildViews[boundElementIndex];
+    if (isBlank(componentView)) {
+      throw new BaseException(`There is no component directive at element ${boundElementIndex}`);
+    }
+    var elementIndex = MapWrapper.get(componentView.proto.variableLocations, variableName);
+    if (isBlank(elementIndex)) {
+      throw new BaseException(`Could not find variable ${variableName}`);
+    }
+    return new ElementRef(new ViewRef(componentView), elementIndex);
+  }
+
   getComponent(hostLocation: ElementRef): any {
     var hostView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
     return this._utils.getComponentInstance(hostView, boundElementIndex);
-  }
-
-  createDynamicComponentView(hostLocation: ElementRef, componentProtoViewRef: ProtoViewRef,
-                             componentBinding: Binding, injector: Injector): ViewRef {
-    var componentProtoView = internalProtoView(componentProtoViewRef);
-    var hostView = internalView(hostLocation.parentView);
-    var boundElementIndex = hostLocation.boundElementIndex;
-    var binder = hostView.proto.elementBinders[boundElementIndex];
-    if (!binder.hasDynamicComponent()) {
-      throw new BaseException(
-          `There is no dynamic component directive at element ${boundElementIndex}`)
-    }
-    var componentView = this._createPooledView(componentProtoView);
-    this._renderer.attachComponentView(hostView.render, boundElementIndex, componentView.render);
-    this._utils.attachComponentView(hostView, boundElementIndex, componentView);
-    this._utils.hydrateDynamicComponentInElementInjector(hostView, boundElementIndex,
-                                                         componentBinding, injector);
-    this._utils.hydrateComponentView(hostView, boundElementIndex);
-    this._viewHydrateRecurse(componentView);
-
-    return new ViewRef(componentView);
   }
 
   createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
@@ -84,51 +82,6 @@ export class AppViewManager {
     this._viewDehydrateRecurse(hostView, true);
     this._renderer.destroyView(hostView.render);
     this._viewListener.viewDestroyed(hostView);
-  }
-
-  createFreeHostView(parentComponentLocation: ElementRef, hostProtoViewRef: ProtoViewRef,
-                     injector: Injector): ViewRef {
-    var hostProtoView = internalProtoView(hostProtoViewRef);
-    var hostView = this._createPooledView(hostProtoView);
-    var parentComponentHostView = internalView(parentComponentLocation.parentView);
-    var parentComponentBoundElementIndex = parentComponentLocation.boundElementIndex;
-    this._utils.attachAndHydrateFreeHostView(parentComponentHostView,
-                                             parentComponentBoundElementIndex, hostView, injector);
-    this._viewHydrateRecurse(hostView);
-    return new ViewRef(hostView);
-  }
-
-  destroyFreeHostView(parentComponentLocation: ElementRef, hostViewRef: ViewRef) {
-    var hostView = internalView(hostViewRef);
-    var parentView = internalView(parentComponentLocation.parentView)
-                         .componentChildViews[parentComponentLocation.boundElementIndex];
-    this._destroyFreeHostView(parentView, hostView);
-  }
-
-  createFreeEmbeddedView(location: ElementRef, protoViewRef: ProtoViewRef,
-                         injector: Injector = null): ViewRef {
-    var protoView = internalProtoView(protoViewRef);
-    var parentView = internalView(location.parentView);
-    var boundElementIndex = location.boundElementIndex;
-
-    var view = this._createPooledView(protoView);
-    this._utils.attachAndHydrateFreeEmbeddedView(parentView, boundElementIndex, view, injector);
-    this._viewHydrateRecurse(view);
-    return new ViewRef(view);
-  }
-
-  destroyFreeEmbeddedView(location: ElementRef, viewRef: ViewRef) {
-    var parentView = internalView(location.parentView);
-    var boundElementIndex = location.boundElementIndex;
-    this._destroyFreeEmbeddedView(parentView, boundElementIndex, internalView(viewRef));
-  }
-
-  destroyDynamicComponent(location: ElementRef) {
-    var hostView = internalView(location.parentView);
-    var ei = hostView.elementInjectors[location.boundElementIndex];
-    var componentView = hostView.componentChildViews[location.boundElementIndex];
-    ei.destroyDynamicComponent();
-    this._destroyComponentView(hostView, location.boundElementIndex, componentView);
   }
 
   createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
@@ -239,20 +192,6 @@ export class AppViewManager {
     this._destroyPooledView(componentView);
   }
 
-  _destroyFreeHostView(parentView, hostView) {
-    this._viewDehydrateRecurse(hostView, true);
-    this._renderer.detachFreeView(hostView.render);
-    this._utils.detachFreeHostView(parentView, hostView);
-    this._destroyPooledView(hostView);
-  }
-
-  _destroyFreeEmbeddedView(parentView, boundElementIndex, view) {
-    this._viewDehydrateRecurse(view, false);
-    this._renderer.detachFreeView(view.render);
-    this._utils.detachFreeEmbeddedView(parentView, boundElementIndex, view);
-    this._destroyPooledView(view);
-  }
-
   _viewHydrateRecurse(view: viewModule.AppView) {
     this._renderer.hydrateView(view.render);
 
@@ -272,7 +211,7 @@ export class AppViewManager {
     for (var i = 0; i < binders.length; i++) {
       var componentView = view.componentChildViews[i];
       if (isPresent(componentView)) {
-        if (binders[i].hasDynamicComponent() || forceDestroyComponents) {
+        if (forceDestroyComponents) {
           this._destroyComponentView(view, i, componentView);
         } else {
           this._viewDehydrateRecurse(componentView, false);
@@ -283,16 +222,7 @@ export class AppViewManager {
         for (var j = vc.views.length - 1; j >= 0; j--) {
           this._destroyViewInContainer(view, i, j);
         }
-        for (var j = vc.freeViews.length - 1; j >= 0; j--) {
-          this._destroyFreeEmbeddedView(view, i, j);
-        }
       }
-    }
-
-    // freeHostViews
-    for (var i = view.freeHostViews.length - 1; i >= 0; i--) {
-      var hostView = view.freeHostViews[i];
-      this._destroyFreeHostView(view, hostView);
     }
   }
 }

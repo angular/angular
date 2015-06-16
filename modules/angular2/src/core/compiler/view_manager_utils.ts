@@ -6,21 +6,15 @@ import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {Renderer} from 'angular2/src/render/api';
 import {Locals} from 'angular2/change_detection';
-import {DirectiveResolver} from './directive_resolver';
 import {RenderViewRef} from 'angular2/src/render/api';
 
 @Injectable()
 export class AppViewManagerUtils {
-  constructor(public _directiveResolver: DirectiveResolver) {}
+  constructor() {}
 
   getComponentInstance(parentView: viewModule.AppView, boundElementIndex: number): any {
-    var binder = parentView.proto.elementBinders[boundElementIndex];
     var eli = parentView.elementInjectors[boundElementIndex];
-    if (binder.hasDynamicComponent()) {
-      return eli.getDynamicallyLoadedComponent();
-    } else {
-      return eli.getComponent();
-    }
+    return eli.getComponent();
   }
 
   createView(protoView: viewModule.AppProtoView, renderView: RenderViewRef,
@@ -92,44 +86,6 @@ export class AppViewManagerUtils {
     this._hydrateView(hostView, injector, null, new Object(), null);
   }
 
-  attachAndHydrateFreeHostView(parentComponentHostView: viewModule.AppView,
-                               parentComponentBoundElementIndex: number,
-                               hostView: viewModule.AppView, injector: Injector = null) {
-    var hostElementInjector =
-        parentComponentHostView.elementInjectors[parentComponentBoundElementIndex];
-    var parentView = parentComponentHostView.componentChildViews[parentComponentBoundElementIndex];
-    parentView.changeDetector.addChild(hostView.changeDetector);
-    ListWrapper.push(parentView.freeHostViews, hostView);
-    this._hydrateView(hostView, injector, hostElementInjector, new Object(), null);
-  }
-
-  detachFreeHostView(parentView: viewModule.AppView, hostView: viewModule.AppView) {
-    parentView.changeDetector.removeChild(hostView.changeDetector);
-    ListWrapper.remove(parentView.freeHostViews, hostView);
-  }
-
-  attachAndHydrateFreeEmbeddedView(parentView: viewModule.AppView, boundElementIndex: number,
-                                   view: viewModule.AppView, injector: Injector = null) {
-    parentView.changeDetector.addChild(view.changeDetector);
-    var viewContainer = this._getOrCreateViewContainer(parentView, boundElementIndex);
-    ListWrapper.push(viewContainer.freeViews, view);
-    var elementInjector = parentView.elementInjectors[boundElementIndex];
-    for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
-      view.rootElementInjectors[i].link(elementInjector);
-    }
-    this._hydrateView(view, injector, elementInjector, parentView.context, parentView.locals);
-  }
-
-  detachFreeEmbeddedView(parentView: viewModule.AppView, boundElementIndex: number,
-                         view: viewModule.AppView) {
-    var viewContainer = parentView.viewContainers[boundElementIndex];
-    view.changeDetector.remove();
-    ListWrapper.remove(viewContainer.freeViews, view);
-    for (var i = 0; i < view.rootElementInjectors.length; ++i) {
-      view.rootElementInjectors[i].unlink();
-    }
-  }
-
   attachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                         contextView: viewModule.AppView, contextBoundElementIndex: number,
                         atIndex: number, view: viewModule.AppView) {
@@ -172,23 +128,12 @@ export class AppViewManagerUtils {
     }
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
-    var elementInjector = contextView.elementInjectors[contextBoundElementIndex].getHost();
-    this._hydrateView(view, injector, elementInjector, contextView.context, contextView.locals);
-  }
-
-  hydrateDynamicComponentInElementInjector(hostView: viewModule.AppView, boundElementIndex: number,
-                                           componentBinding: Binding, injector: Injector = null) {
-    var elementInjector = hostView.elementInjectors[boundElementIndex];
-    if (isPresent(elementInjector.getDynamicallyLoadedComponent())) {
-      throw new BaseException(
-          `There already is a dynamic component loaded at element ${boundElementIndex}`);
+    var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
+    if (isBlank(elementInjector.getHost()) && isBlank(injector)) {
+      injector = elementInjector.getShadowDomAppInjector();
     }
-    if (isBlank(injector)) {
-      injector = elementInjector.getLightDomAppInjector();
-    }
-    var annotation = this._directiveResolver.resolve(componentBinding.token);
-    var componentDirective = eli.DirectiveBinding.createFromBinding(componentBinding, annotation);
-    elementInjector.dynamicallyCreateComponent(componentDirective, injector);
+    this._hydrateView(view, injector, elementInjector.getHost(), contextView.context,
+                      contextView.locals);
   }
 
   _hydrateView(view: viewModule.AppView, appInjector: Injector,

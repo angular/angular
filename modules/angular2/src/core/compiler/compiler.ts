@@ -33,6 +33,7 @@ import * as renderApi from 'angular2/src/render/api';
 @Injectable()
 export class CompilerCache {
   _cache: Map<Type, AppProtoView> = MapWrapper.create();
+  _hostCache: Map<Type, AppProtoView> = MapWrapper.create();
 
   set(component: Type, protoView: AppProtoView): void {
     MapWrapper.set(this._cache, component, protoView);
@@ -43,7 +44,19 @@ export class CompilerCache {
     return normalizeBlank(result);
   }
 
-  clear(): void { MapWrapper.clear(this._cache); }
+  setHost(component: Type, protoView: AppProtoView): void {
+    MapWrapper.set(this._hostCache, component, protoView);
+  }
+
+  getHost(component: Type): AppProtoView {
+    var result = MapWrapper.get(this._hostCache, component);
+    return normalizeBlank(result);
+  }
+
+  clear(): void {
+    MapWrapper.clear(this._cache);
+    MapWrapper.clear(this._hostCache);
+  }
 }
 
 /**
@@ -94,20 +107,19 @@ export class Compiler {
     Compiler._assertTypeIsComponent(componentBinding);
 
     var directiveMetadata = componentBinding.metadata;
-    return this._render.compileHost(directiveMetadata)
-        .then((hostRenderPv) => {
-          return this._compileNestedProtoViews(componentBinding, hostRenderPv, [componentBinding]);
-        })
-        .then((appProtoView) => { return new ProtoViewRef(appProtoView); });
-  }
-
-  compile(component: Type): Promise<ProtoViewRef> {
-    var componentBinding = this._bindDirective(component);
-    Compiler._assertTypeIsComponent(componentBinding);
-    var pvOrPromise = this._compile(componentBinding);
-    var pvPromise = isPromise(pvOrPromise) ? <Promise<AppProtoView>>pvOrPromise :
-                                             PromiseWrapper.resolve(pvOrPromise);
-    return pvPromise.then((appProtoView) => { return new ProtoViewRef(appProtoView); });
+    var hostPvPromise;
+    var component = <Type>componentBinding.key.token;
+    var hostAppProtoView = this._compilerCache.getHost(component);
+    if (isPresent(hostAppProtoView)) {
+      hostPvPromise = PromiseWrapper.resolve(hostAppProtoView);
+    } else {
+      hostPvPromise = this._render.compileHost(directiveMetadata)
+                          .then((hostRenderPv) => {
+                            return this._compileNestedProtoViews(componentBinding, hostRenderPv,
+                                                                 [componentBinding]);
+                          });
+    }
+    return hostPvPromise.then((hostAppProtoView) => { return new ProtoViewRef(hostAppProtoView); });
   }
 
   private _compile(componentBinding: DirectiveBinding): Promise<AppProtoView>| AppProtoView {
@@ -128,9 +140,6 @@ export class Compiler {
       return pvPromise;
     }
     var template = this._templateResolver.resolve(component);
-    if (isBlank(template)) {
-      return null;
-    }
 
     var directives = this._flattenDirectives(template);
 
@@ -160,16 +169,17 @@ export class Compiler {
     var protoViews =
         this._protoViewFactory.createAppProtoViews(componentBinding, renderPv, directives);
     var protoView = protoViews[0];
-    // TODO(tbosch): we should be caching host protoViews as well!
-    // -> need a separate cache for this...
-    if (renderPv.type === renderApi.ViewType.COMPONENT && isPresent(componentBinding)) {
-      // Populate the cache before compiling the nested components,
-      // so that components can reference themselves in their template.
+    if (isPresent(componentBinding)) {
       var component = componentBinding.key.token;
-      this._compilerCache.set(component, protoView);
-      MapWrapper.delete(this._compiling, component);
+      if (renderPv.type === renderApi.ViewType.COMPONENT) {
+        // Populate the cache before compiling the nested components,
+        // so that components can reference themselves in their template.
+        this._compilerCache.set(component, protoView);
+        MapWrapper.delete(this._compiling, component);
+      } else {
+        this._compilerCache.setHost(component, protoView);
+      }
     }
-
     var nestedPVPromises = [];
     ListWrapper.forEach(this._collectComponentElementBinders(protoViews), (elementBinder) => {
       var nestedComponent = elementBinder.componentDirective;
@@ -179,7 +189,7 @@ export class Compiler {
       if (isPromise(nestedCall)) {
         ListWrapper.push(nestedPVPromises,
                          (<Promise<AppProtoView>>nestedCall).then(elementBinderDone));
-      } else if (isPresent(nestedCall)) {
+      } else {
         elementBinderDone(<AppProtoView>nestedCall);
       }
     });

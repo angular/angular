@@ -35,18 +35,13 @@ export class DebugElement {
     return this._elementInjector.getComponent();
   }
 
-  get dynamicallyCreatedComponentInstance(): any {
-    if (!isPresent(this._elementInjector)) {
-      return null;
-    }
-    return this._elementInjector.getDynamicallyLoadedComponent();
-  }
-
   get domElement(): any {
     return resolveInternalDomView(this._parentView.render)
         .boundElements[this._boundElementIndex]
         .element;
   }
+
+  get elementRef(): ElementRef { return this._elementInjector.getElementRef(); }
 
   getDirectiveInstance(directiveIndex: number): any {
     return this._elementInjector.getDirectiveAtIndex(directiveIndex);

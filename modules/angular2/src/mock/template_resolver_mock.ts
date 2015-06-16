@@ -80,10 +80,6 @@ export class MockTemplateResolver extends TemplateResolver {
     if (isBlank(view)) {
       view = super.resolve(component);
     }
-    if (isBlank(view)) {
-      // dynamic components
-      return null;
-    }
 
     var directives = view.directives;
     var overrides = MapWrapper.get(this._directiveOverrides, component);

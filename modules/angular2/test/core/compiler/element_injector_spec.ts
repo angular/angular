@@ -671,7 +671,7 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var protoView = new AppProtoView(null, null, null);
+            var protoView = new AppProtoView(null, null, null, null);
             var bindings = ListWrapper.concat([NeedsProtoViewRef], extraBindings);
             var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, protoView));
 
@@ -871,100 +871,6 @@ export function main() {
           }));
         });
 
-        describe("dynamicallyCreateComponent", () => {
-          it("should create a component dynamically", () => {
-            var inj = injector(extraBindings);
-
-            inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null),
-                                           appInjector);
-            expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(SimpleDirective);
-            expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
-          });
-
-          it("should inject parent dependencies into the dynamically-loaded component", () => {
-            var inj = parentChildInjectors(ListWrapper.concat([SimpleDirective], extraBindings), []);
-            inj.dynamicallyCreateComponent(
-                DirectiveBinding.createFromType(NeedsDirectiveFromAncestor, null), appInjector);
-            expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
-            expect(inj.getDynamicallyLoadedComponent().dependency).toBeAnInstanceOf(SimpleDirective);
-          });
-
-          it("should not inject the proxy component into the children of the dynamically-loaded component",
-             () => {
-               var injWithDynamicallyLoadedComponent = injector([SimpleDirective]);
-               injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(
-                   DirectiveBinding.createFromType(SomeOtherDirective, null), appInjector);
-
-               var shadowDomProtoInjector =
-                   createPei(null, 0, ListWrapper.concat([NeedsDirectiveFromAncestor], extraBindings));
-               var shadowDomInj = shadowDomProtoInjector.instantiate(null);
-
-               expect(() => shadowDomInj.hydrate(appInjector, injWithDynamicallyLoadedComponent,
-                                                 defaultPreBuiltObjects))
-                   .toThrowError(containsRegexp(`No provider for ${stringify(SimpleDirective) }`));
-             });
-
-          it("should not inject the dynamically-loaded component into directives on the same element",
-             () => {
-               var dynamicComp =
-                   DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Component());
-               var proto = createPei(
-                   null, 0, ListWrapper.concat([dynamicComp, NeedsDirective], extraBindings), 1, true);
-               var inj = proto.instantiate(null);
-               inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null),
-                                              appInjector);
-
-               expect(() => inj.hydrate(Injector.resolveAndCreate([]), null, null))
-                   .toThrowError(
-                       `No provider for SimpleDirective! (${stringify(NeedsDirective) } -> ${stringify(SimpleDirective) })`);
-             });
-
-          it("should inject the dynamically-loaded component into the children of the dynamically-loaded component",
-             () => {
-               var componentDirective = DirectiveBinding.createFromType(SimpleDirective, null);
-               var injWithDynamicallyLoadedComponent = injector([]);
-               injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(componentDirective,
-                                                                            appInjector);
-
-               var shadowDomProtoInjector =
-                   createPei(null, 0, ListWrapper.concat([NeedsDirectiveFromAncestor], extraBindings));
-               var shadowDomInjector = shadowDomProtoInjector.instantiate(null);
-               shadowDomInjector.hydrate(appInjector, injWithDynamicallyLoadedComponent,
-                                         defaultPreBuiltObjects);
-
-               expect(shadowDomInjector.get(NeedsDirectiveFromAncestor))
-                   .toBeAnInstanceOf(NeedsDirectiveFromAncestor);
-               expect(shadowDomInjector.get(NeedsDirectiveFromAncestor).dependency)
-                   .toBeAnInstanceOf(SimpleDirective);
-             });
-
-          it("should remove the dynamically-loaded component when dehydrating", () => {
-            var inj = injector(extraBindings);
-            inj.dynamicallyCreateComponent(
-                DirectiveBinding.createFromType(DirectiveWithDestroy,
-                                                new dirAnn.Directive({lifecycle: [onDestroy]})),
-                appInjector);
-            var dir = inj.getDynamicallyLoadedComponent();
-
-            inj.dehydrate();
-
-            expect(inj.getDynamicallyLoadedComponent()).toBe(null);
-            expect(dir.onDestroyCounter).toBe(1);
-
-            inj.hydrate(null, null, null);
-
-            expect(inj.getDynamicallyLoadedComponent()).toBe(null);
-          });
-
-          it("should inject services of the dynamically-loaded component", () => {
-            var inj = injector(extraBindings);
-            var appInjector = Injector.resolveAndCreate([bind("service").toValue("Service")]);
-            inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedsService, null),
-                                           appInjector);
-            expect(inj.getDynamicallyLoadedComponent().service).toEqual("Service");
-          });
-        });
-
         describe('static attributes', () => {
           it('should be injectable', () => {
             var attributes = MapWrapper.create();
@@ -1016,7 +922,7 @@ export function main() {
           });
 
           it("should inject ProtoViewRef", () => {
-            var protoView = new AppProtoView(null, null, null);
+            var protoView = new AppProtoView(null, null, null, null);
             var inj = injector(ListWrapper.concat([NeedsProtoViewRef], extraBindings), null, false,
                                new PreBuiltObjects(null, null, protoView));
 

@@ -35,7 +35,7 @@ export function main() {
 
     function wrapView(view: AppView): ViewRef { return new ViewRef(view); }
 
-    function createProtoView() { return new AppProtoView(null, null, null); }
+    function createProtoView() { return new AppProtoView(null, null, null, null); }
 
     function createView() { return new AppView(null, createProtoView(), MapWrapper.create()); }
 
