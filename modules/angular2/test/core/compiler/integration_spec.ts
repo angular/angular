@@ -312,6 +312,20 @@ export function main() {
            tb.createView(MyComp, {context: ctx}).then((view) => { async.done(); });
          }));
 
+      it('should execute a given directive once, even if specified multiple times',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+           tb.overrideView(MyComp, new viewAnn.View({
+             template: '<p duplicate></p>',
+             directives: [DuplicateDir, DuplicateDir, [DuplicateDir, [DuplicateDir]]]
+           }));
+
+           tb.createView(MyComp, {context: ctx})
+               .then((view) => {
+                 expect(view.rootNodes).toHaveText('duplicate');
+                 async.done();
+               });
+         }));
+
       it('should support directives where a selector matches property binding',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            tb.overrideView(
@@ -1766,4 +1780,11 @@ class ExportDir {
 
 @Component({selector: 'comp'})
 class ComponentWithoutView {
+}
+
+@Directive({selector: '[duplicate]'})
+class DuplicateDir {
+  constructor(ngEl: ElementRef) {
+    DOM.setText(ngEl.domElement, 'duplicate' + DOM.getText(ngEl.domElement));
+  }
 }
