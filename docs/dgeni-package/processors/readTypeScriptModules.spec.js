@@ -46,16 +46,16 @@ describe('readTypeScriptModules', function() {
 
 
   describe('ordering of members', function() {
-    it('should order class members alphabetically (by default)', function() {
+    it('should order class members in order of appearance (by default)', function() {
       processor.sourceFiles = ['orderingOfMembers.ts'];
       var docs = [];
       processor.$process(docs);
       var classDoc = _.find(docs, { docType: 'class' });
       expect(classDoc.docType).toEqual('class');
       expect(getNames(classDoc.members)).toEqual([
-        'doStuff',
         'firstItem',
-        'otherMethod'
+        'otherMethod',
+        'doStuff',
       ]);
     });
 

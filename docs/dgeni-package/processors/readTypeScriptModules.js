@@ -24,8 +24,8 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     basePath: '.',
     // We can ignore members of classes that are private
     hidePrivateMembers: true,
-    // We can sort class members alphabetically
-    sortClassMembers: true,
+    // We leave class members sorted in order of declaration
+    sortClassMembers: false,
     // We can provide a collection of strings or regexes to ignore exports whose export names match
     ignoreExportsMatching: ['___esModule'],
 
