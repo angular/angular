@@ -38,29 +38,24 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   exportAs: 'form'
 })
 export class NgModel extends NgControl {
-  control: Control;
-  ngModel: EventEmitter;
+  _control = new Control("");
+  _added = false;
+  ngModel = new EventEmitter();
   model: any;
-  _added: boolean;
-
-  constructor() {
-    super();
-    this.control = new Control("");
-    this.ngModel = new EventEmitter();
-    this._added = false;
-  }
 
   onChange(c) {
     if (!this._added) {
-      setUpControl(this.control, this);
+      setUpControl(this._control, this);
       this.control.updateValidity();
       this._added = true;
     };
 
     if (StringMapWrapper.contains(c, "model")) {
-      this.control.updateValue(this.model);
+      this._control.updateValue(this.model);
     }
   }
+
+  get control() { return this._control; }
 
   get path(): List<string> { return []; }
 
