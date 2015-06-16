@@ -62,27 +62,11 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'modules',
       {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
 
-  // Use Traceur to transpile *.js sources to ES6
-  var traceurTree = transpileWithTraceur(modulesTree, {
-    destExtension: '.js',
-    destSourceMapExtension: '.map',
-    traceurOptions: {
-      sourceMaps: true,
-      annotations: true,      // parse annotations
-      types: true,            // parse types
-      script: false,          // parse as a module
-      memberVariables: true,  // parse class fields
-      modules: 'instantiate',
-      // typeAssertionModule: 'rtts_assert/rtts_assert',
-      // typeAssertions: options.typeAssertions,
-      outputLanguage: 'es6'
-    }
-  });
-
   // Use TypeScript to transpile the *.ts files to ES6
   // We don't care about errors: we let the TypeScript compilation to ES5
   // in node_tree.ts do the type-checking.
-  var typescriptTree = compileWithTypescript(modulesTree, {
+  var es6Tree = compileWithTypescript(modulesTree, {
+    module: 'Commonjs',
     allowNonTsExtensions: false,
     declaration: true,
     emitDecoratorMetadata: true,
@@ -94,7 +78,21 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     target: 'ES6'
   });
 
-  var es6Tree = mergeTrees([traceurTree, typescriptTree]);
+  // Use TypeScript to transpile the *.ts files to ES5
+  // We don't care about errors: we let the TypeScript compilation to ES5
+  // in node_tree.ts do the type-checking.
+  var es5Tree = compileWithTypescript(modulesTree, {
+    module: 'System',
+    allowNonTsExtensions: false,
+    declaration: true,
+    emitDecoratorMetadata: true,
+    mapRoot: '',           // force sourcemaps to use relative path
+    noEmitOnError: false,  // temporarily ignore errors, we type-check only via cjs build
+    rootDir: '.',
+    sourceMap: true,
+    sourceRoot: '.',
+    target: 'ES5'
+  });
 
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree = transpileWithTraceur(es6Tree, {
