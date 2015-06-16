@@ -1,4 +1,11 @@
-import {Type, isPresent, global, stringify, BaseException} from 'angular2/src/facade/lang';
+import {
+  Type,
+  isPresent,
+  isFunction,
+  global,
+  stringify,
+  BaseException
+} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
@@ -118,7 +125,11 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   annotations(typeOfFunc): List<any> {
     // Prefer the direct API.
     if (isPresent(typeOfFunc.annotations)) {
-      return typeOfFunc.annotations;
+      var annotations = typeOfFunc.annotations;
+      if (isFunction(annotations) && annotations.annotations) {
+        annotations = annotations.annotations;
+      }
+      return annotations;
     }
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
       var annotations = this._reflect.getMetadata('annotations', typeOfFunc);
