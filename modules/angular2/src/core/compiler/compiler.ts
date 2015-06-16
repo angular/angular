@@ -153,8 +153,8 @@ export class Compiler {
       }
     }
 
-    var boundDirectives =
-        ListWrapper.map(directives, (directive) => this._bindDirective(directive));
+    var boundDirectives = this._removeDuplicatedDirectives(
+        ListWrapper.map(directives, (directive) => this._bindDirective(directive)));
 
     var renderTemplate = this._buildRenderTemplate(component, view, boundDirectives);
     pvPromise =
@@ -165,6 +165,12 @@ export class Compiler {
 
     this._compiling.set(component, pvPromise);
     return pvPromise;
+  }
+
+  private _removeDuplicatedDirectives(directives: List<DirectiveBinding>): List<DirectiveBinding> {
+    var directivesMap: Map<number, DirectiveBinding> = new Map();
+    directives.forEach((dirBinding) => { directivesMap.set(dirBinding.key.id, dirBinding); });
+    return MapWrapper.values(directivesMap);
   }
 
   private _compileNestedProtoViews(componentBinding, renderPv, directives): Promise<AppProtoView>|
