@@ -6096,7 +6096,7 @@
       "dependencies": {
         "clang-format": {
           "version": "1.0.19",
-          "from": "clang-format@1.0.19",
+          "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.19.tgz",
           "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.19.tgz"
         },
         "gulp-util": {
@@ -13727,9 +13727,21 @@
       }
     },
     "systemjs": {
-      "version": "0.9.3",
-      "from": "https://registry.npmjs.org/systemjs/-/systemjs-0.9.3.tgz",
-      "resolved": "https://registry.npmjs.org/systemjs/-/systemjs-0.9.3.tgz"
+      "version": "0.18.1",
+      "from": "systemjs@0.18.1",
+      "resolved": "https://registry.npmjs.org/systemjs/-/systemjs-0.18.1.tgz",
+      "dependencies": {
+        "es6-module-loader": {
+          "version": "0.17.1",
+          "from": "es6-module-loader@>=0.17.1 <0.18.0",
+          "resolved": "https://registry.npmjs.org/es6-module-loader/-/es6-module-loader-0.17.1.tgz"
+        },
+        "when": {
+          "version": "3.7.3",
+          "from": "when@>=3.7.2 <4.0.0",
+          "resolved": "https://registry.npmjs.org/when/-/when-3.7.3.tgz"
+        }
+      }
     },
     "systemjs-builder": {
       "version": "0.10.6",
@@ -14132,32 +14144,33 @@
     "ts2dart": {
       "version": "0.6.4",
       "from": "ts2dart@0.6.4",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.6.4.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
-          "from": "source-map@>=0.4.2 <0.5.0",
+          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.2.tgz",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.2.tgz",
           "dependencies": {
             "amdefine": {
               "version": "0.1.1",
-              "from": "amdefine@>=0.0.4",
+              "from": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz",
               "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz"
             }
           }
         },
         "source-map-support": {
           "version": "0.3.1",
-          "from": "source-map-support@>=0.3.1 <0.4.0",
+          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.1.tgz",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.1.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "source-map@0.1.32",
+              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "dependencies": {
                 "amdefine": {
                   "version": "0.1.1",
-                  "from": "amdefine@>=0.0.4",
+                  "from": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz",
                   "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz"
                 }
               }
@@ -14166,7 +14179,7 @@
         },
         "typescript": {
           "version": "1.5.0",
-          "from": "alexeagle/TypeScript#error_is_class",
+          "from": "git://github.com/alexeagle/TypeScript.git#be9a7edff73ac2592e508732c771c85357041385",
           "resolved": "git://github.com/alexeagle/TypeScript.git#be9a7edff73ac2592e508732c771c85357041385"
         }
       }

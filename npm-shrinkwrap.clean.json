@@ -8875,7 +8875,15 @@
       }
     },
     "systemjs": {
-      "version": "0.9.3"
+      "version": "0.18.1",
+      "dependencies": {
+        "es6-module-loader": {
+          "version": "0.17.1"
+        },
+        "when": {
+          "version": "3.7.3"
+        }
+      }
     },
     "systemjs-builder": {
       "version": "0.10.6",
