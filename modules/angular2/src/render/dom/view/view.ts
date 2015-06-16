@@ -17,9 +17,6 @@ export class DomViewRef extends RenderViewRef {
   constructor(public _view: DomView) { super(); }
 }
 
-
-const NG_BINDING_CLASS = 'ng-binding';
-
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
