@@ -56,16 +56,19 @@ export function main() {
     describe('Class', () => {
       it('should create a class', () => {
         var i0, i1;
-        var MyClass = Class({
-          extends: Class({
-            constructor: function() {},
-            extendWorks: function() { return 'extend ' + this.arg; }
-          }),
-          constructor: [String, function(arg) { this.arg = arg; }],
-          methodA: [i0 = new Inject(String), [i1 = Inject(String), Number], function(a, b) {}],
-          works: function() { return this.arg; },
-          prototype: 'IGNORE'
-        });
+        var MyClass =
+            (<any>TestDecorator('test-works'))
+                .Class({
+                  extends: Class({
+                    constructor: function() {},
+                    extendWorks: function() { return 'extend ' + this.arg; }
+                  }),
+                  constructor: [String, function(arg) { this.arg = arg; }],
+                  methodA:
+                      [i0 = new Inject(String), [i1 = Inject(String), Number], function(a, b) {}],
+                  works: function() { return this.arg; },
+                  prototype: 'IGNORE'
+                });
         var obj: any = new MyClass('WORKS');
         expect(obj.arg).toEqual('WORKS');
         expect(obj.works()).toEqual('WORKS');
@@ -76,6 +79,8 @@ export function main() {
         var proto = (<Function>MyClass).prototype;
         expect(proto.extends).toEqual(undefined);
         expect(proto.prototype).toEqual(undefined);
+
+        expect(reflector.annotations(MyClass)[0].arg).toEqual('test-works')
       });
 
       describe('errors', () => {

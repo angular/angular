@@ -79,6 +79,11 @@ export function Class(clsDef: ClassDefinition): Type {
       proto[key] = applyParams(clsDef[key], key);
     }
   }
+
+  if (this && this.annotations instanceof Array) {
+    Reflect.defineMetadata('annotations', this.annotations, constructor);
+  }
+
   return <Type>constructor;
 }
 
