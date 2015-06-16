@@ -55,7 +55,9 @@ describe('MergeTrees', () => {
     let treeDiffer = MakeTreeDiffers(['tree1', 'tree2', 'tree3']);
     let treeMerger = mergeTrees(['tree1', 'tree2', 'tree3'], 'dest', {});
     expect(() => treeMerger.rebuild(treeDiffer.diffTrees()))
-        .toThrowError("`overwrite` option is required for handling duplicates.");
+        .toThrowError(
+            'Duplicate path found while merging trees. Path: "foo.js".\n' +
+            'Either remove the duplicate or enable the "overwrite" option for this merge.');
 
     testDir = {
       'tree1': {'foo.js': mockfs.file({content: 'tree1/foo.js content', mtime: new Date(1000)})},
@@ -82,6 +84,8 @@ describe('MergeTrees', () => {
     testDir.tree2['foo.js'] = mockfs.file({content: 'tree2/foo.js content', mtime: new Date(1000)});
     mockfs(testDir);
     expect(() => treeMerger.rebuild(treeDiffer.diffTrees()))
-        .toThrowError("`overwrite` option is required for handling duplicates.");
+        .toThrowError(
+            'Duplicate path found while merging trees. Path: "foo.js".\n' +
+            'Either remove the duplicate or enable the "overwrite" option for this merge.');
   });
 });
