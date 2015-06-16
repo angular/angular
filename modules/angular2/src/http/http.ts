@@ -25,10 +25,10 @@ function httpRequest(backend: XHRBackend, request: Request) {
  * Performs http requests using `XMLHttpRequest`.
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
- *`request` returns an
- *[Observable](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md),
- *which will emit a single {@link Response} when a response is
- *received.
+ * `request` returns an
+ * [Observable](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md),
+ * which will emit a single {@link Response} when a response is
+ * received.
  *
  * #Example
  *
@@ -49,8 +49,8 @@ function httpRequest(backend: XHRBackend, request: Request) {
  * ```
  *
  * The construct used to perform requests, `XMLHttpRequest`, is abstracted as a "Backend" ({@link
- *XHRBackend} in this case), which could be mocked with dependency injection by replacing the {@link
- *XHRBackend} binding, as in the following example:
+ * XHRBackend} in this case), which could be mocked with dependency injection by replacing the
+ * {@link XHRBackend} binding, as in the following example:
  *
  * #Example
  *
@@ -151,8 +151,8 @@ if (Rx.hasOwnProperty('default')) {
 /**
  *
  * Alias to the `request` method of {@link Http}, for those who'd prefer a simple function instead
- *of an object. In order to get TypeScript type information about the `HttpFactory`, the {@link
- *IHttp} interface can be used as shown in the following example.
+ * of an object. In order to get TypeScript type information about the `HttpFactory`, the {@link
+ * IHttp} interface can be used as shown in the following example.
  *
  * #Example
  *

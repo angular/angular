@@ -2,6 +2,7 @@ import {Injectable} from 'angular2/di';
 import {Request} from 'angular2/src/http/static_request';
 import {Response} from 'angular2/src/http/static_response';
 import {ReadyStates} from 'angular2/src/http/enums';
+import {Connection, ConnectionBackend} from 'angular2/src/http/interfaces';
 import * as Rx from 'rx';
 
 /**
@@ -13,7 +14,7 @@ import * as Rx from 'rx';
  * {@link MockBackend} in order to mock responses to requests.
  *
  **/
-export class MockConnection {
+export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than XHR states.
   /**
@@ -136,7 +137,7 @@ export class MockConnection {
  * This method only exists in the mock implementation, not in real Backends.
  **/
 @Injectable()
-export class MockBackend {
+export class MockBackend implements ConnectionBackend {
   /**
    * [RxJS
    * Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/subjects/subject.md)
@@ -223,7 +224,7 @@ export class MockBackend {
   resolveAllConnections() { this.connections.subscribe((c) => c.readyState = 4); }
 
   /**
-   * Used by {@link Http} to create a new connection. This is equivalent to calling `new
+   * Creates a new {@link MockConnection}. This is equivalent to calling `new
    * MockConnection()`, except that it also will emit the new `Connection` to the `connections`
    * observable of this `MockBackend` instance. This method will usually only be used by tests
    * against the framework itself, not by end-users.
