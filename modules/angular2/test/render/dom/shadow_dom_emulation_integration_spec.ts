@@ -34,10 +34,6 @@ import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 
 import {DomTestbed} from './dom_testbed';
 
-import {Injectable} from 'angular2/di';
-
-import {Component, View} from 'angular2/annotations';
-
 export function main() {
   describe('ShadowDom integration tests', function() {
     var strategies = {
