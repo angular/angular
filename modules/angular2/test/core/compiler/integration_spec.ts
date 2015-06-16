@@ -299,6 +299,40 @@ export function main() {
                .then((rootTC) => { async.done(); });
          }));
 
+      it('should execute a given directive once, even if specified multiple times',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: '<p no-duplicate></p>',
+                directives: [
+                  DuplicateDir,
+                  DuplicateDir,
+                  [DuplicateDir, [DuplicateDir, bind(DuplicateDir).toClass(DuplicateDir)]]
+                ]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 expect(rootTC.nativeElement).toHaveText('noduplicate');
+                 async.done();
+               });
+         }));
+
+      it('should use the last directive binding per directive',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: '<p no-duplicate></p>',
+                directives: [
+                  bind(DuplicateDir)
+                      .toClass(DuplicateDir),
+                  bind(DuplicateDir).toClass(OtherDuplicateDir)
+                ]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 expect(rootTC.nativeElement).toHaveText('othernoduplicate');
+                 async.done();
+               });
+         }));
+
       it('should support directives where a selector matches property binding',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View(
@@ -1804,4 +1838,18 @@ class ExportDir {
 
 @Component({selector: 'comp'})
 class ComponentWithoutView {
+}
+
+@Directive({selector: '[no-duplicate]'})
+class DuplicateDir {
+  constructor(renderer: DomRenderer, private elRef: ElementRef) {
+    DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'noduplicate');
+  }
+}
+
+@Directive({selector: '[no-duplicate]'})
+class OtherDuplicateDir {
+  constructor(renderer: DomRenderer, private elRef: ElementRef) {
+    DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'othernoduplicate');
+  }
 }
