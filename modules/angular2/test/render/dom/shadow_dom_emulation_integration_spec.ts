@@ -516,3 +516,9 @@ var tabTemplate = new ViewDefinition({
   template: '<div><div *auto="cond">TAB(<content></content>)</div></div>',
   directives: [autoViewportDirective]
 });
+
+@Component({selector: 'textAfterContent'})
+@View({template: `<content></content><p>P,</p>{{ 'text' }}`})
+@Injectable()
+class TextAfterContentTag {
+}
