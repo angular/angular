@@ -55,10 +55,9 @@ var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
 
 @Injectable()
 export class Parser {
-  _lexer: Lexer;
   _reflector: Reflector;
-  constructor(lexer: Lexer, providedReflector: Reflector = null) {
-    this._lexer = lexer;
+
+  constructor(public _lexer: Lexer, providedReflector: Reflector = null) {
     this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 
@@ -116,11 +115,9 @@ export class Parser {
 }
 
 class _ParseAST {
-  index: int;
+  index: int = 0;
   constructor(public input: string, public location: any, public tokens: List<any>,
-              public reflector: Reflector, public parseAction: boolean) {
-    this.index = 0;
-  }
+              public reflector: Reflector, public parseAction: boolean) {}
 
   peek(offset: int): Token {
     var i = this.index + offset;

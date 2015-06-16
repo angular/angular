@@ -17,11 +17,7 @@ export class NullPipeFactory extends PipeFactory {
  * @exportedAs angular2/pipes
  */
 export class NullPipe extends Pipe {
-  called: boolean;
-  constructor() {
-    super();
-    this.called = false;
-  }
+  called: boolean = false;
 
   static supportsObj(obj): boolean { return isBlank(obj); }
 

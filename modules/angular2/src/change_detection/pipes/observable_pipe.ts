@@ -30,22 +30,13 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * @exportedAs angular2/pipes
  */
 export class ObservablePipe extends Pipe {
-  _ref: ChangeDetectorRef;
+  _latestValue: Object = null;
+  _latestReturnedValue: Object = null;
 
-  _latestValue: Object;
-  _latestReturnedValue: Object;
+  _subscription: Object = null;
+  _observable: Observable = null;
 
-  _subscription: Object;
-  _observable: Observable;
-
-  constructor(ref: ChangeDetectorRef) {
-    super();
-    this._ref = ref;
-    this._latestValue = null;
-    this._latestReturnedValue = null;
-    this._subscription = null;
-    this._observable = null;
-  }
+  constructor(public _ref: ChangeDetectorRef) { super(); }
 
   supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 

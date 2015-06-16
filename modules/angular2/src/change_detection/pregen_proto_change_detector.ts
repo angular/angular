@@ -6,8 +6,6 @@ import {coalesce} from './coalesce';
 export {Function as PregenProtoChangeDetectorFactory};
 
 export class PregenProtoChangeDetector extends ProtoChangeDetector {
-  constructor() { super(); }
-
   static isSupported(): boolean { return false; }
 
   instantiate(dispatcher: any): ChangeDetector {

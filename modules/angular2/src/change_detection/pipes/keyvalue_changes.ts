@@ -19,28 +19,15 @@ export class KeyValueChangesFactory extends PipeFactory {
  * @exportedAs angular2/pipes
  */
 export class KeyValueChanges extends Pipe {
-  private _records: Map<any, any>;
-  private _mapHead: KVChangeRecord;
-  private _previousMapHead: KVChangeRecord;
-  private _changesHead: KVChangeRecord;
-  private _changesTail: KVChangeRecord;
-  private _additionsHead: KVChangeRecord;
-  private _additionsTail: KVChangeRecord;
-  private _removalsHead: KVChangeRecord;
-  private _removalsTail: KVChangeRecord;
-
-  constructor() {
-    super();
-    this._records = MapWrapper.create();
-    this._mapHead = null;
-    this._previousMapHead = null;
-    this._changesHead = null;
-    this._changesTail = null;
-    this._additionsHead = null;
-    this._additionsTail = null;
-    this._removalsHead = null;
-    this._removalsTail = null;
-  }
+  private _records: Map<any, any> = MapWrapper.create();
+  private _mapHead: KVChangeRecord = null;
+  private _previousMapHead: KVChangeRecord = null;
+  private _changesHead: KVChangeRecord = null;
+  private _changesTail: KVChangeRecord = null;
+  private _additionsHead: KVChangeRecord = null;
+  private _additionsTail: KVChangeRecord = null;
+  private _removalsHead: KVChangeRecord = null;
+  private _removalsTail: KVChangeRecord = null;
 
   static supportsObj(obj): boolean { return obj instanceof Map || isJsObject(obj); }
 
@@ -347,29 +334,17 @@ export class KeyValueChanges extends Pipe {
  * @exportedAs angular2/pipes
  */
 export class KVChangeRecord {
-  key;
-  previousValue;
-  currentValue;
+  previousValue: any = null;
+  currentValue: any = null;
 
-  _nextPrevious: KVChangeRecord;
-  _next: KVChangeRecord;
-  _nextAdded: KVChangeRecord;
-  _nextRemoved: KVChangeRecord;
-  _prevRemoved: KVChangeRecord;
-  _nextChanged: KVChangeRecord;
+  _nextPrevious: KVChangeRecord = null;
+  _next: KVChangeRecord = null;
+  _nextAdded: KVChangeRecord = null;
+  _nextRemoved: KVChangeRecord = null;
+  _prevRemoved: KVChangeRecord = null;
+  _nextChanged: KVChangeRecord = null;
 
-  constructor(key) {
-    this.key = key;
-    this.previousValue = null;
-    this.currentValue = null;
-
-    this._nextPrevious = null;
-    this._next = null;
-    this._nextAdded = null;
-    this._nextRemoved = null;
-    this._prevRemoved = null;
-    this._nextChanged = null;
-  }
+  constructor(public key: any) {}
 
   toString(): string {
     return looseIdentical(this.previousValue, this.currentValue) ?

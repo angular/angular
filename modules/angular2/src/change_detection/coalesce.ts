@@ -13,8 +13,8 @@ import {RecordType, ProtoRecord} from './proto_record';
  * replaced with very cheap SELF records.
  */
 export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
-  var res = ListWrapper.create();
-  var indexMap = MapWrapper.create();
+  var res: List<ProtoRecord> = ListWrapper.create();
+  var indexMap: Map<number, number> = MapWrapper.create();
 
   for (var i = 0; i < records.length; ++i) {
     var r = records[i];

@@ -13,50 +13,53 @@ export class BindingRecord {
               public elementIndex: number, public propertyName: string, public setter: SetterFn,
               public lifecycleEvent: string, public directiveRecord: DirectiveRecord) {}
 
-  callOnChange() { return isPresent(this.directiveRecord) && this.directiveRecord.callOnChange; }
+  callOnChange(): boolean {
+    return isPresent(this.directiveRecord) && this.directiveRecord.callOnChange;
+  }
 
-  isOnPushChangeDetection() {
+  isOnPushChangeDetection(): boolean {
     return isPresent(this.directiveRecord) && this.directiveRecord.isOnPushChangeDetection();
   }
 
-  isDirective() { return this.mode === DIRECTIVE; }
+  isDirective(): boolean { return this.mode === DIRECTIVE; }
 
-  isDirectiveLifecycle() { return this.mode === DIRECTIVE_LIFECYCLE; }
+  isDirectiveLifecycle(): boolean { return this.mode === DIRECTIVE_LIFECYCLE; }
 
-  isElement() { return this.mode === ELEMENT; }
+  isElement(): boolean { return this.mode === ELEMENT; }
 
-  isTextNode() { return this.mode === TEXT_NODE; }
+  isTextNode(): boolean { return this.mode === TEXT_NODE; }
 
   static createForDirective(ast: AST, propertyName: string, setter: SetterFn,
-                            directiveRecord: DirectiveRecord) {
+                            directiveRecord: DirectiveRecord): BindingRecord {
     return new BindingRecord(DIRECTIVE, 0, ast, 0, propertyName, setter, null, directiveRecord);
   }
 
-  static createDirectiveOnCheck(directiveRecord: DirectiveRecord) {
+  static createDirectiveOnCheck(directiveRecord: DirectiveRecord): BindingRecord {
     return new BindingRecord(DIRECTIVE_LIFECYCLE, 0, null, 0, null, null, "onCheck",
                              directiveRecord);
   }
 
-  static createDirectiveOnInit(directiveRecord: DirectiveRecord) {
+  static createDirectiveOnInit(directiveRecord: DirectiveRecord): BindingRecord {
     return new BindingRecord(DIRECTIVE_LIFECYCLE, 0, null, 0, null, null, "onInit",
                              directiveRecord);
   }
 
-  static createDirectiveOnChange(directiveRecord: DirectiveRecord) {
+  static createDirectiveOnChange(directiveRecord: DirectiveRecord): BindingRecord {
     return new BindingRecord(DIRECTIVE_LIFECYCLE, 0, null, 0, null, null, "onChange",
                              directiveRecord);
   }
 
-  static createForElement(ast: AST, elementIndex: number, propertyName: string) {
+  static createForElement(ast: AST, elementIndex: number, propertyName: string): BindingRecord {
     return new BindingRecord(ELEMENT, 0, ast, elementIndex, propertyName, null, null, null);
   }
 
-  static createForHostProperty(directiveIndex: DirectiveIndex, ast: AST, propertyName: string) {
+  static createForHostProperty(directiveIndex: DirectiveIndex, ast: AST,
+                               propertyName: string): BindingRecord {
     return new BindingRecord(ELEMENT, directiveIndex, ast, directiveIndex.elementIndex,
                              propertyName, null, null, null);
   }
 
-  static createForTextNode(ast: AST, elementIndex: number) {
+  static createForTextNode(ast: AST, elementIndex: number): BindingRecord {
     return new BindingRecord(TEXT_NODE, 0, ast, elementIndex, null, null, null, null);
   }
 }

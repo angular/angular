@@ -5,41 +5,38 @@ import {ChangeDetector} from './interfaces';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
 export class AbstractChangeDetector extends ChangeDetector {
-  lightDomChildren: List<any>;
-  shadowDomChildren: List<any>;
+  lightDomChildren: List<any> = [];
+  shadowDomChildren: List<any> = [];
   parent: ChangeDetector;
-  mode: string;
+  mode: string = null;
   ref: ChangeDetectorRef;
 
   constructor() {
     super();
-    this.lightDomChildren = [];
-    this.shadowDomChildren = [];
     this.ref = new ChangeDetectorRef(this);
-    this.mode = null;
   }
 
-  addChild(cd: ChangeDetector) {
+  addChild(cd: ChangeDetector): void {
     ListWrapper.push(this.lightDomChildren, cd);
     cd.parent = this;
   }
 
-  removeChild(cd: ChangeDetector) { ListWrapper.remove(this.lightDomChildren, cd); }
+  removeChild(cd: ChangeDetector): void { ListWrapper.remove(this.lightDomChildren, cd); }
 
-  addShadowDomChild(cd: ChangeDetector) {
+  addShadowDomChild(cd: ChangeDetector): void {
     ListWrapper.push(this.shadowDomChildren, cd);
     cd.parent = this;
   }
 
-  removeShadowDomChild(cd: ChangeDetector) { ListWrapper.remove(this.shadowDomChildren, cd); }
+  removeShadowDomChild(cd: ChangeDetector): void { ListWrapper.remove(this.shadowDomChildren, cd); }
 
-  remove() { this.parent.removeChild(this); }
+  remove(): void { this.parent.removeChild(this); }
 
-  detectChanges() { this._detectChanges(false); }
+  detectChanges(): void { this._detectChanges(false); }
 
-  checkNoChanges() { this._detectChanges(true); }
+  checkNoChanges(): void { this._detectChanges(true); }
 
-  _detectChanges(throwOnChange: boolean) {
+  _detectChanges(throwOnChange: boolean): void {
     if (this.mode === DETACHED || this.mode === CHECKED) return;
 
     this.detectChangesInRecords(throwOnChange);
@@ -53,26 +50,26 @@ export class AbstractChangeDetector extends ChangeDetector {
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
   }
 
-  detectChangesInRecords(throwOnChange: boolean) {}
-  callOnAllChangesDone() {}
+  detectChangesInRecords(throwOnChange: boolean): void {}
+  callOnAllChangesDone(): void {}
 
-  _detectChangesInLightDomChildren(throwOnChange: boolean) {
+  _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;
     for (var i = 0; i < c.length; ++i) {
       c[i]._detectChanges(throwOnChange);
     }
   }
 
-  _detectChangesInShadowDomChildren(throwOnChange: boolean) {
+  _detectChangesInShadowDomChildren(throwOnChange: boolean): void {
     var c = this.shadowDomChildren;
     for (var i = 0; i < c.length; ++i) {
       c[i]._detectChanges(throwOnChange);
     }
   }
 
-  markAsCheckOnce() { this.mode = CHECK_ONCE; }
+  markAsCheckOnce(): void { this.mode = CHECK_ONCE; }
 
-  markPathToRootAsCheckOnce() {
+  markPathToRootAsCheckOnce(): void {
     var c: ChangeDetector = this;
     while (isPresent(c) && c.mode != DETACHED) {
       if (c.mode === CHECKED) c.mode = CHECK_ONCE;
