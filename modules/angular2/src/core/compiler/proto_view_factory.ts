@@ -143,8 +143,8 @@ export class ProtoViewFactory {
         ListWrapper.map(allDirectives, directiveBinding => directiveBinding.metadata);
     var nestedPvsWithIndex = _collectNestedProtoViews(rootRenderProtoView);
     var nestedPvVariableBindings = _collectNestedProtoViewsVariableBindings(nestedPvsWithIndex);
-    var nestedPvVariableNames =
-        _collectNestedProtoViewsVariableNames(nestedPvsWithIndex, nestedPvVariableBindings);
+    var nestedPvVariableNames = _collectNestedProtoViewsVariableNames(nestedPvsWithIndex);
+
     var changeDetectorDefs =
         _getChangeDetectorDefinitions(hostComponentBinding.metadata, nestedPvsWithIndex,
                                       nestedPvVariableNames, allRenderDirectiveMetadata);
@@ -174,10 +174,7 @@ export function getChangeDetectorDefinitions(
     hostComponentMetadata: renderApi.DirectiveMetadata, rootRenderProtoView: renderApi.ProtoViewDto,
     allRenderDirectiveMetadata: List<renderApi.DirectiveMetadata>): List<ChangeDetectorDefinition> {
   var nestedPvsWithIndex = _collectNestedProtoViews(rootRenderProtoView);
-  var nestedPvVariableBindings = _collectNestedProtoViewsVariableBindings(nestedPvsWithIndex);
-  var nestedPvVariableNames =
-      _collectNestedProtoViewsVariableNames(nestedPvsWithIndex, nestedPvVariableBindings);
-
+  var nestedPvVariableNames = _collectNestedProtoViewsVariableNames(nestedPvsWithIndex);
   return _getChangeDetectorDefinitions(hostComponentMetadata, nestedPvsWithIndex,
                                        nestedPvVariableNames, allRenderDirectiveMetadata);
 }
@@ -235,8 +232,6 @@ function _createAppProtoView(
     variableBindings: Map<string, string>, allDirectives: List<DirectiveBinding>): AppProtoView {
   var elementBinders = renderProtoView.elementBinders;
   var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings);
-
-  // TODO: vsavkin refactor to pass element binders into proto view
   _createElementBinders(protoView, elementBinders, allDirectives);
   _bindDirectiveEvents(protoView, elementBinders);
 
@@ -255,31 +250,30 @@ function _createVariableBindings(renderProtoView): Map<string, string> {
   MapWrapper.forEach(renderProtoView.variableBindings, (mappedName, varName) => {
     MapWrapper.set(variableBindings, varName, mappedName);
   });
-  ListWrapper.forEach(renderProtoView.elementBinders, binder => {
-    MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => {
-      MapWrapper.set(variableBindings, varName, mappedName);
-    });
-  });
   return variableBindings;
 }
 
 function _collectNestedProtoViewsVariableNames(
-    nestedPvsWithIndex: List<RenderProtoViewWithIndex>,
-    nestedPvVariableBindings: List<Map<string, string>>): List<List<string>> {
+    nestedPvsWithIndex: List<RenderProtoViewWithIndex>): List<List<string>> {
   var nestedPvVariableNames = ListWrapper.createFixedSize(nestedPvsWithIndex.length);
   ListWrapper.forEach(nestedPvsWithIndex, (pvWithIndex) => {
     var parentVariableNames =
         isPresent(pvWithIndex.parentIndex) ? nestedPvVariableNames[pvWithIndex.parentIndex] : null;
     nestedPvVariableNames[pvWithIndex.index] =
-        _createVariableNames(parentVariableNames, nestedPvVariableBindings[pvWithIndex.index]);
+        _createVariableNames(parentVariableNames, pvWithIndex.renderProtoView);
   });
   return nestedPvVariableNames;
 }
 
-function _createVariableNames(parentVariableNames, variableBindings): List<string> {
-  var variableNames = isPresent(parentVariableNames) ? ListWrapper.clone(parentVariableNames) : [];
-  MapWrapper.forEach(variableBindings, (local, v) => { ListWrapper.push(variableNames, local); });
-  return variableNames;
+
+function _createVariableNames(parentVariableNames, renderProtoView): List<string> {
+  var res = isBlank(parentVariableNames) ? [] : ListWrapper.clone(parentVariableNames);
+  MapWrapper.forEach(renderProtoView.variableBindings,
+                     (mappedName, varName) => { res.push(mappedName); });
+  ListWrapper.forEach(renderProtoView.elementBinders, binder => {
+    MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => { res.push(mappedName); });
+  });
+  return res;
 }
 
 function _createElementBinders(protoView, elementBinders, allDirectiveBindings) {

@@ -544,6 +544,24 @@ export function main() {
                    async.done();
                  });
            }));
+
+        it('should allow to use variables in a for loop',
+           inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+             tb.overrideView(MyComp, new viewAnn.View({
+               template:
+                   '<div><div *ng-for="var i of [1]"><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</div></div>',
+               directives: [ChildCompNoTemplate, NgFor]
+             }));
+
+             tb.createView(MyComp, {context: ctx})
+                 .then((view) => {
+                   view.detectChanges();
+
+                   expect(view.rootNodes).toHaveText("1-hello");
+
+                   async.done();
+                 });
+           }));
       });
 
       describe("ON_PUSH components", () => {
@@ -1341,6 +1359,13 @@ class ChildComp {
     this.ctxProp = service.greeting;
     this.dirProp = null;
   }
+}
+
+@Component({selector: 'child-cmp-no-template'})
+@View({directives: [], template: ''})
+@Injectable()
+class ChildCompNoTemplate {
+  ctxProp: string = 'hello';
 }
 
 @Component({selector: 'child-cmp-svc'})
