@@ -57,6 +57,14 @@ declare module "{$ module.id $}" {
     ;
   {%- endfor %}
   }
+
+  {%- elif export.docType == 'enum' %} {
+    {%- for member in export.members %} 
+    {$ member $}{% if not loop.last %}, 
+    {%- endif -%} 
+    {%- endfor %}
+  }
+
   {%- else -%}
     {% if export.parameters %}({% for param in export.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
     {%- if export.returnType %} : {$ export.returnType $} {% endif -%}

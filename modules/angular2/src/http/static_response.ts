@@ -1,4 +1,4 @@
-import {Response as IResponse, ResponseOptions} from './interfaces';
+import {IResponse, ResponseOptions} from './interfaces';
 import {ResponseTypes} from './enums';
 import {baseResponseOptions} from './base_response_options';
 import {BaseException, isJsObject, isString, global} from 'angular2/src/facade/lang';

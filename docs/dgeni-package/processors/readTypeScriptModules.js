@@ -91,6 +91,13 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
             }
           }
 
+          if (exportDoc.docType == 'enum') {
+            exportDoc.members = [];
+            for (var etype in resolvedExport.exports) {
+              exportDoc.members.push(etype);
+            }
+          }
+
           // Add this export doc to its module doc
           moduleDoc.exports.push(exportDoc);
           docs.push(exportDoc);
@@ -165,6 +172,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       fileInfo: getFileInfo(exportSymbol, basePath),
       location: getLocation(exportSymbol)
     };
+
     if(exportSymbol.flags & ts.SymbolFlags.Function) {
       exportDoc.parameters = getParameters(typeChecker, exportSymbol);
     }
