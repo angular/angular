@@ -1,6 +1,6 @@
 import {RequestMethods, RequestModesOpts, RequestCredentialsOpts} from './enums';
 import {URLSearchParams} from './url_search_params';
-import {IRequestOptions, Request as IRequest} from './interfaces';
+import {IRequestOptions, IRequest} from './interfaces';
 import {Headers} from './headers';
 import {BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
 
