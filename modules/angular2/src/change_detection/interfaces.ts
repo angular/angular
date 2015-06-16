@@ -47,17 +47,17 @@ export class ChangeDetector {
   parent: ChangeDetector;
   mode: string;
 
-  addChild(cd: ChangeDetector) {}
-  addShadowDomChild(cd: ChangeDetector) {}
-  removeChild(cd: ChangeDetector) {}
-  removeShadowDomChild(cd: ChangeDetector) {}
-  remove() {}
-  hydrate(context: any, locals: Locals, directives: any) {}
-  dehydrate() {}
-  markPathToRootAsCheckOnce() {}
+  addChild(cd: ChangeDetector): void {}
+  addShadowDomChild(cd: ChangeDetector): void {}
+  removeChild(cd: ChangeDetector): void {}
+  removeShadowDomChild(cd: ChangeDetector): void {}
+  remove(): void {}
+  hydrate(context: any, locals: Locals, directives: any): void {}
+  dehydrate(): void {}
+  markPathToRootAsCheckOnce(): void {}
 
-  detectChanges() {}
-  checkNoChanges() {}
+  detectChanges(): void {}
+  checkNoChanges(): void {}
 }
 
 export class ChangeDetectorDefinition {

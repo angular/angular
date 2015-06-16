@@ -8,12 +8,12 @@ import {
   isPresent
 } from "angular2/src/facade/lang";
 
-export const TOKEN_TYPE_CHARACTER = 1;
-export const TOKEN_TYPE_IDENTIFIER = 2;
-export const TOKEN_TYPE_KEYWORD = 3;
-export const TOKEN_TYPE_STRING = 4;
-export const TOKEN_TYPE_OPERATOR = 5;
-export const TOKEN_TYPE_NUMBER = 6;
+const TOKEN_TYPE_CHARACTER = 1;
+const TOKEN_TYPE_IDENTIFIER = 2;
+const TOKEN_TYPE_KEYWORD = 3;
+const TOKEN_TYPE_STRING = 4;
+const TOKEN_TYPE_OPERATOR = 5;
+const TOKEN_TYPE_NUMBER = 6;
 
 @Injectable()
 export class Lexer {
@@ -160,24 +160,18 @@ const $NBSP = 160;
 
 
 export class ScannerError extends BaseException {
-  message: string;
-  constructor(message) {
-    super();
-    this.message = message;
-  }
+  constructor(public message) { super(); }
 
-  toString() { return this.message; }
+  toString(): string { return this.message; }
 }
 
 class _Scanner {
   length: number;
-  peek: number;
-  index: number;
+  peek: number = 0;
+  index: number = -1;
 
   constructor(public input: string) {
     this.length = input.length;
-    this.peek = 0;
-    this.index = -1;
     this.advance();
   }
 

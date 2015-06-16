@@ -16,14 +16,14 @@ export class ChangeDetectorRef {
   /**
    * Request to check all ON_PUSH ancestors.
    */
-  requestCheck() { this._cd.markPathToRootAsCheckOnce(); }
+  requestCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
 
   /**
    * Detaches the change detector from the change detector tree.
    *
    * The detached change detector will not be checked until it is reattached.
    */
-  detach() { this._cd.mode = DETACHED; }
+  detach(): void { this._cd.mode = DETACHED; }
 
   /**
    * Reattach the change detector to the change detector tree.
@@ -32,7 +32,7 @@ export class ChangeDetectorRef {
    *checked during the
    * next change detection run.
    */
-  reattach() {
+  reattach(): void {
     this._cd.mode = CHECK_ALWAYS;
     this.requestCheck();
   }

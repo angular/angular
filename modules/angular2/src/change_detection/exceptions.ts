@@ -16,12 +16,10 @@ export class ExpressionChangedAfterItHasBeenChecked extends BaseException {
 
 export class ChangeDetectionError extends BaseException {
   message: string;
-  originalException: any;
   location: string;
 
-  constructor(proto: ProtoRecord, originalException: any) {
+  constructor(proto: ProtoRecord, public originalException: any) {
     super();
-    this.originalException = originalException;
     this.location = proto.expressionAsString;
     this.message = `${this.originalException} in [${this.location}]`;
   }

@@ -29,17 +29,11 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * @exportedAs angular2/pipes
  */
 export class PromisePipe extends Pipe {
-  _ref: ChangeDetectorRef;
-  _latestValue: Object;
-  _latestReturnedValue: Object;
+  _latestValue: Object = null;
+  _latestReturnedValue: Object = null;
   _sourcePromise: Promise<any>;
 
-  constructor(ref: ChangeDetectorRef) {
-    super();
-    this._ref = ref;
-    this._latestValue = null;
-    this._latestReturnedValue = null;
-  }
+  constructor(public _ref: ChangeDetectorRef) { super(); }
 
   supports(promise): boolean { return isPromise(promise); }
 

@@ -30,39 +30,23 @@ export class IterableChangesFactory extends PipeFactory {
  * @exportedAs angular2/pipes
  */
 export class IterableChanges extends Pipe {
-  private _collection;
-  private _length: int;
-  private _linkedRecords: _DuplicateMap;
-  private _unlinkedRecords: _DuplicateMap;
-  private _previousItHead: CollectionChangeRecord;
-  private _itHead: CollectionChangeRecord;
-  private _itTail: CollectionChangeRecord;
-  private _additionsHead: CollectionChangeRecord;
-  private _additionsTail: CollectionChangeRecord;
-  private _movesHead: CollectionChangeRecord;
-  private _movesTail: CollectionChangeRecord;
-  private _removalsHead: CollectionChangeRecord;
-  private _removalsTail: CollectionChangeRecord;
+  private _collection = null;
+  private _length: int = null;
+  // Keeps track of the used records at any point in time (during & across `_check()` calls)
+  private _linkedRecords: _DuplicateMap = null;
+  // Keeps track of the removed records at any point in time during `_check()` calls.
+  private _unlinkedRecords: _DuplicateMap = null;
+  private _previousItHead: CollectionChangeRecord = null;
+  private _itHead: CollectionChangeRecord = null;
+  private _itTail: CollectionChangeRecord = null;
+  private _additionsHead: CollectionChangeRecord = null;
+  private _additionsTail: CollectionChangeRecord = null;
+  private _movesHead: CollectionChangeRecord = null;
+  private _movesTail: CollectionChangeRecord = null;
+  private _removalsHead: CollectionChangeRecord = null;
+  private _removalsTail: CollectionChangeRecord = null;
 
-  constructor() {
-    super();
-    this._collection = null;
-    this._length = null;
-    /// Keeps track of the used records at any point in time (during & across `_check()` calls)
-    this._linkedRecords = null;
-    /// Keeps track of the removed records at any point in time during `_check()` calls.
-    this._unlinkedRecords = null;
-
-    this._previousItHead = null;
-    this._itHead = null;
-    this._itTail = null;
-    this._additionsHead = null;
-    this._additionsTail = null;
-    this._movesHead = null;
-    this._movesTail = null;
-    this._removalsHead = null;
-    this._removalsTail = null;
-  }
+  constructor() { super(); }
 
   static supportsObj(obj): boolean { return isListLikeIterable(obj); }
 
@@ -496,35 +480,20 @@ export class IterableChanges extends Pipe {
  * @exportedAs angular2/pipes
  */
 export class CollectionChangeRecord {
-  currentIndex: int;
-  previousIndex: int;
-  item;
+  currentIndex: int = null;
+  previousIndex: int = null;
 
-  _nextPrevious: CollectionChangeRecord;
-  _prev: CollectionChangeRecord;
-  _next: CollectionChangeRecord;
-  _prevDup: CollectionChangeRecord;
-  _nextDup: CollectionChangeRecord;
-  _prevRemoved: CollectionChangeRecord;
-  _nextRemoved: CollectionChangeRecord;
-  _nextAdded: CollectionChangeRecord;
-  _nextMoved: CollectionChangeRecord;
+  _nextPrevious: CollectionChangeRecord = null;
+  _prev: CollectionChangeRecord = null;
+  _next: CollectionChangeRecord = null;
+  _prevDup: CollectionChangeRecord = null;
+  _nextDup: CollectionChangeRecord = null;
+  _prevRemoved: CollectionChangeRecord = null;
+  _nextRemoved: CollectionChangeRecord = null;
+  _nextAdded: CollectionChangeRecord = null;
+  _nextMoved: CollectionChangeRecord = null;
 
-  constructor(item) {
-    this.currentIndex = null;
-    this.previousIndex = null;
-    this.item = item;
-
-    this._nextPrevious = null;
-    this._prev = null;
-    this._next = null;
-    this._prevDup = null;
-    this._nextDup = null;
-    this._prevRemoved = null;
-    this._nextRemoved = null;
-    this._nextAdded = null;
-    this._nextMoved = null;
-  }
+  constructor(public item: any) {}
 
   toString(): string {
     return this.previousIndex === this.currentIndex ?
@@ -536,20 +505,15 @@ export class CollectionChangeRecord {
 
 // A linked list of CollectionChangeRecords with the same CollectionChangeRecord.item
 class _DuplicateItemRecordList {
-  _head: CollectionChangeRecord;
-  _tail: CollectionChangeRecord;
-
-  constructor() {
-    this._head = null;
-    this._tail = null;
-  }
+  _head: CollectionChangeRecord = null;
+  _tail: CollectionChangeRecord = null;
 
   /**
    * Append the record to the list of duplicates.
    *
    * Note: by design all records in the list of duplicates hold the same value in record.item.
    */
-  add(record: CollectionChangeRecord) {
+  add(record: CollectionChangeRecord): void {
     if (this._head === null) {
       this._head = this._tail = record;
       record._nextDup = null;
@@ -610,8 +574,7 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  map: Map<any, _DuplicateItemRecordList>;
-  constructor() { this.map = MapWrapper.create(); }
+  map: Map<any, _DuplicateItemRecordList> = MapWrapper.create();
 
   put(record: CollectionChangeRecord) {
     // todo(vicb) handle corner cases
