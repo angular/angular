@@ -38,21 +38,21 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   exportAs: 'form'
 })
 export class NgModel extends NgControl {
-  control: Control;
+  _control: Control;
   ngModel: EventEmitter;
   model: any;
   _added: boolean;
 
   constructor() {
     super();
-    this.control = new Control("");
+    this._control = new Control("");
     this.ngModel = new EventEmitter();
     this._added = false;
   }
 
   onChange(c) {
     if (!this._added) {
-      setUpControl(this.control, this);
+      setUpControl(this._control, this);
       this.control.updateValidity();
       this._added = true;
     };
@@ -61,6 +61,8 @@ export class NgModel extends NgControl {
       this.control.updateValue(this.model);
     }
   }
+
+  get control(): Control { return this._control; }
 
   get path(): List<string> { return []; }
 
