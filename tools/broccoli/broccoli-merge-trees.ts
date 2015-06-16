@@ -16,6 +16,11 @@ function outputFileSync(sourcePath, destPath) {
   symlinkOrCopySync(sourcePath, destPath);
 }
 
+function pathOverwrittenError(path) {
+  const msg = 'Either remove the duplicate or enable the "overwrite" option for this merge.';
+  return new Error(`Duplicate path found while merging trees. Path: "${path}".\n${msg}`);
+}
+
 export class MergeTrees implements DiffingBroccoliPlugin {
   private pathCache: {[key: string]: number[]} = Object.create(null);
   public options: MergeTreesOptions;
@@ -59,7 +64,7 @@ export class MergeTrees implements DiffingBroccoliPlugin {
             // ASSERT(contains(pathsToEmit, changedPath));
             cache.unshift(index);
           } else {
-            throw new Error("`overwrite` option is required for handling duplicates.");
+            throw pathOverwrittenError(changedPath);
           }
         });
       });
@@ -79,7 +84,7 @@ export class MergeTrees implements DiffingBroccoliPlugin {
               this.pathCache[removedPath] = undefined;
             } else if (!emitted[removedPath]) {
               if (cache.length === 1 && !overwrite) {
-                throw new Error("`overwrite` option is required for handling duplicates.");
+                throw pathOverwrittenError(removedPath);
               }
               emit(removedPath);
             }
@@ -102,7 +107,7 @@ export class MergeTrees implements DiffingBroccoliPlugin {
             cache.push(index);
             cache.sort((a, b) => a - b);
             if (cache.length > 1 && !overwrite) {
-              throw new Error("`overwrite` option is required for handling duplicates.");
+              throw pathOverwrittenError(changedPath);
             }
             if (cache[cache.length - 1] === index && !emitted[changedPath]) {
               emit(changedPath);
