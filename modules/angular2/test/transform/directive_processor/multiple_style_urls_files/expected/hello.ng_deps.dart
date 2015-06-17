@@ -16,7 +16,10 @@ void initReflector(reflector) {
         const Component(selector: 'hello-app'),
         const View(
             template: r'''{{greeting}}''',
-            styles: const [r'''.greeting { .color: blue; }''',])
+            styles: const [
+          r'''.greeting { .color: blue; }''',
+          r'''.hello { .color: red; }''',
+        ])
       ]
     });
 }

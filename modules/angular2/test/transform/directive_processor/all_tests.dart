@@ -45,8 +45,16 @@ void allTests() {
   absoluteReader.addAsset(new AssetId('other_package', 'lib/template.html'),
       readFile(
           'directive_processor/absolute_url_expression_files/template.html'));
-  _testNgDeps('should inline `templateUrl` values expressed as absolute urls.',
+  absoluteReader.addAsset(new AssetId('other_package', 'lib/template.css'),
+      readFile(
+          'directive_processor/absolute_url_expression_files/template.css'));
+  _testNgDeps('should inline `templateUrl` and `styleUrls` values expressed as'
+      ' absolute urls.',
       'absolute_url_expression_files/hello.dart', reader: absoluteReader);
+
+  _testNgDeps(
+      'should inline multiple `styleUrls` values expressed as absolute urls.',
+      'multiple_style_urls_files/hello.dart');
 
   _testNgDeps('should inline `templateUrl`s expressed as adjacent strings.',
       'split_url_expression_files/hello.dart');
