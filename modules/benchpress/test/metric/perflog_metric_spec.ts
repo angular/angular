@@ -28,7 +28,7 @@ import {
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
-  var commandLog;
+  var commandLog: any[];
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
   function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null, forceGc = null,
@@ -46,17 +46,17 @@ export function main() {
       bind(Options.MICRO_METRICS).toValue(microMetrics),
       bind(PerflogMetric.SET_TIMEOUT)
           .toValue((fn, millis) => {
-            ListWrapper.push(commandLog, ['setTimeout', millis]);
+            commandLog.push(['setTimeout', millis]);
             fn();
           }),
       bind(WebDriverExtension)
           .toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
     ];
     if (isPresent(forceGc)) {
-      ListWrapper.push(bindings, bind(Options.FORCE_GC).toValue(forceGc));
+      bindings.push(bind(Options.FORCE_GC).toValue(forceGc));
     }
     if (isPresent(captureFrames)) {
-      ListWrapper.push(bindings, bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
+      bindings.push(bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
     }
     return Injector.resolveAndCreate(bindings).get(PerflogMetric);
   }
@@ -65,7 +65,7 @@ export function main() {
 
     function sortedKeys(stringMap) {
       var res = [];
-      StringMapWrapper.forEach(stringMap, (_, key) => { ListWrapper.push(res, key); });
+      StringMapWrapper.forEach(stringMap, (_, key) => { res.push(key); });
       res.sort();
       return res;
     }
@@ -324,9 +324,9 @@ export function main() {
 
     describe('aggregation', () => {
 
-      function aggregate(events, microMetrics = null, captureFrames = null) {
+      function aggregate(events: any[], microMetrics = null, captureFrames = null) {
         ListWrapper.insert(events, 0, eventFactory.markStart('benchpress0', 0));
-        ListWrapper.push(events, eventFactory.markEnd('benchpress0', 10));
+        events.push(eventFactory.markEnd('benchpress0', 10));
         var metric = createMetric([events], microMetrics, null, null, captureFrames);
         return metric.beginMeasure().then((_) => metric.endMeasure(false));
       }
@@ -640,19 +640,19 @@ class MockDriverExtension extends WebDriverExtension {
   }
 
   timeBegin(name): Promise<any> {
-    ListWrapper.push(this._commandLog, ['timeBegin', name]);
+    this._commandLog.push(['timeBegin', name]);
     return PromiseWrapper.resolve(null);
   }
 
   timeEnd(name, restartName): Promise<any> {
-    ListWrapper.push(this._commandLog, ['timeEnd', name, restartName]);
+    this._commandLog.push(['timeEnd', name, restartName]);
     return PromiseWrapper.resolve(null);
   }
 
   perfLogFeatures(): PerfLogFeatures { return this._perfLogFeatures; }
 
   readPerfLog(): Promise<any> {
-    ListWrapper.push(this._commandLog, 'readPerfLog');
+    this._commandLog.push('readPerfLog');
     if (this._perfLogs.length > 0) {
       var next = this._perfLogs[0];
       ListWrapper.removeAt(this._perfLogs, 0);
@@ -663,7 +663,7 @@ class MockDriverExtension extends WebDriverExtension {
   }
 
   gc(): Promise<any> {
-    ListWrapper.push(this._commandLog, ['gc']);
+    this._commandLog.push(['gc']);
     return PromiseWrapper.resolve(null);
   }
 }

@@ -35,7 +35,7 @@ class LoggingEventDispatcher implements EventDispatcher {
   constructor(log: List<List<any>>) { this.log = log; }
 
   dispatchEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
-    ListWrapper.push(this.log, [elementIndex, eventName, locals]);
+    this.log.push([elementIndex, eventName, locals]);
     return true;
   }
 }
@@ -93,10 +93,10 @@ export class DomTestbed {
   createRootViews(protoViews: List<ProtoViewDto>): List<TestView> {
     var views = [];
     var lastView = this.createRootView(protoViews[0]);
-    ListWrapper.push(views, lastView);
+    views.push(lastView);
     for (var i = 1; i < protoViews.length; i++) {
       lastView = this.createComponentView(lastView.viewRef, 0, protoViews[i]);
-      ListWrapper.push(views, lastView);
+      views.push(lastView);
     }
     return views;
   }

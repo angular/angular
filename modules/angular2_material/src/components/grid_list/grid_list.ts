@@ -51,7 +51,7 @@ export class MdGridList {
   }
 
   set cols(value) {
-    this._cols = isString(value) ? NumberWrapper.parseInt(value, 10) : value;
+    this._cols = isString(value) ? NumberWrapper.parseInt(value, 10) : <number>value;
   }
 
   get cols() {
@@ -105,7 +105,7 @@ export class MdGridList {
    * @param tile
    */
   addTile(tile: MdGridTile) {
-    ListWrapper.push(this.tiles, tile);
+    this.tiles.push(tile);
   }
 
   /**
@@ -253,7 +253,7 @@ export class MdGridTile {
   }
 
   set rowspan(value) {
-    this._rowspan = isString(value) ? NumberWrapper.parseInt(value, 10) : value;
+    this._rowspan = isString(value) ? NumberWrapper.parseInt(value, 10) : <number>value;
   }
 
   get rowspan() {
@@ -261,7 +261,7 @@ export class MdGridTile {
   }
 
   set colspan(value) {
-    this._colspan = isString(value) ? NumberWrapper.parseInt(value, 10) : value;
+    this._colspan = isString(value) ? NumberWrapper.parseInt(value, 10) : <number>value;
   }
 
   get colspan() {

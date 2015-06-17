@@ -342,9 +342,9 @@ export class ApplicationRef {
 function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,
                             zone: NgZone): Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);
-  var mergedBindings = isPresent(bindings) ?
-                           ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
-                           _injectorBindings(appComponentType);
-  ListWrapper.push(mergedBindings, bind(NgZone).toValue(zone));
+  var mergedBindings: any[] =
+      isPresent(bindings) ? ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
+                            _injectorBindings(appComponentType);
+  mergedBindings.push(bind(NgZone).toValue(zone));
   return _rootInjector.resolveAndCreateChild(mergedBindings);
 }

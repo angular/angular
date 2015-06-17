@@ -30,7 +30,7 @@ import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_vi
 
 export function runCompilerCommonTests() {
   describe('DomCompiler', function() {
-    var mockStepFactory;
+    var mockStepFactory: MockStepFactory;
 
     function createCompiler(processClosure, urlData = null) {
       if (isBlank(urlData)) {
@@ -117,8 +117,8 @@ export function runCompilerCommonTests() {
            var completer = PromiseWrapper.completer();
 
            var compiler = createCompiler((parent, current, control) => {
-             ListWrapper.push(mockStepFactory.subTaskPromises,
-                              completer.promise.then((_) => { subTasksCompleted = true; }));
+             mockStepFactory.subTaskPromises.push(
+                 completer.promise.then((_) => { subTasksCompleted = true; }));
            });
 
            // It should always return a Promise because the subtask is async
@@ -177,7 +177,7 @@ class MockStepFactory extends CompileStepFactory {
   createSteps(viewDef, subTaskPromises) {
     this.viewDef = viewDef;
     this.subTaskPromises = subTaskPromises;
-    ListWrapper.forEach(this.subTaskPromises, (p) => ListWrapper.push(subTaskPromises, p));
+    ListWrapper.forEach(this.subTaskPromises, (p) => this.subTaskPromises.push(p));
     return this.steps;
   }
 }

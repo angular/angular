@@ -1,6 +1,4 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
-
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {
   isPresent,
   RegExpWrapper,
@@ -18,7 +16,7 @@ export function main() {
       var m;
 
       while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
-        ListWrapper.push(indexes, m.index);
+        indexes.push(m.index);
         expect(m[0]).toEqual('!');
         expect(m[1]).toEqual('!');
         expect(m.length).toBe(2);

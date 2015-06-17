@@ -6,16 +6,17 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 export function main() {
   describe('SelectorMatcher', () => {
-    var matcher, matched, selectableCollector, s1, s2, s3, s4;
+    var matcher, selectableCollector, s1, s2, s3, s4;
+    var matched: any[];
 
-    function reset() { matched = ListWrapper.create(); }
+    function reset() { matched = []; }
 
     beforeEach(() => {
       reset();
       s1 = s2 = s3 = s4 = null;
       selectableCollector = (selector, context) => {
-        ListWrapper.push(matched, selector);
-        ListWrapper.push(matched, context);
+        matched.push(selector);
+        matched.push(context);
       };
       matcher = new SelectorMatcher();
     });

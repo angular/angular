@@ -10,7 +10,7 @@ export class DummyBrowserLocation extends SpyObject {
   internalBaseHref: string = '/';
   internalPath: string = '/';
   internalTitle: string = '';
-  urlChanges: List<string> = ListWrapper.create();
+  urlChanges: List<string> = [];
   _subject: EventEmitter = new EventEmitter();
   constructor() { super(); }
 
@@ -28,7 +28,7 @@ export class DummyBrowserLocation extends SpyObject {
   pushState(ctx: any, title: string, url: string): void {
     this.internalTitle = title;
     this.internalPath = url;
-    ListWrapper.push(this.urlChanges, url);
+    this.urlChanges.push(url);
   }
 
   forward(): void { throw new BaseException('Not implemented yet!'); }

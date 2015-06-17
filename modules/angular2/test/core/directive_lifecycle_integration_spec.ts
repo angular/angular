@@ -74,13 +74,13 @@ class LifecycleDir {
 
   constructor() { this.log = []; }
 
-  onChange(_) { ListWrapper.push(this.log, "onChange"); }
+  onChange(_) { this.log.push("onChange"); }
 
-  onInit() { ListWrapper.push(this.log, "onInit"); }
+  onInit() { this.log.push("onInit"); }
 
-  onCheck() { ListWrapper.push(this.log, "onCheck"); }
+  onCheck() { this.log.push("onCheck"); }
 
-  onAllChangesDone() { ListWrapper.push(this.log, "onAllChangesDone"); }
+  onAllChangesDone() { this.log.push("onAllChangesDone"); }
 }
 
 @Component({selector: 'my-comp'})

@@ -8,8 +8,8 @@ function paramParser(rawParams: string): Map<string, List<string>> {
     var split: List<string> = StringWrapper.split(param, '=');
     var key = ListWrapper.get(split, 0);
     var val = ListWrapper.get(split, 1);
-    var list = MapWrapper.get(map, key) || ListWrapper.create();
-    ListWrapper.push(list, val);
+    var list = MapWrapper.get(map, key) || [];
+    list.push(val);
     MapWrapper.set(map, key, list);
   });
   return map;
@@ -23,20 +23,18 @@ export class URLSearchParams {
 
   get(param: string): string { return ListWrapper.first(MapWrapper.get(this.paramsMap, param)); }
 
-  getAll(param: string): List<string> {
-    return MapWrapper.get(this.paramsMap, param) || ListWrapper.create();
-  }
+  getAll(param: string): List<string> { return MapWrapper.get(this.paramsMap, param) || []; }
 
   append(param: string, val: string): void {
-    var list = MapWrapper.get(this.paramsMap, param) || ListWrapper.create();
-    ListWrapper.push(list, val);
+    var list = MapWrapper.get(this.paramsMap, param) || [];
+    list.push(val);
     MapWrapper.set(this.paramsMap, param, list);
   }
 
   toString(): string {
-    var paramsList = ListWrapper.create();
+    var paramsList = [];
     MapWrapper.forEach(this.paramsMap, (values, k) => {
-      ListWrapper.forEach(values, v => { ListWrapper.push(paramsList, k + '=' + v); });
+      ListWrapper.forEach(values, v => { paramsList.push(k + '=' + v); });
     });
     return ListWrapper.join(paramsList, '&');
   }

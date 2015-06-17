@@ -53,7 +53,7 @@ export class NgSwitch {
 
   constructor() {
     this._valueViews = MapWrapper.create();
-    this._activeViews = ListWrapper.create();
+    this._activeViews = [];
     this._useDefault = false;
   }
 
@@ -86,7 +86,7 @@ export class NgSwitch {
         this._emptyAllActiveViews();
       }
       view.create();
-      ListWrapper.push(this._activeViews, view);
+      this._activeViews.push(view);
     }
 
     // Switch to default when there is no more active ViewContainers
@@ -101,7 +101,7 @@ export class NgSwitch {
     for (var i = 0; i < activeContainers.length; i++) {
       activeContainers[i].destroy();
     }
-    this._activeViews = ListWrapper.create();
+    this._activeViews = [];
   }
 
   _activateViews(views: List<SwitchView>): void {
@@ -117,10 +117,10 @@ export class NgSwitch {
   _registerView(value, view: SwitchView): void {
     var views = MapWrapper.get(this._valueViews, value);
     if (isBlank(views)) {
-      views = ListWrapper.create();
+      views = [];
       MapWrapper.set(this._valueViews, value, views);
     }
-    ListWrapper.push(views, view);
+    views.push(view);
   }
 
   _deregisterView(value, view: SwitchView): void {

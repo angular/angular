@@ -51,12 +51,13 @@ export class Validators {
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static _mergeErrors(control: modelModule.AbstractControl, res: StringMap<string, any>): void {
+  static _mergeErrors(control: modelModule.AbstractControl, res: StringMap<string, any[]>): void {
     StringMapWrapper.forEach(control.errors, (value, error) => {
       if (!StringMapWrapper.contains(res, error)) {
         res[error] = [];
       }
-      ListWrapper.push(res[error], control);
+      var current: any[] = res[error];
+      current.push(control);
     });
   }
 }

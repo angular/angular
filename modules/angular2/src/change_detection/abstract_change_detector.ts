@@ -17,14 +17,14 @@ export class AbstractChangeDetector extends ChangeDetector {
   }
 
   addChild(cd: ChangeDetector): void {
-    ListWrapper.push(this.lightDomChildren, cd);
+    this.lightDomChildren.push(cd);
     cd.parent = this;
   }
 
   removeChild(cd: ChangeDetector): void { ListWrapper.remove(this.lightDomChildren, cd); }
 
   addShadowDomChild(cd: ChangeDetector): void {
-    ListWrapper.push(this.shadowDomChildren, cd);
+    this.shadowDomChildren.push(cd);
     cd.parent = this;
   }
 

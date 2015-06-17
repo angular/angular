@@ -455,9 +455,9 @@ export function main() {
 
                  var onChangesDoneCalls = [];
                  var td1;
-                 td1 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td1));
+                 td1 = new TestDirective(() => onChangesDoneCalls.push(td1));
                  var td2;
-                 td2 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td2));
+                 td2 = new TestDirective(() => onChangesDoneCalls.push(td2));
                  cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([td1, td2], []));
 
                  cd.detectChanges();
@@ -473,11 +473,11 @@ export function main() {
               var orderOfOperations = [];
 
               var directiveInShadowDom = null;
-              directiveInShadowDom = new TestDirective(
-                  () => { ListWrapper.push(orderOfOperations, directiveInShadowDom); });
+              directiveInShadowDom =
+                  new TestDirective(() => { orderOfOperations.push(directiveInShadowDom); });
               var parentDirective = null;
-              parentDirective = new TestDirective(
-                  () => { ListWrapper.push(orderOfOperations, parentDirective); });
+              parentDirective =
+                  new TestDirective(() => { orderOfOperations.push(parentDirective); });
 
               parent.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([parentDirective], []));
               child.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directiveInShadowDom], []));
@@ -989,14 +989,14 @@ class TestDispatcher extends ChangeDispatcher {
   }
 
   clear() {
-    this.log = ListWrapper.create();
-    this.loggedValues = ListWrapper.create();
+    this.log = [];
+    this.loggedValues = [];
     this.onAllChangesDoneCalled = true;
   }
 
   notifyOnBinding(binding, value) {
-    ListWrapper.push(this.log, `${binding.propertyName}=${this._asString(value)}`);
-    ListWrapper.push(this.loggedValues, value);
+    this.log.push(`${binding.propertyName}=${this._asString(value)}`);
+    this.loggedValues.push(value);
   }
 
   notifyOnAllChangesDone() { this.onAllChangesDoneCalled = true; }

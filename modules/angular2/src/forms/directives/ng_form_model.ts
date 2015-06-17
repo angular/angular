@@ -113,7 +113,7 @@ export class NgFormModel extends ControlContainer implements Form {
     var c: any = this.form.find(dir.path);
     setUpControl(c, dir);
     c.updateValidity();
-    ListWrapper.push(this.directives, dir);
+    this.directives.push(dir);
   }
 
   getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }

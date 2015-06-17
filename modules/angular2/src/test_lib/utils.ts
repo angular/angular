@@ -8,12 +8,10 @@ export class Log {
 
   constructor() { this._result = []; }
 
-  add(value): void { ListWrapper.push(this._result, value); }
+  add(value): void { this._result.push(value); }
 
   fn(value) {
-    return (a1 = null, a2 = null, a3 = null, a4 = null, a5 = null) => {
-      ListWrapper.push(this._result, value);
-    }
+    return (a1 = null, a2 = null, a3 = null, a4 = null, a5 = null) => { this._result.push(value); }
   }
 
   result(): string { return ListWrapper.join(this._result, "; "); }
@@ -72,8 +70,8 @@ export function stringifyElement(el): string {
 
     // Attributes in an ordered way
     var attributeMap = DOM.attributeMap(el);
-    var keys = ListWrapper.create();
-    MapWrapper.forEach(attributeMap, (v, k) => { ListWrapper.push(keys, k); });
+    var keys = [];
+    MapWrapper.forEach(attributeMap, (v, k) => { keys.push(k); });
     ListWrapper.sort(keys);
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];

@@ -41,7 +41,8 @@ import {RenderCompiler} from 'angular2/src/render/api';
 export function main() {
   describe('compiler', function() {
     var directiveResolver, tplResolver, renderCompiler, protoViewFactory, cmpUrlMapper,
-        renderCompileRequests, rootProtoView;
+        rootProtoView;
+    var renderCompileRequests: any[];
 
     beforeEach(() => {
       directiveResolver = new DirectiveResolver();
@@ -61,7 +62,7 @@ export function main() {
       var urlResolver = new FakeUrlResolver();
       renderCompileRequests = [];
       renderCompiler.spy('compile').andCallFake((template) => {
-        ListWrapper.push(renderCompileRequests, template);
+        renderCompileRequests.push(template);
         return PromiseWrapper.resolve(ListWrapper.removeAt(renderCompileResults, 0));
       });
 
@@ -607,7 +608,7 @@ class FakeProtoViewFactory extends ProtoViewFactory {
 
   createAppProtoViews(componentBinding: DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
                       directives: List<DirectiveBinding>): List<AppProtoView> {
-    ListWrapper.push(this.requests, [componentBinding, renderProtoView, directives]);
+    this.requests.push([componentBinding, renderProtoView, directives]);
     return ListWrapper.removeAt(this.results, 0);
   }
 }

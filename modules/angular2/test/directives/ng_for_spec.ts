@@ -43,7 +43,7 @@ export function main() {
              .then((view) => {
                view.detectChanges();
 
-               ListWrapper.push(view.context.items, 3);
+               (<number[]>view.context.items).push(3);
                view.detectChanges();
 
                expect(DOM.getText(view.rootNodes[0])).toEqual('1;2;3;');
@@ -72,7 +72,7 @@ export function main() {
                view.detectChanges();
 
                ListWrapper.removeAt(view.context.items, 0);
-               ListWrapper.push(view.context.items, 1);
+               (<number[]>view.context.items).push(1);
                view.detectChanges();
 
                expect(DOM.getText(view.rootNodes[0])).toEqual('2;1;');
@@ -108,7 +108,7 @@ export function main() {
                expect(DOM.getText(view.rootNodes[0])).toEqual('misko;shyam;');
 
                // GROW
-               ListWrapper.push(view.context.items, {'name': 'adam'});
+               (<any[]>view.context.items).push({'name': 'adam'});
                view.detectChanges();
 
                expect(DOM.getText(view.rootNodes[0])).toEqual('misko;shyam;adam;');

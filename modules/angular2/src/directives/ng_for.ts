@@ -1,7 +1,6 @@
 import {Directive} from 'angular2/annotations';
 import {ViewContainerRef, ViewRef, ProtoViewRef} from 'angular2/core';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for
@@ -54,16 +53,16 @@ export class NgFor {
     // TODO(rado): check if change detection can produce a change record that is
     // easier to consume than current.
     var recordViewTuples = [];
-    changes.forEachRemovedItem((removedRecord) => ListWrapper.push(
-                                   recordViewTuples, new RecordViewTuple(removedRecord, null)));
+    changes.forEachRemovedItem((removedRecord) =>
+                                   recordViewTuples.push(new RecordViewTuple(removedRecord, null)));
 
-    changes.forEachMovedItem((movedRecord) => ListWrapper.push(
-                                 recordViewTuples, new RecordViewTuple(movedRecord, null)));
+    changes.forEachMovedItem((movedRecord) =>
+                                 recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
 
     var insertTuples = NgFor.bulkRemove(recordViewTuples, this.viewContainer);
 
-    changes.forEachAddedItem(
-        (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null)));
+    changes.forEachAddedItem((addedRecord) =>
+                                 insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
     NgFor.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
 
@@ -85,7 +84,7 @@ export class NgFor {
       // separate moved views from removed views.
       if (isPresent(tuple.record.currentIndex)) {
         tuple.view = viewContainer.detach(tuple.record.previousIndex);
-        ListWrapper.push(movedTuples, tuple);
+        movedTuples.push(tuple);
       } else {
         viewContainer.remove(tuple.record.previousIndex);
       }

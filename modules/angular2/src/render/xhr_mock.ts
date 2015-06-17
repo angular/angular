@@ -6,7 +6,7 @@ import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 export class MockXHR extends XHR {
   private _expectations: List<_Expectation>;
   private _definitions: Map<string, string>;
-  private _requests: List<Promise<string>>;
+  private _requests: List<_PendingRequest>;
 
   constructor() {
     super();
@@ -17,13 +17,13 @@ export class MockXHR extends XHR {
 
   get(url: string): Promise<string> {
     var request = new _PendingRequest(url);
-    ListWrapper.push(this._requests, request);
+    this._requests.push(request);
     return request.getPromise();
   }
 
   expect(url: string, response: string) {
     var expectation = new _Expectation(url, response);
-    ListWrapper.push(this._expectations, expectation);
+    this._expectations.push(expectation);
   }
 
   when(url: string, response: string) { MapWrapper.set(this._definitions, url, response); }
@@ -47,7 +47,7 @@ export class MockXHR extends XHR {
     var urls = [];
     for (var i = 0; i < this._expectations.length; i++) {
       var expectation = this._expectations[i];
-      ListWrapper.push(urls, expectation.url);
+      urls.push(expectation.url);
     }
 
     throw new BaseException(`Unsatisfied requests: ${ListWrapper.join(urls, ', ')}`);

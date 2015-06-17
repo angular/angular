@@ -10,7 +10,7 @@ import {Renderer, ElementRef} from 'angular2/angular2';
 
 export function controlPath(name, parent: ControlContainer) {
   var p = ListWrapper.clone(parent.path);
-  ListWrapper.push(p, name);
+  p.push(name);
   return p;
 }
 

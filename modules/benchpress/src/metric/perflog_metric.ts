@@ -156,10 +156,10 @@ export class PerflogMetric extends Metric {
         startEvent['ph'] = 'B';
         endEvent['ph'] = 'E';
         endEvent['ts'] = startEvent['ts'] + startEvent['dur'];
-        ListWrapper.push(this._remainingEvents, startEvent);
-        ListWrapper.push(this._remainingEvents, endEvent);
+        this._remainingEvents.push(startEvent);
+        this._remainingEvents.push(endEvent);
       } else {
-        ListWrapper.push(this._remainingEvents, event);
+        this._remainingEvents.push(event);
       }
     });
     if (needSort) {
@@ -239,10 +239,10 @@ export class PerflogMetric extends Metric {
         if (StringWrapper.equals(ph, 'I') || StringWrapper.equals(ph, 'i')) {
           if (isPresent(frameCaptureStartEvent) && isBlank(frameCaptureEndEvent) &&
               StringWrapper.equals(name, 'frame')) {
-            ListWrapper.push(frameTimestamps, event['ts']);
+            frameTimestamps.push(event['ts']);
             if (frameTimestamps.length >= 2) {
-              ListWrapper.push(frameTimes, frameTimestamps[frameTimestamps.length - 1] -
-                                               frameTimestamps[frameTimestamps.length - 2]);
+              frameTimes.push(frameTimestamps[frameTimestamps.length - 1] -
+                              frameTimestamps[frameTimestamps.length - 2]);
             }
           }
         }

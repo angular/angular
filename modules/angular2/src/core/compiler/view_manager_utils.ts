@@ -43,7 +43,7 @@ export class AppViewManagerUtils {
           elementInjector = protoElementInjector.instantiate(parentElementInjector);
         } else {
           elementInjector = protoElementInjector.instantiate(null);
-          ListWrapper.push(rootElementInjectors, elementInjector);
+          rootElementInjectors.push(elementInjector);
         }
       }
       elementInjectors[binderIdx] = elementInjector;

@@ -17,7 +17,7 @@ export class Testability {
 
   constructor() {
     this._pendingCount = 0;
-    this._callbacks = ListWrapper.create();
+    this._callbacks = [];
   }
 
   increaseCount(delta: number = 1) {
@@ -37,7 +37,7 @@ export class Testability {
   }
 
   whenStable(callback: Function) {
-    ListWrapper.push(this._callbacks, callback);
+    this._callbacks.push(callback);
 
     if (this._pendingCount === 0) {
       this._runCallbacks();

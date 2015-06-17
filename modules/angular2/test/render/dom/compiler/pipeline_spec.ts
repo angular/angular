@@ -213,15 +213,15 @@ class IgnoreCurrentElementStep implements CompileStep {
   }
 }
 
-function logEntry(log, parent, current) {
+function logEntry(log: string[], parent, current) {
   var parentId = '';
   if (isPresent(parent)) {
     parentId = DOM.getAttribute(parent.element, 'id') + '<';
   }
-  ListWrapper.push(log, parentId + DOM.getAttribute(current.element, 'id'));
+  log.push(parentId + DOM.getAttribute(current.element, 'id'));
 }
 
-function createLoggerStep(log) {
+function createLoggerStep(log: string[]) {
   return new MockStep((parent, current, control) => { logEntry(log, parent, current); });
 }
 

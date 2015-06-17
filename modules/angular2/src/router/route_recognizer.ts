@@ -54,7 +54,7 @@ export class RouteRecognizer {
    *
    */
   recognize(url: string): List<RouteMatch> {
-    var solutions = ListWrapper.create();
+    var solutions = [];
 
     MapWrapper.forEach(this.redirects, (target, path) => {
       // "/" redirect case
@@ -77,13 +77,13 @@ export class RouteRecognizer {
           matchedUrl = match[0];
           unmatchedUrl = StringWrapper.substring(url, match[0].length);
         }
-        ListWrapper.push(solutions, new RouteMatch({
-                           specificity: pathRecognizer.specificity,
-                           handler: pathRecognizer.handler,
-                           params: pathRecognizer.parseParams(url),
-                           matchedUrl: matchedUrl,
-                           unmatchedUrl: unmatchedUrl
-                         }));
+        solutions.push(new RouteMatch({
+          specificity: pathRecognizer.specificity,
+          handler: pathRecognizer.handler,
+          params: pathRecognizer.parseParams(url),
+          matchedUrl: matchedUrl,
+          unmatchedUrl: unmatchedUrl
+        }));
       }
     });
 

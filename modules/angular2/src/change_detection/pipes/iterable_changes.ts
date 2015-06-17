@@ -448,26 +448,26 @@ export class IterableChanges extends Pipe {
 
     var list = [];
     for (record = this._itHead; record !== null; record = record._next) {
-      ListWrapper.push(list, record);
+      list.push(record);
     }
 
     var previous = [];
     for (record = this._previousItHead; record !== null; record = record._nextPrevious) {
-      ListWrapper.push(previous, record);
+      previous.push(record);
     }
 
     var additions = [];
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
-      ListWrapper.push(additions, record);
+      additions.push(record);
     }
     var moves = [];
     for (record = this._movesHead; record !== null; record = record._nextMoved) {
-      ListWrapper.push(moves, record);
+      moves.push(record);
     }
 
     var removals = [];
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
-      ListWrapper.push(removals, record);
+      removals.push(record);
     }
 
     return "collection: " + list.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +

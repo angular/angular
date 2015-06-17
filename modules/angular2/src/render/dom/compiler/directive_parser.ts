@@ -74,7 +74,7 @@ export class DirectiveParser implements CompileStep {
         componentDirective = directive;
         elementBinder.setComponentId(directive.id);
       } else {
-        ListWrapper.push(foundDirectiveIndices, directiveIndex);
+        foundDirectiveIndices.push(directiveIndex);
       }
     });
     ListWrapper.forEach(foundDirectiveIndices, (directiveIndex) => {

@@ -287,7 +287,7 @@ export class ControlArray extends AbstractControl {
   at(index: number): AbstractControl { return this.controls[index]; }
 
   push(control: AbstractControl): void {
-    ListWrapper.push(this.controls, control);
+    this.controls.push(control);
     control.setParent(this);
     this.updateValueAndValidity();
   }

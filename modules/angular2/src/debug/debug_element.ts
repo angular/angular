@@ -69,7 +69,7 @@ export class DebugElement {
 
     if (!isPresent(shadowView)) {
       // The current element is not a component.
-      return ListWrapper.create();
+      return [];
     }
 
     return this._getChildElements(shadowView, null);
@@ -123,7 +123,7 @@ export class DebugElement {
   }
 
   _getChildElements(view: AppView, parentBoundElementIndex: number): List<DebugElement> {
-    var els = ListWrapper.create();
+    var els = [];
     var parentElementBinder = null;
     if (isPresent(parentBoundElementIndex)) {
       parentElementBinder = view.proto.elementBinders[parentBoundElementIndex];
@@ -131,7 +131,7 @@ export class DebugElement {
     for (var i = 0; i < view.proto.elementBinders.length; ++i) {
       var binder = view.proto.elementBinders[i];
       if (binder.parent == parentElementBinder) {
-        ListWrapper.push(els, new DebugElement(view, i));
+        els.push(new DebugElement(view, i));
 
         var views = view.viewContainers[i];
         if (isPresent(views)) {
@@ -154,8 +154,8 @@ export function inspectElement(elementRef: ElementRef): DebugElement {
  */
 export class Scope {
   static all(debugElement): List<DebugElement> {
-    var scope = ListWrapper.create();
-    ListWrapper.push(scope, debugElement);
+    var scope = [];
+    scope.push(debugElement);
 
     ListWrapper.forEach(debugElement.children,
                         (child) => { scope = ListWrapper.concat(scope, Scope.all(child)); });
@@ -166,19 +166,19 @@ export class Scope {
     return scope;
   }
   static light(debugElement): List<DebugElement> {
-    var scope = ListWrapper.create();
+    var scope = [];
     ListWrapper.forEach(debugElement.children, (child) => {
-      ListWrapper.push(scope, child);
+      scope.push(child);
       scope = ListWrapper.concat(scope, Scope.light(child));
     });
     return scope;
   }
 
   static view(debugElement): List<DebugElement> {
-    var scope = ListWrapper.create();
+    var scope = [];
 
     ListWrapper.forEach(debugElement.componentViewChildren, (child) => {
-      ListWrapper.push(scope, child);
+      scope.push(child);
       scope = ListWrapper.concat(scope, Scope.light(child));
     });
     return scope;

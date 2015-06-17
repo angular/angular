@@ -44,14 +44,14 @@ export class IOsDriverExtension extends WebDriverExtension {
           ListWrapper.forEach(entries, function(entry) {
             var message = Json.parse(entry['message'])['message'];
             if (StringWrapper.equals(message['method'], 'Timeline.eventRecorded')) {
-              ListWrapper.push(records, message['params']['record']);
+              records.push(message['params']['record']);
             }
           });
           return this._convertPerfRecordsToEvents(records);
         });
   }
 
-  _convertPerfRecordsToEvents(records: any[], events = null) {
+  _convertPerfRecordsToEvents(records: any[], events: any[] = null) {
     if (isBlank(events)) {
       events = [];
     }
@@ -64,18 +64,18 @@ export class IOsDriverExtension extends WebDriverExtension {
 
       if (StringWrapper.equals(type, 'FunctionCall') &&
           (isBlank(data) || !StringWrapper.equals(data['scriptName'], 'InjectedScript'))) {
-        ListWrapper.push(events, createStartEvent('script', startTime));
+        events.push(createStartEvent('script', startTime));
         endEvent = createEndEvent('script', endTime);
       } else if (StringWrapper.equals(type, 'Time')) {
-        ListWrapper.push(events, createMarkStartEvent(data['message'], startTime));
+        events.push(createMarkStartEvent(data['message'], startTime));
       } else if (StringWrapper.equals(type, 'TimeEnd')) {
-        ListWrapper.push(events, createMarkEndEvent(data['message'], startTime));
+        events.push(createMarkEndEvent(data['message'], startTime));
       } else if (StringWrapper.equals(type, 'RecalculateStyles') ||
                  StringWrapper.equals(type, 'Layout') ||
                  StringWrapper.equals(type, 'UpdateLayerTree') ||
                  StringWrapper.equals(type, 'Paint') || StringWrapper.equals(type, 'Rasterize') ||
                  StringWrapper.equals(type, 'CompositeLayers')) {
-        ListWrapper.push(events, createStartEvent('render', startTime));
+        events.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
       // Note: ios used to support GCEvent up until iOS 6 :-(
@@ -83,7 +83,7 @@ export class IOsDriverExtension extends WebDriverExtension {
         this._convertPerfRecordsToEvents(record['children'], events);
       }
       if (isPresent(endEvent)) {
-        ListWrapper.push(events, endEvent);
+        events.push(endEvent);
       }
     });
     return events;

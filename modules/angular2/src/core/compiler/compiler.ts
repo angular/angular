@@ -187,8 +187,7 @@ export class Compiler {
           (nestedPv: AppProtoView) => { elementBinder.nestedProtoView = nestedPv; };
       var nestedCall = this._compile(nestedComponent);
       if (isPromise(nestedCall)) {
-        ListWrapper.push(nestedPVPromises,
-                         (<Promise<AppProtoView>>nestedCall).then(elementBinderDone));
+        nestedPVPromises.push((<Promise<AppProtoView>>nestedCall).then(elementBinderDone));
       } else {
         elementBinderDone(<AppProtoView>nestedCall);
       }
@@ -206,7 +205,7 @@ export class Compiler {
     ListWrapper.forEach(protoViews, (protoView) => {
       ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
         if (isPresent(elementBinder.componentDirective)) {
-          ListWrapper.push(componentElementBinders, elementBinder);
+          componentElementBinders.push(elementBinder);
         }
       });
     });
@@ -254,7 +253,7 @@ export class Compiler {
       if (isArray(item)) {
         this._flattenList(item, out);
       } else {
-        ListWrapper.push(out, item);
+        out.push(item);
       }
     }
   }

@@ -14,7 +14,6 @@ import {
 } from 'angular2/test_lib';
 
 import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -33,13 +32,13 @@ function microTask(fn: Function): void {
 }
 
 var _log;
-var _errors;
-var _traces;
+var _errors: any[];
+var _traces: any[];
 var _zone;
 
 function logError(error, stackTrace) {
-  ListWrapper.push(_errors, error);
-  ListWrapper.push(_traces, stackTrace);
+  _errors.push(error);
+  _traces.push(stackTrace);
 }
 
 export function main() {
@@ -205,7 +204,8 @@ function commonTests() {
          _zone.initCallbacks({
            onTurnDone: () => {
              _log.add('onTurnDone:started');
-             _zone.run(() => _log.add('nested run')) _log.add('onTurnDone:finished');
+             _zone.run(() => _log.add('nested run'));
+             _log.add('onTurnDone:finished');
            }
          });
 

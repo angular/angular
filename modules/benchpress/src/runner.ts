@@ -41,13 +41,13 @@ export class Runner {
       bind(Options.EXECUTE).toValue(execute)
     ];
     if (isPresent(prepare)) {
-      ListWrapper.push(sampleBindings, bind(Options.PREPARE).toValue(prepare));
+      sampleBindings.push(bind(Options.PREPARE).toValue(prepare));
     }
     if (isPresent(microMetrics)) {
-      ListWrapper.push(sampleBindings, bind(Options.MICRO_METRICS).toValue(microMetrics));
+      sampleBindings.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
     }
     if (isPresent(bindings)) {
-      ListWrapper.push(sampleBindings, bindings);
+      sampleBindings.push(bindings);
     }
     return Injector.resolveAndCreate(sampleBindings)
         .asyncGet(Sampler)

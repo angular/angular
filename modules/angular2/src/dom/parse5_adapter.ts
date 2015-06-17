@@ -33,14 +33,14 @@ export class Parse5DomAdapter extends DomAdapter {
   query(selector) { throw _notImplemented('query'); }
   querySelector(el, selector: string) { return this.querySelectorAll(el, selector)[0]; }
   querySelectorAll(el, selector: string) {
-    var res = ListWrapper.create();
+    var res = [];
     var _recursive = (result, node, selector, matcher) => {
       var cNodes = node.childNodes;
       if (cNodes && cNodes.length > 0) {
         for (var i = 0; i < cNodes.length; i++) {
           var childNode = cNodes[i];
           if (this.elementMatches(childNode, selector, matcher)) {
-            ListWrapper.push(result, childNode);
+            result.push(childNode);
           }
           _recursive(result, childNode, selector, matcher);
         }
@@ -86,9 +86,9 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     var listeners = StringMapWrapper.get(listenersMap, evt);
     if (isBlank(listeners)) {
-      listeners = ListWrapper.create();
+      listeners = [];
     }
-    ListWrapper.push(listeners, listener);
+    listeners.push(listener);
     StringMapWrapper.set(listenersMap, evt, listeners);
   }
   onAndCancel(el, evt, listener): Function {
@@ -287,7 +287,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var classList = this.classList(element);
     var index = classList.indexOf(classname);
     if (index == -1) {
-      ListWrapper.push(classList, classname);
+      classList.push(classname);
       element.attribs["class"] = element.className = ListWrapper.join(classList, " ");
     }
   }
@@ -417,7 +417,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
   }
   _buildRules(parsedRules, css?) {
-    var rules = ListWrapper.create();
+    var rules = [];
     for (var i = 0; i < parsedRules.length; i++) {
       var parsedRule = parsedRules[i];
       var rule: StringMap<string, any> = StringMapWrapper.create();
@@ -448,13 +448,13 @@ export class Parse5DomAdapter extends DomAdapter {
           StringMapWrapper.set(rule, "cssRules", this._buildRules(parsedRule.rules));
         }
       }
-      ListWrapper.push(rules, rule);
+      rules.push(rule);
     }
     return rules;
   }
   cssToRules(css: string): List<any> {
     css = css.replace(/url\(\'(.+)\'\)/g, 'url($1)');
-    var rules = ListWrapper.create();
+    var rules = [];
     var parsedCSS = cssParse(css, {silent: true});
     if (parsedCSS.stylesheet && parsedCSS.stylesheet.rules) {
       rules = this._buildRules(parsedCSS.stylesheet.rules, css);

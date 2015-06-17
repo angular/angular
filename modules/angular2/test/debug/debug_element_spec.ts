@@ -36,9 +36,9 @@ import {NgFor} from 'angular2/src/directives/ng_for';
 class Logger {
   log: List<string>;
 
-  constructor() { this.log = ListWrapper.create(); }
+  constructor() { this.log = []; }
 
-  add(thing: string) { ListWrapper.push(this.log, thing); }
+  add(thing: string) { this.log.push(thing); }
 }
 
 @Directive({selector: '[message]', properties: ['message']})

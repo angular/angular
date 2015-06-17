@@ -13,7 +13,7 @@ export class GenericBrowserDomAdapter extends DomAdapter {
   cssToRules(css: string): List<any> {
     var style = this.createStyleElement(css);
     this.appendChild(this.defaultDoc().head, style);
-    var rules = ListWrapper.create();
+    var rules = [];
     if (isPresent(style.sheet)) {
       // TODO(sorvell): Firefox throws when accessing the rules of a stylesheet
       // with an @import

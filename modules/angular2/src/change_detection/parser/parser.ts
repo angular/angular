@@ -99,11 +99,11 @@ export class Parser {
       var part = parts[i];
       if (i % 2 === 0) {
         // fixed string
-        ListWrapper.push(strings, part);
+        strings.push(part);
       } else {
         var tokens = this._lexer.tokenize(part);
         var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
-        ListWrapper.push(expressions, ast);
+        expressions.push(ast);
       }
     }
     return new ASTWithSource(new Interpolation(strings, expressions), input, location);
@@ -194,7 +194,7 @@ class _ParseAST {
     var exprs = [];
     while (this.index < this.tokens.length) {
       var expr = this.parsePipe();
-      ListWrapper.push(exprs, expr);
+      exprs.push(expr);
 
       if (this.optionalCharacter($SEMICOLON)) {
         if (!this.parseAction) {
@@ -222,7 +222,7 @@ class _ParseAST {
         var name = this.expectIdentifierOrKeyword();
         var args = [];
         while (this.optionalCharacter($COLON)) {
-          ListWrapper.push(args, this.parsePipe());
+          args.push(this.parsePipe());
         }
         result = new Pipe(result, name, args, true);
       } while (this.optionalOperator("|"));
@@ -456,7 +456,7 @@ class _ParseAST {
     var result = [];
     if (!this.next.isCharacter(terminator)) {
       do {
-        ListWrapper.push(result, this.parsePipe());
+        result.push(this.parsePipe());
       } while (this.optionalCharacter($COMMA));
     }
     return result;
@@ -469,9 +469,9 @@ class _ParseAST {
     if (!this.optionalCharacter($RBRACE)) {
       do {
         var key = this.expectIdentifierOrKeywordOrString();
-        ListWrapper.push(keys, key);
+        keys.push(key);
         this.expectCharacter($COLON);
-        ListWrapper.push(values, this.parsePipe());
+        values.push(this.parsePipe());
       } while (this.optionalCharacter($COMMA));
       this.expectCharacter($RBRACE);
     }
@@ -500,7 +500,7 @@ class _ParseAST {
     if (this.next.isCharacter($RPAREN)) return [];
     var positionals = [];
     do {
-      ListWrapper.push(positionals, this.parsePipe());
+      positionals.push(this.parsePipe());
     } while (this.optionalCharacter($COMMA));
     return positionals;
   }
@@ -522,7 +522,7 @@ class _ParseAST {
     var exprs = [];
     while (this.index < this.tokens.length && !this.next.isCharacter($RBRACE)) {
       var expr = this.parseExpression();
-      ListWrapper.push(exprs, expr);
+      exprs.push(expr);
 
       if (this.optionalCharacter($SEMICOLON)) {
         while (this.optionalCharacter($SEMICOLON)) {
@@ -581,7 +581,7 @@ class _ParseAST {
         var source = this.input.substring(start, this.inputIndex);
         expression = new ASTWithSource(ast, source, this.location);
       }
-      ListWrapper.push(bindings, new TemplateBinding(key, keyIsVar, name, expression));
+      bindings.push(new TemplateBinding(key, keyIsVar, name, expression));
       if (!this.optionalCharacter($SEMICOLON)) {
         this.optionalCharacter($COMMA);
       }

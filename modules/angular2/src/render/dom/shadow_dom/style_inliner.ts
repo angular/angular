@@ -73,7 +73,7 @@ export class StyleInliner {
         // Importing again might cause a circular dependency
         promise = PromiseWrapper.resolve(prefix);
       } else {
-        ListWrapper.push(inlinedUrls, url);
+        inlinedUrls.push(url);
         promise = PromiseWrapper.then(this._xhr.get(url), (rawCss) => {
           // resolve nested @import rules
           var inlinedCss = this._inlineImports(rawCss, url, inlinedUrls);
@@ -88,7 +88,7 @@ export class StyleInliner {
           }
         }, (error) => `/* failed to import ${url} */\n`);
       }
-      ListWrapper.push(promises, promise);
+      promises.push(promise);
       partIndex += 2;
     }
 

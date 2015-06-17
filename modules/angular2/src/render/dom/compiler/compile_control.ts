@@ -10,14 +10,14 @@ import {CompileStep} from './compile_step';
 export class CompileControl {
   _currentStepIndex: number = 0;
   _parent: CompileElement = null;
-  _results = null;
-  _additionalChildren = null;
+  _results: any[] = null;
+  _additionalChildren: any[] = null;
   _ignoreCurrentElement: boolean;
 
   constructor(public _steps: List<CompileStep>) {}
 
   // only public so that it can be used by compile_pipeline
-  internalProcess(results, startStepIndex, parent: CompileElement, current: CompileElement) {
+  internalProcess(results: any[], startStepIndex, parent: CompileElement, current: CompileElement) {
     this._results = results;
     var previousStepIndex = this._currentStepIndex;
     var previousParent = this._parent;
@@ -33,7 +33,7 @@ export class CompileControl {
     }
 
     if (!this._ignoreCurrentElement) {
-      ListWrapper.push(results, current);
+      results.push(current);
     }
 
     this._currentStepIndex = previousStepIndex;
@@ -51,9 +51,9 @@ export class CompileControl {
 
   addChild(element: CompileElement) {
     if (isBlank(this._additionalChildren)) {
-      this._additionalChildren = ListWrapper.create();
+      this._additionalChildren = [];
     }
-    ListWrapper.push(this._additionalChildren, element);
+    this._additionalChildren.push(element);
   }
 
   /**

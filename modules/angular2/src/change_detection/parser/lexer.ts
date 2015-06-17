@@ -23,7 +23,7 @@ enum TokenType {
     var tokens = [];
     var token = scanner.scanToken();
     while (token != null) {
-      ListWrapper.push(tokens, token);
+      tokens.push(token);
       token = scanner.scanToken();
     }
     return tokens;

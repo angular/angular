@@ -15,7 +15,6 @@ import {
 } from 'angular2/test_lib';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/forms';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
 
 export function main() {
   describe("Form Model", () => {
@@ -312,7 +311,7 @@ export function main() {
                var loggedValues = [];
 
                ObservableWrapper.subscribe(g.valueChanges, (value) => {
-                 ListWrapper.push(loggedValues, value);
+                 loggedValues.push(value);
 
                  if (loggedValues.length == 2) {
                    expect(loggedValues)

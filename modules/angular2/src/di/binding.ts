@@ -501,7 +501,7 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
       if (isPresent(paramAnnotation.token)) {
         token = paramAnnotation.token;
       }
-      ListWrapper.push(depProps, paramAnnotation);
+      depProps.push(paramAnnotation);
     }
   }
 

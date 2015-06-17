@@ -303,7 +303,7 @@ export class ShadowCss {
           var p = parts[i];
           if (isBlank(p)) break;
           p = p.trim();
-          ListWrapper.push(r, partReplacer(_polyfillHostNoCombinator, p, m[3]));
+          r.push(partReplacer(_polyfillHostNoCombinator, p, m[3]));
         }
         return r.join(',');
       } else {
@@ -392,7 +392,7 @@ export class ShadowCss {
                 this._applyStrictSelectorScope(p, scopeSelector) :
                 this._applySelectorScope(p, scopeSelector, hostSelector);
       }
-      ListWrapper.push(r, p);
+      r.push(p);
     }
     return r.join(', ');
   }

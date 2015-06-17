@@ -31,7 +31,7 @@ export class ShadowDomCompileStep implements CompileStep {
     var stylePromise = this._shadowDomStrategy.processStyleElement(
         this._template.componentId, this._template.templateAbsUrl, current.element);
     if (isPresent(stylePromise) && isPromise(stylePromise)) {
-      ListWrapper.push(this._subTaskPromises, stylePromise);
+      this._subTaskPromises.push(stylePromise);
     }
 
     // Style elements should not be further processed by the compiler, as they can not contain

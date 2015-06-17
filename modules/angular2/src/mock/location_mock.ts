@@ -17,7 +17,7 @@ export class SpyLocation extends SpyObject {
   constructor() {
     super();
     this._path = '/';
-    this.urlChanges = ListWrapper.create();
+    this.urlChanges = [];
     this._subject = new EventEmitter();
     this._baseHref = '';
   }
@@ -38,7 +38,7 @@ export class SpyLocation extends SpyObject {
       return;
     }
     this._path = url;
-    ListWrapper.push(this.urlChanges, url);
+    this.urlChanges.push(url);
   }
 
   forward() {

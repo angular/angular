@@ -42,8 +42,8 @@ export function main() {
     var viewPool;
     var manager;
     var directiveResolver;
-    var createdViews;
-    var createdRenderViews;
+    var createdViews: any[];
+    var createdRenderViews: any[];
 
     function wrapPv(protoView: AppProtoView): ProtoViewRef { return new ProtoViewRef(protoView); }
 
@@ -124,7 +124,7 @@ export function main() {
       utils.spy('createView')
           .andCallFake((proto, renderViewRef, _a, _b) => {
             var view = createView(proto, renderViewRef);
-            ListWrapper.push(createdViews, view);
+            createdViews.push(view);
             return view;
           });
       utils.spy('attachComponentView')
@@ -143,13 +143,13 @@ export function main() {
       renderer.spy('createRootHostView')
           .andCallFake((_b, _c) => {
             var rv = new RenderViewRef();
-            ListWrapper.push(createdRenderViews, rv);
+            createdRenderViews.push(rv);
             return rv;
           });
       renderer.spy('createView')
           .andCallFake((_a) => {
             var rv = new RenderViewRef();
-            ListWrapper.push(createdRenderViews, rv);
+            createdRenderViews.push(rv);
             return rv;
           });
       viewPool.spy('returnView').andReturn(true);

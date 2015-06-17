@@ -226,7 +226,7 @@ export function main() {
   var dynamicBindings = [];
 
   for (var i = 0; i < 20; i++) {
-    ListWrapper.push(dynamicBindings, bind(i).toValue(i));
+    dynamicBindings.push(bind(i).toValue(i));
   }
 
   function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false) {
@@ -1090,6 +1090,6 @@ class FakeRenderer extends Renderer {
     this.log = [];
   }
   setElementProperty(viewRef, elementIndex, propertyName, value) {
-    ListWrapper.push(this.log, [viewRef, elementIndex, propertyName, value]);
+    this.log.push([viewRef, elementIndex, propertyName, value]);
   }
 }

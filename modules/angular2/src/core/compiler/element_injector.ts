@@ -154,7 +154,7 @@ export class TreeNode<T extends TreeNode<any>> {
     var res = [];
     var child = this._head;
     while (child != null) {
-      ListWrapper.push(res, child);
+      res.push(child);
       child = child._next;
     }
     return res;
@@ -285,7 +285,7 @@ export class DirectiveBinding extends ResolvedBinding {
     var readAttributes = [];
     ListWrapper.forEach(deps, (dep) => {
       if (isPresent(dep.attributeName)) {
-        ListWrapper.push(readAttributes, dep.attributeName);
+        readAttributes.push(dep.attributeName);
       }
     });
     return readAttributes;
@@ -357,10 +357,9 @@ export class BindingData {
     if (!(this.binding instanceof DirectiveBinding)) return [];
     var res = [];
     var db = <DirectiveBinding>this.binding;
-    MapWrapper.forEach(
-        db.hostActions,
-        (actionExpression, actionName) => {ListWrapper.push(
-            res, new HostActionAccessor(actionExpression, reflector.getter(actionName)))});
+    MapWrapper.forEach(db.hostActions, (actionExpression, actionName) => {
+      res.push(new HostActionAccessor(actionExpression, reflector.getter(actionName)));
+    });
     return res;
   }
 }
@@ -409,8 +408,8 @@ export class ProtoElementInjector {
                                              bd: List<BindingData>,
                                              firstBindingIsComponent: boolean) {
     ListWrapper.forEach(dirBindings, dirBinding => {
-      ListWrapper.push(bd, ProtoElementInjector._createBindingData(
-                               firstBindingIsComponent, dirBinding, dirBindings, dirBinding));
+      bd.push(ProtoElementInjector._createBindingData(firstBindingIsComponent, dirBinding,
+                                                      dirBindings, dirBinding));
     });
   }
 
@@ -425,9 +424,9 @@ export class ProtoElementInjector {
               `Multiple directives defined the same host injectable: "${stringify(b.key.token)}"`);
         }
         MapWrapper.set(visitedIds, b.key.id, true);
-        ListWrapper.push(bd, ProtoElementInjector._createBindingData(
-                                 firstBindingIsComponent, dirBinding, dirBindings,
-                                 ProtoElementInjector._createBinding(b)));
+        bd.push(ProtoElementInjector._createBindingData(firstBindingIsComponent, dirBinding,
+                                                        dirBindings,
+                                                        ProtoElementInjector._createBinding(b)));
       });
     });
   }
@@ -442,8 +441,7 @@ export class ProtoElementInjector {
     var db = <DirectiveBinding>bindings[0];
     ListWrapper.forEach(
         db.resolvedViewInjectables,
-        b => ListWrapper.push(bd,
-                              new BindingData(ProtoElementInjector._createBinding(b), SHADOW_DOM)));
+        b => bd.push(new BindingData(ProtoElementInjector._createBinding(b), SHADOW_DOM)));
   }
 
   private static _createBinding(b: ResolvedBinding) {
@@ -963,15 +961,15 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     var queriesToUpdate = [];
     if (isPresent(this.parent._query0)) {
       this._pruneQueryFromTree(this.parent._query0);
-      ListWrapper.push(queriesToUpdate, this.parent._query0);
+      queriesToUpdate.push(this.parent._query0);
     }
     if (isPresent(this.parent._query1)) {
       this._pruneQueryFromTree(this.parent._query1);
-      ListWrapper.push(queriesToUpdate, this.parent._query1);
+      queriesToUpdate.push(this.parent._query1);
     }
     if (isPresent(this.parent._query2)) {
       this._pruneQueryFromTree(this.parent._query2);
-      ListWrapper.push(queriesToUpdate, this.parent._query2);
+      queriesToUpdate.push(this.parent._query2);
     }
 
     this.remove();
@@ -1454,10 +1452,10 @@ class QueryRef {
     this.list.reset(aggregator);
   }
 
-  visit(inj: ElementInjector, aggregator): void {
+  visit(inj: ElementInjector, aggregator: any[]): void {
     if (isBlank(inj) || !inj._hasQuery(this)) return;
     if (inj.hasDirective(this.query.directive)) {
-      ListWrapper.push(aggregator, inj.get(this.query.directive));
+      aggregator.push(inj.get(this.query.directive));
     }
     var child = inj._head;
     while (isPresent(child)) {

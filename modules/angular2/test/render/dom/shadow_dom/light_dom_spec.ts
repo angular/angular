@@ -31,7 +31,7 @@ class FakeProtoView extends SpyObject {
 @proxy
 @IMPLEMENTS(DomView)
 class FakeView extends SpyObject {
-  boundElements;
+  boundElements: any[];
   proto;
 
   constructor(containers = null, transitiveContentTagCount: number = 1) {
@@ -53,7 +53,7 @@ class FakeView extends SpyObject {
         }
         var boundElement = new DomElement(null, element, contentTag);
         boundElement.viewContainer = vc;
-        ListWrapper.push(this.boundElements, boundElement);
+        this.boundElements.push(boundElement);
       });
     }
   }

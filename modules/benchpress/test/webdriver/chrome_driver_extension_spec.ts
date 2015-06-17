@@ -11,7 +11,6 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Json, isBlank} from 'angular2/src/facade/lang';
 
@@ -307,12 +306,12 @@ class MockDriverAdapter extends WebDriverAdapter {
   }
 
   executeScript(script) {
-    ListWrapper.push(this._log, ['executeScript', script]);
+    this._log.push(['executeScript', script]);
     return PromiseWrapper.resolve(null);
   }
 
   logs(type) {
-    ListWrapper.push(this._log, ['logs', type]);
+    this._log.push(['logs', type]);
     if (type === 'performance') {
       return PromiseWrapper.resolve(this._events.map((event) => {
         return {

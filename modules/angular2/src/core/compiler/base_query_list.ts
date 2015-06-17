@@ -22,7 +22,7 @@ export class BaseQueryList<T> {
   }
 
   add(obj) {
-    ListWrapper.push(this._results, obj);
+    this._results.push(obj);
     this._dirty = true;
   }
 
@@ -33,7 +33,7 @@ export class BaseQueryList<T> {
     }
   }
 
-  onChange(callback) { ListWrapper.push(this._callbacks, callback); }
+  onChange(callback) { this._callbacks.push(callback); }
 
   removeCallback(callback) { ListWrapper.remove(this._callbacks, callback); }
 

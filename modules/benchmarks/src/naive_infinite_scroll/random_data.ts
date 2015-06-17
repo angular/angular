@@ -13,7 +13,7 @@ import {
 export function generateOfferings(count: int): List<Offering> {
   var res = [];
   for (var i = 0; i < count; i++) {
-    ListWrapper.push(res, generateOffering(i));
+    res.push(generateOffering(i));
   }
   return res;
 }

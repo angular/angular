@@ -33,7 +33,7 @@ export class ConsoleReporter extends Reporter {
 
   static _sortedProps(obj) {
     var props = [];
-    StringMapWrapper.forEach(obj, (value, prop) => ListWrapper.push(props, prop));
+    StringMapWrapper.forEach(obj, (value, prop) => props.push(prop));
     props.sort();
     return props;
   }

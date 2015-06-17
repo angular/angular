@@ -36,7 +36,7 @@ export class App {
     appSize = appSize > 1 ? appSize - 1 : 0;  // draw at least one table
     this.scrollAreas = [];
     for (var i = 0; i < appSize; i++) {
-      ListWrapper.push(this.scrollAreas, i);
+      this.scrollAreas.push(i);
     }
     bindAction('#run-btn', () => { this.runBenchmark(); });
     bindAction('#reset-btn', () => {

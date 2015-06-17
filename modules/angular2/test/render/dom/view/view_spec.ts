@@ -16,7 +16,6 @@ import {
   proxy
 } from 'angular2/test_lib';
 import {isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
@@ -42,8 +41,7 @@ export function main() {
       var root = el('<div><div></div></div>');
       var boundElements = [];
       for (var i = 0; i < boundElementCount; i++) {
-        ListWrapper.push(boundElements,
-                         new DomElement(pv.elementBinders[i], el('<span></span'), null));
+        boundElements.push(new DomElement(pv.elementBinders[i], el('<span></span'), null));
       }
       return new DomView(pv, [DOM.childNodes(root)[0]], [], boundElements);
     }

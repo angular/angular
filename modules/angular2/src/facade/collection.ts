@@ -145,7 +145,6 @@ export class StringMapWrapper {
 }
 
 export class ListWrapper {
-  static create(): List<any> { return new List(); }
   static createFixedSize(size): List<any> { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
@@ -156,7 +155,6 @@ export class ListWrapper {
       fn(array[i]);
     }
   }
-  static push(array, el) { array.push(el); }
   static first(array) {
     if (!array) return null;
     return array[0];

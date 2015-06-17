@@ -16,7 +16,7 @@ import {
 export function main() {
   describe('console reporter', () => {
     var reporter;
-    var log;
+    var log: string[];
 
     function createReporter({columnWidth = null, sampleId = null, descriptions = null,
                              metrics = null}: {columnWidth?, sampleId?, descriptions?, metrics?}) {
@@ -30,10 +30,10 @@ export function main() {
       var bindings = [
         ConsoleReporter.BINDINGS,
         bind(SampleDescription).toValue(new SampleDescription(sampleId, descriptions, metrics)),
-        bind(ConsoleReporter.PRINT).toValue((line) => ListWrapper.push(log, line))
+        bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
       ];
       if (isPresent(columnWidth)) {
-        ListWrapper.push(bindings, bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
+        bindings.push(bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
       }
       reporter = Injector.resolveAndCreate(bindings).get(ConsoleReporter);
     }

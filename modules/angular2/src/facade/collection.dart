@@ -101,7 +101,6 @@ class StringMapWrapper {
 
 class ListWrapper {
   static List clone(Iterable l) => new List.from(l);
-  static List create() => new List();
   static List createFixedSize(int size) => new List(size);
   static get(List m, int k) => m[k];
   static void set(List m, int k, v) {
@@ -126,9 +125,6 @@ class ListWrapper {
   static first(List list) => list.isEmpty ? null : list.first;
   static last(List list) => list.isEmpty ? null : list.last;
   static List reversed(List list) => list.reversed.toList();
-  static void push(List l, e) {
-    l.add(e);
-  }
   static List concat(List a, List b) {
     return new List()
       ..length = a.length + b.length

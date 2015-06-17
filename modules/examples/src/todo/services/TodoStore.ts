@@ -26,7 +26,7 @@ export class TodoFactory {
 export class Store {
   list: List<KeyModel> = [];
 
-  add(record: KeyModel): void { ListWrapper.push(this.list, record); }
+  add(record: KeyModel): void { this.list.push(record); }
 
   remove(record: KeyModel): void { this._spliceOut(record); }
 

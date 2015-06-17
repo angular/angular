@@ -151,7 +151,7 @@ export class DomRenderer extends Renderer {
     }
 
     // add global events
-    view.eventHandlerRemovers = ListWrapper.create();
+    view.eventHandlerRemovers = [];
     var binders = view.proto.elementBinders;
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -160,7 +160,7 @@ export class DomRenderer extends Renderer {
           var globalEvent = binder.globalEvents[i];
           var remover = this._createGlobalEventListener(view, binderIdx, globalEvent.name,
                                                         globalEvent.target, globalEvent.fullName);
-          ListWrapper.push(view.eventHandlerRemovers, remover);
+          view.eventHandlerRemovers.push(remover);
         }
       }
     }

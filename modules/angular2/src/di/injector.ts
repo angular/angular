@@ -390,8 +390,8 @@ export function resolveBindings(bindings: List<Type | Binding | List<any>>): Lis
 
 function flattenBindings(bindings: List<ResolvedBinding>): List<ResolvedBinding> {
   var map = _flattenBindings(bindings, MapWrapper.create());
-  var res = ListWrapper.create();
-  MapWrapper.forEach(map, (binding, keyId) => ListWrapper.push(res, binding));
+  var res = [];
+  MapWrapper.forEach(map, (binding, keyId) => res.push(binding));
   return res;
 }
 

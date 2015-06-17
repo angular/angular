@@ -13,7 +13,7 @@ import {RecordType, ProtoRecord} from './proto_record';
  * replaced with very cheap SELF records.
  */
 export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
-  var res: List<ProtoRecord> = ListWrapper.create();
+  var res: List<ProtoRecord> = [];
   var indexMap: Map<number, number> = MapWrapper.create();
 
   for (var i = 0; i < records.length; ++i) {
@@ -22,14 +22,14 @@ export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
     var matchingRecord = _findMatching(record, res);
 
     if (isPresent(matchingRecord) && record.lastInBinding) {
-      ListWrapper.push(res, _selfRecord(record, matchingRecord.selfIndex, res.length + 1));
+      res.push(_selfRecord(record, matchingRecord.selfIndex, res.length + 1));
       MapWrapper.set(indexMap, r.selfIndex, matchingRecord.selfIndex);
 
     } else if (isPresent(matchingRecord) && !record.lastInBinding) {
       MapWrapper.set(indexMap, r.selfIndex, matchingRecord.selfIndex);
 
     } else {
-      ListWrapper.push(res, record);
+      res.push(record);
       MapWrapper.set(indexMap, r.selfIndex, record.selfIndex);
     }
   }

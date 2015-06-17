@@ -5,10 +5,10 @@ function findFirstClosedCycle(keys: List<any>): List<any> {
   var res = [];
   for (var i = 0; i < keys.length; ++i) {
     if (ListWrapper.contains(res, keys[i])) {
-      ListWrapper.push(res, keys[i]);
+      res.push(keys[i]);
       return res;
     } else {
-      ListWrapper.push(res, keys[i]);
+      res.push(keys[i]);
     }
   }
   return res;
@@ -45,7 +45,7 @@ export class AbstractBindingError extends BaseException {
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   addKey(key): void {
-    ListWrapper.push(this.keys, key);
+    this.keys.push(key);
     this.message = this.constructResolvingMessage(this.keys);
   }
 
@@ -182,13 +182,13 @@ export class NoAnnotationError extends BaseException {
   message: string;
   constructor(typeOrFunc, params: List<List<any>>) {
     super();
-    var signature = ListWrapper.create();
+    var signature = [];
     for (var i = 0, ii = params.length; i < ii; i++) {
       var parameter = params[i];
       if (isBlank(parameter) || parameter.length == 0) {
-        ListWrapper.push(signature, '?');
+        signature.push('?');
       } else {
-        ListWrapper.push(signature, ListWrapper.map(parameter, stringify).join(' '));
+        signature.push(ListWrapper.map(parameter, stringify).join(' '));
       }
     }
     this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +

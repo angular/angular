@@ -55,7 +55,7 @@ export class LightDom {
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (isPresent(el.contentTag)) {
-        ListWrapper.push(acc, el.contentTag);
+        acc.push(el.contentTag);
       }
       if (isPresent(el.viewContainer)) {
         ListWrapper.forEach(el.viewContainer.contentTagContainers(),
@@ -83,10 +83,10 @@ export class LightDom {
         } else if (isPresent(content)) {
           res = ListWrapper.concat(res, content.nodes());
         } else {
-          ListWrapper.push(res, root.node);
+          res.push(root.node);
         }
       } else {
-        ListWrapper.push(res, root.node);
+        res.push(root.node);
       }
     }
     return res;

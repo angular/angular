@@ -69,7 +69,7 @@ export function main() {
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
       ];
       if (isPresent(prepare)) {
-        ListWrapper.push(bindings, bind(Options.PREPARE).toValue(prepare));
+        bindings.push(bind(Options.PREPARE).toValue(prepare));
       }
 
       sampler = Injector.resolveAndCreate(bindings).get(Sampler);
@@ -81,7 +81,7 @@ export function main() {
          var count = 0;
          var driver = new MockDriverAdapter([], (callback) => {
            var result = callback();
-           ListWrapper.push(log, result);
+           log.push(result);
            return PromiseWrapper.resolve(result);
          });
          createSampler({
@@ -105,8 +105,8 @@ export function main() {
          createSampler({
            metric: createCountingMetric(log),
            validator: createCountingValidator(2),
-           prepare: () => { ListWrapper.push(log, `p${workCount++}`); },
-           execute: () => { ListWrapper.push(log, `w${workCount++}`); }
+           prepare: () => { log.push(`p${workCount++}`); },
+           execute: () => { log.push(`w${workCount++}`); }
          });
          sampler.sample().then((_) => {
            expect(log).toEqual([
@@ -130,7 +130,7 @@ export function main() {
          createSampler({
            metric: createCountingMetric(log),
            validator: createCountingValidator(2),
-           execute: () => { ListWrapper.push(log, `w${workCount++}`); },
+           execute: () => { log.push(`w${workCount++}`); },
            prepare: null
          });
          sampler.sample().then((_) => {
@@ -282,7 +282,7 @@ class MockValidator extends Validator {
   }
   validate(completeSample: List<MeasureValues>): List<MeasureValues> {
     var stableSample = isPresent(this._validate) ? this._validate(completeSample) : completeSample;
-    ListWrapper.push(this._log, ['validate', completeSample, stableSample]);
+    this._log.push(['validate', completeSample, stableSample]);
     return stableSample;
   }
 }
@@ -297,12 +297,12 @@ class MockMetric extends Metric {
     this._log = log;
   }
   beginMeasure() {
-    ListWrapper.push(this._log, ['beginMeasure']);
+    this._log.push(['beginMeasure']);
     return PromiseWrapper.resolve(null);
   }
   endMeasure(restart) {
     var measureValues = isPresent(this._endMeasure) ? this._endMeasure() : {};
-    ListWrapper.push(this._log, ['endMeasure', restart, measureValues]);
+    this._log.push(['endMeasure', restart, measureValues]);
     return PromiseWrapper.resolve(measureValues);
   }
 }
@@ -317,11 +317,11 @@ class MockReporter extends Reporter {
     this._log = log;
   }
   reportMeasureValues(values): Promise<any> {
-    ListWrapper.push(this._log, ['reportMeasureValues', values]);
+    this._log.push(['reportMeasureValues', values]);
     return PromiseWrapper.resolve(null);
   }
   reportSample(completeSample, validSample): Promise<any> {
-    ListWrapper.push(this._log, ['reportSample', completeSample, validSample]);
+    this._log.push(['reportSample', completeSample, validSample]);
     return PromiseWrapper.resolve(null);
   }
 }

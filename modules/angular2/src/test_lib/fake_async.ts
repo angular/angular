@@ -1,4 +1,4 @@
-/// <reference path="../../typings/jasmine/jasmine"/>
+/// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 
 import {BaseException, global} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -95,7 +95,7 @@ export function flushMicrotasks(): void {
 function _setTimeout(fn: Function, delay: number, ... args): number {
   var cb = _fnAndFlush(fn);
   var id = _scheduler.scheduleFunction(cb, delay, args);
-  ListWrapper.push(_pendingTimers, id);
+  _pendingTimers.push(id);
   _scheduler.scheduleFunction(_dequeueTimer(id), delay);
   return id;
 }
@@ -124,7 +124,7 @@ function _fnAndFlush(fn: Function): Function {
 }
 
 function _scheduleMicrotask(microtask: Function): void {
-  ListWrapper.push(_microtasks, microtask);
+  _microtasks.push(microtask);
 }
 
 function _dequeueTimer(id: number): Function {

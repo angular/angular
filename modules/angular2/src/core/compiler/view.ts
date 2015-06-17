@@ -183,7 +183,7 @@ export class AppProtoView {
         new ElementBinder(this.elementBinders.length, parent, distanceToParent,
                           protoElementInjector, directiveVariableBindings, componentDirective);
 
-    ListWrapper.push(this.elementBinders, elBinder);
+    this.elementBinders.push(elBinder);
     return elBinder;
   }
 

@@ -118,11 +118,11 @@ export class MdDialog {
         });
   }
 
-  alert(message: string, okMessage: string): Promise {
+  alert(message: string, okMessage: string): Promise<any> {
     throw "Not implemented";
   }
 
-  confirm(message: string, okMessage: string, cancelMessage: string): Promise {
+  confirm(message: string, okMessage: string, cancelMessage: string): Promise<any> {
     throw "Not implemented";
   }
 }
@@ -176,7 +176,7 @@ export class MdDialogRef {
 
 
   /** Gets a promise that is resolved when the dialog is closed. */
-  get whenClosed(): Promise {
+  get whenClosed(): Promise<any> {
     return this.whenClosedDeferred.promise;
   }
 

@@ -32,13 +32,13 @@ export class CssSelector {
   notSelectors: List<CssSelector> = [];
 
   static parse(selector: string): List<CssSelector> {
-    var results = ListWrapper.create();
-    var _addResult = (res, cssSel) => {
+    var results: CssSelector[] = [];
+    var _addResult = (res: CssSelector[], cssSel) => {
       if (cssSel.notSelectors.length > 0 && isBlank(cssSel.element) &&
           ListWrapper.isEmpty(cssSel.classNames) && ListWrapper.isEmpty(cssSel.attrs)) {
         cssSel.element = "*";
       }
-      ListWrapper.push(res, cssSel);
+      res.push(cssSel);
     };
     var cssSelector = new CssSelector();
     var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
@@ -52,7 +52,7 @@ export class CssSelector {
         }
         inNot = true;
         current = new CssSelector();
-        ListWrapper.push(cssSelector.notSelectors, current);
+        cssSelector.notSelectors.push(current);
       }
       if (isPresent(match[2])) {
         current.setElement(match[2]);
@@ -92,16 +92,16 @@ export class CssSelector {
   }
 
   addAttribute(name: string, value: string = _EMPTY_ATTR_VALUE) {
-    ListWrapper.push(this.attrs, name.toLowerCase());
+    this.attrs.push(name.toLowerCase());
     if (isPresent(value)) {
       value = value.toLowerCase();
     } else {
       value = _EMPTY_ATTR_VALUE;
     }
-    ListWrapper.push(this.attrs, value);
+    this.attrs.push(value);
   }
 
-  addClassName(name: string) { ListWrapper.push(this.classNames, name.toLowerCase()); }
+  addClassName(name: string) { this.classNames.push(name.toLowerCase()); }
 
   toString(): string {
     var res = '';
@@ -141,11 +141,11 @@ export class SelectorMatcher {
     return notMatcher;
   }
 
-  private _elementMap: Map<string, List<string>> = MapWrapper.create();
+  private _elementMap: Map<string, List<SelectorContext>> = MapWrapper.create();
   private _elementPartialMap: Map<string, SelectorMatcher> = MapWrapper.create();
-  private _classMap: Map<string, List<string>> = MapWrapper.create();
+  private _classMap: Map<string, List<SelectorContext>> = MapWrapper.create();
   private _classPartialMap: Map<string, SelectorMatcher> = MapWrapper.create();
-  private _attrValueMap: Map<string, Map<string, List<string>>> = MapWrapper.create();
+  private _attrValueMap: Map<string, Map<string, List<SelectorContext>>> = MapWrapper.create();
   private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>> = MapWrapper.create();
   private _listContexts: List<SelectorListContext> = [];
 
@@ -153,7 +153,7 @@ export class SelectorMatcher {
     var listContext = null;
     if (cssSelectors.length > 1) {
       listContext = new SelectorListContext(cssSelectors);
-      ListWrapper.push(this._listContexts, listContext);
+      this._listContexts.push(listContext);
     }
     for (var i = 0; i < cssSelectors.length; i++) {
       this._addSelectable(cssSelectors[i], callbackCtxt, listContext);
@@ -220,13 +220,14 @@ export class SelectorMatcher {
     }
   }
 
-  private _addTerminal(map: Map<string, List<string>>, name: string, selectable: SelectorContext) {
+  private _addTerminal(map: Map<string, List<SelectorContext>>, name: string,
+                       selectable: SelectorContext) {
     var terminalList = MapWrapper.get(map, name);
     if (isBlank(terminalList)) {
-      terminalList = ListWrapper.create();
+      terminalList = [];
       MapWrapper.set(map, name, terminalList);
     }
-    ListWrapper.push(terminalList, selectable);
+    terminalList.push(selectable);
   }
 
   private _addPartial(map: Map<string, SelectorMatcher>, name: string): SelectorMatcher {
@@ -297,8 +298,8 @@ export class SelectorMatcher {
     return result;
   }
 
-  _matchTerminal(map: Map<string, List<string>>, name, cssSelector: CssSelector,
-                 matchedCallback /*: (CssSelector, any) => void*/): boolean {
+  _matchTerminal(map: Map<string, List<SelectorContext>>, name, cssSelector: CssSelector,
+                 matchedCallback: (CssSelector, any) => void): boolean {
     if (isBlank(map) || isBlank(name)) {
       return false;
     }

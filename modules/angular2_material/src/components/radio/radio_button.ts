@@ -119,7 +119,7 @@ export class MdRadioGroup {
 
   /** Registers a child radio button with this group. */
   register(radio: MdRadioButton) {
-    ListWrapper.push(this.radios_, radio);
+    this.radios_.push(radio);
   }
 
   /** Handles up and down arrow key presses to change the selected child radio. */

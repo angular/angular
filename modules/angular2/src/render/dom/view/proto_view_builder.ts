@@ -27,7 +27,7 @@ export class ProtoViewBuilder {
 
   bindElement(element, description = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
-    ListWrapper.push(this.elements, builder);
+    this.elements.push(builder);
     DOM.addClass(element, NG_BINDING_CLASS);
 
     return builder;
@@ -90,7 +90,7 @@ export class ProtoViewBuilder {
         transitiveContentTagCount++;
       }
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
-      ListWrapper.push(apiElementBinders, new api.ElementBinder({
+      apiElementBinders.push(new api.ElementBinder({
         index: ebb.index,
         parentIndex: parentIndex,
         distanceToParent: ebb.distanceToParent,
@@ -103,22 +103,21 @@ export class ProtoViewBuilder {
         readAttributes: ebb.readAttributes
       }));
       var elementIsEmpty = this._isEmptyElement(ebb.element);
-      ListWrapper.push(renderElementBinders, new ElementBinder({
-                         textNodeIndices: ebb.textBindingIndices,
-                         contentTagSelector: ebb.contentTagSelector,
-                         parentIndex: parentIndex,
-                         distanceToParent: ebb.distanceToParent,
-                         nestedProtoView: isPresent(nestedProtoView) ?
-                                              resolveInternalDomProtoView(nestedProtoView.render) :
-                                              null,
-                         componentId: ebb.componentId,
-                         eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
-                         localEvents: ebb.eventBuilder.buildLocalEvents(),
-                         globalEvents: ebb.eventBuilder.buildGlobalEvents(),
-                         hostActions: hostActions,
-                         propertySetters: propertySetters,
-                         elementIsEmpty: elementIsEmpty
-                       }));
+      renderElementBinders.push(new ElementBinder({
+        textNodeIndices: ebb.textBindingIndices,
+        contentTagSelector: ebb.contentTagSelector,
+        parentIndex: parentIndex,
+        distanceToParent: ebb.distanceToParent,
+        nestedProtoView:
+            isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null,
+        componentId: ebb.componentId,
+        eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
+        localEvents: ebb.eventBuilder.buildLocalEvents(),
+        globalEvents: ebb.eventBuilder.buildGlobalEvents(),
+        hostActions: hostActions,
+        propertySetters: propertySetters,
+        elementIsEmpty: elementIsEmpty
+      }));
     });
     return new api.ProtoViewDto({
       render: new DomProtoViewRef(new DomProtoView({
@@ -178,7 +177,7 @@ export class ElementBinderBuilder {
 
   bindDirective(directiveIndex: number): DirectiveBuilder {
     var directive = new DirectiveBuilder(directiveIndex);
-    ListWrapper.push(this.directives, directive);
+    this.directives.push(directive);
     return directive;
   }
 
@@ -211,12 +210,12 @@ export class ElementBinderBuilder {
   }
 
   bindEvent(name, expression, target = null) {
-    ListWrapper.push(this.eventBindings, this.eventBuilder.add(name, expression, target));
+    this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 
   bindText(index, expression) {
-    ListWrapper.push(this.textBindingIndices, index);
-    ListWrapper.push(this.textBindings, expression);
+    this.textBindingIndices.push(index);
+    this.textBindings.push(expression);
   }
 
   setContentTagSelector(value: string) { this.contentTagSelector = value; }
@@ -240,11 +239,11 @@ export class DirectiveBuilder {
   }
 
   bindHostAction(actionName: string, actionExpression: string, expression: ASTWithSource) {
-    ListWrapper.push(this.hostActions, new HostAction(actionName, actionExpression, expression));
+    this.hostActions.push(new HostAction(actionName, actionExpression, expression));
   }
 
   bindEvent(name, expression, target = null) {
-    ListWrapper.push(this.eventBindings, this.eventBuilder.add(name, expression, target));
+    this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 }
 
@@ -266,9 +265,9 @@ export class EventBuilder extends AstTransformer {
         fullName, new ASTWithSource(adjustedAst, source.source, source.location));
     var event = new Event(name, target, fullName);
     if (isBlank(target)) {
-      ListWrapper.push(this.localEvents, event);
+      this.localEvents.push(event);
     } else {
-      ListWrapper.push(this.globalEvents, event);
+      this.globalEvents.push(event);
     }
     return result;
   }
@@ -285,7 +284,7 @@ export class EventBuilder extends AstTransformer {
     }
 
     if (isEventAccess) {
-      ListWrapper.push(this.locals, ast);
+      this.locals.push(ast);
       var index = this.locals.length - 1;
       return new AccessMember(this._implicitReceiver, `${index}`, (arr) => arr[index], null);
     } else {
@@ -306,13 +305,13 @@ export class EventBuilder extends AstTransformer {
   }
 
   _merge(host: List<Event>, tobeAdded: List<Event>) {
-    var names = ListWrapper.create();
+    var names = [];
     for (var i = 0; i < host.length; i++) {
-      ListWrapper.push(names, host[i].fullName);
+      names.push(host[i].fullName);
     }
     for (var j = 0; j < tobeAdded.length; j++) {
       if (!ListWrapper.contains(names, tobeAdded[j].fullName)) {
-        ListWrapper.push(host, tobeAdded[j]);
+        host.push(tobeAdded[j]);
       }
     }
   }

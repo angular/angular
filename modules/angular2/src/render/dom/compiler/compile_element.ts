@@ -63,10 +63,10 @@ export class CompileElement {
 
   classList(): List<string> {
     if (isBlank(this._classList)) {
-      this._classList = ListWrapper.create();
+      this._classList = [];
       var elClassList = DOM.classList(this.element);
       for (var i = 0; i < elClassList.length; i++) {
-        ListWrapper.push(this._classList, elClassList[i]);
+        this._classList.push(elClassList[i]);
       }
     }
     return this._classList;

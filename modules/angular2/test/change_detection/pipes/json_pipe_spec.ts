@@ -14,7 +14,6 @@ import {
   IS_DARTIUM
 } from 'angular2/test_lib';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {JsonPipe} from 'angular2/src/change_detection/pipes/json_pipe';
 
@@ -26,7 +25,7 @@ export function main() {
     var inceptionObjString;
     var catString;
     var pipe;
-    var collection;
+    var collection: number[];
 
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 
@@ -87,7 +86,7 @@ export function main() {
 
         expect(pipe.transform(collection)).toEqual(stringCollection);
 
-        ListWrapper.push(collection, 1);
+        collection.push(1);
 
         expect(pipe.transform(collection)).toEqual(stringCollectionWith1);
       });

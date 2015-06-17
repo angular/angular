@@ -20,7 +20,7 @@ export class CompilePipeline {
     if (isBlank(protoViewType)) {
       protoViewType = ViewType.COMPONENT;
     }
-    var results = ListWrapper.create();
+    var results = [];
     var rootCompileElement = new CompileElement(rootElement, compilationCtxtDescription);
     rootCompileElement.inheritedProtoView = new ProtoViewBuilder(rootElement, protoViewType);
     rootCompileElement.isViewRoot = true;

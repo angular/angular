@@ -47,10 +47,8 @@ class BindingRecordsCreator {
     for (var elementIndex = 0; elementIndex < elementBinders.length; ++elementIndex) {
       var dirs = elementBinders[elementIndex].directives;
       for (var dirIndex = 0; dirIndex < dirs.length; ++dirIndex) {
-        ListWrapper.push(
-            directiveRecords,
-            this._getDirectiveRecord(elementIndex, dirIndex,
-                                     allDirectiveMetadatas[dirs[dirIndex].directiveIndex]));
+        directiveRecords.push(this._getDirectiveRecord(
+            elementIndex, dirIndex, allDirectiveMetadatas[dirs[dirIndex].directiveIndex]));
       }
     }
 
@@ -62,15 +60,15 @@ class BindingRecordsCreator {
     if (isBlank(renderElementBinder.textBindings)) return;
 
     ListWrapper.forEach(renderElementBinder.textBindings, (b) => {
-      ListWrapper.push(bindings, BindingRecord.createForTextNode(b, this._textNodeIndex++));
+      bindings.push(BindingRecord.createForTextNode(b, this._textNodeIndex++));
     });
   }
 
   _createElementPropertyRecords(bindings: List<BindingRecord>, boundElementIndex: number,
                                 renderElementBinder: renderApi.ElementBinder) {
     MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
-      ListWrapper.push(
-          bindings, BindingRecord.createForElement(astWithSource, boundElementIndex, propertyName));
+
+      bindings.push(BindingRecord.createForElement(astWithSource, boundElementIndex, propertyName));
     });
   }
 
@@ -87,18 +85,18 @@ class BindingRecordsCreator {
         // TODO: these setters should eventually be created by change detection, to make
         // it monomorphic!
         var setter = reflector.setter(propertyName);
-        ListWrapper.push(bindings, BindingRecord.createForDirective(astWithSource, propertyName,
-                                                                    setter, directiveRecord));
+        bindings.push(
+            BindingRecord.createForDirective(astWithSource, propertyName, setter, directiveRecord));
       });
 
       if (directiveRecord.callOnChange) {
-        ListWrapper.push(bindings, BindingRecord.createDirectiveOnChange(directiveRecord));
+        bindings.push(BindingRecord.createDirectiveOnChange(directiveRecord));
       }
       if (directiveRecord.callOnInit) {
-        ListWrapper.push(bindings, BindingRecord.createDirectiveOnInit(directiveRecord));
+        bindings.push(BindingRecord.createDirectiveOnInit(directiveRecord));
       }
       if (directiveRecord.callOnCheck) {
-        ListWrapper.push(bindings, BindingRecord.createDirectiveOnCheck(directiveRecord));
+        bindings.push(BindingRecord.createDirectiveOnCheck(directiveRecord));
       }
     }
 
@@ -107,8 +105,8 @@ class BindingRecordsCreator {
       // host properties
       MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
         var dirIndex = new DirectiveIndex(boundElementIndex, i);
-        ListWrapper.push(
-            bindings, BindingRecord.createForHostProperty(dirIndex, astWithSource, propertyName));
+
+        bindings.push(BindingRecord.createForHostProperty(dirIndex, astWithSource, propertyName));
       });
     }
   }
@@ -185,8 +183,8 @@ function _collectNestedProtoViews(
   if (isBlank(result)) {
     result = [];
   }
-  ListWrapper.push(result, new RenderProtoViewWithIndex(renderProtoView, result.length, parentIndex,
-                                                        boundElementIndex));
+  result.push(
+      new RenderProtoViewWithIndex(renderProtoView, result.length, parentIndex, boundElementIndex));
   var currentIndex = result.length - 1;
   var childBoundElementIndex = 0;
   ListWrapper.forEach(renderProtoView.elementBinders, (elementBinder) => {
@@ -265,7 +263,6 @@ function _collectNestedProtoViewsVariableNames(
   });
   return nestedPvVariableNames;
 }
-
 
 function _createVariableNames(parentVariableNames, renderProtoView): List<string> {
   var res = isBlank(parentVariableNames) ? [] : ListWrapper.clone(parentVariableNames);

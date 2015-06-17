@@ -1,7 +1,6 @@
 import {SelectorMatcher} from "angular2/src/render/dom/compiler/selector";
 import {CssSelector} from "angular2/src/render/dom/compiler/selector";
 import {StringWrapper, Math} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
@@ -13,10 +12,10 @@ export function main() {
   var fixedSelectorStrings = [];
   var fixedSelectors = [];
   for (var i = 0; i < count; i++) {
-    ListWrapper.push(fixedSelectorStrings, randomSelector());
+    fixedSelectorStrings.push(randomSelector());
   }
   for (var i = 0; i < count; i++) {
-    ListWrapper.push(fixedSelectors, CssSelector.parse(fixedSelectorStrings[i]));
+    fixedSelectors.push(CssSelector.parse(fixedSelectorStrings[i]));
   }
   fixedMatcher = new SelectorMatcher();
   for (var i = 0; i < count; i++) {
@@ -26,7 +25,7 @@ export function main() {
   function parse() {
     var result = [];
     for (var i = 0; i < count; i++) {
-      ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
+      result.push(CssSelector.parse(fixedSelectorStrings[i]));
     }
     return result;
   }

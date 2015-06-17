@@ -82,10 +82,9 @@ export class ProtoRecordBuilder {
 
   _appendRecords(b: BindingRecord, variableNames: List<string>) {
     if (b.isDirectiveLifecycle()) {
-      ListWrapper.push(
-          this.records,
-          new ProtoRecord(RecordType.DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [], [], -1, null,
-                          this.records.length + 1, b, null, false, false));
+      this.records.push(new ProtoRecord(RecordType.DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [],
+                                        [], -1, null, this.records.length + 1, b, null, false,
+                                        false));
     } else {
       _ConvertAstIntoProtoRecords.append(this.records, b, variableNames);
     }
@@ -215,13 +214,13 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
     var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {
-      ListWrapper.push(this._records, new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1,
-                                                      context, selfIndex, this._bindingRecord,
-                                                      this._expressionAsString, false, false));
+      this._records.push(new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1, context,
+                                         selfIndex, this._bindingRecord, this._expressionAsString,
+                                         false, false));
     } else {
-      ListWrapper.push(this._records, new ProtoRecord(type, name, funcOrValue, args, fixedArgs,
-                                                      context, null, selfIndex, this._bindingRecord,
-                                                      this._expressionAsString, false, false));
+      this._records.push(new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, null,
+                                         selfIndex, this._bindingRecord, this._expressionAsString,
+                                         false, false));
     }
     return selfIndex;
   }

@@ -63,7 +63,7 @@ export function main() {
     var c = isBlank(passedInContext) ? td() : passedInContext;
     var res = [];
     for (var i = 0; i < asts.length; i++) {
-      ListWrapper.push(res, asts[i].eval(c, emptyLocals()));
+      res.push(asts[i].eval(c, emptyLocals()));
     }
     return res;
   }

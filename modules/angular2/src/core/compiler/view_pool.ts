@@ -34,7 +34,7 @@ export class AppViewPool {
     }
     var haveRemainingCapacity = pooledViews.length < this._poolCapacityPerProtoView;
     if (haveRemainingCapacity) {
-      ListWrapper.push(pooledViews, view);
+      pooledViews.push(view);
     }
     return haveRemainingCapacity;
   }

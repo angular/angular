@@ -299,19 +299,19 @@ export class KeyValueChanges extends Pipe {
     var record: KVChangeRecord;
 
     for (record = this._mapHead; record !== null; record = record._next) {
-      ListWrapper.push(items, stringify(record));
+      items.push(stringify(record));
     }
     for (record = this._previousMapHead; record !== null; record = record._nextPrevious) {
-      ListWrapper.push(previous, stringify(record));
+      previous.push(stringify(record));
     }
     for (record = this._changesHead; record !== null; record = record._nextChanged) {
-      ListWrapper.push(changes, stringify(record));
+      changes.push(stringify(record));
     }
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
-      ListWrapper.push(additions, stringify(record));
+      additions.push(stringify(record));
     }
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
-      ListWrapper.push(removals, stringify(record));
+      removals.push(stringify(record));
     }
 
     return "map: " + items.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +

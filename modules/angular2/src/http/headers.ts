@@ -33,8 +33,8 @@ export class Headers {
       this._headersMap = MapWrapper.createFromStringMap(headers);
       MapWrapper.forEach(this._headersMap, (v, k) => {
         if (!isListLikeIterable(v)) {
-          var list = ListWrapper.create();
-          ListWrapper.push(list, v);
+          var list = [];
+          list.push(v);
           MapWrapper.set(this._headersMap, k, list);
         }
       });
@@ -42,8 +42,8 @@ export class Headers {
   }
 
   append(name: string, value: string): void {
-    var list = MapWrapper.get(this._headersMap, name) || ListWrapper.create();
-    ListWrapper.push(list, value);
+    var list = MapWrapper.get(this._headersMap, name) || [];
+    list.push(value);
     MapWrapper.set(this._headersMap, name, list);
   }
 
@@ -61,11 +61,11 @@ export class Headers {
 
   // TODO: this implementation seems wrong. create list then check if it's iterable?
   set(header: string, value: string | List<string>): void {
-    var list = ListWrapper.create();
+    var list = [];
     if (!isListLikeIterable(value)) {
-      ListWrapper.push(list, value);
+      list.push(value);
     } else {
-      ListWrapper.push(list, ListWrapper.toString((<List<string>>value)));
+      list.push(ListWrapper.toString((<List<string>>value)));
     }
 
     MapWrapper.set(this._headersMap, header, list);
@@ -73,9 +73,7 @@ export class Headers {
 
   values() { return MapWrapper.values(this._headersMap); }
 
-  getAll(header: string): Array<string> {
-    return MapWrapper.get(this._headersMap, header) || ListWrapper.create();
-  }
+  getAll(header: string): Array<string> { return MapWrapper.get(this._headersMap, header) || []; }
 
   entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
 }

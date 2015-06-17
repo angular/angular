@@ -53,7 +53,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
           ListWrapper.forEach(entries, function(entry) {
             var message = Json.parse(entry['message'])['message'];
             if (StringWrapper.equals(message['method'], 'Tracing.dataCollected')) {
-              ListWrapper.push(events, message['params']);
+              events.push(message['params']);
             }
             if (StringWrapper.equals(message['method'], 'Tracing.bufferUsage')) {
               throw new BaseException('The DevTools trace buffer filled during the test!');
@@ -79,14 +79,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
         if (StringWrapper.equals(name, 'FunctionCall') &&
             (isBlank(args) || isBlank(args['data']) ||
              !StringWrapper.equals(args['data']['scriptName'], 'InjectedScript'))) {
-          ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': 'script'}));
+          normalizedEvents.push(normalizeEvent(event, {'name': 'script'}));
 
         } else if (StringWrapper.equals(name, 'RecalculateStyles') ||
                    StringWrapper.equals(name, 'Layout') ||
                    StringWrapper.equals(name, 'UpdateLayerTree') ||
                    StringWrapper.equals(name, 'Paint') || StringWrapper.equals(name, 'Rasterize') ||
                    StringWrapper.equals(name, 'CompositeLayers')) {
-          ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': 'render'}));
+          normalizedEvents.push(normalizeEvent(event, {'name': 'render'}));
 
         } else if (StringWrapper.equals(name, 'GCEvent')) {
           var normArgs = {
@@ -97,12 +97,11 @@ export class ChromeDriverExtension extends WebDriverExtension {
             normArgs['majorGc'] = isPresent(majorGCPids[pid]) && majorGCPids[pid];
           }
           majorGCPids[pid] = false;
-          ListWrapper.push(normalizedEvents,
-                           normalizeEvent(event, {'name': 'gc', 'args': normArgs}));
+          normalizedEvents.push(normalizeEvent(event, {'name': 'gc', 'args': normArgs}));
         }
 
       } else if (StringWrapper.equals(cat, 'blink.console')) {
-        ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': name}));
+        normalizedEvents.push(normalizeEvent(event, {'name': name}));
 
       } else if (StringWrapper.equals(cat, 'v8')) {
         if (StringWrapper.equals(name, 'majorGC')) {
@@ -118,7 +117,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
             throw new BaseException('multi-frame render stats not supported');
           }
           if (frameCount == 1) {
-            ListWrapper.push(normalizedEvents, normalizeEvent(event, {'name': 'frame'}));
+            normalizedEvents.push(normalizeEvent(event, {'name': 'frame'}));
           }
         } else if (StringWrapper.equals(name, 'BenchmarkInstrumentation::DisplayRenderingStats') ||
                    StringWrapper.equals(name, 'vsync_before')) {

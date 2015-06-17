@@ -76,7 +76,7 @@ function parsePathString(route: string) {
   }
 
   var segments = splitBySlash(route);
-  var results = ListWrapper.create();
+  var results = [];
   var specificity = 0;
 
   // The "specificity" of a path is used to determine which route is used when multiple routes match
@@ -97,12 +97,12 @@ function parsePathString(route: string) {
     var segment = segments[i], match;
 
     if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
-      ListWrapper.push(results, new DynamicSegment(match[1]));
+      results.push(new DynamicSegment(match[1]));
       specificity += (100 - i);
     } else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
-      ListWrapper.push(results, new StarSegment(match[1]));
+      results.push(new StarSegment(match[1]));
     } else if (segment.length > 0) {
-      ListWrapper.push(results, new StaticSegment(segment));
+      results.push(new StaticSegment(segment));
       specificity += 100 * (100 - i);
     }
   }

@@ -19,6 +19,6 @@ export class MdRadioDispatcher {
 
   /** Listen for future changes to radio button selection. */
   listen(listener) {
-    ListWrapper.push(this.listeners_, listener);
+    this.listeners_.push(listener);
   }
 }
