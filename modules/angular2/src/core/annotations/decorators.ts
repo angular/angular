@@ -24,12 +24,12 @@ export interface ComponentTypeDecorator extends TypeDecorator {
 export interface ViewTypeDecorator extends TypeDecorator { View(obj: ViewArgs): ViewTypeDecorator }
 
 export interface Directive {
-  (obj: any): DirectiveTypeDecorator;
+  (obj: DirectiveArgs): DirectiveTypeDecorator;
   new (obj: DirectiveAnnotation): DirectiveAnnotation;
 }
 
 export interface Component {
-  (obj: any): ComponentTypeDecorator;
+  (obj: ComponentArgs): ComponentTypeDecorator;
   new (obj: ComponentAnnotation): ComponentAnnotation;
 }
 
