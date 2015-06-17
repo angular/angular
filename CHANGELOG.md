@@ -1,3 +1,148 @@
+<a name"2.0.0-alpha.27"></a>
+### 2.0.0-alpha.27 (2015-06-16)
+
+
+#### Bug Fixes
+
+* makes NgModel work in strict mode ([eb3586d7](https://github.com/angular/angular/commit/eb3586d7))
+* Class factory now adds annotations ([bc9e482b](https://github.com/angular/angular/commit/bc9e482b))
+* improve type safety by typing `refs`. ([4ae7df27](https://github.com/angular/angular/commit/4ae7df27))
+* improve type of TreeNode.children. ([c3c2ad14](https://github.com/angular/angular/commit/c3c2ad14))
+* add types for ts2dart's façade handling. ([f3d74185](https://github.com/angular/angular/commit/f3d74185))
+* rename FORWARD_REF to forwardRef in the Angular code base. ([c4ecbf0a](https://github.com/angular/angular/commit/c4ecbf0a))
+* declare var global. ([13466604](https://github.com/angular/angular/commit/13466604))
+* Improve error message on missing dependency ([2ccc65d7](https://github.com/angular/angular/commit/2ccc65d7))
+* compare strings with StringWrapper.equals ([633cf636](https://github.com/angular/angular/commit/633cf636))
+* corrected var/# parsing in template ([a4183971](https://github.com/angular/angular/commit/a4183971), closes [#2084](https://github.com/angular/angular/issues/2084))
+* increase the stack frame size for tests ([ab8eb4f6](https://github.com/angular/angular/commit/ab8eb4f6))
+* include error message in the stack trace ([8d081ea7](https://github.com/angular/angular/commit/8d081ea7))
+* **Compiler:** fix text nodes after content tags ([d599fd34](https://github.com/angular/angular/commit/d599fd34), closes [#2095](https://github.com/angular/angular/issues/2095))
+* **DirectiveMetadata:** add support for events, changeDetection ([b4e82b8b](https://github.com/angular/angular/commit/b4e82b8b))
+* **JsonPipe:** always transform to json ([e77710a3](https://github.com/angular/angular/commit/e77710a3))
+* **Parser:** Parse pipes in arguments ([f9745327](https://github.com/angular/angular/commit/f9745327), closes [#1680](https://github.com/angular/angular/issues/1680))
+* **ShadowDom:** fix emulation integration spec to test all 3 strategies ([6e385154](https://github.com/angular/angular/commit/6e385154), closes [#2546](https://github.com/angular/angular/issues/2546))
+* **analzyer:** removed unused imports ([902759e1](https://github.com/angular/angular/commit/902759e1))
+* **benchmarks:** Do not apply the angular transformer to e2e tests ([cee26826](https://github.com/angular/angular/commit/cee26826))
+* **bootstrap:** temporary disable jit change detection because of a bug in handling pure functio ([9908def8](https://github.com/angular/angular/commit/9908def8))
+* **broccoli:** ensure that inputTrees are stable ([928ec1c5](https://github.com/angular/angular/commit/928ec1c5))
+* **build:**
+  * ensure that asset files are copied over to example directories ([60b97b27](https://github.com/angular/angular/commit/60b97b27))
+  * Minify files for angular2.min.js bundle ([76797dfb](https://github.com/angular/angular/commit/76797dfb))
+  * only pass ts files to ts2dart transpilation. ([b5431e4c](https://github.com/angular/angular/commit/b5431e4c))
+* **bundle:** makes interfaces.ts non-empty when transpiled. ([83e99fc7](https://github.com/angular/angular/commit/83e99fc7))
+* **change detect:** Fix bug in JIT change detectors ([e0fbd4b6](https://github.com/angular/angular/commit/e0fbd4b6))
+* **ci:** remove non-existent gulp task from test_e2e_dart ([1cf807c3](https://github.com/angular/angular/commit/1cf807c3), closes [#2509](https://github.com/angular/angular/issues/2509))
+* **dartfmt:** don't break win32 command line limit ([617d6931](https://github.com/angular/angular/commit/617d6931), closes [#2420](https://github.com/angular/angular/issues/2420), [#1875](https://github.com/angular/angular/issues/1875))
+* **diffing-broccoli-plugin:** wrapped trees are always stable ([7611f92f](https://github.com/angular/angular/commit/7611f92f))
+* **docs:**
+  * order class members in order of declaration ([ea27704e](https://github.com/angular/angular/commit/ea27704e), closes [#2569](https://github.com/angular/angular/issues/2569))
+  * update link paths in annotations ([dd23bab3](https://github.com/angular/angular/commit/dd23bab3), closes [#2475](https://github.com/angular/angular/issues/2475))
+  * ensure no duplicates in alias names of docs ([05d02fa9](https://github.com/angular/angular/commit/05d02fa9))
+  * Working generated angular2.d.ts ([7141c15e](https://github.com/angular/angular/commit/7141c15e))
+* **dynamic_component_loader:**
+  * Fix for ts2dart issue ([bbfb4e1d](https://github.com/angular/angular/commit/bbfb4e1d))
+  * implemented dispose for dynamically-loaded components ([21dcfc89](https://github.com/angular/angular/commit/21dcfc89))
+* **element_injector:** changed visibility rules to expose hostInjector of the component to its shadow d ([c51aef9f](https://github.com/angular/angular/commit/c51aef9f))
+* **forms:**
+  * updated form examples to contain select elements ([c34cb014](https://github.com/angular/angular/commit/c34cb014))
+  * fixed the handling of the select element ([f1541e65](https://github.com/angular/angular/commit/f1541e65))
+  * fixed the selector of NgRequiredValidator ([35197acc](https://github.com/angular/angular/commit/35197acc))
+  * getError does not work without path ([a858f6ac](https://github.com/angular/angular/commit/a858f6ac))
+* **life_cycle:** throw when recursively reentering LifeCycle.tick ([af35ab56](https://github.com/angular/angular/commit/af35ab56))
+* **locals:** improved an error message ([4eb8c9b2](https://github.com/angular/angular/commit/4eb8c9b2))
+* **ng_zone:** updated zone not to run onTurnDown when invoking run synchronously from onTurnDo ([15dab7c5](https://github.com/angular/angular/commit/15dab7c5))
+* **npm:** update scripts and readme for npm packages. ([8923103c](https://github.com/angular/angular/commit/8923103c), closes [#2377](https://github.com/angular/angular/issues/2377))
+* **router:**
+  * ensure that root URL redirect doesn't redirect non-root URLs ([73d15250](https://github.com/angular/angular/commit/73d15250), closes [#2221](https://github.com/angular/angular/issues/2221))
+  * rethrow exceptions ([5782f063](https://github.com/angular/angular/commit/5782f063), closes [#2391](https://github.com/angular/angular/issues/2391))
+  * avoid two slash values between the baseHref and the path ([cdc7b03e](https://github.com/angular/angular/commit/cdc7b03e))
+  * do not prepend the root URL with a starting slash ([e372cc77](https://github.com/angular/angular/commit/e372cc77))
+* **selector:** select by attribute independent of value and order ([9bad70be](https://github.com/angular/angular/commit/9bad70be), closes [#2513](https://github.com/angular/angular/issues/2513))
+* **shadow_dom:** moves the imported nodes into the correct location. ([92d56584](https://github.com/angular/angular/commit/92d56584))
+* **shrinkwrap:** restore fsevents dependency ([833048f3](https://github.com/angular/angular/commit/833048f3), closes [#2511](https://github.com/angular/angular/issues/2511))
+* **view:** local variables override local variables set by ng-for ([d8e27953](https://github.com/angular/angular/commit/d8e27953))
+
+
+#### Features
+
+* allow Type.annotations = Component(...).View(...) ([b2c66949](https://github.com/angular/angular/commit/b2c66949), closes [#2577](https://github.com/angular/angular/issues/2577))
+* support decorator chaining and class creation in ES5 ([c3ae34f0](https://github.com/angular/angular/commit/c3ae34f0), closes [#2534](https://github.com/angular/angular/issues/2534))
+* update ts2dart to 0.6.1. ([96137724](https://github.com/angular/angular/commit/96137724))
+* adjust formatting for clang-format v1.0.19. ([a6e71239](https://github.com/angular/angular/commit/a6e71239))
+* upgrade to clang-format v1.0.19. ([1c2abbc6](https://github.com/angular/angular/commit/1c2abbc6))
+* **AstTranformer:** add support for missing nodes ([da60381c](https://github.com/angular/angular/commit/da60381c))
+* **BaseRequestOptions:** add merge method to make copies of options ([93596dff](https://github.com/angular/angular/commit/93596dff))
+* **Directive:** Have a single Directive.host which mimics HTML ([f3b49378](https://github.com/angular/angular/commit/f3b49378), closes [#2268](https://github.com/angular/angular/issues/2268))
+* **ElementInjector:** throw if multiple directives define the same host injectable ([6a6b43de](https://github.com/angular/angular/commit/6a6b43de))
+* **Events:** allow a different event vs field name ([29c72abc](https://github.com/angular/angular/commit/29c72abc), closes [#2272](https://github.com/angular/angular/issues/2272), [#2344](https://github.com/angular/angular/issues/2344))
+* **FakeAsync:** check pending timers at the end of fakeAsync in Dart ([53694eb6](https://github.com/angular/angular/commit/53694eb6))
+* **Http:** add Http class ([b68e561c](https://github.com/angular/angular/commit/b68e561c), closes [#2530](https://github.com/angular/angular/issues/2530))
+* **Parser:**
+  * support if statements in actions ([7d328799](https://github.com/angular/angular/commit/7d328799), closes [#2022](https://github.com/angular/angular/issues/2022))
+  * implement Unparser ([331a051e](https://github.com/angular/angular/commit/331a051e), closes [#1949](https://github.com/angular/angular/issues/1949), [#2395](https://github.com/angular/angular/issues/2395))
+* **View:** add support for styleUrls and styles ([ac3e624d](https://github.com/angular/angular/commit/ac3e624d), closes [#2382](https://github.com/angular/angular/issues/2382))
+* **benchpress:**
+  * more smoothness metrics ([35589a6b](https://github.com/angular/angular/commit/35589a6b))
+  * add mean frame time metric ([6834c499](https://github.com/angular/angular/commit/6834c499), closes [#2474](https://github.com/angular/angular/issues/2474))
+* **broccoli:**
+  * improve merge-trees plugin and add "overwrite" option ([dc8dac7c](https://github.com/angular/angular/commit/dc8dac7c))
+  * add diffing MergeTrees plugin ([4ee3fdaf](https://github.com/angular/angular/commit/4ee3fdaf), closes [#1815](https://github.com/angular/angular/issues/1815), [#2064](https://github.com/angular/angular/issues/2064))
+* **build:** add `test.unit.dartvm` for a faster roundtrip of dartvm tests ([46eeee6b](https://github.com/angular/angular/commit/46eeee6b))
+* **change detect:** Throw on attempts to use dehydrated detector ([b6e95bb9](https://github.com/angular/angular/commit/b6e95bb9))
+* **diffing-broccoli-plugin:** support multiple inputTrees ([41ae8e76](https://github.com/angular/angular/commit/41ae8e76), closes [#1815](https://github.com/angular/angular/issues/1815), [#2064](https://github.com/angular/angular/issues/2064))
+* **e2e:** added e2e tests for forms ([552d1ed6](https://github.com/angular/angular/commit/552d1ed6))
+* **facade:** add isMap method ([548f3dd5](https://github.com/angular/angular/commit/548f3dd5))
+* **forms:**
+  * set exportAs to form for all form related directives ([e7e82cbe](https://github.com/angular/angular/commit/e7e82cbe))
+  * export validator directives as part of formDirectives ([73bce402](https://github.com/angular/angular/commit/73bce402))
+  * changed forms to capture submit events and fires synthetic ng-submit events ([5fc23cae](https://github.com/angular/angular/commit/5fc23cae))
+  * added hasError and getError methods to all controls ([1a4d2374](https://github.com/angular/angular/commit/1a4d2374))
+* **forms.ts:** formInjectables with FormBuilder ([a6cb86ba](https://github.com/angular/angular/commit/a6cb86ba), closes [#2367](https://github.com/angular/angular/issues/2367))
+* **http:** add basic http service ([21568106](https://github.com/angular/angular/commit/21568106), closes [#2028](https://github.com/angular/angular/issues/2028))
+* **query:**
+  * notify on changes ([5bfcca2d](https://github.com/angular/angular/commit/5bfcca2d))
+  * adds support for descendants and more list apis. ([355ab5b3](https://github.com/angular/angular/commit/355ab5b3))
+* **router:**
+  * allow configuring app base href via token ([cab1d0ef](https://github.com/angular/angular/commit/cab1d0ef))
+  * add routing to async components ([cd95e078](https://github.com/angular/angular/commit/cd95e078))
+* **transform:** update for Directive.host ([591f742d](https://github.com/angular/angular/commit/591f742d))
+* **transformers:** updated transformers ([e5419feb](https://github.com/angular/angular/commit/e5419feb))
+* **view:** added support for exportAs, so any directive can be assigned to a variable ([69b75b7f](https://github.com/angular/angular/commit/69b75b7f))
+
+
+#### Breaking Changes
+
+* By default Query only queries direct children.
+
+ ([355ab5b3](https://github.com/angular/angular/commit/355ab5b3))
+* 
+Before
+
+    @Directive({
+      hostListeners: {'event': 'statement'},
+      hostProperties: {'expression': 'hostProp'},
+      hostAttributes: {'attr': 'value'},
+      hostActions: {'action': 'statement'}
+    })
+
+After
+
+    @Directive({
+      host: {
+        '(event)': 'statement',
+        '[hostProp]': 'expression'  // k & v swapped
+        'attr': 'value',
+        '@action': 'statement'
+      }
+    })
+
+ ([f3b49378](https://github.com/angular/angular/commit/f3b49378))
+* 
+no longer cache ref
+
+ ([e77710a3](https://github.com/angular/angular/commit/e77710a3))
+
+
 <a name"2.0.0-alpha.26"></a>
 ### 2.0.0-alpha.26 (2015-06-03)
 
