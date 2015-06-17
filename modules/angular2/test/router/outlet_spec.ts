@@ -100,7 +100,7 @@ export function main() {
 
     it('should work with child routers', inject([AsyncTestCompleter], (async) => {
          compile('outer { <router-outlet></router-outlet> }')
-             .then((_) => rtr.config({'path': '/a', 'component': ParentCmp}))
+             .then((_) => rtr.config({'path': '/a/...', 'component': ParentCmp}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
                view.detectChanges();
@@ -153,7 +153,7 @@ export function main() {
 
     it('should reuse common parent components', inject([AsyncTestCompleter], (async) => {
          compile()
-             .then((_) => rtr.config({'path': '/team/:id', 'component': TeamCmp}))
+             .then((_) => rtr.config({'path': '/team/:id/...', 'component': TeamCmp}))
              .then((_) => rtr.navigate('/team/angular/user/rado'))
              .then((_) => {
                view.detectChanges();

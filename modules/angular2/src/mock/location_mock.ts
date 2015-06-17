@@ -16,7 +16,7 @@ export class SpyLocation extends SpyObject {
 
   constructor() {
     super();
-    this._path = '/';
+    this._path = '';
     this.urlChanges = [];
     this._subject = new EventEmitter();
     this._baseHref = '';
