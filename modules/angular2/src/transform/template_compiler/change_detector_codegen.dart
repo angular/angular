@@ -352,7 +352,7 @@ class _CodegenState {
     if (r.isPureFunction()) {
       // Add an "if changed guard"
       var condition = r.args.map((a) => _changeNames[a]).join(' || ');
-      return 'if ($condition) { $check }';
+      return 'if ($condition) { $check } else { $newValue = $oldValue; }';
     } else {
       return check;
     }

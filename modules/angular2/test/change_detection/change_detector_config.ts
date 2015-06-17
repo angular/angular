@@ -303,5 +303,6 @@ var _availableDefinitions = [
   'address?.toString()',
   'sayHi("Jim")',
   'a()(99)',
-  'a.sayHi("Jim")'
+  'a.sayHi("Jim")',
+  'passThrough([12])'
 ];

@@ -291,7 +291,7 @@ export class ChangeDetectorJITGenerator {
 
     if (r.isPureFunction()) {
       var condition = r.args.map((a) => this._changeNames[a]).join(" || ");
-      return `if (${condition}) { ${check} }`;
+      return `if (${condition}) { ${check} } else { ${newValue} = ${oldValue}; }`;
     } else {
       return check;
     }

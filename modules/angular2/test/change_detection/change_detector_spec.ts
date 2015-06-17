@@ -54,8 +54,8 @@ const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 /**
  * Tests in this spec run against three different implementations of `AbstractChangeDetector`,
  * `dynamic` (which use reflection to inspect objects), `JIT` (which are generated only for
- * Javascript at runtime using `eval` to avoid the need for reflection) and `Pregen` (which are
- * generated only for Dart prior to app deploy to avoid the need for reflection).
+ * Javascript at runtime using `eval`) and `Pregen` (which are generated only for Dart prior
+ * to app deploy to avoid the need for reflection).
  *
  * Pre-generated classes require knowledge of the shape of the change detector at the time of Dart
  * transformation, so in these tests we abstract a `ChangeDetectorDefinition` out into the
@@ -302,6 +302,16 @@ export function main() {
         val.changeDetector.detectChanges();
 
         expect(val.dispatcher.log).toEqual(['propName=BvalueA']);
+      });
+
+      describe('pure functions', () => {
+        it('should preserve memoized result', () => {
+          var person = new Person('bob');
+          var val = _createChangeDetector('passThrough([12])', person);
+          val.changeDetector.detectChanges();
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.loggedValues).toEqual([[12]]);
+        });
       });
 
       describe('change notification', () => {
@@ -947,6 +957,8 @@ class Person {
   constructor(public name: string, public address: Address = null) {}
 
   sayHi(m) { return `Hi, ${m}`; }
+
+  passThrough(val) { return val; }
 
   toString(): string {
     var address = this.address == null ? '' : ' address=' + this.address.toString();
