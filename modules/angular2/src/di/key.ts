@@ -5,8 +5,6 @@ import {resolveForwardRef} from './forward_ref';
 
 export {TypeLiteral} from './type_literal';
 
-// TODO: uncoment `int` once https://github.com/angular/angular/issues/1414 is fixed
-
 /**
  * A unique object used for retrieving items from the {@link Injector}.
  *
@@ -20,21 +18,16 @@ export {TypeLiteral} from './type_literal';
  * @exportedAs angular2/di
  */
 export class Key {
-  token: Object;
-  id: number;
-
   /**
    * @private
    */
-  constructor(token: Object, id: number) {
+  constructor(public token: Object, public id: number) {
     if (isBlank(token)) {
       throw new BaseException('Token must be defined!');
     }
-    this.token = token;
-    this.id = id;
   }
 
-  get displayName() { return stringify(this.token); }
+  get displayName(): string { return stringify(this.token); }
 
   /**
    * Retrieves a `Key` for a token.
@@ -51,8 +44,7 @@ export class Key {
  * @private
  */
 export class KeyRegistry {
-  _allKeys: Map<Object, Key>;
-  constructor() { this._allKeys = MapWrapper.create(); }
+  private _allKeys: Map<Object, Key> = MapWrapper.create();
 
   get(token: Object): Key {
     if (token instanceof Key) return token;
@@ -73,7 +65,7 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys() /* :int */ { return MapWrapper.size(this._allKeys); }
+  get numberOfKeys(): number { return MapWrapper.size(this._allKeys); }
 }
 
 var _globalKeyRegistry = new KeyRegistry();

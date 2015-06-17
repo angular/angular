@@ -15,7 +15,7 @@ import {CONST, stringify} from "angular2/src/facade/lang";
 @CONST()
 export class Inject {
   constructor(public token) {}
-  toString() { return `@Inject(${stringify(this.token)})`; }
+  toString(): string { return `@Inject(${stringify(this.token)})`; }
 }
 
 /**
@@ -34,7 +34,7 @@ export class Inject {
 @CONST()
 export class InjectPromise {
   constructor(public token) {}
-  toString() { return `@InjectPromise(${stringify(this.token)})`; }
+  toString(): string { return `@InjectPromise(${stringify(this.token)})`; }
 }
 
 /**
@@ -53,7 +53,7 @@ export class InjectPromise {
 @CONST()
 export class InjectLazy {
   constructor(public token) {}
-  toString() { return `@InjectLazy(${stringify(this.token)})`; }
+  toString(): string { return `@InjectLazy(${stringify(this.token)})`; }
 }
 
 /**
@@ -72,7 +72,7 @@ export class InjectLazy {
  */
 @CONST()
 export class Optional {
-  toString() { return `@Optional()`; }
+  toString(): string { return `@Optional()`; }
 }
 
 /**

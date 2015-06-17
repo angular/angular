@@ -3,6 +3,7 @@ import {
   isBlank,
   isPresent,
   CONST,
+  CONST_EXPR,
   BaseException,
   stringify,
   isArray
@@ -30,7 +31,7 @@ export class Dependency {
   static fromKey(key: Key) { return new Dependency(key, false, false, false, []); }
 }
 
-var _EMPTY_LIST = [];  // TODO: make const when supported
+const _EMPTY_LIST = CONST_EXPR([]);
 
 /**
  * Describes how the {@link Injector} should instantiate a given token.

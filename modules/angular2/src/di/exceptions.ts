@@ -140,6 +140,7 @@ export class CyclicDependencyError extends AbstractBindingError {
 export class InstantiationError extends AbstractBindingError {
   cause;
   causeKey;
+
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(cause, key) {
     super(key, function(keys: List<any>) {
