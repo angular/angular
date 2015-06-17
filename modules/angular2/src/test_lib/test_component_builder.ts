@@ -59,9 +59,9 @@ export class TestComponentBuilder {
 
   constructor(injector: Injector) {
     this._injector = injector;
-    this._viewOverrides = MapWrapper.create();
-    this._directiveOverrides = MapWrapper.create();
-    this._templateOverrides = MapWrapper.create();
+    this._viewOverrides = new Map();
+    this._directiveOverrides = new Map();
+    this._templateOverrides = new Map();
   }
 
   _clone(): TestComponentBuilder {
@@ -83,7 +83,7 @@ export class TestComponentBuilder {
    */
   overrideTemplate(componentType: Type, template: string): TestComponentBuilder {
     var clone = this._clone();
-    MapWrapper.set(clone._templateOverrides, componentType, template);
+    clone._templateOverrides.set(componentType, template);
     return clone;
   }
 
@@ -97,7 +97,7 @@ export class TestComponentBuilder {
    */
   overrideView(componentType: Type, view: View): TestComponentBuilder {
     var clone = this._clone();
-    MapWrapper.set(clone._viewOverrides, componentType, view);
+    clone._viewOverrides.set(componentType, view);
     return clone;
   }
 
@@ -112,12 +112,12 @@ export class TestComponentBuilder {
    */
   overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder {
     var clone = this._clone();
-    var overridesForComponent = MapWrapper.get(clone._directiveOverrides, componentType);
+    var overridesForComponent = clone._directiveOverrides.get(componentType);
     if (!isPresent(overridesForComponent)) {
-      MapWrapper.set(clone._directiveOverrides, componentType, MapWrapper.create());
-      overridesForComponent = MapWrapper.get(clone._directiveOverrides, componentType);
+      clone._directiveOverrides.set(componentType, new Map());
+      overridesForComponent = clone._directiveOverrides.get(componentType);
     }
-    MapWrapper.set(overridesForComponent, from, to);
+    overridesForComponent.set(from, to);
     return clone;
   }
 

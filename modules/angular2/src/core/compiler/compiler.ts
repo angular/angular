@@ -32,24 +32,22 @@ import * as renderApi from 'angular2/src/render/api';
  */
 @Injectable()
 export class CompilerCache {
-  _cache: Map<Type, AppProtoView> = MapWrapper.create();
-  _hostCache: Map<Type, AppProtoView> = MapWrapper.create();
+  _cache: Map<Type, AppProtoView> = new Map();
+  _hostCache: Map<Type, AppProtoView> = new Map();
 
-  set(component: Type, protoView: AppProtoView): void {
-    MapWrapper.set(this._cache, component, protoView);
-  }
+  set(component: Type, protoView: AppProtoView): void { this._cache.set(component, protoView); }
 
   get(component: Type): AppProtoView {
-    var result = MapWrapper.get(this._cache, component);
+    var result = this._cache.get(component);
     return normalizeBlank(result);
   }
 
   setHost(component: Type, protoView: AppProtoView): void {
-    MapWrapper.set(this._hostCache, component, protoView);
+    this._hostCache.set(component, protoView);
   }
 
   getHost(component: Type): AppProtoView {
-    var result = MapWrapper.get(this._hostCache, component);
+    var result = this._hostCache.get(component);
     return normalizeBlank(result);
   }
 
@@ -79,7 +77,7 @@ export class Compiler {
               render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory) {
     this._reader = reader;
     this._compilerCache = cache;
-    this._compiling = MapWrapper.create();
+    this._compiling = new Map();
     this._templateResolver = templateResolver;
     this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
@@ -132,7 +130,7 @@ export class Compiler {
       return protoView;
     }
 
-    var pvPromise = MapWrapper.get(this._compiling, component);
+    var pvPromise = this._compiling.get(component);
     if (isPresent(pvPromise)) {
       // The component is already being compiled, attach to the existing Promise
       // instead of re-compiling the component.
@@ -160,7 +158,7 @@ export class Compiler {
               return this._compileNestedProtoViews(componentBinding, renderPv, boundDirectives);
             });
 
-    MapWrapper.set(this._compiling, component, pvPromise);
+    this._compiling.set(component, pvPromise);
     return pvPromise;
   }
 

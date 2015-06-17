@@ -19,7 +19,7 @@ export class KeyValueChangesFactory extends PipeFactory {
  * @exportedAs angular2/pipes
  */
 export class KeyValueChanges extends Pipe {
-  private _records: Map<any, any> = MapWrapper.create();
+  private _records: Map<any, any> = new Map();
   private _mapHead: KVChangeRecord = null;
   private _previousMapHead: KVChangeRecord = null;
   private _changesHead: KVChangeRecord = null;
@@ -106,10 +106,10 @@ export class KeyValueChanges extends Pipe {
           this._addToRemovals(oldSeqRecord);
         }
         if (MapWrapper.contains(records, key)) {
-          newSeqRecord = MapWrapper.get(records, key);
+          newSeqRecord = records.get(key);
         } else {
           newSeqRecord = new KVChangeRecord(key);
-          MapWrapper.set(records, key, newSeqRecord);
+          records.set(key, newSeqRecord);
           newSeqRecord.currentValue = value;
           this._addToAdditions(newSeqRecord);
         }

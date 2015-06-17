@@ -20,15 +20,15 @@ export class Reflector {
   reflectionCapabilities: PlatformReflectionCapabilities;
 
   constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
-    this._typeInfo = MapWrapper.create();
-    this._getters = MapWrapper.create();
-    this._setters = MapWrapper.create();
-    this._methods = MapWrapper.create();
+    this._typeInfo = new Map();
+    this._getters = new Map();
+    this._setters = new Map();
+    this._methods = new Map();
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
   registerType(type: Type, typeInfo: StringMap<string, any>): void {
-    MapWrapper.set(this._typeInfo, type, typeInfo);
+    this._typeInfo.set(type, typeInfo);
   }
 
   registerGetters(getters: StringMap<string, GetterFn>): void {
@@ -77,7 +77,7 @@ export class Reflector {
 
   getter(name: string): GetterFn {
     if (MapWrapper.contains(this._getters, name)) {
-      return MapWrapper.get(this._getters, name);
+      return this._getters.get(name);
     } else {
       return this.reflectionCapabilities.getter(name);
     }
@@ -85,7 +85,7 @@ export class Reflector {
 
   setter(name: string): SetterFn {
     if (MapWrapper.contains(this._setters, name)) {
-      return MapWrapper.get(this._setters, name);
+      return this._setters.get(name);
     } else {
       return this.reflectionCapabilities.setter(name);
     }
@@ -93,14 +93,14 @@ export class Reflector {
 
   method(name: string): MethodFn {
     if (MapWrapper.contains(this._methods, name)) {
-      return MapWrapper.get(this._methods, name);
+      return this._methods.get(name);
     } else {
       return this.reflectionCapabilities.method(name);
     }
   }
 
   _getTypeInfoField(typeOrFunc, key, defaultValue) {
-    var res = MapWrapper.get(this._typeInfo, typeOrFunc)[key];
+    var res = this._typeInfo.get(typeOrFunc)[key];
     return isPresent(res) ? res : defaultValue;
   }
 
@@ -108,5 +108,5 @@ export class Reflector {
 }
 
 function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {
-  StringMapWrapper.forEach(config, (v, k) => MapWrapper.set(target, k, v));
+  StringMapWrapper.forEach(config, (v, k) => target.set(k, v));
 }

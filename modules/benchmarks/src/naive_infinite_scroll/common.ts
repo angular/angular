@@ -57,7 +57,7 @@ export class CustomDate {
 export class RawEntity {
   _data: Map<any, any>;
 
-  constructor() { this._data = MapWrapper.create(); }
+  constructor() { this._data = new Map(); }
 
   get(key: string) {
     if (key.indexOf('.') == -1) {

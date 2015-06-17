@@ -75,7 +75,7 @@ export function stringifyElement(el): string {
     ListWrapper.sort(keys);
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];
-      var attValue = MapWrapper.get(attributeMap, key);
+      var attValue = attributeMap.get(key);
       if (!isString(attValue)) {
         result += ` ${key}`;
       } else {

@@ -10,15 +10,14 @@ export const APP_VIEW_POOL_CAPACITY = CONST_EXPR(new OpaqueToken('AppViewPool.vi
 @Injectable()
 export class AppViewPool {
   _poolCapacityPerProtoView: number;
-  _pooledViewsPerProtoView: Map<viewModule.AppProtoView, List<viewModule.AppView>> =
-      MapWrapper.create();
+  _pooledViewsPerProtoView: Map<viewModule.AppProtoView, List<viewModule.AppView>> = new Map();
 
   constructor(@Inject(APP_VIEW_POOL_CAPACITY) poolCapacityPerProtoView) {
     this._poolCapacityPerProtoView = poolCapacityPerProtoView;
   }
 
   getView(protoView: viewModule.AppProtoView): viewModule.AppView {
-    var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
+    var pooledViews = this._pooledViewsPerProtoView.get(protoView);
     if (isPresent(pooledViews) && pooledViews.length > 0) {
       return ListWrapper.removeLast(pooledViews);
     }
@@ -27,10 +26,10 @@ export class AppViewPool {
 
   returnView(view: viewModule.AppView): boolean {
     var protoView = view.proto;
-    var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
+    var pooledViews = this._pooledViewsPerProtoView.get(protoView);
     if (isBlank(pooledViews)) {
       pooledViews = [];
-      MapWrapper.set(this._pooledViewsPerProtoView, protoView, pooledViews);
+      this._pooledViewsPerProtoView.set(protoView, pooledViews);
     }
     var haveRemainingCapacity = pooledViews.length < this._poolCapacityPerProtoView;
     if (haveRemainingCapacity) {

@@ -27,7 +27,7 @@ export class PropertyBindingParser implements CompileStep {
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
-    var newAttrs = MapWrapper.create();
+    var newAttrs = new Map();
 
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
@@ -66,13 +66,12 @@ export class PropertyBindingParser implements CompileStep {
       }
     });
 
-    MapWrapper.forEach(newAttrs,
-                       (attrValue, attrName) => { MapWrapper.set(attrs, attrName, attrValue); });
+    MapWrapper.forEach(newAttrs, (attrValue, attrName) => { attrs.set(attrName, attrValue); });
   }
 
-  _bindVariable(identifier, value, current: CompileElement, newAttrs) {
+  _bindVariable(identifier, value, current: CompileElement, newAttrs: Map<any, any>) {
     current.bindElement().bindVariable(dashCaseToCamelCase(identifier), value);
-    MapWrapper.set(newAttrs, identifier, value);
+    newAttrs.set(identifier, value);
   }
 
   _bindProperty(name, expression, current: CompileElement, newAttrs) {
@@ -80,10 +79,10 @@ export class PropertyBindingParser implements CompileStep {
                           current, newAttrs);
   }
 
-  _bindPropertyAst(name, ast, current: CompileElement, newAttrs) {
+  _bindPropertyAst(name, ast, current: CompileElement, newAttrs: Map<any, any>) {
     var binder = current.bindElement();
     binder.bindProperty(dashCaseToCamelCase(name), ast);
-    MapWrapper.set(newAttrs, name, ast.source);
+    newAttrs.set(name, ast.source);
   }
 
   _bindAssignmentEvent(name, expression, current: CompileElement, newAttrs) {

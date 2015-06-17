@@ -574,16 +574,16 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  map: Map<any, _DuplicateItemRecordList> = MapWrapper.create();
+  map: Map<any, _DuplicateItemRecordList> = new Map();
 
   put(record: CollectionChangeRecord) {
     // todo(vicb) handle corner cases
     var key = getMapKey(record.item);
 
-    var duplicates = MapWrapper.get(this.map, key);
+    var duplicates = this.map.get(key);
     if (!isPresent(duplicates)) {
       duplicates = new _DuplicateItemRecordList();
-      MapWrapper.set(this.map, key, duplicates);
+      this.map.set(key, duplicates);
     }
     duplicates.add(record);
   }
@@ -598,7 +598,7 @@ class _DuplicateMap {
   get(value, afterIndex = null): CollectionChangeRecord {
     var key = getMapKey(value);
 
-    var recordList = MapWrapper.get(this.map, key);
+    var recordList = this.map.get(key);
     return isBlank(recordList) ? null : recordList.get(value, afterIndex);
   }
 
@@ -611,7 +611,7 @@ class _DuplicateMap {
     var key = getMapKey(record.item);
     // todo(vicb)
     // assert(this.map.containsKey(key));
-    var recordList: _DuplicateItemRecordList = MapWrapper.get(this.map, key);
+    var recordList: _DuplicateItemRecordList = this.map.get(key);
     // Remove the list of duplicates when it gets empty
     if (recordList.remove(record)) {
       MapWrapper.delete(this.map, key);

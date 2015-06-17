@@ -141,12 +141,12 @@ export class SelectorMatcher {
     return notMatcher;
   }
 
-  private _elementMap: Map<string, List<SelectorContext>> = MapWrapper.create();
-  private _elementPartialMap: Map<string, SelectorMatcher> = MapWrapper.create();
-  private _classMap: Map<string, List<SelectorContext>> = MapWrapper.create();
-  private _classPartialMap: Map<string, SelectorMatcher> = MapWrapper.create();
-  private _attrValueMap: Map<string, Map<string, List<SelectorContext>>> = MapWrapper.create();
-  private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>> = MapWrapper.create();
+  private _elementMap: Map<string, List<SelectorContext>> = new Map();
+  private _elementPartialMap: Map<string, SelectorMatcher> = new Map();
+  private _classMap: Map<string, List<SelectorContext>> = new Map();
+  private _classPartialMap: Map<string, SelectorMatcher> = new Map();
+  private _attrValueMap: Map<string, Map<string, List<SelectorContext>>> = new Map();
+  private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>> = new Map();
   private _listContexts: List<SelectorListContext> = [];
 
   addSelectables(cssSelectors: List<CssSelector>, callbackCtxt?: any) {
@@ -201,18 +201,18 @@ export class SelectorMatcher {
         var attrValue = attrs[index++];
         if (isTerminal) {
           var terminalMap = matcher._attrValueMap;
-          var terminalValuesMap = MapWrapper.get(terminalMap, attrName);
+          var terminalValuesMap = terminalMap.get(attrName);
           if (isBlank(terminalValuesMap)) {
-            terminalValuesMap = MapWrapper.create();
-            MapWrapper.set(terminalMap, attrName, terminalValuesMap);
+            terminalValuesMap = new Map();
+            terminalMap.set(attrName, terminalValuesMap);
           }
           this._addTerminal(terminalValuesMap, attrValue, selectable);
         } else {
           var parttialMap = matcher._attrValuePartialMap;
-          var partialValuesMap = MapWrapper.get(parttialMap, attrName);
+          var partialValuesMap = parttialMap.get(attrName);
           if (isBlank(partialValuesMap)) {
-            partialValuesMap = MapWrapper.create();
-            MapWrapper.set(parttialMap, attrName, partialValuesMap);
+            partialValuesMap = new Map();
+            parttialMap.set(attrName, partialValuesMap);
           }
           matcher = this._addPartial(partialValuesMap, attrValue);
         }
@@ -222,19 +222,19 @@ export class SelectorMatcher {
 
   private _addTerminal(map: Map<string, List<SelectorContext>>, name: string,
                        selectable: SelectorContext) {
-    var terminalList = MapWrapper.get(map, name);
+    var terminalList = map.get(name);
     if (isBlank(terminalList)) {
       terminalList = [];
-      MapWrapper.set(map, name, terminalList);
+      map.set(name, terminalList);
     }
     terminalList.push(selectable);
   }
 
   private _addPartial(map: Map<string, SelectorMatcher>, name: string): SelectorMatcher {
-    var matcher = MapWrapper.get(map, name);
+    var matcher = map.get(name);
     if (isBlank(matcher)) {
       matcher = new SelectorMatcher();
-      MapWrapper.set(map, name, matcher);
+      map.set(name, matcher);
     }
     return matcher;
   }
@@ -276,7 +276,7 @@ export class SelectorMatcher {
         var attrName = attrs[index++];
         var attrValue = attrs[index++];
 
-        var terminalValuesMap = MapWrapper.get(this._attrValueMap, attrName);
+        var terminalValuesMap = this._attrValueMap.get(attrName);
         if (!StringWrapper.equals(attrValue, _EMPTY_ATTR_VALUE)) {
           result = this._matchTerminal(terminalValuesMap, _EMPTY_ATTR_VALUE, cssSelector,
                                        matchedCallback) ||
@@ -285,7 +285,7 @@ export class SelectorMatcher {
         result = this._matchTerminal(terminalValuesMap, attrValue, cssSelector, matchedCallback) ||
                  result;
 
-        var partialValuesMap = MapWrapper.get(this._attrValuePartialMap, attrName);
+        var partialValuesMap = this._attrValuePartialMap.get(attrName);
         if (!StringWrapper.equals(attrValue, _EMPTY_ATTR_VALUE)) {
           result = this._matchPartial(partialValuesMap, _EMPTY_ATTR_VALUE, cssSelector,
                                       matchedCallback) ||
@@ -304,8 +304,8 @@ export class SelectorMatcher {
       return false;
     }
 
-    var selectables = MapWrapper.get(map, name);
-    var starSelectables = MapWrapper.get(map, "*");
+    var selectables = map.get(name);
+    var starSelectables = map.get("*");
     if (isPresent(starSelectables)) {
       selectables = ListWrapper.concat(selectables, starSelectables);
     }
@@ -326,7 +326,7 @@ export class SelectorMatcher {
     if (isBlank(map) || isBlank(name)) {
       return false;
     }
-    var nestedSelector = MapWrapper.get(map, name);
+    var nestedSelector = map.get(name);
     if (isBlank(nestedSelector)) {
       return false;
     }

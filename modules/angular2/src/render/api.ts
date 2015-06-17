@@ -205,22 +205,22 @@ export class DirectiveMetadata {
     changeDetection?: string,
     exportAs?: string
   }) {
-    let hostListeners = MapWrapper.create();
-    let hostProperties = MapWrapper.create();
-    let hostAttributes = MapWrapper.create();
-    let hostActions = MapWrapper.create();
+    let hostListeners = new Map();
+    let hostProperties = new Map();
+    let hostAttributes = new Map();
+    let hostActions = new Map();
 
     if (isPresent(host)) {
       MapWrapper.forEach(host, (value: string, key: string) => {
         var matches = RegExpWrapper.firstMatch(hostRegExp, key);
         if (isBlank(matches)) {
-          MapWrapper.set(hostAttributes, key, value);
+          hostAttributes.set(key, value);
         } else if (isPresent(matches[1])) {
-          MapWrapper.set(hostProperties, matches[1], value);
+          hostProperties.set(matches[1], value);
         } else if (isPresent(matches[2])) {
-          MapWrapper.set(hostListeners, matches[2], value);
+          hostListeners.set(matches[2], value);
         } else if (isPresent(matches[3])) {
-          MapWrapper.set(hostActions, matches[3], value);
+          hostActions.set(matches[3], value);
         }
       });
     }

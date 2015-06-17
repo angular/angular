@@ -41,7 +41,7 @@ export function main() {
 
   function addPipes(ast, pipes): any { return createParser().addPipes(ast, pipes); }
 
-  function emptyLocals() { return new Locals(null, MapWrapper.create()); }
+  function emptyLocals() { return new Locals(null, new Map()); }
 
   function evalAction(text, passedInContext = null, passedInLocals = null) {
     var c = isBlank(passedInContext) ? td() : passedInContext;
@@ -195,14 +195,14 @@ export function main() {
 
         it("should handle nested Locals", () => {
           var nested = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-          var locals = new Locals(nested, MapWrapper.create());
+          var locals = new Locals(nested, new Map());
           expectEval("key", null, locals).toEqual("value");
         });
 
         it("should fall back to a regular field read when Locals " +
                "does not have the requested field",
            () => {
-             var locals = new Locals(null, MapWrapper.create());
+             var locals = new Locals(null, new Map());
              expectEval("a", td(999), locals).toEqual(999);
            });
       });
@@ -256,7 +256,7 @@ export function main() {
         it('should fall back to the parent context when Locals does not ' +
                'have the requested method',
            () => {
-             var locals = new Locals(null, MapWrapper.create());
+             var locals = new Locals(null, new Map());
              expectEval("fn()", td(0, 0, 'parent'), locals).toEqual('parent');
            });
       });
@@ -356,7 +356,7 @@ export function main() {
 
         it('should reassign when no variable binding with the given name', () => {
           var context = td();
-          var locals = new Locals(null, MapWrapper.create());
+          var locals = new Locals(null, new Map());
           expectEval('a = 200', context, locals).toEqual(200);
           expect(context.a).toEqual(200);
         });

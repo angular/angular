@@ -40,20 +40,19 @@ export class DomView {
   }
 
   setElementProperty(elementIndex: number, propertyName: string, value: any) {
-    var setter =
-        MapWrapper.get(this.proto.elementBinders[elementIndex].propertySetters, propertyName);
+    var setter = this.proto.elementBinders[elementIndex].propertySetters.get(propertyName);
     setter(this.boundElements[elementIndex].element, value);
   }
 
   callAction(elementIndex: number, actionExpression: string, actionArgs: any) {
     var binder = this.proto.elementBinders[elementIndex];
-    var hostAction = MapWrapper.get(binder.hostActions, actionExpression);
+    var hostAction = binder.hostActions.get(actionExpression);
     hostAction.eval(this.boundElements[elementIndex].element, this._localsWithAction(actionArgs));
   }
 
   _localsWithAction(action: Object): Locals {
-    var map = MapWrapper.create();
-    MapWrapper.set(map, '$action', action);
+    var map = new Map();
+    map.set('$action', action);
     return new Locals(null, map);
   }
 
@@ -62,8 +61,8 @@ export class DomView {
   dispatchEvent(elementIndex, eventName, event): boolean {
     var allowDefaultBehavior = true;
     if (isPresent(this.eventDispatcher)) {
-      var evalLocals = MapWrapper.create();
-      MapWrapper.set(evalLocals, '$event', event);
+      var evalLocals = new Map();
+      evalLocals.set('$event', event);
       // TODO(tbosch): reenable this when we are parsing element properties
       // out of action expressions
       // var localValues = this.proto.elementBinders[elementIndex].eventLocals.eval(null, new

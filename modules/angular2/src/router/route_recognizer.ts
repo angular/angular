@@ -27,12 +27,12 @@ export class RouteRecognizer {
   matchers: Map<RegExp, PathRecognizer>;
 
   constructor() {
-    this.names = MapWrapper.create();
-    this.matchers = MapWrapper.create();
-    this.redirects = MapWrapper.create();
+    this.names = new Map();
+    this.matchers = new Map();
+    this.redirects = new Map();
   }
 
-  addRedirect(path: string, target: string): void { MapWrapper.set(this.redirects, path, target); }
+  addRedirect(path: string, target: string): void { this.redirects.set(path, target); }
 
   addConfig(path: string, handler: any, alias: string = null): void {
     var recognizer = new PathRecognizer(path, handler);
@@ -42,9 +42,9 @@ export class RouteRecognizer {
             `Configuration '${path}' conflicts with existing route '${matcher.path}'`);
       }
     });
-    MapWrapper.set(this.matchers, recognizer.regex, recognizer);
+    this.matchers.set(recognizer.regex, recognizer);
     if (isPresent(alias)) {
-      MapWrapper.set(this.names, alias, recognizer);
+      this.names.set(alias, recognizer);
     }
   }
 
@@ -93,7 +93,7 @@ export class RouteRecognizer {
   hasRoute(name: string): boolean { return MapWrapper.contains(this.names, name); }
 
   generate(name: string, params: any): string {
-    var pathRecognizer = MapWrapper.get(this.names, name);
+    var pathRecognizer = this.names.get(name);
     return isPresent(pathRecognizer) ? pathRecognizer.generate(params) : null;
   }
 }

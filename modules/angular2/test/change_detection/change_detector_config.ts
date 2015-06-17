@@ -120,8 +120,8 @@ class _ExpressionWithLocals {
     'functionFromLocals': new _ExpressionWithLocals(
         'key()', new Locals(null, MapWrapper.createFromPairs([['key', () => 'value']]))),
     'nestedLocals': new _ExpressionWithLocals(
-        'key', new Locals(new Locals(null, MapWrapper.createFromPairs([['key', 'value']])),
-                          MapWrapper.create())),
+        'key',
+        new Locals(new Locals(null, MapWrapper.createFromPairs([['key', 'value']])), new Map())),
     'fallbackLocals': new _ExpressionWithLocals(
         'name', new Locals(null, MapWrapper.createFromPairs([['key', 'value']]))),
     'contextNestedPropertyWithLocals': new _ExpressionWithLocals(

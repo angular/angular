@@ -7,9 +7,9 @@ import {Component, Directive, View} from 'angular2/angular2';
 export class HasStyle {
   style: Map<any, any>;
 
-  constructor() { this.style = MapWrapper.create(); }
+  constructor() { this.style = new Map(); }
 
-  set width(w) { MapWrapper.set(this.style, 'width', w); }
+  set width(w) { this.style.set('width', w); }
 }
 
 @Component({selector: 'company-name', properties: ['width: cell-width', 'company']})
@@ -33,7 +33,7 @@ export class OfferingNameComponent extends HasStyle {
 export class Stage {
   name: string;
   isDisabled: boolean;
-  style: Map;
+  style: Map<string, string>;
   apply: Function;
 }
 
@@ -73,9 +73,8 @@ export class StageButtonsComponent extends HasStyle {
       var stage = new Stage();
       stage.name = status;
       stage.isDisabled = disabled;
-      var stageStyle = MapWrapper.create();
-      MapWrapper.set(stageStyle, 'background-color',
-                     disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD');
+      var stageStyle = new Map<string, string>();
+      stageStyle.set('background-color', disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD');
       stage.style = stageStyle;
       if (isCurrent) {
         disabled = false;

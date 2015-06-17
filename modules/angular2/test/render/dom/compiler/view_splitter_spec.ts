@@ -110,10 +110,9 @@ export function main() {
       it('should add property bindings from the template attribute', () => {
         var rootElement = el('<div><div template="some-prop:expr"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(
-            MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'someProp').source)
+        expect(results[1].inheritedElementBinder.propertyBindings.get('someProp').source)
             .toEqual('expr');
-        expect(MapWrapper.get(results[1].attrs(), 'some-prop')).toEqual('expr');
+        expect(results[1].attrs().get('some-prop')).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute to the nestedProtoView', () => {
@@ -126,9 +125,9 @@ export function main() {
       it('should add entries without value as attributes to the element', () => {
         var rootElement = el('<div><div template="varname"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(MapWrapper.get(results[1].attrs(), 'varname')).toEqual('');
-        expect(results[1].inheritedElementBinder.propertyBindings).toEqual(MapWrapper.create());
-        expect(results[1].inheritedElementBinder.variableBindings).toEqual(MapWrapper.create());
+        expect(results[1].attrs().get('varname')).toEqual('');
+        expect(results[1].inheritedElementBinder.propertyBindings).toEqual(new Map());
+        expect(results[1].inheritedElementBinder.variableBindings).toEqual(new Map());
       });
 
       it('should iterate properly after a template dom modification', () => {
@@ -197,9 +196,9 @@ export function main() {
       it('should add property bindings from the template attribute', () => {
         var rootElement = el('<div><div *prop="expr"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'prop').source)
+        expect(results[1].inheritedElementBinder.propertyBindings.get('prop').source)
             .toEqual('expr');
-        expect(MapWrapper.get(results[1].attrs(), 'prop')).toEqual('expr');
+        expect(results[1].attrs().get('prop')).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute to the nestedProtoView', () => {
@@ -212,9 +211,9 @@ export function main() {
       it('should add entries without value as attribute to the element', () => {
         var rootElement = el('<div><div *varname></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(MapWrapper.get(results[1].attrs(), 'varname')).toEqual('');
-        expect(results[1].inheritedElementBinder.propertyBindings).toEqual(MapWrapper.create());
-        expect(results[1].inheritedElementBinder.variableBindings).toEqual(MapWrapper.create());
+        expect(results[1].attrs().get('varname')).toEqual('');
+        expect(results[1].inheritedElementBinder.propertyBindings).toEqual(new Map());
+        expect(results[1].inheritedElementBinder.variableBindings).toEqual(new Map());
       });
 
       it('should iterate properly after a template dom modification', () => {

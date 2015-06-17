@@ -55,18 +55,15 @@ var _clearValues: {(m: Map<any, any>)} = (function() {
 })();
 
 export class MapWrapper {
-  static create(): Map<any, any> { return new Map(); }
   static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
   static createFromStringMap(stringMap): Map<string, any> {
-    var result = MapWrapper.create();
+    var result = new Map();
     for (var prop in stringMap) {
-      MapWrapper.set(result, prop, stringMap[prop]);
+      result.set(prop, stringMap[prop]);
     }
     return result;
   }
   static createFromPairs(pairs: List<any>): Map<any, any> { return createMapFromPairs(pairs); }
-  static get<K, V>(m: Map<K, V>, k: K): V { return m.get(k); }
-  static set<K, V>(m: Map<K, V>, k: K, v: V) { m.set(k, v); }
   static contains<K>(m: Map<K, any>, k: K) { return m.has(k); }
   static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
   static size(m: Map<any, any>) { return m.size; }

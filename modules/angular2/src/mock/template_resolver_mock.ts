@@ -13,10 +13,10 @@ export class MockTemplateResolver extends TemplateResolver {
 
   constructor() {
     super();
-    this._views = MapWrapper.create();
-    this._inlineTemplates = MapWrapper.create();
-    this._viewCache = MapWrapper.create();
-    this._directiveOverrides = MapWrapper.create();
+    this._views = new Map();
+    this._inlineTemplates = new Map();
+    this._viewCache = new Map();
+    this._directiveOverrides = new Map();
   }
 
   /**
@@ -27,7 +27,7 @@ export class MockTemplateResolver extends TemplateResolver {
    */
   setView(component: Type, view: View): void {
     this._checkOverrideable(component);
-    MapWrapper.set(this._views, component, view);
+    this._views.set(component, view);
   }
 
   /**
@@ -38,7 +38,7 @@ export class MockTemplateResolver extends TemplateResolver {
    */
   setInlineTemplate(component: Type, template: string): void {
     this._checkOverrideable(component);
-    MapWrapper.set(this._inlineTemplates, component, template);
+    this._inlineTemplates.set(component, template);
   }
 
   /**
@@ -51,14 +51,14 @@ export class MockTemplateResolver extends TemplateResolver {
   overrideViewDirective(component: Type, from: Type, to: Type): void {
     this._checkOverrideable(component);
 
-    var overrides = MapWrapper.get(this._directiveOverrides, component);
+    var overrides = this._directiveOverrides.get(component);
 
     if (isBlank(overrides)) {
-      overrides = MapWrapper.create();
-      MapWrapper.set(this._directiveOverrides, component, overrides);
+      overrides = new Map();
+      this._directiveOverrides.set(component, overrides);
     }
 
-    MapWrapper.set(overrides, from, to);
+    overrides.set(from, to);
   }
 
   /**
@@ -73,16 +73,16 @@ export class MockTemplateResolver extends TemplateResolver {
    * @returns {ViewDefinition}
    */
   resolve(component: Type): View {
-    var view = MapWrapper.get(this._viewCache, component);
+    var view = this._viewCache.get(component);
     if (isPresent(view)) return view;
 
-    view = MapWrapper.get(this._views, component);
+    view = this._views.get(component);
     if (isBlank(view)) {
       view = super.resolve(component);
     }
 
     var directives = view.directives;
-    var overrides = MapWrapper.get(this._directiveOverrides, component);
+    var overrides = this._directiveOverrides.get(component);
 
     if (isPresent(overrides) && isPresent(directives)) {
       directives = ListWrapper.clone(view.directives);
@@ -98,12 +98,12 @@ export class MockTemplateResolver extends TemplateResolver {
           {template: view.template, templateUrl: view.templateUrl, directives: directives});
     }
 
-    var inlineTemplate = MapWrapper.get(this._inlineTemplates, component);
+    var inlineTemplate = this._inlineTemplates.get(component);
     if (isPresent(inlineTemplate)) {
       view = new View({template: inlineTemplate, templateUrl: null, directives: view.directives});
     }
 
-    MapWrapper.set(this._viewCache, component, view);
+    this._viewCache.set(component, view);
     return view;
   }
 
@@ -116,7 +116,7 @@ export class MockTemplateResolver extends TemplateResolver {
    * @param {Type} component
    */
   _checkOverrideable(component: Type): void {
-    var cached = MapWrapper.get(this._viewCache, component);
+    var cached = this._viewCache.get(component);
 
     if (isPresent(cached)) {
       throw new BaseException(

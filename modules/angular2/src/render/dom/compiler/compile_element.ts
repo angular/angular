@@ -83,8 +83,8 @@ function getElementDescription(domElement): string {
   buf.add(DOM.tagName(domElement).toLowerCase());
 
   // show id and class first to ease element identification
-  addDescriptionAttribute(buf, "id", MapWrapper.get(atts, "id"));
-  addDescriptionAttribute(buf, "class", MapWrapper.get(atts, "class"));
+  addDescriptionAttribute(buf, "id", atts.get("id"));
+  addDescriptionAttribute(buf, "class", atts.get("class"));
   MapWrapper.forEach(atts, (attValue, attName) => {
     if (attName !== "id" && attName !== "class") {
       addDescriptionAttribute(buf, attName, attValue);

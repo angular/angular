@@ -101,7 +101,7 @@ class MultipleTemplateResolver extends TemplateResolver {
   constructor(multiple: number, components: List<Type>) {
     super();
     this._multiple = multiple;
-    this._cache = MapWrapper.create();
+    this._cache = new Map();
     ListWrapper.forEach(components, (c) => this._warmUp(c));
   }
 
@@ -111,13 +111,13 @@ class MultipleTemplateResolver extends TemplateResolver {
     for (var i = 0; i < this._multiple; ++i) {
       multiplier[i] = view.template;
     }
-    MapWrapper.set(this._cache, component, ListWrapper.join(multiplier, ''));
+    this._cache.set(component, ListWrapper.join(multiplier, ''));
   }
 
   resolve(component: Type): viewModule.View {
     var view = super.resolve(component);
     var myView = new viewModule.View(
-        {template:<string>MapWrapper.get(this._cache, component), directives: view.directives});
+        {template:<string>this._cache.get(component), directives: view.directives});
     return myView;
   }
 }

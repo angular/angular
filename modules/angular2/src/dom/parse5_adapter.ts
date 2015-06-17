@@ -339,11 +339,11 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
   attributeMap(element) {
-    var res = MapWrapper.create();
+    var res = new Map();
     var elAttrs = treeAdapter.getAttrList(element);
     for (var i = 0; i < elAttrs.length; i++) {
       var attrib = elAttrs[i];
-      MapWrapper.set(res, attrib.name, attrib.value);
+      res.set(attrib.name, attrib.value);
     }
     return res;
   }

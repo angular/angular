@@ -100,7 +100,7 @@ export function main() {
       if (isBlank(renderViewRef)) {
         renderViewRef = new RenderViewRef();
       }
-      var view = new AppView(renderer, pv, MapWrapper.create());
+      var view = new AppView(renderer, pv, new Map());
       view.render = renderViewRef;
       var elementInjectors = ListWrapper.createFixedSize(pv.elementBinders.length);
       for (var i = 0; i < pv.elementBinders.length; i++) {

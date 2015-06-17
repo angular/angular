@@ -234,7 +234,7 @@ export class DirectiveBinding extends ResolvedBinding {
   get hostActions(): Map<string, string> {
     return isPresent(this.metadata) && isPresent(this.metadata.hostActions) ?
                this.metadata.hostActions :
-               MapWrapper.create();
+               new Map();
   }
 
   get changeDetection() { return this.metadata.changeDetection; }
@@ -418,14 +418,14 @@ export class ProtoElementInjector {
   private static _createHostInjectorBindingData(dirBindings: List<ResolvedBinding>,
                                                 bd: List<BindingData>,
                                                 firstBindingIsComponent: boolean) {
-    var visitedIds: Map<number, boolean> = MapWrapper.create();
+    var visitedIds: Map<number, boolean> = new Map();
     ListWrapper.forEach(dirBindings, dirBinding => {
       ListWrapper.forEach(dirBinding.resolvedHostInjectables, b => {
         if (MapWrapper.contains(visitedIds, b.key.id)) {
           throw new BaseException(
               `Multiple directives defined the same host injectable: "${stringify(b.key.token)}"`);
         }
-        MapWrapper.set(visitedIds, b.key.id, true);
+        visitedIds.set(b.key.id, true);
         bd.push(ProtoElementInjector._createBindingData(firstBindingIsComponent, dirBinding,
                                                         dirBindings,
                                                         ProtoElementInjector._createBinding(b)));
@@ -734,7 +734,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   getVariableBinding(name: string): any {
-    var index = MapWrapper.get(this._proto.directiveVariableBindings, name);
+    var index = this._proto.directiveVariableBindings.get(name);
     return isPresent(index) ? this.getDirectiveAtIndex(<number>index) : this.getElementRef();
   }
 
@@ -892,7 +892,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   private _buildAttribute(dep: DirectiveDependency): string {
     var attributes = this._proto.attributes;
     if (isPresent(attributes) && MapWrapper.contains(attributes, dep.attributeName)) {
-      return MapWrapper.get(attributes, dep.attributeName);
+      return attributes.get(dep.attributeName);
     } else {
       return null;
     }

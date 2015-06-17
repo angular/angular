@@ -471,7 +471,7 @@ function createDirectiveBinding(directiveResolver, type) {
 }
 
 function createProtoView(elementBinders = null) {
-  var pv = new AppProtoView(null, null, MapWrapper.create(), null);
+  var pv = new AppProtoView(null, null, new Map(), null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
@@ -581,11 +581,11 @@ class FakeTemplateResolver extends TemplateResolver {
 
   constructor() {
     super();
-    this._cmpTemplates = MapWrapper.create();
+    this._cmpTemplates = new Map();
   }
 
   resolve(component: Type): viewAnn.View {
-    var template = MapWrapper.get(this._cmpTemplates, component);
+    var template = this._cmpTemplates.get(component);
     if (isBlank(template)) {
       // dynamic component
       return null;
@@ -593,9 +593,7 @@ class FakeTemplateResolver extends TemplateResolver {
     return template;
   }
 
-  setView(component: Type, template: viewAnn.View) {
-    MapWrapper.set(this._cmpTemplates, component, template);
-  }
+  setView(component: Type, template: viewAnn.View) { this._cmpTemplates.set(component, template); }
 }
 
 class FakeProtoViewFactory extends ProtoViewFactory {

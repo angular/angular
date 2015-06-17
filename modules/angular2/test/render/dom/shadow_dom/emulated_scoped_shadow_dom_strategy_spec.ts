@@ -142,11 +142,11 @@ class FakeXHR extends XHR {
 
   constructor() {
     super();
-    this._responses = MapWrapper.create();
+    this._responses = new Map();
   }
 
   get(url: string): Promise<string> {
-    var response = MapWrapper.get(this._responses, url);
+    var response = this._responses.get(url);
     if (isBlank(response)) {
       return PromiseWrapper.reject('xhr error', null);
     }
@@ -154,5 +154,5 @@ class FakeXHR extends XHR {
     return PromiseWrapper.resolve(response);
   }
 
-  reply(url: string, response: string) { MapWrapper.set(this._responses, url, response); }
+  reply(url: string, response: string) { this._responses.set(url, response); }
 }

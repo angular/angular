@@ -20,8 +20,9 @@ var NG_ID_SEPARATOR_RE = RegExpWrapper.create('#');
 var NG_ID_SEPARATOR = '#';
 
 // Need to keep the views in a global Map so that multiple angular apps are supported
-var _allIdsByView: Map<AppView, number> = CONST_EXPR(MapWrapper.create());
-var _allViewsById: Map<number, AppView> = CONST_EXPR(MapWrapper.create());
+var _allIdsByView = new Map<AppView, number>();
+var _allViewsById = new Map<number, AppView>();
+
 var _nextId = 0;
 
 function _setElementId(element, indices: List<number>) {
@@ -43,7 +44,7 @@ function _getElementId(element): List<number> {
 export function inspectDomElement(element): DebugElement {
   var elId = _getElementId(element);
   if (isPresent(elId)) {
-    var view = MapWrapper.get(_allViewsById, elId[0]);
+    var view = _allViewsById.get(elId[0]);
     if (isPresent(view)) {
       return new DebugElement(view, elId[1]);
     }
@@ -57,8 +58,8 @@ export class DebugElementViewListener implements AppViewListener {
 
   viewCreated(view: AppView) {
     var viewId = _nextId++;
-    MapWrapper.set(_allViewsById, viewId, view);
-    MapWrapper.set(_allIdsByView, view, viewId);
+    _allViewsById.set(viewId, view);
+    _allIdsByView.set(view, viewId);
     var renderView = resolveInternalDomView(view.render);
     for (var i = 0; i < renderView.boundElements.length; i++) {
       _setElementId(renderView.boundElements[i].element, [viewId, i]);
@@ -66,7 +67,7 @@ export class DebugElementViewListener implements AppViewListener {
   }
 
   viewDestroyed(view: AppView) {
-    var viewId = MapWrapper.get(_allIdsByView, view);
+    var viewId = _allIdsByView.get(view);
     MapWrapper.delete(_allIdsByView, view);
     MapWrapper.delete(_allViewsById, viewId);
   }

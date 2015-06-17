@@ -27,28 +27,24 @@ export function main() {
         changeDetection: 'CHECK_ONCE'
       });
       var map = directiveMetadataToMap(someComponent);
-      expect(MapWrapper.get(map, 'compileChildren')).toEqual(false);
-      expect(MapWrapper.get(map, 'hostListeners'))
-          .toEqual(MapWrapper.createFromPairs([['LKey', 'LVal']]));
-      expect(MapWrapper.get(map, 'hostProperties'))
-          .toEqual(MapWrapper.createFromPairs([['PKey', 'PVal']]));
-      expect(MapWrapper.get(map, 'hostActions'))
-          .toEqual(MapWrapper.createFromPairs([['AcKey', 'AcVal']]));
-      expect(MapWrapper.get(map, 'hostAttributes'))
-          .toEqual(MapWrapper.createFromPairs([['AtKey', 'AtVal']]));
-      expect(MapWrapper.get(map, 'id')).toEqual('someComponent');
-      expect(MapWrapper.get(map, 'properties')).toEqual(['propKey: propVal']);
-      expect(MapWrapper.get(map, 'readAttributes')).toEqual(['read1', 'read2']);
-      expect(MapWrapper.get(map, 'selector')).toEqual('some-comp');
-      expect(MapWrapper.get(map, 'type')).toEqual(DirectiveMetadata.COMPONENT_TYPE);
-      expect(MapWrapper.get(map, 'callOnDestroy')).toEqual(true);
-      expect(MapWrapper.get(map, 'callOnCheck')).toEqual(true);
-      expect(MapWrapper.get(map, 'callOnChange')).toEqual(true);
-      expect(MapWrapper.get(map, 'callOnInit')).toEqual(true);
-      expect(MapWrapper.get(map, 'callOnAllChangesDone')).toEqual(true);
-      expect(MapWrapper.get(map, 'exportAs')).toEqual('aaa');
-      expect(MapWrapper.get(map, 'events')).toEqual(['onFoo', 'onBar']);
-      expect(MapWrapper.get(map, 'changeDetection')).toEqual('CHECK_ONCE');
+      expect(map.get('compileChildren')).toEqual(false);
+      expect(map.get('hostListeners')).toEqual(MapWrapper.createFromPairs([['LKey', 'LVal']]));
+      expect(map.get('hostProperties')).toEqual(MapWrapper.createFromPairs([['PKey', 'PVal']]));
+      expect(map.get('hostActions')).toEqual(MapWrapper.createFromPairs([['AcKey', 'AcVal']]));
+      expect(map.get('hostAttributes')).toEqual(MapWrapper.createFromPairs([['AtKey', 'AtVal']]));
+      expect(map.get('id')).toEqual('someComponent');
+      expect(map.get('properties')).toEqual(['propKey: propVal']);
+      expect(map.get('readAttributes')).toEqual(['read1', 'read2']);
+      expect(map.get('selector')).toEqual('some-comp');
+      expect(map.get('type')).toEqual(DirectiveMetadata.COMPONENT_TYPE);
+      expect(map.get('callOnDestroy')).toEqual(true);
+      expect(map.get('callOnCheck')).toEqual(true);
+      expect(map.get('callOnChange')).toEqual(true);
+      expect(map.get('callOnInit')).toEqual(true);
+      expect(map.get('callOnAllChangesDone')).toEqual(true);
+      expect(map.get('exportAs')).toEqual('aaa');
+      expect(map.get('events')).toEqual(['onFoo', 'onBar']);
+      expect(map.get('changeDetection')).toEqual('CHECK_ONCE');
     });
 
     it('mapToDirectiveMetadata', () => {

@@ -44,7 +44,7 @@ export class ShadowDomCompileStep implements CompileStep {
       return;
     }
     var attrs = current.attrs();
-    var selector = MapWrapper.get(attrs, 'select');
+    var selector = attrs.get('select');
     selector = isPresent(selector) ? selector : '';
 
     // The content tag should be replaced by a pair of marker tags (start & end).

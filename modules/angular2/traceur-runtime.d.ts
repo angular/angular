@@ -48,8 +48,8 @@ declare var Map: {
   new (): Map<any, any>;
   new<K, V>(): Map<K, V>;
   // alexeagle: PATCHED
-  new<K, V>(m: Map<K, V>): Map<K, V>;
-  new<K, V>(l: List<any>): Map<K, V>;
+  new<K, V>(m: Map<K, V>): Map<any, any>;
+  new<K, V>(l: List<any>): Map<any, any>;
   prototype: Map<any, any>;
 };
 

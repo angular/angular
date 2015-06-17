@@ -177,7 +177,7 @@ export function main() {
                // event type
                expect(eventEntry[1]).toEqual('change');
                // actual event
-               expect((<any>MapWrapper.get(eventEntry[2], '$event')).type).toEqual('change');
+               expect((<Map<any, any>>eventEntry[2]).get('$event').type).toEqual('change');
                async.done();
              });
 

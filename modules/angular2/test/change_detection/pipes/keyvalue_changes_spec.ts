@@ -9,11 +9,11 @@ export function main() {
   describe('keyvalue_changes', function() {
     describe('KeyValueChanges', function() {
       var changes;
-      var m;
+      var m: Map<any, any>;
 
       beforeEach(() => {
         changes = new KeyValueChanges();
-        m = MapWrapper.create();
+        m = new Map();
       });
 
       afterEach(() => { changes = null; });
@@ -21,12 +21,12 @@ export function main() {
       it('should detect additions', () => {
         changes.check(m);
 
-        MapWrapper.set(m, 'a', 1);
+        m.set('a', 1);
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString({map: ['a[null->1]'], additions: ['a[null->1]']}));
 
-        MapWrapper.set(m, 'b', 2);
+        m.set('b', 2);
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString(
@@ -34,12 +34,12 @@ export function main() {
       });
 
       it('should handle changing key/values correctly', () => {
-        MapWrapper.set(m, 1, 10);
-        MapWrapper.set(m, 2, 20);
+        m.set(1, 10);
+        m.set(2, 20);
         changes.check(m);
 
-        MapWrapper.set(m, 2, 10);
-        MapWrapper.set(m, 1, 20);
+        m.set(2, 10);
+        m.set(1, 20);
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString({
@@ -52,10 +52,10 @@ export function main() {
       it('should expose previous and current value', () => {
         var previous, current;
 
-        MapWrapper.set(m, 1, 10);
+        m.set(1, 10);
         changes.check(m);
 
-        MapWrapper.set(m, 1, 20);
+        m.set(1, 20);
         changes.check(m);
 
         changes.forEachChangedItem((record) => {
@@ -70,19 +70,19 @@ export function main() {
       it('should do basic map watching', () => {
         changes.check(m);
 
-        MapWrapper.set(m, 'a', 'A');
+        m.set('a', 'A');
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
 
-        MapWrapper.set(m, 'b', 'B');
+        m.set('b', 'B');
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString(
                 {map: ['a', 'b[null->B]'], previous: ['a'], additions: ['b[null->B]']}));
 
-        MapWrapper.set(m, 'b', 'BB');
-        MapWrapper.set(m, 'd', 'D');
+        m.set('b', 'BB');
+        m.set('d', 'D');
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString({
@@ -106,7 +106,7 @@ export function main() {
       });
 
       it('should test string by value rather than by reference (DART)', () => {
-        MapWrapper.set(m, 'foo', 'bar');
+        m.set('foo', 'bar');
         changes.check(m);
 
         var f = 'f';
@@ -114,14 +114,14 @@ export function main() {
         var b = 'b';
         var ar = 'ar';
 
-        MapWrapper.set(m, f + oo, b + ar);
+        m.set(f + oo, b + ar);
         changes.check(m);
 
         expect(changes.toString()).toEqual(kvChangesAsString({map: ['foo'], previous: ['foo']}));
       });
 
       it('should not see a NaN value as a change (JS)', () => {
-        MapWrapper.set(m, 'foo', NumberWrapper.NaN);
+        m.set('foo', NumberWrapper.NaN);
         changes.check(m);
 
         changes.check(m);
@@ -139,7 +139,7 @@ export function main() {
           });
 
           it('should do basic object watching', () => {
-            m = {};
+            let m = {};
             changes.check(m);
 
             m['a'] = 'A';

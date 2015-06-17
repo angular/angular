@@ -168,11 +168,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getStyle(element, stylename: string) { return element.style[stylename]; }
   tagName(element): string { return element.tagName; }
   attributeMap(element) {
-    var res = MapWrapper.create();
+    var res = new Map();
     var elAttrs = element.attributes;
     for (var i = 0; i < elAttrs.length; i++) {
       var attrib = elAttrs[i];
-      MapWrapper.set(res, attrib.name, attrib.value);
+      res.set(attrib.name, attrib.value);
     }
     return res;
   }

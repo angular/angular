@@ -50,7 +50,7 @@ export class MdGridList {
     this.rows = 0;
   }
 
-  set cols(value) {
+  set cols(value: any) {
     this._cols = isString(value) ? NumberWrapper.parseInt(value, 10) : <number>value;
   }
 

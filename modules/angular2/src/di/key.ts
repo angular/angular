@@ -44,7 +44,7 @@ export class Key {
  * @private
  */
 export class KeyRegistry {
-  private _allKeys: Map<Object, Key> = MapWrapper.create();
+  private _allKeys: Map<Object, Key> = new Map();
 
   get(token: Object): Key {
     if (token instanceof Key) return token;
@@ -57,11 +57,11 @@ export class KeyRegistry {
     token = theToken;
 
     if (MapWrapper.contains(this._allKeys, token)) {
-      return MapWrapper.get(this._allKeys, token);
+      return this._allKeys.get(token);
     }
 
     var newKey = new Key(token, Key.numberOfKeys);
-    MapWrapper.set(this._allKeys, token, newKey);
+    this._allKeys.set(token, newKey);
     return newKey;
   }
 

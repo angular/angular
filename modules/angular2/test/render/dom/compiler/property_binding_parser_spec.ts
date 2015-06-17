@@ -9,7 +9,7 @@ import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {Lexer, Parser} from 'angular2/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 
-var EMPTY_MAP = MapWrapper.create();
+var EMPTY_MAP = new Map();
 
 export function main() {
   describe('PropertyBindingParser', () => {
@@ -31,7 +31,7 @@ export function main() {
 
     it('should detect [] syntax', () => {
       var results = process(el('<div [a]="b"></div>'));
-      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
     });
 
     it('should detect [] syntax only if an attribute name starts and ends with []', () => {
@@ -41,7 +41,7 @@ export function main() {
 
     it('should detect bind- syntax', () => {
       var results = process(el('<div bind-a="b"></div>'));
-      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
     });
 
     it('should detect bind- syntax only if an attribute name starts with bind',
@@ -49,53 +49,51 @@ export function main() {
 
     it('should detect interpolation syntax', () => {
       var results = process(el('<div a="{{b}}"></div>'));
-      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('{{b}}');
+      expect(results[0].propertyBindings.get('a').source).toEqual('{{b}}');
     });
 
     it('should store property setters as camel case', () => {
       var element = el('<div bind-some-prop="1">');
       var results = process(element);
-      expect(MapWrapper.get(results[0].propertyBindings, 'someProp')).toBeTruthy();
+      expect(results[0].propertyBindings.get('someProp')).toBeTruthy();
     });
 
     it('should detect var- syntax', () => {
       var results = process(el('<template var-a="b"></template>'));
-      expect(MapWrapper.get(results[0].variableBindings, 'b')).toEqual('a');
+      expect(results[0].variableBindings.get('b')).toEqual('a');
     });
 
     it('should store variable binding for a template element on the nestedProtoView', () => {
       var results = process(el('<template var-george="washington"></p>'), true);
       expect(results[0].variableBindings).toEqual(EMPTY_MAP);
-      expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington'))
-          .toEqual('george');
+      expect(results[0].nestedProtoView.variableBindings.get('washington')).toEqual('george');
     });
 
     it('should store variable binding for a non-template element using shorthand syntax on the nestedProtoView',
        () => {
          var results = process(el('<template #george="washington"></template>'), true);
          expect(results[0].variableBindings).toEqual(EMPTY_MAP);
-         expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington'))
-             .toEqual('george');
+         expect(results[0].nestedProtoView.variableBindings.get('washington')).toEqual('george');
        });
 
     it('should store variable binding for a non-template element', () => {
       var results = process(el('<p var-george="washington"></p>'));
-      expect(MapWrapper.get(results[0].variableBindings, 'washington')).toEqual('george');
+      expect(results[0].variableBindings.get('washington')).toEqual('george');
     });
 
     it('should store variable binding for a non-template element using shorthand syntax', () => {
       var results = process(el('<p #george="washington"></p>'));
-      expect(MapWrapper.get(results[0].variableBindings, 'washington')).toEqual('george');
+      expect(results[0].variableBindings.get('washington')).toEqual('george');
     });
 
     it('should store a variable binding with an implicit value', () => {
       var results = process(el('<p var-george></p>'));
-      expect(MapWrapper.get(results[0].variableBindings, '\$implicit')).toEqual('george');
+      expect(results[0].variableBindings.get('\$implicit')).toEqual('george');
     });
 
     it('should store a variable binding with an implicit value using shorthand syntax', () => {
       var results = process(el('<p #george></p>'));
-      expect(MapWrapper.get(results[0].variableBindings, '\$implicit')).toEqual('george');
+      expect(results[0].variableBindings.get('\$implicit')).toEqual('george');
     });
 
     it('should detect variable bindings only if an attribute name starts with #', () => {
@@ -143,25 +141,25 @@ export function main() {
 
     it('should store bound properties as temporal attributes', () => {
       var results = createPipeline().process(el('<div bind-a="b" [c]="d"></div>'));
-      expect(MapWrapper.get(results[0].attrs(), 'a')).toEqual('b');
-      expect(MapWrapper.get(results[0].attrs(), 'c')).toEqual('d');
+      expect(results[0].attrs().get('a')).toEqual('b');
+      expect(results[0].attrs().get('c')).toEqual('d');
     });
 
     it('should store variables as temporal attributes', () => {
       var results = createPipeline().process(el('<div var-a="b" #c="d"></div>'));
-      expect(MapWrapper.get(results[0].attrs(), 'a')).toEqual('b');
-      expect(MapWrapper.get(results[0].attrs(), 'c')).toEqual('d');
+      expect(results[0].attrs().get('a')).toEqual('b');
+      expect(results[0].attrs().get('c')).toEqual('d');
     });
 
     it('should detect [()] syntax', () => {
       var results = process(el('<div [(a)]="b"></div>'));
-      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
       expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
     });
 
     it('should detect bindon- syntax', () => {
       var results = process(el('<div bindon-a="b"></div>'));
-      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
       expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
     });
   });

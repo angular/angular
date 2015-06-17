@@ -15,7 +15,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
  */
 @Injectable()
 export class TemplateLoader {
-  _cache: Map<string, Promise<string>> = MapWrapper.create();
+  _cache: Map<string, Promise<string>> = new Map();
 
   constructor(private _xhr: XHR, urlResolver: UrlResolver) {}
 
@@ -52,7 +52,7 @@ export class TemplateLoader {
   }
 
   private _loadText(url: string): Promise<string> {
-    var response = MapWrapper.get(this._cache, url);
+    var response = this._cache.get(url);
 
     if (isBlank(response)) {
       // TODO(vicb): change error when TS gets fixed
@@ -62,7 +62,7 @@ export class TemplateLoader {
           this._xhr.get(url),
           _ => PromiseWrapper.reject(new BaseException(`Failed to fetch url "${url}"`), null));
 
-      MapWrapper.set(this._cache, url, response);
+      this._cache.set(url, response);
     }
 
     return response;

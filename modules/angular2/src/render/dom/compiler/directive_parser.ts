@@ -135,11 +135,10 @@ export class DirectiveParser implements CompileStep {
       pipes = [];
     }
 
-    var bindingAst =
-        MapWrapper.get(compileElement.bindElement().propertyBindings, dashCaseToCamelCase(elProp));
+    var bindingAst = compileElement.bindElement().propertyBindings.get(dashCaseToCamelCase(elProp));
 
     if (isBlank(bindingAst)) {
-      var attributeValue = MapWrapper.get(compileElement.attrs(), camelCaseToDashCase(elProp));
+      var attributeValue = compileElement.attrs().get(camelCaseToDashCase(elProp));
       if (isPresent(attributeValue)) {
         bindingAst =
             this._parser.wrapLiteralPrimitive(attributeValue, compileElement.elementDescription);

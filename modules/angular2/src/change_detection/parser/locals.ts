@@ -18,7 +18,7 @@ export class Locals {
 
   get(name: string) {
     if (MapWrapper.contains(this.current, name)) {
-      return MapWrapper.get(this.current, name);
+      return this.current.get(name);
     }
 
     if (isPresent(this.parent)) {
@@ -33,7 +33,7 @@ export class Locals {
     // exposed to the public API.
     // TODO: vsavkin maybe it should check only the local map
     if (MapWrapper.contains(this.current, name)) {
-      MapWrapper.set(this.current, name, value);
+      this.current.set(name, value);
     } else {
       throw new BaseException(
           `Setting of new keys post-construction is not supported. Key: ${name}.`);

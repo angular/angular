@@ -1,5 +1,5 @@
 import {isPresent} from 'angular2/src/facade/lang';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, Map} from 'angular2/src/facade/collection';
 import {RecordType, ProtoRecord} from './proto_record';
 
 /**
@@ -14,7 +14,7 @@ import {RecordType, ProtoRecord} from './proto_record';
  */
 export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
   var res: List<ProtoRecord> = [];
-  var indexMap: Map<number, number> = MapWrapper.create();
+  var indexMap: Map<number, number> = new Map<number, number>();
 
   for (var i = 0; i < records.length; ++i) {
     var r = records[i];
@@ -23,14 +23,14 @@ export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
 
     if (isPresent(matchingRecord) && record.lastInBinding) {
       res.push(_selfRecord(record, matchingRecord.selfIndex, res.length + 1));
-      MapWrapper.set(indexMap, r.selfIndex, matchingRecord.selfIndex);
+      indexMap.set(r.selfIndex, matchingRecord.selfIndex);
 
     } else if (isPresent(matchingRecord) && !record.lastInBinding) {
-      MapWrapper.set(indexMap, r.selfIndex, matchingRecord.selfIndex);
+      indexMap.set(r.selfIndex, matchingRecord.selfIndex);
 
     } else {
       res.push(record);
-      MapWrapper.set(indexMap, r.selfIndex, record.selfIndex);
+      indexMap.set(r.selfIndex, record.selfIndex);
     }
   }
 
@@ -59,6 +59,6 @@ function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, a
 }
 
 function _map(indexMap: Map<any, any>, value: number) {
-  var r = MapWrapper.get(indexMap, value);
+  var r = indexMap.get(value);
   return isPresent(r) ? r : value;
 }

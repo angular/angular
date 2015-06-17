@@ -52,7 +52,7 @@ export class NgSwitch {
   _activeViews: List<SwitchView>;
 
   constructor() {
-    this._valueViews = MapWrapper.create();
+    this._valueViews = new Map();
     this._activeViews = [];
     this._useDefault = false;
   }
@@ -63,10 +63,10 @@ export class NgSwitch {
 
     // Add the ViewContainers matching the value (with a fallback to default)
     this._useDefault = false;
-    var views = MapWrapper.get(this._valueViews, value);
+    var views = this._valueViews.get(value);
     if (isBlank(views)) {
       this._useDefault = true;
-      views = normalizeBlank(MapWrapper.get(this._valueViews, _whenDefault));
+      views = normalizeBlank(this._valueViews.get(_whenDefault));
     }
     this._activateViews(views);
 
@@ -92,7 +92,7 @@ export class NgSwitch {
     // Switch to default when there is no more active ViewContainers
     if (this._activeViews.length === 0 && !this._useDefault) {
       this._useDefault = true;
-      this._activateViews(MapWrapper.get(this._valueViews, _whenDefault));
+      this._activateViews(this._valueViews.get(_whenDefault));
     }
   }
 
@@ -115,10 +115,10 @@ export class NgSwitch {
   }
 
   _registerView(value, view: SwitchView): void {
-    var views = MapWrapper.get(this._valueViews, value);
+    var views = this._valueViews.get(value);
     if (isBlank(views)) {
       views = [];
-      MapWrapper.set(this._valueViews, value, views);
+      this._valueViews.set(value, views);
     }
     views.push(view);
   }
@@ -126,7 +126,7 @@ export class NgSwitch {
   _deregisterView(value, view: SwitchView): void {
     // `_whenDefault` is used a marker for non-registered whens
     if (value == _whenDefault) return;
-    var views = MapWrapper.get(this._valueViews, value);
+    var views = this._valueViews.get(value);
     if (views.length == 1) {
       MapWrapper.delete(this._valueViews, value);
     } else {

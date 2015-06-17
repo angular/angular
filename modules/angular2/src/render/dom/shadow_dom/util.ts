@@ -5,16 +5,16 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {ShadowCss} from './shadow_css';
 
-var _componentUIDs: Map<string, int> = MapWrapper.create();
+var _componentUIDs: Map<string, int> = new Map();
 var _nextComponentUID: int = 0;
-var _sharedStyleTexts: Map<string, boolean> = MapWrapper.create();
+var _sharedStyleTexts: Map<string, boolean> = new Map();
 var _lastInsertedStyleEl;
 
 export function getComponentId(componentStringId: string) {
-  var id = MapWrapper.get(_componentUIDs, componentStringId);
+  var id = _componentUIDs.get(componentStringId);
   if (isBlank(id)) {
     id = _nextComponentUID++;
-    MapWrapper.set(_componentUIDs, componentStringId, id);
+    _componentUIDs.set(componentStringId, id);
   }
   return id;
 }
@@ -23,7 +23,7 @@ export function insertSharedStyleText(cssText, styleHost, styleEl) {
   if (!MapWrapper.contains(_sharedStyleTexts, cssText)) {
     // Styles are unscoped and shared across components, only append them to the head
     // when there are not present yet
-    MapWrapper.set(_sharedStyleTexts, cssText, true);
+    _sharedStyleTexts.set(cssText, true);
     insertStyleElement(styleHost, styleEl);
   }
 }

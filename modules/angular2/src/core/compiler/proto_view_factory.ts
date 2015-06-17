@@ -20,7 +20,7 @@ import {ElementBinder} from './element_binder';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 
 class BindingRecordsCreator {
-  _directiveRecordsMap: Map<number, DirectiveRecord> = MapWrapper.create();
+  _directiveRecordsMap: Map<number, DirectiveRecord> = new Map();
   _textNodeIndex: number = 0;
 
   getBindingRecords(elementBinders: List<renderApi.ElementBinder>,
@@ -116,17 +116,18 @@ class BindingRecordsCreator {
     var id = boundElementIndex * 100 + directiveIndex;
 
     if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
-      MapWrapper.set(this._directiveRecordsMap, id, new DirectiveRecord({
-                       directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),
-                       callOnAllChangesDone: directiveMetadata.callOnAllChangesDone,
-                       callOnChange: directiveMetadata.callOnChange,
-                       callOnCheck: directiveMetadata.callOnCheck,
-                       callOnInit: directiveMetadata.callOnInit,
-                       changeDetection: directiveMetadata.changeDetection
-                     }));
+      this._directiveRecordsMap.set(
+          id, new DirectiveRecord({
+            directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),
+            callOnAllChangesDone: directiveMetadata.callOnAllChangesDone,
+            callOnChange: directiveMetadata.callOnChange,
+            callOnCheck: directiveMetadata.callOnCheck,
+            callOnInit: directiveMetadata.callOnInit,
+            changeDetection: directiveMetadata.changeDetection
+          }));
     }
 
-    return MapWrapper.get(this._directiveRecordsMap, id);
+    return this._directiveRecordsMap.get(id);
   }
 }
 
@@ -245,10 +246,9 @@ function _collectNestedProtoViewsVariableBindings(
 }
 
 function _createVariableBindings(renderProtoView): Map<string, string> {
-  var variableBindings = MapWrapper.create();
-  MapWrapper.forEach(renderProtoView.variableBindings, (mappedName, varName) => {
-    MapWrapper.set(variableBindings, varName, mappedName);
-  });
+  var variableBindings = new Map();
+  MapWrapper.forEach(renderProtoView.variableBindings,
+                     (mappedName, varName) => { variableBindings.set(varName, mappedName); });
   return variableBindings;
 }
 
@@ -276,12 +276,11 @@ function _createVariableNames(parentVariableNames, renderProtoView): List<string
 
 export function createVariableLocations(
     elementBinders: List<renderApi.ElementBinder>): Map<string, number> {
-  var variableLocations = MapWrapper.create();
+  var variableLocations = new Map();
   for (var i = 0; i < elementBinders.length; i++) {
     var binder = elementBinders[i];
-    MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => {
-      MapWrapper.set(variableLocations, mappedName, i);
-    });
+    MapWrapper.forEach(binder.variableBindings,
+                       (mappedName, varName) => { variableLocations.set(mappedName, i); });
   }
   return variableLocations;
 }
@@ -348,7 +347,7 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
   return protoElementInjector;
 }
 
-function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
+function _createElementBinder(protoView: AppProtoView, boundElementIndex, renderElementBinder,
                               protoElementInjector, componentDirectiveBinding,
                               directiveBindings): ElementBinder {
   var parent = null;
@@ -363,19 +362,18 @@ function _createElementBinder(protoView, boundElementIndex, renderElementBinder,
   // in order to prevent new variables from being set later in the lifecycle. Since we don't want
   // to actually create variable bindings for the $implicit bindings, add to the
   // protoLocals manually.
-  MapWrapper.forEach(renderElementBinder.variableBindings, (mappedName, varName) => {
-    MapWrapper.set(protoView.protoLocals, mappedName, null);
-  });
+  MapWrapper.forEach(renderElementBinder.variableBindings,
+                     (mappedName, varName) => { protoView.protoLocals.set(mappedName, null); });
   return elBinder;
 }
 
 export function createDirectiveVariableBindings(
     renderElementBinder: renderApi.ElementBinder,
     directiveBindings: List<DirectiveBinding>): Map<string, number> {
-  var directiveVariableBindings = MapWrapper.create();
+  var directiveVariableBindings = new Map();
   MapWrapper.forEach(renderElementBinder.variableBindings, (templateName, exportAs) => {
     var dirIndex = _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, exportAs);
-    MapWrapper.set(directiveVariableBindings, templateName, dirIndex);
+    directiveVariableBindings.set(templateName, dirIndex);
   });
   return directiveVariableBindings;
 }

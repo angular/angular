@@ -8,7 +8,6 @@ import {Renderer, RenderViewRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
-import {MapWrapper} from 'angular2/src/facade/collection';
 
 /**
  * Entry point for creating, moving views in the view hierarchy and destroying views.
@@ -42,7 +41,7 @@ export class AppViewManager {
     if (isBlank(componentView)) {
       throw new BaseException(`There is no component directive at element ${boundElementIndex}`);
     }
-    var elementIndex = MapWrapper.get(componentView.proto.variableLocations, variableName);
+    var elementIndex = componentView.proto.variableLocations.get(variableName);
     if (isBlank(elementIndex)) {
       throw new BaseException(`Could not find variable ${variableName}`);
     }

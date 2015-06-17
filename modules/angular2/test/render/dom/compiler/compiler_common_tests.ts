@@ -34,7 +34,7 @@ export function runCompilerCommonTests() {
 
     function createCompiler(processClosure, urlData = null) {
       if (isBlank(urlData)) {
-        urlData = MapWrapper.create();
+        urlData = new Map();
       }
       var tplLoader = new FakeTemplateLoader(urlData);
       mockStepFactory = new MockStepFactory([new MockStep(processClosure)]);
@@ -99,7 +99,7 @@ export function runCompilerCommonTests() {
          }));
 
       it('should report loading errors', inject([AsyncTestCompleter], (async) => {
-           var compiler = createCompiler(EMPTY_STEP, MapWrapper.create());
+           var compiler = createCompiler(EMPTY_STEP, new Map());
            PromiseWrapper.catchError(
                compiler.compile(
                    new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'})),
@@ -209,7 +209,7 @@ class FakeTemplateLoader extends TemplateLoader {
     }
 
     if (isPresent(template.templateAbsUrl)) {
-      var content = MapWrapper.get(this._urlData, template.templateAbsUrl);
+      var content = this._urlData.get(template.templateAbsUrl);
       return isPresent(content) ?
                  PromiseWrapper.resolve(DOM.createTemplate(content)) :
                  PromiseWrapper.reject(`Failed to fetch url "${template.templateAbsUrl}"`, null);

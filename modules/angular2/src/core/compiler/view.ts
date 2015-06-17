@@ -76,7 +76,7 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
     if (!MapWrapper.contains(this.proto.variableBindings, contextName)) {
       return;
     }
-    var templateName = MapWrapper.get(this.proto.variableBindings, contextName);
+    var templateName = this.proto.variableBindings.get(contextName);
     this.locals.set(templateName, value);
   }
 
@@ -92,8 +92,8 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
    * @param {int} binderIndex
    */
   triggerEventHandlers(eventName: string, eventObj, binderIndex: int): void {
-    var locals = MapWrapper.create();
-    MapWrapper.set(locals, '$event', eventObj);
+    var locals = new Map();
+    locals.set('$event', eventObj);
     this.dispatchEvent(binderIndex, eventName, locals);
   }
 
@@ -162,16 +162,15 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
  */
 export class AppProtoView {
   elementBinders: List<ElementBinder> = [];
-  protoLocals: Map<string, any> = MapWrapper.create();
+  protoLocals: Map<string, any> = new Map();
 
   constructor(public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>,
               public variableLocations: Map<string, number>) {
     if (isPresent(variableBindings)) {
-      MapWrapper.forEach(variableBindings, (templateName, _) => {
-        MapWrapper.set(this.protoLocals, templateName, null);
-      });
+      MapWrapper.forEach(variableBindings,
+                         (templateName, _) => { this.protoLocals.set(templateName, null); });
     }
   }
 
@@ -211,10 +210,10 @@ export class AppProtoView {
       var eventName = eventBinding.fullName;
       var event = StringMapWrapper.get(events, eventName);
       if (isBlank(event)) {
-        event = MapWrapper.create();
+        event = new Map();
         StringMapWrapper.set(events, eventName, event);
       }
-      MapWrapper.set(event, directiveIndex, eventBinding.source);
+      event.set(directiveIndex, eventBinding.source);
     }
   }
 }

@@ -83,16 +83,15 @@ export function main() {
       var results = process(el('<div some-decor-props></div>'),
                             {'elProp': parser.parseBinding('someExpr', '')});
       var directiveBinding = results[0].directives[0];
-      expect(MapWrapper.get(directiveBinding.propertyBindings, 'dirProp').source)
-          .toEqual('someExpr');
+      expect(directiveBinding.propertyBindings.get('dirProp').source).toEqual('someExpr');
     });
 
     it('should bind directive properties with pipes', () => {
       var results = process(el('<div some-decor-props></div>'),
                             {'elProp': parser.parseBinding('someExpr', '')});
       var directiveBinding = results[0].directives[0];
-      var pipedProp = <any>MapWrapper.get(directiveBinding.propertyBindings, 'doubleProp');
-      var simpleProp = <any>MapWrapper.get(directiveBinding.propertyBindings, 'dirProp');
+      var pipedProp = <any>directiveBinding.propertyBindings.get('doubleProp');
+      var simpleProp = <any>directiveBinding.propertyBindings.get('dirProp');
       expect(pipedProp.ast.name).toEqual('double');
       expect(pipedProp.ast.exp).toEqual(simpleProp.ast);
       expect(simpleProp.source).toEqual('someExpr');
@@ -101,7 +100,7 @@ export function main() {
     it('should bind directive properties from attribute values', () => {
       var results = process(el('<div some-decor-props el-prop="someValue"></div>'));
       var directiveBinding = results[0].directives[0];
-      var simpleProp = MapWrapper.get(directiveBinding.propertyBindings, 'dirProp');
+      var simpleProp = directiveBinding.propertyBindings.get('dirProp');
       expect(simpleProp.source).toEqual('someValue');
     });
 
@@ -111,7 +110,7 @@ export function main() {
 
       var directiveBinding = results[0].directives[0];
 
-      var ast = MapWrapper.get(directiveBinding.hostPropertyBindings, 'hostProp');
+      var ast = directiveBinding.hostPropertyBindings.get('hostProp');
       expect(ast.source).toEqual('dirProp');
     });
 
@@ -145,7 +144,7 @@ export function main() {
     it('should read attribute values', () => {
       var element = el('<input some-decor-props some-attr="someValue">');
       var results = process(element);
-      expect(MapWrapper.get(results[0].readAttributes, 'some-attr')).toEqual('someValue');
+      expect(results[0].readAttributes.get('some-attr')).toEqual('someValue');
     });
 
     it('should bind directive events', () => {

@@ -16,15 +16,13 @@ export class RuntimeComponentUrlMapper extends ComponentUrlMapper {
 
   constructor() {
     super();
-    this._componentUrls = MapWrapper.create();
+    this._componentUrls = new Map();
   }
 
-  setComponentUrl(component: Type, url: string) {
-    MapWrapper.set(this._componentUrls, component, url);
-  }
+  setComponentUrl(component: Type, url: string) { this._componentUrls.set(component, url); }
 
   getUrl(component: Type): string {
-    var url = MapWrapper.get(this._componentUrls, component);
+    var url = this._componentUrls.get(component);
     if (isPresent(url)) return url;
     return super.getUrl(component);
   }

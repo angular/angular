@@ -29,7 +29,7 @@ import {reflector} from 'angular2/src/reflection/reflection';
 export class RouteRegistry {
   _rules: Map<any, RouteRecognizer>;
 
-  constructor() { this._rules = MapWrapper.create(); }
+  constructor() { this._rules = new Map(); }
 
   /**
    * Given a component and a configuration object, add the route to this registry
@@ -37,11 +37,11 @@ export class RouteRegistry {
   config(parentComponent, config: StringMap<string, any>): void {
     assertValidConfig(config);
 
-    var recognizer: RouteRecognizer = MapWrapper.get(this._rules, parentComponent);
+    var recognizer: RouteRecognizer = this._rules.get(parentComponent);
 
     if (isBlank(recognizer)) {
       recognizer = new RouteRecognizer();
-      MapWrapper.set(this._rules, parentComponent, recognizer);
+      this._rules.set(parentComponent, recognizer);
     }
 
     if (StringMapWrapper.contains(config, 'redirectTo')) {
@@ -90,7 +90,7 @@ export class RouteRegistry {
    * the application into the state specified by the
    */
   recognize(url: string, parentComponent): Promise<Instruction> {
-    var componentRecognizer = MapWrapper.get(this._rules, parentComponent);
+    var componentRecognizer = this._rules.get(parentComponent);
     if (isBlank(componentRecognizer)) {
       return PromiseWrapper.resolve(null);
     }
@@ -145,7 +145,7 @@ export class RouteRegistry {
 
   generate(name: string, params: StringMap<string, string>, hostComponent): string {
     // TODO: implement for hierarchical routes
-    var componentRecognizer = MapWrapper.get(this._rules, hostComponent);
+    var componentRecognizer = this._rules.get(hostComponent);
     return isPresent(componentRecognizer) ? componentRecognizer.generate(name, params) : null;
   }
 }

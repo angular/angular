@@ -2,15 +2,15 @@ import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 
 function paramParser(rawParams: string): Map<string, List<string>> {
-  var map: Map<string, List<string>> = MapWrapper.create();
+  var map: Map<string, List<string>> = new Map();
   var params: List<string> = StringWrapper.split(rawParams, '&');
   ListWrapper.forEach(params, (param: string) => {
     var split: List<string> = StringWrapper.split(param, '=');
     var key = ListWrapper.get(split, 0);
     var val = ListWrapper.get(split, 1);
-    var list = MapWrapper.get(map, key) || [];
+    var list = map.get(key) || [];
     list.push(val);
-    MapWrapper.set(map, key, list);
+    map.set(key, list);
   });
   return map;
 }
@@ -21,14 +21,14 @@ export class URLSearchParams {
 
   has(param: string): boolean { return MapWrapper.contains(this.paramsMap, param); }
 
-  get(param: string): string { return ListWrapper.first(MapWrapper.get(this.paramsMap, param)); }
+  get(param: string): string { return ListWrapper.first(this.paramsMap.get(param)); }
 
-  getAll(param: string): List<string> { return MapWrapper.get(this.paramsMap, param) || []; }
+  getAll(param: string): List<string> { return this.paramsMap.get(param) || []; }
 
   append(param: string, val: string): void {
-    var list = MapWrapper.get(this.paramsMap, param) || [];
+    var list = this.paramsMap.get(param) || [];
     list.push(val);
-    MapWrapper.set(this.paramsMap, param, list);
+    this.paramsMap.set(param, list);
   }
 
   toString(): string {

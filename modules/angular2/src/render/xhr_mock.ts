@@ -11,7 +11,7 @@ export class MockXHR extends XHR {
   constructor() {
     super();
     this._expectations = [];
-    this._definitions = MapWrapper.create();
+    this._definitions = new Map();
     this._requests = [];
   }
 
@@ -26,7 +26,7 @@ export class MockXHR extends XHR {
     this._expectations.push(expectation);
   }
 
-  when(url: string, response: string) { MapWrapper.set(this._definitions, url, response); }
+  when(url: string, response: string) { this._definitions.set(url, response); }
 
   flush() {
     if (this._requests.length === 0) {
@@ -66,7 +66,7 @@ export class MockXHR extends XHR {
     }
 
     if (MapWrapper.contains(this._definitions, url)) {
-      var response = MapWrapper.get(this._definitions, url);
+      var response = this._definitions.get(url);
       request.complete(normalizeBlank(response));
       return;
     }

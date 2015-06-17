@@ -30,7 +30,7 @@ export class ViewSplitter implements CompileStep {
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
-    var templateBindings = MapWrapper.get(attrs, 'template');
+    var templateBindings = attrs.get('template');
     var hasTemplateBinding = isPresent(templateBindings);
 
     // look for template shortcuts such as *ng-if="condition" and treat them as template="if
@@ -106,11 +106,11 @@ export class ViewSplitter implements CompileStep {
       var binding = bindings[i];
       if (binding.keyIsVar) {
         compileElement.bindElement().bindVariable(dashCaseToCamelCase(binding.key), binding.name);
-        MapWrapper.set(compileElement.attrs(), binding.key, binding.name);
+        compileElement.attrs().set(binding.key, binding.name);
       } else if (isPresent(binding.expression)) {
         compileElement.bindElement().bindProperty(dashCaseToCamelCase(binding.key),
                                                   binding.expression);
-        MapWrapper.set(compileElement.attrs(), binding.key, binding.expression.source);
+        compileElement.attrs().set(binding.key, binding.expression.source);
       } else {
         DOM.setAttribute(compileElement.element, binding.key, '');
       }

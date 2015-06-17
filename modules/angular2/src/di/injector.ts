@@ -89,7 +89,7 @@ export class Injector {
    */
   static resolve(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
     var resolvedBindings = resolveBindings(bindings);
-    var flatten = _flattenBindings(resolvedBindings, MapWrapper.create());
+    var flatten = _flattenBindings(resolvedBindings, new Map());
     return _createListOfBindings(flatten);
   }
 
@@ -389,7 +389,7 @@ export function resolveBindings(bindings: List<Type | Binding | List<any>>): Lis
 }
 
 function flattenBindings(bindings: List<ResolvedBinding>): List<ResolvedBinding> {
-  var map = _flattenBindings(bindings, MapWrapper.create());
+  var map = _flattenBindings(bindings, new Map());
   var res = [];
   MapWrapper.forEach(map, (binding, keyId) => res.push(binding));
   return res;
@@ -406,7 +406,7 @@ function _flattenBindings(bindings: List<ResolvedBinding | List<any>>,
                           res: Map<number, ResolvedBinding>): Map<number, ResolvedBinding> {
   ListWrapper.forEach(bindings, function(b) {
     if (b instanceof ResolvedBinding) {
-      MapWrapper.set(res, b.key.id, b);
+      res.set(b.key.id, b);
     } else if (b instanceof List) {
       _flattenBindings(b, res);
     }

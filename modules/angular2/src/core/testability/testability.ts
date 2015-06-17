@@ -58,13 +58,13 @@ export class TestabilityRegistry {
   _applications: Map<any, Testability>;
 
   constructor() {
-    this._applications = MapWrapper.create();
+    this._applications = new Map();
 
     getTestabilityModule.GetTestability.addToWindow(this);
   }
 
   registerApplication(token, testability: Testability) {
-    MapWrapper.set(this._applications, token, testability);
+    this._applications.set(token, testability);
   }
 
   findTestabilityInTree(elem): Testability {
@@ -72,7 +72,7 @@ export class TestabilityRegistry {
       return null;
     }
     if (MapWrapper.contains(this._applications, elem)) {
-      return MapWrapper.get(this._applications, elem);
+      return this._applications.get(elem);
     }
     if (DOM.isShadowRoot(elem)) {
       return this.findTestabilityInTree(DOM.getHost(elem));

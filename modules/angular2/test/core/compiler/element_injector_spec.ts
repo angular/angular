@@ -879,9 +879,9 @@ export function main() {
 
         describe('static attributes', () => {
           it('should be injectable', () => {
-            var attributes = MapWrapper.create();
-            MapWrapper.set(attributes, 'type', 'text');
-            MapWrapper.set(attributes, 'title', '');
+            var attributes = new Map();
+            attributes.set( 'type', 'text');
+            attributes.set( 'title', '');
 
             var inj = injector(ListWrapper.concat([NeedsAttribute], extraBindings), null, false, null,
                                attributes);
@@ -893,8 +893,8 @@ export function main() {
           });
 
           it('should be injectable without type annotation', () => {
-            var attributes = MapWrapper.create();
-            MapWrapper.set(attributes, 'foo', 'bar');
+            var attributes = new Map();
+            attributes.set( 'foo', 'bar');
 
             var inj = injector(ListWrapper.concat([NeedsAttributeNoType], extraBindings), null, false,
                                null, attributes);

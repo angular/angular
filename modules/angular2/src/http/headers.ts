@@ -23,7 +23,7 @@ export class Headers {
   _headersMap: Map<string, List<string>>;
   constructor(headers?: Headers | Object) {
     if (isBlank(headers)) {
-      this._headersMap = MapWrapper.create();
+      this._headersMap = new Map();
       return;
     }
 
@@ -35,25 +35,23 @@ export class Headers {
         if (!isListLikeIterable(v)) {
           var list = [];
           list.push(v);
-          MapWrapper.set(this._headersMap, k, list);
+          this._headersMap.set(k, list);
         }
       });
     }
   }
 
   append(name: string, value: string): void {
-    var list = MapWrapper.get(this._headersMap, name) || [];
+    var list = this._headersMap.get(name) || [];
     list.push(value);
-    MapWrapper.set(this._headersMap, name, list);
+    this._headersMap.set(name, list);
   }
 
   delete (name: string): void { MapWrapper.delete(this._headersMap, name); }
 
   forEach(fn: Function) { return MapWrapper.forEach(this._headersMap, fn); }
 
-  get(header: string): string {
-    return ListWrapper.first(MapWrapper.get(this._headersMap, header));
-  }
+  get(header: string): string { return ListWrapper.first(this._headersMap.get(header)); }
 
   has(header: string) { return MapWrapper.contains(this._headersMap, header); }
 
@@ -68,12 +66,12 @@ export class Headers {
       list.push(ListWrapper.toString((<List<string>>value)));
     }
 
-    MapWrapper.set(this._headersMap, header, list);
+    this._headersMap.set(header, list);
   }
 
   values() { return MapWrapper.values(this._headersMap); }
 
-  getAll(header: string): Array<string> { return MapWrapper.get(this._headersMap, header) || []; }
+  getAll(header: string): Array<string> { return this._headersMap.get(header) || []; }
 
   entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
 }

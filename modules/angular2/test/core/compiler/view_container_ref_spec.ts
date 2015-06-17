@@ -37,7 +37,7 @@ export function main() {
 
     function createProtoView() { return new AppProtoView(null, null, null, null); }
 
-    function createView() { return new AppView(null, createProtoView(), MapWrapper.create()); }
+    function createView() { return new AppView(null, createProtoView(), new Map()); }
 
     function createViewContainer() { return new ViewContainerRef(viewManager, location); }
 

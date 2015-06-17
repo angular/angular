@@ -31,7 +31,7 @@ export function main() {
       var plugin = new FakeEventManagerPlugin(['click']);
       var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
-      expect(MapWrapper.get(plugin._nonBubbleEventHandlers, 'click')).toBe(handler);
+      expect(plugin._nonBubbleEventHandlers.get('click')).toBe(handler);
     });
 
     it('should delegate bubbling events to plugins', () => {
@@ -40,7 +40,7 @@ export function main() {
       var plugin = new FakeEventManagerPlugin(['click']);
       var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, '^click', handler);
-      expect(MapWrapper.get(plugin._bubbleEventHandlers, 'click')).toBe(handler);
+      expect(plugin._bubbleEventHandlers.get('click')).toBe(handler);
     });
 
     it('should delegate event bindings to the first plugin supporting the event', () => {
@@ -53,9 +53,9 @@ export function main() {
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
       expect(MapWrapper.contains(plugin1._nonBubbleEventHandlers, 'click')).toBe(false);
-      expect(MapWrapper.get(plugin2._nonBubbleEventHandlers, 'click')).toBe(clickHandler);
+      expect(plugin2._nonBubbleEventHandlers.get('click')).toBe(clickHandler);
       expect(MapWrapper.contains(plugin2._nonBubbleEventHandlers, 'dblclick')).toBe(false);
-      expect(MapWrapper.get(plugin1._nonBubbleEventHandlers, 'dblclick')).toBe(dblClickHandler);
+      expect(plugin1._nonBubbleEventHandlers.get('dblclick')).toBe(dblClickHandler);
     });
 
     it('should throw when no plugin can handle the event', () => {
@@ -126,15 +126,18 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
   constructor(supports: List<string>) {
     super();
     this._supports = supports;
-    this._nonBubbleEventHandlers = MapWrapper.create();
-    this._bubbleEventHandlers = MapWrapper.create();
+    this._nonBubbleEventHandlers = new Map();
+    this._bubbleEventHandlers = new Map();
   }
 
   supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
 
   addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
-    MapWrapper.set(shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers,
-                   eventName, handler);
+    if (shouldSupportBubble) {
+      this._bubbleEventHandlers.set(eventName, handler);
+    } else {
+      this._nonBubbleEventHandlers.set(eventName, handler);
+    }
     return () => {
       MapWrapper.delete(
           shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers, eventName)

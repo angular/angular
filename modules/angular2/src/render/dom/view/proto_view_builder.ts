@@ -20,7 +20,7 @@ import * as api from '../../api';
 import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
 
 export class ProtoViewBuilder {
-  variableBindings: Map<string, string> = MapWrapper.create();
+  variableBindings: Map<string, string> = new Map();
   elements: List<ElementBinderBuilder> = [];
 
   constructor(public rootElement, public type: api.ViewType) {}
@@ -40,7 +40,7 @@ export class ProtoViewBuilder {
     // by the "value", or exported identifier. For example, ng-for sets a view local of "index".
     // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
     // it.
-    MapWrapper.set(this.variableBindings, value, name);
+    this.variableBindings.set(value, name);
   }
 
   build(setterFactory: PropertySetterFactory): api.ProtoViewDto {
@@ -49,20 +49,20 @@ export class ProtoViewBuilder {
     var apiElementBinders = [];
     var transitiveContentTagCount = 0;
     ListWrapper.forEach(this.elements, (ebb: ElementBinderBuilder) => {
-      var propertySetters = MapWrapper.create();
-      var hostActions = MapWrapper.create();
+      var propertySetters = new Map();
+      var hostActions = new Map();
 
       var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb: DirectiveBuilder) => {
         ebb.eventBuilder.merge(dbb.eventBuilder);
 
         MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {
-          MapWrapper.set(propertySetters, hostPropertyName,
-                         setterFactory.createSetter(ebb.element, isPresent(ebb.componentId),
-                                                    hostPropertyName));
+          propertySetters.set(hostPropertyName,
+                              setterFactory.createSetter(ebb.element, isPresent(ebb.componentId),
+                                                         hostPropertyName));
         });
 
         ListWrapper.forEach(dbb.hostActions, (hostAction) => {
-          MapWrapper.set(hostActions, hostAction.actionExpression, hostAction.expression);
+          hostActions.set(hostAction.actionExpression, hostAction.expression);
         });
 
         return new api.DirectiveBinder({
@@ -74,8 +74,9 @@ export class ProtoViewBuilder {
       });
 
       MapWrapper.forEach(ebb.propertyBindings, (_, propertyName) => {
-        MapWrapper.set(
-            propertySetters, propertyName,
+
+        propertySetters.set(
+            propertyName,
             setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), propertyName));
       });
 
@@ -149,14 +150,14 @@ export class ElementBinderBuilder {
   distanceToParent: number = 0;
   directives: List<DirectiveBuilder> = [];
   nestedProtoView: ProtoViewBuilder = null;
-  propertyBindings: Map<string, ASTWithSource> = MapWrapper.create();
-  variableBindings: Map<string, string> = MapWrapper.create();
+  propertyBindings: Map<string, ASTWithSource> = new Map();
+  variableBindings: Map<string, string> = new Map();
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
   textBindingIndices: List<number> = [];
   textBindings: List<ASTWithSource> = [];
   contentTagSelector: string = null;
-  readAttributes: Map<string, string> = MapWrapper.create();
+  readAttributes: Map<string, string> = new Map();
   componentId: string = null;
 
   constructor(public index: number, public element, description: string) {}
@@ -170,8 +171,8 @@ export class ElementBinderBuilder {
   }
 
   readAttribute(attrName: string) {
-    if (isBlank(MapWrapper.get(this.readAttributes, attrName))) {
-      MapWrapper.set(this.readAttributes, attrName, DOM.getAttribute(this.element, attrName));
+    if (isBlank(this.readAttributes.get(attrName))) {
+      this.readAttributes.set(attrName, DOM.getAttribute(this.element, attrName));
     }
   }
 
@@ -189,7 +190,7 @@ export class ElementBinderBuilder {
     return this.nestedProtoView;
   }
 
-  bindProperty(name, expression) { MapWrapper.set(this.propertyBindings, name, expression); }
+  bindProperty(name, expression) { this.propertyBindings.set(name, expression); }
 
   bindVariable(name, value) {
     // When current is a view root, the variable bindings are set to the *nested* proto view.
@@ -205,7 +206,7 @@ export class ElementBinderBuilder {
       // When this occurs, a lookup keyed by "index" must occur to find if there is a var
       // referencing
       // it.
-      MapWrapper.set(this.variableBindings, value, name);
+      this.variableBindings.set(value, name);
     }
   }
 
@@ -224,19 +225,17 @@ export class ElementBinderBuilder {
 }
 
 export class DirectiveBuilder {
-  propertyBindings: Map<string, ASTWithSource> = MapWrapper.create();
-  hostPropertyBindings: Map<string, ASTWithSource> = MapWrapper.create();
+  propertyBindings: Map<string, ASTWithSource> = new Map();
+  hostPropertyBindings: Map<string, ASTWithSource> = new Map();
   hostActions: List<HostAction> = [];
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
 
   constructor(public directiveIndex: number) {}
 
-  bindProperty(name, expression) { MapWrapper.set(this.propertyBindings, name, expression); }
+  bindProperty(name, expression) { this.propertyBindings.set(name, expression); }
 
-  bindHostProperty(name, expression) {
-    MapWrapper.set(this.hostPropertyBindings, name, expression);
-  }
+  bindHostProperty(name, expression) { this.hostPropertyBindings.set(name, expression); }
 
   bindHostAction(actionName: string, actionExpression: string, expression: ASTWithSource) {
     this.hostActions.push(new HostAction(actionName, actionExpression, expression));

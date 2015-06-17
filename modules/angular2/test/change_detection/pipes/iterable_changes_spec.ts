@@ -20,7 +20,7 @@ export function main() {
       it('should support list and iterables', () => {
         expect(IterableChanges.supportsObj([])).toBeTruthy();
         expect(IterableChanges.supportsObj(new TestIterable())).toBeTruthy();
-        expect(IterableChanges.supportsObj(MapWrapper.create())).toBeFalsy();
+        expect(IterableChanges.supportsObj(new Map())).toBeFalsy();
         expect(IterableChanges.supportsObj(null)).toBeFalsy();
       });
 

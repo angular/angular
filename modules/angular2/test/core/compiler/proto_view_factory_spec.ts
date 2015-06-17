@@ -131,7 +131,7 @@ export function main() {
       it("should not throw when not binding to a name exported by two directives", () => {
         expect(() => {
           createDirectiveVariableBindings(
-              new renderApi.ElementBinder({variableBindings: MapWrapper.create()}), [
+              new renderApi.ElementBinder({variableBindings: new Map()}), [
                 directiveBinding(
                     {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})}),
                 directiveBinding(
@@ -167,7 +167,7 @@ function createRenderProtoView(elementBinders = null, type: renderApi.ViewType =
     elementBinders = [];
   }
   return new renderApi.ProtoViewDto(
-      {elementBinders: elementBinders, type: type, variableBindings: MapWrapper.create()});
+      {elementBinders: elementBinders, type: type, variableBindings: new Map()});
 }
 
 function createRenderComponentElementBinder(directiveIndex) {
