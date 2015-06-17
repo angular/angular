@@ -23,7 +23,7 @@ var BIND_NAME_REGEXP = RegExpWrapper.create(
  * Parses the property bindings on a single element.
  */
 export class PropertyBindingParser implements CompileStep {
-  constructor(public _parser: Parser) {}
+  constructor(private _parser: Parser) {}
 
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
@@ -82,8 +82,7 @@ export class PropertyBindingParser implements CompileStep {
 
   _bindPropertyAst(name, ast, current: CompileElement, newAttrs) {
     var binder = current.bindElement();
-    var camelCaseName = dashCaseToCamelCase(name);
-    binder.bindProperty(camelCaseName, ast);
+    binder.bindProperty(dashCaseToCamelCase(name), ast);
     MapWrapper.set(newAttrs, name, ast.source);
   }
 
