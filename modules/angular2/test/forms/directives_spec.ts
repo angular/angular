@@ -13,6 +13,9 @@ import {
   AsyncTestCompleter,
   inject
 } from 'angular2/test_lib';
+
+import {QueryList} from 'angular2/angular2';
+
 import {
   ControlGroup,
   Control,
@@ -22,7 +25,9 @@ import {
   ControlValueAccessor,
   Validators,
   NgForm,
-  NgFormControl
+  NgModel,
+  NgFormControl,
+  NgRequiredValidator
 } from 'angular2/forms';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -46,14 +51,14 @@ export function main() {
         formModel = new ControlGroup({"login": new Control(null)});
         form.form = formModel;
 
-        loginControlDir = new NgControlName(form);
+        loginControlDir = new NgControlName(form, new QueryList<any>());
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
       describe("addControl", () => {
         it("should throw when no control found", () => {
-          var dir = new NgControlName(form);
+          var dir = new NgControlName(form, null);
           dir.name = "invalidName";
 
           expect(() => form.addControl(dir))
@@ -61,7 +66,7 @@ export function main() {
         });
 
         it("should throw when no value accessor", () => {
-          var dir = new NgControlName(form);
+          var dir = new NgControlName(form, null);
           dir.name = "login";
 
           expect(() => form.addControl(dir))
@@ -69,7 +74,7 @@ export function main() {
         });
 
         it("should set up validator", () => {
-          loginControlDir.validator = Validators.required;
+          loginControlDir.ngValidators.reset([new NgRequiredValidator()]);
 
           expect(formModel.find(["login"]).valid).toBe(true);
 
@@ -127,7 +132,7 @@ export function main() {
         personControlGroupDir = new NgControlGroup(form);
         personControlGroupDir.name = "person";
 
-        loginControlDir = new NgControlName(personControlGroupDir);
+        loginControlDir = new NgControlName(personControlGroupDir, null);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -168,7 +173,7 @@ export function main() {
       var control;
 
       beforeEach(() => {
-        controlDir = new NgFormControl();
+        controlDir = new NgFormControl(new QueryList<any>());
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new Control(null);
@@ -176,7 +181,7 @@ export function main() {
       });
 
       it("should set up validator", () => {
-        controlDir.validator = Validators.required;
+        controlDir.ngValidators.reset([new NgRequiredValidator()]);
 
         expect(control.valid).toBe(true);
 
@@ -184,6 +189,26 @@ export function main() {
         controlDir.onChange({});
 
         expect(control.valid).toBe(false);
+      });
+    });
+
+    describe("NgModel", () => {
+      var ngModel;
+
+      beforeEach(() => {
+        ngModel = new NgModel(new QueryList<any>());
+        ngModel.valueAccessor = new DummyControlValueAccessor();
+      });
+
+      it("should set up validator", () => {
+        ngModel.ngValidators.reset([new NgRequiredValidator()]);
+
+        expect(ngModel.control.valid).toBe(true);
+
+        // this will add the required validator and recalculate the validity
+        ngModel.onChange({});
+
+        expect(ngModel.control.valid).toBe(false);
       });
     });
   });

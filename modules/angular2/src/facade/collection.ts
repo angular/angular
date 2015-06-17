@@ -253,7 +253,13 @@ export function iterateListLike(obj, fn: Function) {
     }
   }
 }
-
+export function iterableToList<T>(ii:Iterable<T>):List<T> {
+  var res = [];
+  for (var i of ii) {
+    res.push(i);
+  }
+  return res;
+}
 
 // Safari and Internet Explorer do not support the iterable parameter to the
 // Set constructor.  We work around that by manually adding the items.

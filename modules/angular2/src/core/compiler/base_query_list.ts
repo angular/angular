@@ -38,8 +38,6 @@ export class BaseQueryList<T> {
   removeCallback(callback) { ListWrapper.remove(this._callbacks, callback); }
 
   get length() { return this._results.length; }
-
   get first() { return ListWrapper.first(this._results); }
-
   get last() { return ListWrapper.last(this._results); }
 }

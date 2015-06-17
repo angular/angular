@@ -1,10 +1,19 @@
+import {forwardRef, Binding} from 'angular2/di';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive} from '../../../angular2';
 import {Validators} from '../validators';
-import {NgControl} from '../directives';
 
-@Directive({selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]'})
-export class NgRequiredValidator {
-  constructor(c: NgControl) {
-    c.validator = Validators.compose([c.validator, Validators.required]);
-  }
+export class NgValidator {
+  get validator(): Function { throw "Is not implemented"; }
+}
+
+const requiredValidatorBinding =
+    CONST_EXPR(new Binding(NgValidator, {toAlias: forwardRef(() => NgRequiredValidator)}));
+
+@Directive({
+  selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]',
+  hostInjector: [requiredValidatorBinding]
+})
+export class NgRequiredValidator extends NgValidator {
+  get validator(): Function { return Validators.required; }
 }

@@ -2,12 +2,13 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Directive, Ancestor, onChange} from 'angular2/angular2';
+import {Directive, Ancestor, onChange, Query, QueryList} from 'angular2/angular2';
 import {forwardRef, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';
-import {setUpControl} from './shared';
+import {NgValidator} from './validators';
+import {setUpControl, composeNgValidator} from './shared';
 
 const formControlBinding =
     CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
@@ -72,11 +73,14 @@ export class NgFormControl extends NgControl {
   ngModel: EventEmitter;
   _added: boolean;
   model: any;
+  ngValidators: QueryList<NgValidator>;
 
-  constructor() {
+  // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
+  constructor(@Query(NgValidator) ngValidators: QueryList<NgValidator>) {
     super();
     this.ngModel = new EventEmitter();
     this._added = false;
+    this.ngValidators = ngValidators;
   }
 
   onChange(c) {
@@ -90,9 +94,11 @@ export class NgFormControl extends NgControl {
     }
   }
 
+  get path(): List<string> { return []; }
+
   get control(): Control { return this.form; }
 
-  get path(): List<string> { return []; }
+  get validator(): Function { return composeNgValidator(this.ngValidators); }
 
   viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }
 }

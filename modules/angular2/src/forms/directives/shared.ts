@@ -1,11 +1,12 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, iterableToList} from 'angular2/src/facade/collection';
 import {isBlank, BaseException} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
+import {NgValidator} from './validators';
 import {Control} from '../model';
 import {Validators} from '../validators';
-import {Renderer, ElementRef} from 'angular2/angular2';
+import {Renderer, ElementRef, QueryList} from 'angular2/angular2';
 
 
 export function controlPath(name, parent: ControlContainer) {
@@ -35,6 +36,11 @@ export function setUpControl(c: Control, dir: NgControl) {
   dir.valueAccessor.registerOnTouched(() => c.markAsTouched());
 }
 
+export function composeNgValidator(ngValidators: QueryList<NgValidator>): Function {
+  if (isBlank(ngValidators)) return Validators.nullValidator;
+  return Validators.compose(iterableToList(ngValidators).map(v => v.validator));
+}
+
 function _throwError(dir: NgControl, message: string): void {
   var path = ListWrapper.join(dir.path, " -> ");
   throw new BaseException(`${message} '${path}'`);
@@ -43,5 +49,5 @@ function _throwError(dir: NgControl, message: string): void {
 export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
                             propValue: any) {
   renderer.setElementProperty(elementRef.parentView.render, elementRef.boundElementIndex, propName,
-                              propValue);
+    propValue);
 }

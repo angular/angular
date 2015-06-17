@@ -1,12 +1,14 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
-import {Directive, Ancestor, onDestroy, onChange} from 'angular2/angular2';
+
+import {Directive, Ancestor, onDestroy, onChange, Query, QueryList} from 'angular2/angular2';
 import {forwardRef, Binding, Inject} from 'angular2/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {controlPath} from './shared';
+import {NgValidator} from './validators';
+import {controlPath, composeNgValidator} from './shared';
 import {Control} from '../model';
 
 const controlNameBinding =
@@ -82,13 +84,17 @@ export class NgControlName extends NgControl {
   _parent: ControlContainer;
   ngModel: EventEmitter;
   model: any;
+  ngValidators: QueryList<NgValidator>;
   _added: boolean;
 
-  constructor(@Ancestor() _parent: ControlContainer) {
+  // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
+  constructor(@Ancestor() parent: ControlContainer,
+              @Query(NgValidator) ngValidators: QueryList<NgValidator>) {
     super();
-    this._parent = _parent;
+    this._parent = parent;
     this.ngModel = new EventEmitter();
     this._added = false;
+    this.ngValidators = ngValidators;
   }
 
   onChange(c: StringMap<string, any>) {
@@ -101,7 +107,6 @@ export class NgControlName extends NgControl {
     }
   }
 
-
   onDestroy() { this.formDirective.removeControl(this); }
 
   viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }
@@ -111,4 +116,6 @@ export class NgControlName extends NgControl {
   get formDirective(): any { return this._parent.formDirective; }
 
   get control(): Control { return this.formDirective.getControl(this); }
+
+  get validator(): Function { return composeNgValidator(this.ngValidators); }
 }
