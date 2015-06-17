@@ -175,7 +175,7 @@ class FunctionWrapper {
 }
 
 class BaseException extends Error {
-  final String message;
+  String message;
 
   BaseException([this.message]);
 

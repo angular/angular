@@ -6,10 +6,30 @@ import {
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper,
-  CONST_EXPR
+  CONST_EXPR,
+  BaseException,
+  isString
 } from 'angular2/src/facade/lang';
 
 export function main() {
+  describe('BaseException', () => {
+    it('should include error message in stack, if added after initialization', () => {
+      try {
+        var exception = new BaseException();
+        exception.message = 'Msg';
+        throw exception;
+      } catch (e) {
+        if (isString(e.stack)) {
+          // In JS, the stack contains the message, so we verify that added message is in the stack
+          expect(`${e.stack}`.split('\n')[0]).toBe('Error: Msg');
+        } else {
+          // In Dart, the stack does not contain the message, so we toString the error directly
+          expect(e.toString()).toBe('Msg');
+        }
+      }
+    });
+  });
+
   describe('RegExp', () => {
     it('should expose the index for each match', () => {
       var re = RegExpWrapper.create('(!)');
