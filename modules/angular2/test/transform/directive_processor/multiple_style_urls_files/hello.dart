@@ -5,6 +5,6 @@ import 'package:angular2/angular2.dart'
 
 @Component(selector: 'hello-app')
 @View(
-    templateUrl: 'package:other_package/template.html',
-    styleUrls: const ['package:other_package/template.css'])
+    templateUrl: 'template.html',
+    styleUrls: const ['template.css', 'template_other.css'])
 class HelloCmp {}
