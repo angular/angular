@@ -9,7 +9,9 @@ declare type int = number;
 
 interface List<T> extends Array<T> {}
 
-interface StringMap<K, V> extends Object {}
+// FIXME: K must be string!
+// FIXME: should have an index signature, `[k: string]: V;`
+interface StringMap<K, V> {}
 
 interface BrowserNodeGlobal {
   Object: typeof Object;
