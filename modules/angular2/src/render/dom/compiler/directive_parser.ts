@@ -149,6 +149,7 @@ export class DirectiveParser implements CompileStep {
     if (isPresent(bindingAst)) {
       directiveBinderBuilder.bindProperty(dirProperty, bindingAst);
     }
+    compileElement.bindElement().bindPropertyToDirective(dashCaseToCamelCase(elProp));
   }
 
   _bindDirectiveEvent(eventName, action, compileElement, directiveBinderBuilder) {

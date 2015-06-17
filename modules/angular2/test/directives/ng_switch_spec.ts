@@ -79,8 +79,8 @@ export function main() {
                           '<template [ng-switch-when]="\'b\'"><li>when b1;</li></template>' +
                           '<template [ng-switch-when]="\'a\'"><li>when a2;</li></template>' +
                           '<template [ng-switch-when]="\'b\'"><li>when b2;</li></template>' +
-                          '<template [ng-switch-default]><li>when default1;</li></template>' +
-                          '<template [ng-switch-default]><li>when default2;</li></template>' +
+                          '<template ng-switch-default><li>when default1;</li></template>' +
+                          '<template ng-switch-default><li>when default2;</li></template>' +
                           '</ul></div>';
 
            tb.createView(TestComponent, {html: template})
@@ -108,7 +108,7 @@ export function main() {
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="when1"><li>when 1;</li></template>' +
                           '<template [ng-switch-when]="when2"><li>when 2;</li></template>' +
-                          '<template [ng-switch-default]><li>when default;</li></template>' +
+                          '<template ng-switch-default><li>when default;</li></template>' +
                           '</ul></div>';
 
            tb.createView(TestComponent, {html: template})

@@ -18,7 +18,7 @@ const CLASS_PREFIX = 'class.';
 const STYLE_PREFIX = 'style.';
 
 export class PropertySetterFactory {
-  private static _noopSetter(el, value) {}
+  static noopSetter(el, value) {}
 
   private _lazyPropertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
   private _eagerPropertySettersCache: StringMap<string, Function> = StringMapWrapper.create();
@@ -69,7 +69,7 @@ export class PropertySetterFactory {
         if (DOM.hasProperty(protoElement, property)) {
           setterFn = reflector.setter(property);
         } else {
-          setterFn = PropertySetterFactory._noopSetter;
+          setterFn = PropertySetterFactory.noopSetter;
         }
         StringMapWrapper.set(this._eagerPropertySettersCache, property, setterFn);
       }

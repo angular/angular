@@ -77,7 +77,7 @@ class DynamicDummy {
     </div>
 
     <div *ng-if="testingWithDirectives">
-      <dummy [dummy-decorator] *ng-for="#i of list"></dummy>
+      <dummy dummy-decorator *ng-for="#i of list"></dummy>
     </div>
 
     <div *ng-if="testingDynamicComponents">

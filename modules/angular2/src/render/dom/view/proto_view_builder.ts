@@ -75,10 +75,17 @@ export class ProtoViewBuilder {
       });
 
       MapWrapper.forEach(ebb.propertyBindings, (_, propertyName) => {
+        var propSetter =
+            setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), propertyName);
 
-        propertySetters.set(
-            propertyName,
-            setterFactory.createSetter(ebb.element, isPresent(ebb.componentId), propertyName));
+        if (propSetter === PropertySetterFactory.noopSetter) {
+          if (!SetWrapper.has(ebb.propertyBindingsToDirectives, propertyName)) {
+            throw new BaseException(
+                `Can't bind to '${propertyName}' since it isn't a know property of the '${DOM.tagName(ebb.element).toLowerCase()}' element and there are no matching directives with a corresponding property`);
+          }
+        }
+
+        propertySetters.set(propertyName, propSetter);
       });
 
       var nestedProtoView =
@@ -170,6 +177,7 @@ export class ElementBinderBuilder {
   nestedProtoView: ProtoViewBuilder = null;
   propertyBindings: Map<string, ASTWithSource> = new Map();
   variableBindings: Map<string, string> = new Map();
+  propertyBindingsToDirectives: Set<string> = new Set();
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
   textBindingNodes: List</*node*/ any> = [];
@@ -209,6 +217,12 @@ export class ElementBinderBuilder {
   }
 
   bindProperty(name, expression) { this.propertyBindings.set(name, expression); }
+
+  bindPropertyToDirective(name: string) {
+    // we are filling in a set of property names that are bound to a property
+    // of at least one directive. This allows us to report "dangling" bindings.
+    this.propertyBindingsToDirectives.add(name);
+  }
 
   bindVariable(name, value) {
     // When current is a view root, the variable bindings are set to the *nested* proto view.

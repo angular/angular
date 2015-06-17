@@ -192,22 +192,6 @@ export function main() {
                });
          }));
 
-      it('should ignore bindings to unknown properties',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           tb.overrideView(MyComp,
-                           new viewAnn.View({template: '<div unknown="{{ctxProp}}"></div>'}));
-
-           tb.createView(MyComp, {context: ctx})
-               .then((view) => {
-
-                 ctx.ctxProp = 'Some value';
-                 view.detectChanges();
-                 expect(DOM.hasProperty(view.rootNodes[0], 'unknown')).toBeFalsy();
-
-                 async.done();
-               });
-         }));
-
       it('should consume directive watch expression change.',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var tpl = '<div>' +
@@ -247,7 +231,7 @@ export function main() {
         it("should support pipes in bindings",
            inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
-               template: '<div [my-dir] #dir="mydir" [elprop]="ctxProp | double"></div>',
+               template: '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>',
                directives: [MyDir]
              }));
 
@@ -442,7 +426,7 @@ export function main() {
         it('should assign a directive to a var-',
            inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
-               template: '<p><div [export-dir] #localdir="dir"></div></p>',
+               template: '<p><div export-dir #localdir="dir"></div></p>',
                directives: [ExportDir]
              }));
 
@@ -1144,7 +1128,7 @@ export function main() {
       it('should specify a location of an error that happened during change detection (element property)',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
-           tb.overrideView(MyComp, new viewAnn.View({template: '<div [prop]="a.b"></div>'}));
+           tb.overrideView(MyComp, new viewAnn.View({template: '<div [title]="a.b"></div>'}));
 
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -1157,10 +1141,10 @@ export function main() {
       it('should specify a location of an error that happened during change detection (directive property)',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
-           tb.overrideView(
-               MyComp,
-               new viewAnn.View(
-                   {template: '<child-cmp [prop]="a.b"></child-cmp>', directives: [ChildComp]}));
+           tb.overrideView(MyComp, new viewAnn.View({
+             template: '<child-cmp [dir-prop]="a.b"></child-cmp>',
+             directives: [ChildComp]
+           }));
 
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -1204,6 +1188,30 @@ export function main() {
            async.done();
          });
        }));
+
+    describe('Missing property bindings', () => {
+      it('should throw on bindings to unknown properties',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+           tb.overrideView(MyComp,
+                           new viewAnn.View({template: '<div unknown="{{ctxProp}}"></div>'}));
+
+           PromiseWrapper.catchError(tb.createView(MyComp, {context: ctx}), (e) => {
+             expect(e.message).toEqual(
+                 `Can't bind to 'unknown' since it isn't a know property of the 'div' element and there are no matching directives with a corresponding property`);
+             async.done();
+             return null;
+           });
+         }));
+
+      it('should not throw for property binding to a non-existing property when there is a matching directive property',
+         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+           tb.overrideView(
+               MyComp,
+               new viewAnn.View(
+                   {template: '<div my-dir [elprop]="ctxProp"></div>', directives: [MyDir]}));
+           tb.createView(MyComp, {context: ctx}).then((val) => { async.done(); });
+         }));
+    });
 
     // Disabled until a solution is found, refs:
     // - https://github.com/angular/angular/issues/776
@@ -1353,10 +1361,7 @@ class ComponentWithPipes {
   prop: string;
 }
 
-@Component({
-  selector: 'child-cmp',
-  appInjector: [MyService],
-})
+@Component({selector: 'child-cmp', properties: ['dirProp'], appInjector: [MyService]})
 @View({directives: [MyDir], template: '{{ctxProp}}'})
 @Injectable()
 class ChildComp {

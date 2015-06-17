@@ -511,7 +511,7 @@ var conditionalContentComponent = DirectiveMetadata.create({
 });
 
 var autoViewportDirective = DirectiveMetadata.create(
-    {selector: '[auto]', id: '[auto]', type: DirectiveMetadata.DIRECTIVE_TYPE});
+    {selector: '[auto]', id: 'auto', properties: ['auto'], type: DirectiveMetadata.DIRECTIVE_TYPE});
 
 var tabComponent =
     DirectiveMetadata.create({selector: 'tab', id: 'tab', type: DirectiveMetadata.COMPONENT_TYPE});

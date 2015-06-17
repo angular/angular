@@ -36,7 +36,7 @@ export function main() {
          tb.overrideView(
              MyComp,
              new viewAnn.View(
-                 {template: '<div [field]="123" [lifecycle]></div>', directives: [LifecycleDir]}));
+                 {template: '<div [field]="123" lifecycle></div>', directives: [LifecycleDir]}));
 
          tb.createView(MyComp, {context: ctx})
              .then((view) => {

@@ -232,7 +232,7 @@ class CellData {
         </tbody>
         <tbody template="ng-switch-when 'interpolationAttr'">
           <tr template="ng-for #row of data">
-            <td template="ng-for #column of row" i="{{column.i}}" j="{{column.j}}">
+            <td template="ng-for #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
@@ -269,7 +269,7 @@ class LargetableComponent {
 @Component({selector: 'app'})
 @View({
   directives: [LargetableComponent],
-  template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
+  template: `<largetable [data]='data' [benchmark-type]='benchmarkType'></largetable>`
 })
 class AppComponent {
   data;

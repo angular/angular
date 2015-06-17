@@ -205,7 +205,7 @@ export function main() {
 
     it('should repeat over nested arrays with no intermediate element',
        inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-         var template = '<div><template [ng-for] #item [ng-for-of]="items">' +
+         var template = '<div><template ng-for #item [ng-for-of]="items">' +
                         '<div template="ng-for #subitem of item">' +
                         '{{subitem}}-{{item.length}};' +
                         '</div></template></div>';
