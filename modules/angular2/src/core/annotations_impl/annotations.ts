@@ -1008,8 +1008,11 @@ export class Component extends Directive {
    */
   viewInjector: List<any>;
 
+  // TODO(vicb): doc
+  baseUrl: any;
+
   constructor({selector, properties, events, host, exportAs, appInjector, lifecycle, hostInjector,
-               viewInjector, changeDetection = DEFAULT,
+               viewInjector, baseUrl, changeDetection = DEFAULT,
                compileChildren = true}: DirectiveArgs = {}) {
     super({
       selector: selector,
@@ -1025,8 +1028,10 @@ export class Component extends Directive {
     this.changeDetection = changeDetection;
     this.appInjector = appInjector;
     this.viewInjector = viewInjector;
+    this.baseUrl = baseUrl;
   }
 }
+
 export interface DirectiveArgs {
   selector?: string;
   properties?: List<string>;
@@ -1039,6 +1044,7 @@ export interface DirectiveArgs {
   viewInjector?: List<any>;
   changeDetection?: string;
   compileChildren?: boolean;
+  baseUrl?: any;
 }
 
 

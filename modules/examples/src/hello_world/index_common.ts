@@ -1,5 +1,7 @@
 import {ElementRef, Component, Directive, View, Injectable} from 'angular2/angular2';
 
+import {baseUrl} from 'angular2/src/services/url';
+
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
 class GreetingService {
@@ -29,14 +31,14 @@ class RedDec {
   selector: 'hello-app',
   // These are services that would be created if a class in the component's
   // template tries to inject them.
-  appInjector: [GreetingService]
+  appInjector: [GreetingService],
+  baseUrl: baseUrl.here
 })
 // The template for the component.
 @View({
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
-  template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-           <button class="changeButton" (click)="changeGreeting()">change greeting</button>`,
+  templateUrl: 'tpl/hello.html',
   // All directives used in the template need to be specified. This allows for
   // modularity (RedDec can only be used in this template)
   // and better tooling (the template can be invalidated if the attribute is
