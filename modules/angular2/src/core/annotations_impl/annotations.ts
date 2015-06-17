@@ -787,7 +787,7 @@ export class Directive extends Injectable {
   constructor({
                   selector, properties, events, host, lifecycle, hostInjector, exportAs,
                   compileChildren = true,
-              }: ComponentArgs = {}) {
+              }: DirectiveArgs = {}) {
     super();
     this.selector = selector;
     this.properties = properties;
@@ -800,7 +800,7 @@ export class Directive extends Injectable {
   }
 }
 
-export interface ComponentArgs {
+export interface DirectiveArgs {
   selector?: string;
   properties?: List<string>;
   events?: List<string>;
@@ -962,7 +962,7 @@ export class Component extends Directive {
 
   constructor({selector, properties, events, host, exportAs, appInjector, lifecycle, hostInjector,
                viewInjector, changeDetection = DEFAULT,
-               compileChildren = true}: DirectiveArgs = {}) {
+               compileChildren = true}: ComponentArgs = {}) {
     super({
       selector: selector,
       properties: properties,
@@ -979,20 +979,12 @@ export class Component extends Directive {
     this.viewInjector = viewInjector;
   }
 }
-export interface DirectiveArgs {
-  selector?: string;
-  properties?: List<string>;
-  events?: List<string>;
-  host?: StringMap<string, string>;
-  exportAs?: string;
+
+export interface ComponentArgs extends DirectiveArgs {
   appInjector?: List<any>;
-  lifecycle?: List<LifecycleEvent>;
-  hostInjector?: List<any>;
   viewInjector?: List<any>;
   changeDetection?: string;
-  compileChildren?: boolean;
 }
-
 
 /**
  * Lifecycle events are guaranteed to be called in the following order:
