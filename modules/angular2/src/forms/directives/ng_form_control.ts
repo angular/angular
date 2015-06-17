@@ -63,23 +63,21 @@ const formControlBinding =
 @Directive({
   selector: '[ng-form-control]',
   hostInjector: [formControlBinding],
-  properties: ['form: ng-form-control', 'model: ng-model'],
-  events: ['ngModel'],
+  properties: ['form: ngFormControl', 'model: ngModel'],
+  events: ['update: ngModel'],
   lifecycle: [onChange],
   exportAs: 'form'
 })
 export class NgFormControl extends NgControl {
   form: Control;
-  ngModel: EventEmitter;
-  _added: boolean;
+  update = new EventEmitter();
+  _added = false;
   model: any;
   ngValidators: QueryList<NgValidator>;
 
   // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
   constructor(@Query(NgValidator) ngValidators: QueryList<NgValidator>) {
     super();
-    this.ngModel = new EventEmitter();
-    this._added = false;
     this.ngValidators = ngValidators;
   }
 
@@ -100,5 +98,5 @@ export class NgFormControl extends NgControl {
 
   get validator(): Function { return composeNgValidator(this.ngValidators); }
 
-  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }
+  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.update, newValue); }
 }

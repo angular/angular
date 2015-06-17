@@ -33,12 +33,10 @@ import {setProperty} from './shared';
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   value: string = null;
-  onChange: Function;
-  onTouched: Function;
+  onChange = (_) => {};
+  onTouched = () => {};
 
   constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
-    this.onChange = (_) => {};
-    this.onTouched = (_) => {};
     cd.valueAccessor = this;
   }
 

@@ -95,13 +95,8 @@ const formDirectiveBinding =
 })
 export class NgFormModel extends ControlContainer implements Form {
   form: ControlGroup = null;
-  directives: List<NgControl>;
+  directives: List<NgControl> = [];
   ngSubmit = new EventEmitter();
-
-  constructor() {
-    super();
-    this.directives = [];
-  }
 
   onChange(_) { this._updateDomValue(); }
 

@@ -75,25 +75,23 @@ const controlNameBinding =
 @Directive({
   selector: '[ng-control]',
   hostInjector: [controlNameBinding],
-  properties: ['name: ng-control', 'model: ng-model'],
-  events: ['ngModel'],
+  properties: ['name: ngControl', 'model: ngModel'],
+  events: ['update: ngModel'],
   lifecycle: [onDestroy, onChange],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl {
   _parent: ControlContainer;
-  ngModel: EventEmitter;
+  update = new EventEmitter();
   model: any;
   ngValidators: QueryList<NgValidator>;
-  _added: boolean;
+  _added = false;
 
   // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
   constructor(@Ancestor() parent: ControlContainer,
               @Query(NgValidator) ngValidators: QueryList<NgValidator>) {
     super();
     this._parent = parent;
-    this.ngModel = new EventEmitter();
-    this._added = false;
     this.ngValidators = ngValidators;
   }
 
@@ -109,7 +107,7 @@ export class NgControlName extends NgControl {
 
   onDestroy() { this.formDirective.removeControl(this); }
 
-  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }
+  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.update, newValue); }
 
   get path(): List<string> { return controlPath(this.name, this._parent); }
 

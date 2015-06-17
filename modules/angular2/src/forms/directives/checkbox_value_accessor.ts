@@ -30,12 +30,10 @@ import {setProperty} from './shared';
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
   checked: boolean;
-  onChange: Function;
-  onTouched: Function;
+  onChange = (_) => {};
+  onTouched = () => {};
 
   constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
-    this.onChange = (_) => {};
-    this.onTouched = (_) => {};
     cd.valueAccessor = this;
   }
 

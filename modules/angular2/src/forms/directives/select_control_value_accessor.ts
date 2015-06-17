@@ -40,13 +40,11 @@ export class NgSelectOption {
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
   value = '';
-  onChange: Function;
-  onTouched: Function;
+  onChange = (_) => {};
+  onTouched = () => {};
 
   constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef,
               @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
-    this.onChange = (_) => {};
-    this.onTouched = (_) => {};
     cd.valueAccessor = this;
 
     this._updateValueWhenListOfOptionsChanges(query);

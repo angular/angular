@@ -33,15 +33,15 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
 @Directive({
   selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
   hostInjector: [formControlBinding],
-  properties: ['model: ng-model'],
-  events: ['ngModel'],
+  properties: ['model: ngModel'],
+  events: ['update: ngModel'],
   lifecycle: [onChange],
   exportAs: 'form'
 })
 export class NgModel extends NgControl {
   _control = new Control("");
   _added = false;
-  ngModel = new EventEmitter();
+  update = new EventEmitter();
   model: any;
   ngValidators: QueryList<NgValidator>;
 
@@ -69,5 +69,5 @@ export class NgModel extends NgControl {
 
   get validator(): Function { return composeNgValidator(this.ngValidators); }
 
-  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.ngModel, newValue); }
+  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.update, newValue); }
 }

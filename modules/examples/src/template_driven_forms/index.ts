@@ -35,9 +35,7 @@ class CheckoutModel {
  */
 @Directive({selector: '[credit-card]'})
 class CreditCardValidator {
-  constructor(c: NgControl) {
-    c.validator = Validators.compose([c.validator, CreditCardValidator.validate]);
-  }
+  get validator() { return CreditCardValidator.validate; }
 
   static validate(c): StringMap<string, boolean> {
     if (isPresent(c.value) && RegExpWrapper.test(new RegExp("^\\d{16}$"), c.value)) {
