@@ -35,6 +35,13 @@ export class XHRConnection implements Connection {
     this._xhr = new NativeConstruct();
     // TODO(jeffbcross): implement error listening/propagation
     this._xhr.open(RequestMethods[req.method], req.url);
+    var entriesIterator = (req.headers || {}).keys();
+    var item = entriesIterator.next();
+    while (!item.done) {
+        var key = item.value;
+        this._xhr.setRequestHeader(key, req.headers.get(key));
+        item = entriesIterator.next();
+    }
     this._xhr.addEventListener(
         'load',
         () => {this.response.onNext(new Response(this._xhr.response || this._xhr.responseText))});
