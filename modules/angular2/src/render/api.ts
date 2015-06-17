@@ -143,10 +143,11 @@ export class DirectiveMetadata {
   hostProperties: Map<string, string>;
   hostAttributes: Map<string, string>;
   hostActions: Map<string, string>;
+  baseUrl: any;
 
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
                hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
-               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
+               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection, exportAs, baseUrl}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -164,7 +165,8 @@ export class DirectiveMetadata {
     callOnInit?: boolean,
     callOnAllChangesDone?: boolean,
     changeDetection?: string,
-    exportAs?: string
+    exportAs?: string,
+    baseUrl?: any
   }) {
     this.id = id;
     this.selector = selector;
@@ -184,11 +186,12 @@ export class DirectiveMetadata {
     this.callOnAllChangesDone = callOnAllChangesDone;
     this.changeDetection = changeDetection;
     this.exportAs = exportAs;
+    this.baseUrl = baseUrl;
   }
 
   static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
                  callOnDestroy, callOnChange, callOnCheck, callOnInit, callOnAllChangesDone,
-                 changeDetection, exportAs}: {
+                 changeDetection, exportAs, baseUrl}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -203,7 +206,7 @@ export class DirectiveMetadata {
     callOnInit?: boolean,
     callOnAllChangesDone?: boolean,
     changeDetection?: string,
-    exportAs?: string
+    exportAs?: string baseUrl?: any
   }) {
     let hostListeners = MapWrapper.create();
     let hostProperties = MapWrapper.create();
@@ -243,7 +246,8 @@ export class DirectiveMetadata {
       callOnInit: callOnInit,
       callOnAllChangesDone: callOnAllChangesDone,
       changeDetection: changeDetection,
-      exportAs: exportAs
+      exportAs: exportAs,
+      baseUrl: baseUrl
     });
   }
 }

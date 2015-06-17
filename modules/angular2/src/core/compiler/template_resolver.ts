@@ -22,7 +22,7 @@ export class TemplateResolver {
     return view;
   }
 
-  _resolve(component: Type) {
+  _resolve(component: Type): View {
     var annotations = reflector.annotations(component);
     for (var i = 0; i < annotations.length; i++) {
       var annotation = annotations[i];

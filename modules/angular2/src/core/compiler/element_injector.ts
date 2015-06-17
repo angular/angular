@@ -274,7 +274,9 @@ export class DirectiveBinding extends ResolvedBinding {
       changeDetection: ann instanceof
           Component ? ann.changeDetection : null,
 
-      exportAs: ann.exportAs
+      exportAs: ann.exportAs,
+      baseUrl: ann instanceof
+          Component ? ann.baseUrl : null
     });
     return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise,
                                 resolvedAppInjectables, resolvedHostInjectables,

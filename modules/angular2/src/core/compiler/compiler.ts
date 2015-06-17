@@ -24,6 +24,8 @@ import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 
+import {getComponentBaseUrl} from 'angular2/src/services/url';
+
 import * as renderApi from 'angular2/src/render/api';
 
 /**
@@ -55,9 +57,7 @@ export class Compiler {
   private _compilerCache: CompilerCache;
   private _compiling: Map<Type, Promise<AppProtoView>>;
   private _templateResolver: TemplateResolver;
-  private _componentUrlMapper: ComponentUrlMapper;
   private _urlResolver: UrlResolver;
-  private _appUrl: string;
   private _render: renderApi.RenderCompiler;
   private _protoViewFactory: ProtoViewFactory;
 
@@ -68,9 +68,7 @@ export class Compiler {
     this._compilerCache = cache;
     this._compiling = MapWrapper.create();
     this._templateResolver = templateResolver;
-    this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
-    this._appUrl = urlResolver.resolve(null, './');
     this._render = render;
     this._protoViewFactory = protoViewFactory;
   }
@@ -127,7 +125,7 @@ export class Compiler {
       // It happens when a template references a component multiple times.
       return pvPromise;
     }
-    var template = this._templateResolver.resolve(component);
+    var template: View = this._templateResolver.resolve(component);
     if (isBlank(template)) {
       return null;
     }
@@ -203,9 +201,10 @@ export class Compiler {
     return componentElementBinders;
   }
 
-  private _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {
-    var componentUrl =
-        this._urlResolver.resolve(this._appUrl, this._componentUrlMapper.getUrl(component));
+  private _buildRenderTemplate(component: Type, view: View,
+                               directives: List<DirectiveBinding>): renderApi.ViewDefinition {
+    var componentUrl = getComponentBaseUrl(component);
+
     var templateAbsUrl = null;
     var styleAbsUrls = null;
     if (isPresent(view.templateUrl)) {
