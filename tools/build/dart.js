@@ -1,10 +1,10 @@
 var which = require('which');
+var spawnSync = require('child_process').spawnSync;
 
-module.exports = function(gulp) {
+module.exports.detect = function(gulp) {
   var DART_SDK = false;
   try {
     which.sync('dart');
-    console.log('Dart SDK detected');
     if (process.platform === 'win32') {
       DART_SDK = {
         ANALYZER: 'dartanalyzer.bat',
@@ -20,6 +20,7 @@ module.exports = function(gulp) {
         VM: 'dart'
       };
     }
+    console.log('Dart SDK detected:');
   } catch (e) {
     console.log('Dart SDK is not available, Dart tasks will be skipped.');
     var gulpTaskFn = gulp.task.bind(gulp);
@@ -34,4 +35,10 @@ module.exports = function(gulp) {
     };
   }
   return DART_SDK;
+}
+
+module.exports.logVersion = function(dartSdk) {
+  console.log('DART SDK:') ;
+  console.log('- dart: ' + spawnSync(dartSdk.VM, ['--version']).stderr.toString().replace(/\n/g, ''));
+  console.log('- pub: ' + spawnSync(dartSdk.PUB, ['--version']).stdout.toString().replace(/\n/g, ''));
 }

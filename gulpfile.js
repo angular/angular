@@ -38,6 +38,7 @@ var insert = require('gulp-insert');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
 var tslint = require('gulp-tslint');
+var dartSdk = require('./tools/build/dart');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.9.0',
@@ -103,7 +104,7 @@ function runJasmineTests(globs, done) {
 }
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
-var DART_SDK = require('./tools/build/dartdetect')(gulp);
+var DART_SDK = dartSdk.detect(gulp);
 
 // -----------------------
 // configuration
@@ -457,7 +458,12 @@ gulp.task('test.js', function(done) {
 });
 
 gulp.task('test.dart', function(done) {
-  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci', sequenceComplete(done));
+  runSequence('versions.dart', 'test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci',
+              sequenceComplete(done));
+});
+
+gulp.task('versions.dart', function() {
+  dartSdk.logVersion(DART_SDK);
 });
 
 // Reuse the Travis scripts
