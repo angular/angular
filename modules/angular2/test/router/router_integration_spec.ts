@@ -122,7 +122,7 @@ class ParentCmp {
 
 @Component({selector: 'app-cmp'})
 @View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
-@RouteConfig([{path: '/parent', component: ParentCmp}])
+@RouteConfig([{path: '/parent/...', component: ParentCmp}])
 class HierarchyAppCmp {
   constructor(public router: Router, public location: BrowserLocation) {}
 }
