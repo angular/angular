@@ -720,7 +720,7 @@ export class Directive extends Injectable {
   lifecycle: List<LifecycleEvent>;
 
   /**
-   * If set to true the compiler does not compile the children of this directive.
+   * If set to false the compiler does not compile the children of this directive.
    */
   // TODO(vsavkin): This would better fall under the Macro directive concept.
   compileChildren: boolean;
