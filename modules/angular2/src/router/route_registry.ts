@@ -53,11 +53,16 @@ export class RouteRegistry {
         config, {'component': normalizeComponentDeclaration(config['component'])});
 
     var component = config['component'];
-    this.configFromComponent(component);
+    var terminal = recognizer.addConfig(config['path'], config, config['as']);
 
-    recognizer.addConfig(config['path'], config, config['as']);
+    if (component['type'] == 'constructor') {
+      if (terminal) {
+        assertTerminalComponent(component['constructor'], config['path']);
+      } else {
+        this.configFromComponent(component['constructor']);
+      }
+    }
   }
-
 
   /**
    * Reads the annotations of a component and configures the registry based on them
@@ -220,4 +225,22 @@ function mostSpecific(instructions: List<Instruction>): Instruction {
     }
   }
   return mostSpecificSolution;
+}
+
+function assertTerminalComponent(component, path) {
+  if (!isType(component)) {
+    return;
+  }
+
+  var annotations = reflector.annotations(component);
+  if (isPresent(annotations)) {
+    for (var i = 0; i < annotations.length; i++) {
+      var annotation = annotations[i];
+
+      if (annotation instanceof RouteConfig) {
+        throw new BaseException(
+            `Child routes are not allowed for "${path}". Use "..." on the parent's route path.`);
+      }
+    }
+  }
 }

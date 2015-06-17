@@ -87,21 +87,24 @@ export function main() {
       expect(solution.matchedUrl).toEqual('/bar');
     });
 
-    it('should perform a valid redirect when a slash or an empty string is being processed', () => {
-      recognizer.addRedirect('/', '/matias');
-      recognizer.addRedirect('', '/fatias');
+    it('should perform a root URL redirect when only a slash or an empty string is being processed',
+       () => {
+         recognizer.addRedirect('/', '/matias');
+         recognizer.addConfig('/matias', handler);
 
-      recognizer.addConfig('/matias', handler);
-      recognizer.addConfig('/fatias', handler);
+         recognizer.addConfig('/fatias', handler);
 
-      var solutions;
+         var solutions;
 
-      solutions = recognizer.recognize('/');
-      expect(solutions[0].matchedUrl).toBe('/matias');
+         solutions = recognizer.recognize('/');
+         expect(solutions[0].matchedUrl).toBe('/matias');
 
-      solutions = recognizer.recognize('');
-      expect(solutions[0].matchedUrl).toBe('/fatias');
-    });
+         solutions = recognizer.recognize('/fatias');
+         expect(solutions[0].matchedUrl).toBe('/fatias');
+
+         solutions = recognizer.recognize('');
+         expect(solutions[0].matchedUrl).toBe('/matias');
+       });
 
     it('should generate URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');

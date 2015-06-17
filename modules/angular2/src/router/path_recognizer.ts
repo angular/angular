@@ -27,6 +27,10 @@ export class Segment {
   regex: string;
 }
 
+export class ContinuationSegment extends Segment {
+  generate(params): string { return ''; }
+}
+
 class StaticSegment extends Segment {
   regex: string;
   name: string;
@@ -71,7 +75,7 @@ var wildcardMatcher = RegExpWrapper.create("^\\*([^\/]+)$");
 function parsePathString(route: string) {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
-  if (route[0] === "/") {
+  if (StringWrapper.startsWith(route, "/")) {
     route = StringWrapper.substring(route, 1);
   }
 
@@ -93,7 +97,8 @@ function parsePathString(route: string) {
     throw new BaseException(`'${route}' has more than the maximum supported number of segments.`);
   }
 
-  for (var i = 0; i < segments.length; i++) {
+  var limit = segments.length - 1;
+  for (var i = 0; i <= limit; i++) {
     var segment = segments[i], match;
 
     if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
@@ -101,6 +106,12 @@ function parsePathString(route: string) {
       specificity += (100 - i);
     } else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
       results.push(new StarSegment(match[1]));
+    } else if (segment == '...') {
+      if (i < limit) {
+        // TODO (matsko): setup a proper error here `
+        throw new BaseException(`Unexpected "..." before the end of the path for "${route}".`);
+      }
+      results.push(new ContinuationSegment());
     } else if (segment.length > 0) {
       results.push(new StaticSegment(segment));
       specificity += 100 * (100 - i);
@@ -120,6 +131,7 @@ export class PathRecognizer {
   segments: List<Segment>;
   regex: RegExp;
   specificity: number;
+  terminal: boolean = true;
 
   constructor(public path: string, public handler: any) {
     this.segments = [];
@@ -131,7 +143,17 @@ export class PathRecognizer {
     var segments = parsed['segments'];
     var regexString = '^';
 
-    ListWrapper.forEach(segments, (segment) => { regexString += '/' + segment.regex; });
+    ListWrapper.forEach(segments, (segment) => {
+      if (segment instanceof ContinuationSegment) {
+        this.terminal = false;
+      } else {
+        regexString += '/' + segment.regex;
+      }
+    });
+
+    if (this.terminal) {
+      regexString += '$';
+    }
 
     this.regex = RegExpWrapper.create(regexString);
     this.segments = segments;
@@ -143,6 +165,10 @@ export class PathRecognizer {
     var urlPart = url;
     for (var i = 0; i < this.segments.length; i++) {
       var segment = this.segments[i];
+      if (segment instanceof ContinuationSegment) {
+        continue;
+      }
+
       var match = RegExpWrapper.firstMatch(RegExpWrapper.create('/' + segment.regex), urlPart);
       urlPart = StringWrapper.substring(urlPart, match[0].length);
       if (segment.name.length > 0) {

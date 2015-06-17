@@ -91,7 +91,7 @@ export function main() {
        }));
 
     it('should match the full URL using child components', inject([AsyncTestCompleter], (async) => {
-         registry.config(rootHostComponent, {'path': '/first', 'component': DummyParentComp});
+         registry.config(rootHostComponent, {'path': '/first/...', 'component': DummyParentComp});
 
          registry.recognize('/first/second', rootHostComponent)
              .then((instruction) => {
@@ -103,7 +103,7 @@ export function main() {
 
     it('should match the URL using async child components',
        inject([AsyncTestCompleter], (async) => {
-         registry.config(rootHostComponent, {'path': '/first', 'component': DummyAsyncComp});
+         registry.config(rootHostComponent, {'path': '/first/...', 'component': DummyAsyncComp});
 
          registry.recognize('/first/second', rootHostComponent)
              .then((instruction) => {
@@ -117,7 +117,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          registry.config(
              rootHostComponent,
-             {'path': '/first', 'component': {'loader': AsyncParentLoader, 'type': 'loader'}});
+             {'path': '/first/...', 'component': {'loader': AsyncParentLoader, 'type': 'loader'}});
 
          registry.recognize('/first/second', rootHostComponent)
              .then((instruction) => {
@@ -139,6 +139,21 @@ export function main() {
                  {'path': '/some/path', 'component': {'type': 'intentionallyWrongComponentType'}}))
           .toThrowError('Invalid component type \'intentionallyWrongComponentType\'');
     });
+
+    it('should throw when a parent config is missing the `...` suffix any of its children add routes',
+       () => {
+         expect(() =>
+                    registry.config(rootHostComponent, {'path': '/', 'component': DummyParentComp}))
+             .toThrowError(
+                 'Child routes are not allowed for "/". Use "..." on the parent\'s route path.');
+       });
+
+    it('should throw when a parent config is missing the `...` suffix any of its children add routes',
+       () => {
+         expect(() => registry.config(rootHostComponent,
+                                      {'path': '/home/.../fun/', 'component': DummyParentComp}))
+             .toThrowError('Unexpected "..." before the end of the path for "home/.../fun/".');
+       });
   });
 }
 
