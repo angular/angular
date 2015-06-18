@@ -43,17 +43,17 @@ export function main() {
               .toFactory((styleInliner, styleUrlResolver) => new EmulatedScopedShadowDomStrategy(
                              styleInliner, styleUrlResolver, styleHost),
                          [StyleInliner, StyleUrlResolver]),
-      "unscoped": bind(ShadowDomStrategy)
-                      .toFactory((styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
-                                     styleUrlResolver, styleHost),
-                                 [StyleUrlResolver])
+      "unscoped": bind(ShadowDomStrategy).toFactory(
+          (styleInliner, styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
+              styleInliner, styleUrlResolver, null), [StyleInliner, StyleUrlResolver])
     };
     if (DOM.supportsNativeShadowDOM()) {
       StringMapWrapper.set(
           strategies, "native",
           bind(ShadowDomStrategy)
-              .toFactory((styleUrlResolver) => new NativeShadowDomStrategy(styleUrlResolver),
-                         [StyleUrlResolver]));
+              .toFactory((styleInliner, styleUrlResolver) =>
+                             new NativeShadowDomStrategy(styleInliner, styleUrlResolver),
+                         [StyleInliner, StyleUrlResolver]));
     }
     beforeEach(() => { styleHost = el('<div></div>'); });
 
