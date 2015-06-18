@@ -73,23 +73,25 @@ export class MergeTrees implements DiffingBroccoliPlugin {
       // Update cache
       treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
         index = treeDiffs.length - 1 - index;
-        treeDiff.removedPaths.forEach((removedPath) => {
-          let cache = this.pathCache[removedPath];
-          // ASSERT(cache !== undefined);
-          // ASSERT(contains(cache, index));
-          if (cache[cache.length - 1] === index) {
-            pathsToRemove.push(path.join(this.cachePath, removedPath));
-            cache.pop();
-            if (cache.length === 0) {
-              this.pathCache[removedPath] = undefined;
-            } else if (!emitted[removedPath]) {
-              if (cache.length === 1 && !overwrite) {
-                throw pathOverwrittenError(removedPath);
+        if (treeDiff.removedPaths) {
+          treeDiff.removedPaths.forEach((removedPath) => {
+            let cache = this.pathCache[removedPath];
+            // ASSERT(cache !== undefined);
+            // ASSERT(contains(cache, index));
+            if (cache[cache.length - 1] === index) {
+              pathsToRemove.push(path.join(this.cachePath, removedPath));
+              cache.pop();
+              if (cache.length === 0) {
+                this.pathCache[removedPath] = undefined;
+              } else if (!emitted[removedPath]) {
+                if (cache.length === 1 && !overwrite) {
+                  throw pathOverwrittenError(removedPath);
+                }
+                emit(removedPath);
               }
-              emit(removedPath);
             }
-          }
-        });
+          });
+        }
 
         let pathsToUpdate = treeDiff.addedPaths;
 

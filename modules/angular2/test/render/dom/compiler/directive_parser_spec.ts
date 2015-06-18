@@ -27,8 +27,7 @@ export function main() {
         someDirectiveWithInvalidHostProperties,
         someDirectiveWithHostAttributes,
         someDirectiveWithEvents,
-        someDirectiveWithGlobalEvents,
-        someDirectiveWithHostActions
+        someDirectiveWithGlobalEvents
       ];
       parser = new Parser(new Lexer());
     });
@@ -160,11 +159,11 @@ export function main() {
       expect(eventBinding.fullName).toEqual('window:resize');
       expect(eventBinding.source.source).toEqual('doItGlobal()');
     });
-
-    it('should bind directive host actions', () => {
-      var results = process(el('<div some-decor-host-actions></div>'));
-      var directiveBinding = results[0].directives[0];
-      expect(directiveBinding.hostActions[0].actionName).toEqual('focus');
+    
+    it('should throw when the provided selector is not flat', () => {
+      expect(() => { createPipeline(null, [directiveWithNonFlatElementSelector]); })
+          .toThrowError(
+              new RegExp('flat'));
     });
 
     // TODO: assertions should be enabled when running tests:
@@ -255,11 +254,6 @@ var someDirectiveWithHostAttributes = DirectiveMetadata.create({
 var someDirectiveWithEvents = DirectiveMetadata.create(
     {selector: '[some-decor-events]', host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})});
 
-var someDirectiveWithHostActions = DirectiveMetadata.create({
-  selector: '[some-decor-host-actions]',
-  host: MapWrapper.createFromStringMap({'@focus': 'focus()'})
-});
-
 var someDirectiveWithGlobalEvents = DirectiveMetadata.create({
   selector: '[some-decor-globalevents]',
   host: MapWrapper.createFromStringMap({'(window:resize)': 'doItGlobal()'})
@@ -269,4 +263,9 @@ var componentWithNonElementSelector = DirectiveMetadata.create({
   id: 'componentWithNonElementSelector',
   selector: '[attr]',
   type: DirectiveMetadata.COMPONENT_TYPE
+});
+
+var directiveWithNonFlatElementSelector = DirectiveMetadata.create({
+  id: 'directiveWithNonFlatElementSelector',
+  selector: 'not flat'
 });

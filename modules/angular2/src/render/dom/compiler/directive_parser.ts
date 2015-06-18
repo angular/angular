@@ -91,11 +91,6 @@ export class DirectiveParser implements CompileStep {
           this._bindDirectiveEvent(eventName, action, current, directiveBinderBuilder);
         });
       }
-      if (isPresent(dirMetadata.hostActions)) {
-        MapWrapper.forEach(dirMetadata.hostActions, (action, actionName) => {
-          this._bindHostAction(actionName, action, current, directiveBinderBuilder);
-        });
-      }
       if (isPresent(dirMetadata.hostProperties)) {
         MapWrapper.forEach(dirMetadata.hostProperties, (expression, hostPropertyName) => {
           this._bindHostProperty(hostPropertyName, expression, current, directiveBinderBuilder);
@@ -134,9 +129,8 @@ export class DirectiveParser implements CompileStep {
       elProp = bindConfig;
       pipes = [];
     }
-
-    var bindingAst = compileElement.bindElement().propertyBindings.get(dashCaseToCamelCase(elProp));
-
+    elProp = dashCaseToCamelCase(elProp);
+    var bindingAst = compileElement.bindElement().propertyBindings.get(elProp);
     if (isBlank(bindingAst)) {
       var attributeValue = compileElement.attrs().get(camelCaseToDashCase(elProp));
       if (isPresent(attributeValue)) {
@@ -147,9 +141,8 @@ export class DirectiveParser implements CompileStep {
 
     // Bindings are optional, so this binding only needs to be set up if an expression is given.
     if (isPresent(bindingAst)) {
-      directiveBinderBuilder.bindProperty(dirProperty, bindingAst);
+      directiveBinderBuilder.bindProperty(dirProperty, bindingAst, elProp);
     }
-    compileElement.bindElement().bindPropertyToDirective(dashCaseToCamelCase(elProp));
   }
 
   _bindDirectiveEvent(eventName, action, compileElement, directiveBinderBuilder) {
@@ -160,11 +153,6 @@ export class DirectiveParser implements CompileStep {
     } else {
       directiveBinderBuilder.bindEvent(eventName, ast);
     }
-  }
-
-  _bindHostAction(actionName, actionExpression, compileElement, directiveBinderBuilder) {
-    var ast = this._parser.parseAction(actionExpression, compileElement.elementDescription);
-    directiveBinderBuilder.bindHostAction(actionName, actionExpression, ast);
   }
 
   _bindHostProperty(hostPropertyName, expression, compileElement, directiveBinderBuilder) {

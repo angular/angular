@@ -1,6 +1,12 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit} from 'angular2/test_lib';
 
-import {List, ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {
+  List,
+  ListWrapper,
+  StringMap,
+  StringMapWrapper,
+  MapWrapper
+} from 'angular2/src/facade/collection';
 
 export function main() {
   describe('ListWrapper', () => {
@@ -107,6 +113,15 @@ export function main() {
         var m2 = {'a': 1, 'b': 20, 'c': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
+      });
+    });
+
+    describe('MapWrapper', () => {
+      it('should return a list of keys values', () => {
+        var m = new Map();
+        m.set('a', 'b');
+        expect(MapWrapper.keys(m)).toEqual(['a']);
+        expect(MapWrapper.values(m)).toEqual(['b']);
       });
     });
   });

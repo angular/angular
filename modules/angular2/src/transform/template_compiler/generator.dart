@@ -8,7 +8,6 @@ import 'package:angular2/src/core/compiler/proto_view_factory.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compile_pipeline.dart';
 import 'package:angular2/src/render/dom/compiler/template_loader.dart';
-import 'package:angular2/src/render/dom/view/property_setter_factory.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
@@ -106,7 +105,7 @@ class _TemplateExtractor {
     var compileElements =
         pipeline.process(templateEl, ViewType.COMPONENT, viewDef.componentId);
     var protoViewDto = compileElements[0].inheritedProtoView
-        .build(new PropertySetterFactory());
+        .build();
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 

@@ -16,6 +16,11 @@ function _abstract() {
  * Provides DOM operations in an environment-agnostic way.
  */
 export class DomAdapter {
+  hasProperty(element, name: string): boolean { throw _abstract(); }
+  setProperty(el: /*element*/ any, name: string, value: any) { throw _abstract(); }
+  getProperty(el: /*element*/ any, name: string): any { throw _abstract(); }
+  invoke(el: /*element*/ any, methodName: string, args: List<any>): any { throw _abstract(); }
+
   logError(error) { throw _abstract(); }
 
   /**
@@ -70,7 +75,6 @@ export class DomAdapter {
   getHost(el): any { throw _abstract(); }
   getDistributedNodes(el): List<any> { throw _abstract(); }
   clone(node): any { throw _abstract(); }
-  hasProperty(element, name: string): boolean { throw _abstract(); }
   getElementsByClassName(element, name: string): List<any> { throw _abstract(); }
   getElementsByTagName(element, name: string): List<any> { throw _abstract(); }
   classList(element): List<any> { throw _abstract(); }

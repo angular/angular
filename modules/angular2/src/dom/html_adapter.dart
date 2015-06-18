@@ -10,13 +10,24 @@ class Html5LibDomAdapter implements DomAdapter {
     setRootDomAdapter(new Html5LibDomAdapter());
   }
 
+  hasProperty(element, String name) {
+    // This is needed for serverside compile to generate the right getters/setters...
+    return true;
+  }
+
+  void setProperty(Element element, String name, Object value) => throw 'not implemented';
+
+  getProperty(Element element, String name) => throw 'not implemented';
+
+  invoke(Element element, String methodName, List args) => throw 'not implemented';
+
   logError(error) {
     stderr.writeln('${error}');
   }
 
   @override
   final attrToPropMap = const {
-    'innerHtml': 'innerHtml',
+    'innerHtml': 'innerHTML',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
@@ -184,11 +195,6 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   clone(node) => node.clone(true);
-
-  hasProperty(element, String name) {
-    // This is needed for serverside compile to generate the right getters/setters...
-    return true;
-  }
   getElementsByClassName(element, String name) {
     throw 'not implemented';
   }

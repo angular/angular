@@ -17,7 +17,6 @@ import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
-import {PropertySetterFactory} from '../view/property_setter_factory';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -25,8 +24,6 @@ import {PropertySetterFactory} from '../view/property_setter_factory';
  * the CompilePipeline and the CompileSteps.
  */
 export class DomCompiler extends RenderCompiler {
-  _propertySetterFactory: PropertySetterFactory = new PropertySetterFactory();
-
   constructor(public _stepFactory: CompileStepFactory, public _templateLoader: TemplateLoader) {
     super();
   }
@@ -58,7 +55,7 @@ export class DomCompiler extends RenderCompiler {
     var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef, subTaskPromises));
     var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);
 
-    var protoView = compileElements[0].inheritedProtoView.build(this._propertySetterFactory);
+    var protoView = compileElements[0].inheritedProtoView.build();
 
     if (subTaskPromises.length > 0) {
       return PromiseWrapper.all(subTaskPromises).then((_) => protoView);
