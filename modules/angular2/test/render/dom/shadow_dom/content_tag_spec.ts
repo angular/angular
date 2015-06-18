@@ -13,6 +13,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Content} from 'angular2/src/render/dom/shadow_dom/content_tag';
 
 var _scriptStart = `<script start=""></script>`;
+var _scriptEnd = `<script end=""></script>`;
 
 export function main() {
   describe('Content', function() {
@@ -20,32 +21,35 @@ export function main() {
     var content;
 
     beforeEach(() => {
-      parent = el(`<div>${_scriptStart}</div>`);
-      let contentStartMarker = DOM.firstChild(parent);
-      content = new Content(contentStartMarker, '');
+      parent = el(`<div>${_scriptStart}${_scriptEnd}`);
+      content = DOM.firstChild(parent);
     });
 
     it("should insert the nodes", () => {
-      content.init(null);
-      content.insert([el("<a>A</a>"), el("<b>B</b>")]);
+      var c = new Content(content, '');
+      c.init(null);
+      c.insert([el("<a></a>"), el("<b></b>")])
 
-      expect(parent).toHaveText('AB');
+          expect(DOM.getInnerHTML(parent))
+              .toEqual(`${_scriptStart}<a></a><b></b>${_scriptEnd}`);
     });
 
     it("should remove the nodes from the previous insertion", () => {
-      content.init(null);
-      content.insert([el("<a>A</a>")]);
-      content.insert([el("<b>B</b>")]);
+      var c = new Content(content, '');
+      c.init(null);
+      c.insert([el("<a></a>")]);
+      c.insert([el("<b></b>")]);
 
-      expect(parent).toHaveText('B');
+      expect(DOM.getInnerHTML(parent)).toEqual(`${_scriptStart}<b></b>${_scriptEnd}`);
     });
 
-    it("should clear nodes on inserting an empty list", () => {
-      content.init(null);
-      content.insert([el("<a>A</a>")]);
-      content.insert([]);
+    it("should insert empty list", () => {
+      var c = new Content(content, '');
+      c.init(null);
+      c.insert([el("<a></a>")]);
+      c.insert([]);
 
-      expect(parent).toHaveText('');
+      expect(DOM.getInnerHTML(parent)).toEqual(`${_scriptStart}${_scriptEnd}`);
     });
   });
 }
