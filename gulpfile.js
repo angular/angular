@@ -1,20 +1,20 @@
 'use strict';
 
 var autoprefixer = require('gulp-autoprefixer');
+var childProcess = require('child_process');
 var del = require('del');
 var format = require('gulp-clang-format');
-var exec = require('child_process').exec;
-var fork = require('child_process').fork;
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
-var sass = require('gulp-sass');
-var shell = require('gulp-shell');
-var spawn = require('child_process').spawn;
-var runSequence = require('run-sequence');
+var gutil = require('gulp-util');
 var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
+var micromatch = require('micromatch');
 var path = require('path');
+var runSequence = require('run-sequence');
+var sass = require('gulp-sass');
+var shell = require('gulp-shell');
 
 var watch = require('./tools/build/watch');
 
@@ -85,7 +85,7 @@ var treatTestErrorsAsFatal = true;
 
 function runJasmineTests(globs, done) {
   var args = ['--'].concat(globs);
-  fork('./tools/traceur-jasmine', args, {
+  childProcess.fork('./tools/traceur-jasmine', args, {
     stdio: 'inherit'
   }).on('close', function jasmineCloseHandler(exitCode) {
     if (exitCode && treatTestErrorsAsFatal) {
@@ -197,23 +197,47 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 // ------------
 // formatting
 
-function doCheckFormat() {
-  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
-      .pipe(format.checkFormat('file'));
-}
+var FORMAT_FILES_PATTERN = ['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'];
+var FORMAT_FILES_FILTER = micromatch.filter(FORMAT_FILES_PATTERN);
 
 gulp.task('check-format', function() {
-  return doCheckFormat().on('warning', function(e) {
-    console.log("NOTE: this will be promoted to an ERROR in the continuous build");
-  });
+  function runGit(cmd, timeout) {
+    timeout = timeout || 200;
+    return childProcess.execSync('/usr/bin/env git ' + cmd, {timemout: timeout, encoding: 'utf-8'});
+  }
+  var t = Date.now();
+  var modifiedFiles;
+  try {
+    // Parse which remote is angular/angular. This is a bit messy and could fail, but better than
+    // making a remote request on each check-format run.
+    var mainRepoRemoteName =
+        runGit('remote --verbose').match(/^([a-zA-Z]+) .*angular\/angular$/m)[1];
+
+    modifiedFiles = runGit('diff --name-only ' + mainRepoRemoteName + '/master');
+    modifiedFiles = modifiedFiles.split('\n').filter(FORMAT_FILES_FILTER);
+  } catch (e) {
+    gutil.log('Could not find master reference for github.com/angular/angular repository.');
+    gutil.log('You must have a remote pointing to angular/angular');
+    gutil.log(e);
+    process.exit(1);
+  }
+  gutil.log('Found modified files in', Date.now() - t, 'ms');
+  return gulp.src(modifiedFiles)
+      .pipe(format.checkFormat('file'))
+      .on('warning', function(e) {
+        gutil.log("NOTE: this will be promoted to an ERROR in the continuous build");
+      });
 });
 
-gulp.task('enforce-format', function() {
-  return doCheckFormat().on('warning', function(e) {
-    console.log("ERROR: You forgot to run clang-format on your change.");
-    console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
-    process.exit(1);
-  });
+gulp.task('enforce-format-all', function() {
+  // NB: Keep pattern in sync with check-format code above.
+  return gulp.src(FORMAT_FILES_PATTERN)
+      .pipe(format.checkFormat('file'))
+      .on('warning', function(e) {
+        gutil.log("ERROR: You forgot to run clang-format on your change.");
+        gutil.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
+        process.exit(1);
+      });
 });
 
 // ------------
@@ -229,7 +253,7 @@ gulp.task('build/checkCircularDependencies', function (done) {
   });
   var circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {
-    console.log(circularDependencies);
+    gutil.log(circularDependencies);
     process.exit(1);
   }
   done();
@@ -290,10 +314,10 @@ var webserver = require('gulp-webserver');
 gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
-    console.log('bower:', result.id, result.data.endpoint.name);
+    gutil.log('bower:', result.id, result.data.endpoint.name);
   });
   bowerTask.on('error', function(error) {
-    console.log(error);
+    gutil.log(error);
   });
   return bowerTask;
 });
@@ -309,8 +333,8 @@ function createDocsTasks(publicBuild) {
       var dgeni = new Dgeni([require(dgeniPackage)]);
       return dgeni.generate();
     } catch(x) {
-      console.log(x);
-      console.log(x.stack);
+      gutil.log(x);
+      gutil.log(x.stack);
       throw x;
     }
   });
@@ -350,8 +374,8 @@ gulp.task('docs/angular.io', function() {
     var dgeni = new Dgeni([require('./docs/angular.io-package')]);
     return dgeni.generate();
   } catch(x) {
-    console.log(x);
-    console.log(x.stack);
+    gutil.log(x);
+    gutil.log(x.stack);
     throw x;
   }
 });
@@ -364,7 +388,7 @@ function runKarma(configFile, done) {
   var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
                                            'node node_modules/.bin/karma run ';
   cmd += configFile;
-  exec(cmd, function(e, stdout) {
+  childProcess.exec(cmd, function(e, stdout) {
     // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
     // karma server will print all test failures
     done();
@@ -695,7 +719,7 @@ gulp.task('!build.js.cjs', function() {
   return angularBuilder.rebuildNodeTree().then(function() {
     if (firstBuildJsCjs) {
       firstBuildJsCjs = false;
-      console.log('creating node_modules symlink hack');
+      gutil.log('creating node_modules symlink hack');
       // linknodemodules is all sync
       linknodemodules(gulp, gulpPlugins, {
         dir: CONFIG.dest.js.cjs
@@ -848,7 +872,7 @@ gulp.task('!build/change_detect.dart', function(done) {
 
   var dartStream = fs.createWriteStream(path.join(destDir, 'change_detector_classes.dart'));
   var genMain = path.join(srcDir, 'gen_change_detectors.dart');
-  var proc = spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
+  var proc = childProcess.spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
   proc.on('error', function(code) {
     done(new Error('Failed while generating change detector classes. Please run manually: ' +
                    DART_SDK.VM + ' ' + dartArgs.join(' ')));
