@@ -26,17 +26,14 @@ export class DomProtoView {
   boundTextNodeCount: number;
   rootNodeCount: number;
 
-  constructor({elementBinders, element, transitiveContentTagCount}) {
+  constructor({elementBinders, element, transitiveContentTagCount, boundTextNodeCount}) {
     this.element = element;
     this.elementBinders = elementBinders;
     this.transitiveContentTagCount = transitiveContentTagCount;
     this.isTemplateElement = DOM.isTemplateElement(this.element);
     this.rootBindingOffset =
         (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
-    this.boundTextNodeCount =
-        ListWrapper.reduce(elementBinders, (prevCount: number, elementBinder: ElementBinder) =>
-                                               prevCount + elementBinder.textNodeIndices.length,
-                           0);
+    this.boundTextNodeCount = boundTextNodeCount;
     this.rootNodeCount =
         this.isTemplateElement ? DOM.childNodes(DOM.content(this.element)).length : 1;
   }

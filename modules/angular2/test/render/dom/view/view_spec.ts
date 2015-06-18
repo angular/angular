@@ -30,8 +30,12 @@ export function main() {
         binders = [];
       }
       var rootEl = el('<div></div>');
-      return new DomProtoView(
-          {element: rootEl, elementBinders: binders, transitiveContentTagCount: 0});
+      return new DomProtoView({
+        element: rootEl,
+        elementBinders: binders,
+        transitiveContentTagCount: 0,
+        boundTextNodeCount: 0
+      });
     }
 
     function createView(pv = null, boundElementCount = 0) {

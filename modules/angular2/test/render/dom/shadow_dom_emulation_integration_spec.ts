@@ -36,15 +36,16 @@ import {DomTestbed} from './dom_testbed';
 
 export function main() {
   describe('ShadowDom integration tests', function() {
+    var styleHost;
     var strategies = {
       "scoped":
           bind(ShadowDomStrategy)
               .toFactory((styleInliner, styleUrlResolver) => new EmulatedScopedShadowDomStrategy(
-                             styleInliner, styleUrlResolver, null),
+                             styleInliner, styleUrlResolver, styleHost),
                          [StyleInliner, StyleUrlResolver]),
       "unscoped": bind(ShadowDomStrategy)
-                      .toFactory((styleUrlResolver) =>
-                                     new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+                      .toFactory((styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
+                                     styleUrlResolver, styleHost),
                                  [StyleUrlResolver])
     };
     if (DOM.supportsNativeShadowDOM()) {
@@ -54,12 +55,15 @@ export function main() {
               .toFactory((styleUrlResolver) => new NativeShadowDomStrategy(styleUrlResolver),
                          [StyleUrlResolver]));
     }
+    beforeEach(() => { styleHost = el('<div></div>'); });
 
     StringMapWrapper.forEach(strategies, (strategyBinding, name) => {
       describe(`${name} shadow dom strategy`, () => {
         beforeEachBindings(() => { return [strategyBinding, DomTestbed]; });
 
         // GH-2095 - https://github.com/angular/angular/issues/2095
+        // important as we are adding a content end element during compilation,
+        // which could skrew up text node indices.
         it('should support text nodes after content tags',
            inject([DomTestbed, AsyncTestCompleter], (tb, async) => {
              tb.compileAll([
@@ -67,6 +71,28 @@ export function main() {
                  new ViewDefinition({
                    componentId: 'simple',
                    template: '<content></content><p>P,</p>{{a}}',
+                   directives: []
+                 })
+               ])
+                 .then((protoViewDtos) => {
+                   var rootView = tb.createRootView(protoViewDtos[0]);
+                   var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
+
+                   tb.renderer.setText(cmpView.viewRef, 0, 'text');
+                   expect(tb.rootEl).toHaveText('P,text');
+                   async.done();
+                 });
+           }));
+
+        // important as we are moving style tags around during compilation,
+        // which could skrew up text node indices.
+        it('should support text nodes after style tags',
+           inject([DomTestbed, AsyncTestCompleter], (tb, async) => {
+             tb.compileAll([
+                 simple,
+                 new ViewDefinition({
+                   componentId: 'simple',
+                   template: '<style></style><p>P,</p>{{a}}',
                    directives: []
                  })
                ])
@@ -95,6 +121,29 @@ export function main() {
                ])
                  .then((protoViews) => {
                    tb.createRootViews(protoViews);
+
+                   expect(tb.rootEl).toHaveText('SIMPLE(A)');
+
+                   async.done();
+                 });
+           }));
+
+        it('should support simple components with text interpolation as direct children',
+           inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+             tb.compileAll([
+                 mainDir,
+                 new ViewDefinition({
+                   componentId: 'main',
+                   template: '<simple>' +
+                                 '{{text}}' +
+                                 '</simple>',
+                   directives: [simple]
+                 }),
+                 simpleTemplate
+               ])
+                 .then((protoViews) => {
+                   var cmpView = tb.createRootViews(protoViews)[1];
+                   tb.renderer.setText(cmpView.viewRef, 0, 'A');
 
                    expect(tb.rootEl).toHaveText('SIMPLE(A)');
 
