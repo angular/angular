@@ -10,7 +10,7 @@ import {
   it,
   xit,
   beforeEachBindings,
-  SpyObject
+  SpyObject,
 } from 'angular2/test_lib';
 
 import {bind} from 'angular2/di';
