@@ -8,6 +8,7 @@ describe('ng2 naive infinite scroll benchmark', function() {
 
   [1, 2, 4].forEach(function(appSize) {
     it('should run scroll benchmark and collect stats for appSize = ' + appSize, function(done) {
+      console.log('********************** running naive infinite scroll benchmark!');
       runBenchmark({
         url: URL,
         id: 'ng2.naive_infinite_scroll',
