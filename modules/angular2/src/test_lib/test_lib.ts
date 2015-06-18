@@ -280,7 +280,7 @@ export interface GuinessCompatibleSpy extends jasmine.Spy {
 }
 
 export class SpyObject {
-  constructor(type = null) {
+  constructor(type = null, forceSpyCreation: boolean = false) {
     if (type) {
       for (var prop in type.prototype) {
         var m = null;
@@ -293,7 +293,11 @@ export class SpyObject {
           // should not matter.
         }
         if (typeof m === 'function') {
-          this.spy(prop);
+          if (forceSpyCreation) {
+            this.createSpy(prop);
+          } else {
+            this.spy(prop);
+          }
         }
       }
     }
@@ -303,8 +307,14 @@ export class SpyObject {
 
   spy(name) {
     if (!this[name]) {
-      this[name] = this._createGuinnessCompatibleSpy(name);
+      return this.createSpy(name);
+    } else {
+      return this[name];
     }
+  }
+
+  createSpy(name) {
+    this[name] = this._createGuinnessCompatibleSpy(name);
     return this[name];
   }
 

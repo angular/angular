@@ -25,8 +25,8 @@ export {
 } from './src/change_detection/exceptions';
 export {
   ProtoChangeDetector,
-  ChangeDispatcher,
   ChangeDetector,
+  ChangeDispatcher,
   ChangeDetection,
   ChangeDetectorDefinition
 } from './src/change_detection/interfaces';

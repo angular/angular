@@ -34,7 +34,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
 
   _MyComponent_ChangeDetector0(this._dispatcher, this._pipeRegistry,
       this._protos, this._directiveRecords)
-      : super();
+      : super("MyComponent_comp_0");
 
   void detectChangesInRecords(throwOnChange) {
     if (!hydrated()) {

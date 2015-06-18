@@ -990,15 +990,12 @@ class FakeDirectives {
   getDetectorFor(di: DirectiveIndex) { return this.detectors[di.directiveIndex]; }
 }
 
-class TestDispatcher extends ChangeDispatcher {
+class TestDispatcher implements ChangeDispatcher {
   log: List<string>;
   loggedValues: List<any>;
   onAllChangesDoneCalled: boolean = false;
 
-  constructor() {
-    super();
-    this.clear();
-  }
+  constructor() { this.clear(); }
 
   clear() {
     this.log = [];

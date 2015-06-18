@@ -1,13 +1,20 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  SpyProtoChangeDetector
+} from 'angular2/test_lib';
 
 import {
   PreGeneratedChangeDetection,
   ChangeDetectorDefinition,
-  ProtoChangeDetector,
   DynamicProtoChangeDetector
 } from 'angular2/change_detection';
-
-class DummyChangeDetector extends ProtoChangeDetector {}
 
 export function main() {
   describe("PreGeneratedChangeDetection", () => {
@@ -15,7 +22,7 @@ export function main() {
     var def;
 
     beforeEach(() => {
-      proto = new DummyChangeDetector();
+      proto = new SpyProtoChangeDetector();
       def = new ChangeDetectorDefinition('id', null, [], [], []);
     });
 

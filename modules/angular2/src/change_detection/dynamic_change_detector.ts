@@ -21,10 +21,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   directives: any = null;
   alreadyChecked: boolean = false;
 
-  constructor(private changeControlStrategy: string, private dispatcher: any,
+  constructor(id: string, private changeControlStrategy: string, private dispatcher: any,
               private pipeRegistry: PipeRegistry, private protos: List<ProtoRecord>,
               private directiveRecords: List<any>) {
-    super();
+    super(id);
     this.values = ListWrapper.createFixedSize(protos.length + 1);
     this.pipes = ListWrapper.createFixedSize(protos.length + 1);
     this.prevContexts = ListWrapper.createFixedSize(protos.length + 1);

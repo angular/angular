@@ -911,7 +911,7 @@ export function main() {
           });
 
           it('should inject ChangeDetectorRef', () => {
-            var cd = new DynamicChangeDetector(null, null, null, [], []);
+            var cd = new DynamicChangeDetector(null, null, null, null, [], []);
             var view = <any>new DummyView();
             var childView = new DummyView();
             childView.changeDetector = cd;

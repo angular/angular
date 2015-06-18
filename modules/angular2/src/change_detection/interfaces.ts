@@ -3,10 +3,6 @@ import {Locals} from './parser/locals';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 
-export class ProtoChangeDetector {
-  instantiate(dispatcher: any): ChangeDetector { return null; }
-}
-
 /**
  * Interface used by Angular to control the change detection strategy for an application.
  *
@@ -39,26 +35,29 @@ export class ChangeDetection {
   }
 }
 
-export class ChangeDispatcher {
-  notifyOnBinding(bindingRecord: BindingRecord, value: any) {}
+export interface ChangeDispatcher {
+  notifyOnBinding(bindingRecord: BindingRecord, value: any): void;
+  notifyOnAllChangesDone(): void;
 }
 
-export class ChangeDetector {
+export interface ChangeDetector {
   parent: ChangeDetector;
   mode: string;
 
-  addChild(cd: ChangeDetector): void {}
-  addShadowDomChild(cd: ChangeDetector): void {}
-  removeChild(cd: ChangeDetector): void {}
-  removeShadowDomChild(cd: ChangeDetector): void {}
-  remove(): void {}
-  hydrate(context: any, locals: Locals, directives: any): void {}
-  dehydrate(): void {}
-  markPathToRootAsCheckOnce(): void {}
+  addChild(cd: ChangeDetector): void;
+  addShadowDomChild(cd: ChangeDetector): void;
+  removeChild(cd: ChangeDetector): void;
+  removeShadowDomChild(cd: ChangeDetector): void;
+  remove(): void;
+  hydrate(context: any, locals: Locals, directives: any): void;
+  dehydrate(): void;
+  markPathToRootAsCheckOnce(): void;
 
-  detectChanges(): void {}
-  checkNoChanges(): void {}
+  detectChanges(): void;
+  checkNoChanges(): void;
 }
+
+export interface ProtoChangeDetector { instantiate(dispatcher: any): ChangeDetector; }
 
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: string, public variableNames: List<string>,

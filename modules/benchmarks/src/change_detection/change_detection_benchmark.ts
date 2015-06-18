@@ -379,7 +379,7 @@ class FakeDirectives {
   getDirectiveFor(record) { return this.targetObj; }
 }
 
-class DummyDispatcher extends ChangeDispatcher {
+class DummyDispatcher implements ChangeDispatcher {
   notifyOnBinding(bindingRecord, newValue) { throw "Should not be used"; }
   notifyOnAllChangesDone() {}
 }

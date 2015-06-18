@@ -13,6 +13,7 @@ import {
   it,
   xit,
   SpyObject,
+  SpyChangeDetector,
   proxy,
   Log
 } from 'angular2/test_lib';
@@ -22,7 +23,6 @@ import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
-import {ChangeDetector} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {
   DirectiveBinding,
@@ -276,13 +276,6 @@ class SomeComponent {
 @IMPLEMENTS(ElementInjector)
 class SpyElementInjector extends SpyObject {
   constructor() { super(ElementInjector); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(ChangeDetector)
-class SpyChangeDetector extends SpyObject {
-  constructor() { super(ChangeDetector); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 

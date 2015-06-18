@@ -142,7 +142,7 @@ class _CodegenState {
             this.$_DISPATCHER_ACCESSOR,
             this.$_PIPE_REGISTRY_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
-            this.$_DIRECTIVES_ACCESSOR) : super();
+            this.$_DIRECTIVES_ACCESSOR) : super(${JSON.encode(_changeDetectorDefId)});
 
         void detectChangesInRecords(throwOnChange) {
           if (!hydrated()) {

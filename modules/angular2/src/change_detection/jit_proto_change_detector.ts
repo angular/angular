@@ -6,12 +6,10 @@ import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 import {coalesce} from './coalesce';
 import {ProtoRecordBuilder} from './proto_change_detector';
 
-var _jitProtoChangeDetectorClassCounter: number = 0;
-export class JitProtoChangeDetector extends ProtoChangeDetector {
+export class JitProtoChangeDetector implements ProtoChangeDetector {
   _factory: Function;
 
   constructor(private _pipeRegistry, private definition: ChangeDetectorDefinition) {
-    super();
     this._factory = this._createFactory(definition);
   }
 
@@ -25,10 +23,8 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
     var recordBuilder = new ProtoRecordBuilder();
     ListWrapper.forEach(definition.bindingRecords,
                         (b) => { recordBuilder.add(b, definition.variableNames); });
-    var c = _jitProtoChangeDetectorClassCounter++;
     var records = coalesce(recordBuilder.records);
-    var typeName = `ChangeDetector${c}`;
-    return new ChangeDetectorJITGenerator(typeName, definition.strategy, records,
+    return new ChangeDetectorJITGenerator(definition.id, definition.strategy, records,
                                           this.definition.directiveRecords)
         .generate();
   }

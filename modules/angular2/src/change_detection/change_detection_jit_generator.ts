@@ -38,7 +38,7 @@ export class ChangeDetectorJITGenerator {
   _fieldNames: List<string>;
   _pipeNames: List<string>;
 
-  constructor(public typeName: string, public changeDetectionStrategy: string,
+  constructor(public id: string, public changeDetectionStrategy: string,
               public records: List<ProtoRecord>, public directiveRecords: List<any>) {
     this._localNames = this._getLocalNames(records);
     this._changeNames = this._getChangeNames(this._localNames);
@@ -48,10 +48,7 @@ export class ChangeDetectorJITGenerator {
 
   _getLocalNames(records: List<ProtoRecord>): List<string> {
     var index = 0;
-    var names = records.map((r) => {
-      var sanitizedName = r.name.replace(new RegExp("\\W", "g"), '');
-      return `${sanitizedName}${index++}`
-    });
+    var names = records.map((r) => { return _sanitizeName(`${r.name}${index++}`); });
     return ["context"].concat(names);
   }
 
@@ -68,9 +65,10 @@ export class ChangeDetectorJITGenerator {
   }
 
   generate(): Function {
+    var typeName = _sanitizeName(`ChangeDetector_${this.id}`);
     var classDefinition = `
-      var ${this.typeName} = function ${this.typeName}(dispatcher, pipeRegistry, protos, directiveRecords) {
-        ${ABSTRACT_CHANGE_DETECTOR}.call(this);
+      var ${typeName} = function ${typeName}(dispatcher, pipeRegistry, protos, directiveRecords) {
+        ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)});
         ${DISPATCHER_ACCESSOR} = dispatcher;
         ${PIPE_REGISTRY_ACCESSOR} = pipeRegistry;
         ${PROTOS_ACCESSOR} = protos;
@@ -80,9 +78,9 @@ export class ChangeDetectorJITGenerator {
         ${this._genFieldDefinitions()}
       }
 
-      ${this.typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
+      ${typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 
-      ${this.typeName}.prototype.detectChangesInRecords = function(throwOnChange) {
+      ${typeName}.prototype.detectChangesInRecords = function(throwOnChange) {
         if (!this.hydrated()) {
           ${UTIL}.throwDehydrated();
         }
@@ -99,11 +97,11 @@ export class ChangeDetectorJITGenerator {
         ${ALREADY_CHECKED_ACCESSOR} = true;
       }
 
-      ${this.typeName}.prototype.callOnAllChangesDone = function() {
+      ${typeName}.prototype.callOnAllChangesDone = function() {
         ${this._genCallOnAllChangesDoneBody()}
       }
 
-      ${this.typeName}.prototype.hydrate = function(context, locals, directives) {
+      ${typeName}.prototype.hydrate = function(context, locals, directives) {
         ${MODE_ACCESSOR} = "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
         ${CONTEXT_ACCESSOR} = context;
         ${LOCALS_ACCESSOR} = locals;
@@ -112,21 +110,20 @@ export class ChangeDetectorJITGenerator {
         ${ALREADY_CHECKED_ACCESSOR} = false;
       }
 
-      ${this.typeName}.prototype.dehydrate = function() {
+      ${typeName}.prototype.dehydrate = function() {
         ${this._genPipeOnDestroy()}
         ${this._genFieldDefinitions()}
         ${LOCALS_ACCESSOR} = null;
       }
 
-      ${this.typeName}.prototype.hydrated = function() {
+      ${typeName}.prototype.hydrated = function() {
         return ${CONTEXT_ACCESSOR} !== null;
       }
 
       return function(dispatcher, pipeRegistry) {
-        return new ${this.typeName}(dispatcher, pipeRegistry, protos, directiveRecords);
+        return new ${typeName}(dispatcher, pipeRegistry, protos, directiveRecords);
       }
     `;
-
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
                         'directiveRecords', classDefinition)(
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
@@ -443,4 +440,8 @@ export class ChangeDetectorJITGenerator {
     `;
     return retVal;
   }
+}
+
+function _sanitizeName(s: string): string {
+  return s.replace(new RegExp("\\W", "g"), '');
 }

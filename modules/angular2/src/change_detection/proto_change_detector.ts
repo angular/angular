@@ -25,12 +25,7 @@ import {
   SafeMethodCall
 } from './parser/ast';
 
-import {
-  ChangeDispatcher,
-  ChangeDetector,
-  ProtoChangeDetector,
-  ChangeDetectorDefinition
-} from './interfaces';
+import {ChangeDetector, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {PipeRegistry} from './pipes/pipe_registry';
@@ -41,17 +36,17 @@ import {coalesce} from './coalesce';
 
 import {ProtoRecord, RecordType} from './proto_record';
 
-export class DynamicProtoChangeDetector extends ProtoChangeDetector {
+export class DynamicProtoChangeDetector implements ProtoChangeDetector {
   _records: List<ProtoRecord>;
 
   constructor(private _pipeRegistry: PipeRegistry, private definition: ChangeDetectorDefinition) {
-    super();
     this._records = this._createRecords(definition);
   }
 
   instantiate(dispatcher: any) {
-    return new DynamicChangeDetector(this.definition.strategy, dispatcher, this._pipeRegistry,
-                                     this._records, this.definition.directiveRecords);
+    return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
+                                     this._pipeRegistry, this._records,
+                                     this.definition.directiveRecords);
   }
 
   _createRecords(definition: ChangeDetectorDefinition) {

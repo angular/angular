@@ -2,19 +2,17 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
+import {Locals} from './parser/locals';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
-export class AbstractChangeDetector extends ChangeDetector {
+export class AbstractChangeDetector implements ChangeDetector {
   lightDomChildren: List<any> = [];
   shadowDomChildren: List<any> = [];
   parent: ChangeDetector;
   mode: string = null;
   ref: ChangeDetectorRef;
 
-  constructor() {
-    super();
-    this.ref = new ChangeDetectorRef(this);
-  }
+  constructor(public id: string) { this.ref = new ChangeDetectorRef(this); }
 
   addChild(cd: ChangeDetector): void {
     this.lightDomChildren.push(cd);
@@ -51,6 +49,11 @@ export class AbstractChangeDetector extends ChangeDetector {
   }
 
   detectChangesInRecords(throwOnChange: boolean): void {}
+
+  hydrate(context: any, locals: Locals, directives: any): void {}
+
+  dehydrate(): void {}
+
   callOnAllChangesDone(): void {}
 
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
