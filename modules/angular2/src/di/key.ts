@@ -56,7 +56,7 @@ export class KeyRegistry {
     }
     token = theToken;
 
-    if (MapWrapper.contains(this._allKeys, token)) {
+    if (this._allKeys.has(token)) {
       return this._allKeys.get(token);
     }
 

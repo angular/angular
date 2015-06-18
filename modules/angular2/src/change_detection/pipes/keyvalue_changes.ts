@@ -105,7 +105,7 @@ export class KeyValueChanges extends Pipe {
           this._removeFromSeq(lastOldSeqRecord, oldSeqRecord);
           this._addToRemovals(oldSeqRecord);
         }
-        if (MapWrapper.contains(records, key)) {
+        if (records.has(key)) {
           newSeqRecord = records.get(key);
         } else {
           newSeqRecord = new KVChangeRecord(key);

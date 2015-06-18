@@ -20,7 +20,7 @@ export function getComponentId(componentStringId: string) {
 }
 
 export function insertSharedStyleText(cssText, styleHost, styleEl) {
-  if (!MapWrapper.contains(_sharedStyleTexts, cssText)) {
+  if (!_sharedStyleTexts.has(cssText)) {
     // Styles are unscoped and shared across components, only append them to the head
     // when there are not present yet
     _sharedStyleTexts.set(cssText, true);

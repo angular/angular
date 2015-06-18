@@ -36,7 +36,6 @@ class MapWrapper {
     m[p[0]] = p[1];
     return m;
   });
-  static contains(Map m, k) => m.containsKey(k);
   static forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }

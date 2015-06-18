@@ -53,7 +53,7 @@ export class Headers {
 
   get(header: string): string { return ListWrapper.first(this._headersMap.get(header)); }
 
-  has(header: string) { return MapWrapper.contains(this._headersMap, header); }
+  has(header: string) { return this._headersMap.has(header); }
 
   keys() { return MapWrapper.keys(this._headersMap); }
 

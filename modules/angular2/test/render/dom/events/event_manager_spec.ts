@@ -52,9 +52,9 @@ export function main() {
       var manager = new EventManager([plugin1, plugin2], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
-      expect(MapWrapper.contains(plugin1._nonBubbleEventHandlers, 'click')).toBe(false);
+      expect(plugin1._nonBubbleEventHandlers.has('click')).toBe(false);
       expect(plugin2._nonBubbleEventHandlers.get('click')).toBe(clickHandler);
-      expect(MapWrapper.contains(plugin2._nonBubbleEventHandlers, 'dblclick')).toBe(false);
+      expect(plugin2._nonBubbleEventHandlers.has('dblclick')).toBe(false);
       expect(plugin1._nonBubbleEventHandlers.get('dblclick')).toBe(dblClickHandler);
     });
 

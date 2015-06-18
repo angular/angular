@@ -71,7 +71,7 @@ export class TestabilityRegistry {
     if (elem == null) {
       return null;
     }
-    if (MapWrapper.contains(this._applications, elem)) {
+    if (this._applications.has(elem)) {
       return this._applications.get(elem);
     }
     if (DOM.isShadowRoot(elem)) {

@@ -69,7 +69,7 @@ export class RouteRegistry {
 
     // Don't read the annotations from a type more than once –
     // this prevents an infinite loop if a component routes recursively.
-    if (MapWrapper.contains(this._rules, component)) {
+    if (this._rules.has(component)) {
       return;
     }
     var annotations = reflector.annotations(component);

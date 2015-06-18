@@ -421,7 +421,7 @@ export class ProtoElementInjector {
     var visitedIds: Map<number, boolean> = new Map();
     ListWrapper.forEach(dirBindings, dirBinding => {
       ListWrapper.forEach(dirBinding.resolvedHostInjectables, b => {
-        if (MapWrapper.contains(visitedIds, b.key.id)) {
+        if (visitedIds.has(b.key.id)) {
           throw new BaseException(
               `Multiple directives defined the same host injectable: "${stringify(b.key.token)}"`);
         }
@@ -730,7 +730,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
   hasVariableBinding(name: string): boolean {
     var vb = this._proto.directiveVariableBindings;
-    return isPresent(vb) && MapWrapper.contains(vb, name);
+    return isPresent(vb) && vb.has(name);
   }
 
   getVariableBinding(name: string): any {
@@ -891,7 +891,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
   private _buildAttribute(dep: DirectiveDependency): string {
     var attributes = this._proto.attributes;
-    if (isPresent(attributes) && MapWrapper.contains(attributes, dep.attributeName)) {
+    if (isPresent(attributes) && attributes.has(dep.attributeName)) {
       return attributes.get(dep.attributeName);
     } else {
       return null;

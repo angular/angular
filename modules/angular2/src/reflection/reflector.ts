@@ -52,7 +52,7 @@ export class Reflector {
   }
 
   parameters(typeOrFunc): List<any> {
-    if (MapWrapper.contains(this._typeInfo, typeOrFunc)) {
+    if (this._typeInfo.has(typeOrFunc)) {
       return this._getTypeInfoField(typeOrFunc, "parameters", []);
     } else {
       return this.reflectionCapabilities.parameters(typeOrFunc);
@@ -60,7 +60,7 @@ export class Reflector {
   }
 
   annotations(typeOrFunc): List<any> {
-    if (MapWrapper.contains(this._typeInfo, typeOrFunc)) {
+    if (this._typeInfo.has(typeOrFunc)) {
       return this._getTypeInfoField(typeOrFunc, "annotations", []);
     } else {
       return this.reflectionCapabilities.annotations(typeOrFunc);
@@ -68,7 +68,7 @@ export class Reflector {
   }
 
   interfaces(type): List<any> {
-    if (MapWrapper.contains(this._typeInfo, type)) {
+    if (this._typeInfo.has(type)) {
       return this._getTypeInfoField(type, "interfaces", []);
     } else {
       return this.reflectionCapabilities.interfaces(type);
@@ -76,7 +76,7 @@ export class Reflector {
   }
 
   getter(name: string): GetterFn {
-    if (MapWrapper.contains(this._getters, name)) {
+    if (this._getters.has(name)) {
       return this._getters.get(name);
     } else {
       return this.reflectionCapabilities.getter(name);
@@ -84,7 +84,7 @@ export class Reflector {
   }
 
   setter(name: string): SetterFn {
-    if (MapWrapper.contains(this._setters, name)) {
+    if (this._setters.has(name)) {
       return this._setters.get(name);
     } else {
       return this.reflectionCapabilities.setter(name);
@@ -92,7 +92,7 @@ export class Reflector {
   }
 
   method(name: string): MethodFn {
-    if (MapWrapper.contains(this._methods, name)) {
+    if (this._methods.has(name)) {
       return this._methods.get(name);
     } else {
       return this.reflectionCapabilities.method(name);
@@ -104,7 +104,7 @@ export class Reflector {
     return isPresent(res) ? res : defaultValue;
   }
 
-  _containsTypeInfo(typeOrFunc) { return MapWrapper.contains(this._typeInfo, typeOrFunc); }
+  _containsTypeInfo(typeOrFunc) { return this._typeInfo.has(typeOrFunc); }
 }
 
 function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {

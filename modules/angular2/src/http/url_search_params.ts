@@ -19,7 +19,7 @@ export class URLSearchParams {
   paramsMap: Map<string, List<string>>;
   constructor(public rawParams: string) { this.paramsMap = paramParser(rawParams); }
 
-  has(param: string): boolean { return MapWrapper.contains(this.paramsMap, param); }
+  has(param: string): boolean { return this.paramsMap.has(param); }
 
   get(param: string): string { return ListWrapper.first(this.paramsMap.get(param)); }
 

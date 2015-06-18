@@ -65,7 +65,7 @@ export class MockXHR extends XHR {
       }
     }
 
-    if (MapWrapper.contains(this._definitions, url)) {
+    if (this._definitions.has(url)) {
       var response = this._definitions.get(url);
       request.complete(normalizeBlank(response));
       return;

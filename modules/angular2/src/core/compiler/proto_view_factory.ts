@@ -115,7 +115,7 @@ class BindingRecordsCreator {
                       directiveMetadata: renderApi.DirectiveMetadata): DirectiveRecord {
     var id = boundElementIndex * 100 + directiveIndex;
 
-    if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
+    if (!this._directiveRecordsMap.has(id)) {
       this._directiveRecordsMap.set(
           id, new DirectiveRecord({
             directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),

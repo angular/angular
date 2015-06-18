@@ -73,7 +73,7 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
 
   setLocal(contextName: string, value): void {
     if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
-    if (!MapWrapper.contains(this.proto.variableBindings, contextName)) {
+    if (!this.proto.variableBindings.has(contextName)) {
       return;
     }
     var templateName = this.proto.variableBindings.get(contextName);

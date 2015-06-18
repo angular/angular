@@ -5,7 +5,7 @@ export class Locals {
   constructor(public parent: Locals, public current: Map<any, any>) {}
 
   contains(name: string): boolean {
-    if (MapWrapper.contains(this.current, name)) {
+    if (this.current.has(name)) {
       return true;
     }
 
@@ -17,7 +17,7 @@ export class Locals {
   }
 
   get(name: string) {
-    if (MapWrapper.contains(this.current, name)) {
+    if (this.current.has(name)) {
       return this.current.get(name);
     }
 
@@ -32,7 +32,7 @@ export class Locals {
     // TODO(rado): consider removing this check if we can guarantee this is not
     // exposed to the public API.
     // TODO: vsavkin maybe it should check only the local map
-    if (MapWrapper.contains(this.current, name)) {
+    if (this.current.has(name)) {
       this.current.set(name, value);
     } else {
       throw new BaseException(

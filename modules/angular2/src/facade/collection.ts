@@ -64,7 +64,6 @@ export class MapWrapper {
     return result;
   }
   static createFromPairs(pairs: List<any>): Map<any, any> { return createMapFromPairs(pairs); }
-  static contains<K>(m: Map<K, any>, k: K) { return m.has(k); }
   static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
   static size(m: Map<any, any>) { return m.size; }
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }

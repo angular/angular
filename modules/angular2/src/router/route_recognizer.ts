@@ -90,7 +90,7 @@ export class RouteRecognizer {
     return solutions;
   }
 
-  hasRoute(name: string): boolean { return MapWrapper.contains(this.names, name); }
+  hasRoute(name: string): boolean { return this.names.has(name); }
 
   generate(name: string, params: any): string {
     var pathRecognizer = this.names.get(name);

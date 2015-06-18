@@ -198,7 +198,7 @@ class MockStep implements CompileStep {
 export class IgnoreChildrenStep implements CompileStep {
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
-    if (MapWrapper.contains(attributeMap, 'ignore-children')) {
+    if (attributeMap.has('ignore-children')) {
       current.compileChildren = false;
     }
   }
@@ -207,7 +207,7 @@ export class IgnoreChildrenStep implements CompileStep {
 class IgnoreCurrentElementStep implements CompileStep {
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
-    if (MapWrapper.contains(attributeMap, 'ignore-current')) {
+    if (attributeMap.has('ignore-current')) {
       control.ignoreCurrentElement();
     }
   }
