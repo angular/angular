@@ -126,12 +126,15 @@ class Html5LibDomAdapter implements DomAdapter {
   clearNodes(el) {
     throw 'not implemented';
   }
-  appendChild(el, node) => null;
+  appendChild(el, node) => el.append(node.remove());
   removeChild(el, node) {
     throw 'not implemented';
   }
-  remove(el) => null;
-  insertBefore(el, node) => null;
+  remove(el) => el.remove();
+  insertBefore(el, node) {
+    if (el.parent == null) throw '$el must have a parent';
+    el.parent.insertBefore(node, el);
+  }
   insertAllBefore(el, nodes) {
     throw 'not implemented';
   }
@@ -229,9 +232,11 @@ class Html5LibDomAdapter implements DomAdapter {
   getAttribute(element, String attribute) {
     throw 'not implemented';
   }
-  setAttribute(element, String name, String value) => null;
+  setAttribute(element, String name, String value) {
+    element.attributes[name] = value;
+  }
   removeAttribute(element, String attribute) {
-    throw 'not implemented';
+    element.attributes.remove(attribute);
   }
 
   templateAwareRoot(el) => el;
