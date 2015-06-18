@@ -5,6 +5,7 @@ import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Lexer, Parser} from 'angular2/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   describe('TextInterpolationParser', () => {
@@ -20,7 +21,8 @@ export function main() {
 
     function assertTextBinding(elementBinder, bindingIndex, nodeIndex, expression) {
       expect(elementBinder.textBindings[bindingIndex].source).toEqual(expression);
-      expect(elementBinder.textBindingIndices[bindingIndex]).toEqual(nodeIndex);
+      expect(elementBinder.textBindingNodes[bindingIndex])
+          .toEqual(DOM.childNodes(DOM.templateAwareRoot(elementBinder.element))[nodeIndex]);
     }
 
     it('should find text interpolation in normal elements', () => {

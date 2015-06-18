@@ -48,6 +48,7 @@ export class ProtoViewBuilder {
 
     var apiElementBinders = [];
     var transitiveContentTagCount = 0;
+    var boundTextNodeCount = 0;
     ListWrapper.forEach(this.elements, (ebb: ElementBinderBuilder) => {
       var propertySetters = new Map();
       var hostActions = new Map();
@@ -103,9 +104,10 @@ export class ProtoViewBuilder {
         textBindings: ebb.textBindings,
         readAttributes: ebb.readAttributes
       }));
-      var elementIsEmpty = this._isEmptyElement(ebb.element);
+      var childNodeInfo = this._analyzeChildNodes(ebb.element, ebb.textBindingNodes);
+      boundTextNodeCount += ebb.textBindingNodes.length;
       renderElementBinders.push(new ElementBinder({
-        textNodeIndices: ebb.textBindingIndices,
+        textNodeIndices: childNodeInfo.boundTextNodeIndices,
         contentTagSelector: ebb.contentTagSelector,
         parentIndex: parentIndex,
         distanceToParent: ebb.distanceToParent,
@@ -117,14 +119,15 @@ export class ProtoViewBuilder {
         globalEvents: ebb.eventBuilder.buildGlobalEvents(),
         hostActions: hostActions,
         propertySetters: propertySetters,
-        elementIsEmpty: elementIsEmpty
+        elementIsEmpty: childNodeInfo.elementIsEmpty
       }));
     });
     return new api.ProtoViewDto({
       render: new DomProtoViewRef(new DomProtoView({
         element: this.rootElement,
         elementBinders: renderElementBinders,
-        transitiveContentTagCount: transitiveContentTagCount
+        transitiveContentTagCount: transitiveContentTagCount,
+        boundTextNodeCount: boundTextNodeCount
       })),
       type: this.type,
       elementBinders: apiElementBinders,
@@ -132,17 +135,32 @@ export class ProtoViewBuilder {
     });
   }
 
-  _isEmptyElement(el) {
-    var childNodes = DOM.childNodes(el);
+  // Note: We need to calculate the next node indices not until the compilation is complete,
+  // as the compiler might change the order of elements.
+  private _analyzeChildNodes(parentElement: /*element*/ any,
+                             boundTextNodes: List</*node*/ any>): _ChildNodesInfo {
+    var childNodes = DOM.childNodes(DOM.templateAwareRoot(parentElement));
+    var boundTextNodeIndices = [];
+    var indexInBoundTextNodes = 0;
+    var elementIsEmpty = true;
     for (var i = 0; i < childNodes.length; i++) {
       var node = childNodes[i];
-      if ((DOM.isTextNode(node) && DOM.getText(node).trim().length > 0) ||
-          (DOM.isElementNode(node))) {
-        return false;
+      if (indexInBoundTextNodes < boundTextNodes.length &&
+          node === boundTextNodes[indexInBoundTextNodes]) {
+        boundTextNodeIndices.push(i);
+        indexInBoundTextNodes++;
+        elementIsEmpty = false;
+      } else if ((DOM.isTextNode(node) && DOM.getText(node).trim().length > 0) ||
+                 (DOM.isElementNode(node))) {
+        elementIsEmpty = false;
       }
     }
-    return true;
+    return new _ChildNodesInfo(boundTextNodeIndices, elementIsEmpty);
   }
+}
+
+class _ChildNodesInfo {
+  constructor(public boundTextNodeIndices: List<number>, public elementIsEmpty: boolean) {}
 }
 
 export class ElementBinderBuilder {
@@ -154,7 +172,7 @@ export class ElementBinderBuilder {
   variableBindings: Map<string, string> = new Map();
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
-  textBindingIndices: List<number> = [];
+  textBindingNodes: List</*node*/ any> = [];
   textBindings: List<ASTWithSource> = [];
   contentTagSelector: string = null;
   readAttributes: Map<string, string> = new Map();
@@ -214,8 +232,8 @@ export class ElementBinderBuilder {
     this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 
-  bindText(index, expression) {
-    this.textBindingIndices.push(index);
+  bindText(textNode, expression) {
+    this.textBindingNodes.push(textNode);
     this.textBindings.push(expression);
   }
 
