@@ -98,7 +98,7 @@ export function main() {
             .toEqual(kvChangesAsString(
                 {map: ['a', 'd'], previous: ['a', 'b[BB->null]', 'd'], removals: ['b[BB->null]']}));
 
-        MapWrapper.clear(m);
+        m.clear();
         changes.check(m);
         expect(changes.toString())
             .toEqual(kvChangesAsString(

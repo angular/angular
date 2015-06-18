@@ -60,8 +60,8 @@ export function shimCssForComponent(cssText: string, componentId: string): strin
 
 // Reset the caches - used for tests only
 export function resetShadowDomCache() {
-  MapWrapper.clear(_componentUIDs);
+  _componentUIDs.clear();
   _nextComponentUID = 0;
-  MapWrapper.clear(_sharedStyleTexts);
+  _sharedStyleTexts.clear();
   _lastInsertedStyleEl = null;
 }

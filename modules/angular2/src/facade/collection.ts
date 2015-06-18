@@ -67,7 +67,6 @@ export class MapWrapper {
   static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
   static size(m: Map<any, any>) { return m.size; }
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
-  static clear(m: Map<any, any>) { m.clear(); }
   static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable(m) { return m; }
   static keys<K>(m: Map<K, any>): List<K> { return m.keys(); }

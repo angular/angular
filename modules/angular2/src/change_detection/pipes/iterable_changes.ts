@@ -621,7 +621,7 @@ class _DuplicateMap {
 
   get isEmpty(): boolean { return MapWrapper.size(this.map) === 0; }
 
-  clear() { MapWrapper.clear(this.map); }
+  clear() { this.map.clear(); }
 
   toString(): string { return '_DuplicateMap(' + stringify(this.map) + ')'; }
 }

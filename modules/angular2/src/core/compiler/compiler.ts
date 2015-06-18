@@ -52,8 +52,8 @@ export class CompilerCache {
   }
 
   clear(): void {
-    MapWrapper.clear(this._cache);
-    MapWrapper.clear(this._hostCache);
+    this._cache.clear();
+    this._hostCache.clear();
   }
 }
 

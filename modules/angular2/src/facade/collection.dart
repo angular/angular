@@ -43,9 +43,6 @@ class MapWrapper {
   static void delete(Map m, k) {
     m.remove(k);
   }
-  static void clear(Map m) {
-    m.clear();
-  }
   static void clearValues(Map m) {
     for (var k in m.keys) {
       m[k] = null;
