@@ -1060,7 +1060,7 @@ export function main() {
                  var tc = rootTC.componentViewChildren[0];
                  var needsAttribute = tc.inject(NeedsAttribute);
                  expect(needsAttribute.typeAttribute).toEqual('text');
-                 expect(needsAttribute.titleAttribute).toEqual('');
+                 expect(needsAttribute.staticAttribute).toEqual('');
                  expect(needsAttribute.fooAttribute).toEqual(null);
 
                  async.done();
@@ -1886,12 +1886,13 @@ class IdDir {
 @Injectable()
 class NeedsAttribute {
   typeAttribute;
-  titleAttribute;
+  staticAttribute;
   fooAttribute;
-  constructor(@Attribute('type') typeAttribute: String, @Attribute('title') titleAttribute: String,
+  constructor(@Attribute('type') typeAttribute: String,
+              @Attribute('static') staticAttribute: String,
               @Attribute('foo') fooAttribute: String) {
     this.typeAttribute = typeAttribute;
-    this.titleAttribute = titleAttribute;
+    this.staticAttribute = staticAttribute;
     this.fooAttribute = fooAttribute;
   }
 }

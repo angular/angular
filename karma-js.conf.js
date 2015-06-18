@@ -12,21 +12,25 @@ module.exports = function(config) {
       // Loaded through the es6-module-loader, in `test-main.js`.
       {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
 
+      'node_modules/traceur/bin/traceur-runtime.js',
+      'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
+
+      // Including systemjs because it defines `__eval`, which produces correct stack traces.
+      'node_modules/systemjs/dist/system.src.js',
+      // SystemJS relies on Promise and URL; provided polyfills must only be served as they are dynamically loaded
+      {pattern: 'node_modules/systemjs/dist/system-polyfills.js', included: false, watched: false, served: true},
+
       // zone-microtask must be included first as it contains a Promise monkey patch
       'node_modules/zone.js/dist/zone-microtask.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/jasmine-patch.js',
-
-      'node_modules/traceur/bin/traceur-runtime.js',
-      'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
-      // Including systemjs because it defines `__eval`, which produces correct stack traces.
-      'node_modules/systemjs/dist/system.src.js',
+      
       {pattern: 'node_modules/rx/dist/rx.js', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
       {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false},
-      'modules/angular2/src/test_lib/shims_for_IE.ts'
+      'modules/angular2/src/test_lib/shims_for_IE.js'
     ],
 
     exclude: [
