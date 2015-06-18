@@ -111,6 +111,13 @@ export class ChromeDriverExtension extends WebDriverExtension {
         }
 
       } else if (StringWrapper.equals(cat, 'benchmark')) {
+        // TODO(goderbauer): Instead of BenchmarkInstrumentation::ImplThreadRenderingStats the
+        // following events should be used (if available) for more accurate measurments:
+        //   1st choice: vsync_before - ground truth on Android
+        //   2nd choice: BenchmarkInstrumentation::DisplayRenderingStats - available on systems with
+        //               new surfaces framework (not broadly enabled yet)
+        //   3rd choice: BenchmarkInstrumentation::ImplThreadRenderingStats - fallback event that is
+        //               allways available if something is rendered
         if (StringWrapper.equals(name, 'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
           var frameCount = event['args']['data']['frame_count'];
           if (frameCount > 1) {
@@ -119,13 +126,6 @@ export class ChromeDriverExtension extends WebDriverExtension {
           if (frameCount == 1) {
             normalizedEvents.push(normalizeEvent(event, {'name': 'frame'}));
           }
-        } else if (StringWrapper.equals(name, 'BenchmarkInstrumentation::DisplayRenderingStats') ||
-                   StringWrapper.equals(name, 'vsync_before')) {
-          // TODO(goderbauer): If present, these events should be used instead of
-          // BenchmarkInstrumentation::ImplThreadRenderingStats.
-          // However, they never seem to appear in practice. Maybe they appear on a different
-          // platform?
-          throw new BaseException('NYI');
         }
       }
     });
