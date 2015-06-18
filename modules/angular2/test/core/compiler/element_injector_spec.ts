@@ -446,7 +446,7 @@ export function main() {
         expect(inj.hostActionAccessors.length).toEqual(1);
 
         var accessor = inj.hostActionAccessors[0][0];
-        expect(accessor.actionExpression).toEqual('onAction');
+        expect(accessor.methodName).toEqual('onAction');
         expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });

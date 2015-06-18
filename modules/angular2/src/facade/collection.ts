@@ -69,8 +69,8 @@ export class MapWrapper {
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
   static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable(m) { return m; }
-  static keys<K>(m: Map<K, any>): List<K> { return m.keys(); }
-  static values<V>(m: Map<any, V>): List<V> { return m.values(); }
+  static keys<K>(m: Map<K, any>): List<K> { return (<any>Array).from(m.keys()); }
+  static values<V>(m: Map<any, V>): List<V> { return (<any>Array).from(m.values()); }
 }
 
 /**

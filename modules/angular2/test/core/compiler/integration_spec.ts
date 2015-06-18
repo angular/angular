@@ -1141,10 +1141,10 @@ export function main() {
       it('should specify a location of an error that happened during change detection (directive property)',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
 
-           tb.overrideView(MyComp, new viewAnn.View({
-             template: '<child-cmp [dir-prop]="a.b"></child-cmp>',
-             directives: [ChildComp]
-           }));
+           tb.overrideView(
+               MyComp,
+               new viewAnn.View(
+                   {template: '<child-cmp [title]="a.b"></child-cmp>', directives: [ChildComp]}));
 
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
@@ -1474,17 +1474,14 @@ class DirectiveUpdatingHostProperties {
   constructor() { this.id = "one"; }
 }
 
-@Directive({
-  selector: '[update-host-actions]',
-  host: {'@setAttr': 'setAttribute("key", $action["attrValue"])'}
-})
+@Directive({selector: '[update-host-actions]', host: {'@setAttr': 'setAttribute'}})
 @Injectable()
 class DirectiveUpdatingHostActions {
   setAttr: EventEmitter;
 
   constructor() { this.setAttr = new EventEmitter(); }
 
-  triggerSetAttr(attrValue) { ObservableWrapper.callNext(this.setAttr, {'attrValue': attrValue}); }
+  triggerSetAttr(attrValue) { ObservableWrapper.callNext(this.setAttr, ["key", attrValue]); }
 }
 
 @Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})

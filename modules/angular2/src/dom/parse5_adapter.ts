@@ -26,6 +26,20 @@ function _notImplemented(methodName) {
 export class Parse5DomAdapter extends DomAdapter {
   static makeCurrent() { setRootDomAdapter(new Parse5DomAdapter()); }
 
+  hasProperty(element, name: string) { return _HTMLElementPropertyList.indexOf(name) > -1; }
+  // TODO(tbosch): don't even call this method when we run the tests on server side
+  // by not using the DomRenderer in tests. Keeping this for now to make tests happy...
+  setProperty(el: /*element*/ any, name: string, value: any) {
+    if (name === 'innerHTML') {
+      this.setInnerHTML(el, value);
+    } else {
+      el[name] = value;
+    }
+  }
+  // TODO(tbosch): don't even call this method when we run the tests on server side
+  // by not using the DomRenderer in tests. Keeping this for now to make tests happy...
+  getProperty(el: /*element*/ any, name: string): any { return el[name]; }
+
   logError(error) { console.error(error); }
 
   get attrToPropMap() { return _attrToPropMap; }
@@ -268,7 +282,6 @@ export class Parse5DomAdapter extends DomAdapter {
       return newParser.parseFragment(serialized).childNodes[0];
     }
   }
-  hasProperty(element, name: string) { return _HTMLElementPropertyList.indexOf(name) > -1; }
   getElementsByClassName(element, name: string) {
     return this.querySelectorAll(element, "." + name);
   }

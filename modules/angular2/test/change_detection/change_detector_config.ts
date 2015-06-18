@@ -28,7 +28,7 @@ function _getParser() {
 
 function _createBindingRecords(expression: string): List<BindingRecord> {
   var ast = _getParser().parseBinding(expression, 'location');
-  return [BindingRecord.createForElement(ast, 0, PROP_NAME)];
+  return [BindingRecord.createForElementProperty(ast, 0, PROP_NAME)];
 }
 
 function _convertLocalsToVariableBindings(locals: Locals): List<any> {
@@ -247,8 +247,8 @@ class _DirectiveUpdating {
     'interpolation':
         new _DirectiveUpdating(
             [
-              BindingRecord.createForElement(_getParser().parseInterpolation('B{{a}}A', 'location'),
-                                             0, PROP_NAME)
+              BindingRecord.createForElementProperty(
+                  _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
             ],
             [])
   };

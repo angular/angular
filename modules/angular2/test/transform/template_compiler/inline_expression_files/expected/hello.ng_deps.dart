@@ -18,9 +18,6 @@ void initReflector(reflector) {
       ]
     })
     ..registerGetters({'b': (o) => o.b, 'greeting': (o) => o.greeting})
-    ..registerSetters({
-      'b': (o, v) => o.b = v,
-      'greeting': (o, v) => o.greeting = v,
-      'a': (o, v) => o.a = v
-    });
+    ..registerSetters(
+        {'b': (o, v) => o.b = v, 'greeting': (o, v) => o.greeting = v});
 }
