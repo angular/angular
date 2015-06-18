@@ -27,8 +27,11 @@ import {
  * - see `ShadowCss` for more information and limitations.
  */
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
-  constructor(public styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
-    super(styleUrlResolver, styleHost);
+  styleInliner: StyleInliner;
+
+  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
+    super(styleInliner, styleUrlResolver, styleHost);
+    this.styleInliner = styleInliner;
   }
 
   processStyleElement(hostComponentId: string, templateUrl: string, styleEl): Promise<any> {
@@ -37,20 +40,21 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
     cssText = this.styleUrlResolver.resolveUrls(cssText, templateUrl);
     var inlinedCss = this.styleInliner.inlineImports(cssText, templateUrl);
 
+    var ret = null;
     if (isPromise(inlinedCss)) {
       DOM.setText(styleEl, '');
-      return (<Promise<string>>inlinedCss)
-          .then((css) => {
-            css = shimCssForComponent(css, hostComponentId);
-            DOM.setText(styleEl, css);
-            this._moveToStyleHost(styleEl);
-          });
+      ret = (<Promise<string>>inlinedCss)
+                .then((css) => {
+                  css = shimCssForComponent(css, hostComponentId);
+                  DOM.setText(styleEl, css);
+                });
     } else {
       var css = shimCssForComponent(<string>inlinedCss, hostComponentId);
       DOM.setText(styleEl, css);
-      this._moveToStyleHost(styleEl);
-      return null;
     }
+
+    this._moveToStyleHost(styleEl);
+    return ret;
   }
 
   _moveToStyleHost(styleEl) {

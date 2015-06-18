@@ -17,6 +17,7 @@ import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -37,7 +38,8 @@ export function main() {
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
   var urlResolver = new UrlResolver();
   var styleUrlResolver = new StyleUrlResolver(urlResolver);
-  var shadowDomStrategy = new NativeShadowDomStrategy(styleUrlResolver);
+  var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
+  var shadowDomStrategy = new NativeShadowDomStrategy(styleInliner, styleUrlResolver);
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
                                                  new TemplateLoader(null, urlResolver));
   var compiler =
