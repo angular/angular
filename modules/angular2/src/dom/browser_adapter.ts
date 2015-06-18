@@ -50,6 +50,12 @@ var _chromeNumKeyPadMap = {
 
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
+  hasProperty(element, name: string) { return name in element; }
+  setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
+  getProperty(el: /*element*/ any, name: string): any { return el[name]; }
+  invoke(el: /*element*/ any, methodName: string, args: List<any>): any {
+    el[methodName].apply(el, args);
+  }
 
   // TODO(tbosch): move this into a separate environment class once we have it
   logError(error) { window.console.error(error); }
@@ -152,7 +158,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   clone(node: Node) { return node.cloneNode(true); }
-  hasProperty(element, name: string) { return name in element; }
   getElementsByClassName(element, name: string) { return element.getElementsByClassName(name); }
   getElementsByTagName(element, name: string) { return element.getElementsByTagName(name); }
   classList(element): List<any> {

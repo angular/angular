@@ -19,8 +19,21 @@ import {ASTWithSource} from 'angular2/change_detection';
  * - render compiler is not on the critical path as
  *   its output will be stored in precompiled templates.
  */
+
 export class EventBinding {
   constructor(public fullName: string, public source: ASTWithSource) {}
+}
+
+export enum PropertyBindingType {
+  PROPERTY,
+  ATTRIBUTE,
+  CLASS,
+  STYLE
+}
+
+export class ElementPropertyBinding {
+  constructor(public type: PropertyBindingType, public astWithSource: ASTWithSource,
+              public property: string, public unit: string = null) {}
 }
 
 export class ElementBinder {
@@ -29,7 +42,7 @@ export class ElementBinder {
   distanceToParent: number;
   directives: List<DirectiveBinder>;
   nestedProtoView: ProtoViewDto;
-  propertyBindings: Map<string, ASTWithSource>;
+  propertyBindings: List<ElementPropertyBinding>;
   variableBindings: Map<string, string>;
   // Note: this contains a preprocessed AST
   // that replaced the values that should be extracted from the element
@@ -45,7 +58,7 @@ export class ElementBinder {
     distanceToParent?: number,
     directives?: List<DirectiveBinder>,
     nestedProtoView?: ProtoViewDto,
-    propertyBindings?: Map<string, ASTWithSource>,
+    propertyBindings?: List<ElementPropertyBinding>,
     variableBindings?: Map<string, string>,
     eventBindings?: List<EventBinding>,
     textBindings?: List<ASTWithSource>,
@@ -72,12 +85,12 @@ export class DirectiveBinder {
   // that replaced the values that should be extracted from the element
   // with a local name
   eventBindings: List<EventBinding>;
-  hostPropertyBindings: Map<string, ASTWithSource>;
+  hostPropertyBindings: List<ElementPropertyBinding>;
   constructor({directiveIndex, propertyBindings, eventBindings, hostPropertyBindings}: {
     directiveIndex?: number,
     propertyBindings?: Map<string, ASTWithSource>,
     eventBindings?: List<EventBinding>,
-    hostPropertyBindings?: Map<string, ASTWithSource>
+    hostPropertyBindings?: List<ElementPropertyBinding>
   }) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = propertyBindings;
@@ -358,19 +371,33 @@ export class Renderer {
 
   /**
    * Sets a property on an element.
-   * Note: This will fail if the property was not mentioned previously as a host property
-   * in the ProtoView
    */
   setElementProperty(viewRef: RenderViewRef, elementIndex: number, propertyName: string,
                      propertyValue: any) {}
 
   /**
-   * Calls an action.
-   * Note: This will fail if the action was not mentioned previously as a host action
-   * in the ProtoView
+   * Sets an attribute on an element.
    */
-  callAction(viewRef: RenderViewRef, elementIndex: number, actionExpression: string,
-             actionArgs: any) {}
+  setElementAttribute(viewRef: RenderViewRef, elementIndex: number, attributeName: string,
+                      attributeValue: string) {}
+
+  /**
+   * Sets a class on an element.
+   */
+  setElementClass(viewRef: RenderViewRef, elementIndex: number, className: string, isAdd: boolean) {
+  }
+
+  /**
+   * Sets a style on an element.
+   */
+  setElementStyle(viewRef: RenderViewRef, elementIndex: number, styleName: string,
+                  styleValue: string) {}
+
+  /**
+   * Calls a method on an element.
+   */
+  invokeElementMethod(viewRef: RenderViewRef, elementIndex: number, methodName: string,
+                      args: List<any>) {}
 
   /**
    * Sets the value of a text node.

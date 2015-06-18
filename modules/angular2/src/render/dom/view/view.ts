@@ -1,13 +1,13 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
-import {Locals} from 'angular2/change_detection';
-import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, stringify} from 'angular2/src/facade/lang';
 
 import {DomProtoView} from './proto_view';
 import {LightDom} from '../shadow_dom/light_dom';
 import {DomElement} from './element';
 
 import {RenderViewRef, EventDispatcher} from '../../api';
+import {camelCaseToDashCase} from '../util';
 
 export function resolveInternalDomView(viewRef: RenderViewRef) {
   return (<DomViewRef>viewRef)._view;
@@ -40,20 +40,42 @@ export class DomView {
   }
 
   setElementProperty(elementIndex: number, propertyName: string, value: any) {
-    var setter = this.proto.elementBinders[elementIndex].propertySetters.get(propertyName);
-    setter(this.boundElements[elementIndex].element, value);
+    DOM.setProperty(this.boundElements[elementIndex].element, propertyName, value);
   }
 
-  callAction(elementIndex: number, actionExpression: string, actionArgs: any) {
-    var binder = this.proto.elementBinders[elementIndex];
-    var hostAction = binder.hostActions.get(actionExpression);
-    hostAction.eval(this.boundElements[elementIndex].element, this._localsWithAction(actionArgs));
+  setElementAttribute(elementIndex: number, attributeName: string, value: string) {
+    var element = this.boundElements[elementIndex].element;
+    var dashCasedAttributeName = camelCaseToDashCase(attributeName);
+    if (isPresent(value)) {
+      DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
+    } else {
+      DOM.removeAttribute(element, dashCasedAttributeName);
+    }
   }
 
-  _localsWithAction(action: Object): Locals {
-    var map = new Map();
-    map.set('$action', action);
-    return new Locals(null, map);
+  setElementClass(elementIndex: number, className: string, isAdd: boolean) {
+    var element = this.boundElements[elementIndex].element;
+    var dashCasedClassName = camelCaseToDashCase(className);
+    if (isAdd) {
+      DOM.addClass(element, dashCasedClassName);
+    } else {
+      DOM.removeClass(element, dashCasedClassName);
+    }
+  }
+
+  setElementStyle(elementIndex: number, styleName: string, value: string) {
+    var element = this.boundElements[elementIndex].element;
+    var dashCasedStyleName = camelCaseToDashCase(styleName);
+    if (isPresent(value)) {
+      DOM.setStyle(element, dashCasedStyleName, stringify(value));
+    } else {
+      DOM.removeStyle(element, dashCasedStyleName);
+    }
+  }
+
+  invokeElementMethod(elementIndex: number, methodName: string, args: List<any>) {
+    var element = this.boundElements[elementIndex].element;
+    DOM.invoke(element, methodName, args);
   }
 
   setText(textIndex: number, value: string) { DOM.setText(this.boundTextNodes[textIndex], value); }

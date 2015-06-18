@@ -315,13 +315,13 @@ export class EventEmitterAccessor {
 }
 
 export class HostActionAccessor {
-  constructor(public actionExpression: string, public getter: Function) {}
+  constructor(public methodName: string, public getter: Function) {}
 
   subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object) {
     var eventEmitter = this.getter(directive);
     return ObservableWrapper.subscribe(
         eventEmitter,
-        actionObj => view.callAction(boundElementIndex, this.actionExpression, actionObj));
+        actionArgs => view.invokeElementMethod(boundElementIndex, this.methodName, actionArgs));
   }
 }
 

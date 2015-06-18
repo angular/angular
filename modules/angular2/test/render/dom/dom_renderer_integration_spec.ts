@@ -91,12 +91,13 @@ export function main() {
              });
        }));
 
-    it('should update element properties', inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+    it('should update any element property/attributes/class/style independent of the compilation',
+       inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compileAll([
              someComponent,
              new ViewDefinition({
                componentId: 'someComponent',
-               template: '<input [value]="someProp">asdf',
+               template: '<input [title]="y" style="position:absolute">',
                directives: []
              })
            ])
@@ -104,33 +105,50 @@ export function main() {
                var rootView = tb.createRootView(protoViewDtos[0]);
                var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
 
+               var el = DOM.childNodes(tb.rootEl)[0];
                tb.renderer.setElementProperty(cmpView.viewRef, 0, 'value', 'hello');
+               expect(el.value).toEqual('hello');
+
+               tb.renderer.setElementClass(cmpView.viewRef, 0, 'a', true);
                expect(DOM.childNodes(tb.rootEl)[0].value).toEqual('hello');
+               tb.renderer.setElementClass(cmpView.viewRef, 0, 'a', false);
+               expect(DOM.hasClass(el, 'a')).toBe(false);
+
+               tb.renderer.setElementStyle(cmpView.viewRef, 0, 'width', '10px');
+               expect(DOM.getStyle(el, 'width')).toEqual('10px');
+               tb.renderer.setElementStyle(cmpView.viewRef, 0, 'width', null);
+               expect(DOM.getStyle(el, 'width')).toEqual('');
+
+               tb.renderer.setElementAttribute(cmpView.viewRef, 0, 'someAttr', 'someValue');
+               expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
+
                async.done();
              });
        }));
 
-    it('should call actions on the element',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
-         tb.compileAll([
-             someComponent,
-             new ViewDefinition({
-               componentId: 'someComponent',
-               template: '<input with-host-actions></input>',
-               directives: [directiveWithHostActions]
-             })
-           ])
-             .then((protoViewDtos) => {
-               var views = tb.createRootViews(protoViewDtos);
-               var componentView = views[1];
+    if (DOM.supportsDOMEvents()) {
+      it('should call actions on the element independent of the compilation',
+         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+           tb.compileAll([
+               someComponent,
+               new ViewDefinition({
+                 componentId: 'someComponent',
+                 template: '<input [title]="y"></input>',
+                 directives: []
+               })
+             ])
+               .then((protoViewDtos) => {
+                 var views = tb.createRootViews(protoViewDtos);
+                 var componentView = views[1];
 
-               tb.renderer.callAction(componentView.viewRef, 0, 'value = "val"', null);
+                 tb.renderer.invokeElementMethod(componentView.viewRef, 0, 'setAttribute',
+                                                 ['a', 'b']);
 
-               expect(DOM.getValue(DOM.childNodes(tb.rootEl)[0])).toEqual('val');
-               async.done();
-             });
-       }));
-
+                 expect(DOM.getAttribute(DOM.childNodes(tb.rootEl)[0], 'a')).toEqual('b');
+                 async.done();
+               });
+         }));
+    }
 
     it('should add and remove views to and from containers',
        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
@@ -188,10 +206,3 @@ export function main() {
 
 var someComponent = DirectiveMetadata.create(
     {id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'some-comp'});
-
-var directiveWithHostActions = DirectiveMetadata.create({
-  id: 'withHostActions',
-  type: DirectiveMetadata.DIRECTIVE_TYPE,
-  selector: '[with-host-actions]',
-  host: MapWrapper.createFromStringMap({'@setValue': 'value = "val"'})
-});

@@ -26,8 +26,7 @@ export function main() {
         someDirectiveWithHostProperties,
         someDirectiveWithHostAttributes,
         someDirectiveWithEvents,
-        someDirectiveWithGlobalEvents,
-        someDirectiveWithHostActions
+        someDirectiveWithGlobalEvents
       ];
       parser = new Parser(new Lexer());
     });
@@ -154,12 +153,6 @@ export function main() {
       expect(eventBinding.source.source).toEqual('doItGlobal()');
     });
 
-    it('should bind directive host actions', () => {
-      var results = process(el('<div some-decor-host-actions></div>'));
-      var directiveBinding = results[0].directives[0];
-      expect(directiveBinding.hostActions[0].actionName).toEqual('focus');
-    });
-
     // TODO: assertions should be enabled when running tests:
     // https://github.com/angular/angular/issues/1340
     describe('component directives', () => {
@@ -242,11 +235,6 @@ var someDirectiveWithHostAttributes = DirectiveMetadata.create({
 
 var someDirectiveWithEvents = DirectiveMetadata.create(
     {selector: '[some-decor-events]', host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})});
-
-var someDirectiveWithHostActions = DirectiveMetadata.create({
-  selector: '[some-decor-host-actions]',
-  host: MapWrapper.createFromStringMap({'@focus': 'focus()'})
-});
 
 var someDirectiveWithGlobalEvents = DirectiveMetadata.create({
   selector: '[some-decor-globalevents]',

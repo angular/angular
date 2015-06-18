@@ -99,11 +99,20 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
 
   // dispatch to element injector or text nodes based on context
   notifyOnBinding(b: BindingRecord, currentValue: any): void {
-    if (b.isElement()) {
+    if (b.isElementProperty()) {
       this.renderer.setElementProperty(this.render, b.elementIndex, b.propertyName, currentValue);
-    } else {
-      // we know it refers to _textNodes.
+    } else if (b.isElementAttribute()) {
+      this.renderer.setElementAttribute(this.render, b.elementIndex, b.propertyName, currentValue);
+    } else if (b.isElementClass()) {
+      this.renderer.setElementClass(this.render, b.elementIndex, b.propertyName, currentValue);
+    } else if (b.isElementStyle()) {
+      var unit = isPresent(b.propertyUnit) ? b.propertyUnit : '';
+      this.renderer.setElementStyle(this.render, b.elementIndex, b.propertyName,
+                                    `${currentValue}${unit}`);
+    } else if (b.isTextNode()) {
       this.renderer.setText(this.render, b.elementIndex, currentValue);
+    } else {
+      throw new BaseException('Unsupported directive record');
     }
   }
 
@@ -124,8 +133,8 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
     return isPresent(childView) ? childView.changeDetector : null;
   }
 
-  callAction(elementIndex: number, actionExpression: string, action: Object) {
-    this.renderer.callAction(this.render, elementIndex, actionExpression, action);
+  invokeElementMethod(elementIndex: number, methodName: string, args: List<any>) {
+    this.renderer.invokeElementMethod(this.render, elementIndex, methodName, args);
   }
 
   // implementation of EventDispatcher#dispatchEvent

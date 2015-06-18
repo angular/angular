@@ -187,10 +187,28 @@ export class DomRenderer extends Renderer {
     view.setElementProperty(elementIndex, propertyName, propertyValue);
   }
 
-  callAction(viewRef: RenderViewRef, elementIndex: number, actionExpression: string,
-             actionArgs: any): void {
+  setElementAttribute(viewRef: RenderViewRef, elementIndex: number, attributeName: string,
+                      attributeValue: string): void {
     var view = resolveInternalDomView(viewRef);
-    view.callAction(elementIndex, actionExpression, actionArgs);
+    view.setElementAttribute(elementIndex, attributeName, attributeValue);
+  }
+
+  setElementClass(viewRef: RenderViewRef, elementIndex: number, className: string,
+                  isAdd: boolean): void {
+    var view = resolveInternalDomView(viewRef);
+    view.setElementClass(elementIndex, className, isAdd);
+  }
+
+  setElementStyle(viewRef: RenderViewRef, elementIndex: number, styleName: string,
+                  styleValue: string): void {
+    var view = resolveInternalDomView(viewRef);
+    view.setElementStyle(elementIndex, styleName, styleValue);
+  }
+
+  invokeElementMethod(viewRef: RenderViewRef, elementIndex: number, methodName: string,
+                      args: List<any>): void {
+    var view = resolveInternalDomView(viewRef);
+    view.invokeElementMethod(elementIndex, methodName, args);
   }
 
   setText(viewRef: RenderViewRef, textNodeIndex: number, text: string): void {
