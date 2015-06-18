@@ -85,9 +85,9 @@ function _getAppBindings() {
     bind(DOCUMENT_TOKEN)
         .toValue(appDoc),
     bind(ShadowDomStrategy)
-        .toFactory((styleUrlResolver, doc) =>
-                       new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
-                   [StyleUrlResolver, DOCUMENT_TOKEN]),
+        .toFactory((styleInliner, styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(
+                       styleInliner, styleUrlResolver, doc.head),
+                   [StyleInliner, StyleUrlResolver, DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),

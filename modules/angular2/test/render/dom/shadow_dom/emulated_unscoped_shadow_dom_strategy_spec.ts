@@ -23,18 +23,26 @@ import {
 } from 'angular2/src/render/dom/shadow_dom/util';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+
+import {isBlank} from 'angular2/src/facade/lang';
+import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+
+import {XHR} from 'angular2/src/render/xhr';
 
 export function main() {
   var strategy;
 
   describe('EmulatedUnscopedShadowDomStrategy', () => {
-    var styleHost;
+    var xhr, styleHost;
 
     beforeEach(() => {
       var urlResolver = new UrlResolver();
       var styleUrlResolver = new StyleUrlResolver(urlResolver);
+      xhr = new FakeXHR();
+      var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
       styleHost = el('<div></div>');
-      strategy = new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, styleHost);
+      strategy = new EmulatedUnscopedShadowDomStrategy(styleInliner, styleUrlResolver, styleHost);
       resetShadowDomCache();
     });
 
@@ -49,11 +57,20 @@ export function main() {
       expect(styleElement).toHaveText(".foo {background-image: url('http://base/img.jpg');}");
     });
 
-    it('should not inline import rules', () => {
-      var styleElement = el('<style>@import "other.css";</style>');
-      strategy.processStyleElement('someComponent', 'http://base', styleElement);
-      expect(styleElement).toHaveText("@import 'http://base/other.css';");
-    });
+    it('should inline @import rules', inject([AsyncTestCompleter], (async) => {
+         xhr.reply('http://base/one.css', '.one {}');
+
+         var styleElement = el('<style>@import "one.css";</style>');
+         var stylePromise =
+             strategy.processStyleElement('someComponent', 'http://base', styleElement);
+         expect(stylePromise).toBePromise();
+         expect(styleElement).toHaveText('');
+
+         stylePromise.then((_) => {
+           expect(styleElement).toHaveText('.one {}\n');
+           async.done();
+         });
+       }));
 
     it('should move the style element to the style host', () => {
       var compileElement = el('<div><style>.one {}</style></div>');
@@ -78,4 +95,24 @@ export function main() {
     });
 
   });
+}
+
+class FakeXHR extends XHR {
+  _responses: Map<string, string>;
+
+  constructor() {
+    super();
+    this._responses = MapWrapper.create();
+  }
+
+  get(url: string): Promise<string> {
+    var response = MapWrapper.get(this._responses, url);
+    if (isBlank(response)) {
+      return PromiseWrapper.reject('xhr error', null);
+    }
+
+    return PromiseWrapper.resolve(response);
+  }
+
+  reply(url: string, response: string) { MapWrapper.set(this._responses, url, response); }
 }
