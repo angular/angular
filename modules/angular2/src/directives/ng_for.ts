@@ -1,5 +1,12 @@
 import {Directive} from 'angular2/annotations';
-import {ViewContainerRef, ViewRef, ProtoViewRef} from 'angular2/core';
+import {
+  ViewContainerRef,
+  ViewRef,
+  ProtoViewRef,
+  PipeRegistry,
+  onCheck,
+  Pipe
+} from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -34,17 +41,25 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/directives
  */
-@Directive(
-    {selector: '[ng-for][ng-for-of]', properties: ['iterableChanges: ngForOf | iterableDiff']})
+@Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [onCheck]})
 export class NgFor {
-  viewContainer: ViewContainerRef;
-  protoViewRef: ProtoViewRef;
-  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
-    this.viewContainer = viewContainer;
-    this.protoViewRef = protoViewRef;
+  _ngForOf: any;
+  _pipe: Pipe;
+
+  constructor(private viewContainer: ViewContainerRef, private protoViewRef: ProtoViewRef,
+              private pipes: PipeRegistry) {}
+
+  set ngForOf(value: any) {
+    this._ngForOf = value;
+    this._pipe = this.pipes.get("iterableDiff", value, null, this._pipe);
   }
 
-  set iterableChanges(changes) {
+  onCheck() {
+    var diff = this._pipe.transform(this._ngForOf);
+    if (isPresent(diff)) this._applyChanges(diff.wrapped);
+  }
+
+  private _applyChanges(changes) {
     if (isBlank(changes)) {
       this.viewContainer.clear();
       return;
@@ -67,11 +82,11 @@ export class NgFor {
     NgFor.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
-      this.perViewChange(insertTuples[i].view, insertTuples[i].record);
+      this._perViewChange(insertTuples[i].view, insertTuples[i].record);
     }
   }
 
-  perViewChange(view, record) {
+  private _perViewChange(view, record) {
     view.setLocal('\$implicit', record.item);
     view.setLocal('index', record.currentIndex);
   }

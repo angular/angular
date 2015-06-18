@@ -6,7 +6,7 @@ import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
-import {Pipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
+import {BindingPipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
   constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
@@ -38,8 +38,6 @@ export function main() {
   function parseInterpolation(text, location = null): any {
     return createParser().parseInterpolation(text, location);
   }
-
-  function addPipes(ast, pipes): any { return createParser().addPipes(ast, pipes); }
 
   function emptyLocals() { return new Locals(null, new Map()); }
 
@@ -412,7 +410,7 @@ export function main() {
         it("should parse pipes", () => {
           var originalExp = '"Foo" | uppercase';
           var ast = parseBinding(originalExp).ast;
-          expect(ast).toBeAnInstanceOf(Pipe);
+          expect(ast).toBeAnInstanceOf(BindingPipe);
           expect(new Unparser().unparse(ast)).toEqual(`(${originalExp})`);
         });
 
@@ -600,7 +598,7 @@ export function main() {
       it('should parse pipes', () => {
         var bindings = parseTemplateBindings('key value|pipe');
         var ast = bindings[0].expression.ast;
-        expect(ast).toBeAnInstanceOf(Pipe);
+        expect(ast).toBeAnInstanceOf(BindingPipe);
       });
     });
 
@@ -619,29 +617,6 @@ export function main() {
         var originalExp = 'before {{ a }} middle {{ b }} after';
         var ast = parseInterpolation(originalExp).ast;
         expect(new Unparser().unparse(ast)).toEqual(originalExp);
-      });
-    });
-
-    describe('addPipes', () => {
-      it('should return the given ast whe the list of pipes is empty', () => {
-        var ast = parseBinding("1 + 1", "Location");
-        var transformedAst = addPipes(ast, []);
-        expect(transformedAst).toBe(ast);
-      });
-
-      it('should append pipe ast nodes', () => {
-        var ast = parseBinding("1 + 1", "Location");
-        var transformedAst = addPipes(ast, ['one', 'two']);
-        expect(transformedAst.ast.name).toEqual("two");
-        expect(transformedAst.ast.exp.name).toEqual("one");
-        expect(transformedAst.ast.exp.exp.operation).toEqual("+");
-      });
-
-      it('should preserve location and source', () => {
-        var ast = parseBinding("1 + 1", "Location");
-        var transformedAst = addPipes(ast, ['one', 'two']);
-        expect(transformedAst.source).toEqual("1 + 1");
-        expect(transformedAst.location).toEqual("Location");
       });
     });
 

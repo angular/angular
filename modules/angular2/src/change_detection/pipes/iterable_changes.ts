@@ -15,12 +15,10 @@ import {
   isArray
 } from 'angular2/src/facade/lang';
 
-import {WrappedValue, Pipe, PipeFactory} from './pipe';
+import {WrappedValue, Pipe, BasePipe, PipeFactory} from './pipe';
 
 @CONST()
-export class IterableChangesFactory extends PipeFactory {
-  constructor() { super(); }
-
+export class IterableChangesFactory implements PipeFactory {
   supports(obj): boolean { return IterableChanges.supportsObj(obj); }
 
   create(cdRef): Pipe { return new IterableChanges(); }
@@ -29,7 +27,7 @@ export class IterableChangesFactory extends PipeFactory {
 /**
  * @exportedAs angular2/pipes
  */
-export class IterableChanges extends Pipe {
+export class IterableChanges extends BasePipe {
   private _collection = null;
   private _length: int = null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
@@ -95,7 +93,7 @@ export class IterableChanges extends Pipe {
     if (this.check(collection)) {
       return WrappedValue.wrap(this);
     } else {
-      return this;
+      return null;
     }
   }
 

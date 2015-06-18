@@ -23,7 +23,7 @@ import {Pipe} from './pipe';
  *
  * @exportedAs angular2/pipes
  */
-export class UpperCasePipe extends Pipe {
+export class UpperCasePipe implements Pipe {
   _latestValue: string = null;
 
   supports(str): boolean { return isString(str); }

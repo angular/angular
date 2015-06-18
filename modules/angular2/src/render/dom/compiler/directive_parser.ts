@@ -147,8 +147,7 @@ export class DirectiveParser implements CompileStep {
 
     // Bindings are optional, so this binding only needs to be set up if an expression is given.
     if (isPresent(bindingAst)) {
-      var fullExpAstWithBindPipes = this._parser.addPipes(bindingAst, pipes);
-      directiveBinderBuilder.bindProperty(dirProperty, fullExpAstWithBindPipes);
+      directiveBinderBuilder.bindProperty(dirProperty, bindingAst);
     }
   }
 

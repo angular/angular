@@ -23,7 +23,7 @@ import {Pipe} from './pipe';
  *
  * @exportedAs angular2/pipes
  */
-export class LowerCasePipe extends Pipe {
+export class LowerCasePipe implements Pipe {
   _latestValue: string = null;
 
   supports(str): boolean { return isString(str); }

@@ -36,10 +36,12 @@ var _wrappedIndex = 0;
  * #Example
  *
  * ```
- * class DoublePipe extends Pipe {
+ * class DoublePipe implements Pipe {
  *  supports(obj) {
  *    return true;
  *  }
+ *
+ *  onDestroy() {}
  *
  *  transform(value) {
  *    return `${value}${value}`;
@@ -49,24 +51,34 @@ var _wrappedIndex = 0;
  *
  * @exportedAs angular2/pipes
  */
-export class Pipe {
-  supports(obj): boolean { return false; }
-  onDestroy() {}
-  transform(value: any): any { return null; }
+export interface Pipe {
+  supports(obj): boolean;
+  onDestroy(): void;
+  transform(value: any): any;
 }
 
-// TODO: vsavkin: make it an interface
-@CONST()
-export class PipeFactory {
-  supports(obs): boolean {
-    _abstract();
-    return false;
-  }
+/**
+ * Provides default implementation of supports and onDestroy.
+ *
+ * #Example
+ *
+ * ```
+ * class DoublePipe extends BasePipe {*
+ *  transform(value) {
+ *    return `${value}${value}`;
+ *  }
+ * }
+ * ```
+ */
+export class BasePipe implements Pipe {
+  supports(obj): boolean { return true; }
+  onDestroy(): void {}
+  transform(value: any): any { return _abstract(); }
+}
 
-  create(cdRef): Pipe {
-    _abstract();
-    return null;
-  }
+export interface PipeFactory {
+  supports(obs): boolean;
+  create(cdRef): Pipe;
 }
 
 function _abstract() {

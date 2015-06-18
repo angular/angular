@@ -1,15 +1,13 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {stringify, looseIdentical, isJsObject, CONST} from 'angular2/src/facade/lang';
 
-import {WrappedValue, Pipe, PipeFactory} from './pipe';
+import {WrappedValue, BasePipe, Pipe, PipeFactory} from './pipe';
 
 /**
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class KeyValueChangesFactory extends PipeFactory {
-  constructor() { super(); }
-
+export class KeyValueChangesFactory implements PipeFactory {
   supports(obj): boolean { return KeyValueChanges.supportsObj(obj); }
 
   create(cdRef): Pipe { return new KeyValueChanges(); }
@@ -18,7 +16,7 @@ export class KeyValueChangesFactory extends PipeFactory {
 /**
  * @exportedAs angular2/pipes
  */
-export class KeyValueChanges extends Pipe {
+export class KeyValueChanges extends BasePipe {
   private _records: Map<any, any> = new Map();
   private _mapHead: KVChangeRecord = null;
   private _previousMapHead: KVChangeRecord = null;
@@ -37,7 +35,7 @@ export class KeyValueChanges extends Pipe {
     if (this.check(map)) {
       return WrappedValue.wrap(this);
     } else {
-      return this;
+      return null;
     }
   }
 

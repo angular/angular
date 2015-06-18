@@ -145,7 +145,7 @@ export class ChangeDetectorJITGenerator {
   _getNonNullPipeNames(): List<string> {
     var pipes = [];
     this.records.forEach((r) => {
-      if (r.mode === RecordType.PIPE || r.mode === RecordType.BINDING_PIPE) {
+      if (r.isPipeRecord()) {
         pipes.push(this._pipeNames[r.selfIndex]);
       }
     });
@@ -245,7 +245,7 @@ export class ChangeDetectorJITGenerator {
     var change = this._changeNames[r.selfIndex];
 
     var pipe = this._pipeNames[r.selfIndex];
-    var cdRef = r.mode === RecordType.BINDING_PIPE ? "this.ref" : "null";
+    var cdRef = "this.ref";
 
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;

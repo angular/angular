@@ -223,7 +223,7 @@ class _CodegenState {
   List<String> _getNonNullPipeNames() {
     return _records
         .where((r) =>
-            r.mode == RecordType.PIPE || r.mode == RecordType.BINDING_PIPE)
+            r.mode == RecordType.PIPE)
         .map((r) => _pipeNames[r.selfIndex])
         .toList();
   }
@@ -310,7 +310,7 @@ class _CodegenState {
     var change = _changeNames[r.selfIndex];
 
     var pipe = _pipeNames[r.selfIndex];
-    var cdRef = r.mode == RecordType.BINDING_PIPE ? 'this.ref' : 'null';
+    var cdRef = 'this.ref';
 
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;

@@ -1,13 +1,11 @@
 import {isBlank, CONST} from 'angular2/src/facade/lang';
-import {Pipe, WrappedValue, PipeFactory} from './pipe';
+import {Pipe, BasePipe, WrappedValue, PipeFactory} from './pipe';
 
 /**
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class NullPipeFactory extends PipeFactory {
-  constructor() { super(); }
-
+export class NullPipeFactory implements PipeFactory {
   supports(obj): boolean { return NullPipe.supportsObj(obj); }
 
   create(cdRef): Pipe { return new NullPipe(); }
@@ -16,7 +14,7 @@ export class NullPipeFactory extends PipeFactory {
 /**
  * @exportedAs angular2/pipes
  */
-export class NullPipe extends Pipe {
+export class NullPipe extends BasePipe {
   called: boolean = false;
 
   static supportsObj(obj): boolean { return isBlank(obj); }

@@ -1,5 +1,5 @@
 import {isBlank, isPresent, Json} from 'angular2/src/facade/lang';
-import {Pipe, PipeFactory} from './pipe';
+import {Pipe, BasePipe, PipeFactory} from './pipe';
 
 /**
  * Implements json transforms to any object.
@@ -26,9 +26,7 @@ import {Pipe, PipeFactory} from './pipe';
  *
  * @exportedAs angular2/pipes
  */
-export class JsonPipe extends Pipe {
-  supports(obj): boolean { return true; }
-
+export class JsonPipe extends BasePipe {
   transform(value): string { return Json.stringify(value); }
 
   create(cdRef): Pipe { return this }

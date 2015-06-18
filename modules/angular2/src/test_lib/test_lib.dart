@@ -187,7 +187,7 @@ class SpyFunction extends gns.SpyFunction {
 class SpyObject extends gns.SpyObject {
   final Map<String, SpyFunction> _spyFuncs = {};
 
-  SpyObject([arg, arg2]) {}
+  SpyObject([arg]) {}
 
   SpyFunction spy(String funcName) =>
       _spyFuncs.putIfAbsent(funcName, () => new SpyFunction(funcName));

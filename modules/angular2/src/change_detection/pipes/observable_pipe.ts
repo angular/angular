@@ -29,14 +29,14 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *
  * @exportedAs angular2/pipes
  */
-export class ObservablePipe extends Pipe {
+export class ObservablePipe implements Pipe {
   _latestValue: Object = null;
   _latestReturnedValue: Object = null;
 
   _subscription: Object = null;
   _observable: Observable = null;
 
-  constructor(public _ref: ChangeDetectorRef) { super(); }
+  constructor(public _ref: ChangeDetectorRef) {}
 
   supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 
@@ -91,9 +91,7 @@ export class ObservablePipe extends Pipe {
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class ObservablePipeFactory extends PipeFactory {
-  constructor() { super(); }
-
+export class ObservablePipeFactory implements PipeFactory {
   supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 
   create(cdRef): Pipe { return new ObservablePipe(cdRef); }

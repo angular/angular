@@ -8,10 +8,15 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 export class CSSClass {
   _domEl;
   _pipe;
-  _prevRawClass;
-  rawClass;
+  _rawClass;
+
   constructor(private _pipeRegistry: PipeRegistry, ngEl: ElementRef) {
     this._domEl = ngEl.domElement;
+  }
+
+  set rawClass(v) {
+    this._rawClass = v;
+    this._pipe = this._pipeRegistry.get('keyValDiff', this._rawClass);
   }
 
   _toggleClass(className, enabled): void {
@@ -23,19 +28,15 @@ export class CSSClass {
   }
 
   onCheck() {
-    if (this.rawClass != this._prevRawClass) {
-      this._prevRawClass = this.rawClass;
-      this._pipe = isPresent(this.rawClass) ?
-                       this._pipeRegistry.get('keyValDiff', this.rawClass, null) :
-                       null;
-    }
+    var diff = this._pipe.transform(this._rawClass);
+    if (isPresent(diff)) this._applyChanges(diff.wrapped);
+  }
 
-    if (isPresent(this._pipe) && this._pipe.check(this.rawClass)) {
-      this._pipe.forEachAddedItem(
-          (record) => { this._toggleClass(record.key, record.currentValue); });
-      this._pipe.forEachChangedItem(
-          (record) => { this._toggleClass(record.key, record.currentValue); });
-      this._pipe.forEachRemovedItem((record) => {
+  private _applyChanges(diff) {
+    if (isPresent(diff)) {
+      diff.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
+      diff.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
+      diff.forEachRemovedItem((record) => {
         if (record.previousValue) {
           DOM.removeClass(this._domEl, record.key);
         }

@@ -12,7 +12,6 @@ export enum RecordType {
   INVOKE_CLOSURE,
   KEYED_ACCESS,
   PIPE,
-  BINDING_PIPE,
   INTERPOLATE,
   SAFE_PROPERTY,
   SAFE_INVOKE_METHOD,
@@ -30,9 +29,7 @@ export class ProtoRecord {
     return this.mode === RecordType.INTERPOLATE || this.mode === RecordType.PRIMITIVE_OP;
   }
 
-  isPipeRecord(): boolean {
-    return this.mode === RecordType.PIPE || this.mode === RecordType.BINDING_PIPE;
-  }
+  isPipeRecord(): boolean { return this.mode === RecordType.PIPE; }
 
   isLifeCycleRecord(): boolean { return this.mode === RecordType.DIRECTIVE_LIFECYCLE; }
 }

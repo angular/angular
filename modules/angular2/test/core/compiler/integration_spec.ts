@@ -36,6 +36,7 @@ import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/faca
 
 import {Injector, bind, Injectable, Binding, forwardRef, OpaqueToken, Inject} from 'angular2/di';
 import {
+  PipeFactory,
   PipeRegistry,
   defaultPipeRegistry,
   ChangeDetection,
@@ -243,12 +244,11 @@ export function main() {
           ];
         });
 
-        it("should support pipes in bindings and bind config",
+        it("should support pipes in bindings",
            inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              tb.overrideView(MyComp, new viewAnn.View({
-               template:
-                   '<component-with-pipes #comp [prop]="ctxProp | double"></component-with-pipes>',
-               directives: [ComponentWithPipes]
+               template: '<div [my-dir] #dir="mydir" [elprop]="ctxProp | double"></div>',
+               directives: [MyDir]
              }));
 
              tb.createView(MyComp, {context: ctx})
@@ -256,10 +256,8 @@ export function main() {
                    ctx.ctxProp = 'a';
                    view.detectChanges();
 
-                   var comp = view.rawView.locals.get("comp");
-
-                   // it is doubled twice: once in the binding, second time in the bind config
-                   expect(comp.prop).toEqual('aaaa');
+                   var dir = view.rawView.locals.get("dir");
+                   expect(dir.dirProp).toEqual('aa');
                    async.done();
                  });
            }));
@@ -1292,7 +1290,7 @@ class DynamicViewport {
   }
 }
 
-@Directive({selector: '[my-dir]', properties: ['dirProp: elprop']})
+@Directive({selector: '[my-dir]', properties: ['dirProp: elprop'], exportAs: 'mydir'})
 @Injectable()
 class MyDir {
   dirProp: string;
@@ -1349,7 +1347,7 @@ class MyComp {
   }
 }
 
-@Component({selector: 'component-with-pipes', properties: ["prop: prop | double"]})
+@Component({selector: 'component-with-pipes', properties: ["prop"]})
 @View({template: ''})
 @Injectable()
 class ComponentWithPipes {
@@ -1430,14 +1428,16 @@ class SomeViewport {
 }
 
 @Injectable()
-class DoublePipe extends Pipe {
+class DoublePipe implements Pipe {
+  onDestroy() {}
+
   supports(obj) { return true; }
 
   transform(value) { return `${value}${value}`; }
 }
 
 @Injectable()
-class DoublePipeFactory {
+class DoublePipeFactory implements PipeFactory {
   supports(obj) { return true; }
 
   create(cdRef) { return new DoublePipe(); }

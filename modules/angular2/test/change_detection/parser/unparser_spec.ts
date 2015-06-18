@@ -10,7 +10,7 @@ import {
   Conditional,
   EmptyExpr,
   If,
-  Pipe,
+  BindingPipe,
   ImplicitReceiver,
   Interpolation,
   KeyedAccess,
@@ -68,7 +68,7 @@ export function main() {
     it('should support Pipe', () => {
       var originalExp = '(a | b)';
       var ast = parseBinding(originalExp).ast;
-      expect(ast).toBeAnInstanceOf(Pipe);
+      expect(ast).toBeAnInstanceOf(BindingPipe);
       expect(unparser.unparse(ast)).toEqual(originalExp);
     });
 

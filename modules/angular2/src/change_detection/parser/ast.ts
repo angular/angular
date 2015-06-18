@@ -141,11 +141,8 @@ export class KeyedAccess extends AST {
   visit(visitor: AstVisitor) { return visitor.visitKeyedAccess(this); }
 }
 
-export class Pipe extends AST {
-  constructor(public exp: AST, public name: string, public args: List<any>,
-              public inBinding: boolean) {
-    super();
-  }
+export class BindingPipe extends AST {
+  constructor(public exp: AST, public name: string, public args: List<any>) { super(); }
 
   visit(visitor: AstVisitor) { return visitor.visitPipe(this); }
 }
@@ -336,7 +333,7 @@ export interface AstVisitor {
   visitChain(ast: Chain): any;
   visitConditional(ast: Conditional): any;
   visitIf(ast: If): any;
-  visitPipe(ast: Pipe): any;
+  visitPipe(ast: BindingPipe): any;
   visitFunctionCall(ast: FunctionCall): any;
   visitImplicitReceiver(ast: ImplicitReceiver): any;
   visitInterpolation(ast: Interpolation): any;
@@ -394,8 +391,8 @@ export class AstTransformer implements AstVisitor {
                            ast.falseExp.visit(this));
   }
 
-  visitPipe(ast: Pipe) {
-    return new Pipe(ast.exp.visit(this), ast.name, this.visitAll(ast.args), ast.inBinding);
+  visitPipe(ast: BindingPipe) {
+    return new BindingPipe(ast.exp.visit(this), ast.name, this.visitAll(ast.args));
   }
 
   visitKeyedAccess(ast: KeyedAccess) {

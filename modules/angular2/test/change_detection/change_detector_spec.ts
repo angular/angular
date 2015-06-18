@@ -1,3 +1,4 @@
+///<reference path="../../src/change_detection/pipes/pipe.ts"/>
 import {
   ddescribe,
   describe,
@@ -853,28 +854,19 @@ export function main() {
   });
 }
 
-class CountingPipe extends Pipe {
-  state: number;
+class CountingPipe implements Pipe {
+  state: number = 0;
 
-  constructor() {
-    super();
-    this.state = 0;
-  }
+  onDestroy() {}
 
   supports(newValue) { return true; }
 
   transform(value) { return `${value} state:${this.state ++}`; }
 }
 
-class OncePipe extends Pipe {
-  called: boolean;
-  destroyCalled: boolean;
-
-  constructor() {
-    super();
-    this.called = false;
-    this.destroyCalled = false;
-  }
+class OncePipe implements Pipe {
+  called: boolean = false;
+  destroyCalled: boolean = false;
 
   supports(newValue) { return !this.called; }
 
@@ -886,11 +878,19 @@ class OncePipe extends Pipe {
   }
 }
 
-class IdentityPipe extends Pipe {
+class IdentityPipe implements Pipe {
+  supports(obj): boolean { return true; }
+
+  onDestroy() {}
+
   transform(value) { return value; }
 }
 
-class WrappedPipe extends Pipe {
+class WrappedPipe implements Pipe {
+  supports(obj): boolean { return true; }
+
+  onDestroy() {}
+
   transform(value) { return WrappedValue.wrap(value); }
 }
 
@@ -907,7 +907,7 @@ class FakePipeRegistry extends PipeRegistry {
     this.numberOfLookups = 0;
   }
 
-  get(type: string, obj, cdRef) {
+  get(type: string, obj, cdRef?, existingPipe?) {
     if (type != this.pipeType) return null;
     this.numberOfLookups++;
     this.cdRef = cdRef;

@@ -86,17 +86,6 @@ export function main() {
       expect(directiveBinding.propertyBindings.get('dirProp').source).toEqual('someExpr');
     });
 
-    it('should bind directive properties with pipes', () => {
-      var results = process(el('<div some-decor-props></div>'),
-                            {'elProp': parser.parseBinding('someExpr', '')});
-      var directiveBinding = results[0].directives[0];
-      var pipedProp = <any>directiveBinding.propertyBindings.get('doubleProp');
-      var simpleProp = <any>directiveBinding.propertyBindings.get('dirProp');
-      expect(pipedProp.ast.name).toEqual('double');
-      expect(pipedProp.ast.exp).toEqual(simpleProp.ast);
-      expect(simpleProp.source).toEqual('someExpr');
-    });
-
     it('should bind directive properties from attribute values', () => {
       var results = process(el('<div some-decor-props el-prop="someValue"></div>'));
       var directiveBinding = results[0].directives[0];
@@ -237,7 +226,7 @@ var decoratorWithMultipleAttrs = DirectiveMetadata.create({
 
 var someDirectiveWithProps = DirectiveMetadata.create({
   selector: '[some-decor-props]',
-  properties: ['dirProp: elProp', 'doubleProp: elProp | double'],
+  properties: ['dirProp: elProp'],
   readAttributes: ['some-attr']
 });
 

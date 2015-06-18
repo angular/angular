@@ -8,7 +8,7 @@ import {
   Conditional,
   EmptyExpr,
   If,
-  Pipe,
+  BindingPipe,
   FunctionCall,
   ImplicitReceiver,
   Interpolation,
@@ -81,7 +81,7 @@ export class Unparser implements AstVisitor {
     }
   }
 
-  visitPipe(ast: Pipe) {
+  visitPipe(ast: BindingPipe) {
     this._expression += '(';
     this._visit(ast.exp);
     this._expression += ` | ${ast.name}`;

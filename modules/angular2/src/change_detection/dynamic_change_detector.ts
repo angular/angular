@@ -269,14 +269,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isPresent(storedPipe)) {
       storedPipe.onDestroy();
     }
-
-    // Currently, only pipes that used in bindings in the template get
-    // the changeDetectorRef of the encompassing component.
-    //
-    // In the future, pipes declared in the bind configuration should
-    // be able to access the changeDetectorRef of that component.
-    var cdr = proto.mode === RecordType.BINDING_PIPE ? this.ref : null;
-    var pipe = this.pipeRegistry.get(proto.name, context, cdr);
+    var pipe = this.pipeRegistry.get(proto.name, context, this.ref);
     this._writePipe(proto, pipe);
     return pipe;
   }

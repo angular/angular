@@ -11,7 +11,7 @@ import {
   Chain,
   Conditional,
   If,
-  Pipe,
+  BindingPipe,
   FunctionCall,
   ImplicitReceiver,
   Interpolation,
@@ -179,10 +179,9 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
                            null, 0);
   }
 
-  visitPipe(ast: Pipe) {
+  visitPipe(ast: BindingPipe) {
     var value = ast.exp.visit(this);
-    var type = ast.inBinding ? RecordType.BINDING_PIPE : RecordType.PIPE;
-    return this._addRecord(type, ast.name, ast.name, [], null, value);
+    return this._addRecord(RecordType.PIPE, ast.name, ast.name, [], null, value);
   }
 
   visitKeyedAccess(ast: KeyedAccess) {
