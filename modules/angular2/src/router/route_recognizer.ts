@@ -14,7 +14,7 @@ import {
   StringMapWrapper
 } from 'angular2/src/facade/collection';
 
-import {PathRecognizer} from './path_recognizer';
+import {PathRecognizer, ContinuationSegment} from './path_recognizer';
 
 /**
  * `RouteRecognizer` is responsible for recognizing routes for a single component.
@@ -34,7 +34,7 @@ export class RouteRecognizer {
 
   addRedirect(path: string, target: string): void { this.redirects.set(path, target); }
 
-  addConfig(path: string, handler: any, alias: string = null): void {
+  addConfig(path: string, handler: any, alias: string = null): boolean {
     var recognizer = new PathRecognizer(path, handler);
     MapWrapper.forEach(this.matchers, (matcher, _) => {
       if (recognizer.regex.toString() == matcher.regex.toString()) {
@@ -46,6 +46,7 @@ export class RouteRecognizer {
     if (isPresent(alias)) {
       this.names.set(alias, recognizer);
     }
+    return recognizer.terminal;
   }
 
 
@@ -62,8 +63,8 @@ export class RouteRecognizer {
         if (path == url) {
           url = target;
         }
-      } else if (StringWrapper.startsWith(url, path)) {
-        url = target + StringWrapper.substring(url, path.length);
+      } else if (url.startsWith(path)) {
+        url = target + url.substring(path.length);
       }
     });
 
@@ -75,7 +76,7 @@ export class RouteRecognizer {
         var unmatchedUrl = '';
         if (url != '/') {
           matchedUrl = match[0];
-          unmatchedUrl = StringWrapper.substring(url, match[0].length);
+          unmatchedUrl = url.substring(match[0].length);
         }
         solutions.push(new RouteMatch({
           specificity: pathRecognizer.specificity,
