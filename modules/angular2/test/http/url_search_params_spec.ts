@@ -22,14 +22,14 @@ export function main() {
       // Compliant with spec described at https://url.spec.whatwg.org/#urlsearchparams
       expect(searchParams.has("topic")).toBe(true);
       expect(searchParams.has("foo")).toBe(false);
-      expect(searchParams.get("topic")).toBe("api");
+      expect(searchParams.get("topic")).toEqual("api");
       expect(searchParams.getAll("topic")).toEqual(["api"]);
       expect(searchParams.get("foo")).toBe(null);
       searchParams.append("topic", "webdev");
       expect(searchParams.getAll("topic")).toEqual(["api", "webdev"]);
-      expect(searchParams.toString()).toBe("q=URLUtils.searchParams&topic=api&topic=webdev");
+      expect(searchParams.toString()).toEqual("q=URLUtils.searchParams&topic=api&topic=webdev");
       searchParams.delete("topic");
-      expect(searchParams.toString()).toBe("q=URLUtils.searchParams");
+      expect(searchParams.toString()).toEqual("q=URLUtils.searchParams");
     });
   });
 }

@@ -1,8 +1,9 @@
-import {RequestMethods, RequestModesOpts, RequestCredentialsOpts} from './enums';
-import {URLSearchParams} from './url_search_params';
-import {IRequestOptions, IRequest} from './interfaces';
+import {RequestMethods, RequestModesOpts, RequestCredentialsOpts, RequestCacheOpts} from './enums';
+import {RequestOptions} from './base_request_options';
+import {IRequestOptions} from './interfaces';
 import {Headers} from './headers';
-import {BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
+import {BaseException, RegExpWrapper, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 // TODO(jeffbcross): properly implement body accessors
 /**
@@ -13,7 +14,7 @@ import {BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
  * but is considered a static value whose body can be accessed many times. There are other
  * differences in the implementation, but this is the most significant.
  */
-export class Request implements IRequest {
+export class Request {
   /**
    * Http method with which to perform the request.
    *
@@ -27,22 +28,27 @@ export class Request implements IRequest {
    * Spec](https://fetch.spec.whatwg.org/#headers-class). {@link Headers} class reference.
    */
   headers: Headers;
+  /** Url of the remote resource */
+  url: string;
+  // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
+  private _body: string;
+  cache: RequestCacheOpts;
+  // TODO(jeffbcross): determine way to add type to destructured args
+  constructor(options?: IRequestOptions) {
+    var requestOptions: RequestOptions = options instanceof
+        StringMap ? RequestOptions.fromStringWrapper(<StringMap<string, any>>options) :
+                    <RequestOptions>options;
 
-  private _body: URLSearchParams | FormData | Blob | string;
-
-  constructor(/** Url of the remote resource */ public url: string,
-              {body, method = RequestMethods.GET, mode = RequestModesOpts.Cors,
-               credentials = RequestCredentialsOpts.Omit,
-               headers = new Headers()}: IRequestOptions = {}) {
-    this._body = body;
-    this.method = method;
-    // Defaults to 'cors', consistent with browser
+    this.url = requestOptions.url;
+    this._body = requestOptions.body;
+    this.method = requestOptions.method;
     // TODO(jeffbcross): implement behavior
-    this.mode = mode;
+    this.mode = requestOptions.mode;
     // Defaults to 'omit', consistent with browser
     // TODO(jeffbcross): implement behavior
-    this.credentials = credentials;
-    this.headers = headers;
+    this.credentials = requestOptions.credentials;
+    this.headers = requestOptions.headers;
+    this.cache = requestOptions.cache;
   }
 
   /**
@@ -50,5 +56,5 @@ export class Request implements IRequest {
    * empty
    * string.
    */
-  text(): String { return this._body ? this._body.toString() : ''; }
+  text(): String { return isPresent(this._body) ? this._body.toString() : ''; }
 }

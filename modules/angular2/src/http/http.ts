@@ -1,24 +1,25 @@
-/// <reference path="../../typings/rx/rx.d.ts" />
-
+import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Injectable} from 'angular2/src/di/decorators';
-import {IRequestOptions, Connection, IHttp} from './interfaces';
+import {IRequestOptions, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
-import {Response} from './static_response';
-import {XHRBackend} from './backends/xhr_backend';
-import {BaseRequestOptions} from './base_request_options';
+import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethods} from './enums';
-import {URLSearchParams} from './url_search_params';
-import * as Rx from 'rx';
+import {EventEmitter} from 'angular2/src/facade/async';
 
-function httpRequest(backend: XHRBackend, request: Request): Rx.Observable<Response> {
-  return <Rx.Observable<Response>>(Observable.create(observer => {
-    var connection: Connection = backend.createConnection(request);
-    var internalSubscription = connection.response.subscribe(observer);
-    return () => {
-      internalSubscription.dispose();
-      connection.dispose();
-    };
-  }));
+function httpRequest(backend: ConnectionBackend, request: Request): EventEmitter {
+  return backend.createConnection(request).response;
+}
+
+function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
+  var newOptions = defaultOpts;
+  if (isPresent(providedOpts)) {
+    newOptions = newOptions.merge(providedOpts);
+  }
+  if (isPresent(method)) {
+    return newOptions.merge({method: method, url: url});
+  } else {
+    return newOptions.merge({url: url});
+  }
 }
 
 /**
@@ -72,7 +73,7 @@ function httpRequest(backend: XHRBackend, request: Request): Rx.Observable<Respo
  **/
 @Injectable()
 export class Http {
-  constructor(private _backend: XHRBackend, private _defaultOptions: BaseRequestOptions) {}
+  constructor(private _backend: ConnectionBackend, private _defaultOptions: BaseRequestOptions) {}
 
   /**
    * Performs any type of http request. First argument is required, and can either be a url or
@@ -80,75 +81,68 @@ export class Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string | Request, options?: IRequestOptions): Rx.Observable<Response> {
-    if (typeof url === 'string') {
-      return httpRequest(this._backend, new Request(url, this._defaultOptions.merge(options)));
+  request(url: string | Request, options?: IRequestOptions): EventEmitter {
+    var responseObservable: EventEmitter;
+    if (isString(url)) {
+      responseObservable = httpRequest(
+          this._backend,
+          new Request(mergeOptions(this._defaultOptions, options, RequestMethods.GET, url)));
     } else if (url instanceof Request) {
-      return httpRequest(this._backend, url);
+      responseObservable = httpRequest(this._backend, url);
     }
+    return responseObservable;
   }
 
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: IRequestOptions): Rx.Observable<Response> {
-    return httpRequest(this._backend, new Request(url, this._defaultOptions.merge(options)
-                                                           .merge({method: RequestMethods.GET})));
+  get(url: string, options?: IRequestOptions) {
+    return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
+                                                               RequestMethods.GET, url)));
   }
 
   /**
    * Performs a request with `post` http method.
    */
-  post(url: string, body: URLSearchParams | FormData | Blob | string,
-       options?: IRequestOptions): Rx.Observable<Response> {
+  post(url: string, body: string, options?: IRequestOptions) {
     return httpRequest(this._backend,
-                       new Request(url, this._defaultOptions.merge(options)
-
-                                            .merge({body: body, method: RequestMethods.POST})));
+                       new Request(mergeOptions(this._defaultOptions.merge({body: body}), options,
+                                                RequestMethods.POST, url)));
   }
 
   /**
    * Performs a request with `put` http method.
    */
-  put(url: string, body: URLSearchParams | FormData | Blob | string,
-      options?: IRequestOptions): Rx.Observable<Response> {
+  put(url: string, body: string, options?: IRequestOptions) {
     return httpRequest(this._backend,
-                       new Request(url, this._defaultOptions.merge(options)
-                                            .merge({body: body, method: RequestMethods.PUT})));
+                       new Request(mergeOptions(this._defaultOptions.merge({body: body}), options,
+                                                RequestMethods.PUT, url)));
   }
 
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: IRequestOptions): Rx.Observable<Response> {
-    return httpRequest(this._backend, new Request(url, this._defaultOptions.merge(options).merge(
-                                                           {method: RequestMethods.DELETE})));
+  delete (url: string, options?: IRequestOptions) {
+    return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
+                                                               RequestMethods.DELETE, url)));
   }
 
   /**
    * Performs a request with `patch` http method.
    */
-  patch(url: string, body: URLSearchParams | FormData | Blob | string,
-        options?: IRequestOptions): Rx.Observable<Response> {
+  patch(url: string, body: string, options?: IRequestOptions) {
     return httpRequest(this._backend,
-                       new Request(url, this._defaultOptions.merge(options)
-                                            .merge({body: body, method: RequestMethods.PATCH})));
+                       new Request(mergeOptions(this._defaultOptions.merge({body: body}), options,
+                                                RequestMethods.PATCH, url)));
   }
 
   /**
    * Performs a request with `head` http method.
    */
-  head(url: string, options?: IRequestOptions): Rx.Observable<Response> {
-    return httpRequest(this._backend, new Request(url, this._defaultOptions.merge(options)
-                                                           .merge({method: RequestMethods.HEAD})));
+  head(url: string, options?: IRequestOptions) {
+    return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
+                                                               RequestMethods.HEAD, url)));
   }
-}
-
-var Observable;
-if (Rx.hasOwnProperty('default')) {
-  Observable = (<any>Rx).default.Rx.Observable;
-} else {
-  Observable = Rx.Observable;
 }
 
 /**
@@ -174,10 +168,10 @@ if (Rx.hasOwnProperty('default')) {
  * }
  * ```
  **/
-export function HttpFactory(backend: XHRBackend, defaultOptions: BaseRequestOptions): IHttp {
+export function HttpFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
   return function(url: string | Request, options?: IRequestOptions) {
-    if (typeof url === 'string') {
-      return httpRequest(backend, new Request(url, defaultOptions.merge(options)));
+    if (isString(url)) {
+      return httpRequest(backend, new Request(mergeOptions(defaultOptions, options, null, url)));
     } else if (url instanceof Request) {
       return httpRequest(backend, url);
     }

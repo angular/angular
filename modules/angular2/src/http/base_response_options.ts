@@ -3,21 +3,19 @@ import {ResponseTypes} from './enums';
 import {ResponseOptions} from './interfaces';
 
 export class BaseResponseOptions implements ResponseOptions {
+  body: string | Object | ArrayBuffer | JSON | FormData | Blob;
   status: number;
-  headers: Headers | Object;
+  headers: Headers;
   statusText: string;
   type: ResponseTypes;
   url: string;
 
-  constructor({status = 200, statusText = 'Ok', type = ResponseTypes.Default,
-               headers = new Headers(), url = ''}: ResponseOptions = {}) {
-    this.status = status;
-    this.statusText = statusText;
-    this.type = type;
-    this.headers = headers;
-    this.url = url;
+  constructor() {
+    this.status = 200;
+    this.statusText = 'Ok';
+    this.type = ResponseTypes.Default;
+    this.headers = new Headers();
   }
 }
-;
 
-export var baseResponseOptions = Object.freeze(new BaseResponseOptions());
+export var baseResponseOptions = new BaseResponseOptions();

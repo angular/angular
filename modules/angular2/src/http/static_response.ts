@@ -1,7 +1,7 @@
 import {IResponse, ResponseOptions} from './interfaces';
 import {ResponseTypes} from './enums';
 import {baseResponseOptions} from './base_response_options';
-import {BaseException, isJsObject, isString, global} from 'angular2/src/facade/lang';
+import {BaseException, isJsObject, isString, isPresent, Json} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 
 // TODO: make this injectable so baseResponseOptions can be overridden, mostly for the benefit of
@@ -72,34 +72,37 @@ export class Response implements IResponse {
    * Spec](https://fetch.spec.whatwg.org/#headers-class).
    */
   headers: Headers;
-  constructor(private _body?: string | Object | ArrayBuffer | JSON | FormData | Blob,
-              {status, statusText, headers, type, url}: ResponseOptions = baseResponseOptions) {
+  // TODO: Support ArrayBuffer, JSON, FormData, Blob
+  private _body: string | Object;
+  constructor({body, status, statusText, headers, type, url}: ResponseOptions = {}) {
     if (isJsObject(headers)) {
       headers = new Headers(headers);
     }
-    this.status = status;
-    this.statusText = statusText;
-    this.headers = <Headers>headers;
-    this.type = type;
-    this.url = url;
+    this._body = isPresent(body) ? body : baseResponseOptions.body;
+    this.status = isPresent(status) ? status : baseResponseOptions.status;
+    this.statusText = isPresent(statusText) ? statusText : baseResponseOptions.statusText;
+    this.headers = isPresent(headers) ? <Headers>headers : baseResponseOptions.headers;
+    this.type = isPresent(type) ? type : baseResponseOptions.type;
+    this.url = isPresent(url) ? url : baseResponseOptions.url;
   }
 
   /**
    * Not yet implemented
    */
-  blob(): Blob {
-    throw new BaseException('"blob()" method not implemented on Response superclass');
-  }
+  // TODO: Blob return type
+  blob(): any { throw new BaseException('"blob()" method not implemented on Response superclass'); }
 
   /**
    * Attempts to return body as parsed `JSON` object, or raises an exception.
    */
-  json(): JSON {
+  json(): Object {
+    var jsonResponse;
     if (isJsObject(this._body)) {
-      return <JSON>this._body;
+      jsonResponse = this._body;
     } else if (isString(this._body)) {
-      return global.JSON.parse(<string>this._body);
+      jsonResponse = Json.parse(<string>this._body);
     }
+    return jsonResponse;
   }
 
   /**
@@ -110,7 +113,8 @@ export class Response implements IResponse {
   /**
    * Not yet implemented
    */
-  arrayBuffer(): ArrayBuffer {
+  // TODO: ArrayBuffer return type
+  arrayBuffer(): any {
     throw new BaseException('"arrayBuffer()" method not implemented on Response superclass');
   }
 }
