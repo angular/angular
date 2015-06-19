@@ -78,7 +78,8 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
   // We actually don't want to parse param docs in this package as we are getting the data out using TS
   parseTagsProcessor.tagDefinitions.forEach(function(tagDef) {
     if (tagDef.name === 'param') {
-      tagDef.ignore = true;
+      tagDef.docProperty = 'paramData';
+      tagDef.transforms = [];
     }
   });
 
