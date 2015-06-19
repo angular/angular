@@ -11,11 +11,11 @@ import {XHRBackend, XHRConnection} from 'angular2/src/http/backends/xhr_backend'
 import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
 import {ConnectionBackend} from 'angular2/src/http/interfaces';
+import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 
 export {MockConnection, MockBackend} from 'angular2/src/http/backends/mock_backend';
 export {Request} from 'angular2/src/http/static_request';
 export {Response} from 'angular2/src/http/static_response';
-import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 
 export {
   IRequestOptions,
@@ -24,6 +24,7 @@ export {
   ConnectionBackend
 } from 'angular2/src/http/interfaces';
 
+export {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 export {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
 export {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 export {XHRBackend, XHRConnection} from 'angular2/src/http/backends/xhr_backend';
