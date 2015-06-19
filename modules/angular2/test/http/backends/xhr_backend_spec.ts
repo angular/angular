@@ -14,13 +14,15 @@ import {BrowserXHR} from 'angular2/src/http/backends/browser_xhr';
 import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
 import {bind, Injector} from 'angular2/di';
 import {Request} from 'angular2/src/http/static_request';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {RequestOptions} from 'angular2/src/http/base_request_options';
 
 var abortSpy;
 var sendSpy;
 var openSpy;
 var addEventListenerSpy;
 
-class MockBrowserXHR extends SpyObject {
+class MockBrowserXHR extends BrowserXHR {
   abort: any;
   send: any;
   open: any;
@@ -29,24 +31,26 @@ class MockBrowserXHR extends SpyObject {
   responseText: string;
   constructor() {
     super();
-    this.abort = abortSpy = this.spy('abort');
-    this.send = sendSpy = this.spy('send');
-    this.open = openSpy = this.spy('open');
-    this.addEventListener = addEventListenerSpy = this.spy('addEventListener');
+    var spy = new SpyObject();
+    this.abort = abortSpy = spy.spy('abort');
+    this.send = sendSpy = spy.spy('send');
+    this.open = openSpy = spy.spy('open');
+    this.addEventListener = addEventListenerSpy = spy.spy('addEventListener');
   }
+
+  build() { return new MockBrowserXHR(); }
 }
 
 export function main() {
   describe('XHRBackend', () => {
     var backend;
     var sampleRequest;
-    var constructSpy = new SpyObject();
 
     beforeEach(() => {
       var injector =
-          Injector.resolveAndCreate([bind(BrowserXHR).toValue(MockBrowserXHR), XHRBackend]);
+          Injector.resolveAndCreate([bind(BrowserXHR).toClass(MockBrowserXHR), XHRBackend]);
       backend = injector.get(XHRBackend);
-      sampleRequest = new Request('https://google.com');
+      sampleRequest = new Request(new RequestOptions({url: 'https://google.com'}));
     });
 
     it('should create a connection',
@@ -55,22 +59,21 @@ export function main() {
 
     describe('XHRConnection', () => {
       it('should call abort when disposed', () => {
-        var connection = new XHRConnection(sampleRequest, MockBrowserXHR);
+        var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
         connection.dispose();
         expect(abortSpy).toHaveBeenCalled();
       });
 
 
       it('should automatically call open with method and url', () => {
-        new XHRConnection(sampleRequest, MockBrowserXHR);
+        new XHRConnection(sampleRequest, new MockBrowserXHR());
         expect(openSpy).toHaveBeenCalledWith('GET', sampleRequest.url);
       });
 
 
       it('should automatically call send on the backend with request body', () => {
         var body = 'Some body to love';
-        var request = new Request('https://google.com', {body: body});
-        var connection = new XHRConnection(request, MockBrowserXHR);
+        new XHRConnection(new Request(new RequestOptions({body: body})), new MockBrowserXHR());
         expect(sendSpy).toHaveBeenCalledWith(body);
       });
     });

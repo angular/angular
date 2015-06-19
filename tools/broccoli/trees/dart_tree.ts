@@ -44,16 +44,7 @@ function stripModulePrefix(relativePath: string): string {
 
 function getSourceTree() {
   // Transpile everything in 'modules' except for rtts_assertions.
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'],
-                                  // TODO(jeffbcross): add http when lib supports dart
-                                  [
-                                    'rtts_assert/**/*',
-                                    'examples/e2e_test/http/**/*',
-                                    'examples/src/http/**/*',
-                                    'angular2/src/http/**/*',
-                                    'angular2/test/http/**/*',
-                                    'angular2/http.ts'
-                                  ]);
+  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*']);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
@@ -107,6 +98,11 @@ function getHtmlSourcesTree() {
   return mergeTrees([htmlSrcsTree, urlParamsToFormTree]);
 }
 
+function getExamplesJsonTree() {
+  // Copy JSON files
+  return modulesFunnel(['examples/**/*.json']);
+}
+
 
 function getTemplatedPubspecsTree() {
   // The JSON structure for templating pubspec.yaml files.
@@ -154,7 +150,7 @@ function getDocsTree() {
 
 module.exports = function makeDartTree(options: AngularBuilderOptions) {
   var dartSources = dartfmt(getSourceTree(), {dartSDK: options.dartSDK, logs: options.logs});
-  var sourceTree = mergeTrees([dartSources, getHtmlSourcesTree()]);
+  var sourceTree = mergeTrees([dartSources, getHtmlSourcesTree(), getExamplesJsonTree()]);
   sourceTree = fixDartFolderLayout(sourceTree);
 
   var dartTree = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);

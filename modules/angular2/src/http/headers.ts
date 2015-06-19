@@ -11,7 +11,8 @@ import {
   List,
   Map,
   MapWrapper,
-  ListWrapper
+  ListWrapper,
+  StringMap
 } from 'angular2/src/facade/collection';
 
 /**
@@ -21,15 +22,15 @@ import {
  */
 export class Headers {
   _headersMap: Map<string, List<string>>;
-  constructor(headers?: Headers | Object) {
+  constructor(headers?: Headers | StringMap<string, any>) {
     if (isBlank(headers)) {
       this._headersMap = new Map();
       return;
     }
 
-    if (isPresent((<Headers>headers)._headersMap)) {
+    if (headers instanceof Headers) {
       this._headersMap = (<Headers>headers)._headersMap;
-    } else if (isJsObject(headers)) {
+    } else if (headers instanceof StringMap) {
       this._headersMap = MapWrapper.createFromStringMap(headers);
       MapWrapper.forEach(this._headersMap, (v, k) => {
         if (!isListLikeIterable(v)) {
@@ -42,7 +43,8 @@ export class Headers {
   }
 
   append(name: string, value: string): void {
-    var list = this._headersMap.get(name) || [];
+    var mapName = this._headersMap.get(name);
+    var list = isListLikeIterable(mapName) ? mapName : [];
     list.push(value);
     this._headersMap.set(name, list);
   }
@@ -57,13 +59,19 @@ export class Headers {
 
   keys(): List<string> { return MapWrapper.keys(this._headersMap); }
 
-  // TODO: this implementation seems wrong. create list then check if it's iterable?
   set(header: string, value: string | List<string>): void {
     var list = [];
-    if (!isListLikeIterable(value)) {
-      list.push(value);
+    var isDart = false;
+    // Dart hack
+    if (list.toString().length === 2) {
+      isDart = true;
+    }
+    if (isListLikeIterable(value)) {
+      var pushValue = (<List<string>>value).toString();
+      if (isDart) pushValue = pushValue.substring(1, pushValue.length - 1);
+      list.push(pushValue);
     } else {
-      list.push(ListWrapper.toString((<List<string>>value)));
+      list.push(value);
     }
 
     this._headersMap.set(header, list);
@@ -71,7 +79,10 @@ export class Headers {
 
   values(): List<List<string>> { return MapWrapper.values(this._headersMap); }
 
-  getAll(header: string): Array<string> { return this._headersMap.get(header) || []; }
+  getAll(header: string): Array<string> {
+    var headers = this._headersMap.get(header);
+    return isListLikeIterable(headers) ? headers : [];
+  }
 
   entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
 }

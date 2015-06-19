@@ -3,7 +3,9 @@ import {Request} from 'angular2/src/http/static_request';
 import {Response} from 'angular2/src/http/static_response';
 import {ReadyStates} from 'angular2/src/http/enums';
 import {Connection, ConnectionBackend} from 'angular2/src/http/interfaces';
-import * as Rx from 'rx';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+import {isPresent} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, BaseException} from 'angular2/src/facade/lang';
 
 /**
  *
@@ -14,7 +16,8 @@ import * as Rx from 'rx';
  * {@link MockBackend} in order to mock responses to requests.
  *
  **/
-export class MockConnection implements Connection {
+@IMPLEMENTS(Connection)
+export class MockConnection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than XHR states.
   /**
@@ -33,18 +36,12 @@ export class MockConnection implements Connection {
    * Observable](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md)
    * of {@link Response}. Can be subscribed to in order to be notified when a response is available.
    */
-  response: Rx.Subject<Response>;
+  response: EventEmitter;
 
   constructor(req: Request) {
-    if (Rx.hasOwnProperty('default')) {
-      this.response = new ((<any>Rx).default.Rx.Subject)();
-    } else {
-      this.response = new Rx.Subject<Response>();
-    }
-
+    this.response = new EventEmitter();
     this.readyState = ReadyStates.OPEN;
     this.request = req;
-    this.dispose = this.dispose.bind(this);
   }
 
   /**
@@ -71,12 +68,12 @@ export class MockConnection implements Connection {
    *
    */
   mockRespond(res: Response) {
-    if (this.readyState >= ReadyStates.DONE) {
-      throw new Error('Connection has already been resolved');
+    if (this.readyState === ReadyStates.DONE || this.readyState === ReadyStates.CANCELLED) {
+      throw new BaseException('Connection has already been resolved');
     }
     this.readyState = ReadyStates.DONE;
-    this.response.onNext(res);
-    this.response.onCompleted();
+    ObservableWrapper.callNext(this.response, res);
+    ObservableWrapper.callReturn(this.response);
   }
 
   /**
@@ -100,8 +97,8 @@ export class MockConnection implements Connection {
   mockError(err?) {
     // Matches XHR semantics
     this.readyState = ReadyStates.DONE;
-    this.response.onError(err);
-    this.response.onCompleted();
+    ObservableWrapper.callThrow(this.response, err);
+    ObservableWrapper.callReturn(this.response);
   }
 }
 
@@ -137,7 +134,8 @@ export class MockConnection implements Connection {
  * This method only exists in the mock implementation, not in real Backends.
  **/
 @Injectable()
-export class MockBackend implements ConnectionBackend {
+@IMPLEMENTS(ConnectionBackend)
+export class MockBackend {
   /**
    * [RxJS
    * Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/subjects/subject.md)
@@ -171,7 +169,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: Rx.Subject<MockConnection>;
+  connections: EventEmitter;  //<MockConnection>
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -188,20 +186,14 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: Rx.Observable<MockConnection>;
+  pendingConnections: EventEmitter;  //<MockConnection>
   constructor() {
-    var Observable;
     this.connectionsArray = [];
-    if (Rx.hasOwnProperty('default')) {
-      this.connections = new (<any>Rx).default.Rx.Subject();
-      Observable = (<any>Rx).default.Rx.Observable;
-    } else {
-      this.connections = new Rx.Subject<MockConnection>();
-      Observable = Rx.Observable;
-    }
-    this.connections.subscribe(connection => this.connectionsArray.push(connection));
-    this.pendingConnections =
-        Observable.fromArray(this.connectionsArray).filter((c) => c.readyState < ReadyStates.DONE);
+    this.connections = new EventEmitter();
+    ObservableWrapper.subscribe(this.connections,
+                                connection => this.connectionsArray.push(connection));
+    this.pendingConnections = new EventEmitter();
+    // Observable.fromArray(this.connectionsArray).filter((c) => c.readyState < ReadyStates.DONE);
   }
 
   /**
@@ -211,8 +203,8 @@ export class MockBackend implements ConnectionBackend {
    */
   verifyNoPendingRequests() {
     let pending = 0;
-    this.pendingConnections.subscribe((c) => pending++);
-    if (pending > 0) throw new Error(`${pending} pending connections to be resolved`);
+    ObservableWrapper.subscribe(this.pendingConnections, c => pending++);
+    if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
   }
 
   /**
@@ -221,7 +213,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { this.connections.subscribe((c) => c.readyState = 4); }
+  resolveAllConnections() { ObservableWrapper.subscribe(this.connections, c => c.readyState = 4); }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new
@@ -229,12 +221,12 @@ export class MockBackend implements ConnectionBackend {
    * observable of this `MockBackend` instance. This method will usually only be used by tests
    * against the framework itself, not by end-users.
    */
-  createConnection(req: Request): Connection {
-    if (!req || !(req instanceof Request)) {
-      throw new Error(`createConnection requires an instance of Request, got ${req}`);
+  createConnection(req: Request) {
+    if (!isPresent(req) || !(req instanceof Request)) {
+      throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }
     let connection = new MockConnection(req);
-    this.connections.onNext(connection);
+    ObservableWrapper.callNext(this.connections, connection);
     return connection;
   }
 }

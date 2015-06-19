@@ -1,4 +1,5 @@
 import {bootstrap, Component, View, NgFor, Inject} from 'angular2/angular2';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 import {Http, httpInjectables} from 'angular2/http';
 
 @Component({selector: 'http-app'})
@@ -8,7 +9,7 @@ import {Http, httpInjectables} from 'angular2/http';
     <h1>people</h1>
     <ul class="people">
       <li *ng-for="#person of people">
-        hello, {{person.name}}
+        hello, {{person['name']}}
       </li>
     </ul>
   `
@@ -16,6 +17,6 @@ import {Http, httpInjectables} from 'angular2/http';
 export class HttpCmp {
   people: Object;
   constructor(http: Http) {
-    http.get('./people.json').map(res => res.json()).subscribe(people => this.people = people);
+    ObservableWrapper.subscribe(http.get('./people.json'), res => this.people = res.json());
   }
 }

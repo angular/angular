@@ -1,11 +1,11 @@
 import {CONST_EXPR, CONST, isPresent} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
-import {URLSearchParams} from './url_search_params';
 import {RequestModesOpts, RequestMethods, RequestCacheOpts, RequestCredentialsOpts} from './enums';
 import {IRequestOptions} from './interfaces';
 import {Injectable} from 'angular2/di';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 
+const INITIALIZER = CONST_EXPR({});
 /**
  * Creates a request options object with default properties as described in the [Fetch
  * Spec](https://fetch.spec.whatwg.org/#requestinit) to be optionally provided when instantiating a
@@ -28,28 +28,49 @@ export class RequestOptions implements IRequestOptions {
   /**
    * Body to be used when creating the request.
    */
-  body: URLSearchParams | FormData | Blob | string;
+  // TODO: support FormData, Blob, URLSearchParams, JSON
+  body: string;
   mode: RequestModesOpts = RequestModesOpts.Cors;
   credentials: RequestCredentialsOpts;
   cache: RequestCacheOpts;
-  constructor({method, headers, body, mode, credentials, cache}: IRequestOptions = {
-    method: RequestMethods.GET,
-    mode: RequestModesOpts.Cors
-  }) {
-    this.method = method;
+  url: string;
+  constructor({method, headers, body, mode, credentials, cache, url}: IRequestOptions = {}) {
+    this.method = isPresent(method) ? method : RequestMethods.GET;
     this.headers = headers;
     this.body = body;
-    this.mode = mode;
+    this.mode = isPresent(mode) ? mode : RequestModesOpts.Cors;
     this.credentials = credentials;
     this.cache = cache;
+    this.url = url;
   }
 
   /**
    * Creates a copy of the `RequestOptions` instance, using the optional input as values to override
    * existing values.
    */
-  merge(opts: IRequestOptions = {}): RequestOptions {
-    return new RequestOptions(StringMapWrapper.merge(this, opts));
+  merge({url = null, method = null, headers = null, body = null, mode = null, credentials = null,
+         cache = null}: any = {}): RequestOptions {
+    return new RequestOptions({
+      method: isPresent(method) ? method : this.method,
+      headers: isPresent(headers) ? headers : this.headers,
+      body: isPresent(body) ? body : this.body,
+      mode: isPresent(mode) ? mode : this.mode,
+      credentials: isPresent(credentials) ? credentials : this.credentials,
+      cache: isPresent(cache) ? cache : this.cache,
+      url: isPresent(url) ? url : this.url
+    });
+  }
+
+  static fromStringWrapper(map: StringMap<string, any>): RequestOptions {
+    return new RequestOptions({
+      method: StringMapWrapper.get(map, 'method'),
+      headers: StringMapWrapper.get(map, 'headers'),
+      body: StringMapWrapper.get(map, 'body'),
+      mode: StringMapWrapper.get(map, 'mode'),
+      credentials: StringMapWrapper.get(map, 'credentials'),
+      cache: StringMapWrapper.get(map, 'cache'),
+      url:<string>StringMapWrapper.get(map, 'url')
+    })
   }
 }
 

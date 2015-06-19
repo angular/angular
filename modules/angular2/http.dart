@@ -1,1 +1,0 @@
-library angular2.http;

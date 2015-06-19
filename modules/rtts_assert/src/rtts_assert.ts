@@ -302,6 +302,7 @@ function define(classOrName, check) {
   return cls;
 }
 
+
 var assert: any = function(value) {
   return {
     is: function is(...types) {

@@ -10,20 +10,24 @@ import {Http, HttpFactory} from './src/http/http';
 import {XHRBackend, XHRConnection} from 'angular2/src/http/backends/xhr_backend';
 import {BrowserXHR} from 'angular2/src/http/backends/browser_xhr';
 import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
+import {ConnectionBackend} from 'angular2/src/http/interfaces';
 
 export {MockConnection, MockBackend} from 'angular2/src/http/backends/mock_backend';
 export {Request} from 'angular2/src/http/static_request';
 export {Response} from 'angular2/src/http/static_response';
 
-export {Http, XHRBackend, XHRConnection, BaseRequestOptions, RequestOptions, HttpFactory};
 export {
   IHttp,
   IRequestOptions,
-  IRequest,
   IResponse,
   Connection,
   ConnectionBackend
 } from 'angular2/src/http/interfaces';
+
+export {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
+export {XHRBackend, XHRConnection} from 'angular2/src/http/backends/xhr_backend';
+export {Http, HttpFactory} from './src/http/http';
+
 export {Headers} from 'angular2/src/http/headers';
 
 export * from 'angular2/src/http/enums';
@@ -47,8 +51,9 @@ export {URLSearchParams} from 'angular2/src/http/url_search_params';
  *
  */
 export var httpInjectables: List<any> = [
-  bind(BrowserXHR)
-      .toValue(BrowserXHR),
+  bind(ConnectionBackend)
+      .toClass(XHRBackend),
+  BrowserXHR,
   XHRBackend,
   BaseRequestOptions,
   bind(HttpFactory).toFactory(HttpFactory, [XHRBackend, BaseRequestOptions]),
