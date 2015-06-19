@@ -8,6 +8,28 @@ import {IterableChanges} from 'angular2/src/change_detection/pipes/iterable_chan
 import {isPresent, isString, StringWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
+/**
+ * Adds and removes CSS classes based on an {expression} value.
+ *
+ * The result of expression is used to add and remove CSS classes using the following logic,
+ * based on expression's value type:
+ * - {string} - all the CSS classes (space - separated) are added
+ * - {Array} - all the CSS classes (Array elements) are added
+ * - {Object} - each key corresponds to a CSS class name while values
+ * are interpreted as {boolean} expression. If a given expression
+ * evaluates to {true} a corresponding CSS class is added - otherwise
+ * it is removed.
+ *
+ * # Example:
+ *
+ * ```
+ * <div class="message" [class]="{error: errorCount > 0}">
+ *     Please check errors.
+ * </div>
+ * ```
+ *
+ * @exportedAs angular2/directives
+ */
 @Directive({selector: '[class]', lifecycle: [onCheck], properties: ['rawClass: class']})
 export class CSSClass {
   _pipe: Pipe;
