@@ -53,7 +53,8 @@ const kServedPaths = [
   'examples/src/material/input',
   'examples/src/material/progress-linear',
   'examples/src/material/radio',
-  'examples/src/material/switcher'
+  'examples/src/material/switcher',
+  'examples/src/material/tabs',
 ];
 
 

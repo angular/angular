@@ -1,0 +1,400 @@
+@import "../../core/style/variables";
+@import "../../core/style/shadows";
+
+// TODO(jelbourn): This goes away.
+@import "../../core/style/default-theme";
+
+
+
+
+/// TMP
+@mixin pie-clearfix {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+///
+
+
+$tabs-paginator-width: $baseline-grid * 4 !default;
+$tabs-tab-width: $baseline-grid * 12 !default;
+$tabs-header-height: 48px !default;
+
+@keyframes md-tab-content-hide {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+md-tabs {
+  display: block;
+  margin: 0;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+
+  &.ng-animate {
+    transition: height $swift-ease-in-out-duration $swift-ease-in-out-timing-function;
+  }
+
+  &:not(.md-no-tab-content):not([md-dynamic-height]) {
+    min-height: 200 + $tabs-header-height;
+  }
+
+  &[md-align-tabs="bottom"] {
+    .md-tabs-wrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: $tabs-header-height;
+    }
+
+    .md-tabs-content-wrapper {
+      top: 0;
+      bottom: $tabs-header-height;
+    }
+  }
+
+  &[md-dynamic-height] {
+    .md-tabs-content-wrapper {
+      min-height: 0;
+      position: relative;
+      top: auto; left: auto; right: auto; bottom: auto;
+      overflow: visible;
+    }
+    .md-tab-content {
+      &.md-active {
+        position: relative;
+      }
+    }
+  }
+
+  &[md-border-bottom] {
+    .md-tabs-wrapper {
+      border-width: 0 0 1px;
+      border-style: solid;
+      .md-tab {
+        padding-bottom: 11px;
+      }
+    }
+  }
+}
+
+.md-tabs-wrapper {
+  display: block;
+  position: relative;
+
+  .md-prev-button, .md-next-button {
+    height: 100%;
+    width: $tabs-paginator-width;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    line-height: 1em;
+    z-index: 2;
+    cursor: pointer;
+    font-size: 16px;
+    background: transparent no-repeat center center;
+    transition: $swift-ease-in-out;
+
+    &:focus {
+      outline: none;
+    }
+
+    &.md-disabled {
+      opacity: 0.25;
+      cursor: default;
+    }
+
+    &.ng-leave {
+      transition: none;
+    }
+
+    md-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate3d(-50%, -50%, 0);
+    }
+  }
+
+  md-prev-button {
+    left: 0;
+    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE3LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPiA8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPiA8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjQgMjQiIHhtbDpzcGFjZT0icHJlc2VydmUiPiA8ZyBpZD0iSGVhZGVyIj4gPGc+IDxyZWN0IHg9Ii02MTgiIHk9Ii0xMjA4IiBmaWxsPSJub25lIiB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNjAwIi8+IDwvZz4gPC9nPiA8ZyBpZD0iTGFiZWwiPiA8L2c+IDxnIGlkPSJJY29uIj4gPGc+IDxwb2x5Z29uIHBvaW50cz0iMTUuNCw3LjQgMTQsNiA4LDEyIDE0LDE4IDE1LjQsMTYuNiAxMC44LDEyIAkJIiBzdHlsZT0iZmlsbDp3aGl0ZTsiLz4gPHJlY3QgZmlsbD0ibm9uZSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+IDwvZz4gPC9nPiA8ZyBpZD0iR3JpZCIgZGlzcGxheT0ibm9uZSI+IDxnIGRpc3BsYXk9ImlubGluZSI+IDwvZz4gPC9nPiA8L3N2Zz4NCg==');
+  }
+
+  md-next-button {
+    right: 0;
+    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE3LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPiA8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPiA8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjQgMjQiIHhtbDpzcGFjZT0icHJlc2VydmUiPiA8ZyBpZD0iSGVhZGVyIj4gPGc+IDxyZWN0IHg9Ii02MTgiIHk9Ii0xMzM2IiBmaWxsPSJub25lIiB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNjAwIi8+IDwvZz4gPC9nPiA8ZyBpZD0iTGFiZWwiPiA8L2c+IDxnIGlkPSJJY29uIj4gPGc+IDxwb2x5Z29uIHBvaW50cz0iMTAsNiA4LjYsNy40IDEzLjIsMTIgOC42LDE2LjYgMTAsMTggMTYsMTIgCQkiIHN0eWxlPSJmaWxsOndoaXRlOyIvPiA8cmVjdCBmaWxsPSJub25lIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiLz4gPC9nPiA8L2c+IDxnIGlkPSJHcmlkIiBkaXNwbGF5PSJub25lIj4gPGcgZGlzcGxheT0iaW5saW5lIj4gPC9nPiA8L2c+IDwvc3ZnPg0K');
+    md-icon {
+      transform: translate3d(-50%, -50%, 0) rotate(180deg);
+    }
+  }
+
+  &.md-stretch-tabs {
+    md-pagination-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      md-tab-item {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.md-tabs-canvas {
+  @include pie-clearfix;
+  position: relative;
+  overflow: hidden;
+  display: block;
+  height: $tabs-header-height;
+  .md-dummy-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  &.md-paginated {
+    margin: 0 $tabs-paginator-width;
+  }
+  &.md-center-tabs {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.md-pagination-wrapper {
+  @include pie-clearfix;
+  height: $tabs-header-height;
+  display: block;
+  transition: left $swift-ease-in-out-duration $swift-ease-in-out-timing-function;
+  position: absolute;
+  width: 999999px;
+  left: 0;
+  transform: translate3d(0, 0, 0);
+  &.md-center-tabs {
+    position: relative;
+    width: initial;
+    flex: 1;
+    margin: 0 auto;
+  }
+}
+
+.md-tabs-content-wrapper {
+  display: block;
+  position: absolute;
+  top: $tabs-header-height; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+}
+
+.md-tab-content {
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  transform: translateX(0);
+  transition: transform $swift-ease-in-out-duration $swift-ease-in-out-timing-function;
+  overflow: auto;
+  &.md-no-scroll {
+    bottom: auto;
+    overflow: hidden;
+  }
+  &.ng-leave, &.md-no-transition {
+    transition: none;
+  }
+  &.md-left {
+    transform: translateX(-100%);
+    animation: 2 * $swift-ease-in-out-duration md-tab-content-hide;
+    opacity: 0;
+    * {
+      transition: visibility 0s linear;
+      transition-delay: $swift-ease-in-out-duration;
+      visibility: hidden;
+    }
+  }
+  &.md-right {
+    transform: translateX(100%);
+    animation: 2 * $swift-ease-in-out-duration md-tab-content-hide;
+    opacity: 0;
+    * {
+      transition: visibility 0s linear;
+      transition-delay: $swift-ease-in-out-duration;
+      visibility: hidden;
+    }
+  }
+}
+.md-ink-bar {
+  position: absolute;
+  left: auto;
+  right: auto;
+  bottom: 0;
+  height: 2px;
+  &.md-left {
+    transition: left ($swift-ease-in-out-duration * 0.45) $swift-ease-in-out-timing-function,
+        right $swift-ease-in-out-duration $swift-ease-in-out-timing-function;
+  }
+  &.md-right {
+    transition: left $swift-ease-in-out-duration $swift-ease-in-out-timing-function,
+        right ($swift-ease-in-out-duration * 0.45) $swift-ease-in-out-timing-function;
+  }
+}
+
+md-tab {
+  padding: 12px 24px 14px;
+  position: absolute;
+  z-index: -1;
+  white-space: nowrap;
+  box-shadow: none;
+  border: none;
+  left: -9999px;
+  text-transform: uppercase;
+  font-size: 14px;
+  &:after {
+    content: attr(label);
+  }
+}
+
+.md-tab {
+  font-size: 14px;
+  text-align: center;
+  line-height: $tabs-header-height - 24;
+  padding: 12px 24px;
+  transition: background-color 0.35s $swift-ease-in-out-timing-function;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  text-transform: uppercase;
+  float: left;
+  font-weight: 500;
+  &.md-focused {
+    box-shadow: none;
+    outline: none;
+  }
+  &.md-active {
+    cursor: default;
+  }
+  &.md-disabled {
+    pointer-events: none;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-drag: none;
+    opacity: 0.5;
+    cursor: default;
+  }
+  &.ng-leave {
+    transition: none;
+  }
+}
+
+md-toolbar + md-tabs {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+
+// THEME
+
+@mixin md-tab-primary {
+  md-tabs-wrapper {
+    background-color: md-color($md-primary);
+  }
+  md-tab-item:not([disabled]) {
+    color: md-color($md-primary, 100);
+    &.md-active, &.md-focused {
+      color: md-color($md-primary, default-contrast);
+    }
+    &.md-focused {
+      background: md-color($md-primary, default-contrast, 0.1);
+    }
+  }
+}
+
+@mixin md-tab-warn {
+  md-tabs-wrapper {
+    background-color: md-color($md-warn);
+  }
+  md-tab-item:not([disabled]) {
+    color: md-color($md-warn, 100);
+    &.md-active, &.md-focused {
+      color: md-color($md-warn, default-contrast);
+    }
+    &.md-focused {
+      background: md-color($md-warn, default-contrast, 0.1);
+    }
+  }
+}
+@mixin md-tab-accent {
+  md-tabs-wrapper {
+    background-color: md-color($md-accent);
+  }
+  md-tab-item:not([disabled]) {
+    color: md-color($md-accent, 100);
+    &.md-active, &.md-focused {
+      color: md-color($md-accent, default-contrast);
+    }
+    &.md-focused {
+      background: md-color($md-accent, default-contrast, 0.1);
+    }
+  }
+
+  md-ink-bar {
+    color: md-color($md-primary, 600, 1);
+    background: md-color($md-primary, 600, 1);
+  }
+}
+
+md-tabs {
+  .md-tabs-wrapper {
+    background-color: transparent;
+    border-color: md-color($md-foreground, divider);
+  }
+  .md-paginator md-icon {
+    color: md-color($md-primary);
+  }
+
+  .md-ink-bar {
+    color: md-color($md-accent);
+    background: md-color($md-accent);
+  }
+
+  .md-tab {
+    color: md-color($md-foreground, secondary-text);
+    &[disabled] {
+      color: md-color($md-foreground, disabled-text);
+    }
+    &.md-active, &.md-focused {
+      color: md-color($md-primary);
+    }
+    &.md-focused {
+      background: md-color($md-primary, 0.1);
+    }
+    .md-ripple-container {
+      color: md-color($md-accent, 100);
+    }
+  }
+
+  &.md-accent {
+    @include md-tab-accent();
+  }
+
+  &.md-primary {
+    @include md-tab-primary();
+  }
+
+  &.md-warn {
+    @include md-tab-warn();
+  }
+}
+
+md-toolbar > md-tabs {
+  @include md-tab-primary();
+}
+md-toolbar.md-accent > md-tabs {
+  @include md-tab-accent();
+}
+md-toolbar.md-warn > md-tabs {
+  @include md-tab-warn();
+}
