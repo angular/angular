@@ -486,20 +486,6 @@ export function main() {
           expect(pei.getBindingAtIndex(i).key.token).toBe(i);
         }
       });
-
-      it('should throw whenever multiple directives declare the same host injectable', () => {
-        expect(() => {
-          createPei(null, 0, [
-            DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-              hostInjector: [bind('injectable1').toValue('injectable1')]
-            })),
-            DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Component({
-              hostInjector: [bind('injectable1').toValue('injectable2')]
-            }))
-          ]);
-        }).toThrowError('Multiple directives defined the same host injectable: "injectable1"');
-      });
-
     });
   });
 
@@ -968,10 +954,45 @@ export function main() {
           });
 
           it('should contain directives on the same injector', () => {
-            var inj = injector(ListWrapper.concat([NeedsQuery, CountingDirective], extraBindings), null,
+            var inj = injector(ListWrapper.concat([
+                NeedsQuery,
+                CountingDirective
+              ], extraBindings), null,
               false, preBuildObjects);
 
             expectDirectives(inj.get(NeedsQuery).query, CountingDirective, [0]);
+          })
+
+          it('should contain multiple directives from the same injector', () => {
+            var inj = injector(ListWrapper.concat([
+                NeedsQuery,
+                CountingDirective,
+                FancyCountingDirective,
+                bind(CountingDirective).toAlias(FancyCountingDirective)
+              ], extraBindings), null,
+              false, preBuildObjects);
+
+            expect(inj.get(NeedsQuery).query.length).toEqual(2);
+            expect(inj.get(NeedsQuery).query.first).toBeAnInstanceOf(CountingDirective);
+            expect(inj.get(NeedsQuery).query.last).toBeAnInstanceOf(FancyCountingDirective);
+          })
+
+          it('should contain multiple directives from the same injector after linking', () => {
+            var inj = parentChildInjectors([], ListWrapper.concat([
+                NeedsQuery,
+                CountingDirective,
+                FancyCountingDirective,
+                bind(CountingDirective).toAlias(FancyCountingDirective)
+              ], extraBindings));
+
+            var parent = inj.parent;
+
+            inj.unlink();
+            inj.link(parent);
+
+            expect(inj.get(NeedsQuery).query.length).toEqual(2);
+            expect(inj.get(NeedsQuery).query.first).toBeAnInstanceOf(CountingDirective);
+            expect(inj.get(NeedsQuery).query.last).toBeAnInstanceOf(FancyCountingDirective);
           })
 
           it('should contain the element when no directives are bound to the var binding', () => {

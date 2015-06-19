@@ -184,7 +184,7 @@ class ListWrapper {
 
 bool isListLikeIterable(obj) => obj is Iterable;
 
-List<T> iterableToList(Iterable<T> ii) => ii.toList();
+List iterableToList(Iterable ii) => ii.toList();
 
 void iterateListLike(iter, fn(item)) {
   assert(iter is Iterable);

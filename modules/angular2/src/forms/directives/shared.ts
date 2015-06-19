@@ -38,7 +38,8 @@ export function setUpControl(c: Control, dir: NgControl) {
 
 export function composeNgValidator(ngValidators: QueryList<NgValidator>): Function {
   if (isBlank(ngValidators)) return Validators.nullValidator;
-  return Validators.compose(iterableToList(ngValidators).map(v => v.validator));
+  return Validators.compose(
+      (<List<NgValidator>>iterableToList(ngValidators)).map(v => v.validator));
 }
 
 function _throwError(dir: NgControl, message: string): void {
@@ -49,5 +50,5 @@ function _throwError(dir: NgControl, message: string): void {
 export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
                             propValue: any) {
   renderer.setElementProperty(elementRef.parentView.render, elementRef.boundElementIndex, propName,
-    propValue);
+                              propValue);
 }

@@ -6,11 +6,14 @@ import {
   Component,
   Directive,
   View,
-  Ancestor
+  Ancestor,
+  NgValidator,
+  forwardRef,
+  Binding
 } from 'angular2/angular2';
 import {formDirectives, NgControl, Validators, NgForm} from 'angular2/forms';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
@@ -33,7 +36,10 @@ class CheckoutModel {
 /**
  * Custom validator.
  */
-@Directive({selector: '[credit-card]'})
+const creditCardValidatorBinding =
+    CONST_EXPR(new Binding(NgValidator, {toAlias: forwardRef(() => CreditCardValidator)}));
+
+@Directive({selector: '[credit-card]', hostInjector: [creditCardValidatorBinding]})
 class CreditCardValidator {
   get validator() { return CreditCardValidator.validate; }
 

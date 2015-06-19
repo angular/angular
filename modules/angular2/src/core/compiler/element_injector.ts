@@ -418,14 +418,8 @@ export class ProtoElementInjector {
   private static _createHostInjectorBindingData(dirBindings: List<ResolvedBinding>,
                                                 bd: List<BindingData>,
                                                 firstBindingIsComponent: boolean) {
-    var visitedIds: Map<number, boolean> = new Map();
     ListWrapper.forEach(dirBindings, dirBinding => {
       ListWrapper.forEach(dirBinding.resolvedHostInjectables, b => {
-        if (visitedIds.has(b.key.id)) {
-          throw new BaseException(
-              `Multiple directives defined the same host injectable: "${stringify(b.key.token)}"`);
-        }
-        visitedIds.set(b.key.id, true);
         bd.push(ProtoElementInjector._createBindingData(firstBindingIsComponent, dirBinding,
                                                         dirBindings,
                                                         ProtoElementInjector._createBinding(b)));
@@ -948,6 +942,10 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
+  addDirectivesMatchingQuery(query: Query, list: any[]): void {
+    this._strategy.addDirectivesMatchingQuery(query, list);
+  }
+
   private _buildQueries(): void {
     if (isPresent(this._proto)) {
       this._strategy.buildQueries();
@@ -1158,6 +1156,7 @@ interface _ElementInjectorStrategy {
   getComponent(): any;
   isComponentKey(key: Key): boolean;
   buildQueries(): void;
+  addDirectivesMatchingQuery(q: Query, res: any[]): void;
   getObjByKeyId(keyId: number, visibility: number): any;
   getDirectiveAtIndex(index: number): any;
   getComponentBinding(): DirectiveBinding;
@@ -1234,17 +1233,18 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
 
   hydrate(): void {
     var p = this._protoStrategy;
+    var e = this._ei;
 
-    if (isPresent(p._keyId0)) this.getObjByKeyId(p._keyId0, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId1)) this.getObjByKeyId(p._keyId1, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId2)) this.getObjByKeyId(p._keyId2, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId3)) this.getObjByKeyId(p._keyId3, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId4)) this.getObjByKeyId(p._keyId4, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId5)) this.getObjByKeyId(p._keyId5, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId6)) this.getObjByKeyId(p._keyId6, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId7)) this.getObjByKeyId(p._keyId7, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId8)) this.getObjByKeyId(p._keyId8, LIGHT_DOM_AND_SHADOW_DOM);
-    if (isPresent(p._keyId9)) this.getObjByKeyId(p._keyId9, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId0) && isBlank(this._obj0)) this._obj0 = e._new(p._binding0);
+    if (isPresent(p._keyId1) && isBlank(this._obj1)) this._obj1 = e._new(p._binding1);
+    if (isPresent(p._keyId2) && isBlank(this._obj2)) this._obj2 = e._new(p._binding2);
+    if (isPresent(p._keyId3) && isBlank(this._obj3)) this._obj3 = e._new(p._binding3);
+    if (isPresent(p._keyId4) && isBlank(this._obj4)) this._obj4 = e._new(p._binding4);
+    if (isPresent(p._keyId5) && isBlank(this._obj5)) this._obj5 = e._new(p._binding5);
+    if (isPresent(p._keyId6) && isBlank(this._obj6)) this._obj6 = e._new(p._binding6);
+    if (isPresent(p._keyId7) && isBlank(this._obj7)) this._obj7 = e._new(p._binding7);
+    if (isPresent(p._keyId8) && isBlank(this._obj8)) this._obj8 = e._new(p._binding8);
+    if (isPresent(p._keyId9) && isBlank(this._obj9)) this._obj9 = e._new(p._binding9);
   }
 
   getComponent(): any { return this._obj0; }
@@ -1286,6 +1286,20 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     if (p._binding9 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(<List<DirectiveDependency>>p._binding9.dependencies);
     }
+  }
+
+  addDirectivesMatchingQuery(query: Query, list: any[]): void {
+    var p = this._protoStrategy;
+    if (isPresent(p._binding0) && p._binding0.key.token === query.selector) list.push(this._obj0);
+    if (isPresent(p._binding1) && p._binding1.key.token === query.selector) list.push(this._obj1);
+    if (isPresent(p._binding2) && p._binding2.key.token === query.selector) list.push(this._obj2);
+    if (isPresent(p._binding3) && p._binding3.key.token === query.selector) list.push(this._obj3);
+    if (isPresent(p._binding4) && p._binding4.key.token === query.selector) list.push(this._obj4);
+    if (isPresent(p._binding5) && p._binding5.key.token === query.selector) list.push(this._obj5);
+    if (isPresent(p._binding6) && p._binding6.key.token === query.selector) list.push(this._obj6);
+    if (isPresent(p._binding7) && p._binding7.key.token === query.selector) list.push(this._obj7);
+    if (isPresent(p._binding8) && p._binding8.key.token === query.selector) list.push(this._obj8);
+    if (isPresent(p._binding9) && p._binding9.key.token === query.selector) list.push(this._obj9);
   }
 
   getObjByKeyId(keyId: number, visibility: number): any {
@@ -1406,8 +1420,8 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     var p = this._protoStrategy;
 
     for (var i = 0; i < p._keyIds.length; i++) {
-      if (isPresent(p._keyIds[i])) {
-        this.getObjByKeyId(p._keyIds[i], LIGHT_DOM_AND_SHADOW_DOM);
+      if (isPresent(p._keyIds[i]) && isBlank(this._objs[i])) {
+        this._objs[i] = this._ei._new(p._bindings[i]);
       }
     }
   }
@@ -1428,6 +1442,15 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
       }
     }
   }
+
+  addDirectivesMatchingQuery(query: Query, list: any[]): void {
+    var p = this._protoStrategy;
+
+    for (var i = 0; i < p._bindings.length; i++) {
+      if (p._bindings[i].key.token === query.selector) list.push(this._objs[i]);
+    }
+  }
+
 
   getObjByKeyId(keyId: number, visibility: number): any {
     var p = this._protoStrategy;
@@ -1518,8 +1541,6 @@ class QueryRef {
   }
 
   private _aggregateDirective(inj: ElementInjector, aggregator: List<any>): void {
-    if (inj.hasDirective(this.query.selector)) {
-      aggregator.push(inj.get(this.query.selector));
-    }
+    inj.addDirectivesMatchingQuery(this.query, aggregator);
   }
 }

@@ -253,7 +253,7 @@ export function iterateListLike(obj, fn: Function) {
     }
   }
 }
-export function iterableToList<T>(ii:Iterable<T>):List<T> {
+export function iterableToList<T>(ii: any): List<T> {
   var res = [];
   for (var i of ii) {
     res.push(i);
