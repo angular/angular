@@ -15,7 +15,15 @@ export {MockConnection, MockBackend} from 'angular2/src/http/backends/mock_backe
 export {Request} from 'angular2/src/http/static_request';
 export {Response} from 'angular2/src/http/static_response';
 
-export {Http, XHRBackend, XHRConnection, BaseRequestOptions, RequestOptions, HttpFactory};
+export {
+  Http,
+  XHRBackend,
+  XHRConnection,
+  BrowserXHR,
+  BaseRequestOptions,
+  RequestOptions,
+  HttpFactory
+};
 export {
   IHttp,
   IRequestOptions,
