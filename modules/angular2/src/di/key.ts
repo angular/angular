@@ -1,9 +1,40 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {stringify, CONST, Type, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {stringify, CONST, CONST_EXPR, Type, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {TypeLiteral} from './type_literal';
 import {resolveForwardRef} from './forward_ref';
 
 export {TypeLiteral} from './type_literal';
+
+/**
+ * @private
+ */
+@CONST()
+export class KeyRegistry {
+  private _allKeys: Map<Object, Key> = new Map<Object, Key>();
+
+  get(token: Object): Key {
+    if (token instanceof Key) return token;
+
+    // TODO: workaround for https://github.com/Microsoft/TypeScript/issues/3123
+    var theToken = token;
+    if (token instanceof TypeLiteral) {
+      theToken = token.type;
+    }
+    token = theToken;
+
+    if (this._allKeys.has(token)) {
+      return this._allKeys.get(token);
+    }
+
+    var newKey = new Key(token, Key.numberOfKeys);
+    this._allKeys.set(token, newKey);
+    return newKey;
+  }
+
+  get numberOfKeys(): number { return MapWrapper.size(this._allKeys); }
+}
+
+const _globalKeyRegistry = CONST_EXPR(new KeyRegistry());
 
 /**
  * A unique object used for retrieving items from the {@link Injector}.
@@ -39,33 +70,3 @@ export class Key {
    */
   static get numberOfKeys(): number { return _globalKeyRegistry.numberOfKeys; }
 }
-
-/**
- * @private
- */
-export class KeyRegistry {
-  private _allKeys: Map<Object, Key> = new Map();
-
-  get(token: Object): Key {
-    if (token instanceof Key) return token;
-
-    // TODO: workaround for https://github.com/Microsoft/TypeScript/issues/3123
-    var theToken = token;
-    if (token instanceof TypeLiteral) {
-      theToken = token.type;
-    }
-    token = theToken;
-
-    if (this._allKeys.has(token)) {
-      return this._allKeys.get(token);
-    }
-
-    var newKey = new Key(token, Key.numberOfKeys);
-    this._allKeys.set(token, newKey);
-    return newKey;
-  }
-
-  get numberOfKeys(): number { return MapWrapper.size(this._allKeys); }
-}
-
-var _globalKeyRegistry = new KeyRegistry();
