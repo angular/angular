@@ -21,6 +21,16 @@ module.exports = new Package('angular.io', [basePackage])
   writeFilesProcessor.outputFolder  = 'dist/angular.io';
 })
 
+.config(function(readFilesProcessor, generateNavigationDoc, createOverviewDump, createTypeDefinitionFile) {
+  // Clear out unwanted processors
+  readFilesProcessor.$enabled = false;
+  generateNavigationDoc.$enabled = false;
+  createOverviewDump.$enabled = false;
+  createTypeDefinitionFile.$enabled = false;
+})
+
+
+
 
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
 
