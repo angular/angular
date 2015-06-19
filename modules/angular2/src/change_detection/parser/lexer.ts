@@ -17,7 +17,8 @@ enum TokenType {
   NUMBER
 }
 
-@Injectable() export class Lexer {
+@Injectable()
+export class Lexer {
   tokenize(text: string): List<any> {
     var scanner = new _Scanner(text);
     var tokens = [];

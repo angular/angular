@@ -237,16 +237,20 @@ class _DirectiveUpdating {
     'noCallbacks': new _DirectiveUpdating(
         [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
         [_DirectiveUpdating.recordNoCallbacks]),
-    'readingDirectives': new _DirectiveUpdating([
-      BindingRecord.createForHostProperty(new DirectiveIndex(0, 0),
-                                          _getParser().parseBinding('a', 'location'), PROP_NAME)
-    ],
-                                                [_DirectiveUpdating.basicRecords[0]]),
-    'interpolation': new _DirectiveUpdating([
-      BindingRecord.createForElement(_getParser().parseInterpolation('B{{a}}A', 'location'), 0,
-                                     PROP_NAME)
-    ],
-                                            [])
+    'readingDirectives':
+        new _DirectiveUpdating(
+            [
+              BindingRecord.createForHostProperty(
+                  new DirectiveIndex(0, 0), _getParser().parseBinding('a', 'location'), PROP_NAME)
+            ],
+            [_DirectiveUpdating.basicRecords[0]]),
+    'interpolation':
+        new _DirectiveUpdating(
+            [
+              BindingRecord.createForElement(_getParser().parseInterpolation('B{{a}}A', 'location'),
+                                             0, PROP_NAME)
+            ],
+            [])
   };
 }
 

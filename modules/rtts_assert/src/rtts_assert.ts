@@ -204,22 +204,21 @@ function formatErrors(errors, indent = '  ') {
 // assert a type of given value and throw if does not pass
 var type: any =
     function(actual, T) {
-      var errors = [];
-      // currentStack = [];
+  var errors = [];
+  // currentStack = [];
 
-      if (!isType(actual, T, errors)) {
-        // console.log(JSON.stringify(errors, null, '  '));
-        // TODO(vojta): print "an instance of" only if T starts with uppercase.
-        var msg =
-            'Expected an instance of ' + prettyPrint(T) + ', got ' + prettyPrint(actual) + '!';
-        if (errors.length) {
-          msg += '\n' + formatErrors(errors);
-        }
-
-        throw new Error(msg);
-      }
-      return actual;
+  if (!isType(actual, T, errors)) {
+    // console.log(JSON.stringify(errors, null, '  '));
+    // TODO(vojta): print "an instance of" only if T starts with uppercase.
+    var msg = 'Expected an instance of ' + prettyPrint(T) + ', got ' + prettyPrint(actual) + '!';
+    if (errors.length) {
+      msg += '\n' + formatErrors(errors);
     }
+
+    throw new Error(msg);
+  }
+  return actual;
+}
 
 function returnType(actual, T) {
   var errors = [];
@@ -303,46 +302,45 @@ function define(classOrName, check) {
   return cls;
 }
 
-var assert: any =
-    function(value) {
-      return {
-        is: function is(...types) {
-          // var errors = []
-          var allErrors = [];
-          var errors;
-          for (var i = 0; i < types.length; i++) {
-            var type = types[i];
-            errors = [];
+var assert: any = function(value) {
+  return {
+    is: function is(...types) {
+      // var errors = []
+      var allErrors = [];
+      var errors;
+      for (var i = 0; i < types.length; i++) {
+        var type = types[i];
+        errors = [];
 
-            if (isType(value, type, errors)) {
-              return true;
-            }
-
-            // if no errors, merge multiple "is not instance of " into x/y/z ?
-            allErrors.push(prettyPrint(value) + ' is not instance of ' + prettyPrint(type));
-            if (errors.length) {
-              allErrors.push(errors);
-            }
-          }
-
-          // if (types.length > 1) {
-          //   currentStack.push(['has to be ' + types.map(prettyPrint).join(' or '),
-          //   ...allErrors]);
-          // } else {
-          currentStack.push(...allErrors);
-          // }
-          return false;
+        if (isType(value, type, errors)) {
+          return true;
         }
-      };
+
+        // if no errors, merge multiple "is not instance of " into x/y/z ?
+        allErrors.push(prettyPrint(value) + ' is not instance of ' + prettyPrint(type));
+        if (errors.length) {
+          allErrors.push(errors);
+        }
+      }
+
+      // if (types.length > 1) {
+      //   currentStack.push(['has to be ' + types.map(prettyPrint).join(' or '),
+      //   ...allErrors]);
+      // } else {
+      currentStack.push(...allErrors);
+      // }
+      return false;
     }
+  };
+};
 
 
-    // PUBLIC API
+// PUBLIC API
 
-    // asserting API
+// asserting API
 
-    // throw if no type provided
-    assert.type = type;
+// throw if no type provided
+assert.type = type;
 for (var prop in primitives) {
   assert.type[prop] = primitives[prop];
 }

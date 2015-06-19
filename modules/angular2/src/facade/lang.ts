@@ -28,12 +28,11 @@ export function assertionsEnabled(): boolean {
 // TODO: remove calls to assert in production environment
 // Note: Can't just export this and import in in other files
 // as `assert` is a reserved keyword in Dart
-_global.assert =
-    function assert(condition) {
-      if (assertionsEnabled_) {
-        _global['assert'].call(condition);
-      }
-    }
+_global.assert = function assert(condition) {
+  if (assertionsEnabled_) {
+    _global['assert'].call(condition);
+  }
+};
 // This function is needed only to properly support Dart's const expressions
 // see https://github.com/angular/ts2dart/pull/151 for more info
 export function CONST_EXPR<T>(expr: T): T {

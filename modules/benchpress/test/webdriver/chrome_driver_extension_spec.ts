@@ -277,10 +277,11 @@ export function main() {
 
       it('should throw an error on buffer overflow', inject([AsyncTestCompleter], (async) => {
            PromiseWrapper.catchError(
-               createExtension([
-                 chromeTimelineEvents.start('FunctionCall', 1234),
-               ],
-                               'Tracing.bufferUsage')
+               createExtension(
+                   [
+                     chromeTimelineEvents.start('FunctionCall', 1234),
+                   ],
+                   'Tracing.bufferUsage')
                    .readPerfLog(),
                (err) => {
                  expect(() => { throw err; })

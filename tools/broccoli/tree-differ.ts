@@ -166,4 +166,8 @@ function pad(value, length) {
 }
 
 
-enum FileStatus { ADDED, UNCHANGED, CHANGED }
+enum FileStatus {
+  ADDED,
+  UNCHANGED,
+  CHANGED
+}

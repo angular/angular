@@ -317,11 +317,12 @@ export function main() {
          var mainProtoView =
              createProtoView([createComponentElementBinder(directiveResolver, NestedComponent)]);
          var nestedProtoView = createProtoView();
-         var compiler = createCompiler([
-           createRenderProtoView([createRenderComponentElementBinder(0)]),
-           createRenderProtoView()
-         ],
-                                       [[rootProtoView], [mainProtoView], [nestedProtoView]]);
+         var compiler = createCompiler(
+             [
+               createRenderProtoView([createRenderComponentElementBinder(0)]),
+               createRenderProtoView()
+             ],
+             [[rootProtoView], [mainProtoView], [nestedProtoView]]);
          compiler.compileInHost(MainComponent)
              .then((protoViewRef) => {
                expect(internalProtoView(protoViewRef).elementBinders[0].nestedProtoView)

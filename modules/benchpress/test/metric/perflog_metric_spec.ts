@@ -333,14 +333,15 @@ export function main() {
 
       describe('frame metrics', () => {
         it('should calculate mean frame time', inject([AsyncTestCompleter], (async) => {
-             aggregate([
-               eventFactory.markStart('frameCapture', 0),
-               eventFactory.instant('frame', 1),
-               eventFactory.instant('frame', 3),
-               eventFactory.instant('frame', 4),
-               eventFactory.markEnd('frameCapture', 5)
-             ],
-                       null, true)
+             aggregate(
+                 [
+                   eventFactory.markStart('frameCapture', 0),
+                   eventFactory.instant('frame', 1),
+                   eventFactory.instant('frame', 3),
+                   eventFactory.instant('frame', 4),
+                   eventFactory.markEnd('frameCapture', 5)
+                 ],
+                 null, true)
                  .then((data) => {
                    expect(data['frameTime.mean']).toBe(((3 - 1) + (4 - 3)) / 2);
                    async.done();
@@ -372,11 +373,12 @@ export function main() {
 
         it('should throw if trying to capture twice', inject([AsyncTestCompleter], (async) => {
              PromiseWrapper.catchError(
-                 aggregate([
-                   eventFactory.markStart('frameCapture', 3),
-                   eventFactory.markStart('frameCapture', 4)
-                 ],
-                           null, true),
+                 aggregate(
+                     [
+                       eventFactory.markStart('frameCapture', 3),
+                       eventFactory.markStart('frameCapture', 4)
+                     ],
+                     null, true),
                  (err) => {
                    expect(() => { throw err; })
                        .toThrowError('can capture frames only once per benchmark run');
@@ -405,17 +407,18 @@ export function main() {
            }));
 
         it('should calculate best and worst frame time', inject([AsyncTestCompleter], (async) => {
-             aggregate([
-               eventFactory.markStart('frameCapture', 0),
-               eventFactory.instant('frame', 1),
-               eventFactory.instant('frame', 9),
-               eventFactory.instant('frame', 15),
-               eventFactory.instant('frame', 18),
-               eventFactory.instant('frame', 28),
-               eventFactory.instant('frame', 32),
-               eventFactory.markEnd('frameCapture', 10)
-             ],
-                       null, true)
+             aggregate(
+                 [
+                   eventFactory.markStart('frameCapture', 0),
+                   eventFactory.instant('frame', 1),
+                   eventFactory.instant('frame', 9),
+                   eventFactory.instant('frame', 15),
+                   eventFactory.instant('frame', 18),
+                   eventFactory.instant('frame', 28),
+                   eventFactory.instant('frame', 32),
+                   eventFactory.markEnd('frameCapture', 10)
+                 ],
+                 null, true)
                  .then((data) => {
                    expect(data['frameTime.worst']).toBe(10);
                    expect(data['frameTime.best']).toBe(3);
@@ -425,14 +428,15 @@ export function main() {
 
         it('should calculate percentage of smoothness to be good',
            inject([AsyncTestCompleter], (async) => {
-             aggregate([
-               eventFactory.markStart('frameCapture', 0),
-               eventFactory.instant('frame', 1),
-               eventFactory.instant('frame', 2),
-               eventFactory.instant('frame', 3),
-               eventFactory.markEnd('frameCapture', 4)
-             ],
-                       null, true)
+             aggregate(
+                 [
+                   eventFactory.markStart('frameCapture', 0),
+                   eventFactory.instant('frame', 1),
+                   eventFactory.instant('frame', 2),
+                   eventFactory.instant('frame', 3),
+                   eventFactory.markEnd('frameCapture', 4)
+                 ],
+                 null, true)
                  .then((data) => {
                    expect(data['frameTime.smooth']).toBe(1.0);
                    async.done();
@@ -441,16 +445,17 @@ export function main() {
 
         it('should calculate percentage of smoothness to be bad',
            inject([AsyncTestCompleter], (async) => {
-             aggregate([
-               eventFactory.markStart('frameCapture', 0),
-               eventFactory.instant('frame', 1),
-               eventFactory.instant('frame', 2),
-               eventFactory.instant('frame', 22),
-               eventFactory.instant('frame', 23),
-               eventFactory.instant('frame', 24),
-               eventFactory.markEnd('frameCapture', 4)
-             ],
-                       null, true)
+             aggregate(
+                 [
+                   eventFactory.markStart('frameCapture', 0),
+                   eventFactory.instant('frame', 1),
+                   eventFactory.instant('frame', 2),
+                   eventFactory.instant('frame', 22),
+                   eventFactory.instant('frame', 23),
+                   eventFactory.instant('frame', 24),
+                   eventFactory.markEnd('frameCapture', 4)
+                 ],
+                 null, true)
                  .then((data) => {
                    expect(data['frameTime.smooth']).toBe(0.75);
                    async.done();
@@ -591,11 +596,12 @@ export function main() {
       describe('microMetrics', () => {
 
         it('should report micro metrics', inject([AsyncTestCompleter], (async) => {
-             aggregate([
-               eventFactory.markStart('mm1', 0),
-               eventFactory.markEnd('mm1', 5),
-             ],
-                       {'mm1': 'micro metric 1'})
+             aggregate(
+                 [
+                   eventFactory.markStart('mm1', 0),
+                   eventFactory.markEnd('mm1', 5),
+                 ],
+                 {'mm1': 'micro metric 1'})
                  .then((data) => {
                    expect(data['mm1']).toBe(5.0);
                    async.done();
@@ -615,11 +621,12 @@ export function main() {
            }));
 
         it('should report micro metric averages', inject([AsyncTestCompleter], (async) => {
-             aggregate([
-               eventFactory.markStart('mm1*20', 0),
-               eventFactory.markEnd('mm1*20', 5),
-             ],
-                       {'mm1': 'micro metric 1'})
+             aggregate(
+                 [
+                   eventFactory.markStart('mm1*20', 0),
+                   eventFactory.markEnd('mm1*20', 5),
+                 ],
+                 {'mm1': 'micro metric 1'})
                  .then((data) => {
                    expect(data['mm1']).toBe(5 / 20);
                    async.done();

@@ -14,26 +14,22 @@ describe('ng2 naive infinite scroll benchmark', function() {
     var cells = `${ allScrollItems } .row *`;
     var stageButtons = `${ allScrollItems } .row stage-buttons button`;
 
-    var count =
-        function(selector) {
-          return browser.executeScript(`return ` +
-                                       `document.querySelectorAll("${ selector }").length;`);
-        }
+    var count = function(selector) {
+      return browser.executeScript(`return ` +
+                                   `document.querySelectorAll("${ selector }").length;`);
+    };
 
-    var clickFirstOf =
-        function(selector) {
-          return browser.executeScript(`document.querySelector("${ selector }").click();`);
-        }
+    var clickFirstOf = function(selector) {
+      return browser.executeScript(`document.querySelector("${ selector }").click();`);
+    };
 
-    var firstTextOf =
-        function(selector) {
-          return browser.executeScript(`return ` +
-                                       `document.querySelector("${ selector }").innerText;`);
-        }
+    var firstTextOf = function(selector) {
+      return browser.executeScript(`return ` +
+                                   `document.querySelector("${ selector }").innerText;`);
+    };
 
-        // Make sure rows are rendered
-        count(allScrollItems)
-            .then(function(c) { expect(c).toEqual(expectedRowCount); });
+    // Make sure rows are rendered
+    count(allScrollItems).then(function(c) { expect(c).toEqual(expectedRowCount); });
 
     // Make sure cells are rendered
     count(cells).then(function(c) { expect(c).toEqual(expectedRowCount * expectedCellsPerRow); });
@@ -47,10 +43,9 @@ describe('ng2 naive infinite scroll benchmark', function() {
                 firstTextOf(`${ stageButtons }:enabled`)
                     .then(function(text) { expect(text).toEqual('Won'); })
               });
-        })
+        });
 
-            $("#reset-btn")
-        .click();
+    $("#reset-btn").click();
     $("#run-btn").click();
     browser.wait(() => {
       return $('#done').getText().then(function() { return true; }, function() { return false; });
