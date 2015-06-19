@@ -1209,22 +1209,21 @@ export function main() {
     // - https://github.com/angular/angular/issues/776
     // - https://github.com/angular/angular/commit/81f3f32
     xdescribe('Missing directive checks', () => {
+      function expectCompileError(tb, inlineTpl, errMessage, done) {
+        tb.overrideView(MyComp, new viewAnn.View({template: inlineTpl}));
+        PromiseWrapper.then(
+            tb.createView(MyComp),
+            (value) => {
+              throw new BaseException(
+                  "Test failure: should not have come here as an exception was expected");
+            },
+            (err) => {
+              expect(err.message).toEqual(errMessage);
+              done();
+            });
+      }
 
       if (assertionsEnabled()) {
-        function expectCompileError(tb, inlineTpl, errMessage, done) {
-          tb.overrideView(MyComp, new viewAnn.View({template: inlineTpl}));
-          PromiseWrapper.then(
-              tb.createView(MyComp),
-              (value) => {
-                throw new BaseException(
-                    "Test failure: should not have come here as an exception was expected");
-              },
-              (err) => {
-                expect(err.message).toEqual(errMessage);
-                done();
-              });
-        }
-
         it('should raise an error if no directive is registered for a template with template bindings',
            inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
              expectCompileError(tb, '<div><div template="if: foo"></div></div>',

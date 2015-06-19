@@ -127,5 +127,12 @@ module.exports = function makeNodeTree(destinationPath) {
     ]
   });
 
+  // Prepend 'use strict' directive to all JS files.
+  // See https://github.com/Microsoft/TypeScript/issues/3576
+  nodeTree = replace(nodeTree, {
+    files: ['**/*.js'],
+    patterns: [{match: /^/, replacement: function() { return `'use strict';` }}]
+  });
+
   return destCopy(nodeTree, destinationPath);
 };
