@@ -139,6 +139,19 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
   [Google's JavaScript Style Guide][js-style-guide]:
     * Wrap all code at **100 characters**.
 
+### <a name="clang-format">clang-format</a>
+The Angular project uses [`clang-format`](http://clang.llvm.org/docs/ClangFormat.html) to
+automatically format its source and enforce the common coding style. A couple of tips:
+
+* Install clang-format with `npm install -g clang-format`.
+* Use `clang-format -i [file name]` to format a file (or multiple).
+* Use `gulp enforce-format` to check if your code is `clang-format` clean. This also gives
+  you a command line to format your code.
+* `clang-format` also includes a git hook, run `git clang-format` to format all files you
+  touched.
+* `clang-format` integrations are available for many popular editors (`vim`, `emacs`,
+  `Sublime Text`, etc.)
+
 ## <a name="commit"></a> Commit Message Guidelines
 
 We have very precise rules over how our git commit messages can be formatted.  This leads to **more
