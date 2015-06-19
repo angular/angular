@@ -122,7 +122,8 @@ var CONFIG = {
       dart2js: 'dist/js/dart2js'
     },
     dart: 'dist/dart',
-    docs: 'dist/docs'
+    docs: 'dist/docs',
+    docs_angular_io: 'dist/angular.io'
   }
 };
 
@@ -143,6 +144,10 @@ gulp.task('build/clean.dart', function(done) {
 
 gulp.task('build/clean.docs',  function(done) {
   del(CONFIG.dest.docs, done);
+});
+
+gulp.task('build/clean.docs_angular_io', function(done) {
+  del(CONFIG.dest.docs_angular_io, done);
 });
 
 
@@ -345,7 +350,7 @@ function createDocsTasks(publicBuild) {
 createDocsTasks(true);
 createDocsTasks(false);
 
-gulp.task('docs/angular.io', function() {
+gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
   try {
     var dgeni = new Dgeni([require('./docs/angular.io-package')]);
     return dgeni.generate();
