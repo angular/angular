@@ -6095,9 +6095,8 @@
       "resolved": "https://registry.npmjs.org/gulp-clang-format/-/gulp-clang-format-1.0.19.tgz",
       "dependencies": {
         "clang-format": {
-          "version": "1.0.19",
-          "from": "clang-format@1.0.19",
-          "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.19.tgz"
+          "version": "1.0.21",
+          "from": "clang-format@1.0.21"
         },
         "gulp-util": {
           "version": "3.0.5",
