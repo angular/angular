@@ -13,12 +13,25 @@
  *
  */
 
-export * from './src/forms/model';
-export * from './src/forms/directives';
-export * from './src/forms/validators';
-export * from './src/forms/directives/validators';
-export * from './src/forms/form_builder';
+export {AbstractControl, Control, ControlGroup, ControlArray} from './src/forms/model';
+
+export {NgControlName} from './src/forms/directives/ng_control_name';
+export {NgFormControl} from './src/forms/directives/ng_form_control';
+export {NgModel} from './src/forms/directives/ng_model';
+export {NgControl} from './src/forms/directives/ng_control';
+export {NgControlGroup} from './src/forms/directives/ng_control_group';
+export {NgFormModel} from './src/forms/directives/ng_form_model';
+export {NgForm} from './src/forms/directives/ng_form';
+export {ControlValueAccessor} from './src/forms/directives/control_value_accessor';
+export {DefaultValueAccessor} from './src/forms/directives/default_value_accessor';
+export {CheckboxControlValueAccessor} from './src/forms/directives/checkbox_value_accessor';
+export {SelectControlValueAccessor} from './src/forms/directives/select_control_value_accessor';
+export {formDirectives} from './src/forms/directives';
+export {Validators} from './src/forms/validators';
+export {NgValidator, NgRequiredValidator} from './src/forms/directives/validators';
+export {FormBuilder} from './src/forms/form_builder';
 
 import {FormBuilder} from './src/forms/form_builder';
 import {CONST_EXPR, Type} from './src/facade/lang';
+
 export const formInjectables: List<Type> = CONST_EXPR([FormBuilder]);
