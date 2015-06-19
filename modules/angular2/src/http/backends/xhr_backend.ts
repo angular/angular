@@ -1,11 +1,11 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyStates, RequestMethods} from '../enums';
+import {ReadyStates, RequestMethods, RequestMethodsMap} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
-import {Inject} from 'angular2/di';
 import {Injectable} from 'angular2/di';
 import {BrowserXHR} from './browser_xhr';
-import * as Rx from 'rx';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {isPresent, ENUM_INDEX} from 'angular2/src/facade/lang';
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -22,22 +22,24 @@ export class XHRConnection implements Connection {
    * [Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/subjects/subject.md)
    * which emits a single {@link Response} value on load event of `XMLHttpRequest`.
    */
-  response: Rx.Subject<Response>;
+  response: EventEmitter;  //<Response>;
   readyState: ReadyStates;
   private _xhr;
-  constructor(req: Request, NativeConstruct: any) {
+  constructor(req: Request, browserXHR: BrowserXHR) {
+    // TODO: get rid of this when enum lookups are available in ts2dart
+    // https://github.com/angular/ts2dart/issues/221
+    var requestMethodsMap = new RequestMethodsMap();
     this.request = req;
-    if (Rx.hasOwnProperty('default')) {
-      this.response = new (<any>Rx).default.Rx.Subject();
-    } else {
-      this.response = new Rx.Subject<Response>();
-    }
-    this._xhr = new NativeConstruct();
+    this.response = new EventEmitter();
+    this._xhr = browserXHR.build();
     // TODO(jeffbcross): implement error listening/propagation
-    this._xhr.open(RequestMethods[req.method], req.url);
+    this._xhr.open(requestMethodsMap.getMethod(ENUM_INDEX(req.method)), req.url);
     this._xhr.addEventListener(
         'load',
-        () => {this.response.onNext(new Response(this._xhr.response || this._xhr.responseText))});
+        (_) => {ObservableWrapper.callNext(
+            this.response, new Response({
+              body: isPresent(this._xhr.response) ? this._xhr.response : this._xhr.responseText
+            }))});
     // TODO(jeffbcross): make this more dynamic based on body type
     this._xhr.send(this.request.text());
   }
@@ -76,8 +78,8 @@ export class XHRConnection implements Connection {
  **/
 @Injectable()
 export class XHRBackend implements ConnectionBackend {
-  constructor(private _NativeConstruct: BrowserXHR) {}
+  constructor(private _browserXHR: BrowserXHR) {}
   createConnection(request: Request): XHRConnection {
-    return new XHRConnection(request, this._NativeConstruct);
+    return new XHRConnection(request, this._browserXHR);
   }
 }

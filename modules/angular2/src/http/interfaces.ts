@@ -9,24 +9,36 @@ import {
   ResponseTypes
 } from './enums';
 import {Headers} from './headers';
-import {URLSearchParams} from './url_search_params';
+import {BaseException} from 'angular2/src/facade/lang';
+import {EventEmitter} from 'angular2/src/facade/async';
+import {Request} from './static_request';
+
+export class ConnectionBackend {
+  constructor() {}
+  createConnection(request: any): Connection { throw new BaseException('Abstract!'); }
+}
+
+export class Connection {
+  readyState: ReadyStates;
+  request: Request;
+  response: EventEmitter;  //<IResponse>;
+  dispose(): void { throw new BaseException('Abstract!'); }
+}
 
 export interface IRequestOptions {
+  url?: string;
   method?: RequestMethods;
   headers?: Headers;
-  body?: URLSearchParams | FormData | Blob | string;
+  // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
+  body?: string;
   mode?: RequestModesOpts;
   credentials?: RequestCredentialsOpts;
   cache?: RequestCacheOpts;
 }
 
-export interface IRequest {
-  method: RequestMethods;
-  mode: RequestModesOpts;
-  credentials: RequestCredentialsOpts;
-}
-
 export interface ResponseOptions {
+  // TODO: Support Blob, ArrayBuffer, JSON
+  body?: string | Object | FormData;
   status?: number;
   statusText?: string;
   headers?: Headers | Object;
@@ -43,21 +55,10 @@ export interface IResponse {
   url: string;
   totalBytes: number;
   bytesLoaded: number;
-  blob(): Blob;
-  arrayBuffer(): ArrayBuffer;
+  blob(): any;  // TODO: Blob
+  arrayBuffer(): any;  // TODO: ArrayBuffer
   text(): string;
   json(): Object;
-}
-
-export interface ConnectionBackend {
-  createConnection(observer: any, config: IRequest): Connection;
-}
-
-export interface Connection {
-  readyState: ReadyStates;
-  request: IRequest;
-  response: Rx.Subject<IResponse>;
-  dispose(): void;
 }
 
 /**
@@ -83,4 +84,4 @@ export interface Connection {
  */
 // Prefixed as IHttp because used in conjunction with Http class, but interface is callable
 // constructor(@Inject(Http) http:IHttp)
-export interface IHttp { (url: string, options?: IRequestOptions): Rx.Observable<IResponse> }
+export interface IHttp { (url: string, options?: IRequestOptions): EventEmitter }
