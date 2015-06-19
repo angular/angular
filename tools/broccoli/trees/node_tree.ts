@@ -127,5 +127,11 @@ module.exports = function makeNodeTree(destinationPath) {
     ]
   });
 
+  // Prepend 'use strict' directive to all JS files.
+  nodeTree = replace(nodeTree, {
+    files: ['**/*.js'],
+    patterns: [{match: /^/, replacement: function() { return `'use strict';\n` }}]
+  });
+
   return destCopy(nodeTree, destinationPath);
 };
