@@ -240,49 +240,47 @@ gulp.task('build/checkCircularDependencies', function (done) {
   done();
 });
 
-function jsServeDev(gulp, gulpPlugins) {
+function jsServeDev() {
   return jsserve(gulp, gulpPlugins, {
     path: CONFIG.dest.js.dev.es5,
     port: 8000
-  });
+  })();
 }
 
-function jsServeProd(gulp, gulpPlugins) {
+function jsServeProd() {
   return jsserve(gulp, gulpPlugins, {
     path: CONFIG.dest.js.prod.es5,
     port: 8001
-  });
+  })();
 }
 
-function jsServeDartJs(gulp, gulpPlugins) {
+function jsServeDartJs() {
   return jsserve(gulp, gulpPlugins, {
     path: CONFIG.dest.js.dart2js,
     port: 8002
-  });
+  })();
 }
 
 // ------------------
 // web servers
 gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
-  jsServeDev(gulp, gulpPlugins)();
+  jsServeDev();
 });
 
-gulp.task('serve.js.prod', jsServeProd(gulp, gulpPlugins));
+gulp.task('serve.js.prod', jsServeProd);
 
 gulp.task('serve.e2e.dev', ['build.js.dev', 'build.js.cjs', 'build.css.material'], function(neverDone) {
-  watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
-  watch('modules/**', { ignoreInitial: true }, '!build.js.cjs');
-  jsServeDev(gulp, gulpPlugins)();
+  watch('modules/**', { ignoreInitial: true }, ['!broccoli.js.dev', '!build.js.cjs']);
+  jsServeDev();
 });
 
 gulp.task('serve.e2e.prod', ['build.js.prod', 'build.js.cjs', 'build.css.material'], function(neverDone) {
-  watch('modules/**', { ignoreInitial: true }, '!broccoli.js.prod');
-  watch('modules/**', { ignoreInitial: true }, '!build.js.cjs');
-  jsServeProd(gulp, gulpPlugins)();
+  watch('modules/**', { ignoreInitial: true }, ['!broccoli.js.prod', '!build.js.cjs']);
+  jsServeProd();
 });
 
-gulp.task('serve.js.dart2js', jsServeDartJs(gulp, gulpPlugins));
+gulp.task('serve.js.dart2js', jsServeDartJs);
 
 gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
@@ -694,8 +692,8 @@ gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   );
 });
 
-gulp.task('build.js.prod', ['build.tools'], function() {
-  return angularBuilder.rebuildBrowserProdTree();
+gulp.task('build.js.prod', ['build.tools'], function(done) {
+  runSequence('!broccoli.js.prod', sequenceComplete(done));
 });
 
 
