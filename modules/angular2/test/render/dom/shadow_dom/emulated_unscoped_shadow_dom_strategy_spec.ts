@@ -13,7 +13,7 @@ import {
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {Map, ListWrapper} from 'angular2/src/facade/collection';
 
 import {
   EmulatedUnscopedShadowDomStrategy,
@@ -102,11 +102,11 @@ class FakeXHR extends XHR {
 
   constructor() {
     super();
-    this._responses = MapWrapper.create();
+    this._responses = <Map<string, string>>{};
   }
 
   get(url: string): Promise<string> {
-    var response = MapWrapper.get(this._responses, url);
+    var response = this._responses[url];
     if (isBlank(response)) {
       return PromiseWrapper.reject('xhr error', null);
     }
@@ -114,5 +114,5 @@ class FakeXHR extends XHR {
     return PromiseWrapper.resolve(response);
   }
 
-  reply(url: string, response: string) { MapWrapper.set(this._responses, url, response); }
+  reply(url: string, response: string) { this._responses[url] = response; }
 }

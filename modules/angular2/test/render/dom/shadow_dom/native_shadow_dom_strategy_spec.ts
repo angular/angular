@@ -23,7 +23,7 @@ import {XHR} from 'angular2/src/render/xhr';
 
 import {isBlank} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Map} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -76,11 +76,11 @@ class FakeXHR extends XHR {
 
   constructor() {
     super();
-    this._responses = MapWrapper.create();
+    this._responses = <Map<string, string>>{};
   }
 
   get(url: string): Promise<string> {
-    var response = MapWrapper.get(this._responses, url);
+    var response = this._responses[url];
     if (isBlank(response)) {
       return PromiseWrapper.reject('xhr error', null);
     }
@@ -88,5 +88,5 @@ class FakeXHR extends XHR {
     return PromiseWrapper.resolve(response);
   }
 
-  reply(url: string, response: string) { MapWrapper.set(this._responses, url, response); }
+  reply(url: string, response: string) { this._responses[url] = response; }
 }

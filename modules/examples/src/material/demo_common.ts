@@ -44,7 +44,7 @@ export class DemoUrlResolver extends UrlResolver {
     }
 
     if (url[0] == '/') {
-      throw new BaseException(`Could not resolve the url ${url} from ${baseUrl}`);
+      return url;
     }
 
     var m = RegExpWrapper.firstMatch(_schemeRe, url);

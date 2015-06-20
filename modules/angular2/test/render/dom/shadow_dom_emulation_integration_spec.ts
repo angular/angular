@@ -43,9 +43,11 @@ export function main() {
               .toFactory((styleInliner, styleUrlResolver) => new EmulatedScopedShadowDomStrategy(
                              styleInliner, styleUrlResolver, styleHost),
                          [StyleInliner, StyleUrlResolver]),
-      "unscoped": bind(ShadowDomStrategy).toFactory(
-          (styleInliner, styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
-              styleInliner, styleUrlResolver, null), [StyleInliner, StyleUrlResolver])
+      "unscoped":
+          bind(ShadowDomStrategy)
+              .toFactory((styleInliner, styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(
+                             styleInliner, styleUrlResolver, null),
+                         [StyleInliner, StyleUrlResolver])
     };
     if (DOM.supportsNativeShadowDOM()) {
       StringMapWrapper.set(
