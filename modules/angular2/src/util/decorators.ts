@@ -127,26 +127,26 @@ export function makeParamDecorator(annotationCls): any {
     if (this instanceof annotationCls) {
       return annotationInstance;
     } else {
-      function ParamDecorator(cls, unusedKey, index) {
-        var parameters: Array<Array<any>> = Reflect.getMetadata('parameters', cls);
-        parameters = parameters || [];
-
-        // there might be gaps if some in between parameters do not have annotations.
-        // we pad with nulls.
-        while (parameters.length <= index) {
-          parameters.push(null);
-        }
-
-        parameters[index] = parameters[index] || [];
-        var annotationsForParam: Array<any> = parameters[index];
-        annotationsForParam.push(annotationInstance);
-
-        Reflect.defineMetadata('parameters', parameters, cls);
-        return cls;
-      }
-
       (<any>ParamDecorator).annotation = annotationInstance;
       return ParamDecorator;
+    }
+
+    function ParamDecorator(cls, unusedKey, index) {
+      var parameters: Array<Array<any>> = Reflect.getMetadata('parameters', cls);
+      parameters = parameters || [];
+
+      // there might be gaps if some in between parameters do not have annotations.
+      // we pad with nulls.
+      while (parameters.length <= index) {
+        parameters.push(null);
+      }
+
+      parameters[index] = parameters[index] || [];
+      var annotationsForParam: Array<any> = parameters[index];
+      annotationsForParam.push(annotationInstance);
+
+      Reflect.defineMetadata('parameters', parameters, cls);
+      return cls;
     }
   }
   ParamDecoratorFactory.prototype = Object.create(annotationCls.prototype);
