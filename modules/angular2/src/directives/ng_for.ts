@@ -37,7 +37,7 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  *
  * - `<li *ng-for="#item of items; #i = index">...</li>`
  * - `<li template="ng-for #item of items; #i = index">...</li>`
- * - `<template [ng-for] #item [ng-for-of]="items" #i="index"><li>...</li></template>`
+ * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  *
  * @exportedAs angular2/directives
  */
