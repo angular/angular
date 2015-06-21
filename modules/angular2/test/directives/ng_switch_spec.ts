@@ -25,8 +25,8 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
-                          '<template [ng-switch-when]="\'a\'"><li>when a</li></template>' +
-                          '<template [ng-switch-when]="\'b\'"><li>when b</li></template>' +
+                          '<template ng-switch-when="a"><li>when a</li></template>' +
+                          '<template ng-switch-when="b"><li>when b</li></template>' +
                           '</ul></div>';
 
            tb.createView(TestComponent, {html: template})
@@ -75,10 +75,10 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
-                          '<template [ng-switch-when]="\'a\'"><li>when a1;</li></template>' +
-                          '<template [ng-switch-when]="\'b\'"><li>when b1;</li></template>' +
-                          '<template [ng-switch-when]="\'a\'"><li>when a2;</li></template>' +
-                          '<template [ng-switch-when]="\'b\'"><li>when b2;</li></template>' +
+                          '<template ng-switch-when="a"><li>when a1;</li></template>' +
+                          '<template ng-switch-when="b"><li>when b1;</li></template>' +
+                          '<template ng-switch-when="a"><li>when a2;</li></template>' +
+                          '<template ng-switch-when="b"><li>when b2;</li></template>' +
                           '<template ng-switch-default><li>when default1;</li></template>' +
                           '<template ng-switch-default><li>when default2;</li></template>' +
                           '</ul></div>';
