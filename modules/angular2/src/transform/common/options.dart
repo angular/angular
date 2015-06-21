@@ -10,6 +10,7 @@ const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';
 const ENTRY_POINT_PARAM = 'entry_points';
 const GENERATE_CHANGE_DETECTORS_PARAM = 'generate_change_detectors';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
+const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
 const OPTIMIZATION_PHASES_PARAM = 'optimization_phases';
 const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_points';
@@ -32,6 +33,9 @@ class TransformerOptions {
   /// Whether to generate calls to our generated `initReflector` code
   final bool initReflector;
 
+  /// Whether to inline html/css urls into the View directive
+  final bool inlineViews;
+
   /// The [AnnotationMatcher] which is used to identify angular annotations.
   final AnnotationMatcher annotationMatcher;
 
@@ -50,13 +54,14 @@ class TransformerOptions {
   TransformerOptions._internal(this.entryPoints, this.reflectionEntryPoints,
       this.modeName, this.mirrorMode, this.initReflector,
       this.annotationMatcher, this.optimizationPhases,
-      this.generateChangeDetectors);
+      this.generateChangeDetectors, this.inlineViews);
 
   factory TransformerOptions(List<String> entryPoints,
       {List<String> reflectionEntryPoints, String modeName: 'release',
       MirrorMode mirrorMode: MirrorMode.none, bool initReflector: true,
       List<AnnotationDescriptor> customAnnotationDescriptors: const [],
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
+      bool inlineViews: true,
       bool generateChangeDetectors: true}) {
     if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {
       reflectionEntryPoints = entryPoints;
@@ -66,6 +71,6 @@ class TransformerOptions {
     optimizationPhases = optimizationPhases.isNegative ? 0 : optimizationPhases;
     return new TransformerOptions._internal(entryPoints, reflectionEntryPoints,
         modeName, mirrorMode, initReflector, annotationMatcher,
-        optimizationPhases, generateChangeDetectors);
+        optimizationPhases, generateChangeDetectors, inlineViews);
   }
 }
