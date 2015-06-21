@@ -38,6 +38,8 @@ export class XHRConnection implements Connection {
     this._xhr.addEventListener(
         'load',
         () => {this.response.onNext(new Response(this._xhr.response || this._xhr.responseText))});
+    this._xhr.addEventListener('error', (err) => {this.response.onError(new Response(
+                                            err, {type: 'error', status: this._xhr.status}))});
     // TODO(jeffbcross): make this more dynamic based on body type
     this._xhr.send(this.request.text());
   }
