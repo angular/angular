@@ -211,10 +211,12 @@ bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final AsyncStringWriter writer;
   final XHR _xhr;
+  final bool _inlineViews;
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
   bool _processingView = false;
 
-  AnnotationsTransformVisitor(AsyncStringWriter writer, this._xhr)
+  AnnotationsTransformVisitor(
+      AsyncStringWriter writer, this._xhr, this._inlineViews)
       : this.writer = writer,
         super(writer);
 
@@ -259,32 +261,34 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       return super.visitNamedExpression(node);
     }
     var keyString = '${node.name.label}';
-    if (keyString == 'templateUrl') {
-      // Inline the templateUrl
-      var url = node.expression.accept(_evaluator);
-      if (url is String) {
-        writer.print("template: r'''");
-        writer.asyncPrint(_readOrEmptyString(url));
-        writer.print("'''");
-        return null;
-      } else {
-        logger.warning('template url is not a String $url');
-      }
-    } else if (keyString == 'styleUrls') {
-      // Inline the styleUrls
-      var urls = node.expression.accept(_evaluator);
-      writer.print('styles: const [');
-      for (var url in urls) {
+    if (_inlineViews) {
+      if (keyString == 'templateUrl') {
+        // Inline the templateUrl
+        var url = node.expression.accept(_evaluator);
         if (url is String) {
-          writer.print("r'''");
+          writer.print("template: r'''");
           writer.asyncPrint(_readOrEmptyString(url));
-          writer.print("''', ");
+          writer.print("'''");
+          return null;
         } else {
-          logger.warning('style url is not a String ${url}');
+          logger.warning('template url is not a String $url');
         }
+      } else if (keyString == 'styleUrls') {
+        // Inline the styleUrls
+        var urls = node.expression.accept(_evaluator);
+        writer.print('styles: const [');
+        for (var url in urls) {
+          if (url is String) {
+            writer.print("r'''");
+            writer.asyncPrint(_readOrEmptyString(url));
+            writer.print("''', ");
+          } else {
+            logger.warning('style url is not a String ${url}');
+          }
+        }
+        writer.print(']');
+        return null;
       }
-      writer.print(']');
-      return null;
     }
     return super.visitNamedExpression(node);
   }

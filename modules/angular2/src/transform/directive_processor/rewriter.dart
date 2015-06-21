@@ -23,12 +23,12 @@ import 'visitors.dart';
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
 Future<String> createNgDeps(AssetReader reader, AssetId assetId,
-    AnnotationMatcher annotationMatcher) async {
+    AnnotationMatcher annotationMatcher, bool inlineViews) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new AsyncStringWriter();
-  var visitor = new CreateNgDepsVisitor(
-      writer, assetId, new XhrImpl(reader, assetId), annotationMatcher);
+  var visitor = new CreateNgDepsVisitor(writer, assetId,
+      new XhrImpl(reader, assetId), annotationMatcher, inlineViews);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
 
@@ -60,13 +60,14 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(
-      AsyncStringWriter writer, this.assetId, XHR xhr, this._annotationMatcher)
+  CreateNgDepsVisitor(AsyncStringWriter writer, this.assetId, XHR xhr,
+      this._annotationMatcher, inlineViews)
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
-        _metaVisitor = new AnnotationsTransformVisitor(writer, xhr);
+        _metaVisitor = new AnnotationsTransformVisitor(
+            writer, xhr, inlineViews);
 
   void _visitNodeListWithSeparator(NodeList<AstNode> list, String separator) {
     if (list == null) return;

@@ -12,6 +12,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       _readFileList(config, REFLECTION_ENTRY_POINT_PARAM);
   var initReflector =
       _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
+  var inlineViews = _readBool(config, INLINE_VIEWS_PARAM, defaultValue: true);
   var generateChangeDetectors =
       _readBool(config, GENERATE_CHANGE_DETECTORS_PARAM, defaultValue: true);
   String mirrorModeVal =
@@ -35,6 +36,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
+      inlineViews: inlineViews,
       customAnnotationDescriptors: _readCustomAnnotations(config),
       optimizationPhases: optimizationPhases,
       generateChangeDetectors: generateChangeDetectors);
