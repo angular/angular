@@ -23,8 +23,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
-                          '<template [ng-switch-when]="\'a\'"><li>when a</li></template>' +
-                          '<template [ng-switch-when]="\'b\'"><li>when b</li></template>' +
+                          '<template ng-switch-when="a"><li>when a</li></template>' +
+                          '<template ng-switch-when="b"><li>when b</li></template>' +
                           '</ul></div>';
 
            tcb.overrideTemplate(TestComponent, template)
@@ -75,10 +75,10 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
-                          '<template [ng-switch-when]="\'a\'"><li>when a1;</li></template>' +
-                          '<template [ng-switch-when]="\'b\'"><li>when b1;</li></template>' +
-                          '<template [ng-switch-when]="\'a\'"><li>when a2;</li></template>' +
-                          '<template [ng-switch-when]="\'b\'"><li>when b2;</li></template>' +
+                          '<template ng-switch-when="a"><li>when a1;</li></template>' +
+                          '<template ng-switch-when="b"><li>when b1;</li></template>' +
+                          '<template ng-switch-when="a"><li>when a2;</li></template>' +
+                          '<template ng-switch-when="b"><li>when b2;</li></template>' +
                           '<template ng-switch-default><li>when default1;</li></template>' +
                           '<template ng-switch-default><li>when default2;</li></template>' +
                           '</ul></div>';
