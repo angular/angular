@@ -45,7 +45,10 @@ export class XHRConnection implements Connection {
   /**
    * Calls abort on the underlying XMLHttpRequest.
    */
-  dispose(): void { this._xhr.abort(); }
+  dispose(): void {
+    this._xhr.abort();
+    this.response.dispose();
+  }
 }
 
 /**
