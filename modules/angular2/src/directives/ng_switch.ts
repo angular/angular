@@ -38,7 +38,7 @@ export class SwitchView {
  * <ANY [ng-switch]="expression">
  *   <template [ng-switch-when]="whenExpression1">...</template>
  *   <template [ng-switch-when]="whenExpression1">...</template>
- *   <template [ng-switch-default]>...</template>
+ *   <template ng-switch-default>...</template>
  * </ANY>
  * ```
  *
@@ -148,7 +148,7 @@ export class NgSwitch {
  * <template [ng-switch-when]="contextVariable">...</template>
  *
  * // match against a constant string
- * <template [ng-switch-when]="'stringValue'">...</template>
+ * <template ng-switch-when="stringValue">...</template>
  * ```
  *
  * @exportedAs angular2/directives
@@ -184,7 +184,7 @@ export class NgSwitchWhen {
  * Example:
  *
  * ```
- * <template [ng-switch-default]>...</template>
+ * <template ng-switch-default>...</template>
  * ```
  *
  * @exportedAs angular2/directives
