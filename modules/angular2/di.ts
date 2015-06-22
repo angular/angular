@@ -7,16 +7,39 @@
 
 export {
   InjectAnnotation,
-  InjectPromiseAnnotation,
-  InjectLazyAnnotation,
   OptionalAnnotation,
   InjectableAnnotation,
-  DependencyAnnotation
+  DependencyAnnotation,
+  VisibilityAnnotation,
+  SelfAnnotation,
+  ParentAnnotation,
+  AncestorAnnotation,
+  UnboundedAnnotation
 } from './src/di/annotations';
 
-export {Inject, InjectPromise, InjectLazy, Optional, Injectable} from './src/di/decorators';
+export {
+  Inject,
+  Optional,
+  Injectable,
+  Visibility,
+  Self,
+  Parent,
+  Ancestor,
+  Unbounded
+} from './src/di/decorators';
+export {self} from './src/di/annotations_impl';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './src/di/forward_ref';
-export {resolveBindings, Injector} from './src/di/injector';
+export {
+  resolveBindings,
+  Injector,
+  ProtoInjector,
+  PUBLIC_AND_PRIVATE,
+  PUBLIC,
+  PRIVATE,
+  undefinedValue,
+  InjectorInlineStrategy,
+  InjectorDynamicStrategy
+} from './src/di/injector';
 export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/di/binding';
 export {Key, KeyRegistry, TypeLiteral} from './src/di/key';
 export {
@@ -26,6 +49,7 @@ export {
   CyclicDependencyError,
   InstantiationError,
   InvalidBindingError,
-  NoAnnotationError
+  NoAnnotationError,
+  OutOfBoundsError
 } from './src/di/exceptions';
 export {OpaqueToken} from './src/di/opaque_token';

@@ -14,27 +14,35 @@ import {Options} from './common_options';
 @ABSTRACT()
 export class WebDriverExtension {
   static bindTo(childTokens): List<Binding> {
-    return [
-      bind(_CHILDREN)
-          .toAsyncFactory((injector) => PromiseWrapper.all(
-                              ListWrapper.map(childTokens, (token) => injector.asyncGet(token))),
-                          [Injector]),
-      bind(WebDriverExtension)
-          .toFactory(
-              (children, capabilities) => {
-                var delegate;
-                ListWrapper.forEach(children, (extension) => {
-                  if (extension.supports(capabilities)) {
-                    delegate = extension;
-                  }
-                });
-                if (isBlank(delegate)) {
-                  throw new BaseException('Could not find a delegate for given capabilities!');
-                }
-                return delegate;
-              },
-              [_CHILDREN, Options.CAPABILITIES])
-    ];
+    var res =
+        [
+          bind(_CHILDREN)
+              .toFactory((injector: Injector) => PromiseWrapper.all(
+                             ListWrapper.map(childTokens, (token) => injector.get(token))),
+                         [Injector]),
+          bind(WebDriverExtension)
+              .toFactory(
+                  (childrenPromise, capabilitiesPromise) => {
+                    return PromiseWrapper.all([childrenPromise, capabilitiesPromise])
+                        .then((arr) => {
+                          var children = arr[0];
+                          var capabilities = arr[1];
+                          var delegate;
+                          ListWrapper.forEach(children, (extension) => {
+                            if (extension.supports(capabilities)) {
+                              delegate = extension;
+                            }
+                          });
+                          if (isBlank(delegate)) {
+                            throw new BaseException(
+                                'Could not find a delegate for given capabilities!');
+                          }
+                          return delegate;
+                        });
+                  },
+                  [_CHILDREN, Options.CAPABILITIES])
+        ];
+    return res;
   }
 
   gc(): Promise<any> { throw new BaseException('NYI'); }

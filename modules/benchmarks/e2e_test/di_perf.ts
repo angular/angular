@@ -6,7 +6,7 @@ describe('ng2 di benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log the stats for getByToken', function(done) {
+  fit('should log the stats for getByToken', function(done) {
     runClickBenchmark({
       url: URL,
       buttons: ['#getByToken'],

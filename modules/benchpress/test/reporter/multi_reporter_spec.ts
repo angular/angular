@@ -23,7 +23,7 @@ export function main() {
                      ListWrapper.map(ids, (id) => bind(id).toValue(new MockReporter(id))),
                      MultiReporter.createBindings(ids)
                    ])
-        .asyncGet(MultiReporter);
+        .get(MultiReporter);
   }
 
   describe('multi reporter', () => {

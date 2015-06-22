@@ -5,9 +5,12 @@
 
 export {
   Inject as InjectAnnotation,
-  InjectPromise as InjectPromiseAnnotation,
-  InjectLazy as InjectLazyAnnotation,
   Optional as OptionalAnnotation,
   Injectable as InjectableAnnotation,
+  Visibility as VisibilityAnnotation,
+  Self as SelfAnnotation,
+  Parent as ParentAnnotation,
+  Ancestor as AncestorAnnotation,
+  Unbounded as UnboundedAnnotation,
   DependencyAnnotation,  // abstract base class, does not need a decorator
 } from './annotations_impl';

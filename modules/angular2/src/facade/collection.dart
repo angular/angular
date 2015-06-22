@@ -49,8 +49,8 @@ class MapWrapper {
     }
   }
   static Iterable iterable(Map m) => new IterableMap(m);
-  static Iterable keys(Map m) => m.keys;
-  static Iterable values(Map m) => m.values;
+  static List keys(Map m) => m.keys.toList();
+  static List values(Map m) => m.values.toList();
 }
 
 class StringMapWrapper {

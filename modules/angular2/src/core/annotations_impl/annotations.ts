@@ -1,6 +1,6 @@
 import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-import {Injectable} from 'angular2/src/di/annotations_impl';
+import {Injectable, self} from 'angular2/src/di/annotations_impl';
 import {DEFAULT} from 'angular2/change_detection';
 
 // type StringMap = {[idx: string]: string};
@@ -788,7 +788,7 @@ export class Directive extends Injectable {
                   selector, properties, events, host, lifecycle, hostInjector, exportAs,
                   compileChildren = true,
               }: DirectiveArgs = {}) {
-    super();
+    super(self);
     this.selector = selector;
     this.properties = properties;
     this.events = events;
