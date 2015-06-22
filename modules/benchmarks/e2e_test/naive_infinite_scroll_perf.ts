@@ -12,6 +12,7 @@ describe('ng2 naive infinite scroll benchmark', function() {
         url: URL,
         id: 'ng2.naive_infinite_scroll',
         work: function() {
+          browser.sleep(1000);
           $('#reset-btn').click();
           $('#run-btn').click();
           browser.wait(() => {

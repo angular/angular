@@ -23,11 +23,11 @@ import {NgFor} from 'angular2/directives';
   directives: [ScrollItemComponent, NgFor],
   template: `
     <div>
-        <div id="scrollDiv"
+        <div class="scrollDiv"
              [style]="scrollDivStyle"
              on-scroll="onScroll($event)">
-            <div id="padding"></div>
-            <div id="inner">
+            <div class="padding"></div>
+            <div class="inner">
                 <scroll-item
                     template="ng-for #item of visibleItems"
                     [offering]="item">
@@ -61,10 +61,10 @@ export class ScrollAreaComponent {
     if (evt != null) {
       var scrollDiv = evt.target;
       if (this.paddingDiv == null) {
-        this.paddingDiv = scrollDiv.querySelector('#padding');
+        this.paddingDiv = scrollDiv.querySelector('.padding');
       }
       if (this.innerDiv == null) {
-        this.innerDiv = scrollDiv.querySelector('#inner');
+        this.innerDiv = scrollDiv.querySelector('.inner');
         this.innerDiv.style.setProperty('width', `${ROW_WIDTH}px`);
       }
       scrollTop = scrollDiv.scrollTop;
