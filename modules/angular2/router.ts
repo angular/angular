@@ -11,12 +11,14 @@ export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
 export {RouteParams} from './src/router/instruction';
 export {RouteRegistry} from './src/router/route_registry';
-export {BrowserLocation} from './src/router/browser_location';
+export {LocationStrategy} from './src/router/location_strategy';
+export {HTML5LocationStrategy} from './src/router/html5_location_strategy';
 export {Location, appBaseHrefToken} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
 
-import {BrowserLocation} from './src/router/browser_location';
+import {LocationStrategy} from './src/router/location_strategy';
+import {HTML5LocationStrategy} from './src/router/html5_location_strategy';
 import {Router, RootRouter} from './src/router/router';
 import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
@@ -33,7 +35,7 @@ export const routerDirectives: List<any> = CONST_EXPR([RouterOutlet, RouterLink]
 export var routerInjectables: List<any> = [
   RouteRegistry,
   Pipeline,
-  BrowserLocation,
+  bind(LocationStrategy).toClass(HTML5LocationStrategy),
   Location,
   bind(Router)
       .toFactory((registry, pipeline, location,
