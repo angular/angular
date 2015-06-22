@@ -5,12 +5,6 @@ import {
   DirectiveArgs
 } from './annotations';
 import {ViewAnnotation, ViewArgs} from './view';
-import {
-  SelfAnnotation,
-  ParentAnnotation,
-  AncestorAnnotation,
-  UnboundedAnnotation
-} from './visibility';
 import {AttributeAnnotation, QueryAnnotation} from './di';
 import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
 import {Type} from 'angular2/src/facade/lang';
@@ -45,12 +39,6 @@ export var Directive = <Directive>makeDecorator(DirectiveAnnotation);
 
 /* from view */
 export var View = <View>makeDecorator(ViewAnnotation, (fn: any) => fn.View = View);
-
-/* from visibility */
-export var Self = makeParamDecorator(SelfAnnotation);
-export var Parent = makeParamDecorator(ParentAnnotation);
-export var Ancestor = makeParamDecorator(AncestorAnnotation);
-export var Unbounded = makeParamDecorator(UnboundedAnnotation);
 
 /* from di */
 export var Attribute = makeParamDecorator(AttributeAnnotation);

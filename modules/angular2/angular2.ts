@@ -31,14 +31,13 @@ export {
 
 export {
   Inject,
-  InjectPromise,
-  InjectLazy,
   Optional,
   Injectable,
   forwardRef,
   resolveForwardRef,
   ForwardRefFn,
   Injector,
+  ProtoInjector,
   Binding,
   bind,
   Key,
@@ -52,7 +51,12 @@ export {
   OpaqueToken,
   ResolvedBinding,
   BindingBuilder,
-  Dependency
+  Dependency,
+  Visibility,
+  Self,
+  Parent,
+  Ancestor,
+  Unbounded
 } from './di';
 
 export * from './core';

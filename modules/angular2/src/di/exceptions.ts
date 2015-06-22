@@ -198,3 +198,18 @@ export class NoAnnotationError extends BaseException {
 
   toString(): string { return this.message; }
 }
+
+/**
+ * Thrown when getting an object by index.
+ *
+ * @exportedAs angular2/di_errors
+ */
+export class OutOfBoundsError extends BaseException {
+  message: string;
+  constructor(index) {
+    super();
+    this.message = `Index ${index} is out-of-bounds.`;
+  }
+
+  toString(): string { return this.message; }
+}

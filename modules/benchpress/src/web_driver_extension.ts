@@ -16,22 +16,24 @@ export class WebDriverExtension {
   static bindTo(childTokens): List<Binding> {
     return [
       bind(_CHILDREN)
-          .toAsyncFactory((injector) => PromiseWrapper.all(
-                              ListWrapper.map(childTokens, (token) => injector.asyncGet(token))),
-                          [Injector]),
+          .toFactory((injector: Injector) => PromiseWrapper.all(
+                         ListWrapper.map(childTokens, (token) => injector.get(token))),
+                     [Injector]),
       bind(WebDriverExtension)
           .toFactory(
-              (children, capabilities) => {
-                var delegate;
-                ListWrapper.forEach(children, (extension) => {
-                  if (extension.supports(capabilities)) {
-                    delegate = extension;
+              (p, capabilities) => {
+                return p.then(children => {
+                  var delegate;
+                  ListWrapper.forEach(children, (extension) => {
+                    if (extension.supports(capabilities)) {
+                      delegate = extension;
+                    }
+                  });
+                  if (isBlank(delegate)) {
+                    throw new BaseException('Could not find a delegate for given capabilities!');
                   }
+                  return delegate;
                 });
-                if (isBlank(delegate)) {
-                  throw new BaseException('Could not find a delegate for given capabilities!');
-                }
-                return delegate;
               },
               [_CHILDREN, Options.CAPABILITIES])
     ];

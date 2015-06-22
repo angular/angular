@@ -22,7 +22,7 @@ export function main() {
                      ListWrapper.map(ids, (id) => bind(id).toValue(new MockMetric(id))),
                      MultiMetric.createBindings(ids)
                    ])
-        .asyncGet(MultiMetric);
+        .get(MultiMetric);
   }
 
   describe('multi metric', () => {

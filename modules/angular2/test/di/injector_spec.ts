@@ -9,12 +9,21 @@ import {
   DependencyAnnotation,
   Injectable
 } from 'angular2/di';
-import {Optional, Inject, InjectLazy} from 'angular2/src/di/decorators';
+import {Optional, Inject} from 'angular2/src/di/decorators';
 import * as ann from 'angular2/src/di/annotations_impl';
 
 class CustomDependencyAnnotation extends DependencyAnnotation {}
 
 class Engine {}
+
+@Injectable(ann.self)
+class EngineWithSetVisibility {
+}
+
+@Injectable()
+class CarNeedsEngineWithSetVisibility {
+  constructor(engine: EngineWithSetVisibility) {}
+}
 
 class BrokenEngine {
   constructor() { throw new BaseException("Broken Engine"); }
@@ -33,12 +42,6 @@ class TurboEngine extends Engine {}
 class Car {
   engine: Engine;
   constructor(engine: Engine) { this.engine = engine; }
-}
-
-@Injectable()
-class CarWithLazyEngine {
-  engineFactory;
-  constructor(@InjectLazy(Engine) engineFactory) { this.engineFactory = engineFactory; }
 }
 
 @Injectable()
@@ -236,10 +239,6 @@ export function main() {
       expect(() => injector.get(Car))
           .toThrowError(
               `Cannot instantiate cyclic dependency! (${stringify(Car)} -> ${stringify(Engine)} -> ${stringify(Car)})`);
-
-      expect(() => injector.asyncGet(Car))
-          .toThrowError(
-              `Cannot instantiate cyclic dependency! (${stringify(Car)} -> ${stringify(Engine)} -> ${stringify(Car)})`);
     });
 
     it('should show the full path when error happens in a constructor', () => {
@@ -274,25 +273,6 @@ export function main() {
       expect(injector.get('null')).toBe(null);
     });
 
-    describe("default bindings", () => {
-      it("should be used when no matching binding found", () => {
-        var injector = Injector.resolveAndCreate([], {defaultBindings: true});
-
-        var car = injector.get(Car);
-
-        expect(car).toBeAnInstanceOf(Car);
-      });
-
-      it("should use the matching binding when it is available", () => {
-        var injector =
-            Injector.resolveAndCreate([bind(Car).toClass(SportsCar)], {defaultBindings: true});
-
-        var car = injector.get(Car);
-
-        expect(car).toBeAnInstanceOf(SportsCar);
-      });
-    });
-
     describe("child", () => {
       it('should load instances from parent injector', () => {
         var parent = Injector.resolveAndCreate([Engine]);
@@ -324,40 +304,10 @@ export function main() {
         expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
       });
 
-      it("should create child injectors without default bindings", () => {
-        var parent = Injector.resolveAndCreate([], {defaultBindings: true});
-        var child = parent.resolveAndCreateChild([]);
-
-        // child delegates to parent the creation of Car
-        var childCar = child.get(Car);
-        var parentCar = parent.get(Car);
-
-        expect(childCar).toBe(parentCar);
-      });
-
       it("should give access to direct parent", () => {
         var parent = Injector.resolveAndCreate([]);
         var child = parent.resolveAndCreateChild([]);
         expect(child.parent).toBe(parent);
-      });
-    });
-
-    describe("lazy", () => {
-      it("should create dependencies lazily", () => {
-        var injector = Injector.resolveAndCreate([Engine, CarWithLazyEngine]);
-
-        var car = injector.get(CarWithLazyEngine);
-        expect(car.engineFactory()).toBeAnInstanceOf(Engine);
-      });
-
-      it("should cache instance created lazily", () => {
-        var injector = Injector.resolveAndCreate([Engine, CarWithLazyEngine]);
-
-        var car = injector.get(CarWithLazyEngine);
-        var e1 = car.engineFactory();
-        var e2 = car.engineFactory();
-
-        expect(e1).toBe(e2);
       });
     });
 
@@ -374,20 +324,16 @@ export function main() {
         var bindings = Injector.resolve([
           forwardRef(() => Engine),
           [bind(forwardRef(() => BrokenEngine)).toClass(forwardRef(() => Engine))],
-          bind(forwardRef(() => String)).toFactory(() => 'OK', [forwardRef(() => Engine)]),
-          bind(forwardRef(() => DashboardSoftware))
-              .toAsyncFactory(() => 123, [forwardRef(() => BrokenEngine)])
+          bind(forwardRef(() => String)).toFactory(() => 'OK', [forwardRef(() => Engine)])
         ]);
 
-        var engineBinding = bindings[Key.get(Engine).id];
-        var brokenEngineBinding = bindings[Key.get(BrokenEngine).id];
-        var stringBinding = bindings[Key.get(String).id];
-        var dashboardSoftwareBinding = bindings[Key.get(DashboardSoftware).id];
+        var engineBinding = bindings[0];
+        var brokenEngineBinding = bindings[1];
+        var stringBinding = bindings[2];
 
         expect(engineBinding.factory() instanceof Engine).toBe(true);
         expect(brokenEngineBinding.factory() instanceof Engine).toBe(true);
         expect(stringBinding.dependencies[0].key).toEqual(Key.get(Engine));
-        expect(dashboardSoftwareBinding.dependencies[0].key).toEqual(Key.get(BrokenEngine));
       });
 
       it('should support overriding factory dependencies with dependency annotations', () => {
@@ -396,10 +342,24 @@ export function main() {
               .toFactory((e) => "result",
                          [[new ann.Inject("dep"), new CustomDependencyAnnotation()]])
         ]);
-        var binding = bindings[Key.get("token").id];
+        var binding = bindings[0];
 
         expect(binding.dependencies[0].key.token).toEqual("dep");
         expect(binding.dependencies[0].properties).toEqual([new CustomDependencyAnnotation()]);
+      });
+    });
+
+    describe("default visibility", () => {
+      it("should use the provided visibility", () => {
+        var bindings = Injector.resolve([CarNeedsEngineWithSetVisibility, EngineWithSetVisibility]);
+        var carBinding = bindings[0];
+        expect(carBinding.dependencies[0].visibility).toEqual(ann.self);
+      });
+
+      it("should set the default visibility to unbounded", () => {
+        var bindings = Injector.resolve([Car, Engine]);
+        var carBinding = bindings[0];
+        expect(carBinding.dependencies[0].visibility).toEqual(ann.unbounded);
       });
     });
   });

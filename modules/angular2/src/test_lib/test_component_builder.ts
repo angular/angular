@@ -144,6 +144,8 @@ export class TestComponentBuilder {
 
     // TODO(juliemr): can/should this be optional?
     DOM.appendChild(doc.body, rootEl);
+
+
     return this._injector.get(DynamicComponentLoader)
         .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector)
         .then((componentRef) => { return new RootTestComponent(componentRef); });

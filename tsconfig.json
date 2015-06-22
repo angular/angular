@@ -11,6 +11,8 @@
     },
     "filesGlob": [
         "./**/*.ts",
-        "!./node_modules/**/*.ts"
+        "!./node_modules/**/*.ts",
+        "!./dist/**",
+        "!./temp/**"
     ]
 }
