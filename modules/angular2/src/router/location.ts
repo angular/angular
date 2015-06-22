@@ -1,44 +1,57 @@
-import {BrowserLocation} from './browser_location';
+import {LocationStrategy} from './location_strategy';
 import {StringWrapper, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/di';
 
 export const appBaseHrefToken: OpaqueToken = CONST_EXPR(new OpaqueToken('locationHrefToken'));
 
+/**
+ * This is the service that an application developer will directly interact with.
+ *
+ * Responsible for normalizing the URL against the application's base href.
+ * A normalized URL is absolute from the URL host, includes the application's base href, and has no
+ * trailing slash:
+ * - `/my/app/user/123` is normalized
+ * - `my/app/user/123` **is not** normalized
+ * - `/my/app/user/123/` **is not** normalized
+ */
 @Injectable()
 export class Location {
   private _subject: EventEmitter;
   private _baseHref: string;
 
-  constructor(public _browserLocation: BrowserLocation,
+  constructor(public _platformStrategy: LocationStrategy,
               @Optional() @Inject(appBaseHrefToken) href?: string) {
     this._subject = new EventEmitter();
-    this._baseHref = stripIndexHtml(isPresent(href) ? href : this._browserLocation.getBaseHref());
-    this._browserLocation.onPopState((_) => this._onPopState(_));
+    this._baseHref = stripTrailingSlash(
+        stripIndexHtml(isPresent(href) ? href : this._platformStrategy.getBaseHref()));
+    this._platformStrategy.onPopState((_) => this._onPopState(_));
   }
 
   _onPopState(_): void { ObservableWrapper.callNext(this._subject, {'url': this.path()}); }
 
-  path(): string { return this.normalize(this._browserLocation.path()); }
+  path(): string { return this.normalize(this._platformStrategy.path()); }
 
-  normalize(url: string): string { return this._stripBaseHref(stripIndexHtml(url)); }
+  normalize(url: string): string {
+    return stripTrailingSlash(this._stripBaseHref(stripIndexHtml(url)));
+  }
 
   normalizeAbsolutely(url: string): string {
-    if (url.length > 0 && url[0] != '/') {
+    if (!url.startsWith('/')) {
       url = '/' + url;
     }
-    return this._addBaseHref(url);
+    return stripTrailingSlash(this._addBaseHref(url));
   }
 
   _stripBaseHref(url: string): string {
-    if (this._baseHref.length > 0 && StringWrapper.startsWith(url, this._baseHref)) {
-      return StringWrapper.substring(url, this._baseHref.length);
+    if (this._baseHref.length > 0 && url.startsWith(this._baseHref)) {
+      return url.substring(this._baseHref.length);
     }
     return url;
   }
 
   _addBaseHref(url: string): string {
-    if (!StringWrapper.startsWith(url, this._baseHref)) {
+    if (!url.startsWith(this._baseHref)) {
       return this._baseHref + url;
     }
     return url;
@@ -46,12 +59,12 @@ export class Location {
 
   go(url: string): void {
     var finalUrl = this.normalizeAbsolutely(url);
-    this._browserLocation.pushState(null, '', finalUrl);
+    this._platformStrategy.pushState(null, '', finalUrl);
   }
 
-  forward(): void { this._browserLocation.forward(); }
+  forward(): void { this._platformStrategy.forward(); }
 
-  back(): void { this._browserLocation.back(); }
+  back(): void { this._platformStrategy.back(); }
 
   subscribe(onNext, onThrow = null, onReturn = null): void {
     ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
@@ -61,12 +74,16 @@ export class Location {
 
 
 function stripIndexHtml(url: string): string {
-  // '/index.html'.length == 11
-  if (url.length > 10 && StringWrapper.substring(url, url.length - 11) == '/index.html') {
-    return StringWrapper.substring(url, 0, url.length - 11);
+  if (/\/index.html$/g.test(url)) {
+    // '/index.html'.length == 11
+    return url.substring(0, url.length - 11);
   }
-  if (url.length > 1 && url[url.length - 1] == '/') {
-    url = StringWrapper.substring(url, 0, url.length - 1);
+  return url;
+}
+
+function stripTrailingSlash(url: string): string {
+  if (/\/$/g.test(url)) {
+    url = url.substring(0, url.length - 1);
   }
   return url;
 }
