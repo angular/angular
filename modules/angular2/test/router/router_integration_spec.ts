@@ -20,8 +20,8 @@ import {RouteConfig} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 import {routerInjectables, Router, appBaseHrefToken, routerDirectives} from 'angular2/router';
-import {BrowserLocation} from 'angular2/src/router/browser_location';
-import {DummyBrowserLocation} from 'angular2/src/mock/browser_location_mock';
+import {LocationStrategy} from 'angular2/src/router/location_strategy';
+import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 export function main() {
   describe('router injectables', () => {
@@ -32,12 +32,7 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el);
       testBindings = [
         routerInjectables,
-        bind(BrowserLocation)
-            .toFactory(() => {
-              var browserLocation = new DummyBrowserLocation();
-              browserLocation.spy('pushState');
-              return browserLocation;
-            }),
+        bind(LocationStrategy).toClass(MockLocationStrategy),
         bind(DOCUMENT_TOKEN).toValue(fakeDoc)
       ];
     });
@@ -48,7 +43,7 @@ export function main() {
                var router = applicationRef.hostComponent.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('outer { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/');
+                 expect(applicationRef.hostComponent.location.path()).toEqual('');
                  async.done();
                });
              });
@@ -109,7 +104,7 @@ class HelloCmp {
 @View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
 @RouteConfig([{path: '/', component: HelloCmp}])
 class AppCmp {
-  constructor(public router: Router, public location: BrowserLocation) {}
+  constructor(public router: Router, public location: LocationStrategy) {}
 }
 
 
@@ -124,7 +119,7 @@ class ParentCmp {
 @View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([{path: '/parent/...', component: ParentCmp}])
 class HierarchyAppCmp {
-  constructor(public router: Router, public location: BrowserLocation) {}
+  constructor(public router: Router, public location: LocationStrategy) {}
 }
 
 @Component({selector: 'oops-cmp'})
@@ -137,5 +132,5 @@ class BrokenCmp {
 @View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
 @RouteConfig([{path: '/cause-error', component: BrokenCmp}])
 class BrokenAppCmp {
-  constructor(public router: Router, public location: BrowserLocation) {}
+  constructor(public router: Router, public location: LocationStrategy) {}
 }

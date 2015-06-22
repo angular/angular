@@ -32,6 +32,8 @@ import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/even
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 import {MockXHR} from 'angular2/src/render/xhr_mock';
+import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestBed} from './test_bed';
@@ -109,6 +111,7 @@ function _getAppBindings() {
     Parser,
     Lexer,
     ExceptionHandler,
+    bind(LocationStrategy).toClass(MockLocationStrategy),
     bind(XHR).toClass(MockXHR),
     ComponentUrlMapper,
     UrlResolver,

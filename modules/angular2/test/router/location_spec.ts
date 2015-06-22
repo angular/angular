@@ -15,19 +15,19 @@ import {
 import {Injector, bind} from 'angular2/di';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Location, appBaseHrefToken} from 'angular2/src/router/location';
-import {BrowserLocation} from 'angular2/src/router/browser_location';
-import {DummyBrowserLocation} from 'angular2/src/mock/browser_location_mock';
+import {LocationStrategy} from 'angular2/src/router/location_strategy';
+import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 export function main() {
   describe('Location', () => {
 
-    var browserLocation, location;
+    var locationStrategy, location;
 
     function makeLocation(baseHref: string = '/my/app', binding: any = CONST_EXPR([])): Location {
-      browserLocation = new DummyBrowserLocation();
-      browserLocation.internalBaseHref = baseHref;
+      locationStrategy = new MockLocationStrategy();
+      locationStrategy.internalBaseHref = baseHref;
       let injector = Injector.resolveAndCreate(
-          [Location, bind(BrowserLocation).toValue(browserLocation), binding]);
+          [Location, bind(LocationStrategy).toValue(locationStrategy), binding]);
       return location = injector.get(Location);
     }
 
@@ -35,11 +35,11 @@ export function main() {
 
     it('should normalize relative urls on navigate', () => {
       location.go('user/btford');
-      expect(browserLocation.path()).toEqual('/my/app/user/btford');
+      expect(locationStrategy.path()).toEqual('/my/app/user/btford');
     });
 
     it('should not prepend urls with starting slash when an empty URL is provided',
-       () => { expect(location.normalizeAbsolutely('')).toEqual(browserLocation.getBaseHref()); });
+       () => { expect(location.normalizeAbsolutely('')).toEqual(locationStrategy.getBaseHref()); });
 
     it('should not prepend path with an extra slash when a baseHref has a trailing slash', () => {
       let location = makeLocation('/my/slashed/app/');
@@ -48,17 +48,17 @@ export function main() {
 
     it('should not append urls with leading slash on navigate', () => {
       location.go('/my/app/user/btford');
-      expect(browserLocation.path()).toEqual('/my/app/user/btford');
+      expect(locationStrategy.path()).toEqual('/my/app/user/btford');
     });
 
     it('should remove index.html from base href', () => {
       let location = makeLocation('/my/app/index.html');
       location.go('user/btford');
-      expect(browserLocation.path()).toEqual('/my/app/user/btford');
+      expect(locationStrategy.path()).toEqual('/my/app/user/btford');
     });
 
     it('should normalize urls on popstate', inject([AsyncTestCompleter], (async) => {
-         browserLocation.simulatePopState('/my/app/user/btford');
+         locationStrategy.simulatePopState('/my/app/user/btford');
          location.subscribe((ev) => {
            expect(ev['url']).toEqual('/user/btford');
            async.done();
@@ -66,14 +66,14 @@ export function main() {
        }));
 
     it('should normalize location path', () => {
-      browserLocation.internalPath = '/my/app/user/btford';
+      locationStrategy.internalPath = '/my/app/user/btford';
       expect(location.path()).toEqual('/user/btford');
     });
 
     it('should use optional base href param', () => {
       let location = makeLocation('/', bind(appBaseHrefToken).toValue('/my/custom/href'));
       location.go('user/btford');
-      expect(browserLocation.path()).toEqual('/my/custom/href/user/btford');
+      expect(locationStrategy.path()).toEqual('/my/custom/href/user/btford');
     });
   });
 }

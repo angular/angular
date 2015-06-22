@@ -1,12 +1,9 @@
-import {proxy, SpyObject} from 'angular2/test_lib';
-import {IMPLEMENTS, BaseException} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {BrowserLocation} from 'angular2/src/router/browser_location';
+import {List} from 'angular2/src/facade/collection';
+import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
-@proxy
-@IMPLEMENTS(BrowserLocation)
-export class DummyBrowserLocation extends SpyObject {
+
+export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
   internalPath: string = '/';
   internalTitle: string = '';
@@ -31,13 +28,7 @@ export class DummyBrowserLocation extends SpyObject {
     this.urlChanges.push(url);
   }
 
-  forward(): void { throw new BaseException('Not implemented yet!'); }
-
-  back(): void { throw new BaseException('Not implemented yet!'); }
-
   onPopState(fn): void { ObservableWrapper.subscribe(this._subject, fn); }
 
   getBaseHref(): string { return this.internalBaseHref; }
-
-  noSuchMethod(m) { return super.noSuchMethod(m); }
 }
