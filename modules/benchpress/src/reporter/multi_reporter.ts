@@ -9,10 +9,11 @@ export class MultiReporter extends Reporter {
   static createBindings(childTokens: List<any>): List<Binding> {
     return [
       bind(_CHILDREN)
-          .toAsyncFactory((injector) => PromiseWrapper.all(
-                              ListWrapper.map(childTokens, (token) => injector.asyncGet(token))),
-                          [Injector]),
-      bind(MultiReporter).toFactory((children) => new MultiReporter(children), [_CHILDREN])
+          .toFactory((injector: Injector) => PromiseWrapper.all(
+                         ListWrapper.map(childTokens, (token) => injector.get(token))),
+                     [Injector]),
+      bind(MultiReporter)
+          .toFactory(p => p.then(children => new MultiReporter(children)), [_CHILDREN])
     ];
   }
 

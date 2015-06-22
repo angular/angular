@@ -1,7 +1,7 @@
 import {Injector, bind, Binding} from 'angular2/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Sampler, SampleState} from './sampler';
 import {ConsoleReporter} from './reporter/console_reporter';
@@ -49,9 +49,9 @@ export class Runner {
     if (isPresent(bindings)) {
       sampleBindings.push(bindings);
     }
-    return Injector.resolveAndCreate(sampleBindings)
-        .asyncGet(Sampler)
-        .then((sampler) => sampler.sample());
+
+    var sampler = PromiseWrapper.resolve(Injector.resolveAndCreate(sampleBindings).get(Sampler));
+    return sampler.then((sampler) => sampler.sample());
   }
 }
 
@@ -73,9 +73,8 @@ var _DEFAULT_BINDINGS = [
   WebDriverExtension.bindTo([ChromeDriverExtension, IOsDriverExtension]),
   Metric.bindTo(MultiMetric),
 
-  bind(Options.CAPABILITIES)
-      .toAsyncFactory((adapter) => adapter.capabilities(), [WebDriverAdapter]),
+  bind(Options.CAPABILITIES).toFactory((adapter) => adapter.capabilities(), [WebDriverAdapter]),
   bind(Options.USER_AGENT)
-      .toAsyncFactory((adapter) => adapter.executeScript('return window.navigator.userAgent;'),
-                      [WebDriverAdapter])
+      .toFactory((adapter) => adapter.executeScript('return window.navigator.userAgent;'),
+                 [WebDriverAdapter])
 ];

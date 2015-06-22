@@ -56,7 +56,7 @@ export function main() {
                var router = applicationRef.hostComponent.router;
                PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
                  expect(el).toHaveText('outer { oh no }');
-                 expect(error.message).toBe('oops!');
+                 expect(error.message).toContain('oops!');
                  async.done();
                });
              });
@@ -89,7 +89,6 @@ export function main() {
                router.navigate('/parent/child');
              });
        }));
-
     // TODO: add a test in which the child component has bindings
   });
 }
@@ -107,13 +106,11 @@ class AppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-
 @Component({selector: 'parent-cmp'})
 @View({template: `parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([{path: '/child', component: HelloCmp}])
 class ParentCmp {
 }
-
 
 @Component({selector: 'app-cmp'})
 @View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})

@@ -1,4 +1,5 @@
-import {Directive, Parent} from 'angular2/annotations';
+import {Directive} from 'angular2/annotations';
+import {Parent} from 'angular2/di';
 import {ViewContainerRef, ProtoViewRef} from 'angular2/core';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';

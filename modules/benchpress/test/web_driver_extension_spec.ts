@@ -24,7 +24,7 @@ export function main() {
                      bind(Options.CAPABILITIES).toValue(caps),
                      WebDriverExtension.bindTo(ids)
                    ])
-        .asyncGet(WebDriverExtension);
+        .get(WebDriverExtension);
   }
 
   describe('WebDriverExtension.bindTo', () => {

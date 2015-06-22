@@ -26,15 +26,17 @@ export class RouterOutlet {
   private _componentRef: ComponentRef;
   private _elementRef: ElementRef;
   private _currentInstruction: Instruction;
+  private _injector: Injector;
 
   constructor(elementRef: ElementRef, private _loader: DynamicComponentLoader,
-              private _parentRouter: routerMod.Router, private _injector: Injector,
+              private _parentRouter: routerMod.Router, _injector: Injector,
               @Attribute('name') nameAttr: string) {
     // TODO: reintroduce with new // sibling routes
     // if (isBlank(nameAttr)) {
     //  nameAttr = 'default';
     //}
 
+    this._injector = _injector.getAppInjector();
     this._elementRef = elementRef;
 
     this._childRouter = null;
