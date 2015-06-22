@@ -83,5 +83,5 @@ export class App {
 
   _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
 
-  _getScrollDiv() { return DOM.query('body /deep/ #testArea /deep/ #scrollDiv'); }
+  _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
 }
