@@ -28,8 +28,8 @@ If you find a bug in the source code or a mistake in the documentation, you can 
 ## <a name="feature"></a> Want a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
 Repository][github]. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it. Angular 2 is in developer preview 
-and we are not ready to accept major contributions ahead of the full release. 
+a proposal for your work first, to be sure that we can use it. Angular 2 is in developer preview
+and we are not ready to accept major contributions ahead of the full release.
 Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
@@ -135,22 +135,9 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
 * All public API methods **must be documented**. (Details TBC).
-* With the exceptions listed below, we follow the rules contained in
-  [Google's JavaScript Style Guide][js-style-guide]:
-    * Wrap all code at **100 characters**.
-
-### <a name="clang-format">clang-format</a>
-The Angular project uses [`clang-format`](http://clang.llvm.org/docs/ClangFormat.html) to
-automatically format its source and enforce the common coding style. A couple of tips:
-
-* Install clang-format with `npm install -g clang-format`.
-* Use `clang-format -i [file name]` to format a file (or multiple).
-* Use `gulp enforce-format` to check if your code is `clang-format` clean. This also gives
-  you a command line to format your code.
-* `clang-format` also includes a git hook, run `git clang-format` to format all files you
-  touched.
-* `clang-format` integrations are available for many popular editors (`vim`, `emacs`,
-  `Sublime Text`, etc.)
+* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at
+  **100 characters**. An automated formatter is available, see
+  [DEVELOPER.md](DEVELOPER.md#clang-format).
 
 ## <a name="commit"></a> Commit Message Guidelines
 
@@ -188,7 +175,7 @@ Must be one of the following:
   generation
 
 ### Scope
-The scope could be anything specifying place of the commit change. For example 
+The scope could be anything specifying place of the commit change. For example
 `Compiler`, `ElementInjector`, etc.
 
 ### Subject

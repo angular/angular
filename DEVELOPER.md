@@ -175,7 +175,7 @@ Karma is run against the new output.
 much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test and a group of
 tests respectively.
 
-### E2e tests
+### E2E tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder).
 2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs a local webserver).
@@ -195,30 +195,36 @@ Angular specific command line options when running protractor:
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
 
-## Formatting
+## Formatting with <a name="clang-format">clang-format</a>
 
-We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code style for our TypeScript code.
-This allows us to focus our code reviews more on the content, and less on style nit-picking.
-It also lets us encode our style guide in the `.clang-format` file in the repository,
-allowing many tools and editors to share our settings.
+We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code
+style for our TypeScript code. This allows us to focus our code reviews more on the content, and
+less on style nit-picking. It also lets us encode our style guide in the `.clang-format` file in the
+repository, allowing many tools and editors to share our settings.
 
 To check the formatting of your code, run
 
     gulp check-format
 
-Note that the continuous build on Travis runs `gulp enforce-format`.
-Unlike the `check-format` task, this will actually fail the build if files aren't formatted according to the style guide.
+Note that the continuous build on Travis runs `gulp enforce-format`. Unlike the `check-format` task,
+this will actually fail the build if files aren't formatted according to the style guide.
 
-Your life will be easier if you include the formatter in your standard workflow.
-Otherwise, you'll likely forget to check the formatting,
-and waste time waiting for a build on Travis that fails due to some whitespace difference.
+Your life will be easier if you include the formatter in your standard workflow. Otherwise, you'll
+likely forget to check the formatting, and waste time waiting for a build on Travis that fails due
+to some whitespace difference.
 
-* **git pre-commit hook** is available at
-[llvm.org](https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/git-clang-format).
-This will automatically format your delta regions when you commit a change.
-To install, first patch this file to add `.ts` to the `default_extensions` section.
-Then copy the file somewhere in your path, for example, `/usr/local/git/current/bin/git-clang-format`.
-Make sure it is executable. Then, in the angular repo, run
+* Install clang-format with `npm install -g clang-format`.
+* Use `clang-format -i [file name]` to format a file (or multiple).
+  Note that `clang-format` tries to load a `clang-format` node module close to the sources being
+  formatted, or from the `$CWD`, and only then uses the globally installed one - so the version used
+  should automatically match the one required by the project.
+  Use `clang-format -version` in case you get confused.
+* Use `gulp enforce-format` to check if your code is `clang-format` clean. This also gives
+  you a command line to format your code.
+* `clang-format` also includes a git hook, run `git clang-format` to format all files you
+  touched.
+* You can run this as a **git pre-commit hook** to automatically format your delta regions when you
+  commit a change. In the angular repo, run
 
 ```
     $ echo -e '#!/bin/sh\nexec git clang-format' > .git/hooks/pre-commit
@@ -237,7 +243,9 @@ Make sure it is executable. Then, in the angular repo, run
     - Program: [path to clang-format, try `$ echo $(npm config get prefix)/bin/clang-format`]
     - Parameters: `-i -style=file $FilePath$`
     - Working directory: `$ProjectFileDir$`
-    
+* `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
+  `Sublime Text`, etc.).
+
 ## Project Information
 
 ### Folder structure
