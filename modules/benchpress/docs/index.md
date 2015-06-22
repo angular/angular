@@ -16,6 +16,7 @@ There are so called "micro benchmarks" that esentially use a stop watch in the b
   as the garbage collection amount directly affects garbage collection time.
 - distinguish script execution time from waiting: e.g. to measure the client side only time that is spent
   in a complex user interaction, ignoring backend calls.
+- measure fps to assert the smoothness of scrolling and animations.
 
 This kind of data is already available in the DevTools of modern browsers. However, there is no standard way to
 use those tools in an automated way to measure web app performance, especially not across platforms.
@@ -157,6 +158,21 @@ runner.sample({
 
 When looking into the DevTools Timeline, we see a marker as well:
 ![Marked Timeline](marked_timeline.png)
+
+# Smoothness Metrics
+
+Benchpress can also measure the "smoothness" of scrolling and animations. In order to do that, the following set of metrics can be collected by benchpress:
+
+- `frameTime.mean`: mean frame time in ms (target: 16.6ms for 60fps)
+- `frameTime.worst`: worst frame time in ms
+- `frameTime.best`: best frame time in ms
+- `frameTime.smooth`: percentage of frames that hit 60fps
+
+To collect these metrics, you need to execute `console.time('frameCapture')` and `console.timeEnd('frameCapture')` either in your benchmark application or in you benchmark driver via webdriver. The metrics mentioned above will only be collected between those two calls and it is recommended to wrap the time/timeEnd calls as closely as possible around the action you want to evaluate to get accurate measurements.
+
+In addition to that, one extra binding needs to be passed to benchpress in tests that want to collect these metrics:
+
+    benchpress.sample(bindings: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
 
 # Best practices
 
