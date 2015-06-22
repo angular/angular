@@ -7,14 +7,14 @@ export type Type = new (...args: any[]) => any;
 
 export class BaseException extends Error {
   message;
-  stack;
   constructor(message?: string) {
     super(message);
     this.message = message;
-    this.stack = (<any>new Error(message)).stack;
   }
 
   toString(): string { return this.message; }
+
+  get stack() { return (<any>new Error(this.message)).stack }
 }
 
 export var Math = _global.Math;
