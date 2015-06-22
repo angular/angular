@@ -6,7 +6,7 @@ import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
-import {BindingPipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
+import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
   constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
@@ -38,6 +38,12 @@ export function main() {
   function parseInterpolation(text, location = null): any {
     return createParser().parseInterpolation(text, location);
   }
+
+  function parseSimpleBinding(text, location = null): any {
+    return createParser().parseSimpleBinding(text, location);
+  }
+
+  function unparse(ast: AST): string { return new Unparser().unparse(ast); }
 
   function emptyLocals() { return new Locals(null, new Map()); }
 
@@ -617,6 +623,24 @@ export function main() {
         var originalExp = 'before {{ a }} middle {{ b }} after';
         var ast = parseInterpolation(originalExp).ast;
         expect(new Unparser().unparse(ast)).toEqual(originalExp);
+      });
+    });
+
+    describe("parseSimpleBinding", () => {
+      it("should parse a field access", () => {
+        var p = parseSimpleBinding("name");
+        expect(unparse(p)).toEqual("name");
+      });
+
+      it("should parse a constant", () => {
+        var p = parseSimpleBinding("[1, 2]");
+        expect(unparse(p)).toEqual("[1, 2]");
+      });
+
+      it("should throw when the given expression is not just a field name", () => {
+        expect(() => parseSimpleBinding("name + 1"))
+            .toThrowError(new RegExp(
+                'Simple binding expression can only contain field access and constants'));
       });
     });
 

@@ -45,7 +45,8 @@ import {
   SafeMethodCall,
   FunctionCall,
   TemplateBinding,
-  ASTWithSource
+  ASTWithSource,
+  AstVisitor
 } from './ast';
 
 
@@ -70,6 +71,12 @@ export class Parser {
   parseBinding(input: string, location: any): ASTWithSource {
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+    return new ASTWithSource(ast, input, location);
+  }
+
+  parseSimpleBinding(input: string, location: string): ASTWithSource {
+    var tokens = this._lexer.tokenize(input);
+    var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseSimpleBinding();
     return new ASTWithSource(ast, input, location);
   }
 
@@ -200,6 +207,14 @@ class _ParseAST {
     if (exprs.length == 0) return new EmptyExpr();
     if (exprs.length == 1) return exprs[0];
     return new Chain(exprs);
+  }
+
+  parseSimpleBinding(): AST {
+    var ast = this.parseChain();
+    if (!SimpleExpressionChecker.check(ast)) {
+      this.error(`Simple binding expression can only contain field access and constants'`);
+    }
+    return ast;
   }
 
   parsePipe() {
@@ -589,4 +604,58 @@ class _ParseAST {
     throw new BaseException(
         `Parser Error: ${message} ${location} [${this.input}] in ${this.location}`);
   }
+}
+
+class SimpleExpressionChecker implements AstVisitor {
+  static check(ast: AST) {
+    var s = new SimpleExpressionChecker();
+    ast.visit(s);
+    return s.simple;
+  }
+
+  simple = true;
+
+  visitImplicitReceiver(ast: ImplicitReceiver) {}
+
+  visitInterpolation(ast: Interpolation) { this.simple = false; }
+
+  visitLiteralPrimitive(ast: LiteralPrimitive) {}
+
+  visitAccessMember(ast: AccessMember) {}
+
+  visitSafeAccessMember(ast: SafeAccessMember) { this.simple = false; }
+
+  visitMethodCall(ast: MethodCall) { this.simple = false; }
+
+  visitSafeMethodCall(ast: SafeMethodCall) { this.simple = false; }
+
+  visitFunctionCall(ast: FunctionCall) { this.simple = false; }
+
+  visitLiteralArray(ast: LiteralArray) { this.visitAll(ast.expressions); }
+
+  visitLiteralMap(ast: LiteralMap) { this.visitAll(ast.values); }
+
+  visitBinary(ast: Binary) { this.simple = false; }
+
+  visitPrefixNot(ast: PrefixNot) { this.simple = false; }
+
+  visitConditional(ast: Conditional) { this.simple = false; }
+
+  visitPipe(ast: BindingPipe) { this.simple = false; }
+
+  visitKeyedAccess(ast: KeyedAccess) { this.simple = false; }
+
+  visitAll(asts: List<any>) {
+    var res = ListWrapper.createFixedSize(asts.length);
+    for (var i = 0; i < asts.length; ++i) {
+      res[i] = asts[i].visit(this);
+    }
+    return res;
+  }
+
+  visitChain(ast: Chain) { this.simple = false; }
+
+  visitAssignment(ast: Assignment) { this.simple = false; }
+
+  visitIf(ast: If) { this.simple = false; }
 }

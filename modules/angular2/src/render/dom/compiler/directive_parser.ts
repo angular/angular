@@ -168,8 +168,8 @@ export class DirectiveParser implements CompileStep {
   }
 
   _bindHostProperty(hostPropertyName, expression, compileElement, directiveBinderBuilder) {
-    var ast = this._parser.parseBinding(expression,
-                                        `hostProperties of ${compileElement.elementDescription}`);
+    var ast = this._parser.parseSimpleBinding(
+        expression, `hostProperties of ${compileElement.elementDescription}`);
     directiveBinderBuilder.bindHostProperty(hostPropertyName, ast);
   }
 

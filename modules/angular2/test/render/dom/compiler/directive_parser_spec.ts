@@ -24,6 +24,7 @@ export function main() {
         decoratorWithMultipleAttrs,
         someDirectiveWithProps,
         someDirectiveWithHostProperties,
+        someDirectiveWithInvalidHostProperties,
         someDirectiveWithHostAttributes,
         someDirectiveWithEvents,
         someDirectiveWithGlobalEvents,
@@ -101,6 +102,12 @@ export function main() {
 
       var ast = directiveBinding.hostPropertyBindings.get('hostProp');
       expect(ast.source).toEqual('dirProp');
+    });
+
+    it('should throw when parsing invalid host properties', () => {
+      expect(() => process(el('<input some-decor-with-invalid-host-props>')))
+          .toThrowError(
+              new RegExp('Simple binding expression can only contain field access and constants'));
     });
 
     it('should set host element attributes', () => {
@@ -233,6 +240,11 @@ var someDirectiveWithProps = DirectiveMetadata.create({
 var someDirectiveWithHostProperties = DirectiveMetadata.create({
   selector: '[some-decor-with-host-props]',
   host: MapWrapper.createFromStringMap({'[hostProp]': 'dirProp'})
+});
+
+var someDirectiveWithInvalidHostProperties = DirectiveMetadata.create({
+  selector: '[some-decor-with-invalid-host-props]',
+  host: MapWrapper.createFromStringMap({'[hostProp]': 'dirProp + dirProp2'})
 });
 
 var someDirectiveWithHostAttributes = DirectiveMetadata.create({

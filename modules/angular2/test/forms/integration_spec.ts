@@ -670,7 +670,7 @@ export function main() {
 
                         var input = view.querySelector("input");
                         expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+                            .toEqual(['ng-binding', 'ng-untouched', 'ng-pristine', 'ng-invalid']);
 
                         dispatchEvent(input, "blur");
                         view.detectChanges();
