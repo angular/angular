@@ -2,6 +2,9 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
+var fs = require('fs-extra');
+var browserify = require('browserify');
+var path = require('path');
 
 module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConfig,
     sfx) {
@@ -22,4 +25,64 @@ module.exports.modify = function(srcs, concatName) {
   return gulp.src(srcs)
     .pipe(concat(concatName))
     .pipe(replace('sourceMappingURL', 'sourceMappingURLDisabled'))  // TODO: add concat for sourceMaps
+}
+
+
+module.exports.benchpressBundle = function(entries, packageJsonPath, includes, excludes, ignore, dest, cb) {
+  /*
+    we need a script in dist/js/cjs so we
+    can find node modules the same way benchpress does.
+    This allows us to extract the LICENSE files from each
+    module included in the bundle, through:
+      helper(moduleName)
+  */
+  var helperScript = 'module.exports = function(moduleName){return require.resolve(moduleName)}';
+  var helperPath = path.resolve('./dist/js/cjs/_module_resolver.js');
+  fs.writeFileSync(helperPath, helperScript);
+  var helper = require(helperPath);
+
+  var b = browserify({
+    entries: entries,
+    builtins: [],
+    insertGlobalVars: ['__filename','__dirname'],
+    detectGlobals: false
+  });
+  for (var i = 0; i < excludes.length; i++) {
+    b.exclude(excludes[i]);
+  }
+  var packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
+  for (var dep in packageJson.dependencies) {
+    //remove deps from package that we want to include in the bundle
+    if (includes.indexOf(dep) > -1) {
+      delete packageJson.dependencies[dep];
+    } else {
+      b.exclude(dep);
+    }
+  }
+  for (var i = 0; i < ignore.length; i++) {
+    b.ignore(ignore[i]);
+  }
+  fs.mkdirsSync(dest);
+  fs.writeFileSync(dest + '/package.json', JSON.stringify(packageJson, null, '  '));
+  b.bundle(function(err, buf) {
+    if (err) {
+      return cb(err);
+    }
+    var contents = buf.toString();
+
+    var licenses = "/*\n";
+    //for packaged dependencies, the license must also be included
+    for (var i = 0; i < includes.length; i++) {
+      var licensePath = helper(includes[i] + "/LICENSE");
+      var licenseContent = fs.readFileSync(licensePath);
+      licenses += "======================== BEGIN LICENSE FOR BUNDLED MODULE: " + includes[i] + " ========================\n";
+      licenses += licenseContent;
+      licenses += "======================== END LICENSE FOR BUNDLED MODULE: " + includes[i] + " ========================\n";
+    }
+    licenses += "*/\n";
+    contents = licenses + contents;
+    contents += 'module.exports = global.__benchpressExports;\n';
+    fs.writeFileSync(dest + '/index.js', contents);
+    cb(null);
+  });
 }
