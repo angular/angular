@@ -1,5 +1,6 @@
 import {isPromise} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
+import {Injectable} from 'angular2/di';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -20,6 +21,7 @@ import {insertSharedStyleText} from './util';
  * - styles are **not** scoped to their component and will apply to the whole document,
  * - you can **not** use shadow DOM specific selectors in the styles
  */
+@Injectable()
 export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
   constructor(public styleInliner: StyleInliner, public styleUrlResolver: StyleUrlResolver,
               public styleHost) {
