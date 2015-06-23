@@ -61,7 +61,7 @@ export function main() {
 
 @Directive({selector: '[test-dec]'})
 class TestDirective {
-  constructor(el: ElementRef) { DOM.addClass(el.domElement, 'compiled'); }
+  constructor(el: ElementRef) { DOM.addClass(el.nativeElement, 'compiled'); }
 }
 
 @Component({selector: 'test-cmp'})

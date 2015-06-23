@@ -24,7 +24,7 @@ export class Ruler {
   constructor(domAdapter: DomAdapter) { this.domAdapter = domAdapter; }
 
   measure(el: ElementRef): Promise<Rectangle> {
-    var clntRect = <any>this.domAdapter.getBoundingClientRect(el.domElement);
+    var clntRect = <any>this.domAdapter.getBoundingClientRect(el.nativeElement);
 
     // even if getBoundingClientRect is synchronous we use async API in preparation for further
     // changes

@@ -256,8 +256,8 @@ export function main() {
 
                  view.detectChanges();
 
-                 expect(q.query.first.domElement).toHaveText("1d");
-                 expect(q.query.last.domElement).toHaveText("2d");
+                 expect(q.query.first.nativeElement).toHaveText("1d");
+                 expect(q.query.last.nativeElement).toHaveText("2d");
 
                  async.done();
                });

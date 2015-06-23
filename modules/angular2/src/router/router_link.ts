@@ -4,10 +4,10 @@ import {ElementRef} from 'angular2/core';
 import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {isPresent} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Router} from './router';
 import {Location} from './location';
+import {Renderer} from 'angular2/src/render/api';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -37,7 +37,6 @@ import {Location} from './location';
   host: {'(^click)': 'onClick()'}
 })
 export class RouterLink {
-  private _domEl;
   private _route: string;
   private _params: StringMap<string, string>;
 
@@ -46,8 +45,8 @@ export class RouterLink {
   // the url passed to the router navigation.
   _navigationHref: string;
 
-  constructor(elementRef: ElementRef, private _router: Router, private _location: Location) {
-    this._domEl = elementRef.domElement;
+  constructor(private _elementRef: ElementRef, private _router: Router, private _location: Location,
+              private _renderer: Renderer) {
     this._params = StringMapWrapper.create();
   }
 
@@ -66,7 +65,7 @@ export class RouterLink {
       this._visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
       // Keeping the link on the element to support contextual menu `copy link`
       // and other in-browser affordances.
-      DOM.setAttribute(this._domEl, 'href', this._visibleHref);
+      this._renderer.setElementAttribute(this._elementRef, 'href', this._visibleHref);
     }
   }
 }

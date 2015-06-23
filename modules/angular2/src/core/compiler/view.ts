@@ -65,7 +65,7 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
     this.elementRefs = ListWrapper.createFixedSize(this.proto.elementBinders.length);
     this.ref = new ViewRef(this);
     for (var i = 0; i < this.elementRefs.length; i++) {
-      this.elementRefs[i] = new ElementRef(this.ref, i);
+      this.elementRefs[i] = new ElementRef(this.ref, i, renderer);
     }
     this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
   }
