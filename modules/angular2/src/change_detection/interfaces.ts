@@ -1,4 +1,5 @@
 import {List} from 'angular2/src/facade/collection';
+import {CONST} from 'angular2/src/facade/lang';
 import {Locals} from './parser/locals';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord} from './directive_record';
@@ -29,6 +30,7 @@ import {DirectiveRecord} from './directive_record';
  * ```
  * @exportedAs angular2/change_detection
  */
+@CONST()
 export class ChangeDetection {
   createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return null;
