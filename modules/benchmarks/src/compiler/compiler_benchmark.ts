@@ -18,6 +18,8 @@ import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
+
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -42,9 +44,9 @@ export function main() {
   var shadowDomStrategy = new NativeShadowDomStrategy(styleInliner, styleUrlResolver);
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
                                                  new TemplateLoader(null, urlResolver));
-  var compiler =
-      new Compiler(reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver,
-                   renderCompiler, new ProtoViewFactory(new DynamicChangeDetection(null)));
+  var compiler = new Compiler(
+      reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
+      new ProtoViewFactory(new DynamicChangeDetection(null)), new FakeAppRootUrl());
 
   function measureWrapper(func, desc) {
     return function() {
@@ -163,4 +165,8 @@ class BenchmarkComponentNoBindings {
 </div>`
 })
 class BenchmarkComponentWithBindings {
+}
+
+class FakeAppRootUrl extends AppRootUrl {
+  get value() { return ''; }
 }

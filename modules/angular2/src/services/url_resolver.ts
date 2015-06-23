@@ -13,17 +13,7 @@ export class UrlResolver {
   }
 
   /**
-   * Resolves the `url` given the `baseUrl`.
-   *
-   * ## When the `baseUrl` is null
-   *
-   * `url` is resolved in the context of the current document.
-   * If the document location is 'http://www.foo.com/base' and the `url` is 'path/to/here', the
-   * resolved url will be
-   * 'http://www.foo.com/base/path/to/here'
-   *
-   * ## When the `baseUrl` is not null
-   *
+   * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,
    * - due to a limitation in the process used to resolve urls (a HTMLLinkElement), `url` must not
    * start with a `/`,
@@ -37,11 +27,6 @@ export class UrlResolver {
    * @returns {string} the resolved URL
    */
   resolve(baseUrl: string, url: string): string {
-    if (isBlank(baseUrl)) {
-      DOM.resolveAndSetHref(UrlResolver.a, url, null);
-      return DOM.getHref(UrlResolver.a);
-    }
-
     if (isBlank(url) || url == '') return baseUrl;
 
     if (url[0] == '/') {

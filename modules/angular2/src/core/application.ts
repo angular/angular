@@ -44,6 +44,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -133,7 +134,8 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     StyleUrlResolver,
     StyleInliner,
     DynamicComponentLoader,
-    Testability
+    Testability,
+    AppRootUrl
   ];
 }
 
