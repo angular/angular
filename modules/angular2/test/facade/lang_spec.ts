@@ -10,7 +10,7 @@ import {
 export function main() {
   describe('RegExp', () => {
     it('should expose the index for each match', () => {
-      var re = RegExpWrapper.create('(!)');
+      var re = /(!)/g;
       var matcher = RegExpWrapper.matcher(re, '0!23!567!!');
       var indexes = [];
       var m;

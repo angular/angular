@@ -49,12 +49,11 @@ export function containsRegexp(input: string): RegExp {
 }
 
 export function normalizeCSS(css: string): string {
-  css = StringWrapper.replaceAll(css, RegExpWrapper.create('\\s+'), ' ');
-  css = StringWrapper.replaceAll(css, RegExpWrapper.create(':\\s'), ':');
-  css = StringWrapper.replaceAll(css, RegExpWrapper.create("\\'"), '"');
-  css = StringWrapper.replaceAllMapped(css, RegExpWrapper.create('url\\(\\"(.+)\\"\\)'),
-                                       (match) => `url(${match[1]})`);
-  css = StringWrapper.replaceAllMapped(css, RegExpWrapper.create('\\[(.+)=([^"\\]]+)\\]'),
+  css = StringWrapper.replaceAll(css, /\s+/g, ' ');
+  css = StringWrapper.replaceAll(css, /:\s/g, ':');
+  css = StringWrapper.replaceAll(css, /'"/g, '"');
+  css = StringWrapper.replaceAllMapped(css, /url\(\"(.+)\\"\)/g, (match) => `url(${match[1]})`);
+  css = StringWrapper.replaceAllMapped(css, /\[(.+)=([^"\]]+)\]/g,
                                        (match) => `[${match[1]}="${match[2]}"]`);
   return css;
 }

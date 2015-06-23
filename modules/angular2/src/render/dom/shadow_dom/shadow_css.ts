@@ -403,8 +403,8 @@ export class ShadowCss {
   }
 
   _makeScopeMatcher(scopeSelector: string): RegExp {
-    var lre = RegExpWrapper.create('\\[');
-    var rre = RegExpWrapper.create('\\]');
+    var lre = /\[/g;
+    var rre = /\]/g;
     scopeSelector = StringWrapper.replaceAll(scopeSelector, lre, '\\[');
     scopeSelector = StringWrapper.replaceAll(scopeSelector, rre, '\\]');
     return RegExpWrapper.create('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
@@ -429,7 +429,7 @@ export class ShadowCss {
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]
   _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
-    var isRe = RegExpWrapper.create('\\[is=([^\\]]*)\\]');
+    var isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);
     var splits = [' ', '>', '+', '~'], scoped = selector, attrName = '[' + scopeSelector + ']';
     for (var i = 0; i < splits.length; i++) {
@@ -440,7 +440,7 @@ export class ShadowCss {
                             var t = StringWrapper.replaceAll(p.trim(), _polyfillHostRe, '');
                             if (t.length > 0 && !ListWrapper.contains(splits, t) &&
                                 !StringWrapper.contains(t, attrName)) {
-                              var re = RegExpWrapper.create('([^:]*)(:*)(.*)');
+                              var re = /([^:]*)(:*)(.*)/g;
                               var m = RegExpWrapper.firstMatch(re, t);
                               if (isPresent(m)) {
                                 p = m[1] + attrName + m[2] + m[3];
@@ -463,10 +463,10 @@ export class ShadowCss {
     // TODO(sorvell): Safari cssom incorrectly removes quotes from the content
     // property. (https://bugs.webkit.org/show_bug.cgi?id=118045)
     // don't replace attr rules
-    var attrRe = RegExpWrapper.create('[\'"]+|attr');
+    var attrRe = /['"]+|attr/g;
     if (rule.style.content.length > 0 &&
         !isPresent(RegExpWrapper.firstMatch(attrRe, rule.style.content))) {
-      var contentRe = RegExpWrapper.create('content:[^;]*;');
+      var contentRe = /content:[^;]*;/g;
       cssText =
           StringWrapper.replaceAll(cssText, contentRe, 'content: \'' + rule.style.content + '\';');
     }
@@ -487,13 +487,11 @@ export class ShadowCss {
     return cssText;
   }
 }
-
-var _cssContentNextSelectorRe = RegExpWrapper.create(
-    'polyfill-next-selector[^}]*content:[\\s]*?[\'"](.*?)[\'"][;\\s]*}([^{]*?){', 'im');
-var _cssContentRuleRe =
-    RegExpWrapper.create('(polyfill-rule)[^}]*(content:[\\s]*[\'"](.*?)[\'"])[;\\s]*[^}]*}', 'im');
-var _cssContentUnscopedRuleRe = RegExpWrapper.create(
-    '(polyfill-unscoped-rule)[^}]*(content:[\\s]*[\'"](.*?)[\'"])[;\\s]*[^}]*}', 'im');
+var _cssContentNextSelectorRe =
+    /polyfill-next-selector[^}]*content:[\s]*?['"](.*?)['"][;\s]*}([^{]*?){/gim;
+var _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*['"](.*?)['"])[;\s]*[^}]*}/gim;
+var _cssContentUnscopedRuleRe =
+    /(polyfill-unscoped-rule)[^}]*(content:[\s]*['"](.*?)['"])[;\s]*[^}]*}/gim;
 var _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 var _polyfillHostContext = '-shadowcsscontext';
@@ -504,18 +502,21 @@ var _cssColonHostRe = RegExpWrapper.create('(' + _polyfillHost + _parenSuffix, '
 var _cssColonHostContextRe = RegExpWrapper.create('(' + _polyfillHostContext + _parenSuffix, 'im');
 var _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 var _shadowDOMSelectorsRe = [
-  RegExpWrapper.create('>>>'),
-  RegExpWrapper.create('::shadow'),
-  RegExpWrapper.create('::content'),
+  />>>/g,
+  /::shadow/g,
+  /::content/g,
   // Deprecated selectors
-  RegExpWrapper.create('/deep/'),         // former >>>
-  RegExpWrapper.create('/shadow-deep/'),  // former /deep/
-  RegExpWrapper.create('/shadow/'),       // former ::shadow
+  // TODO(vicb): see https://github.com/angular/clang-format/issues/16
+  // clang-format off
+  /\/deep\//g,         // former >>>
+  /\/shadow-deep\//g,  // former /deep/
+  /\/shadow\//g,       // former ::shadow
+  // clanf-format on
 ];
 var _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
 var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');
-var _colonHostRe = RegExpWrapper.create(':host', 'im');
-var _colonHostContextRe = RegExpWrapper.create(':host-context', 'im');
+var _colonHostRe = /:host/gim;
+var _colonHostContextRe = /:host-context/gim;
 
 function _cssToRules(cssText: string) {
   return DOM.cssToRules(cssText);

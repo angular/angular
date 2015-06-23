@@ -2,7 +2,7 @@
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
 import {Injectable} from 'angular2/di';
-import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {RegExp, StringWrapper} from 'angular2/src/facade/lang';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 /**
@@ -31,6 +31,6 @@ export class StyleUrlResolver {
   }
 }
 
-var _cssUrlRe = RegExpWrapper.create('(url\\()([^)]*)(\\))');
-var _cssImportRe = RegExpWrapper.create('(@import[\\s]+(?!url\\())[\'"]([^\'"]*)[\'"](.*;)');
-var _quoteRe = RegExpWrapper.create('[\'"]');
+var _cssUrlRe = /(url\()([^)]*)(\))/g;
+var _cssImportRe = /(@import[\s]+(?!url\())['"]([^'"]*)['"](.*;)/g;
+var _quoteRe = /['"]/g;

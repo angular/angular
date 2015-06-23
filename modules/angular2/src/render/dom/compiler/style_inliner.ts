@@ -131,9 +131,9 @@ function _wrapInMediaRule(css: string, query: string): string {
   return (isBlank(query)) ? css : `@media ${query} {\n${css}\n}`;
 }
 
-var _importRe = RegExpWrapper.create('@import\\s+([^;]+);');
+var _importRe = /@import\s+([^;]+);/g;
 var _urlRe = RegExpWrapper.create(
     'url\\(\\s*?[\'"]?([^\'")]+)[\'"]?|' +  // url(url) or url('url') or url("url")
     '[\'"]([^\'")]+)[\'"]'                  // "url" or 'url'
     );
-var _mediaQueryRe = RegExpWrapper.create('[\'"][^\'"]+[\'"]\\s*\\)?\\s*(.*)');
+var _mediaQueryRe = /['"][^'"]+['"]\s*\)?\s*(.*)/g;
