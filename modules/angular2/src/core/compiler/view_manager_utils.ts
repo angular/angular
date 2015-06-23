@@ -86,6 +86,7 @@ export class AppViewManagerUtils {
     this._hydrateView(hostView, injector, null, new Object(), null);
   }
 
+  // Misnomer: this method is attaching next to the view container.
   attachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                         contextView: viewModule.AppView, contextBoundElementIndex: number,
                         atIndex: number, view: viewModule.AppView) {
@@ -104,7 +105,11 @@ export class AppViewManagerUtils {
     }
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
     for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
-      view.rootElementInjectors[i].linkAfter(elementInjector, sibling);
+      if (isPresent(elementInjector.parent)) {
+        view.rootElementInjectors[i].linkAfter(elementInjector.parent, sibling);
+      } else {
+        contextView.rootElementInjectors.push(view.rootElementInjectors[i]);
+      }
     }
   }
 
@@ -115,7 +120,13 @@ export class AppViewManagerUtils {
     view.changeDetector.remove();
     ListWrapper.removeAt(viewContainer.views, atIndex);
     for (var i = 0; i < view.rootElementInjectors.length; ++i) {
-      view.rootElementInjectors[i].unlink();
+      var inj = view.rootElementInjectors[i];
+      if (isPresent(inj.parent)) {
+        inj.unlink();
+      } else {
+        var removeIdx = ListWrapper.indexOf(parentView.rootElementInjectors, inj);
+        ListWrapper.removeAt(parentView.rootElementInjectors, removeIdx);
+      }
     }
   }
 

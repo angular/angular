@@ -1027,7 +1027,8 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     if (queryRef.query.descendants == false) {
       if (this == queryRef.originator) {
         this._addQueryToTreeSelfAndRecurse(queryRef);
-      } else if (this.parent == queryRef.originator && this._proto.distanceToParent == 1) {
+        // TODO(rado): add check for distance to parent = 1 when issue #2707 is fixed.
+      } else if (this.parent == queryRef.originator) {
         this._assignQueryRef(queryRef);
       }
     } else {
