@@ -1,12 +1,12 @@
-import {StringWrapper, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
 
 export const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
 export const NG_BINDING_CLASS = 'ng-binding';
 
 export const EVENT_TARGET_SEPARATOR = ':';
 
-var CAMEL_CASE_REGEXP = RegExpWrapper.create('([A-Z])');
-var DASH_CASE_REGEXP = RegExpWrapper.create('-([a-z])');
+var CAMEL_CASE_REGEXP = /([A-Z])/g;
+var DASH_CASE_REGEXP = /-([a-z])/g;
 
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,

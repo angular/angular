@@ -17,8 +17,8 @@ import {dashCaseToCamelCase} from '../util';
 // Group 6 = idenitifer inside [()]
 // Group 7 = idenitifer inside []
 // Group 8 = identifier inside ()
-var BIND_NAME_REGEXP = RegExpWrapper.create(
-    '^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\\[\\(([^\\)]+)\\)\\]|\\[([^\\]]+)\\]|\\(([^\\)]+)\\))$');
+var BIND_NAME_REGEXP =
+    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 /**
  * Parses the property bindings on a single element.
  */
