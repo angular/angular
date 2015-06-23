@@ -1,4 +1,4 @@
-import {isBlank, isPresent, Json} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Json, CONST} from 'angular2/src/facade/lang';
 import {Pipe, BasePipe, PipeFactory} from './pipe';
 
 /**
@@ -26,6 +26,7 @@ import {Pipe, BasePipe, PipeFactory} from './pipe';
  *
  * @exportedAs angular2/pipes
  */
+@CONST()
 export class JsonPipe extends BasePipe {
   transform(value): string { return Json.stringify(value); }
 

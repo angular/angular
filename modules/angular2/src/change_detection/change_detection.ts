@@ -21,52 +21,52 @@ import {CONST_EXPR, isPresent, BaseException} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/pipes
  */
-export var keyValDiff: List<PipeFactory> = [new KeyValueChangesFactory(), new NullPipeFactory()];
+export const keyValDiff: List<PipeFactory> = CONST_EXPR([CONST_EXPR(new KeyValueChangesFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  *
  * @exportedAs angular2/pipes
  */
-export var iterableDiff: List<PipeFactory> = [new IterableChangesFactory(), new NullPipeFactory()];
+export const iterableDiff: List<PipeFactory> = CONST_EXPR([CONST_EXPR(new IterableChangesFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Async binding to such types as Observable.
  *
  * @exportedAs angular2/pipes
  */
-export var async: List<PipeFactory> =
-    [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
+export const async: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new ObservablePipeFactory()), CONST_EXPR(new PromisePipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Uppercase text transform.
  *
  * @exportedAs angular2/pipes
  */
-export var uppercase: List<PipeFactory> = [new UpperCaseFactory(), new NullPipeFactory()];
+export const uppercase: List<PipeFactory> = CONST_EXPR([CONST_EXPR(new UpperCaseFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Lowercase text transform.
  *
  * @exportedAs angular2/pipes
  */
-export var lowercase: List<PipeFactory> = [new LowerCaseFactory(), new NullPipeFactory()];
+export const lowercase: List<PipeFactory> = CONST_EXPR([CONST_EXPR(new LowerCaseFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Json stringify transform.
  *
  * @exportedAs angular2/pipes
  */
-export var json: List<PipeFactory | Pipe> = [new JsonPipe(), new NullPipeFactory()];
+export const json: List<PipeFactory | Pipe> = CONST_EXPR([CONST_EXPR(new JsonPipe()), CONST_EXPR(new NullPipeFactory())]);
 
-export var defaultPipes = {
+export const defaultPipes = CONST_EXPR({
   "iterableDiff": iterableDiff,
   "keyValDiff": keyValDiff,
   "async": async,
   "uppercase": uppercase,
   "lowercase": lowercase,
   "json": json
-};
+});
 
 /**
  * Map from {@link ChangeDetectorDefinition#id} to a factory method which takes a
