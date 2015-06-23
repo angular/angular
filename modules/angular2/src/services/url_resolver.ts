@@ -1,54 +1,293 @@
 import {Injectable} from 'angular2/di';
-import {isPresent, isBlank, RegExpWrapper, BaseException} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {
+  isPresent,
+  isBlank,
+  RegExpWrapper,
+  BaseException,
+  normalizeBlank
+} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 @Injectable()
 export class UrlResolver {
-  static a;
-
-  constructor() {
-    if (isBlank(UrlResolver.a)) {
-      UrlResolver.a = DOM.createElement('a');
-    }
-  }
-
   /**
    * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,
-   * - due to a limitation in the process used to resolve urls (a HTMLLinkElement), `url` must not
-   * start with a `/`,
    * - if `url` is relative ('path/to/here', './path/to/here'), the resolved url is a combination of
    * `baseUrl` and `url`,
-   * - if `url` is absolute (it has a scheme: 'http://', 'https://'), the `url` is returned
-   * (ignoring the `baseUrl`)
+   * - if `url` is absolute (it has a scheme: 'http://', 'https://' or start with '/'), the `url` is
+   * returned as is (ignoring the `baseUrl`)
    *
    * @param {string} baseUrl
    * @param {string} url
    * @returns {string} the resolved URL
    */
-  resolve(baseUrl: string, url: string): string {
-    if (isBlank(url) || url == '') return baseUrl;
-
-    if (url[0] == '/') {
-      // The `HTMLLinkElement` does not allow resolving this case (the `url` would be interpreted as
-      // relative):
-      // - `baseUrl` = 'http://www.foo.com/base'
-      // - `url` = '/absolute/path/to/here'
-      // - the result would be 'http://www.foo.com/base/absolute/path/to/here' while
-      // 'http://www.foo.com/absolute/path/to/here'
-      // is expected (without the 'base' segment).
-      throw new BaseException(`Could not resolve the url ${url} from ${baseUrl}`);
-    }
-
-    var m = RegExpWrapper.firstMatch(_schemeRe, url);
-
-    if (isPresent(m[1])) {
-      return url;
-    }
-
-    DOM.resolveAndSetHref(UrlResolver.a, baseUrl, url);
-    return DOM.getHref(UrlResolver.a);
-  }
+  resolve(baseUrl: string, url: string): string { return _resolveUrl(baseUrl, url); }
 }
 
-var _schemeRe = RegExpWrapper.create('^([^:/?#]+:)?');
+// The code below is adapted from Traceur:
+// https://github.com/google/traceur-compiler/blob/9511c1dafa972bf0de1202a8a863bad02f0f95a8/src/runtime/url.js
+
+/**
+ * Builds a URI string from already-encoded parts.
+ *
+ * No encoding is performed.  Any component may be omitted as either null or
+ * undefined.
+ *
+ * @param {?string=} opt_scheme The scheme such as 'http'.
+ * @param {?string=} opt_userInfo The user name before the '@'.
+ * @param {?string=} opt_domain The domain such as 'www.google.com', already
+ *     URI-encoded.
+ * @param {(string|null)=} opt_port The port number.
+ * @param {?string=} opt_path The path, already URI-encoded.  If it is not
+ *     empty, it must begin with a slash.
+ * @param {?string=} opt_queryData The URI-encoded query data.
+ * @param {?string=} opt_fragment The URI-encoded fragment identifier.
+ * @return {string} The fully combined URI.
+ */
+function _buildFromEncodedParts(opt_scheme?: string, opt_userInfo?: string, opt_domain?: string,
+                                opt_port?: string, opt_path?: string, opt_queryData?: string,
+                                opt_fragment?: string): string {
+  var out = [];
+
+  if (isPresent(opt_scheme)) {
+    out.push(opt_scheme + ':');
+  }
+
+  if (isPresent(opt_domain)) {
+    out.push('//');
+
+    if (isPresent(opt_userInfo)) {
+      out.push(opt_userInfo + '@');
+    }
+
+    out.push(opt_domain);
+
+    if (isPresent(opt_port)) {
+      out.push(':' + opt_port);
+    }
+  }
+
+  if (isPresent(opt_path)) {
+    out.push(opt_path);
+  }
+
+  if (isPresent(opt_queryData)) {
+    out.push('?' + opt_queryData);
+  }
+
+  if (isPresent(opt_fragment)) {
+    out.push('#' + opt_fragment);
+  }
+
+  return out.join('');
+}
+
+/**
+ * A regular expression for breaking a URI into its component parts.
+ *
+ * {@link http://www.gbiv.com/protocols/uri/rfc/rfc3986.html#RFC2234} says
+ * As the "first-match-wins" algorithm is identical to the "greedy"
+ * disambiguation method used by POSIX regular expressions, it is natural and
+ * commonplace to use a regular expression for parsing the potential five
+ * components of a URI reference.
+ *
+ * The following line is the regular expression for breaking-down a
+ * well-formed URI reference into its components.
+ *
+ * <pre>
+ * ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+ *  12            3  4          5       6  7        8 9
+ * </pre>
+ *
+ * The numbers in the second line above are only to assist readability; they
+ * indicate the reference points for each subexpression (i.e., each paired
+ * parenthesis). We refer to the value matched for subexpression <n> as $<n>.
+ * For example, matching the above expression to
+ * <pre>
+ *     http://www.ics.uci.edu/pub/ietf/uri/#Related
+ * </pre>
+ * results in the following subexpression matches:
+ * <pre>
+ *    $1 = http:
+ *    $2 = http
+ *    $3 = //www.ics.uci.edu
+ *    $4 = www.ics.uci.edu
+ *    $5 = /pub/ietf/uri/
+ *    $6 = <undefined>
+ *    $7 = <undefined>
+ *    $8 = #Related
+ *    $9 = Related
+ * </pre>
+ * where <undefined> indicates that the component is not present, as is the
+ * case for the query component in the above example. Therefore, we can
+ * determine the value of the five components as
+ * <pre>
+ *    scheme    = $2
+ *    authority = $4
+ *    path      = $5
+ *    query     = $7
+ *    fragment  = $9
+ * </pre>
+ *
+ * The regular expression has been modified slightly to expose the
+ * userInfo, domain, and port separately from the authority.
+ * The modified version yields
+ * <pre>
+ *    $1 = http              scheme
+ *    $2 = <undefined>       userInfo -\
+ *    $3 = www.ics.uci.edu   domain     | authority
+ *    $4 = <undefined>       port     -/
+ *    $5 = /pub/ietf/uri/    path
+ *    $6 = <undefined>       query without ?
+ *    $7 = Related           fragment without #
+ * </pre>
+ * @type {!RegExp}
+ * @private
+ */
+var _splitRe =
+    RegExpWrapper.create('^' +
+                         '(?:' +
+                         '([^:/?#.]+)' +  // scheme - ignore special characters
+                                          // used by other URL parts such as :,
+                                          // ?, /, #, and .
+                         ':)?' +
+                         '(?://' +
+                         '(?:([^/?#]*)@)?' +                  // userInfo
+                         '([\\w\\d\\-\\u0100-\\uffff.%]*)' +  // domain - restrict to letters,
+                                                              // digits, dashes, dots, percent
+                                                              // escapes, and unicode characters.
+                         '(?::([0-9]+))?' +                   // port
+                         ')?' +
+                         '([^?#]+)?' +        // path
+                         '(?:\\?([^#]*))?' +  // query
+                         '(?:#(.*))?' +       // fragment
+                         '$');
+
+/**
+ * The index of each URI component in the return value of goog.uri.utils.split.
+ * @enum {number}
+ */
+enum _ComponentIndex {
+  SCHEME = 1,
+  USER_INFO,
+  DOMAIN,
+  PORT,
+  PATH,
+  QUERY_DATA,
+  FRAGMENT
+}
+
+/**
+ * Splits a URI into its component parts.
+ *
+ * Each component can be accessed via the component indices; for example:
+ * <pre>
+ * goog.uri.utils.split(someStr)[goog.uri.utils.CompontentIndex.QUERY_DATA];
+ * </pre>
+ *
+ * @param {string} uri The URI string to examine.
+ * @return {!Array.<string|undefined>} Each component still URI-encoded.
+ *     Each component that is present will contain the encoded value, whereas
+ *     components that are not present will be undefined or empty, depending
+ *     on the browser's regular expression implementation.  Never null, since
+ *     arbitrary strings may still look like path names.
+ */
+function _split(uri: string): List<string | any> {
+  return RegExpWrapper.firstMatch(_splitRe, uri);
+}
+
+/**
+  * Removes dot segments in given path component, as described in
+  * RFC 3986, section 5.2.4.
+  *
+  * @param {string} path A non-empty path component.
+  * @return {string} Path component with removed dot segments.
+  */
+function _removeDotSegments(path: string): string {
+  if (path == '/') return '/';
+
+  var leadingSlash = path[0] == '/' ? '/' : '';
+  var trailingSlash = path[path.length - 1] === '/' ? '/' : '';
+  var segments = path.split('/');
+
+  var out = [];
+  var up = 0;
+  for (var pos = 0; pos < segments.length; pos++) {
+    var segment = segments[pos];
+    switch (segment) {
+      case '':
+      case '.':
+        break;
+      case '..':
+        if (out.length > 0) {
+          ListWrapper.removeAt(out, out.length - 1);
+        } else {
+          up++;
+        }
+        break;
+      default:
+        out.push(segment);
+    }
+  }
+
+  if (leadingSlash == '') {
+    while (up-- > 0) {
+      ListWrapper.insert(out, 0, '..');
+    }
+
+    if (out.length === 0) out.push('.');
+  }
+
+  return leadingSlash + out.join('/') + trailingSlash;
+}
+
+/**
+ * Takes an array of the parts from split and canonicalizes the path part
+ * and then joins all the parts.
+ * @param {Array.<string?>} parts
+ * @return {string}
+ */
+function _joinAndCanonicalizePath(parts: List<any>): string {
+  var path = parts[_ComponentIndex.PATH];
+  path = isBlank(path) ? '' : _removeDotSegments(path);
+  parts[_ComponentIndex.PATH] = path;
+
+  return _buildFromEncodedParts(parts[_ComponentIndex.SCHEME], parts[_ComponentIndex.USER_INFO],
+                                parts[_ComponentIndex.DOMAIN], parts[_ComponentIndex.PORT], path,
+                                parts[_ComponentIndex.QUERY_DATA], parts[_ComponentIndex.FRAGMENT]);
+}
+
+/**
+ * Resolves a URL.
+ * @param {string} base The URL acting as the base URL.
+ * @param {string} to The URL to resolve.
+ * @return {string}
+ */
+function _resolveUrl(base: string, url: string): string {
+  var parts = _split(url);
+  var baseParts = _split(base);
+
+  if (isPresent(parts[_ComponentIndex.SCHEME])) {
+    return _joinAndCanonicalizePath(parts);
+  } else {
+    parts[_ComponentIndex.SCHEME] = baseParts[_ComponentIndex.SCHEME];
+  }
+
+  for (var i = _ComponentIndex.SCHEME; i <= _ComponentIndex.PORT; i++) {
+    if (isBlank(parts[i])) {
+      parts[i] = baseParts[i];
+    }
+  }
+
+  if (parts[_ComponentIndex.PATH][0] == '/') {
+    return _joinAndCanonicalizePath(parts);
+  }
+
+  var path = baseParts[_ComponentIndex.PATH];
+  if (isBlank(path)) path = '/';
+  var index = path.lastIndexOf('/');
+  path = path.substring(0, index + 1) + parts[_ComponentIndex.PATH];
+  parts[_ComponentIndex.PATH] = path;
+  return _joinAndCanonicalizePath(parts);
+}
