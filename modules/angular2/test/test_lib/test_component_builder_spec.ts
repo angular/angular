@@ -62,7 +62,7 @@ export function main() {
          tcb.createAsync(ChildComp).then((rootTestComponent) => {
            rootTestComponent.detectChanges();
 
-           expect(rootTestComponent.domElement).toHaveText('Original Child');
+           expect(rootTestComponent.nativeElement).toHaveText('Original Child');
            async.done();
          });
        }));
@@ -72,11 +72,11 @@ export function main() {
 
          tcb.createAsync(MyIfComp).then((rootTestComponent) => {
            rootTestComponent.detectChanges();
-           expect(rootTestComponent.domElement).toHaveText('MyIf()');
+           expect(rootTestComponent.nativeElement).toHaveText('MyIf()');
 
            rootTestComponent.componentInstance.showMore = true;
            rootTestComponent.detectChanges();
-           expect(rootTestComponent.domElement).toHaveText('MyIf(More)');
+           expect(rootTestComponent.nativeElement).toHaveText('MyIf(More)');
 
            async.done();
          });
@@ -89,7 +89,7 @@ export function main() {
              .createAsync(MockChildComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.domElement).toHaveText('Mock');
+               expect(rootTestComponent.nativeElement).toHaveText('Mock');
 
                async.done();
              });
@@ -103,7 +103,7 @@ export function main() {
              .createAsync(ChildComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.domElement).toHaveText('Modified Child');
+               expect(rootTestComponent.nativeElement).toHaveText('Modified Child');
 
                async.done();
              });
@@ -116,7 +116,7 @@ export function main() {
              .createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.domElement).toHaveText('Parent(Mock)');
+               expect(rootTestComponent.nativeElement).toHaveText('Parent(Mock)');
 
                async.done();
              });

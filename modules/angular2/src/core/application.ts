@@ -56,7 +56,6 @@ import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
-import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
@@ -85,10 +84,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
               // TODO(rado): investigate whether to support bindings on root component.
               return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
                   .then((componentRef) => {
-                    var domView = resolveInternalDomView(componentRef.hostView.render);
-                    // We need to do this here to ensure that we create Testability and
-                    // it's ready on the window for users.
-                    registry.registerApplication(domView.boundElements[0].element, testability);
+                    registry.registerApplication(componentRef.location.nativeElement, testability);
 
                     return componentRef;
                   });

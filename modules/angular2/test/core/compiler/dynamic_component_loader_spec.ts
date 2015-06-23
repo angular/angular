@@ -40,7 +40,7 @@ export function main() {
 
                         loader.loadIntoLocation(DynamicallyLoaded, tc.elementRef, 'loc')
                             .then(ref => {
-                              expect(tc.domElement).toHaveText("Location;DynamicallyLoaded;");
+                              expect(tc.nativeElement).toHaveText("Location;DynamicallyLoaded;");
                               async.done();
                             });
                       });
@@ -59,7 +59,7 @@ export function main() {
                         loader.loadIntoLocation(DynamicallyLoaded, tc.elementRef, 'loc')
                             .then(ref => {
                               ref.dispose();
-                              expect(tc.domElement).toHaveText("Location;");
+                              expect(tc.nativeElement).toHaveText("Location;");
                               async.done();
                             });
                       });
@@ -80,7 +80,7 @@ export function main() {
 
                            tc.detectChanges();
 
-                           var newlyInsertedElement = DOM.childNodes(tc.domElement)[1];
+                           var newlyInsertedElement = DOM.childNodes(tc.nativeElement)[1];
                            expect(newlyInsertedElement.id)
                                .toEqual("new value")
 

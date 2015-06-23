@@ -2,17 +2,15 @@ import {Directive, onCheck} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipe_registry';
 import {isPresent} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {Renderer} from 'angular2/src/render/api';
 
 @Directive({selector: '[class]', lifecycle: [onCheck], properties: ['rawClass: class']})
 export class CSSClass {
-  _domEl;
   _pipe;
   _rawClass;
 
-  constructor(private _pipeRegistry: PipeRegistry, ngEl: ElementRef) {
-    this._domEl = ngEl.domElement;
-  }
+  constructor(private _pipeRegistry: PipeRegistry, private _ngEl: ElementRef,
+              private _renderer: Renderer) {}
 
   set rawClass(v) {
     this._rawClass = v;
@@ -20,11 +18,7 @@ export class CSSClass {
   }
 
   _toggleClass(className, enabled): void {
-    if (enabled) {
-      DOM.addClass(this._domEl, className);
-    } else {
-      DOM.removeClass(this._domEl, className);
-    }
+    this._renderer.setElementClass(this._ngEl, className, enabled);
   }
 
   onCheck() {
@@ -38,7 +32,7 @@ export class CSSClass {
       diff.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
       diff.forEachRemovedItem((record) => {
         if (record.previousValue) {
-          DOM.removeClass(this._domEl, record.key);
+          this._toggleClass(record.key, false);
         }
       });
     }

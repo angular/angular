@@ -165,7 +165,7 @@ export class AppViewManagerUtils {
     if (isPresent(elementInjector.getDirectiveVariableBindings())) {
       MapWrapper.forEach(elementInjector.getDirectiveVariableBindings(), (directiveIndex, name) => {
         if (isBlank(directiveIndex)) {
-          view.locals.set(name, elementInjector.getElementRef().domElement);
+          view.locals.set(name, elementInjector.getElementRef().nativeElement);
         } else {
           view.locals.set(name, elementInjector.getDirectiveAtIndex(directiveIndex));
         }

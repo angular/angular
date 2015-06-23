@@ -30,6 +30,10 @@ export class AppViewManager {
     return hostView.elementInjectors[location.boundElementIndex].getViewContainerRef();
   }
 
+  getHostElement(hostViewRef: ViewRef): ElementRef {
+    return internalView(hostViewRef).elementRefs[0];
+  }
+
   /**
    * Returns an ElementRef for the element with the given variable name
    * in the component view of the component at the provided ElementRef.

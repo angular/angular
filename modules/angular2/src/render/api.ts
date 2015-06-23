@@ -371,6 +371,12 @@ export class Renderer {
   dehydrateView(viewRef: RenderViewRef) {}
 
   /**
+   * Returns the native element at the given location.
+   * Attention: In a WebWorker scenario, this should always return null!
+   */
+  getNativeElementSync(location: RenderElementRef): any { return null; }
+
+  /**
    * Sets a property on an element.
    */
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any) {}
