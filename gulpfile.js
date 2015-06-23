@@ -559,6 +559,20 @@ gulp.task('test.transpiler.unittest', function(done) {
   runJasmineTests(['tools/transpiler/unittest/**/*.js'], done);
 });
 
+
+// -----------------
+// Pre/Post-test checks
+
+gulp.task('pre-test-checks', function(done) {
+  runSequence('build/checkCircularDependencies', sequenceComplete(done));
+});
+
+
+gulp.task('post-test-checks', function(done) {
+  runSequence('enforce-format', sequenceComplete(done));
+});
+
+
 // -----------------
 // orchestrated targets
 
@@ -686,8 +700,6 @@ gulp.task('!broccoli.js.prod', function() {
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
     'broccoli.js.dev',
-    'build/checkCircularDependencies',
-    'check-format',
     sequenceComplete(done)
   );
 });
