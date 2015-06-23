@@ -1,67 +1,120 @@
 export {
-  DehydratedException,
-  ExpressionChangedAfterItHasBeenChecked,
-  ChangeDetectionError,
-  ChangeDetection,
-  ON_PUSH,
   DEFAULT,
+  ON_PUSH,
+  BasePipe,
+  BindingRecord,
+  ChangeDetection,
+  ChangeDetectionError,
+  ChangeDetector,
+  ChangeDetectorDefinition,
   ChangeDetectorRef,
-  PipeRegistry,
-  WrappedValue,
-  Pipe,
-  PipeFactory,
+  ChangeDispatcher,
+  DehydratedException,
+  DirectiveIndex,
+  DirectiveRecord,
+  DynamicChangeDetection,
+  ExpressionChangedAfterItHasBeenChecked,
+  JitChangeDetection,
+  Locals,
   NullPipe,
   NullPipeFactory,
-  defaultPipes,
-  DynamicChangeDetection,
-  JitChangeDetection,
+  Pipe,
+  PipeFactory,
+  PipeRegistry,
   PreGeneratedChangeDetection,
   preGeneratedProtoDetectors,
-  defaultPipeRegistry,
-  DirectiveIndex,
-  BindingRecord,
   ProtoChangeDetector,
-  ChangeDispatcher,
-  ChangeDetector,
-  Locals,
-  ChangeDetectorDefinition,
-  BasePipe,
-  DirectiveRecord
+  WrappedValue,
+  defaultPipeRegistry,
+  defaultPipes,
 } from './change_detection';
 
 export {
-  Inject,
-  Optional,
-  Injectable,
-  forwardRef,
-  resolveForwardRef,
-  ForwardRefFn,
-  Injector,
-  ProtoInjector,
-  Binding,
-  bind,
-  Key,
-  NoBindingError,
   AbstractBindingError,
+  Ancestor,
   AsyncBindingError,
+  Binding,
+  BindingBuilder,
   CyclicDependencyError,
+  Dependency,
+  ForwardRefFn,
+  Inject,
+  Injectable,
+  Injector,
   InstantiationError,
   InvalidBindingError,
+  Key,
   NoAnnotationError,
+  NoBindingError,
   OpaqueToken,
-  ResolvedBinding,
-  BindingBuilder,
-  Dependency,
-  Visibility,
-  Self,
+  Optional,
   Parent,
-  Ancestor,
-  Unbounded
+  ProtoInjector,
+  ResolvedBinding,
+  resolveForwardRef,
+  Self,
+  Unbounded,
+  Visibility,
+  bind,
+  forwardRef
 } from './di';
 
-export * from './core';
-export * from './annotations';
-export * from './directives';
+export {
+  ApplicationRef,
+  Compiler,
+  CompilerCache,
+  ComponentRef,
+  DirectiveResolver,
+  DynamicComponentLoader,
+  ElementRef,
+  NgZone,
+  OnAllChangesDone,
+  OnChange,
+  OnCheck,
+  OnDestroy,
+  OnInit,
+  ProtoViewRef,
+  QueryList,
+  ViewAnnotation,
+  ViewArgs,
+  ViewContainerRef,
+  ViewRef,
+  appComponentRefToken,
+  appComponentTypeToken,
+  bootstrap
+} from './core';
+
+export {
+  Attribute,
+  Component,
+  ComponentAnnotation,
+  ComponentArgs,
+  ComponentTypeDecorator,
+  Directive,
+  DirectiveAnnotation,
+  DirectiveArgs,
+  DirectiveTypeDecorator,
+  Query,
+  View,
+  ViewTypeDecorator,
+  onDestroy,
+  onChange,
+  onCheck,
+  onInit,
+  onAllChangesDone
+} from './annotations';
+
+export {
+  CSSClass,
+  NgFor,
+  NgIf,
+  NgNonBindable,
+  NgSwitch,
+  NgSwitchDefault,
+  NgSwitchWhen,
+  SwitchView,
+  coreDirectives
+} from './directives';
 
 export {
   AbstractControl,
@@ -87,7 +140,24 @@ export {
   formInjectables
 } from './forms';
 
-export * from './http';
-export {Observable, EventEmitter} from 'angular2/src/facade/async';
-export * from 'angular2/src/render/api';
-export {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+export {EventEmitter, Observable} from 'angular2/src/facade/async';
+
+export {
+  DirectiveBinder,
+  DirectiveMetadata,
+  ElementBinder,
+  ElementPropertyBinding,
+  EventBinding,
+  EventDispatcher,
+  PropertyBindingType,
+  ProtoViewDto,
+  RenderCompiler,
+  Renderer,
+  RenderElementRef,
+  RenderProtoViewRef,
+  RenderViewRef,
+  ViewDefinition,
+  ViewType
+} from 'angular2/src/render/api';
+
+export {DOCUMENT_TOKEN, DomRenderer} from 'angular2/src/render/dom/dom_renderer';

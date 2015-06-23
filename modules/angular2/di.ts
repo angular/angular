@@ -18,14 +18,14 @@ export {
 } from './src/di/annotations';
 
 export {
-  Inject,
-  Optional,
-  Injectable,
-  Visibility,
-  Self,
-  Parent,
   Ancestor,
-  Unbounded
+  Inject,
+  Injectable,
+  Optional,
+  Parent,
+  Self,
+  Unbounded,
+  Visibility
 } from './src/di/decorators';
 export {self} from './src/di/annotations_impl';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './src/di/forward_ref';

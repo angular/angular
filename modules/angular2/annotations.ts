@@ -10,5 +10,25 @@
  * used by Angular to resolve dependencies.
  *
  */
-export * from './src/core/annotations/annotations';
-export * from './src/core/annotations/decorators';
+export {
+  ComponentAnnotation,
+  ComponentArgs,
+  DirectiveAnnotation,
+  DirectiveArgs,
+  onDestroy,
+  onChange,
+  onCheck,
+  onInit,
+  onAllChangesDone
+} from './src/core/annotations/annotations';
+
+export {
+  Attribute,
+  Component,
+  ComponentTypeDecorator,
+  Directive,
+  DirectiveTypeDecorator,
+  Query,
+  View,
+  ViewTypeDecorator
+} from './src/core/annotations/decorators';
