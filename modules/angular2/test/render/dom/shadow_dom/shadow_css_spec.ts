@@ -20,7 +20,7 @@ export function main() {
     function s(css: string, contentAttr: string, hostAttr: string = '') {
       var shadowCss = new ShadowCss();
       var shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
-      var nlRegexp = RegExpWrapper.create('\\n');
+      var nlRegexp = /\n/g;
       return normalizeCSS(StringWrapper.replaceAll(shim, nlRegexp, ''));
     }
 
@@ -61,8 +61,7 @@ export function main() {
         isPresent(DOM.defaultDoc().body.style.animationName)) {
       it('should handle keyframes rules', () => {
         var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
-        var passRe = RegExpWrapper.create(
-            '@keyframes foo {\\s*0% {\\s*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}\\s*}');
+        var passRe = /@keyframes foo {\s*0% {\s*transform:translate\(-50%\) scaleX\(0\);\s*}\s*}/g;
         expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
       });
     }
@@ -70,8 +69,8 @@ export function main() {
     if (DOM.getUserAgent().indexOf('AppleWebKit') > -1) {
       it('should handle -webkit-keyframes rules', () => {
         var css = '@-webkit-keyframes foo {0% {-webkit-transform: translate(-50%) scaleX(0);}}';
-        var passRe = RegExpWrapper.create(
-            '@-webkit-keyframes foo {\\s*0% {\\s*(-webkit-)*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
+        var passRe =
+            /@-webkit-keyframes foo {\s*0% {\s*(-webkit-)*transform:translate\(-50%\) scaleX\(0\);\s*}}/g;
         expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
       });
     }

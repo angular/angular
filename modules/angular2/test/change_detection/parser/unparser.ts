@@ -23,11 +23,13 @@ import {
 } from 'angular2/src/change_detection/parser/ast';
 
 
-import {StringWrapper, RegExpWrapper, isPresent, isString} from 'angular2/src/facade/lang';
-
-var quoteRegExp = RegExpWrapper.create('"');
+import {StringWrapper, isPresent, isString} from 'angular2/src/facade/lang';
 
 export class Unparser implements AstVisitor {
+  // TODO(vicb): see https://github.com/angular/clang-format/issues/16 -> /"/g
+  // clang-format off
+  private static _quoteRegExp = /["]/g;
+  // clang-format on
   private _expression: string;
 
   unparse(ast: AST) {
@@ -151,7 +153,7 @@ export class Unparser implements AstVisitor {
 
   visitLiteralPrimitive(ast: LiteralPrimitive) {
     if (isString(ast.value)) {
-      this._expression += `"${StringWrapper.replaceAll(ast.value, quoteRegExp, '\"')}"`;
+      this._expression += `"${StringWrapper.replaceAll(ast.value, Unparser._quoteRegExp, '\"')}"`;
     } else {
       this._expression += `${ast.value}`;
     }
@@ -192,7 +194,8 @@ export class Unparser implements AstVisitor {
     this._expression += ')';
   }
 
-  private _visit(ast: AST) { ast.visit(this); }
+  private _visit(ast: AST) {
+    ast.visit(this); }
 
   private _visitExpOrBlock(ast: AST) {
     var isBlock = ast instanceof Chain || ast instanceof EmptyExpr;

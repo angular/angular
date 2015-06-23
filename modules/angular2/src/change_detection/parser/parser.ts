@@ -1,11 +1,5 @@
 import {Injectable} from 'angular2/src/di/decorators';
-import {
-  isBlank,
-  isPresent,
-  BaseException,
-  StringWrapper,
-  RegExpWrapper
-} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, BaseException, StringWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {
   Lexer,
@@ -52,7 +46,7 @@ import {
 
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
+var INTERPOLATION_REGEXP = /\{\{(.*?)\}\}/g;
 
 @Injectable()
 export class Parser {

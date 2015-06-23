@@ -321,7 +321,7 @@ export class PerflogMetric extends Metric {
   _markName(index) { return `${_MARK_NAME_PREFIX}${index}`; }
 }
 
-var _MICRO_ITERATIONS_REGEX = RegExpWrapper.create('(.+)\\*(\\d+)$');
+var _MICRO_ITERATIONS_REGEX = /(.+)\*(\d+)$/g;
 
 var _MAX_RETRY_COUNT = 20;
 var _MARK_NAME_PREFIX = 'benchpress';

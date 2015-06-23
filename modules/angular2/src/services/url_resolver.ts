@@ -66,4 +66,4 @@ export class UrlResolver {
   }
 }
 
-var _schemeRe = RegExpWrapper.create('^([^:/?#]+:)?');
+var _schemeRe = /^([^:/?#]+:)?/g;
