@@ -68,6 +68,10 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
 
             exportDoc.members = [];
             for(var memberName in resolvedExport.members) {
+              // FIXME(alexeagle): why do generic type params appear in members?
+              if (memberName === 'T') {
+                continue;
+              }
               log.silly('>>>>>> member: ' + memberName + ' from ' + exportDoc.id + ' in ' + moduleDoc.id);
               var memberSymbol = resolvedExport.members[memberName];
               var memberDoc = createMemberDoc(memberSymbol, exportDoc, basePath, parseInfo.typeChecker);
@@ -227,6 +231,8 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       }
       if (parameter.type) {
         paramText += ':' + getType(sourceFile, parameter.type);
+      } else {
+        paramText += ': any';
       }
       return paramText.trim();
     });

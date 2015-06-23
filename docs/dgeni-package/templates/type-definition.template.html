@@ -6,7 +6,7 @@
 {$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
 {%- endmacro -%}
 
-// Type definitions for Angular v{$ versionInfo.currentVersion.full $}
+// Type definitions for Angular v{$ versionInfo.currentVersion.full | replace(r/\+/, "_") $}
 // Project: http://angular.io/
 // Definitions by: angular team <https://github.com/angular/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -34,8 +34,8 @@ declare module "angular2/angular2" {
 
   // See https://github.com/Microsoft/TypeScript/issues/1168
   class BaseException /* extends Error */ {
-    message;
-    stack;
+    message: string;
+    stack: string;
     toString(): string;
   }
 }
@@ -53,15 +53,15 @@ declare module "{$ module.id $}" {
     {$ commentBlock(member, 5) $}
     {$ member.name $}
     {%- if member.parameters %}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
-    {%- if member.returnType %}: {$ member.returnType $}{% endif -%}
+    {%- if member.returnType %}: {$ member.returnType $}{%- else -%}: any{% endif -%}
     ;
   {%- endfor %}
   }
 
   {%- elif export.docType == 'enum' %} {
-    {%- for member in export.members %} 
-    {$ member $}{% if not loop.last %}, 
-    {%- endif -%} 
+    {%- for member in export.members %}
+    {$ member $}{% if not loop.last %},
+    {%- endif -%}
     {%- endfor %}
   }
 
