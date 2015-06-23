@@ -1,4 +1,5 @@
 import {OpaqueToken} from 'angular2/di';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-export var appComponentRefToken: OpaqueToken = new OpaqueToken('ComponentRef');
-export var appComponentTypeToken: OpaqueToken = new OpaqueToken('RootComponent');
+export const appComponentRefToken: OpaqueToken = CONST_EXPR(new OpaqueToken('ComponentRef'));
+export const appComponentTypeToken: OpaqueToken = CONST_EXPR(new OpaqueToken('RootComponent'));
