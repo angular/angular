@@ -70,6 +70,7 @@ export interface Pipe {
  * }
  * ```
  */
+@CONST()
 export class BasePipe implements Pipe {
   supports(obj): boolean { return true; }
   onDestroy(): void {}
