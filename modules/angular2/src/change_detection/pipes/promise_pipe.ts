@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {isBlank, isPresent, isPromise} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
 import {Pipe, WrappedValue} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -80,6 +80,7 @@ export class PromisePipe implements Pipe {
  *
  * @exportedAs angular2/pipes
  */
+@CONST()
 export class PromisePipeFactory {
   supports(promise): boolean { return isPromise(promise); }
 

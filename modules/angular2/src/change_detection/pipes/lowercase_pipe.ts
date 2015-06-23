@@ -1,4 +1,4 @@
-import {isString, StringWrapper} from 'angular2/src/facade/lang';
+import {isString, StringWrapper, CONST} from 'angular2/src/facade/lang';
 import {Pipe} from './pipe';
 
 /**
@@ -43,6 +43,7 @@ export class LowerCasePipe implements Pipe {
 /**
  * @exportedAs angular2/pipes
  */
+@CONST()
 export class LowerCaseFactory {
   supports(str): boolean { return isString(str); }
 
