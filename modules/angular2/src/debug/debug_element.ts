@@ -8,8 +8,6 @@ import {AppView} from 'angular2/src/core/compiler/view';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
-
 /**
  * @exportedAs angular2/test
  *
@@ -35,13 +33,9 @@ export class DebugElement {
     return this._elementInjector.getComponent();
   }
 
-  get domElement(): any {
-    return resolveInternalDomView(this._parentView.render)
-        .boundElements[this._boundElementIndex]
-        .element;
-  }
+  get nativeElement(): any { return this.elementRef.nativeElement; }
 
-  get elementRef(): ElementRef { return this._elementInjector.getElementRef(); }
+  get elementRef(): ElementRef { return this._parentView.elementRefs[this._boundElementIndex]; }
 
   getDirectiveInstance(directiveIndex: number): any {
     return this._elementInjector.getDirectiveAtIndex(directiveIndex);
@@ -192,7 +186,7 @@ export class By {
   static all(): Function { return (debugElement) => true; }
 
   static css(selector: string): Function {
-    return (debugElement) => { return DOM.elementMatches(debugElement.domElement, selector); };
+    return (debugElement) => { return DOM.elementMatches(debugElement.nativeElement, selector); };
   }
   static directive(type: Type): Function {
     return (debugElement) => { return debugElement.hasDirective(type); };

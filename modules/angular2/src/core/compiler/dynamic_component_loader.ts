@@ -36,7 +36,7 @@ export class DynamicComponentLoader {
         .then(hostProtoViewRef => {
           var hostViewRef =
               this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector, injector);
-          var newLocation = new ElementRef(hostViewRef, 0);
+          var newLocation = this._viewManager.getHostElement(hostViewRef);
           var component = this._viewManager.getComponent(newLocation);
 
           var dispose = () => { this._viewManager.destroyRootHostView(hostViewRef); };
@@ -68,7 +68,7 @@ export class DynamicComponentLoader {
           var viewContainer = this._viewManager.getViewContainer(location);
           var hostViewRef =
               viewContainer.create(hostProtoViewRef, viewContainer.length, null, injector);
-          var newLocation = new ElementRef(hostViewRef, 0);
+          var newLocation = this._viewManager.getHostElement(hostViewRef);
           var component = this._viewManager.getComponent(newLocation);
 
           var dispose = () => {

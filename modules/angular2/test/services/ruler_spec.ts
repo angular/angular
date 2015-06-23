@@ -46,7 +46,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var ruler = new Ruler(DOM);
          var elRef = <any>new SpyElementRef();
-         elRef.domElement = DOM.createElement('div');
+         elRef.nativeElement = DOM.createElement('div');
          ruler.measure(elRef).then((rect) => {
            // here we are using an element created in a doc fragment so all the measures will come
            // back as 0
@@ -61,7 +61,7 @@ export function main() {
 @proxy
 @IMPLEMENTS(ElementRef)
 class SpyElementRef extends SpyObject {
-  domElement;
+  nativeElement;
   constructor() { super(ElementRef); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
