@@ -292,13 +292,13 @@ export function main() {
 
         it('should attach the view', () => {
           var contextView = createView();
-          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0,
-                                        wrapPv(childProtoView),
+          var elRef = elementRef(wrapView(parentView), 0);
+          manager.createViewInContainer(elRef, 0, wrapPv(childProtoView),
                                         elementRef(wrapView(contextView), 1), null);
           expect(utils.spy('attachViewInContainer'))
               .toHaveBeenCalledWith(parentView, 0, contextView, 1, 0, createdViews[0]);
           expect(renderer.spy('attachViewInContainer'))
-              .toHaveBeenCalledWith(parentView.render, 0, 0, createdViews[0].render);
+              .toHaveBeenCalledWith(elRef, 0, createdViews[0].render);
         });
 
         it('should hydrate the view', () => {
@@ -349,10 +349,11 @@ export function main() {
         });
 
         it('should detach', () => {
-          manager.destroyViewInContainer(elementRef(wrapView(parentView), 0), 0);
+          var elRef = elementRef(wrapView(parentView), 0);
+          manager.destroyViewInContainer(elRef, 0);
           expect(utils.spy('detachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0);
           expect(renderer.spy('detachViewInContainer'))
-              .toHaveBeenCalledWith(parentView.render, 0, 0, childView.render);
+              .toHaveBeenCalledWith(elRef, 0, childView.render);
         });
 
         it('should return the view to the pool', () => {
@@ -381,7 +382,7 @@ export function main() {
           manager.destroyRootHostView(wrapView(parentView));
           expect(utils.spy('detachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0);
           expect(renderer.spy('detachViewInContainer'))
-              .toHaveBeenCalledWith(parentView.render, 0, 0, childView.render);
+              .toHaveBeenCalledWith(parentView.elementRefs[0], 0, childView.render);
         });
 
         it('should return the view to the pool', () => {

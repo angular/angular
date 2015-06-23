@@ -22,7 +22,7 @@ export class AppViewManager {
   getComponentView(hostLocation: ElementRef): ViewRef {
     var hostView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
-    return new ViewRef(hostView.componentChildViews[boundElementIndex]);
+    return hostView.componentChildViews[boundElementIndex].ref;
   }
 
   getViewContainer(location: ElementRef): ViewContainerRef {
@@ -45,7 +45,7 @@ export class AppViewManager {
     if (isBlank(elementIndex)) {
       throw new BaseException(`Could not find variable ${variableName}`);
     }
-    return new ElementRef(new ViewRef(componentView), elementIndex);
+    return componentView.elementRefs[elementIndex];
   }
 
   getComponent(hostLocation: ElementRef): any {
@@ -69,7 +69,7 @@ export class AppViewManager {
 
     this._utils.hydrateRootHostView(hostView, injector);
     this._viewHydrateRecurse(hostView);
-    return new ViewRef(hostView);
+    return hostView.ref;
   }
 
   destroyRootHostView(hostViewRef: ViewRef) {
@@ -98,14 +98,13 @@ export class AppViewManager {
 
     var view = this._createPooledView(protoView);
 
-    this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex,
-                                         view.render);
+    this._renderer.attachViewInContainer(viewContainerLocation, atIndex, view.render);
     this._utils.attachViewInContainer(parentView, boundElementIndex, contextView,
                                       contextBoundElementIndex, atIndex, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView,
                                        contextBoundElementIndex, atIndex, injector);
     this._viewHydrateRecurse(view);
-    return new ViewRef(view);
+    return view.ref;
   }
 
   destroyViewInContainer(viewContainerLocation: ElementRef, atIndex: number) {
@@ -126,8 +125,7 @@ export class AppViewManager {
     // Right now we are destroying any special
     // context view that might have been used.
     this._utils.attachViewInContainer(parentView, boundElementIndex, null, null, atIndex, view);
-    this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex,
-                                         view.render);
+    this._renderer.attachViewInContainer(viewContainerLocation, atIndex, view.render);
     return viewRef;
   }
 
@@ -137,9 +135,8 @@ export class AppViewManager {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
-    this._renderer.detachViewInContainer(parentView.render, boundElementIndex, atIndex,
-                                         view.render);
-    return new ViewRef(view);
+    this._renderer.detachViewInContainer(viewContainerLocation, atIndex, view.render);
+    return view.ref;
   }
 
   _createPooledView(protoView: viewModule.AppProtoView): viewModule.AppView {
@@ -160,7 +157,7 @@ export class AppViewManager {
       var binder = binders[binderIdx];
       if (binder.hasStaticComponent()) {
         var childView = this._createPooledView(binder.nestedProtoView);
-        this._renderer.attachComponentView(view.render, binderIdx, childView.render);
+        this._renderer.attachComponentView(view.elementRefs[binderIdx], childView.render);
         this._utils.attachComponentView(view, binderIdx, childView);
       }
     }
@@ -179,14 +176,15 @@ export class AppViewManager {
     var view = viewContainer.views[atIndex];
     this._viewDehydrateRecurse(view, false);
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
-    this._renderer.detachViewInContainer(parentView.render, boundElementIndex, atIndex,
+    this._renderer.detachViewInContainer(parentView.elementRefs[boundElementIndex], atIndex,
                                          view.render);
     this._destroyPooledView(view);
   }
 
   _destroyComponentView(hostView, boundElementIndex, componentView) {
     this._viewDehydrateRecurse(componentView, false);
-    this._renderer.detachComponentView(hostView.render, boundElementIndex, componentView.render);
+    this._renderer.detachComponentView(hostView.elementRefs[boundElementIndex],
+                                       componentView.render);
     this._utils.detachComponentView(hostView, boundElementIndex);
     this._destroyPooledView(componentView);
   }

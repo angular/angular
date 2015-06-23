@@ -11,7 +11,8 @@ import {
   ProtoViewDto,
   ViewDefinition,
   EventDispatcher,
-  DirectiveMetadata
+  DirectiveMetadata,
+  RenderElementRef
 } from 'angular2/src/render/api';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 import {el, dispatchEvent} from 'angular2/test_lib';
@@ -28,6 +29,13 @@ export class TestView {
   }
 }
 
+export function elRef(renderView: RenderViewRef, boundElementIndex: number) {
+  return new TestRenderElementRef(renderView, boundElementIndex);
+}
+
+class TestRenderElementRef implements RenderElementRef {
+  constructor(public renderView: RenderViewRef, public boundElementIndex: number) {}
+}
 
 class LoggingEventDispatcher implements EventDispatcher {
   log: List<List<any>>;
@@ -85,7 +93,7 @@ export class DomTestbed {
   createComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
                       componentProtoView: ProtoViewDto): TestView {
     var componentViewRef = this.renderer.createView(componentProtoView.render);
-    this.renderer.attachComponentView(parentViewRef, boundElementIndex, componentViewRef);
+    this.renderer.attachComponentView(elRef(parentViewRef, boundElementIndex), componentViewRef);
     this.renderer.hydrateView(componentViewRef);
     return this._createTestView(componentViewRef);
   }
@@ -104,13 +112,13 @@ export class DomTestbed {
   destroyComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
                        componentView: RenderViewRef) {
     this.renderer.dehydrateView(componentView);
-    this.renderer.detachComponentView(parentViewRef, boundElementIndex, componentView);
+    this.renderer.detachComponentView(elRef(parentViewRef, boundElementIndex), componentView);
   }
 
   createViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                         protoView: ProtoViewDto): TestView {
     var viewRef = this.renderer.createView(protoView.render);
-    this.renderer.attachViewInContainer(parentViewRef, boundElementIndex, atIndex, viewRef);
+    this.renderer.attachViewInContainer(elRef(parentViewRef, boundElementIndex), atIndex, viewRef);
     this.renderer.hydrateView(viewRef);
     return this._createTestView(viewRef);
   }
@@ -118,7 +126,7 @@ export class DomTestbed {
   destroyViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                          viewRef: RenderViewRef) {
     this.renderer.dehydrateView(viewRef);
-    this.renderer.detachViewInContainer(parentViewRef, boundElementIndex, atIndex, viewRef);
+    this.renderer.detachViewInContainer(elRef(parentViewRef, boundElementIndex), atIndex, viewRef);
     this.renderer.destroyView(viewRef);
   }
 

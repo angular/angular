@@ -306,6 +306,11 @@ export class RenderCompiler {
   compile(template: ViewDefinition): Promise<ProtoViewDto> { return null; }
 }
 
+export interface RenderElementRef {
+  renderView: RenderViewRef;
+  boundElementIndex: number;
+}
+
 export class Renderer {
   /**
    * Creates a root host view that includes the given element.
@@ -333,29 +338,25 @@ export class Renderer {
   /**
    * Attaches a componentView into the given hostView at the given element
    */
-  attachComponentView(hostViewRef: RenderViewRef, elementIndex: number,
-                      componentViewRef: RenderViewRef) {}
+  attachComponentView(location: RenderElementRef, componentViewRef: RenderViewRef) {}
 
   /**
    * Detaches a componentView into the given hostView at the given element
    */
-  detachComponentView(hostViewRef: RenderViewRef, boundElementIndex: number,
-                      componentViewRef: RenderViewRef) {}
+  detachComponentView(location: RenderElementRef, componentViewRef: RenderViewRef) {}
 
   /**
    * Attaches a view into a ViewContainer (in the given parentView at the given element) at the
    * given index.
    */
-  attachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {}
+  attachViewInContainer(location: RenderElementRef, atIndex: number, viewRef: RenderViewRef) {}
 
   /**
    * Detaches a view into a ViewContainer (in the given parentView at the given element) at the
    * given index.
    */
   // TODO(tbosch): this should return a promise as it can be animated!
-  detachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {}
+  detachViewInContainer(location: RenderElementRef, atIndex: number, viewRef: RenderViewRef) {}
 
   /**
    * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views
@@ -372,32 +373,27 @@ export class Renderer {
   /**
    * Sets a property on an element.
    */
-  setElementProperty(viewRef: RenderViewRef, elementIndex: number, propertyName: string,
-                     propertyValue: any) {}
+  setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any) {}
 
   /**
    * Sets an attribute on an element.
    */
-  setElementAttribute(viewRef: RenderViewRef, elementIndex: number, attributeName: string,
-                      attributeValue: string) {}
+  setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string) {}
 
   /**
    * Sets a class on an element.
    */
-  setElementClass(viewRef: RenderViewRef, elementIndex: number, className: string, isAdd: boolean) {
-  }
+  setElementClass(location: RenderElementRef, className: string, isAdd: boolean) {}
 
   /**
    * Sets a style on an element.
    */
-  setElementStyle(viewRef: RenderViewRef, elementIndex: number, styleName: string,
-                  styleValue: string) {}
+  setElementStyle(location: RenderElementRef, styleName: string, styleValue: string) {}
 
   /**
    * Calls a method on an element.
    */
-  invokeElementMethod(viewRef: RenderViewRef, elementIndex: number, methodName: string,
-                      args: List<any>) {}
+  invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>) {}
 
   /**
    * Sets the value of a text node.

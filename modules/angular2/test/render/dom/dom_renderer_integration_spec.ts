@@ -16,7 +16,7 @@ import {
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {DomTestbed, TestView} from './dom_testbed';
+import {DomTestbed, TestView, elRef} from './dom_testbed';
 
 import {ViewDefinition, DirectiveMetadata, RenderViewRef} from 'angular2/src/render/api';
 
@@ -106,20 +106,20 @@ export function main() {
                var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
 
                var el = DOM.childNodes(tb.rootEl)[0];
-               tb.renderer.setElementProperty(cmpView.viewRef, 0, 'value', 'hello');
+               tb.renderer.setElementProperty(elRef(cmpView.viewRef, 0), 'value', 'hello');
                expect(el.value).toEqual('hello');
 
-               tb.renderer.setElementClass(cmpView.viewRef, 0, 'a', true);
+               tb.renderer.setElementClass(elRef(cmpView.viewRef, 0), 'a', true);
                expect(DOM.childNodes(tb.rootEl)[0].value).toEqual('hello');
-               tb.renderer.setElementClass(cmpView.viewRef, 0, 'a', false);
+               tb.renderer.setElementClass(elRef(cmpView.viewRef, 0), 'a', false);
                expect(DOM.hasClass(el, 'a')).toBe(false);
 
-               tb.renderer.setElementStyle(cmpView.viewRef, 0, 'width', '10px');
+               tb.renderer.setElementStyle(elRef(cmpView.viewRef, 0), 'width', '10px');
                expect(DOM.getStyle(el, 'width')).toEqual('10px');
-               tb.renderer.setElementStyle(cmpView.viewRef, 0, 'width', null);
+               tb.renderer.setElementStyle(elRef(cmpView.viewRef, 0), 'width', null);
                expect(DOM.getStyle(el, 'width')).toEqual('');
 
-               tb.renderer.setElementAttribute(cmpView.viewRef, 0, 'someAttr', 'someValue');
+               tb.renderer.setElementAttribute(elRef(cmpView.viewRef, 0), 'someAttr', 'someValue');
                expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
 
                async.done();
@@ -141,7 +141,7 @@ export function main() {
                  var views = tb.createRootViews(protoViewDtos);
                  var componentView = views[1];
 
-                 tb.renderer.invokeElementMethod(componentView.viewRef, 0, 'setAttribute',
+                 tb.renderer.invokeElementMethod(elRef(componentView.viewRef, 0), 'setAttribute',
                                                  ['a', 'b']);
 
                  expect(DOM.getAttribute(DOM.childNodes(tb.rootEl)[0], 'a')).toEqual('b');

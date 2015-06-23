@@ -21,6 +21,8 @@ import {ElementBinder} from './element_binder';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
 import {EventDispatcher} from 'angular2/src/render/api';
+import {ViewRef} from './view_ref';
+import {ElementRef} from './element_ref';
 
 export class AppViewContainer {
   // The order in this list matches the DOM order.
@@ -40,6 +42,8 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
   componentChildViews: List<AppView> = null;
   viewContainers: List<AppViewContainer>;
   preBuiltObjects: List<PreBuiltObjects> = null;
+  elementRefs: List<ElementRef>;
+  ref: ViewRef;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
@@ -58,6 +62,11 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
   constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
               protoLocals: Map<string, any>) {
     this.viewContainers = ListWrapper.createFixedSize(this.proto.elementBinders.length);
+    this.elementRefs = ListWrapper.createFixedSize(this.proto.elementBinders.length);
+    this.ref = new ViewRef(this);
+    for (var i = 0; i < this.elementRefs.length; i++) {
+      this.elementRefs[i] = new ElementRef(this.ref, i);
+    }
     this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
   }
 
@@ -100,14 +109,16 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
   // dispatch to element injector or text nodes based on context
   notifyOnBinding(b: BindingRecord, currentValue: any): void {
     if (b.isElementProperty()) {
-      this.renderer.setElementProperty(this.render, b.elementIndex, b.propertyName, currentValue);
+      this.renderer.setElementProperty(this.elementRefs[b.elementIndex], b.propertyName,
+                                       currentValue);
     } else if (b.isElementAttribute()) {
-      this.renderer.setElementAttribute(this.render, b.elementIndex, b.propertyName, currentValue);
+      this.renderer.setElementAttribute(this.elementRefs[b.elementIndex], b.propertyName,
+                                        currentValue);
     } else if (b.isElementClass()) {
-      this.renderer.setElementClass(this.render, b.elementIndex, b.propertyName, currentValue);
+      this.renderer.setElementClass(this.elementRefs[b.elementIndex], b.propertyName, currentValue);
     } else if (b.isElementStyle()) {
       var unit = isPresent(b.propertyUnit) ? b.propertyUnit : '';
-      this.renderer.setElementStyle(this.render, b.elementIndex, b.propertyName,
+      this.renderer.setElementStyle(this.elementRefs[b.elementIndex], b.propertyName,
                                     `${currentValue}${unit}`);
     } else if (b.isTextNode()) {
       this.renderer.setText(this.render, b.elementIndex, currentValue);
@@ -134,7 +145,7 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
   }
 
   invokeElementMethod(elementIndex: number, methodName: string, args: List<any>) {
-    this.renderer.invokeElementMethod(this.render, elementIndex, methodName, args);
+    this.renderer.invokeElementMethod(this.elementRefs[elementIndex], methodName, args);
   }
 
   // implementation of EventDispatcher#dispatchEvent

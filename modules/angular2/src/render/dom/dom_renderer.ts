@@ -20,7 +20,7 @@ import {DomElement} from './view/element';
 import {DomViewContainer} from './view/view_container';
 import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from './util';
 
-import {Renderer, RenderProtoViewRef, RenderViewRef} from '../api';
+import {Renderer, RenderProtoViewRef, RenderViewRef, RenderElementRef} from '../api';
 
 export const DOCUMENT_TOKEN = CONST_EXPR(new OpaqueToken('DocumentToken'));
 
@@ -53,12 +53,11 @@ export class DomRenderer extends Renderer {
     // noop for now
   }
 
-  attachComponentView(hostViewRef: RenderViewRef, elementIndex: number,
-                      componentViewRef: RenderViewRef) {
-    var hostView = resolveInternalDomView(hostViewRef);
+  attachComponentView(location: RenderElementRef, componentViewRef: RenderViewRef) {
+    var hostView = resolveInternalDomView(location.renderView);
     var componentView = resolveInternalDomView(componentViewRef);
-    var element = hostView.boundElements[elementIndex].element;
-    var lightDom = hostView.boundElements[elementIndex].lightDom;
+    var element = hostView.boundElements[location.boundElementIndex].element;
+    var lightDom = hostView.boundElements[location.boundElementIndex].lightDom;
     if (isPresent(lightDom)) {
       lightDom.attachShadowDomView(componentView);
     }
@@ -79,12 +78,11 @@ export class DomRenderer extends Renderer {
     return resolveInternalDomView(viewRef).rootNodes;
   }
 
-  detachComponentView(hostViewRef: RenderViewRef, boundElementIndex: number,
-                      componentViewRef: RenderViewRef) {
-    var hostView = resolveInternalDomView(hostViewRef);
+  detachComponentView(location: RenderElementRef, componentViewRef: RenderViewRef) {
+    var hostView = resolveInternalDomView(location.renderView);
     var componentView = resolveInternalDomView(componentViewRef);
     this._removeViewNodes(componentView);
-    var lightDom = hostView.boundElements[boundElementIndex].lightDom;
+    var lightDom = hostView.boundElements[location.boundElementIndex].lightDom;
     if (isPresent(lightDom)) {
       lightDom.detachShadowDomView();
     }
@@ -92,19 +90,18 @@ export class DomRenderer extends Renderer {
     componentView.shadowRoot = null;
   }
 
-  attachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {
-    var parentView = resolveInternalDomView(parentViewRef);
+  attachViewInContainer(location: RenderElementRef, atIndex: number, viewRef: RenderViewRef) {
+    var parentView = resolveInternalDomView(location.renderView);
     var view = resolveInternalDomView(viewRef);
-    var viewContainer = this._getOrCreateViewContainer(parentView, boundElementIndex);
+    var viewContainer = this._getOrCreateViewContainer(parentView, location.boundElementIndex);
     ListWrapper.insert(viewContainer.views, atIndex, view);
     view.hostLightDom = parentView.hostLightDom;
 
-    var directParentLightDom = this._directParentLightDom(parentView, boundElementIndex);
+    var directParentLightDom = this._directParentLightDom(parentView, location.boundElementIndex);
     if (isBlank(directParentLightDom)) {
       var siblingToInsertAfter;
       if (atIndex == 0) {
-        siblingToInsertAfter = parentView.boundElements[boundElementIndex].element;
+        siblingToInsertAfter = parentView.boundElements[location.boundElementIndex].element;
       } else {
         siblingToInsertAfter = ListWrapper.last(viewContainer.views[atIndex - 1].rootNodes);
       }
@@ -118,14 +115,13 @@ export class DomRenderer extends Renderer {
     }
   }
 
-  detachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {
-    var parentView = resolveInternalDomView(parentViewRef);
+  detachViewInContainer(location: RenderElementRef, atIndex: number, viewRef: RenderViewRef) {
+    var parentView = resolveInternalDomView(location.renderView);
     var view = resolveInternalDomView(viewRef);
-    var viewContainer = parentView.boundElements[boundElementIndex].viewContainer;
+    var viewContainer = parentView.boundElements[location.boundElementIndex].viewContainer;
     var detachedView = viewContainer.views[atIndex];
     ListWrapper.removeAt(viewContainer.views, atIndex);
-    var directParentLightDom = this._directParentLightDom(parentView, boundElementIndex);
+    var directParentLightDom = this._directParentLightDom(parentView, location.boundElementIndex);
     if (isBlank(directParentLightDom)) {
       this._removeViewNodes(detachedView);
     } else {
@@ -181,34 +177,30 @@ export class DomRenderer extends Renderer {
     view.hydrated = false;
   }
 
-  setElementProperty(viewRef: RenderViewRef, elementIndex: number, propertyName: string,
-                     propertyValue: any): void {
-    var view = resolveInternalDomView(viewRef);
-    view.setElementProperty(elementIndex, propertyName, propertyValue);
+  setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any): void {
+    var view = resolveInternalDomView(location.renderView);
+    view.setElementProperty(location.boundElementIndex, propertyName, propertyValue);
   }
 
-  setElementAttribute(viewRef: RenderViewRef, elementIndex: number, attributeName: string,
+  setElementAttribute(location: RenderElementRef, attributeName: string,
                       attributeValue: string): void {
-    var view = resolveInternalDomView(viewRef);
-    view.setElementAttribute(elementIndex, attributeName, attributeValue);
+    var view = resolveInternalDomView(location.renderView);
+    view.setElementAttribute(location.boundElementIndex, attributeName, attributeValue);
   }
 
-  setElementClass(viewRef: RenderViewRef, elementIndex: number, className: string,
-                  isAdd: boolean): void {
-    var view = resolveInternalDomView(viewRef);
-    view.setElementClass(elementIndex, className, isAdd);
+  setElementClass(location: RenderElementRef, className: string, isAdd: boolean): void {
+    var view = resolveInternalDomView(location.renderView);
+    view.setElementClass(location.boundElementIndex, className, isAdd);
   }
 
-  setElementStyle(viewRef: RenderViewRef, elementIndex: number, styleName: string,
-                  styleValue: string): void {
-    var view = resolveInternalDomView(viewRef);
-    view.setElementStyle(elementIndex, styleName, styleValue);
+  setElementStyle(location: RenderElementRef, styleName: string, styleValue: string): void {
+    var view = resolveInternalDomView(location.renderView);
+    view.setElementStyle(location.boundElementIndex, styleName, styleValue);
   }
 
-  invokeElementMethod(viewRef: RenderViewRef, elementIndex: number, methodName: string,
-                      args: List<any>): void {
-    var view = resolveInternalDomView(viewRef);
-    view.invokeElementMethod(elementIndex, methodName, args);
+  invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>): void {
+    var view = resolveInternalDomView(location.renderView);
+    view.invokeElementMethod(location.boundElementIndex, methodName, args);
   }
 
   setText(viewRef: RenderViewRef, textNodeIndex: number, text: string): void {
