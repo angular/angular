@@ -93,6 +93,8 @@ class StringMapWrapper {
 class ListWrapper {
   static List clone(Iterable l) => new List.from(l);
   static List createFixedSize(int size) => new List(size);
+  static List createGrowableSize(int size) =>
+      new List.generate(size, (_) => null, growable: true);
   static get(List m, int k) => m[k];
   static void set(List m, int k, v) {
     m[k] = v;

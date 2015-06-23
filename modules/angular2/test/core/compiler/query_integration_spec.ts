@@ -76,14 +76,11 @@ export function main() {
                });
          }));
 
-      // TODO(rado): The test below should be using descendants: false,
-      // but due to a bug with how injectors are hooked up query considers the
-      // directives to be distances 2 instead of direct children.
       it('should reflect dynamically inserted directives',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template =
                '<div text="1"></div>' +
-               '<needs-query-desc text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query-desc>' +
+               '<needs-query text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query>' +
                '<div text="4"></div>';
 
            tb.createView(MyComp, {html: template})
@@ -104,7 +101,7 @@ export function main() {
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
            var template =
                '<div text="1"></div>' +
-               '<needs-query-desc text="2"><div *ng-for="var i of list" [text]="i"></div></needs-query-desc>' +
+               '<needs-query text="2"><div *ng-for="var i of list" [text]="i"></div></needs-query>' +
                '<div text="4"></div>';
 
            tb.createView(MyComp, {html: template})
@@ -126,10 +123,10 @@ export function main() {
     describe("onChange", () => {
       it('should notify query on change',
          inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var template = '<needs-query-desc #q>' +
+           var template = '<needs-query #q>' +
                           '<div text="1"></div>' +
                           '<div *ng-if="shouldShow" text="2"></div>' +
-                          '</needs-query-desc>';
+                          '</needs-query>';
 
            tb.createView(MyComp, {html: template})
                .then((view) => {
