@@ -771,9 +771,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
   getComponent(): any { return this._strategy.getComponent(); }
 
-  getElementRef(): ElementRef {
-    return new ElementRef(new ViewRef(this._preBuiltObjects.view), this._proto.index);
-  }
+  getElementRef(): ElementRef { return this._preBuiltObjects.view.elementRefs[this._proto.index]; }
 
   getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());

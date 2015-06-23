@@ -49,6 +49,5 @@ function _throwError(dir: NgControl, message: string): void {
 
 export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
                             propValue: any) {
-  renderer.setElementProperty(elementRef.parentView.render, elementRef.boundElementIndex, propName,
-                              propValue);
+  renderer.setElementProperty(elementRef, propName, propValue);
 }
