@@ -3,6 +3,7 @@
 
 let mockfs = require('mock-fs');
 import fs = require('fs');
+import path = require('path');
 import {TreeDiffer} from './tree-differ';
 import {DiffingFlatten} from './broccoli-flatten';
 
@@ -69,6 +70,7 @@ describe('Flatten', () => {
     let differ = new TreeDiffer('testLabel', 'input');
     let flattenedTree = flatten('input');
     expect(() => flattenedTree.rebuild(differ.diffTree()))
-        .toThrowError("Duplicate file 'file-1.txt' found in path 'dir1/subdir-1/file-1.txt'");
+        .toThrowError("Duplicate file 'file-1.txt' found in path 'dir1" + path.sep + "subdir-1" +
+                      path.sep + "file-1.txt'");
   });
 });
