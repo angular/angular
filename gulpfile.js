@@ -124,9 +124,29 @@ var CONFIG = {
     },
     dart: 'dist/dart',
     docs: 'dist/docs',
-    docs_angular_io: 'dist/angular.io'
+    docs_angular_io: 'dist/angular.io',
+    benchpress_bundle: 'dist/build/benchpress_bundle/'
   }
 };
+
+var BENCHPRESS_BUNDLE_CONFIG = {
+  entries: ['./dist/js/cjs/benchpress/index.js'],
+  packageJson: './dist/js/cjs/benchpress/package.json',
+  includes: [
+    'angular2',
+    'traceur',
+    'reflect-metadata'
+  ],
+  excludes: [
+    'selenium-webdriver',
+    'rtts_assert',
+    'zone.js'
+  ],
+  ignore: [
+    'rx'
+  ],
+  dest: CONFIG.dest.benchpress_bundle
+}
 
 // ------------
 // clean
@@ -151,6 +171,9 @@ gulp.task('build/clean.docs_angular_io', function(done) {
   del(CONFIG.dest.docs_angular_io, done);
 });
 
+gulp.task('build/clean.benchpress.bundle', function(done) {
+  del(CONFIG.dest.benchpress_bundle, done);
+});
 
 // ------------
 // transpile
@@ -888,9 +911,9 @@ gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
 
 gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps', 'router.bundle.js.dev', 'mock.bundle.js.dev']);
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps', 'benchpress.bundle']);
 
-gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', 'build/clean.docs']);
+gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', 'build/clean.docs', 'build/clean.benchpress.bundle']);
 
 gulp.task('build', ['build.js', 'build.dart']);
 
@@ -958,6 +981,18 @@ gulp.task('cleanup.builder', function(done) {
                       // this is here just to cleanup old files that we leaked in the past
   });
 });
+
+gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs'], function(cb) {
+  bundler.benchpressBundle(
+    BENCHPRESS_BUNDLE_CONFIG.entries,
+    BENCHPRESS_BUNDLE_CONFIG.packageJson,
+    BENCHPRESS_BUNDLE_CONFIG.includes,
+    BENCHPRESS_BUNDLE_CONFIG.excludes,
+    BENCHPRESS_BUNDLE_CONFIG.ignore,
+    BENCHPRESS_BUNDLE_CONFIG.dest,
+    cb
+  );
+})
 
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)
