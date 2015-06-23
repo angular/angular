@@ -24,7 +24,7 @@ module.exports = function(gulp, plugins, config) {
       libFiles.concat(testFiles).concat(webFiles).forEach(function(fileName, index) {
         if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
           if (fileName.indexOf('lib') == 0) {
-            fileName = 'package:' + packageName + '/' + path.relative('lib', fileName);
+            fileName = 'package:' + packageName + '/' + path.relative('lib', fileName).replace(/\\/g, '/');
           }
           analyzeFile.push('import "' + fileName + '" as mod' + index + ';');
         }
@@ -54,6 +54,10 @@ module.exports = function(gulp, plugins, config) {
       var errorCount = 0;
       var warningCount = 0;
       rl.on('line', function(line) {
+        if (line == "find: >     bin [: No such file or directory") {
+          //Skip bad output from Dart SDK .bat files on Windows
+          return;
+        }
         var parsedLine = _AnalyzerOutputLine.parse(line);
         if (!parsedLine) {
           errorCount++;

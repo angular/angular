@@ -17,7 +17,7 @@ class Codegen {
       {String prefix})
       : this.prefix = prefix == null ? _PREFIX_BASE : prefix,
         importUris = newEntryPointPaths.map((p) =>
-            path.relative(p, from: path.dirname(reflectionEntryPointPath))) {
+            path.relative(p, from: path.dirname(reflectionEntryPointPath)).replaceAll('\\', '/')) {
     if (this.prefix.isEmpty) throw new ArgumentError.value('(empty)', 'prefix');
   }
 
