@@ -24,7 +24,7 @@ export class ViewContainerRef {
     }
   }
 
-  get(index: number): ViewRef { return new ViewRef(this._getViews()[index]); }
+  get(index: number): ViewRef { return this._getViews()[index].ref; }
 
   get length(): number { return this._getViews().length; }
 

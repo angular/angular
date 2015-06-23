@@ -32,7 +32,7 @@ import {
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 
-import {DomTestbed} from './dom_testbed';
+import {DomTestbed, elRef} from './dom_testbed';
 
 export function main() {
   describe('ShadowDom integration tests', function() {
@@ -425,17 +425,21 @@ export function main() {
                    expect(tb.rootEl).toHaveText('(TAB(0))');
 
                    tb.renderer.dehydrateView(tabChildView.viewRef);
-                   tb.renderer.detachViewInContainer(tab1View.viewRef, 0, 0, tabChildView.viewRef);
+                   tb.renderer.detachViewInContainer(elRef(tab1View.viewRef, 0), 0,
+                                                     tabChildView.viewRef);
 
-                   tb.renderer.attachViewInContainer(tab2View.viewRef, 0, 0, tabChildView.viewRef);
+                   tb.renderer.attachViewInContainer(elRef(tab2View.viewRef, 0), 0,
+                                                     tabChildView.viewRef);
                    tb.renderer.hydrateView(tabChildView.viewRef);
 
                    expect(tb.rootEl).toHaveText('(TAB(1))');
 
                    tb.renderer.dehydrateView(tabChildView.viewRef);
-                   tb.renderer.detachViewInContainer(tab2View.viewRef, 0, 0, tabChildView.viewRef);
+                   tb.renderer.detachViewInContainer(elRef(tab2View.viewRef, 0), 0,
+                                                     tabChildView.viewRef);
 
-                   tb.renderer.attachViewInContainer(tab3View.viewRef, 0, 0, tabChildView.viewRef);
+                   tb.renderer.attachViewInContainer(elRef(tab3View.viewRef, 0), 0,
+                                                     tabChildView.viewRef);
                    tb.renderer.hydrateView(tabChildView.viewRef);
 
                    expect(tb.rootEl).toHaveText('(TAB(2))');
