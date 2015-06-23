@@ -38,7 +38,13 @@ function publishModule {
   mkdir -p $PUBLISH_DIR/ts
   cp -r $ROOT_DIR/modules/$NAME/$FILES $PUBLISH_DIR/ts
 
-  cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
+  if [ $NAME = "benchpress" ]; then
+    cp -r $ROOT_DIR/dist/build/benchpress_bundle/$FILES $PUBLISH_DIR
+    cp -r $ROOT_DIR/dist/js/cjs/benchpress/README.md $PUBLISH_DIR
+    cp -r $ROOT_DIR/dist/js/cjs/benchpress/docs $PUBLISH_DIR
+  else
+    cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
+  fi
 
   npm publish $PUBLISH_DIR
 }

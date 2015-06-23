@@ -1,6 +1,8 @@
 export {verifyNoBrowserErrors} from './e2e_util';
 
-import {bind, Options} from 'benchpress/benchpress';
+var benchpress = global['benchpress'];
+var bind = benchpress.bind;
+var Options = benchpress.Options;
 
 export function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) { return $(selector); });

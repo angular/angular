@@ -11,7 +11,6 @@
     "angular2": "<%= packageJson.version %>",
     "firefox-profile": "<%= packageJson.devDependencies['firefox-profile'] %>",
     "jpm": "<%= packageJson.devDependencies.jpm %>",
-    "rtts_assert": "<%= packageJson.version %>",
     "traceur": "<%= packageJson.dependencies.traceur %>",
     "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>"
   },

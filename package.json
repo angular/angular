@@ -54,6 +54,7 @@
     "broccoli-slow-trees": "^1.1.0",
     "broccoli-stew": "^0.2.1",
     "broccoli-writer": "^0.1.1",
+    "browserify": "^10.2.4",
     "canonical-path": "0.0.2",
     "chokidar": "^1.0.1",
     "clang-format": "^1.0.25",
