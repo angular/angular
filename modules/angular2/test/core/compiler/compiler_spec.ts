@@ -34,6 +34,7 @@ import {
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 
 import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import * as renderApi from 'angular2/src/render/api';
 // TODO(tbosch): Spys don't support named modules...
 import {RenderCompiler} from 'angular2/src/render/api';
@@ -68,7 +69,7 @@ export function main() {
 
       protoViewFactory = new FakeProtoViewFactory(protoViewFactoryResults);
       return new Compiler(directiveResolver, new CompilerCache(), tplResolver, cmpUrlMapper,
-                          urlResolver, renderCompiler, protoViewFactory);
+                          urlResolver, renderCompiler, protoViewFactory, new FakeAppRootUrl());
     }
 
     describe('serialize template', () => {
@@ -567,13 +568,11 @@ class SpyRenderCompiler extends SpyObject {
 class FakeUrlResolver extends UrlResolver {
   constructor() { super(); }
 
-  resolve(baseUrl: string, url: string): string {
-    if (baseUrl === null && url == './') {
-      return 'http://www.app.com';
-    }
+  resolve(baseUrl: string, url: string): string { return baseUrl + url; }
+}
 
-    return baseUrl + url;
-  }
+class FakeAppRootUrl extends AppRootUrl {
+  get value() { return 'http://www.app.com'; }
 }
 
 

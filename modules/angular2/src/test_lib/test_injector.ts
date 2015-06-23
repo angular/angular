@@ -22,6 +22,7 @@ import {
 import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -115,6 +116,7 @@ function _getAppBindings() {
     bind(XHR).toClass(MockXHR),
     ComponentUrlMapper,
     UrlResolver,
+    AppRootUrl,
     StyleUrlResolver,
     StyleInliner,
     TestBed,
