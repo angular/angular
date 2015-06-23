@@ -1,5 +1,6 @@
 import {isBlank, isPresent, isPromise} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {Injectable} from 'angular2/di';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -26,6 +27,7 @@ import {
  * - a common subset of shadow DOM selectors are supported,
  * - see `ShadowCss` for more information and limitations.
  */
+@Injectable()
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
   constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
     super(styleInliner, styleUrlResolver, styleHost);
