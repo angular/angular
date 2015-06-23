@@ -23,6 +23,7 @@ import {View} from '../annotations_impl/view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 
 import * as renderApi from 'angular2/src/render/api';
 
@@ -74,14 +75,15 @@ export class Compiler {
 
   constructor(reader: DirectiveResolver, cache: CompilerCache, templateResolver: TemplateResolver,
               componentUrlMapper: ComponentUrlMapper, urlResolver: UrlResolver,
-              render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory) {
+              render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory,
+              appUrl: AppRootUrl) {
     this._reader = reader;
     this._compilerCache = cache;
     this._compiling = new Map();
     this._templateResolver = templateResolver;
     this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
-    this._appUrl = urlResolver.resolve(null, './');
+    this._appUrl = appUrl.value;
     this._render = render;
     this._protoViewFactory = protoViewFactory;
   }
