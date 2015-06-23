@@ -27,7 +27,8 @@ import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {
   DirectiveBinding,
   ElementInjector,
-  PreBuiltObjects
+  PreBuiltObjects,
+  ProtoElementInjector
 } from 'angular2/src/core/compiler/element_injector';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {Component} from 'angular2/annotations';
@@ -66,10 +67,12 @@ export function main() {
       return res;
     }
 
-    function createElementInjector() {
+    function createElementInjector(parent = null) {
       var host = new SpyElementInjector();
       var appInjector = new SpyInjector();
-      return SpyObject.stub(new SpyElementInjector(),
+      var elementInjector =
+          isPresent(parent) ? new SpyElementInjectorWithParent(parent) : new SpyElementInjector();
+      return SpyObject.stub(elementInjector,
                             {
                               'isExportingComponent': false,
                               'isExportingElement': false,
@@ -82,15 +85,19 @@ export function main() {
                             {});
     }
 
-    function createView(pv = null) {
+    function createView(pv = null, nestedInjectors = false) {
       if (isBlank(pv)) {
         pv = createProtoView();
       }
       var view = new AppView(null, pv, new Map());
-      var elementInjectors = ListWrapper.createFixedSize(pv.elementBinders.length);
+      var elementInjectors = ListWrapper.createGrowableSize(pv.elementBinders.length);
       var preBuiltObjects = ListWrapper.createFixedSize(pv.elementBinders.length);
       for (var i = 0; i < pv.elementBinders.length; i++) {
-        elementInjectors[i] = createElementInjector();
+        if (nestedInjectors && i > 0) {
+          elementInjectors[i] = createElementInjector(elementInjectors[i - 1]);
+        } else {
+          elementInjectors[i] = createElementInjector();
+        }
         preBuiltObjects[i] = new SpyPreBuiltObjects();
       }
       view.init(<any>new SpyChangeDetector(), elementInjectors, elementInjectors, preBuiltObjects,
@@ -118,10 +125,9 @@ export function main() {
         var spyCd = <any>componentView.changeDetector;
         spyCd.spy('hydrate').andCallFake(log.fn('hydrateCD'));
 
-        utils.hydrateComponentView(hostView, 0)
+        utils.hydrateComponentView(hostView, 0);
 
-            expect(log.result())
-                .toEqual('hydrate; hydrateCD');
+        expect(log.result()).toEqual('hydrate; hydrateCD');
       });
 
     });
@@ -187,25 +193,32 @@ export function main() {
     describe('attachViewInContainer', () => {
       var parentView, contextView, childView;
 
-      function createViews() {
+      function createViews(numInj = 1) {
         var parentPv = createProtoView([createEmptyElBinder()]);
         parentView = createView(parentPv);
 
-        var contextPv = createProtoView([createEmptyElBinder()]);
-        contextView = createView(contextPv);
+        var binders = [];
+        for (var i = 0; i < numInj; i++) binders.push(createEmptyElBinder());
+        var contextPv = createProtoView(binders);
+        contextView = createView(contextPv, true);
 
         var childPv = createProtoView([createEmptyElBinder()]);
         childView = createView(childPv);
       }
 
+      it('should link the views rootElementInjectors at the given context', () => {
+        createViews();
+        utils.attachViewInContainer(parentView, 0, contextView, 0, 0, childView);
+        expect(contextView.elementInjectors.length).toEqual(2);
+      });
+
       it('should link the views rootElementInjectors after the elementInjector at the given context',
          () => {
-           createViews();
-           utils.attachViewInContainer(parentView, 0, contextView, 0, 0, childView);
+           createViews(2);
+           utils.attachViewInContainer(parentView, 0, contextView, 1, 0, childView);
            expect(childView.rootElementInjectors[0].spy('linkAfter'))
                .toHaveBeenCalledWith(contextView.elementInjectors[0], null);
          });
-
     });
 
     describe('hydrateViewInContainer', () => {
@@ -276,6 +289,17 @@ class SomeComponent {
 @IMPLEMENTS(ElementInjector)
 class SpyElementInjector extends SpyObject {
   constructor() { super(ElementInjector); }
+  noSuchMethod(m) { return super.noSuchMethod(m) }
+}
+
+@proxy
+@IMPLEMENTS(ElementInjector)
+class SpyElementInjectorWithParent extends SpyObject {
+  parent: ElementInjector;
+  constructor(parent) {
+    super(ElementInjector);
+    this.parent = parent;
+  }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 

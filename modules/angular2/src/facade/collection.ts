@@ -140,7 +140,10 @@ export class StringMapWrapper {
 }
 
 export class ListWrapper {
+  // JS has no way to express a staticly fixed size list, but dart does so we
+  // keep both methods.
   static createFixedSize(size): List<any> { return new List(size); }
+  static createGrowableSize(size): List<any> { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
   static clone(array: List<any>) { return array.slice(0); }

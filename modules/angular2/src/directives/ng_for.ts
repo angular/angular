@@ -107,7 +107,7 @@ export class NgFor {
     return movedTuples;
   }
 
-  static bulkInsert(tuples, viewContainer, protoViewRef) {
+  static bulkInsert(tuples, viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
     for (var i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];
