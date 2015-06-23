@@ -87,6 +87,8 @@ export class DebugElement {
     return this._elementInjector.get(type);
   }
 
+  getLocal(name: string): any { return this._parentView.locals.get(name); }
+
   /**
    * Return the first descendant TestElememt matching the given predicate
    * and scope.
