@@ -121,28 +121,25 @@ export class TreeDiffer {
 }
 
 
-export class DiffResult {
+export interface DiffResult {
+  addedPaths: string[];
+  changedPaths: string[];
+  removedPaths: string[];
+  log(verbose: boolean): void;
+  toString(): string;
+}
+
+
+class DirtyCheckingDiffResult {
+  public filesChecked: number = 0;
+  public directoriesChecked: number = 0;
   public addedPaths: string[] = [];
   public changedPaths: string[] = [];
   public removedPaths: string[] = [];
-
-  constructor(public label: string = '') {}
-
-  log(verbose: boolean): void {}
-
-  toString(): string {
-    // TODO(@caitp): more meaningful logging
-    return '';
-  }
-}
-
-class DirtyCheckingDiffResult extends DiffResult {
-  public filesChecked: number = 0;
-  public directoriesChecked: number = 0;
   public startTime: number = Date.now();
   public endTime: number = null;
 
-  constructor(label: string, public directoryName: string) { super(label); }
+  constructor(public label: string, public directoryName: string) {}
 
   toString() {
     return `${pad(this.label, 30)}, ${pad(this.endTime - this.startTime, 5)}ms, ` +

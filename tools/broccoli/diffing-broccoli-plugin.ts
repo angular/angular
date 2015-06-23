@@ -28,7 +28,7 @@ export function wrapDiffingPlugin(pluginClass): DiffingPluginWrapperFactory {
 
 
 export interface DiffingBroccoliPlugin {
-  rebuild(diff: (DiffResult | DiffResult[])): (Promise<DiffResult | void>| DiffResult | void);
+  rebuild(diff: (DiffResult | DiffResult[])): (Promise<any>| void);
   cleanup ? () : void;
 }
 
@@ -52,8 +52,6 @@ class DiffingPluginWrapper implements BroccoliTree {
   cachePath = null;
   outputPath = null;
 
-  private diffResult: DiffResult = null;
-
   constructor(private pluginClass, private wrappedPluginArguments) {
     if (Array.isArray(wrappedPluginArguments[0])) {
       this.inputTrees = this.stabilizeTrees(wrappedPluginArguments[0]);
@@ -64,59 +62,33 @@ class DiffingPluginWrapper implements BroccoliTree {
     this.description = this.pluginClass.name;
   }
 
-  private getDiffResult(): (DiffResult | DiffResult[]) {
-    let returnOrCalculateDiffResult = (tree, index) => {
-      // returnOrCalculateDiffResult will do one of two things:
-      //
-      // If `this.diffResult` is null, calculate a DiffResult using TreeDiffer
-      // for the input tree.
-      //
-      // Otherwise, `this.diffResult` was produced from the output of the
-      // inputTree's rebuild() method, and can be used without being checked.
-      // Set `this.diffResult` to null and return the previously stored value.
-      if (!tree.diffResult) {
-        let differ = index === false ? this.treeDiffer : this.treeDiffers[index];
-        return differ.diffTree();
-      }
-      let diffResult = tree.diffResult;
-      tree.diffResult = null;
-      return diffResult;
-    };
-
-    if (this.inputTrees) {
-      return this.inputTrees.map(returnOrCalculateDiffResult);
-    } else if (this.inputTree) {
-      return returnOrCalculateDiffResult(this.inputTree, false);
+  private calculateDiff(firstRun: boolean): (DiffResult | DiffResult[]) {
+    // TODO(caitp): optionally log trees based on environment variable or
+    // command line option. It may be worth logging for trees where elapsed
+    // time exceeds some threshold, like 10ms.
+    if (this.treeDiffer) {
+      return this.treeDiffer.diffTree();
+    } else if (this.treeDiffers) {
+      return this.treeDiffers.map((treeDiffer) => treeDiffer.diffTree());
     } else {
       throw new Error("Missing TreeDiffer");
     }
   }
 
-  private maybeStoreDiffResult(value: (DiffResult | void)) {
-    this.diffResult = value ? <DiffResult>(value) : null;
-  }
 
   rebuild() {
     try {
       let firstRun = !this.initialized;
       this.init();
 
-      let diffResult = this.getDiffResult();
+      let diffResult = this.calculateDiff(firstRun);
 
-      let result = this.wrappedPlugin.rebuild(diffResult);
+      var rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
 
-      if (result) {
-        let resultPromise = <Promise<DiffResult | void>>(result);
-        if (resultPromise.then) {
-          // rebuild() -> Promise<>
-          return resultPromise.then((result: (DiffResult | void)) => {
-            this.maybeStoreDiffResult(result);
-            this.relinkOutputAndCachePaths();
-          });
-        }
+      if (rebuildPromise) {
+        return (<Promise<any>>rebuildPromise).then(this.relinkOutputAndCachePaths.bind(this));
       }
 
-      this.maybeStoreDiffResult(<(DiffResult | void)>(result));
       this.relinkOutputAndCachePaths();
     } catch (e) {
       e.message = `[${this.description}]: ${e.message}`;
