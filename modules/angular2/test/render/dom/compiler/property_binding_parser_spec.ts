@@ -34,6 +34,11 @@ export function main() {
       expect(results[0].propertyBindings.get('a').source).toEqual('b');
     });
 
+    it('should detect [] syntax with data- prefix', () => {
+      var results = process(el('<div data-[a]="b"></div>'));
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
+    });
+
     it('should detect [] syntax only if an attribute name starts and ends with []', () => {
       expect(process(el('<div z[a]="b"></div>'))[0]).toBe(null);
       expect(process(el('<div [a]v="b"></div>'))[0]).toBe(null);
@@ -41,6 +46,11 @@ export function main() {
 
     it('should detect bind- syntax', () => {
       var results = process(el('<div bind-a="b"></div>'));
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
+    });
+
+    it('should detect bind- syntax with data- prefix', () => {
+      var results = process(el('<div data-bind-a="b"></div>'));
       expect(results[0].propertyBindings.get('a').source).toEqual('b');
     });
 
@@ -52,6 +62,11 @@ export function main() {
       expect(results[0].propertyBindings.get('a').source).toEqual('{{b}}');
     });
 
+    it('should detect interpolation syntax with data- prefix', () => {
+      var results = process(el('<div data-a="{{b}}"></div>'));
+      expect(results[0].propertyBindings.get('a').source).toEqual('{{b}}');
+    });
+
     it('should store property setters as camel case', () => {
       var element = el('<div bind-some-prop="1">');
       var results = process(element);
@@ -60,6 +75,11 @@ export function main() {
 
     it('should detect var- syntax', () => {
       var results = process(el('<template var-a="b"></template>'));
+      expect(results[0].variableBindings.get('b')).toEqual('a');
+    });
+
+    it('should detect var- syntax with data- prefix', () => {
+      var results = process(el('<template data-var-a="b"></template>'));
       expect(results[0].variableBindings.get('b')).toEqual('a');
     });
 
@@ -113,6 +133,13 @@ export function main() {
       expect(eventBinding.fullName).toEqual('click[]');
     });
 
+    it('should detect () syntax with data- prefix', () => {
+      var results = process(el('<div data-(click)="b()"></div>'));
+      var eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('b()');
+      expect(eventBinding.fullName).toEqual('click');
+    });
+
     it('should detect () syntax only if an attribute name starts and ends with ()', () => {
       expect(process(el('<div z(a)="b()"></div>'))[0]).toEqual(null);
       expect(process(el('<div (a)v="b()"></div>'))[0]).toEqual(null);
@@ -127,6 +154,13 @@ export function main() {
 
     it('should detect on- syntax', () => {
       var results = process(el('<div on-click="b()"></div>'));
+      var eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('b()');
+      expect(eventBinding.fullName).toEqual('click');
+    });
+
+    it('should detect on- syntax with data- prefix', () => {
+      var results = process(el('<div data-on-click="b()"></div>'));
       var eventBinding = results[0].eventBindings[0];
       expect(eventBinding.source.source).toEqual('b()');
       expect(eventBinding.fullName).toEqual('click');
@@ -157,8 +191,20 @@ export function main() {
       expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
     });
 
+    it('should detect [()] syntax with data- prefix', () => {
+      var results = process(el('<div data-[(a)]="b"></div>'));
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
+      expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
+    });
+
     it('should detect bindon- syntax', () => {
       var results = process(el('<div bindon-a="b"></div>'));
+      expect(results[0].propertyBindings.get('a').source).toEqual('b');
+      expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
+    });
+
+    it('should detect bindon- syntax with data- prefix', () => {
+      var results = process(el('<div data-bindon-a="b"></div>'));
       expect(results[0].propertyBindings.get('a').source).toEqual('b');
       expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
     });
