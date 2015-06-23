@@ -1,4 +1,4 @@
-import {isPresent, RegExpWrapper} from 'angular2/src/facade/lang';
+import {isPresent, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {Parser} from 'angular2/change_detection';
@@ -30,6 +30,9 @@ export class PropertyBindingParser implements CompileStep {
     var newAttrs = new Map();
 
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
+
+      attrName = this._normalizeAttributeName(attrName);
+
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
       if (isPresent(bindParts)) {
         if (isPresent(bindParts[1])) {  // match: bind-prop
@@ -67,6 +70,11 @@ export class PropertyBindingParser implements CompileStep {
     });
 
     MapWrapper.forEach(newAttrs, (attrValue, attrName) => { attrs.set(attrName, attrValue); });
+  }
+
+  _normalizeAttributeName(attrName: string): string {
+    return StringWrapper.startsWith(attrName, 'data-') ? StringWrapper.substring(attrName, 5) :
+                                                         attrName;
   }
 
   _bindVariable(identifier, value, current: CompileElement, newAttrs: Map<any, any>) {
