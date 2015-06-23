@@ -55,9 +55,70 @@ export {
   Dependency
 } from './di';
 
-export * from './core';
-export * from './annotations';
-export * from './directives';
+export {
+  AncestorAnnotation,
+  ApplicationRef,
+  AttributeAnnotation,
+  Compiler,
+  CompilerCache,
+  ComponentRef,
+  DirectiveResolver,
+  DynamicComponentLoader,
+  ElementRef,
+  NgZone,
+  OnAllChangesDone,
+  OnChange,
+  OnCheck,
+  OnDestroy,
+  OnInit,
+  ParentAnnotation,
+  ProtoViewRef,
+  QueryAnnotation,
+  QueryList,
+  SelfAnnotation,
+  UnboundedAnnotation,
+  ViewAnnotation,
+  ViewArgs,
+  ViewContainerRef,
+  ViewRef,
+  appComponentRefToken,
+  appComponentTypeToken,
+  bootstrap
+} from './core';
+
+export {
+  Ancestor,
+  Attribute,
+  Component,
+  ComponentAnnotation,
+  ComponentArgs,
+  ComponentTypeDecorator,
+  Directive,
+  DirectiveAnnotation,
+  DirectiveArgs,
+  DirectiveTypeDecorator,
+  Parent,
+  Query,
+  Self,
+  Unbounded,
+  View,
+  ViewTypeDecorator,
+  onDestroy,
+  onChange,
+  onCheck,
+  onInit,
+  onAllChangesDone
+} from './annotations';
+
+export {
+  CSSClass,
+  NgFor,
+  NgIf,
+  NgNonBindable,
+  NgSwitch,
+  NgSwitchWhen,
+  NgSwitchDefault
+} from './directives';
 
 export {
   AbstractControl,
@@ -83,7 +144,23 @@ export {
   formInjectables
 } from './forms';
 
-export * from './http';
+export {} from './http';
+
 export {Observable, EventEmitter} from 'angular2/src/facade/async';
-export * from 'angular2/src/render/api';
+export {
+  DirectiveBinder,
+  DirectiveMetadata,
+  ElementBinder,
+  ElementPropertyBinding,
+  EventBinding,
+  EventDispatcher,
+  PropertyBindingType,
+  ProtoViewDto,
+  RenderCompiler,
+  Renderer,
+  RenderProtoViewRef,
+  RenderViewRef,
+  ViewDefinition,
+  ViewType
+} from 'angular2/src/render/api';
 export {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
