@@ -3,6 +3,7 @@
 
 let mockfs = require('mock-fs');
 import fs = require('fs');
+import path = require('path');
 import {TreeDiffer} from './tree-differ';
 
 
@@ -30,7 +31,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.addedPaths).toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
+      expect(diffResult.addedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
@@ -82,7 +84,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.addedPaths).toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
+      expect(diffResult.addedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       // change two files
       testDir['dir1']['file-1.txt'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
@@ -92,7 +95,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt']);
+      expect(diffResult.changedPaths)
+          .toEqual(['file-1.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       expect(diffResult.removedPaths).toEqual([]);
 
@@ -127,7 +131,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.addedPaths).toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
+      expect(diffResult.addedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       // change two files
       testDir['orig_path']['file-1.txt'] =
@@ -139,7 +144,8 @@ describe('TreeDiffer', () => {
       diffResult = differ.diffTree();
 
       expect(diffResult.addedPaths).toEqual([]);
-      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt']);
+      expect(diffResult.changedPaths)
+          .toEqual(['file-1.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
