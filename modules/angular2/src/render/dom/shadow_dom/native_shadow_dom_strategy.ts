@@ -1,5 +1,4 @@
 import {Injectable} from 'angular2/di';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 
 /**
@@ -10,5 +9,5 @@ import {ShadowDomStrategy} from './shadow_dom_strategy';
  */
 @Injectable()
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
-  prepareShadowRoot(el): Node { return DOM.createShadowRoot(el); }
+  hasNativeContentElement(): boolean { return true; }
 }

@@ -26,7 +26,11 @@ export class TextInterpolationParser implements CompileStep {
         var expr = this._parser.parseInterpolation(text, current.elementDescription);
         if (isPresent(expr)) {
           DOM.setText(node, ' ');
-          current.bindElement().bindText(node, expr);
+          if (current.element === current.inheritedProtoView.rootElement) {
+            current.inheritedProtoView.bindRootText(node, expr);
+          } else {
+            current.bindElement().bindText(node, expr);
+          }
         }
       }
     }

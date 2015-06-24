@@ -58,11 +58,13 @@ export {
 
 export * from './http';
 export {
-  EventDispatcher,
+  RenderEventDispatcher,
   Renderer,
   RenderElementRef,
   RenderViewRef,
-  RenderProtoViewRef
+  RenderProtoViewRef,
+  RenderFragmentRef,
+  RenderViewWithFragments
 } from 'angular2/src/render/api';
 export {
   DomRenderer,

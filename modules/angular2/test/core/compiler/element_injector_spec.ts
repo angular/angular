@@ -51,17 +51,10 @@ import {QueryList} from 'angular2/src/core/compiler/query_list';
 @proxy
 @IMPLEMENTS(AppView)
 class DummyView extends SpyObject {
-  componentChildViews;
   changeDetector;
-  elementRefs;
-  constructor(elementCount = 0) {
+  constructor() {
     super(AppView);
-    this.componentChildViews = [];
     this.changeDetector = null;
-    this.elementRefs = ListWrapper.createFixedSize(elementCount);
-    for (var i=0; i<elementCount; i++) {
-      this.elementRefs[i] = new DummyElementRef();
-    }
   }
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
@@ -69,6 +62,7 @@ class DummyView extends SpyObject {
 @proxy
 @IMPLEMENTS(ElementRef)
 class DummyElementRef extends SpyObject {
+  boundElementIndex: number = 0;
   constructor() { super(ElementRef); }
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
@@ -246,14 +240,14 @@ class TestNode extends TreeNode<TestNode> {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>new DummyView(1), null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>new DummyView(), <any>new DummyElementRef(), null);
 
   // An injector with more than 10 bindings will switch to the dynamic strategy
   var dynamicBindings = [];
 
   for (var i = 0; i < 20; i++) {
     dynamicBindings.push(bind(i).toValue(i));
-  }
+  }      
 
   function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false, dirVariableBindings = null) {
     var directiveBinding = ListWrapper.map(bindings, b => {
@@ -754,9 +748,9 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var protoView = new AppProtoView(null, null, null, null);
+            var protoView = new AppProtoView(null, null, null, null, null);
             var bindings = ListWrapper.concat([NeedsProtoViewRef], extraBindings);
-            var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, protoView));
+            var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, null, protoView));
 
             expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
           });
@@ -947,7 +941,7 @@ export function main() {
         describe("refs", () => {
           it("should inject ElementRef", () => {
             var inj = injector(ListWrapper.concat([NeedsElementRef], extraBindings));
-            expect(inj.get(NeedsElementRef).elementRef).toBe(defaultPreBuiltObjects.view.elementRefs[0]);
+            expect(inj.get(NeedsElementRef).elementRef).toBe(defaultPreBuiltObjects.elementRef);
           });
 
           it("should inject ChangeDetectorRef of the component's view into the component", () => {
@@ -955,10 +949,10 @@ export function main() {
             var view = <any>new DummyView();
             var childView = new DummyView();
             childView.changeDetector = cd;
-            view.componentChildViews = [childView];
+            view.spy('getNestedView').andReturn(childView);
             var binding = DirectiveBinding.createFromType(ComponentNeedsChangeDetectorRef, new dirAnn.Component());
             var inj = injector(ListWrapper.concat([binding], extraBindings), null, true,
-                               new PreBuiltObjects(null, view, null));
+                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
 
             expect(inj.get(ComponentNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
@@ -969,7 +963,7 @@ export function main() {
             view.changeDetector =cd;
             var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new dirAnn.Directive());
             var inj = injector(ListWrapper.concat([binding], extraBindings), null, false,
-                               new PreBuiltObjects(null, view, null));
+                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
 
             expect(inj.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
@@ -980,9 +974,9 @@ export function main() {
           });
 
           it("should inject ProtoViewRef", () => {
-            var protoView = new AppProtoView(null, null, null, null);
+            var protoView = new AppProtoView(null, null, null, null, null);
             var inj = injector(ListWrapper.concat([NeedsProtoViewRef], extraBindings), null, false,
-                               new PreBuiltObjects(null, null, protoView));
+                               new PreBuiltObjects(null, null, null, protoView));
 
             expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
           });
@@ -1071,7 +1065,7 @@ export function main() {
             var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
                                false, preBuildObjects, null, dirVariableBindings);
 
-            expect(inj.get(NeedsQueryByVarBindings).query.first).toBe(defaultPreBuiltObjects.view.elementRefs[0]);
+            expect(inj.get(NeedsQueryByVarBindings).query.first).toBe(defaultPreBuiltObjects.elementRef);
           });
 
           it('should contain directives on the same injector when querying by variable bindings' +
@@ -1198,7 +1192,7 @@ export function main() {
         });
       });
     });
-  });
+  });    
 }
 
 class ContextWithHandler {

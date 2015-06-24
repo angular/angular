@@ -19,6 +19,8 @@ var _attrToPropMap = {
 };
 var defDoc = null;
 
+var mapProps = ['attribs', 'x-attribsNamespace', 'x-attribsPrefix'];
+
 function _notImplemented(methodName) {
   return new BaseException('This method is not implemented in Parse5DomAdapter: ' + methodName);
 }
@@ -271,18 +273,45 @@ export class Parse5DomAdapter extends DomAdapter {
   getHost(el): string { return el.host; }
   getDistributedNodes(el: any): List<Node> { throw _notImplemented('getDistributedNodes'); }
   clone(node: Node): Node {
-    // e.g. document fragment
-    if ((<any>node).type === 'root') {
-      var serialized = serializer.serialize(node);
-      var newParser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
-      return newParser.parseFragment(serialized);
-    } else {
-      var temp = treeAdapter.createElement("template", null, []);
-      treeAdapter.appendChild(temp, node);
-      var serialized = serializer.serialize(temp);
-      var newParser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
-      return newParser.parseFragment(serialized).childNodes[0];
-    }
+    var _recursive = (node) => {
+      var nodeClone = Object.create(Object.getPrototypeOf(node));
+      for (var prop in node) {
+        var desc = Object.getOwnPropertyDescriptor(node, prop);
+        if (desc && 'value' in desc && typeof desc.value !== 'object') {
+          nodeClone[prop] = node[prop];
+        }
+      }
+      nodeClone.parent = null;
+      nodeClone.prev = null;
+      nodeClone.next = null;
+      nodeClone.children = null;
+
+      mapProps.forEach(mapName => {
+        if (isPresent(node[mapName])) {
+          nodeClone[mapName] = {};
+          for (var prop in node[mapName]) {
+            nodeClone[mapName][prop] = node[mapName][prop];
+          }
+        }
+      });
+      var cNodes = node.children;
+      if (cNodes) {
+        var cNodesClone = new Array(cNodes.length);
+        for (var i = 0; i < cNodes.length; i++) {
+          var childNode = cNodes[i];
+          var childNodeClone = _recursive(childNode);
+          cNodesClone[i] = childNodeClone;
+          if (i > 0) {
+            childNodeClone.prev = cNodesClone[i - 1];
+            cNodesClone[i - 1].next = childNodeClone;
+          }
+          childNodeClone.parent = nodeClone;
+        }
+        nodeClone.children = cNodesClone;
+      }
+      return nodeClone;
+    };
+    return _recursive(node);
   }
   getElementsByClassName(element, name: string): List<HTMLElement> {
     return this.querySelectorAll(element, "." + name);

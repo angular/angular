@@ -16,19 +16,13 @@ import {
   NativeShadowDomStrategy
 } from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-
 export function main() {
-  var strategy;
+  var strategy: NativeShadowDomStrategy;
 
   describe('NativeShadowDomStrategy', () => {
     beforeEach(() => { strategy = new NativeShadowDomStrategy(); });
 
-    if (DOM.supportsNativeShadowDOM()) {
-      it('should use the native shadow root', () => {
-        var host = el('<div><span>original content</span></div>');
-        expect(strategy.prepareShadowRoot(host)).toBe(DOM.getShadowRoot(host));
-      });
-    }
+    it('should report that this is the native strategy',
+       () => { expect(strategy.hasNativeContentElement()).toBe(true); });
   });
 }

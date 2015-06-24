@@ -56,7 +56,8 @@ export class DebugElementViewListener implements AppViewListener {
     _allViewsById.set(viewId, view);
     _allIdsByView.set(view, viewId);
     for (var i = 0; i < view.elementRefs.length; i++) {
-      _setElementId(this._renderer.getNativeElementSync(view.elementRefs[i]), [viewId, i]);
+      var el = view.elementRefs[i];
+      _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
     }
   }
 

@@ -31,7 +31,7 @@ export class DomAdapter {
 
   parse(templateHtml: string) { throw _abstract(); }
   query(selector: string): any { throw _abstract(); }
-  querySelector(el, selector: string) { throw _abstract(); }
+  querySelector(el, selector: string): HTMLElement { throw _abstract(); }
   querySelectorAll(el, selector: string): List<any> { throw _abstract(); }
   on(el, evt, listener) { throw _abstract(); }
   onAndCancel(el, evt, listener): Function { throw _abstract(); }
@@ -76,7 +76,7 @@ export class DomAdapter {
   getShadowRoot(el): any { throw _abstract(); }
   getHost(el): any { throw _abstract(); }
   getDistributedNodes(el): List<Node> { throw _abstract(); }
-  clone(node: Node): Node { throw _abstract(); }
+  clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/ { throw _abstract(); }
   getElementsByClassName(element, name: string): List<HTMLElement> { throw _abstract(); }
   getElementsByTagName(element, name: string): List<HTMLElement> { throw _abstract(); }
   classList(element): List<any> { throw _abstract(); }
@@ -105,7 +105,7 @@ export class DomAdapter {
   isElementNode(node): boolean { throw _abstract(); }
   hasShadowRoot(node): boolean { throw _abstract(); }
   isShadowRoot(node): boolean { throw _abstract(); }
-  importIntoDoc(node) { throw _abstract(); }
+  importIntoDoc /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/ { throw _abstract(); }
   isPageRule(rule): boolean { throw _abstract(); }
   isStyleRule(rule): boolean { throw _abstract(); }
   isMediaRule(rule): boolean { throw _abstract(); }

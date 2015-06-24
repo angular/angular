@@ -29,7 +29,7 @@ class HelloRootCmp {
 }
 
 @Component({selector: 'hello-app'})
-@View({template: 'before: <content></content> after: done'})
+@View({template: 'before: <ng-content></ng-content> after: done'})
 class HelloRootCmpContent {
   constructor() {}
 }
@@ -68,19 +68,19 @@ class HelloRootDirectiveIsNotCmp {
 export function main() {
   var fakeDoc, el, el2, testBindings, lightDom;
 
-  beforeEach(() => {
-    fakeDoc = DOM.createHtmlDocument();
-    el = DOM.createElement('hello-app', fakeDoc);
-    el2 = DOM.createElement('hello-app-2', fakeDoc);
-    lightDom = DOM.createElement('light-dom-el', fakeDoc);
-    DOM.appendChild(fakeDoc.body, el);
-    DOM.appendChild(fakeDoc.body, el2);
-    DOM.appendChild(el, lightDom);
-    DOM.setText(lightDom, 'loading');
-    testBindings = [bind(DOCUMENT_TOKEN).toValue(fakeDoc)];
-  });
-
   describe('bootstrap factory method', () => {
+    beforeEach(() => {
+      fakeDoc = DOM.createHtmlDocument();
+      el = DOM.createElement('hello-app', fakeDoc);
+      el2 = DOM.createElement('hello-app-2', fakeDoc);
+      lightDom = DOM.createElement('light-dom-el', fakeDoc);
+      DOM.appendChild(fakeDoc.body, el);
+      DOM.appendChild(fakeDoc.body, el2);
+      DOM.appendChild(el, lightDom);
+      DOM.setText(lightDom, 'loading');
+      testBindings = [bind(DOCUMENT_TOKEN).toValue(fakeDoc)];
+    });
+
     it('should throw if bootstrapped Directive is not a Component',
        inject([AsyncTestCompleter], (async) => {
          var refPromise =
@@ -145,14 +145,6 @@ export function main() {
 
          refPromise.then((ref) => {
            expect(ref.hostComponent.lc).toBe(ref.injector.get(LifeCycle));
-           async.done();
-         });
-       }));
-
-    it("should support shadow dom content tag", inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootCmpContent, testBindings);
-         refPromise.then((ref) => {
-           expect(el).toHaveText('before: loading after: done');
            async.done();
          });
        }));

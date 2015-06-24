@@ -137,7 +137,7 @@ class Pane {                      | Component controller class
 <div class="outer">
   <h1>{{title}}</h1>
   <div class="inner" [hidden]="!open">
-    <content></content>
+    <ng-content></ng-content>
   </div>
 </div>
 ```

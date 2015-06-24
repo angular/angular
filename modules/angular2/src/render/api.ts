@@ -48,11 +48,10 @@ export class ElementBinder {
   // that replaced the values that should be extracted from the element
   // with a local name
   eventBindings: List<EventBinding>;
-  textBindings: List<ASTWithSource>;
   readAttributes: Map<string, string>;
 
   constructor({index, parentIndex, distanceToParent, directives, nestedProtoView, propertyBindings,
-               variableBindings, eventBindings, textBindings, readAttributes}: {
+               variableBindings, eventBindings, readAttributes}: {
     index?: number,
     parentIndex?: number,
     distanceToParent?: number,
@@ -61,7 +60,6 @@ export class ElementBinder {
     propertyBindings?: List<ElementPropertyBinding>,
     variableBindings?: Map<string, string>,
     eventBindings?: List<EventBinding>,
-    textBindings?: List<ASTWithSource>,
     readAttributes?: Map<string, string>
   } = {}) {
     this.index = index;
@@ -72,7 +70,6 @@ export class ElementBinder {
     this.propertyBindings = propertyBindings;
     this.variableBindings = variableBindings;
     this.eventBindings = eventBindings;
-    this.textBindings = textBindings;
     this.readAttributes = readAttributes;
   }
 }
@@ -116,17 +113,20 @@ export class ProtoViewDto {
   elementBinders: List<ElementBinder>;
   variableBindings: Map<string, string>;
   type: ViewType;
+  textBindings: List<ASTWithSource>;
 
-  constructor({render, elementBinders, variableBindings, type}: {
+  constructor({render, elementBinders, variableBindings, type, textBindings}: {
     render?: RenderProtoViewRef,
     elementBinders?: List<ElementBinder>,
     variableBindings?: Map<string, string>,
-    type?: ViewType
+    type?: ViewType,
+    textBindings?: List<ASTWithSource>
   }) {
     this.render = render;
     this.elementBinders = elementBinders;
     this.variableBindings = variableBindings;
     this.type = type;
+    this.textBindings = textBindings;
   }
 }
 
@@ -260,10 +260,13 @@ export class DirectiveMetadata {
   }
 }
 
-// An opaque reference to a DomProtoView
+// An opaque reference to a render proto ivew
 export class RenderProtoViewRef {}
 
-// An opaque reference to a DomView
+// An opaque reference to a part of a view
+export class RenderFragmentRef {}
+
+// An opaque reference to a view
 export class RenderViewRef {}
 
 export class ViewDefinition {
@@ -291,6 +294,23 @@ export class ViewDefinition {
   }
 }
 
+export class RenderProtoViewMergeMapping {
+  constructor(public mergedProtoViewRef: RenderProtoViewRef,
+              // Number of fragments in the merged ProtoView.
+              // Fragments are stored in depth first order of nested ProtoViews.
+              public fragmentCount: number,
+              // Mapping from app element index to render element index.
+              // Mappings of nested ProtoViews are in depth first order, with all
+              // indices for one ProtoView in a consecuitve block.
+              public mappedElementIndices: number[],
+              // Mapping from app text index to render text index.
+              // Mappings of nested ProtoViews are in depth first order, with all
+              // indices for one ProtoView in a consecuitve block.
+              public mappedTextIndices: number[],
+              // Mapping from view index to app element index
+              public hostElementIndicesByViewIndex: number[]) {}
+}
+
 export class RenderCompiler {
   /**
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
@@ -303,6 +323,24 @@ export class RenderCompiler {
    * but only the needed ones based on previous calls.
    */
   compile(view: ViewDefinition): Promise<ProtoViewDto> { return null; }
+
+  /**
+   * Merges ProtoViews.
+   * The first entry of the array is the protoview into which all the other entries of the array
+   * should be merged.
+   * If the array contains other arrays, they will be merged before processing the parent array.
+   * The array must contain an entry for every component and embedded ProtoView of the first entry.
+   * @param protoViewRefs List of ProtoViewRefs or nested
+   * @return the merge result for every input array in depth first order.
+   */
+  mergeProtoViewsRecursively(
+      protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping[]> {
+    return null;
+  }
+}
+
+export class RenderViewWithFragments {
+  constructor(public viewRef: RenderViewRef, public fragmentRefs: RenderFragmentRef[]) {}
 }
 
 /**
@@ -315,33 +353,39 @@ export interface RenderElementRef {
    * Reference to the {@link RenderViewRef} where the `RenderElementRef` is inside of.
    */
   renderView: RenderViewRef;
-
   /**
-   * Index of the element inside the {@link ViewRef}.
+   * Index of the element inside the {@link RenderViewRef}.
    *
    * This is used internally by the Angular framework to locate elements.
    */
-  boundElementIndex: number;
+  renderBoundElementIndex: number;
 }
 
 export class Renderer {
   /**
    * Creates a root host view that includes the given element.
+   * Note that the fragmentCount needs to be passed in so that we can create a result
+   * synchronously even when dealing with webworkers!
+   *
    * @param {RenderProtoViewRef} hostProtoViewRef a RenderProtoViewRef of type
    * ProtoViewDto.HOST_VIEW_TYPE
    * @param {any} hostElementSelector css selector for the host element (will be queried against the
    * main document)
-   * @return {RenderViewRef} the created view
+   * @return {RenderViewWithFragments} the created view including fragments
    */
-  createRootHostView(hostProtoViewRef: RenderProtoViewRef,
-                     hostElementSelector: string): RenderViewRef {
+  createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
+                     hostElementSelector: string): RenderViewWithFragments {
     return null;
   }
 
   /**
-   * Creates a regular view out of the given ProtoView
+   * Creates a regular view out of the given ProtoView.
+   * Note that the fragmentCount needs to be passed in so that we can create a result
+   * synchronously even when dealing with webworkers!
    */
-  createView(protoViewRef: RenderProtoViewRef): RenderViewRef { return null; }
+  createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
+    return null;
+  }
 
   /**
    * Destroys the given view after it has been dehydrated and detached
@@ -349,27 +393,20 @@ export class Renderer {
   destroyView(viewRef: RenderViewRef) {}
 
   /**
-   * Attaches a componentView into the given hostView at the given element
+   * Attaches a fragment after another fragment.
    */
-  attachComponentView(location: RenderElementRef, componentViewRef: RenderViewRef) {}
+  attachFragmentAfterFragment(previousFragmentRef: RenderFragmentRef,
+                              fragmentRef: RenderFragmentRef) {}
 
   /**
-   * Detaches a componentView into the given hostView at the given element
+   * Attaches a fragment after an element.
    */
-  detachComponentView(location: RenderElementRef, componentViewRef: RenderViewRef) {}
+  attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {}
 
   /**
-   * Attaches a view into a ViewContainer (in the given parentView at the given element) at the
-   * given index.
+   * Detaches a fragment.
    */
-  attachViewInContainer(location: RenderElementRef, atIndex: number, viewRef: RenderViewRef) {}
-
-  /**
-   * Detaches a view into a ViewContainer (in the given parentView at the given element) at the
-   * given index.
-   */
-  // TODO(tbosch): this should return a promise as it can be animated!
-  detachViewInContainer(location: RenderElementRef, atIndex: number, viewRef: RenderViewRef) {}
+  detachFragment(fragmentRef: RenderFragmentRef) {}
 
   /**
    * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views
@@ -422,18 +459,18 @@ export class Renderer {
   /**
    * Sets the dispatcher for all events of the given view
    */
-  setEventDispatcher(viewRef: RenderViewRef, dispatcher: EventDispatcher) {}
+  setEventDispatcher(viewRef: RenderViewRef, dispatcher: RenderEventDispatcher) {}
 }
 
 
 /**
  * A dispatcher for all events happening in a view.
  */
-export interface EventDispatcher {
+export interface RenderEventDispatcher {
   /**
    * Called when an event was triggered for a on-* attribute on an element.
    * @param {Map<string, any>} locals Locals to be used to evaluate the
    *   event expressions
    */
-  dispatchEvent(elementIndex: number, eventName: string, locals: Map<string, any>);
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>);
 }

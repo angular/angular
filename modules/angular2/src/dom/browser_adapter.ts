@@ -63,7 +63,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   get attrToPropMap(): any { return _attrToPropMap; }
 
   query(selector: string): any { return document.querySelector(selector); }
-  querySelector(el, selector: string): Node { return el.querySelector(selector); }
+  querySelector(el, selector: string): HTMLElement { return el.querySelector(selector); }
   querySelectorAll(el, selector: string): List<any> { return el.querySelectorAll(selector); }
   on(el, evt, listener) { el.addEventListener(evt, listener, false); }
   onAndCancel(el, evt, listener): Function {
@@ -112,17 +112,16 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return res;
   }
   clearNodes(el) {
-    for (var i = 0; i < el.childNodes.length; i++) {
-      this.remove(el.childNodes[i]);
+    while (el.firstChild) {
+      el.firstChild.remove();
     }
   }
   appendChild(el, node) { el.appendChild(node); }
   removeChild(el, node) { el.removeChild(node); }
   replaceChild(el: Node, newChild, oldChild) { el.replaceChild(newChild, oldChild); }
-  remove(el): Node {
-    var parent = el.parentNode;
-    parent.removeChild(el);
-    return el;
+  remove(node): Node {
+    node.remove();
+    return node;
   }
   insertBefore(el, node) { el.parentNode.insertBefore(node, el); }
   insertAllBefore(el, nodes) {

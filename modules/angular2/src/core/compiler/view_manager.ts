@@ -4,7 +4,13 @@ import * as viewModule from './view';
 import {ElementRef} from './element_ref';
 import {ProtoViewRef, ViewRef, internalView, internalProtoView} from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
-import {Renderer, RenderViewRef} from 'angular2/src/render/api';
+import {
+  Renderer,
+  RenderViewRef,
+  RenderFragmentRef,
+  RenderViewWithFragments,
+  ViewType
+} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
@@ -23,18 +29,6 @@ export class AppViewManager {
               private _utils: AppViewManagerUtils, private _renderer: Renderer) {}
 
   /**
-   * Returns associated Component {@link ViewRef} from {@link ElementRef}.
-   *
-   * If an {@link ElementRef} is from an element which has a component, this method returns
-   * the component's {@link ViewRef}.
-   */
-  getComponentView(hostLocation: ElementRef): ViewRef {
-    var hostView: viewModule.AppView = internalView(hostLocation.parentView);
-    var boundElementIndex = hostLocation.boundElementIndex;
-    return hostView.componentChildViews[boundElementIndex].ref;
-  }
-
-  /**
    * Returns a {@link ViewContainerRef} at the {@link ElementRef} location.
    */
   getViewContainer(location: ElementRef): ViewContainerRef {
@@ -47,7 +41,8 @@ export class AppViewManager {
    */
   // TODO(misko): remove https://github.com/angular/angular/issues/2891
   getHostElement(hostViewRef: ViewRef): ElementRef {
-    return internalView(hostViewRef).elementRefs[0];
+    var hostView = internalView(hostViewRef);
+    return hostView.elementRefs[hostView.elementOffset];
   }
 
   /**
@@ -62,15 +57,15 @@ export class AppViewManager {
   getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef {
     var hostView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
-    var componentView = hostView.componentChildViews[boundElementIndex];
+    var componentView = hostView.getNestedView(boundElementIndex);
     if (isBlank(componentView)) {
       throw new BaseException(`There is no component directive at element ${boundElementIndex}`);
     }
-    var elementIndex = componentView.proto.variableLocations.get(variableName);
-    if (isBlank(elementIndex)) {
+    var binderIdx = componentView.proto.variableLocations.get(variableName);
+    if (isBlank(binderIdx)) {
       throw new BaseException(`Could not find variable ${variableName}`);
     }
-    return componentView.elementRefs[elementIndex];
+    return componentView.elementRefs[componentView.elementOffset + binderIdx];
   }
 
   /**
@@ -146,14 +141,13 @@ export class AppViewManager {
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
     }
-    var renderView = this._renderer.createRootHostView(hostProtoView.render, hostElementSelector);
-    var hostView = this._utils.createView(hostProtoView, renderView, this, this._renderer);
-    this._renderer.setEventDispatcher(hostView.render, hostView);
-    this._createViewRecurse(hostView);
-    this._viewListener.viewCreated(hostView);
+    var renderViewWithFragments = this._renderer.createRootHostView(
+        hostProtoView.mergeMapping.renderProtoViewRef,
+        hostProtoView.mergeMapping.renderFragmentCount, hostElementSelector);
+    var hostView = this._createMainView(hostProtoView, renderViewWithFragments);
 
+    this._renderer.hydrateView(hostView.render);
     this._utils.hydrateRootHostView(hostView, injector);
-    this._viewHydrateRecurse(hostView);
 
     return hostView.ref;
   }
@@ -162,14 +156,14 @@ export class AppViewManager {
    * Remove the View created with {@link AppViewManager#createRootHostView}.
    */
   destroyRootHostView(hostViewRef: ViewRef) {
-    // Note: Don't detach the hostView as we want to leave the
-    // root element in place. Also don't put the hostView into the view pool
+    // Note: Don't put the hostView into the view pool
     // as it is depending on the element for which it was created.
     var hostView = internalView(hostViewRef);
-    // We do want to destroy the component view though.
-    this._viewDehydrateRecurse(hostView, true);
-    this._renderer.destroyView(hostView.render);
+    this._renderer.detachFragment(hostView.renderFragment);
+    this._renderer.dehydrateView(hostView.render);
+    this._viewDehydrateRecurse(hostView);
     this._viewListener.viewDestroyed(hostView);
+    this._renderer.destroyView(hostView.render);
   }
 
   /**
@@ -187,17 +181,40 @@ export class AppViewManager {
     if (isPresent(context)) {
       contextView = internalView(context.parentView);
       contextBoundElementIndex = context.boundElementIndex;
+    } else {
+      contextView = parentView;
+      contextBoundElementIndex = boundElementIndex;
     }
 
-    var view = this._createPooledView(protoView);
-
-    this._renderer.attachViewInContainer(viewContainerLocation, atIndex, view.render);
+    var embeddedFragmentView = contextView.getNestedView(contextBoundElementIndex);
+    var view;
+    if (isPresent(embeddedFragmentView) && !embeddedFragmentView.hydrated()) {
+      // Case 1: instantiate the first view of a template that has been merged into a parent
+      view = embeddedFragmentView;
+      this._attachRenderView(parentView, boundElementIndex, atIndex, view);
+    } else {
+      // Case 2: instantiate another copy of the template. This is a separate case
+      // as we only inline one copy of the template into the parent view.
+      view = this._createPooledView(protoView);
+      this._attachRenderView(parentView, boundElementIndex, atIndex, view);
+      this._renderer.hydrateView(view.render);
+    }
     this._utils.attachViewInContainer(parentView, boundElementIndex, contextView,
                                       contextBoundElementIndex, atIndex, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView,
                                        contextBoundElementIndex, atIndex, bindings);
-    this._viewHydrateRecurse(view);
     return view.ref;
+  }
+
+  _attachRenderView(parentView: viewModule.AppView, boundElementIndex: number, atIndex: number,
+                    view: viewModule.AppView) {
+    var elementRef = parentView.elementRefs[boundElementIndex];
+    if (atIndex === 0) {
+      this._renderer.attachFragmentAfterElement(elementRef, view.renderFragment);
+    } else {
+      var prevView = parentView.viewContainers[boundElementIndex].views[atIndex - 1];
+      this._renderer.attachFragmentAfterFragment(prevView.renderFragment, view.renderFragment);
+    }
   }
 
   /**
@@ -226,7 +243,7 @@ export class AppViewManager {
     // Right now we are destroying any special
     // context view that might have been used.
     this._utils.attachViewInContainer(parentView, boundElementIndex, null, null, atIndex, view);
-    this._renderer.attachViewInContainer(viewContainerLocation, atIndex, view.render);
+    this._attachRenderView(parentView, boundElementIndex, atIndex, view);
     return viewRef;
   }
 
@@ -240,86 +257,65 @@ export class AppViewManager {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
-    this._renderer.detachViewInContainer(viewContainerLocation, atIndex, view.render);
+    this._renderer.detachFragment(view.renderFragment);
     return view.ref;
+  }
+
+  _createMainView(protoView: viewModule.AppProtoView,
+                  renderViewWithFragments: RenderViewWithFragments): viewModule.AppView {
+    var mergedParentView =
+        this._utils.createView(protoView, renderViewWithFragments, this, this._renderer);
+    this._renderer.setEventDispatcher(mergedParentView.render, mergedParentView);
+    this._viewListener.viewCreated(mergedParentView);
+    return mergedParentView;
   }
 
   _createPooledView(protoView: viewModule.AppProtoView): viewModule.AppView {
     var view = this._viewPool.getView(protoView);
     if (isBlank(view)) {
-      view = this._utils.createView(protoView, this._renderer.createView(protoView.render), this,
-                                    this._renderer);
-      this._renderer.setEventDispatcher(view.render, view);
-      this._createViewRecurse(view);
-      this._viewListener.viewCreated(view);
+      view = this._createMainView(
+          protoView, this._renderer.createView(protoView.mergeMapping.renderProtoViewRef,
+                                               protoView.mergeMapping.renderFragmentCount));
     }
     return view;
-  }
-
-  _createViewRecurse(view: viewModule.AppView) {
-    var binders = view.proto.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      if (binder.hasStaticComponent()) {
-        var childView = this._createPooledView(binder.nestedProtoView);
-        this._renderer.attachComponentView(view.elementRefs[binderIdx], childView.render);
-        this._utils.attachComponentView(view, binderIdx, childView);
-      }
-    }
   }
 
   _destroyPooledView(view: viewModule.AppView) {
     var wasReturned = this._viewPool.returnView(view);
     if (!wasReturned) {
-      this._renderer.destroyView(view.render);
       this._viewListener.viewDestroyed(view);
+      this._renderer.destroyView(view.render);
     }
   }
 
-  _destroyViewInContainer(parentView, boundElementIndex, atIndex: number) {
+  _destroyViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
+                          atIndex: number) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
-    this._viewDehydrateRecurse(view, false);
+
+    this._viewDehydrateRecurse(view);
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
-    this._renderer.detachViewInContainer(parentView.elementRefs[boundElementIndex], atIndex,
-                                         view.render);
-    this._destroyPooledView(view);
-  }
-
-  _destroyComponentView(hostView, boundElementIndex, componentView) {
-    this._viewDehydrateRecurse(componentView, false);
-    this._renderer.detachComponentView(hostView.elementRefs[boundElementIndex],
-                                       componentView.render);
-    this._utils.detachComponentView(hostView, boundElementIndex);
-    this._destroyPooledView(componentView);
-  }
-
-  _viewHydrateRecurse(view: viewModule.AppView) {
-    this._renderer.hydrateView(view.render);
-
-    var binders = view.proto.elementBinders;
-    for (var i = 0; i < binders.length; ++i) {
-      if (binders[i].hasStaticComponent()) {
-        this._utils.hydrateComponentView(view, i);
-        this._viewHydrateRecurse(view.componentChildViews[i]);
-      }
+    if (view.viewOffset > 0) {
+      // Case 1: a view that is part of another view.
+      // Just detach the fragment
+      this._renderer.detachFragment(view.renderFragment);
+    } else {
+      // Case 2: a view that is not part of another view.
+      // dehydrate and destroy it.
+      this._renderer.dehydrateView(view.render);
+      this._renderer.detachFragment(view.renderFragment);
+      this._destroyPooledView(view);
     }
   }
 
-  _viewDehydrateRecurse(view: viewModule.AppView, forceDestroyComponents) {
-    this._utils.dehydrateView(view);
-    this._renderer.dehydrateView(view.render);
-    var binders = view.proto.elementBinders;
-    for (var i = 0; i < binders.length; i++) {
-      var componentView = view.componentChildViews[i];
-      if (isPresent(componentView)) {
-        if (forceDestroyComponents) {
-          this._destroyComponentView(view, i, componentView);
-        } else {
-          this._viewDehydrateRecurse(componentView, false);
-        }
-      }
-      var vc = view.viewContainers[i];
+  _viewDehydrateRecurse(view: viewModule.AppView) {
+    if (view.hydrated()) {
+      this._utils.dehydrateView(view);
+    }
+    var viewContainers = view.viewContainers;
+    for (var i = view.elementOffset, ii = view.elementOffset + view.proto.mergeMapping.elementCount;
+         i < ii; i++) {
+      var vc = viewContainers[i];
       if (isPresent(vc)) {
         for (var j = vc.views.length - 1; j >= 0; j--) {
           this._destroyViewInContainer(view, i, j);

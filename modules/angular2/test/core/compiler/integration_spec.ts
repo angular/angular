@@ -15,7 +15,8 @@ import {
   xit,
   containsRegexp,
   stringifyElement,
-  TestComponentBuilder
+  TestComponentBuilder,
+  fakeAsync
 } from 'angular2/test_lib';
 
 
@@ -1369,8 +1370,8 @@ class SimpleImperativeViewComponent {
   done;
 
   constructor(self: ElementRef, viewManager: AppViewManager, renderer: DomRenderer) {
-    var shadowViewRef = viewManager.getComponentView(self);
-    renderer.setComponentViewRootNodes(shadowViewRef.render, [el('hello imp view')]);
+    var hostElement = renderer.getNativeElementSync(self);
+    DOM.appendChild(hostElement, el('hello imp view'));
   }
 }
 
@@ -1870,7 +1871,7 @@ class SomeImperativeViewport {
     }
     if (value) {
       this.view = this.vc.create(this.protoView);
-      var nodes = this.renderer.getRootNodes(this.view.render);
+      var nodes = this.renderer.getRootNodes(this.view.renderFragment);
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
       }

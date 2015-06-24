@@ -12,7 +12,6 @@ import {
   beforeEachBindings,
   it,
   xit,
-  viewRootNodes,
   TestComponentBuilder,
   RootTestComponent,
   inspectElement,
@@ -240,8 +239,7 @@ export function main() {
 
                         componentRef.dispose();
 
-                        expect(rootEl).toHaveText('');
-                        expect(rootEl.parentNode).toBe(doc.body);
+                        expect(rootEl.parentNode).toBeFalsy();
 
                         async.done();
                       });

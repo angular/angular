@@ -206,11 +206,9 @@ export function main() {
              .then((_) => rtr.navigate('/page/1'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(DOM.getAttribute(rootTC.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .children[0]
-                                           .nativeElement,
-                                       'href'))
+               expect(DOM.getAttribute(
+                          rootTC.componentViewChildren[1].componentViewChildren[0].nativeElement,
+                          'href'))
                    .toEqual('/page/2');
                async.done();
              });
@@ -232,7 +230,6 @@ export function main() {
                expect(DOM.getAttribute(rootTC.componentViewChildren[1]
                                            .componentViewChildren[2]
                                            .componentViewChildren[0]
-                                           .children[0]
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/2');

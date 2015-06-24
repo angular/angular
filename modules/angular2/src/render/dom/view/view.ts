@@ -3,10 +3,8 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import {isPresent, isBlank, BaseException, stringify} from 'angular2/src/facade/lang';
 
 import {DomProtoView} from './proto_view';
-import {LightDom} from '../shadow_dom/light_dom';
-import {DomElement} from './element';
 
-import {RenderViewRef, EventDispatcher} from '../../api';
+import {RenderViewRef, RenderEventDispatcher} from '../../api';
 import {camelCaseToDashCase} from '../util';
 
 export function resolveInternalDomView(viewRef: RenderViewRef): DomView {
@@ -21,30 +19,19 @@ export class DomViewRef extends RenderViewRef {
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
 export class DomView {
-  hostLightDom: LightDom = null;
-  shadowRoot = null;
   hydrated: boolean = false;
-  eventDispatcher: EventDispatcher = null;
+  eventDispatcher: RenderEventDispatcher = null;
   eventHandlerRemovers: List<Function> = [];
 
-  constructor(public proto: DomProtoView, public rootNodes: List</*node*/ any>,
-              public boundTextNodes: List</*node*/ any>, public boundElements: List<DomElement>) {}
-
-  getDirectParentElement(boundElementIndex: number): DomElement {
-    var binder = this.proto.elementBinders[boundElementIndex];
-    var parent = null;
-    if (binder.parentIndex !== -1 && binder.distanceToParent === 1) {
-      parent = this.boundElements[binder.parentIndex];
-    }
-    return parent;
-  }
+  constructor(public proto: DomProtoView, public boundTextNodes: List<Node>,
+              public boundElements: Element[]) {}
 
   setElementProperty(elementIndex: number, propertyName: string, value: any) {
-    DOM.setProperty(this.boundElements[elementIndex].element, propertyName, value);
+    DOM.setProperty(this.boundElements[elementIndex], propertyName, value);
   }
 
   setElementAttribute(elementIndex: number, attributeName: string, value: string) {
-    var element = this.boundElements[elementIndex].element;
+    var element = this.boundElements[elementIndex];
     var dashCasedAttributeName = camelCaseToDashCase(attributeName);
     if (isPresent(value)) {
       DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
@@ -54,7 +41,7 @@ export class DomView {
   }
 
   setElementClass(elementIndex: number, className: string, isAdd: boolean) {
-    var element = this.boundElements[elementIndex].element;
+    var element = this.boundElements[elementIndex];
     var dashCasedClassName = camelCaseToDashCase(className);
     if (isAdd) {
       DOM.addClass(element, dashCasedClassName);
@@ -64,7 +51,7 @@ export class DomView {
   }
 
   setElementStyle(elementIndex: number, styleName: string, value: string) {
-    var element = this.boundElements[elementIndex].element;
+    var element = this.boundElements[elementIndex];
     var dashCasedStyleName = camelCaseToDashCase(styleName);
     if (isPresent(value)) {
       DOM.setStyle(element, dashCasedStyleName, stringify(value));
@@ -74,7 +61,7 @@ export class DomView {
   }
 
   invokeElementMethod(elementIndex: number, methodName: string, args: List<any>) {
-    var element = this.boundElements[elementIndex].element;
+    var element = this.boundElements[elementIndex];
     DOM.invoke(element, methodName, args);
   }
 
@@ -91,7 +78,7 @@ export class DomView {
       // Locals(null, evalLocals));
       // this.eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
       allowDefaultBehavior =
-          this.eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
+          this.eventDispatcher.dispatchRenderEvent(elementIndex, eventName, evalLocals);
       if (!allowDefaultBehavior) {
         event.preventDefault();
       }

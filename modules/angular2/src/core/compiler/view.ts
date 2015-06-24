@@ -20,9 +20,45 @@ import {
 import {ElementBinder} from './element_binder';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
-import {EventDispatcher} from 'angular2/src/render/api';
-import {ViewRef} from './view_ref';
+import {RenderEventDispatcher} from 'angular2/src/render/api';
+import {ViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
+
+export class AppProtoViewMergeMapping {
+  renderProtoViewRef: renderApi.RenderProtoViewRef;
+  renderFragmentCount: number;
+  renderElementIndices: number[];
+  renderInverseElementIndices: number[];
+  renderTextIndices: number[];
+  nestedViewIndicesByElementIndex: number[];
+  hostElementIndicesByViewIndex: number[];
+  constructor(renderProtoViewMergeMapping: renderApi.RenderProtoViewMergeMapping) {
+    this.renderProtoViewRef = renderProtoViewMergeMapping.mergedProtoViewRef;
+    this.renderFragmentCount = renderProtoViewMergeMapping.fragmentCount;
+    this.renderElementIndices = renderProtoViewMergeMapping.mappedElementIndices;
+    this.renderInverseElementIndices =
+        inverseIndexMapping(this.renderElementIndices, this.renderElementIndices.length);
+    this.renderTextIndices = renderProtoViewMergeMapping.mappedTextIndices;
+    this.hostElementIndicesByViewIndex = renderProtoViewMergeMapping.hostElementIndicesByViewIndex;
+    this.nestedViewIndicesByElementIndex =
+        inverseIndexMapping(this.hostElementIndicesByViewIndex, this.renderElementIndices.length);
+  }
+
+  get viewCount() { return this.hostElementIndicesByViewIndex.length; }
+
+  get elementCount() { return this.renderElementIndices.length; }
+}
+
+function inverseIndexMapping(input: number[], resultLength: number): number[] {
+  var result = ListWrapper.createFixedSize(resultLength);
+  for (var i = 0; i < input.length; i++) {
+    var value = input[i];
+    if (isPresent(value)) {
+      result[input[i]] = i;
+    }
+  }
+  return result;
+}
 
 export class AppViewContainer {
   // The order in this list matches the DOM order.
@@ -33,17 +69,34 @@ export class AppViewContainer {
  * Cost of making objects: http://jsperf.com/instantiate-size-of-object
  *
  */
-export class AppView implements ChangeDispatcher, EventDispatcher {
-  render: renderApi.RenderViewRef = null;
-  /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
+export class AppView implements ChangeDispatcher, RenderEventDispatcher {
+  // AppViews that have been merged in depth first order.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  views: List<AppView> = null;
+  // root elementInjectors of this AppView
+  // This list is local to this AppView and not shared with other Views.
   rootElementInjectors: List<ElementInjector>;
+  // ElementInjectors of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
   elementInjectors: List<ElementInjector> = null;
-  changeDetector: ChangeDetector = null;
-  componentChildViews: List<AppView> = null;
-  viewContainers: List<AppViewContainer>;
+  // ViewContainers of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  viewContainers: List<AppViewContainer> = null;
+  // PreBuiltObjects of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
   preBuiltObjects: List<PreBuiltObjects> = null;
+  // ElementRef of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
   elementRefs: List<ElementRef>;
+
   ref: ViewRef;
+  changeDetector: ChangeDetector = null;
+
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
@@ -60,24 +113,26 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
   locals: Locals;
 
   constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
-              protoLocals: Map<string, any>) {
-    this.viewContainers = ListWrapper.createFixedSize(this.proto.elementBinders.length);
-    this.elementRefs = ListWrapper.createFixedSize(this.proto.elementBinders.length);
+              public mainMergeMapping: AppProtoViewMergeMapping, public viewOffset: number,
+              public elementOffset: number, public textOffset: number,
+              protoLocals: Map<string, any>, public render: renderApi.RenderViewRef,
+              public renderFragment: renderApi.RenderFragmentRef) {
     this.ref = new ViewRef(this);
-    for (var i = 0; i < this.elementRefs.length; i++) {
-      this.elementRefs[i] = new ElementRef(this.ref, i, renderer);
-    }
+
     this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
   }
 
   init(changeDetector: ChangeDetector, elementInjectors: List<ElementInjector>,
        rootElementInjectors: List<ElementInjector>, preBuiltObjects: List<PreBuiltObjects>,
-       componentChildViews: List<AppView>) {
+       views: List<AppView>, elementRefs: List<ElementRef>,
+       viewContainers: List<AppViewContainer>) {
     this.changeDetector = changeDetector;
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
     this.preBuiltObjects = preBuiltObjects;
-    this.componentChildViews = componentChildViews;
+    this.views = views;
+    this.elementRefs = elementRefs;
+    this.viewContainers = viewContainers;
   }
 
   setLocal(contextName: string, value): void {
@@ -98,49 +153,57 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
    *
    * @param {string} eventName
    * @param {*} eventObj
-   * @param {int} binderIndex
+   * @param {int} boundElementIndex
    */
-  triggerEventHandlers(eventName: string, eventObj, binderIndex: int): void {
+  triggerEventHandlers(eventName: string, eventObj, boundElementIndex: int): void {
     var locals = new Map();
     locals.set('$event', eventObj);
-    this.dispatchEvent(binderIndex, eventName, locals);
+    this.dispatchEvent(boundElementIndex, eventName, locals);
   }
 
   // dispatch to element injector or text nodes based on context
   notifyOnBinding(b: BindingRecord, currentValue: any): void {
-    if (b.isElementProperty()) {
-      this.renderer.setElementProperty(this.elementRefs[b.elementIndex], b.propertyName,
-                                       currentValue);
-    } else if (b.isElementAttribute()) {
-      this.renderer.setElementAttribute(this.elementRefs[b.elementIndex], b.propertyName,
-                                        currentValue);
-    } else if (b.isElementClass()) {
-      this.renderer.setElementClass(this.elementRefs[b.elementIndex], b.propertyName, currentValue);
-    } else if (b.isElementStyle()) {
-      var unit = isPresent(b.propertyUnit) ? b.propertyUnit : '';
-      this.renderer.setElementStyle(this.elementRefs[b.elementIndex], b.propertyName,
-                                    `${currentValue}${unit}`);
-    } else if (b.isTextNode()) {
-      this.renderer.setText(this.render, b.elementIndex, currentValue);
+    if (b.isTextNode()) {
+      this.renderer.setText(
+          this.render, this.mainMergeMapping.renderTextIndices[b.elementIndex + this.textOffset],
+          currentValue);
     } else {
-      throw new BaseException('Unsupported directive record');
+      var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
+      if (b.isElementProperty()) {
+        this.renderer.setElementProperty(elementRef, b.propertyName, currentValue);
+      } else if (b.isElementAttribute()) {
+        this.renderer.setElementAttribute(elementRef, b.propertyName, currentValue);
+      } else if (b.isElementClass()) {
+        this.renderer.setElementClass(elementRef, b.propertyName, currentValue);
+      } else if (b.isElementStyle()) {
+        var unit = isPresent(b.propertyUnit) ? b.propertyUnit : '';
+        this.renderer.setElementStyle(elementRef, b.propertyName, `${currentValue}${unit}`);
+      } else {
+        throw new BaseException('Unsupported directive record');
+      }
     }
   }
 
   notifyOnAllChangesDone(): void {
+    var eiCount = this.proto.elementBinders.length;
     var ei = this.elementInjectors;
-    for (var i = ei.length - 1; i >= 0; i--) {
-      if (isPresent(ei[i])) ei[i].onAllChangesDone();
+    for (var i = eiCount - 1; i >= 0; i--) {
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].onAllChangesDone();
     }
   }
 
   getDirectiveFor(directive: DirectiveIndex): any {
-    var elementInjector = this.elementInjectors[directive.elementIndex];
+    var elementInjector = this.elementInjectors[this.elementOffset + directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
+  getNestedView(boundElementIndex: number): AppView {
+    var viewIndex = this.mainMergeMapping.nestedViewIndicesByElementIndex[boundElementIndex];
+    return isPresent(viewIndex) ? this.views[viewIndex] : null;
+  }
+
   getDetectorFor(directive: DirectiveIndex): any {
-    var childView = this.componentChildViews[directive.elementIndex];
+    var childView = this.getNestedView(this.elementOffset + directive.elementIndex);
     return isPresent(childView) ? childView.changeDetector : null;
   }
 
@@ -148,15 +211,24 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
     this.renderer.invokeElementMethod(this.elementRefs[elementIndex], methodName, args);
   }
 
-  // implementation of EventDispatcher#dispatchEvent
+  // implementation of RenderEventDispatcher#dispatchRenderEvent
+  dispatchRenderEvent(renderElementIndex: number, eventName: string,
+                      locals: Map<string, any>): boolean {
+    var elementRef =
+        this.elementRefs[this.proto.mergeMapping.renderInverseElementIndices[renderElementIndex]];
+    var view = internalView(elementRef.parentView);
+    return view.dispatchEvent(elementRef.boundElementIndex, eventName, locals);
+  }
+
+
   // returns false if preventDefault must be applied to the DOM event
-  dispatchEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {
+  dispatchEvent(boundElementIndex: number, eventName: string, locals: Map<string, any>): boolean {
     // Most of the time the event will be fired only when the view is in the live document.
     // However, in a rare circumstance the view might get dehydrated, in between the event
     // queuing up and firing.
     var allowDefaultBehavior = true;
     if (this.hydrated()) {
-      var elBinder = this.proto.elementBinders[elementIndex];
+      var elBinder = this.proto.elementBinders[boundElementIndex - this.elementOffset];
       if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
       var eventMap = elBinder.hostListeners[eventName];
       if (isBlank(eventMap)) return allowDefaultBehavior;
@@ -165,7 +237,7 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
         if (directiveIndex === -1) {
           context = this.context;
         } else {
-          context = this.elementInjectors[elementIndex].getDirectiveAtIndex(directiveIndex);
+          context = this.elementInjectors[boundElementIndex].getDirectiveAtIndex(directiveIndex);
         }
         var result = expr.eval(context, new Locals(this.locals, locals));
         if (isPresent(result)) {
@@ -183,11 +255,11 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
 export class AppProtoView {
   elementBinders: List<ElementBinder> = [];
   protoLocals: Map<string, any> = new Map();
+  mergeMapping: AppProtoViewMergeMapping;
 
-  constructor(public render: renderApi.RenderProtoViewRef,
-              public protoChangeDetector: ProtoChangeDetector,
+  constructor(public type: renderApi.ViewType, public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>,
-              public variableLocations: Map<string, number>) {
+              public variableLocations: Map<string, number>, public textBindingCount: number) {
     if (isPresent(variableBindings)) {
       MapWrapper.forEach(variableBindings,
                          (templateName, _) => { this.protoLocals.set(templateName, null); });

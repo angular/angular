@@ -48,7 +48,7 @@ import "package:angular2/di.dart" show Injectable;
 @Template(
     inline: '<div class="greeting">{{greeting}} <span red>world</span>!</div>'
         '<button class="changeButton" (click)="changeGreeting()">'
-        'change greeting</button><content></content>',
+        'change greeting</button><ng-content></ng-content>',
     directives: const [RedDec])
 class HelloCmp {
   String greeting;

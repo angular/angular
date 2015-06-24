@@ -64,7 +64,7 @@ export class MdDialog {
           // TODO(jelbourn): Don't use direct DOM access. Need abstraction to create an element
           // directly on the document body (also needed for web workers stuff).
           // Create a DOM node to serve as a physical host element for the dialog.
-          var dialogElement = this.domRenderer.getRootNodes(containerRef.hostView.render)[0];
+          var dialogElement = containerRef.location.nativeElement;
           DOM.appendChild(DOM.query('body'), dialogElement);
 
           // TODO(jelbourn): Use hostProperties binding to set these once #1539 is fixed.
@@ -109,7 +109,7 @@ export class MdDialog {
         .then((componentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)
-          var backdropElement = this.domRenderer.getRootNodes(componentRef.hostView.render)[0];
+          var backdropElement = componentRef.location.nativeElement;
           DOM.addClass(backdropElement, 'md-backdrop');
           DOM.appendChild(DOM.query('body'), backdropElement);
           return componentRef;

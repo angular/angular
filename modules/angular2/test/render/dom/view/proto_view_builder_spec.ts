@@ -14,13 +14,15 @@ import {
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 import {ASTWithSource, AST} from 'angular2/change_detection';
 import {PropertyBindingType, ViewType} from 'angular2/src/render/api';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   function emptyExpr() { return new ASTWithSource(new AST(), 'empty', 'empty'); }
 
   describe('ProtoViewBuilder', () => {
     var builder;
-    beforeEach(() => { builder = new ProtoViewBuilder(el('<div/>'), ViewType.EMBEDDED); });
+    beforeEach(
+        () => { builder = new ProtoViewBuilder(DOM.createTemplate(''), ViewType.EMBEDDED); });
 
     if (!IS_DARTIUM) {
       describe('verification of properties', () => {

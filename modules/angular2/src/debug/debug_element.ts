@@ -45,9 +45,7 @@ export class DebugElement {
    * @return {List<DebugElement>}
    */
   get children(): List<DebugElement> {
-    var thisElementBinder = this._parentView.proto.elementBinders[this._boundElementIndex];
-
-    return this._getChildElements(this._parentView, thisElementBinder.index);
+    return this._getChildElements(this._parentView, this._boundElementIndex);
   }
 
   /**
@@ -57,7 +55,7 @@ export class DebugElement {
    * @return {List<DebugElement>}
    */
   get componentViewChildren(): List<DebugElement> {
-    var shadowView = this._parentView.componentChildViews[this._boundElementIndex];
+    var shadowView = this._parentView.getNestedView(this._boundElementIndex);
 
     if (!isPresent(shadowView)) {
       // The current element is not a component.
@@ -120,14 +118,14 @@ export class DebugElement {
     var els = [];
     var parentElementBinder = null;
     if (isPresent(parentBoundElementIndex)) {
-      parentElementBinder = view.proto.elementBinders[parentBoundElementIndex];
+      parentElementBinder = view.proto.elementBinders[parentBoundElementIndex - view.elementOffset];
     }
     for (var i = 0; i < view.proto.elementBinders.length; ++i) {
       var binder = view.proto.elementBinders[i];
       if (binder.parent == parentElementBinder) {
-        els.push(new DebugElement(view, i));
+        els.push(new DebugElement(view, view.elementOffset + i));
 
-        var views = view.viewContainers[i];
+        var views = view.viewContainers[view.elementOffset + i];
         if (isPresent(views)) {
           ListWrapper.forEach(views.views, (nextView) => {
             els = ListWrapper.concat(els, this._getChildElements(nextView, null));
@@ -184,7 +182,11 @@ export class By {
   static all(): Function { return (debugElement) => true; }
 
   static css(selector: string): Predicate<DebugElement> {
-    return (debugElement) => { return DOM.elementMatches(debugElement.nativeElement, selector); };
+    return (debugElement) => {
+      return isPresent(debugElement.nativeElement) ?
+                 DOM.elementMatches(debugElement.nativeElement, selector) :
+                 false;
+    };
   }
   static directive(type: Type): Predicate<DebugElement> {
     return (debugElement) => { return debugElement.hasDirective(type); };

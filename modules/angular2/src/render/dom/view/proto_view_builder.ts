@@ -19,17 +19,19 @@ import {
 } from 'angular2/change_detection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
-import {ElementBinder, Event, HostAction} from './element_binder';
+import {DomElementBinder, Event, HostAction} from './element_binder';
 
 import * as api from '../../api';
 
-import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
+import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR, queryBoundTextNodeIndices} from '../util';
 
 export class ProtoViewBuilder {
   variableBindings: Map<string, string> = new Map();
   elements: List<ElementBinderBuilder> = [];
+  rootTextBindings: Map<Node, ASTWithSource> = new Map();
 
-  constructor(public rootElement, public type: api.ViewType) {}
+  constructor(public rootElement, public type: api.ViewType,
+              public useNativeShadowDom: boolean = false) {}
 
   bindElement(element, description = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
@@ -49,12 +51,22 @@ export class ProtoViewBuilder {
     this.variableBindings.set(value, name);
   }
 
+  // Note: We don't store the node index until the compilation is complete,
+  // as the compiler might change the order of elements.
+  bindRootText(textNode, expression) { this.rootTextBindings.set(textNode, expression); }
+
   build(): api.ProtoViewDto {
-    var renderElementBinders = [];
+    var domElementBinders = [];
 
     var apiElementBinders = [];
-    var transitiveContentTagCount = 0;
-    var boundTextNodeCount = 0;
+    var textNodeExpressions = [];
+    var rootTextNodeIndices = [];
+    queryBoundTextNodeIndices(DOM.content(this.rootElement), this.rootTextBindings,
+                              (node, nodeIndex, expression) => {
+                                textNodeExpressions.push(expression);
+                                rootTextNodeIndices.push(nodeIndex);
+                              });
+
     ListWrapper.forEach(this.elements, (ebb: ElementBinderBuilder) => {
       var directiveTemplatePropertyNames = new Set();
       var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb: DirectiveBuilder) => {
@@ -71,15 +83,12 @@ export class ProtoViewBuilder {
         });
       });
       var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
-      var nestedRenderProtoView =
-          isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null;
-      if (isPresent(nestedRenderProtoView)) {
-        transitiveContentTagCount += nestedRenderProtoView.transitiveContentTagCount;
-      }
-      if (isPresent(ebb.contentTagSelector)) {
-        transitiveContentTagCount++;
-      }
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
+      var textNodeIndices = [];
+      queryBoundTextNodeIndices(ebb.element, ebb.textBindings, (node, nodeIndex, expression) => {
+        textNodeExpressions.push(expression);
+        textNodeIndices.push(nodeIndex);
+      });
       apiElementBinders.push(new api.ElementBinder({
         index: ebb.index,
         parentIndex: parentIndex,
@@ -91,64 +100,28 @@ export class ProtoViewBuilder {
                                          ebb.propertyBindings, directiveTemplatePropertyNames),
         variableBindings: ebb.variableBindings,
         eventBindings: ebb.eventBindings,
-        textBindings: ebb.textBindings,
         readAttributes: ebb.readAttributes
       }));
-      var childNodeInfo = this._analyzeChildNodes(ebb.element, ebb.textBindingNodes);
-      boundTextNodeCount += ebb.textBindingNodes.length;
-      renderElementBinders.push(new ElementBinder({
-        textNodeIndices: childNodeInfo.boundTextNodeIndices,
-        contentTagSelector: ebb.contentTagSelector,
-        parentIndex: parentIndex,
-        distanceToParent: ebb.distanceToParent,
-        nestedProtoView:
-            isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null,
-        componentId: ebb.componentId,
+      domElementBinders.push(new DomElementBinder({
+        textNodeIndices: textNodeIndices,
+        hasNestedProtoView: isPresent(nestedProtoView) || isPresent(ebb.componentId),
+        hasNativeShadowRoot: isPresent(ebb.componentId) && this.useNativeShadowDom,
         eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
         localEvents: ebb.eventBuilder.buildLocalEvents(),
-        globalEvents: ebb.eventBuilder.buildGlobalEvents(),
-        elementIsEmpty: childNodeInfo.elementIsEmpty
+        globalEvents: ebb.eventBuilder.buildGlobalEvents()
       }));
     });
+    var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
     return new api.ProtoViewDto({
-      render: new DomProtoViewRef(new DomProtoView({
-        element: this.rootElement,
-        elementBinders: renderElementBinders,
-        transitiveContentTagCount: transitiveContentTagCount,
-        boundTextNodeCount: boundTextNodeCount
-      })),
+      render: new DomProtoViewRef(DomProtoView.create(this.type, this.rootElement, [rootNodeCount],
+                                                      rootTextNodeIndices, domElementBinders, null,
+                                                      null, null)),
       type: this.type,
       elementBinders: apiElementBinders,
-      variableBindings: this.variableBindings
+      variableBindings: this.variableBindings,
+      textBindings: textNodeExpressions
     });
   }
-
-  // Note: We need to calculate the next node indices not until the compilation is complete,
-  // as the compiler might change the order of elements.
-  private _analyzeChildNodes(parentElement: /*element*/ any,
-                             boundTextNodes: List</*node*/ any>): _ChildNodesInfo {
-    var childNodes = DOM.childNodes(DOM.templateAwareRoot(parentElement));
-    var boundTextNodeIndices = [];
-    var indexInBoundTextNodes = 0;
-    var elementIsEmpty = true;
-    for (var i = 0; i < childNodes.length; i++) {
-      var node = childNodes[i];
-      if (indexInBoundTextNodes < boundTextNodes.length &&
-          node === boundTextNodes[indexInBoundTextNodes]) {
-        boundTextNodeIndices.push(i);
-        indexInBoundTextNodes++;
-        elementIsEmpty = false;
-      } else if ((DOM.isTextNode(node) && DOM.getText(node).trim().length > 0) ||
-                 (DOM.isElementNode(node))) {
-        elementIsEmpty = false;
-      }
-    }
-    return new _ChildNodesInfo(boundTextNodeIndices, elementIsEmpty);
-  }
-}
-
-class _ChildNodesInfo {
-  constructor(public boundTextNodeIndices: List<number>, public elementIsEmpty: boolean) {}
 }
 
 export class ElementBinderBuilder {
@@ -161,9 +134,7 @@ export class ElementBinderBuilder {
   propertyBindingsToDirectives: Set<string> = new Set();
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
-  textBindingNodes: List</*node*/ any> = [];
-  textBindings: List<ASTWithSource> = [];
-  contentTagSelector: string = null;
+  textBindings: Map<Node, ASTWithSource> = new Map();
   readAttributes: Map<string, string> = new Map();
   componentId: string = null;
 
@@ -229,12 +200,9 @@ export class ElementBinderBuilder {
     this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 
-  bindText(textNode, expression) {
-    this.textBindingNodes.push(textNode);
-    this.textBindings.push(expression);
-  }
-
-  setContentTagSelector(value: string) { this.contentTagSelector = value; }
+  // Note: We don't store the node index until the compilation is complete,
+  // as the compiler might change the order of elements.
+  bindText(textNode, expression) { this.textBindings.set(textNode, expression); }
 
   setComponentId(componentId: string) { this.componentId = componentId; }
 }

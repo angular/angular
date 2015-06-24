@@ -1,48 +1,57 @@
 import {Inject, Injectable} from 'angular2/di';
+import {isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, List, Map} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
-import {DomView} from 'angular2/src/render/dom/view/view';
 import {
+  RenderViewWithFragments,
+  RenderFragmentRef,
   RenderViewRef,
   ProtoViewDto,
   ViewDefinition,
-  EventDispatcher,
+  RenderEventDispatcher,
   DirectiveMetadata,
-  RenderElementRef
+  RenderElementRef,
+  RenderProtoViewMergeMapping,
+  RenderProtoViewRef
 } from 'angular2/src/render/api';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
+import {resolveInternalDomFragment} from 'angular2/src/render/dom/view/fragment';
 import {el, dispatchEvent} from 'angular2/test_lib';
 
-export class TestView {
-  rawView: DomView;
+export class TestRootView {
   viewRef: RenderViewRef;
+  fragments: RenderFragmentRef[];
+  hostElement: Element;
   events: List<List<any>>;
 
-  constructor(viewRef: RenderViewRef) {
-    this.viewRef = viewRef;
-    this.rawView = resolveInternalDomView(viewRef);
+  constructor(viewWithFragments: RenderViewWithFragments) {
+    this.viewRef = viewWithFragments.viewRef;
+    this.fragments = viewWithFragments.fragmentRefs;
+    this.hostElement = <Element>resolveInternalDomFragment(this.fragments[0])[0];
     this.events = [];
   }
+}
+
+export class TestRenderElementRef implements RenderElementRef {
+  constructor(public renderView: RenderViewRef, public renderBoundElementIndex: number) {}
 }
 
 export function elRef(renderView: RenderViewRef, boundElementIndex: number) {
   return new TestRenderElementRef(renderView, boundElementIndex);
 }
 
-class TestRenderElementRef implements RenderElementRef {
-  constructor(public renderView: RenderViewRef, public boundElementIndex: number) {}
-}
+export function rootNodes(view: RenderViewRef) {}
 
-class LoggingEventDispatcher implements EventDispatcher {
+class LoggingEventDispatcher implements RenderEventDispatcher {
   log: List<List<any>>;
 
   constructor(log: List<List<any>>) { this.log = log; }
 
-  dispatchEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
     this.log.push([elementIndex, eventName, locals]);
     return true;
   }
@@ -67,71 +76,62 @@ export class DomTestbed {
     DOM.appendChild(DOM.querySelector(document, 'body'), this.rootEl);
   }
 
-  compileAll(directivesOrViewDefinitions:
-                 List<DirectiveMetadata | ViewDefinition>): Promise<List<ProtoViewDto>> {
-    return PromiseWrapper.all(ListWrapper.map(directivesOrViewDefinitions, (entry) => {
-      if (entry instanceof DirectiveMetadata) {
-        return this.compiler.compileHost(entry);
-      } else {
-        return this.compiler.compile(entry);
-      }
-    }));
+  compile(host: DirectiveMetadata, componentViews: ViewDefinition[]): Promise<ProtoViewDto[]> {
+    var promises = [this.compiler.compileHost(host)];
+    componentViews.forEach(view => promises.push(this.compiler.compile(view)));
+    return PromiseWrapper.all(promises);
   }
 
-  _createTestView(viewRef: RenderViewRef) {
-    var testView = new TestView(viewRef);
-    this.renderer.setEventDispatcher(viewRef, new LoggingEventDispatcher(testView.events));
+  merge(protoViews:
+            List<ProtoViewDto | RenderProtoViewRef>): Promise<RenderProtoViewMergeMapping[]> {
+    return this.compiler.mergeProtoViewsRecursively(collectMergeRenderProtoViewsRecurse(
+        <ProtoViewDto>protoViews[0], ListWrapper.slice(protoViews, 1)));
+  }
+
+  compileAndMerge(host: DirectiveMetadata,
+                  componentViews: ViewDefinition[]): Promise<RenderProtoViewMergeMapping[]> {
+    return this.compile(host, componentViews).then(protoViewDtos => this.merge(protoViewDtos));
+  }
+
+  _createTestView(viewWithFragments: RenderViewWithFragments) {
+    var testView = new TestRootView(viewWithFragments);
+    this.renderer.setEventDispatcher(viewWithFragments.viewRef,
+                                     new LoggingEventDispatcher(testView.events));
     return testView;
   }
 
-  createRootView(rootProtoView: ProtoViewDto): TestView {
-    var viewRef = this.renderer.createRootHostView(rootProtoView.render, '#root');
-    this.renderer.hydrateView(viewRef);
-    return this._createTestView(viewRef);
+  createView(protoView: RenderProtoViewMergeMapping): TestRootView {
+    var viewWithFragments = this.renderer.createView(protoView.mergedProtoViewRef, 0);
+    this.renderer.hydrateView(viewWithFragments.viewRef);
+    return this._createTestView(viewWithFragments);
   }
 
-  createComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
-                      componentProtoView: ProtoViewDto): TestView {
-    var componentViewRef = this.renderer.createView(componentProtoView.render);
-    this.renderer.attachComponentView(elRef(parentViewRef, boundElementIndex), componentViewRef);
-    this.renderer.hydrateView(componentViewRef);
-    return this._createTestView(componentViewRef);
-  }
-
-  createRootViews(protoViews: List<ProtoViewDto>): List<TestView> {
-    var views = [];
-    var lastView = this.createRootView(protoViews[0]);
-    views.push(lastView);
-    for (var i = 1; i < protoViews.length; i++) {
-      lastView = this.createComponentView(lastView.viewRef, 0, protoViews[i]);
-      views.push(lastView);
-    }
-    return views;
-  }
-
-  destroyComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
-                       componentView: RenderViewRef) {
-    this.renderer.dehydrateView(componentView);
-    this.renderer.detachComponentView(elRef(parentViewRef, boundElementIndex), componentView);
-  }
-
-  createViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        protoView: ProtoViewDto): TestView {
-    var viewRef = this.renderer.createView(protoView.render);
-    this.renderer.attachViewInContainer(elRef(parentViewRef, boundElementIndex), atIndex, viewRef);
-    this.renderer.hydrateView(viewRef);
-    return this._createTestView(viewRef);
-  }
-
-  destroyViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                         viewRef: RenderViewRef) {
-    this.renderer.dehydrateView(viewRef);
-    this.renderer.detachViewInContainer(elRef(parentViewRef, boundElementIndex), atIndex, viewRef);
-    this.renderer.destroyView(viewRef);
-  }
-
-  triggerEvent(viewRef: RenderViewRef, boundElementIndex: number, eventName: string) {
-    var element = resolveInternalDomView(viewRef).boundElements[boundElementIndex].element;
+  triggerEvent(elementRef: RenderElementRef, eventName: string) {
+    var element = resolveInternalDomView(elementRef.renderView)
+                      .boundElements[elementRef.renderBoundElementIndex];
     dispatchEvent(element, eventName);
   }
+}
+
+function collectMergeRenderProtoViewsRecurse(current: ProtoViewDto,
+                                             components: List<ProtoViewDto | RenderProtoViewRef>):
+    List<RenderProtoViewRef | List<any>> {
+  var result = [current.render];
+  current.elementBinders.forEach((elementBinder) => {
+    if (isPresent(elementBinder.nestedProtoView)) {
+      result.push(collectMergeRenderProtoViewsRecurse(elementBinder.nestedProtoView, components));
+    } else if (elementBinder.directives.length > 0) {
+      if (components.length > 0) {
+        var comp = components.shift();
+        if (comp instanceof ProtoViewDto) {
+          result.push(collectMergeRenderProtoViewsRecurse(comp, components));
+        } else {
+          result.push(comp);
+        }
+      } else {
+        result.push(null);
+      }
+    }
+  });
+  return result;
 }

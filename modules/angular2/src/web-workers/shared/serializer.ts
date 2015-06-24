@@ -185,7 +185,6 @@ class ElementBinderSerializer {
       'propertyBindings': Serializer.serialize(binder.propertyBindings, ElementPropertyBinding),
       'variableBindings': Serializer.mapToObject(binder.variableBindings),
       'eventBindings': Serializer.serialize(binder.eventBindings, EventBinding),
-      'textBindings': Serializer.serialize(binder.textBindings, ASTWithSource),
       'readAttributes': Serializer.mapToObject(binder.readAttributes)
     };
   }
@@ -200,7 +199,6 @@ class ElementBinderSerializer {
       propertyBindings: Serializer.deserialize(obj.propertyBindings, ElementPropertyBinding),
       variableBindings: Serializer.objectToMap(obj.variableBindings),
       eventBindings: Serializer.deserialize(obj.eventBindings, EventBinding),
-      textBindings: Serializer.deserialize(obj.textBindings, ASTWithSource, "interpolation"),
       readAttributes: Serializer.objectToMap(obj.readAttributes)
     });
   }
@@ -213,6 +211,7 @@ class ProtoViewDtoSerializer {
       'render': null,
       'elementBinders': Serializer.serialize(view.elementBinders, ElementBinder),
       'variableBindings': Serializer.mapToObject(view.variableBindings),
+      'textBindings': Serializer.serialize(view.textBindings, ASTWithSource),
       'type': view.type
     };
   }
@@ -222,6 +221,7 @@ class ProtoViewDtoSerializer {
       render: null,  // TODO: fix render refs and write a serializer for them
       elementBinders: Serializer.deserialize(obj.elementBinders, ElementBinder),
       variableBindings: Serializer.objectToMap(obj.variableBindings),
+      textBindings: Serializer.deserialize(obj.textBindings, ASTWithSource, "interpolation"),
       type: obj.type
     });
   }

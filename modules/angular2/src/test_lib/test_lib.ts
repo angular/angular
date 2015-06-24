@@ -271,6 +271,8 @@ export interface GuinessCompatibleSpy extends jasmine.Spy {
   /** By chaining the spy with and.callFake, all calls to the spy will delegate to the supplied
    * function. */
   andCallFake(fn: Function): GuinessCompatibleSpy;
+  /** removes all recorded calls */
+  reset();
 }
 
 export class SpyObject {
@@ -320,6 +322,7 @@ export class SpyObject {
     var newSpy: GuinessCompatibleSpy = <any>jasmine.createSpy(name);
     newSpy.andCallFake = <any>newSpy.and.callFake;
     newSpy.andReturn = <any>newSpy.and.returnValue;
+    newSpy.reset = <any>newSpy.calls.reset;
     // return null by default to satisfy our rtts asserts
     newSpy.and.returnValue(null);
     return newSpy;

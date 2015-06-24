@@ -19,9 +19,8 @@ import {isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
-import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
+import {DomElementBinder} from 'angular2/src/render/dom/view/element_binder';
 import {DomView} from 'angular2/src/render/dom/view/view';
-import {DomElement} from 'angular2/src/render/dom/view/element';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -30,54 +29,33 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      var rootEl = el('<div></div>');
-      return new DomProtoView({
-        element: rootEl,
-        elementBinders: binders,
-        transitiveContentTagCount: 0,
-        boundTextNodeCount: 0
-      });
+      var rootEl = DOM.createTemplate('<div></div>');
+      return DomProtoView.create(null, <Element>rootEl, [1], [], binders, null, null, null);
     }
+
+    function createElementBinder() { return new DomElementBinder({textNodeIndices: []}); }
 
     function createView(pv = null, boundElementCount = 0) {
       if (isBlank(pv)) {
-        pv = createProtoView(ListWrapper.createFixedSize(boundElementCount));
+        var elementBinders = ListWrapper.createFixedSize(boundElementCount);
+        for (var i = 0; i < boundElementCount; i++) {
+          elementBinders[i] = createElementBinder();
+        }
+        pv = createProtoView(elementBinders);
       }
       var root = el('<div><div></div></div>');
       var boundElements = [];
       for (var i = 0; i < boundElementCount; i++) {
-        boundElements.push(new DomElement(pv.elementBinders[i], el('<span></span'), null));
+        boundElements.push(el('<span></span'));
       }
-      return new DomView(pv, [DOM.childNodes(root)[0]], [], boundElements);
+      return new DomView(pv, [DOM.childNodes(root)[0]], boundElements);
     }
-
-    function createElementBinder(parentIndex: number = 0, distanceToParent: number = 1) {
-      return new ElementBinder(
-          {parentIndex: parentIndex, distanceToParent: distanceToParent, textNodeIndices: []});
-    }
-
-    describe('getDirectParentElement', () => {
-
-      it('should return the DomElement of the direct parent', () => {
-        var pv = createProtoView([createElementBinder(), createElementBinder(0, 1)]);
-        var view = createView(pv, 2);
-        expect(view.getDirectParentElement(1)).toBe(view.boundElements[0]);
-      });
-
-      it('should return null if the direct parent is not bound', () => {
-        var pv = createProtoView(
-            [createElementBinder(), createElementBinder(), createElementBinder(0, 2)]);
-        var view = createView(pv, 3);
-        expect(view.getDirectParentElement(2)).toBe(null);
-      });
-
-    });
 
     describe('setElementProperty', () => {
       var el, view;
       beforeEach(() => {
         view = createView(null, 1);
-        el = view.boundElements[0].element;
+        el = view.boundElements[0];
       });
 
       it('should update the property value', () => {
@@ -91,7 +69,7 @@ export function main() {
       var el, view;
       beforeEach(() => {
         view = createView(null, 1);
-        el = view.boundElements[0].element;
+        el = view.boundElements[0];
       });
 
       it('should update and remove an attribute', () => {
@@ -111,7 +89,7 @@ export function main() {
       var el, view;
       beforeEach(() => {
         view = createView(null, 1);
-        el = view.boundElements[0].element;
+        el = view.boundElements[0];
       });
 
       it('should set and remove a class', () => {
@@ -135,7 +113,7 @@ export function main() {
       var el, view;
       beforeEach(() => {
         view = createView(null, 1);
-        el = view.boundElements[0].element;
+        el = view.boundElements[0];
       });
 
       it('should set and remove styles', () => {

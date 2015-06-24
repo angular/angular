@@ -398,7 +398,7 @@ class NeedsQueryDesc {
 }
 
 @Component({selector: 'needs-query-by-var-binding'})
-@View({directives: [], template: '<content>'})
+@View({directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByLabel {
   query: QueryList<any>;
@@ -408,7 +408,7 @@ class NeedsQueryByLabel {
 }
 
 @Component({selector: 'needs-query-by-var-bindings'})
-@View({directives: [], template: '<content>'})
+@View({directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByTwoLabels {
   query: QueryList<any>;

@@ -221,13 +221,17 @@ bool isJsObject(o) {
   return false;
 }
 
+var _assertionsEnabled = null;
 bool assertionsEnabled() {
-  try {
-    assert(false);
-    return false;
-  } catch (e) {
-    return true;
+  if (_assertionsEnabled == null) {    
+    try {
+      assert(false);
+      _assertionsEnabled = false;
+    } catch (e) {
+      _assertionsEnabled = true;
+    }
   }
+  return _assertionsEnabled;
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...

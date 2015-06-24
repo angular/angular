@@ -278,7 +278,7 @@ export class DirectiveBinding extends ResolvedBinding {
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
   constructor(public viewManager: avmModule.AppViewManager, public view: viewModule.AppView,
-              public protoView: viewModule.AppProtoView) {}
+              public elementRef: ElementRef, public protoView: viewModule.AppProtoView) {}
 }
 
 export class EventEmitterAccessor {
@@ -575,7 +575,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   getComponent(): any { return this._strategy.getComponent(); }
 
-  getElementRef(): ElementRef { return this._preBuiltObjects.view.elementRefs[this._proto.index]; }
+  getElementRef(): ElementRef { return this._preBuiltObjects.elementRef; }
 
   getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
@@ -606,7 +606,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       // We provide the component's view change detector to components and
       // the surrounding component's change detector to directives.
       if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
-        var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
+        var componentView = this._preBuiltObjects.view.getNestedView(
+            this._preBuiltObjects.elementRef.boundElementIndex);
         return componentView.changeDetector.ref;
       } else {
         return this._preBuiltObjects.view.changeDetector.ref;

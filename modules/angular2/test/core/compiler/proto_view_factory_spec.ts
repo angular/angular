@@ -35,7 +35,7 @@ export function main() {
 
   describe('ProtoViewFactory', () => {
     var changeDetection;
-    var protoViewFactory;
+    var protoViewFactory: ProtoViewFactory;
     var directiveResolver;
 
     beforeEach(() => {
@@ -63,10 +63,13 @@ export function main() {
     describe('createAppProtoViews', () => {
 
       it('should create an AppProtoView for the root render proto view', () => {
-        var renderPv = createRenderProtoView();
-        var pvs = protoViewFactory.createAppProtoViews(bindDirective(MainComponent), renderPv, []);
-        expect(pvs.length).toBe(1);
-        expect(pvs[0].render).toBe(renderPv.render);
+        var varBindings = new Map();
+        varBindings.set('a', 'b');
+        var renderPv = createRenderProtoView([], null, varBindings);
+        var appPv =
+            protoViewFactory.createAppProtoViews(bindDirective(MainComponent), renderPv, []);
+        expect(appPv.variableBindings.get('a')).toEqual('b');
+        expect(appPv).toBeTruthy();
       });
     });
 
@@ -159,15 +162,23 @@ function directiveBinding({metadata}: {metadata?: any} = {}) {
   return new DirectiveBinding(Key.get("dummy"), null, [], [], [], metadata);
 }
 
-function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {
+function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null,
+                               variableBindings = null) {
   if (isBlank(type)) {
     type = renderApi.ViewType.COMPONENT;
   }
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
-  return new renderApi.ProtoViewDto(
-      {elementBinders: elementBinders, type: type, variableBindings: new Map()});
+  if (isBlank(variableBindings)) {
+    variableBindings = new Map();
+  }
+  return new renderApi.ProtoViewDto({
+    elementBinders: elementBinders,
+    type: type,
+    variableBindings: variableBindings,
+    textBindings: []
+  });
 }
 
 function createRenderComponentElementBinder(directiveIndex) {

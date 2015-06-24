@@ -65,23 +65,31 @@ export class ViewSplitter implements CompileStep {
         }
       }
       if (hasTemplateBinding) {
-        var newParent = new CompileElement(DOM.createTemplate(''));
-        newParent.inheritedProtoView = current.inheritedProtoView;
-        newParent.inheritedElementBinder = current.inheritedElementBinder;
-        newParent.distanceToInheritedBinder = current.distanceToInheritedBinder;
+        var anchor = new CompileElement(DOM.createTemplate(''));
+        anchor.inheritedProtoView = current.inheritedProtoView;
+        anchor.inheritedElementBinder = current.inheritedElementBinder;
+        anchor.distanceToInheritedBinder = current.distanceToInheritedBinder;
         // newParent doesn't appear in the original template, so we associate
         // the current element description to get a more meaningful message in case of error
-        newParent.elementDescription = current.elementDescription;
+        anchor.elementDescription = current.elementDescription;
 
-        current.inheritedProtoView = newParent.bindElement().bindNestedProtoView(current.element);
+        var viewRoot = new CompileElement(DOM.createTemplate(''));
+        viewRoot.inheritedProtoView = anchor.bindElement().bindNestedProtoView(viewRoot.element);
+        // viewRoot doesn't appear in the original template, so we associate
+        // the current element description to get a more meaningful message in case of error
+        viewRoot.elementDescription = current.elementDescription;
+        viewRoot.isViewRoot = true;
+
+        current.inheritedProtoView = viewRoot.inheritedProtoView;
         current.inheritedElementBinder = null;
         current.distanceToInheritedBinder = 0;
-        current.isViewRoot = true;
-        this._parseTemplateBindings(templateBindings, newParent);
 
-        this._addParentElement(current.element, newParent.element);
-        control.addParent(newParent);
-        DOM.remove(current.element);
+        this._parseTemplateBindings(templateBindings, anchor);
+        DOM.insertBefore(current.element, anchor.element);
+        control.addParent(anchor);
+
+        DOM.appendChild(DOM.content(viewRoot.element), current.element);
+        control.addParent(viewRoot);
       }
     }
   }
@@ -92,11 +100,6 @@ export class ViewSplitter implements CompileStep {
       DOM.appendChild(target, next);
       next = DOM.firstChild(source);
     }
-  }
-
-  _addParentElement(currentElement, newParentElement) {
-    DOM.insertBefore(currentElement, newParentElement);
-    DOM.appendChild(newParentElement, currentElement);
   }
 
   _parseTemplateBindings(templateBindings: string, compileElement: CompileElement) {
