@@ -37,6 +37,7 @@ var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
+var tslint = require('gulp-tslint');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.9.0',
@@ -220,6 +221,19 @@ gulp.task('enforce-format', function() {
     console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
     process.exit(1);
   });
+});
+
+gulp.task('lint', ["build.tools"], function() {
+  // https://github.com/palantir/tslint#supported-rules
+  var tslintConfig = {
+    "rules": {
+      "requireReturnType": true
+    }
+  };
+
+  return gulp.src('modules/angular2/src/**/*.ts')
+        .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
+        .pipe(tslint.report('prose', {emitError: false}));
 });
 
 // ------------
