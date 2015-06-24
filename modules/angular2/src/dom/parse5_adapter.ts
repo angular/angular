@@ -234,7 +234,7 @@ export class Parse5DomAdapter extends DomAdapter {
       el.data = value;
     } else {
       this.clearNodes(el);
-      treeAdapter.insertText(el, value);
+      if (value !== '') treeAdapter.insertText(el, value);
     }
   }
   getValue(el) { return el.value; }
