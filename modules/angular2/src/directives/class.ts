@@ -1,8 +1,11 @@
 import {Directive, onCheck} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipe_registry';
-import {isPresent} from 'angular2/src/facade/lang';
 import {Renderer} from 'angular2/src/render/api';
+import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
+import {IterableChanges} from 'angular2/src/change_detection/pipes/iterable_changes';
+import {isPresent, isString, StringWrapper, RegExpWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
 @Directive({selector: '[class]', lifecycle: [onCheck], properties: ['rawClass: class']})
 export class CSSClass {
@@ -13,28 +16,55 @@ export class CSSClass {
               private _renderer: Renderer) {}
 
   set rawClass(v) {
-    this._rawClass = v;
-    this._pipe = this._pipeRegistry.get('keyValDiff', this._rawClass);
-  }
+    this._cleanupClasses(this._rawClass);
 
-  _toggleClass(className, enabled): void {
-    this._renderer.setElementClass(this._ngEl, className, enabled);
+    if (isString(v)) {
+      v = StringWrapper.split(v, RegExpWrapper.create(' '));
+    }
+
+    this._rawClass = v;
+    this._pipe = this._pipeRegistry.get(isListLikeIterable(v) ? 'iterableDiff' : 'keyValDiff', v);
   }
 
   onCheck() {
     var diff = this._pipe.transform(this._rawClass);
-    if (isPresent(diff)) this._applyChanges(diff.wrapped);
+    if (isPresent(diff) && isPresent(diff.wrapped)) {
+      if (diff.wrapped instanceof IterableChanges) {
+        this._applyArrayChanges(diff.wrapped);
+      } else {
+        this._applyObjectChanges(diff.wrapped);
+      }
+    }
   }
 
-  private _applyChanges(diff) {
-    if (isPresent(diff)) {
-      diff.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-      diff.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-      diff.forEachRemovedItem((record) => {
-        if (record.previousValue) {
-          this._toggleClass(record.key, false);
-        }
-      });
+  private _cleanupClasses(rawClassVal): void {
+    if (isPresent(rawClassVal)) {
+      if (isListLikeIterable(rawClassVal)) {
+        ListWrapper.forEach(rawClassVal, (className) => { this._toggleClass(className, false); });
+      } else {
+        StringMapWrapper.forEach(rawClassVal, (expVal, className) => {
+          if (expVal) this._toggleClass(className, false);
+        });
+      }
     }
+  }
+
+  private _applyObjectChanges(diff: KeyValueChanges): void {
+    diff.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
+    diff.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
+    diff.forEachRemovedItem((record) => {
+      if (record.previousValue) {
+        this._toggleClass(record.key, false);
+      }
+    });
+  }
+
+  private _applyArrayChanges(diff: IterableChanges): void {
+    diff.forEachAddedItem((record) => { this._toggleClass(record.item, true); });
+    diff.forEachRemovedItem((record) => { this._toggleClass(record.item, false); });
+  }
+
+  private _toggleClass(className: string, enabled): void {
+      this._renderer.setElementClass(this._ngEl, className, enabled);
   }
 }
