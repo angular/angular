@@ -18,7 +18,6 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 import {ViewDefinition} from 'angular2/src/render/api';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {StringWrapper, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {XHR} from 'angular2/src/render/xhr';
 import {MockXHR} from 'angular2/src/render/xhr_mock';
@@ -29,7 +28,7 @@ export function main() {
 
     beforeEach(() => {
       xhr = new MockXHR();
-      urlResolver = new FakeUrlResolver();
+      urlResolver = new UrlResolver();
       styleUrlResolver = new StyleUrlResolver(urlResolver);
       let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
       loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
@@ -37,17 +36,17 @@ export function main() {
 
     describe('html', () => {
       it('should load inline templates', inject([AsyncTestCompleter], (async) => {
-           var template = new ViewDefinition({template: 'template template'});
-           loader.load(template).then((el) => {
+           var view = new ViewDefinition({template: 'template template'});
+           loader.load(view).then((el) => {
              expect(DOM.content(el)).toHaveText('template template');
              async.done();
            });
          }));
 
       it('should load templates through XHR', inject([AsyncTestCompleter], (async) => {
-           xhr.expect('base/foo.html', 'xhr template');
-           var template = new ViewDefinition({templateAbsUrl: 'base/foo.html'});
-           loader.load(template).then((el) => {
+           xhr.expect('http://ng.io/foo.html', 'xhr template');
+           var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/foo.html'});
+           loader.load(view).then((el) => {
              expect(DOM.content(el)).toHaveText('xhr template');
              async.done();
            });
@@ -55,12 +54,12 @@ export function main() {
          }));
 
       it('should resolve urls in styles', inject([AsyncTestCompleter], (async) => {
-           xhr.expect('base/foo.html',
+           xhr.expect('http://ng.io/foo.html',
                       '<style>.foo { background-image: url("double.jpg"); }</style>');
-           var template = new ViewDefinition({templateAbsUrl: 'base/foo.html'});
-           loader.load(template).then((el) => {
+           var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/foo.html'});
+           loader.load(view).then((el) => {
              expect(DOM.content(el))
-                 .toHaveText(".foo { background-image: url('/base/double.jpg'); }");
+                 .toHaveText(".foo { background-image: url('http://ng.io/double.jpg'); }");
              async.done();
            });
            xhr.flush();
@@ -68,14 +67,14 @@ export function main() {
 
       it('should inline styles', inject([AsyncTestCompleter], (async) => {
            let xhr = new FakeXHR();
-           xhr.reply('base/foo.html', '<style>@import "foo.css";</style>');
-           xhr.reply('/base/foo.css', '/* foo.css */');
+           xhr.reply('http://ng.io/foo.html', '<style>@import "foo.css";</style>');
+           xhr.reply('http://ng.io/foo.css', '/* foo.css */');
 
            let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
            let loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
 
-           var template = new ViewDefinition({templateAbsUrl: 'base/foo.html'});
-           loader.load(template).then((el) => {
+           var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/foo.html'});
+           loader.load(view).then((el) => {
              expect(DOM.getInnerHTML(el)).toEqual("<style>/* foo.css */\n</style>");
              async.done();
            });
@@ -85,13 +84,13 @@ export function main() {
          inject([AsyncTestCompleter], (async) => {
            var firstEl;
            // we have only one xhr.expect, so there can only be one xhr call!
-           xhr.expect('base/foo.html', 'xhr template');
-           var template = new ViewDefinition({templateAbsUrl: 'base/foo.html'});
-           loader.load(template)
+           xhr.expect('http://ng.io/foo.html', 'xhr template');
+           var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/foo.html'});
+           loader.load(view)
                .then((el) => {
                  expect(DOM.content(el)).toHaveText('xhr template');
                  firstEl = el;
-                 return loader.load(template);
+                 return loader.load(view);
                })
                .then((el) => {
                  expect(el).not.toBe(firstEl);
@@ -102,19 +101,19 @@ export function main() {
          }));
 
       it('should throw when no template is defined', () => {
-        var template = new ViewDefinition({template: null, templateAbsUrl: null});
-        expect(() => loader.load(template))
+        var view = new ViewDefinition({template: null, templateAbsUrl: null});
+        expect(() => loader.load(view))
             .toThrowError('View should have either the templateUrl or template property set');
       });
 
       it('should return a rejected Promise when XHR loading fails',
          inject([AsyncTestCompleter], (async) => {
-           xhr.expect('base/foo.html', null);
-           var template = new ViewDefinition({templateAbsUrl: 'base/foo.html'});
-           PromiseWrapper.then(loader.load(template), function(_) { throw 'Unexpected response'; },
+           xhr.expect('http://ng.io/foo.html', null);
+           var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/foo.html'});
+           PromiseWrapper.then(loader.load(view), function(_) { throw 'Unexpected response'; },
                                function(error) {
                                  expect(error.message)
-                                     .toEqual('Failed to fetch url "base/foo.html"');
+                                     .toEqual('Failed to fetch url "http://ng.io/foo.html"');
                                  async.done();
                                });
            xhr.flush();
@@ -123,8 +122,8 @@ export function main() {
 
     describe('css', () => {
       it('should load inline styles', inject([AsyncTestCompleter], (async) => {
-           var template = new ViewDefinition({template: 'html', styles: ['style 1', 'style 2']});
-           loader.load(template).then((el) => {
+           var view = new ViewDefinition({template: 'html', styles: ['style 1', 'style 2']});
+           loader.load(view).then((el) => {
              expect(DOM.getInnerHTML(el))
                  .toEqual('<style>style 1</style><style>style 2</style>html');
              async.done();
@@ -132,25 +131,30 @@ export function main() {
          }));
 
       it('should resolve urls in inline styles', inject([AsyncTestCompleter], (async) => {
-           var template = new ViewDefinition(
-               {template: 'html', styles: ['.foo { background-image: url("double.jpg"); }']});
-           loader.load(template).then((el) => {
+           xhr.expect('http://ng.io/foo.html', 'html');
+           var view = new ViewDefinition({
+             templateAbsUrl: 'http://ng.io/foo.html',
+             styles: ['.foo { background-image: url("double.jpg"); }']
+           });
+           loader.load(view).then((el) => {
              expect(DOM.getInnerHTML(el))
-                 .toEqual("<style>.foo { background-image: url('/double.jpg'); }</style>html");
+                 .toEqual(
+                     "<style>.foo { background-image: url('http://ng.io/double.jpg'); }</style>html");
              async.done();
            });
+           xhr.flush();
          }));
 
       it('should load templates through XHR', inject([AsyncTestCompleter], (async) => {
-           xhr.expect('base/foo.html', 'xhr template');
-           xhr.expect('base/foo-1.css', '1');
-           xhr.expect('base/foo-2.css', '2');
-           var template = new ViewDefinition({
-             templateAbsUrl: 'base/foo.html',
+           xhr.expect('http://ng.io/foo.html', 'xhr template');
+           xhr.expect('http://ng.io/foo-1.css', '1');
+           xhr.expect('http://ng.io/foo-2.css', '2');
+           var view = new ViewDefinition({
+             templateAbsUrl: 'http://ng.io/foo.html',
              styles: ['i1'],
-             styleAbsUrls: ['base/foo-1.css', 'base/foo-2.css']
+             styleAbsUrls: ['http://ng.io/foo-1.css', 'http://ng.io/foo-2.css']
            });
-           loader.load(template).then((el) => {
+           loader.load(view).then((el) => {
              expect(DOM.getInnerHTML(el))
                  .toEqual('<style>i1</style><style>1</style><style>2</style>xhr template');
              async.done();
@@ -160,15 +164,15 @@ export function main() {
 
       it('should inline styles', inject([AsyncTestCompleter], (async) => {
            let xhr = new FakeXHR();
-           xhr.reply('base/foo.html', '<p>template</p>');
-           xhr.reply('/base/foo.css', '/* foo.css */');
+           xhr.reply('http://ng.io/foo.html', '<p>template</p>');
+           xhr.reply('http://ng.io/foo.css', '/* foo.css */');
 
            let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
            let loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
 
-           var template = new ViewDefinition(
-               {templateAbsUrl: 'base/foo.html', styles: ['@import "foo.css";']});
-           loader.load(template).then((el) => {
+           var view = new ViewDefinition(
+               {templateAbsUrl: 'http://ng.io/foo.html', styles: ['@import "foo.css";']});
+           loader.load(view).then((el) => {
              expect(DOM.getInnerHTML(el)).toEqual("<style>/* foo.css */\n</style><p>template</p>");
              async.done();
            });
@@ -177,12 +181,12 @@ export function main() {
 
       it('should return a rejected Promise when XHR loading fails',
          inject([AsyncTestCompleter], (async) => {
-           xhr.expect('base/foo.css', null);
-           var template = new ViewDefinition({template: '', styleAbsUrls: ['base/foo.css']});
-           PromiseWrapper.then(loader.load(template), function(_) { throw 'Unexpected response'; },
+           xhr.expect('http://ng.io/foo.css', null);
+           var view = new ViewDefinition({template: '', styleAbsUrls: ['http://ng.io/foo.css']});
+           PromiseWrapper.then(loader.load(view), function(_) { throw 'Unexpected response'; },
                                function(error) {
                                  expect(error.message)
-                                     .toEqual('Failed to fetch url "base/foo.css"');
+                                     .toEqual('Failed to fetch url "http://ng.io/foo.css"');
                                  async.done();
                                });
            xhr.flush();
@@ -192,21 +196,6 @@ export function main() {
 }
 
 class SomeComponent {}
-
-class FakeUrlResolver extends UrlResolver {
-  constructor() { super(); }
-
-  resolve(baseUrl: string, url: string): string {
-    if (url.length > 0 && url[0] == '/') return url;
-    if (!isPresent(baseUrl)) return `/${url}`;
-    var parts: List<string> = baseUrl.split('/');
-    if (parts.length > 1) {
-      ListWrapper.removeLast(parts);
-    }
-    parts.push(url);
-    return '/' + parts.join('/');
-  }
-}
 
 class FakeXHR extends XHR {
   _responses: Map<string, string> = new Map();

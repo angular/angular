@@ -53,11 +53,12 @@ export function main() {
     });
 
     describe('relative base url', () => {
-      it('should add a relative path to the base url',
-         () => { expect(resolver.resolve('foo/', './bar')).toEqual('foo/bar'); });
+      it('should add a relative path to the base url', () => {
+        expect(resolver.resolve('foo/', './bar')).toEqual('foo/bar');
+        expect(resolver.resolve('foo/baz', './bar')).toEqual('foo/bar');
+        expect(resolver.resolve('foo/baz', 'bar')).toEqual('foo/bar');
 
-      it('should replace the base path',
-         () => { expect(resolver.resolve('foo/baz', './bar')).toEqual('foo/bar'); });
+      });
 
       it('should support ".." in the path', () => {
         expect(resolver.resolve('foo/baz', '../bar')).toEqual('bar');
