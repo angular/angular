@@ -1,5 +1,7 @@
 import {
   AsyncTestCompleter,
+  TestComponentBuilder,
+  By,
   beforeEach,
   ddescribe,
   describe,
@@ -14,8 +16,6 @@ import {
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {TestBed} from 'angular2/src/test_lib/test_bed';
-
 import {Component, View} from 'angular2/angular2';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
@@ -23,95 +23,99 @@ import {NgIf} from 'angular2/src/directives/ng_if';
 export function main() {
   describe('ng-if directive', () => {
     it('should work in a template attribute',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
 
-         tb.createView(TestComponent, {html: html})
-             .then((view) => {
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
+         tcb.overrideTemplate(TestComponent, html)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('hello');
                async.done();
              });
        }));
 
     it('should work in a template element',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html =
              '<div><template [ng-if]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
 
-         tb.createView(TestComponent, {html: html})
-             .then((view) => {
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('hello2');
+         tcb.overrideTemplate(TestComponent, html)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('hello2');
                async.done();
              });
        }));
 
     it('should toggle node when condition changes',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
 
-         tb.createView(TestComponent, {html: html})
-             .then((view) => {
-               view.context.booleanCondition = false;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('');
+         tcb.overrideTemplate(TestComponent, html)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.componentInstance.booleanCondition = false;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
+               expect(rootTC.nativeElement).toHaveText('');
 
-               view.context.booleanCondition = true;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
+               rootTC.componentInstance.booleanCondition = true;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('hello');
 
-               view.context.booleanCondition = false;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('');
+               rootTC.componentInstance.booleanCondition = false;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
+               expect(rootTC.nativeElement).toHaveText('');
 
                async.done();
              });
        }));
 
     it('should handle nested if correctly',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html =
              '<div><template [ng-if]="booleanCondition"><copy-me *ng-if="nestedBooleanCondition">hello</copy-me></template></div>';
 
-         tb.createView(TestComponent, {html: html})
-             .then((view) => {
-               view.context.booleanCondition = false;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('');
+         tcb.overrideTemplate(TestComponent, html)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.componentInstance.booleanCondition = false;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
+               expect(rootTC.nativeElement).toHaveText('');
 
-               view.context.booleanCondition = true;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
+               rootTC.componentInstance.booleanCondition = true;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('hello');
 
-               view.context.nestedBooleanCondition = false;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('');
+               rootTC.componentInstance.nestedBooleanCondition = false;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
+               expect(rootTC.nativeElement).toHaveText('');
 
-               view.context.nestedBooleanCondition = true;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
+               rootTC.componentInstance.nestedBooleanCondition = true;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('hello');
 
-               view.context.booleanCondition = false;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('');
+               rootTC.componentInstance.booleanCondition = false;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
+               expect(rootTC.nativeElement).toHaveText('');
 
                async.done();
              });
        }));
 
     it('should update several nodes with if',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html =
              '<div>' +
              '<copy-me template="ng-if numberCondition + 1 >= 2">helloNumber</copy-me>' +
@@ -119,23 +123,24 @@ export function main() {
              '<copy-me template="ng-if functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
              '</div>';
 
-         tb.createView(TestComponent, {html: html})
-             .then((view) => {
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(3);
-               expect(DOM.getText(view.rootNodes[0]))
+         tcb.overrideTemplate(TestComponent, html)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(3);
+               expect(DOM.getText(rootTC.nativeElement))
                    .toEqual('helloNumberhelloStringhelloFunction');
 
-               view.context.numberCondition = 0;
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('helloString');
+               rootTC.componentInstance.numberCondition = 0;
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('helloString');
 
-               view.context.numberCondition = 1;
-               view.context.stringCondition = "bar";
-               view.detectChanges();
-               expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-               expect(DOM.getText(view.rootNodes[0])).toEqual('helloNumber');
+               rootTC.componentInstance.numberCondition = 1;
+               rootTC.componentInstance.stringCondition = "bar";
+               rootTC.detectChanges();
+               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+               expect(rootTC.nativeElement).toHaveText('helloNumber');
                async.done();
              });
        }));
@@ -143,36 +148,39 @@ export function main() {
 
     if (!IS_DARTIUM) {
       it('should not add the element twice if the condition goes from true to true (JS)',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
-           tb.createView(TestComponent, {html: html})
-               .then((view) => {
-                 view.detectChanges();
-                 expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
+           tcb.overrideTemplate(TestComponent, html)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+                 expect(rootTC.nativeElement).toHaveText('hello');
 
-                 view.context.numberCondition = 2;
-                 view.detectChanges();
-                 expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
+                 rootTC.componentInstance.numberCondition = 2;
+                 rootTC.detectChanges();
+                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
+                 expect(rootTC.nativeElement).toHaveText('hello');
 
                  async.done();
                });
          }));
 
       it('should not recreate the element if the condition goes from true to true (JS)',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
-           tb.createView(TestComponent, {html: html})
-               .then((view) => {
-                 view.detectChanges();
-                 DOM.addClass(view.rootNodes[0].childNodes[1], "foo");
+           tcb.overrideTemplate(TestComponent, html)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 DOM.addClass(DOM.querySelector(rootTC.nativeElement, 'copy-me'), "foo");
 
-                 view.context.numberCondition = 2;
-                 view.detectChanges();
-                 expect(DOM.hasClass(view.rootNodes[0].childNodes[1], "foo")).toBe(true);
+                 rootTC.componentInstance.numberCondition = 2;
+                 rootTC.detectChanges();
+                 expect(DOM.hasClass(DOM.querySelector(rootTC.nativeElement, 'copy-me'), "foo"))
+                     .toBe(true);
 
                  async.done();
                });
@@ -181,14 +189,15 @@ export function main() {
 
     if (IS_DARTIUM) {
       it('should not create the element if the condition is not a boolean (DART)',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
-           tb.createView(TestComponent, {html: html})
-               .then((view) => {
-                 expect(() => view.detectChanges()).toThrowError();
-                 expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('');
+           tcb.overrideTemplate(TestComponent, html)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 expect(() => rootTC.detectChanges()).toThrowError();
+                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
+                 expect(rootTC.nativeElement).toHaveText('');
                  async.done();
                });
          }));

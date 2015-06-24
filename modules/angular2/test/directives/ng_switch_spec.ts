@@ -1,5 +1,6 @@
 import {
   AsyncTestCompleter,
+  TestComponentBuilder,
   beforeEach,
   ddescribe,
   describe,
@@ -10,69 +11,68 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Component, View} from 'angular2/angular2';
 
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/directives/ng_switch';
 
-import {TestBed} from 'angular2/src/test_lib/test_bed';
-
 export function main() {
   describe('switch', () => {
     describe('switch value changes', () => {
       it('should switch amongst when values',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="\'a\'"><li>when a</li></template>' +
                           '<template [ng-switch-when]="\'b\'"><li>when b</li></template>' +
                           '</ul></div>';
 
-           tb.createView(TestComponent, {html: template})
-               .then((view) => {
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('');
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('');
 
-                 view.context.switchValue = 'a';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when a');
+                 rootTC.componentInstance.switchValue = 'a';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when a');
 
-                 view.context.switchValue = 'b';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when b');
+                 rootTC.componentInstance.switchValue = 'b';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when b');
 
                  async.done();
                });
          }));
 
       it('should switch amongst when values with fallback to default',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<li template="ng-switch-when \'a\'">when a</li>' +
                           '<li template="ng-switch-default">when default</li>' +
                           '</ul></div>';
 
-           tb.createView(TestComponent, {html: template})
-               .then((view) => {
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when default');
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when default');
 
-                 view.context.switchValue = 'a';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when a');
+                 rootTC.componentInstance.switchValue = 'a';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when a');
 
-                 view.context.switchValue = 'b';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when default');
+                 rootTC.componentInstance.switchValue = 'b';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when default');
 
                  async.done();
                });
          }));
 
       it('should support multiple whens with the same value',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="\'a\'"><li>when a1;</li></template>' +
@@ -83,18 +83,19 @@ export function main() {
                           '<template ng-switch-default><li>when default2;</li></template>' +
                           '</ul></div>';
 
-           tb.createView(TestComponent, {html: template})
-               .then((view) => {
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when default1;when default2;');
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when default1;when default2;');
 
-                 view.context.switchValue = 'a';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when a1;when a2;');
+                 rootTC.componentInstance.switchValue = 'a';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when a1;when a2;');
 
-                 view.context.switchValue = 'b';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when b1;when b2;');
+                 rootTC.componentInstance.switchValue = 'b';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when b1;when b2;');
 
                  async.done();
                });
@@ -103,7 +104,7 @@ export function main() {
 
     describe('when values changes', () => {
       it('should switch amongst when values',
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
                           '<ul [ng-switch]="switchValue">' +
                           '<template [ng-switch-when]="when1"><li>when 1;</li></template>' +
@@ -111,29 +112,30 @@ export function main() {
                           '<template ng-switch-default><li>when default;</li></template>' +
                           '</ul></div>';
 
-           tb.createView(TestComponent, {html: template})
-               .then((view) => {
-                 view.context.when1 = 'a';
-                 view.context.when2 = 'b';
-                 view.context.switchValue = 'a';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when 1;');
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.componentInstance.when1 = 'a';
+                 rootTC.componentInstance.when2 = 'b';
+                 rootTC.componentInstance.switchValue = 'a';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when 1;');
 
-                 view.context.switchValue = 'b';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when 2;');
+                 rootTC.componentInstance.switchValue = 'b';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when 2;');
 
-                 view.context.switchValue = 'c';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when default;');
+                 rootTC.componentInstance.switchValue = 'c';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when default;');
 
-                 view.context.when1 = 'c';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when 1;');
+                 rootTC.componentInstance.when1 = 'c';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when 1;');
 
-                 view.context.when1 = 'd';
-                 view.detectChanges();
-                 expect(DOM.getText(view.rootNodes[0])).toEqual('when default;');
+                 rootTC.componentInstance.when1 = 'd';
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('when default;');
 
                  async.done();
                });
