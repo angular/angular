@@ -15,15 +15,17 @@ import {ConnectionBackend} from 'angular2/src/http/interfaces';
 export {MockConnection, MockBackend} from 'angular2/src/http/backends/mock_backend';
 export {Request} from 'angular2/src/http/static_request';
 export {Response} from 'angular2/src/http/static_response';
+import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 
 export {
   IRequestOptions,
-  IResponse,
+  IResponseOptions,
   Connection,
   ConnectionBackend
 } from 'angular2/src/http/interfaces';
 
 export {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
+export {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 export {XHRBackend, XHRConnection} from 'angular2/src/http/backends/xhr_backend';
 export {Http} from './src/http/http';
 
@@ -49,5 +51,12 @@ export {URLSearchParams} from 'angular2/src/http/url_search_params';
  * ```
  *
  */
-export var httpInjectables: List<any> =
-    [bind(ConnectionBackend).toClass(XHRBackend), BrowserXHR, XHRBackend, BaseRequestOptions, Http];
+export var httpInjectables: List<any> = [
+  bind(ConnectionBackend)
+      .toClass(XHRBackend),
+  BrowserXHR,
+  XHRBackend,
+  bind(RequestOptions).toClass(BaseRequestOptions),
+  bind(ResponseOptions).toClass(BaseResponseOptions),
+  Http
+];

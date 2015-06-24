@@ -1,9 +1,13 @@
 import {RequestMethods, RequestModesOpts, RequestCredentialsOpts, RequestCacheOpts} from './enums';
 import {RequestOptions} from './base_request_options';
-import {IRequestOptions} from './interfaces';
 import {Headers} from './headers';
-import {BaseException, RegExpWrapper, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
-import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {
+  BaseException,
+  RegExpWrapper,
+  CONST_EXPR,
+  isPresent,
+  isJsObject
+} from 'angular2/src/facade/lang';
 
 // TODO(jeffbcross): properly implement body accessors
 /**
@@ -33,12 +37,8 @@ export class Request {
   // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
   private _body: string;
   cache: RequestCacheOpts;
-  // TODO(jeffbcross): determine way to add type to destructured args
-  constructor(options?: IRequestOptions) {
-    var requestOptions: RequestOptions = options instanceof
-        StringMap ? RequestOptions.fromStringWrapper(<StringMap<string, any>>options) :
-                    <RequestOptions>options;
-
+  constructor(requestOptions: RequestOptions) {
+    // TODO: assert that url is present
     this.url = requestOptions.url;
     this._body = requestOptions.body;
     this.method = requestOptions.method;
@@ -50,6 +50,7 @@ export class Request {
     this.headers = requestOptions.headers;
     this.cache = requestOptions.cache;
   }
+
 
   /**
    * Returns the request's body as string, assuming that body exists. If body is undefined, return

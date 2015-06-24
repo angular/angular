@@ -5,7 +5,6 @@ import {IRequestOptions} from './interfaces';
 import {Injectable} from 'angular2/di';
 import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 
-const INITIALIZER = CONST_EXPR({});
 /**
  * Creates a request options object with default properties as described in the [Fetch
  * Spec](https://fetch.spec.whatwg.org/#requestinit) to be optionally provided when instantiating a
@@ -28,36 +27,36 @@ export class RequestOptions implements IRequestOptions {
   /**
    * Body to be used when creating the request.
    */
-  // TODO: support FormData, Blob, URLSearchParams, JSON
+  // TODO: support FormData, Blob, URLSearchParams
   body: string;
   mode: RequestModesOpts = RequestModesOpts.Cors;
   credentials: RequestCredentialsOpts;
   cache: RequestCacheOpts;
   url: string;
   constructor({method, headers, body, mode, credentials, cache, url}: IRequestOptions = {}) {
-    this.method = isPresent(method) ? method : RequestMethods.GET;
-    this.headers = headers;
-    this.body = body;
-    this.mode = isPresent(mode) ? mode : RequestModesOpts.Cors;
-    this.credentials = credentials;
-    this.cache = cache;
-    this.url = url;
+    this.method = isPresent(method) ? method : null;
+    this.headers = isPresent(headers) ? headers : null;
+    this.body = isPresent(body) ? body : null;
+    this.mode = isPresent(mode) ? mode : null;
+    this.credentials = isPresent(credentials) ? credentials : null;
+    this.cache = isPresent(cache) ? cache : null;
+    this.url = isPresent(url) ? url : null;
   }
 
   /**
    * Creates a copy of the `RequestOptions` instance, using the optional input as values to override
    * existing values.
    */
-  merge({url = null, method = null, headers = null, body = null, mode = null, credentials = null,
-         cache = null}: any = {}): RequestOptions {
+  merge(options?: IRequestOptions): RequestOptions {
     return new RequestOptions({
-      method: isPresent(method) ? method : this.method,
-      headers: isPresent(headers) ? headers : this.headers,
-      body: isPresent(body) ? body : this.body,
-      mode: isPresent(mode) ? mode : this.mode,
-      credentials: isPresent(credentials) ? credentials : this.credentials,
-      cache: isPresent(cache) ? cache : this.cache,
-      url: isPresent(url) ? url : this.url
+      method: isPresent(options) && isPresent(options.method) ? options.method : this.method,
+      headers: isPresent(options) && isPresent(options.headers) ? options.headers : this.headers,
+      body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
+      mode: isPresent(options) && isPresent(options.mode) ? options.mode : this.mode,
+      credentials: isPresent(options) && isPresent(options.credentials) ? options.credentials :
+                                                                          this.credentials,
+      cache: isPresent(options) && isPresent(options.cache) ? options.cache : this.cache,
+      url: isPresent(options) && isPresent(options.url) ? options.url : this.url
     });
   }
 
@@ -94,5 +93,7 @@ export class RequestOptions implements IRequestOptions {
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {
-  constructor() { super(); }
+  constructor() {
+    super({method: RequestMethods.GET, headers: new Headers(), mode: RequestModesOpts.Cors});
+  }
 }

@@ -2,6 +2,7 @@ import {ConnectionBackend, Connection} from '../interfaces';
 import {ReadyStates, RequestMethods, RequestMethodsMap} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
+import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/di';
 import {BrowserXHR} from './browser_xhr';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
@@ -25,7 +26,7 @@ export class XHRConnection implements Connection {
   response: EventEmitter;  //<Response>;
   readyState: ReadyStates;
   private _xhr;
-  constructor(req: Request, browserXHR: BrowserXHR) {
+  constructor(req: Request, browserXHR: BrowserXHR, baseResponseOptions?: ResponseOptions) {
     // TODO: get rid of this when enum lookups are available in ts2dart
     // https://github.com/angular/ts2dart/issues/221
     var requestMethodsMap = new RequestMethodsMap();
@@ -34,12 +35,15 @@ export class XHRConnection implements Connection {
     this._xhr = browserXHR.build();
     // TODO(jeffbcross): implement error listening/propagation
     this._xhr.open(requestMethodsMap.getMethod(ENUM_INDEX(req.method)), req.url);
-    this._xhr.addEventListener(
-        'load',
-        (_) => {ObservableWrapper.callNext(
-            this.response, new Response({
-              body: isPresent(this._xhr.response) ? this._xhr.response : this._xhr.responseText
-            }))});
+    this._xhr.addEventListener('load', (_) => {
+      var responseOptions = new ResponseOptions(
+          {body: isPresent(this._xhr.response) ? this._xhr.response : this._xhr.responseText});
+      if (isPresent(baseResponseOptions)) {
+        responseOptions = baseResponseOptions.merge(responseOptions);
+      }
+
+      ObservableWrapper.callNext(this.response, new Response(responseOptions))
+    });
     // TODO(jeffbcross): make this more dynamic based on body type
     this._xhr.send(this.request.text());
   }
@@ -78,8 +82,8 @@ export class XHRConnection implements Connection {
  **/
 @Injectable()
 export class XHRBackend implements ConnectionBackend {
-  constructor(private _browserXHR: BrowserXHR) {}
+  constructor(private _browserXHR: BrowserXHR, private _baseResponseOptions: ResponseOptions) {}
   createConnection(request: Request): XHRConnection {
-    return new XHRConnection(request, this._browserXHR);
+    return new XHRConnection(request, this._browserXHR, this._baseResponseOptions);
   }
 }

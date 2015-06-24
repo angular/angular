@@ -21,7 +21,7 @@ export class ConnectionBackend {
 export class Connection {
   readyState: ReadyStates;
   request: Request;
-  response: EventEmitter;  //<IResponse>;
+  response: EventEmitter;  // TODO: generic of <Response>;
   dispose(): void { throw new BaseException('Abstract!'); }
 }
 
@@ -36,27 +36,12 @@ export interface IRequestOptions {
   cache?: RequestCacheOpts;
 }
 
-export interface ResponseOptions {
+export interface IResponseOptions {
   // TODO: Support Blob, ArrayBuffer, JSON
   body?: string | Object | FormData;
   status?: number;
   statusText?: string;
-  headers?: Headers | Object;
+  headers?: Headers;
   type?: ResponseTypes;
   url?: string;
-}
-
-export interface IResponse {
-  headers: Headers;
-  ok: boolean;
-  status: number;
-  statusText: string;
-  type: ResponseTypes;
-  url: string;
-  totalBytes: number;
-  bytesLoaded: number;
-  blob(): any;         // TODO: Blob
-  arrayBuffer(): any;  // TODO: ArrayBuffer
-  text(): string;
-  json(): Object;
 }
