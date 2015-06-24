@@ -13,7 +13,7 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
@@ -38,7 +38,7 @@ export function main() {
   var urlResolver = new UrlResolver();
   var shadowDomStrategy = new NativeShadowDomStrategy();
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
-                                                 new TemplateLoader(null, null, null));
+                                                 new ViewLoader(null, null, null));
   var compiler = new Compiler(
       reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
       new ProtoViewFactory(new DynamicChangeDetection(null)), new FakeAppRootUrl());
