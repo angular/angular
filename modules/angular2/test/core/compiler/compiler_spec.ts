@@ -60,7 +60,7 @@ export function main() {
 
     function createCompiler(renderCompileResults: List<renderApi.ProtoViewDto>,
                             protoViewFactoryResults: List<List<AppProtoView>>) {
-      var urlResolver = new FakeUrlResolver();
+      var urlResolver = new UrlResolver();
       renderCompileRequests = [];
       renderCompiler.spy('compile').andCallFake((view) => {
         renderCompileRequests.push(view);
@@ -111,17 +111,17 @@ export function main() {
 
       it('should fill templateAbsUrl given inline templates',
          inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
            captureTemplate(new viewAnn.View({template: '<div></div>'}))
                .then((renderTpl) => {
-                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/mainComponent');
+                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/cmp/main.js');
                  async.done();
                });
          }));
 
       it('should not fill templateAbsUrl given no inline template or template url',
          inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
            captureTemplate(new viewAnn.View({template: null, templateUrl: null}))
                .then((renderTpl) => {
                  expect(renderTpl.templateAbsUrl).toBe(null);
@@ -130,23 +130,23 @@ export function main() {
          }));
 
       it('should fill templateAbsUrl given url template', inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
-           captureTemplate(new viewAnn.View({templateUrl: '/someTemplate'}))
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
+           captureTemplate(new viewAnn.View({templateUrl: 'tpl/main.html'}))
                .then((renderTpl) => {
                  expect(renderTpl.templateAbsUrl)
-                     .toEqual('http://www.app.com/mainComponent/someTemplate');
+                     .toEqual('http://www.app.com/cmp/tpl/main.html');
                  async.done();
                });
          }));
 
       it('should fill styleAbsUrls given styleUrls', inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
-           captureTemplate(new viewAnn.View({styleUrls: ['/1.css', '/2.css']}))
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
+           captureTemplate(new viewAnn.View({styleUrls: ['css/1.css', 'css/2.css']}))
                .then((renderTpl) => {
                  expect(renderTpl.styleAbsUrls)
                      .toEqual([
-                       'http://www.app.com/mainComponent/1.css',
-                       'http://www.app.com/mainComponent/2.css'
+                       'http://www.app.com/cmp/css/1.css',
+                       'http://www.app.com/cmp/css/2.css'
                      ]);
                  async.done();
                });
@@ -566,16 +566,9 @@ class SpyRenderCompiler extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-class FakeUrlResolver extends UrlResolver {
-  constructor() { super(); }
-
-  resolve(baseUrl: string, url: string): string { return baseUrl + url; }
-}
-
 class FakeAppRootUrl extends AppRootUrl {
   get value() { return 'http://www.app.com'; }
 }
-
 
 class FakeTemplateResolver extends TemplateResolver {
   _cmpViews: Map<Type, viewAnn.View> = new Map();
