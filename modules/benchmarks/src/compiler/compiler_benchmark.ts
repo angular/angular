@@ -14,7 +14,7 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
@@ -33,14 +33,14 @@ export function main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var reader = new DirectiveResolver();
   var cache = new CompilerCache();
-  var templateResolver = new MultipleTemplateResolver(
+  var viewResolver = new MultipleViewResolver(
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
   var urlResolver = new UrlResolver();
   var shadowDomStrategy = new NativeShadowDomStrategy();
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
                                                  new ViewLoader(null, null, null));
   var compiler = new Compiler(
-      reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
+      reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
       new ProtoViewFactory(new DynamicChangeDetection(null)), new FakeAppRootUrl());
 
   function measureWrapper(func, desc) {
@@ -93,7 +93,7 @@ class Dir4 {
   constructor(dir3: Dir3) {}
 }
 
-class MultipleTemplateResolver extends TemplateResolver {
+class MultipleViewResolver extends ViewResolver {
   _multiple: number;
   _cache: Map<any, any>;
 
