@@ -5,7 +5,7 @@ import {global, isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import * as Rx from 'rx';
 
-export var Promise = (<any>global).Promise;
+export {Promise};
 
 export interface PromiseCompleter<R> {
   promise: Promise<R>;
