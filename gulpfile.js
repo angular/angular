@@ -559,6 +559,31 @@ gulp.task('test.transpiler.unittest', function(done) {
   runJasmineTests(['tools/transpiler/unittest/**/*.js'], done);
 });
 
+gulp.task('!pre.test.typings', [], function(done) {
+  return gulp
+    .src([
+      'modules/angular2/typings/**/*'], {
+        base: 'modules/angular2/typings/**'
+      }
+    )
+    .pipe(gulp.dest('dist/docs/typings/*'));
+});
+
+// -----------------
+// TODO: Use a version of TypeScript that matches what is used by DefinitelyTyped.
+gulp.task('test.typings', ['!pre.test.typings'], function(done) {
+  var stream = gulp.src(['typings_spec/*.ts', 'dist/docs/typings/angular2/angular2.d.ts'])
+      .pipe(tsc({target: 'ES5', module: 'commonjs',
+                 // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
+                 // see https://github.com/ivogabe/gulp-typescript#typescript-version
+                 typescript: require('typescript')}))
+      .on('error', function(error) {
+        // nodejs doesn't propagate errors from the src stream into the final stream so we are
+        // forwarding the error into the final stream
+        stream.emit('error', error);
+      });
+});
+
 // -----------------
 // Pre/Post-test checks
 
