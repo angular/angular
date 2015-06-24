@@ -13,7 +13,7 @@ import {
   RenderProtoViewRef
 } from '../../api';
 import {CompilePipeline} from './compile_pipeline';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
@@ -24,12 +24,10 @@ import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
  * the CompilePipeline and the CompileSteps.
  */
 export class DomCompiler extends RenderCompiler {
-  constructor(public _stepFactory: CompileStepFactory, public _templateLoader: TemplateLoader) {
-    super();
-  }
+  constructor(public _stepFactory: CompileStepFactory, public _viewLoader: ViewLoader) { super(); }
 
   compile(view: ViewDefinition): Promise<ProtoViewDto> {
-    var tplPromise = this._templateLoader.load(view);
+    var tplPromise = this._viewLoader.load(view);
     return PromiseWrapper.then(
         tplPromise, (el) => this._compileTemplate(view, el, ViewType.COMPONENT), (e) => {
           throw new BaseException(`Failed to load the template for "${view.componentId}" : ${e}`);
@@ -59,8 +57,7 @@ export class DomCompiler extends RenderCompiler {
 
 @Injectable()
 export class DefaultDomCompiler extends DomCompiler {
-  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy,
-              templateLoader: TemplateLoader) {
-    super(new DefaultStepFactory(parser, shadowDomStrategy), templateLoader);
+  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy, viewLoader: ViewLoader) {
+    super(new DefaultStepFactory(parser, shadowDomStrategy), viewLoader);
   }
 }

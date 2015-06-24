@@ -7,9 +7,7 @@ export function main() {
   describe('StyleUrlResolver', () => {
     let styleUrlResolver;
 
-    beforeEach(() => {
-      styleUrlResolver = new StyleUrlResolver(new UrlResolver());
-    });
+    beforeEach(() => { styleUrlResolver = new StyleUrlResolver(new UrlResolver()); });
 
     it('should resolve "url()" urls', () => {
       var css = `

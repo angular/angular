@@ -9,7 +9,7 @@ import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compile_pipeline.dart';
 import 'package:angular2/src/render/dom/compiler/style_inliner.dart';
 import 'package:angular2/src/render/dom/compiler/style_url_resolver.dart';
-import 'package:angular2/src/render/dom/compiler/template_loader.dart';
+import 'package:angular2/src/render/dom/compiler/view_loader.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
@@ -81,7 +81,7 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
 /// reflectively accessed from that template.
 class _TemplateExtractor {
   final CompileStepFactory _factory;
-  TemplateLoader _loader;
+  ViewLoader _loader;
 
   _TemplateExtractor(XHR xhr)
       : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
@@ -90,7 +90,7 @@ class _TemplateExtractor {
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
 
-    _loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
+    _loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
   }
 
   Future<_ExtractResult> extractTemplates(ViewDefinition viewDef) async {
