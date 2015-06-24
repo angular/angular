@@ -118,8 +118,8 @@ export function main() {
                                      .then((tc) => {
                                        loader.loadNextToLocation(DynamicallyLoaded, tc.elementRef)
                                            .then(ref => {
-                                             expect(tc.domElement).toHaveText("Location;");
-                                             expect(DOM.nextSibling(tc.domElement))
+                                             expect(tc.nativeElement).toHaveText("Location;");
+                                             expect(DOM.nextSibling(tc.nativeElement))
                                                  .toHaveText('DynamicallyLoaded;');
 
                                              async.done();
@@ -142,15 +142,15 @@ export function main() {
                             .then(ref => {
                               loader.loadNextToLocation(DynamicallyLoaded2, tc.elementRef)
                                   .then(ref2 => {
-                                    var firstSibling = DOM.nextSibling(tc.domElement);
+                                    var firstSibling = DOM.nextSibling(tc.nativeElement);
                                     var secondSibling = DOM.nextSibling(firstSibling);
-                                    expect(tc.domElement).toHaveText("Location;");
+                                    expect(tc.nativeElement).toHaveText("Location;");
                                     expect(firstSibling).toHaveText("DynamicallyLoaded;");
                                     expect(secondSibling).toHaveText("DynamicallyLoaded2;");
 
                                     ref2.dispose();
 
-                                    firstSibling = DOM.nextSibling(tc.domElement);
+                                    firstSibling = DOM.nextSibling(tc.nativeElement);
                                     secondSibling = DOM.nextSibling(firstSibling);
                                     expect(secondSibling).toBeNull();
 
@@ -177,7 +177,7 @@ export function main() {
 
                               tc.detectChanges();
 
-                              var newlyInsertedElement = DOM.nextSibling(tc.domElement);
+                              var newlyInsertedElement = DOM.nextSibling(tc.nativeElement);
                               expect(newlyInsertedElement.id)
                                   .toEqual("new value")
 
