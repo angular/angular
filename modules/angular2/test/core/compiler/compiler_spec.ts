@@ -577,9 +577,7 @@ class FakeViewResolver extends ViewResolver {
     return this._cmpViews.has(component) ? this._cmpViews.get(component) : null;
   }
 
-  setView(component: Type, template: viewAnn.View): void {
-    this._cmpViews.set(component, template);
-  }
+  setView(component: Type, view: viewAnn.View): void { this._cmpViews.set(component, view); }
 }
 
 class FakeProtoViewFactory extends ProtoViewFactory {

@@ -74,7 +74,7 @@ export class TestComponentBuilder {
 
   /**
    * Overrides only the html of a {@link Component}.
-   * All the other propoerties of the component's {@link View} are preserved.
+   * All the other properties of the component's {@link View} are preserved.
    *
    * @param {Type} component
    * @param {string} html
@@ -130,9 +130,8 @@ export class TestComponentBuilder {
     var mockViewResolver = this._injector.get(ViewResolver);
     MapWrapper.forEach(this._viewOverrides,
                        (view, type) => { mockViewResolver.setView(type, view); });
-    MapWrapper.forEach(this._templateOverrides, (template, type) => {
-      mockViewResolver.setInlineTemplate(type, template);
-    });
+    MapWrapper.forEach(this._templateOverrides,
+                       (template, type) => { mockViewResolver.setInlineTemplate(type, template); });
     MapWrapper.forEach(this._directiveOverrides, (overrides, component) => {
       MapWrapper.forEach(overrides, (to, from) => {
         mockViewResolver.overrideViewDirective(component, from, to);

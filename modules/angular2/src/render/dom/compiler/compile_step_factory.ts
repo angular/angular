@@ -10,19 +10,19 @@ import {ShadowDomCompileStep} from '../shadow_dom/shadow_dom_compile_step';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 
 export class CompileStepFactory {
-  createSteps(template: ViewDefinition): List<CompileStep> { return null; }
+  createSteps(view: ViewDefinition): List<CompileStep> { return null; }
 }
 
 export class DefaultStepFactory extends CompileStepFactory {
   constructor(public _parser: Parser, public _shadowDomStrategy: ShadowDomStrategy) { super(); }
 
-  createSteps(template: ViewDefinition): List<CompileStep> {
+  createSteps(view: ViewDefinition): List<CompileStep> {
     return [
       new ViewSplitter(this._parser),
       new PropertyBindingParser(this._parser),
-      new DirectiveParser(this._parser, template.directives),
+      new DirectiveParser(this._parser, view.directives),
       new TextInterpolationParser(this._parser),
-      new ShadowDomCompileStep(this._shadowDomStrategy, template)
+      new ShadowDomCompileStep(this._shadowDomStrategy, view)
     ];
   }
 }
