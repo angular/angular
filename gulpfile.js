@@ -37,6 +37,7 @@ var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
+var tslint = require('gulp-tslint');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.9.0',
@@ -244,6 +245,19 @@ gulp.task('enforce-format', function() {
     console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
     process.exit(1);
   });
+});
+
+gulp.task('lint', ['build.tools'], function() {
+  // https://github.com/palantir/tslint#supported-rules
+  var tslintConfig = {
+    "rules": {
+      "requireReturnType": true
+    }
+  };
+
+  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
+      .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
+      .pipe(tslint.report('prose'));
 });
 
 // ------------
@@ -592,7 +606,7 @@ gulp.task('pre-test-checks', function(done) {
 });
 
 gulp.task('post-test-checks', function(done) {
-  runSequence('enforce-format', sequenceComplete(done));
+  runSequence('lint', 'enforce-format', sequenceComplete(done));
 });
 
 
