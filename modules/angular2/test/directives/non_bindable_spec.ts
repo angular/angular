@@ -1,5 +1,7 @@
 import {
   AsyncTestCompleter,
+  TestComponentBuilder,
+  By,
   beforeEach,
   ddescribe,
   describe,
@@ -18,40 +20,44 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 import {NgNonBindable} from 'angular2/src/directives/ng_non_bindable';
 
-import {TestBed} from 'angular2/src/test_lib/test_bed';
-
 export function main() {
   describe('non-bindable', () => {
     it('should not interpolate children',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div>{{text}}<span ng-non-bindable>{{text}}</span></div>';
-         tb.createView(TestComponent, {html: template})
-             .then((view) => {
-               view.detectChanges();
-               expect(DOM.getText(view.rootNodes[0])).toEqual('foo{{text}}');
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('foo{{text}}');
                async.done();
              });
        }));
 
     it('should ignore directives on child nodes',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div ng-non-bindable><span id=child test-dec>{{text}}</span></div>';
-         tb.createView(TestComponent, {html: template})
-             .then((view) => {
-               view.detectChanges();
-               var span = DOM.querySelector(view.rootNodes[0], '#child');
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.detectChanges();
+
+               // We must use DOM.querySelector instead of rootTC.query here
+               // since the elements inside are not compiled.
+               var span = DOM.querySelector(rootTC.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
                async.done();
              });
        }));
 
     it('should trigger directives on the same node',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div><span id=child ng-non-bindable test-dec>{{text}}</span></div>';
-         tb.createView(TestComponent, {html: template})
-             .then((view) => {
-               view.detectChanges();
-               var span = DOM.querySelector(view.rootNodes[0], '#child');
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.detectChanges();
+               var span = DOM.querySelector(rootTC.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
                async.done();
              });
