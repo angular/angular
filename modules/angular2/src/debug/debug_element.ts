@@ -145,6 +145,10 @@ export function inspectElement(elementRef: ElementRef): DebugElement {
   return DebugElement.create(elementRef);
 }
 
+export function asNativeElements(arr: List<DebugElement>): List<any> {
+  return arr.map((debugEl) => debugEl.nativeElement);
+}
+
 /**
  * @exportedAs angular2/test
  */

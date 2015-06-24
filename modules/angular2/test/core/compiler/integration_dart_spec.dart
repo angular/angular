@@ -3,7 +3,6 @@ library angular2.test.di.integration_dart_spec;
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/di.dart';
-import 'package:angular2/src/test_lib/test_bed.dart';
 import 'package:angular2/test_lib.dart';
 
 class MockException implements Error {
@@ -40,16 +39,16 @@ void functionThatThrowsNonError() {
 main() {
   describe('TypeLiteral', () {
     it('should publish via appInjector', inject([
-      TestBed,
+      TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
       tb.overrideView(Dummy, new View(
           template: '<type-literal-component></type-literal-component>',
-          directives: [TypeLiteralComponent]));
+          directives: [TypeLiteralComponent]))
 
-      tb.createView(Dummy).then((view) {
-        view.detectChanges();
-        expect(view.rootNodes).toHaveText('[Hello, World]');
+      .createAsync(Dummy).then((tc) {
+        tc.detectChanges();
+        expect(asNativeElements(tc.componentViewChildren)).toHaveText('[Hello, World]');
         async.done();
       });
     }));
@@ -57,28 +56,28 @@ main() {
 
   describe('Error handling', () {
     it('should preserve Error stack traces thrown from components', inject([
-      TestBed,
+      TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
       tb.overrideView(Dummy, new View(
           template: '<throwing-component></throwing-component>',
-          directives: [ThrowingComponent]));
+          directives: [ThrowingComponent]))
 
-      tb.createView(Dummy).catchError((e, stack) {
+      .createAsync(Dummy).catchError((e, stack) {
         expect(stack.toString().split('\n')[0]).toEqual(e.message);
         async.done();
       });
     }));
 
     it('should preserve non-Error stack traces thrown from components', inject([
-      TestBed,
+      TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
       tb.overrideView(Dummy, new View(
           template: '<throwing-component2></throwing-component2>',
-          directives: [ThrowingComponent2]));
+          directives: [ThrowingComponent2]))
 
-      tb.createView(Dummy).catchError((e, stack) {
+      .createAsync(Dummy).catchError((e, stack) {
         expect(stack.toString().split('\n')[0]).toEqual(e.message);
         async.done();
       });
@@ -87,30 +86,30 @@ main() {
 
   describe('Property access', () {
     it('should distinguish between map and property access', inject([
-      TestBed,
+      TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
       tb.overrideView(Dummy, new View(
           template: '<property-access></property-access>',
-          directives: [PropertyAccess]));
+          directives: [PropertyAccess]))
 
-      tb.createView(Dummy).then((view) {
-        view.detectChanges();
-        expect(view.rootNodes).toHaveText('prop:foo-prop;map:foo-map');
+      .createAsync(Dummy).then((tc) {
+        tc.detectChanges();
+        expect(asNativeElements(tc.componentViewChildren)).toHaveText('prop:foo-prop;map:foo-map');
         async.done();
       });
     }));
 
     it('should not fallback on map access if property missing', inject([
-      TestBed,
+      TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
       tb.overrideView(Dummy, new View(
           template: '<no-property-access></no-property-access>',
-          directives: [NoPropertyAccess]));
+          directives: [NoPropertyAccess]))
 
-      tb.createView(Dummy).then((view) {
-        expect(() => view.detectChanges())
+      .createAsync(Dummy).then((tc) {
+        expect(() => tc.detectChanges())
             .toThrowError(new RegExp('property not found'));
         async.done();
       });
@@ -119,16 +118,16 @@ main() {
 
   describe('OnChange', () {
     it('should be notified of changes', inject([
-      TestBed,
+      TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
       tb.overrideView(Dummy, new View(
           template: '''<on-change [prop]="'hello'"></on-change>''',
-          directives: [OnChangeComponent]));
+          directives: [OnChangeComponent]))
 
-      tb.createView(Dummy).then((view) {
-        view.detectChanges();
-        var cmp = view.rawView.elementInjectors[0].get(OnChangeComponent);
+      .createAsync(Dummy).then((tc) {
+        tc.detectChanges();
+        var cmp = tc.componentViewChildren[0].inject(OnChangeComponent);
         expect(cmp.prop).toEqual('hello');
         expect(cmp.changes.containsKey('prop')).toEqual(true);
         async.done();

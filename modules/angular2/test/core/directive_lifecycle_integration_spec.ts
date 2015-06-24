@@ -9,11 +9,11 @@ import {
   it,
   xdescribe,
   xit,
+  TestComponentBuilder,
   IS_DARTIUM
 } from 'angular2/test_lib';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {
   Directive,
   Component,
@@ -27,25 +27,21 @@ import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
-    var ctx;
-
-    beforeEach(() => { ctx = new MyComp(); });
 
     it('should invoke lifecycle methods onChange > onInit > onCheck > onAllChangesDone',
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-         tb.overrideView(
-             MyComp,
-             new viewAnn.View(
-                 {template: '<div [field]="123" lifecycle></div>', directives: [LifecycleDir]}));
-
-         tb.createView(MyComp, {context: ctx})
-             .then((view) => {
-               var dir = view.rawView.elementInjectors[0].get(LifecycleDir);
-               view.detectChanges();
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(
+                MyComp,
+                new viewAnn.View(
+                    {template: '<div [field]="123" lifecycle></div>', directives: [LifecycleDir]}))
+             .createAsync(MyComp)
+             .then((tc) => {
+               var dir = tc.componentViewChildren[0].inject(LifecycleDir);
+               tc.detectChanges();
 
                expect(dir.log).toEqual(["onChange", "onInit", "onCheck", "onAllChangesDone"]);
 
-               view.detectChanges();
+               tc.detectChanges();
 
                expect(dir.log).toEqual([
                  "onChange",
