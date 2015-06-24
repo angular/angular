@@ -21,6 +21,11 @@ function paramParser(rawParams: string): Map<string, List<string>> {
   return map;
 }
 
+/**
+ * Map-like representation of url search parameters, based on
+ * [URLSearchParams](https://url.spec.whatwg.org/#urlsearchparams) in the url living standard.
+ *
+ */
 export class URLSearchParams {
   paramsMap: Map<string, List<string>>;
   constructor(public rawParams: string) { this.paramsMap = paramParser(rawParams); }

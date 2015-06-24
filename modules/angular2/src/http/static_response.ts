@@ -1,13 +1,17 @@
-import {IResponse, ResponseOptions} from './interfaces';
 import {ResponseTypes} from './enums';
-import {baseResponseOptions} from './base_response_options';
-import {BaseException, isJsObject, isString, isPresent, Json} from 'angular2/src/facade/lang';
+import {
+  BaseException,
+  CONST_EXPR,
+  isJsObject,
+  isString,
+  isPresent,
+  Json
+} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
+import {ResponseOptions} from './base_response_options';
 
-// TODO: make this injectable so baseResponseOptions can be overridden, mostly for the benefit of
-// headers merging.
 /**
- * Creates `Response` instances with default values.
+ * Creates `Response` instances from provided values.
  *
  * Though this object isn't
  * usually instantiated by end-users, it is the primary object interacted with when it comes time to
@@ -19,12 +23,12 @@ import {Headers} from './headers';
  * http.request('my-friends.txt').subscribe(response => this.friends = response.text());
  * ```
  *
- * The Response's interface is inspired by the Request constructor defined in the [Fetch
+ * The Response's interface is inspired by the Response constructor defined in the [Fetch
  * Spec](https://fetch.spec.whatwg.org/#response-class), but is considered a static value whose body
  * can be accessed many times. There are other differences in the implementation, but this is the
  * most significant.
  */
-export class Response implements IResponse {
+export class Response {
   /**
    * One of "basic", "cors", "default", "error, or "opaque".
    *
@@ -74,16 +78,13 @@ export class Response implements IResponse {
   headers: Headers;
   // TODO: Support ArrayBuffer, JSON, FormData, Blob
   private _body: string | Object;
-  constructor({body, status, statusText, headers, type, url}: ResponseOptions = {}) {
-    if (isJsObject(headers)) {
-      headers = new Headers(headers);
-    }
-    this._body = isPresent(body) ? body : baseResponseOptions.body;
-    this.status = isPresent(status) ? status : baseResponseOptions.status;
-    this.statusText = isPresent(statusText) ? statusText : baseResponseOptions.statusText;
-    this.headers = isPresent(headers) ? <Headers>headers : baseResponseOptions.headers;
-    this.type = isPresent(type) ? type : baseResponseOptions.type;
-    this.url = isPresent(url) ? url : baseResponseOptions.url;
+  constructor(responseOptions: ResponseOptions) {
+    this._body = responseOptions.body;
+    this.status = responseOptions.status;
+    this.statusText = responseOptions.statusText;
+    this.headers = responseOptions.headers;
+    this.type = responseOptions.type;
+    this.url = responseOptions.url;
   }
 
   /**

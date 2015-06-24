@@ -9,11 +9,7 @@ import {IMPLEMENTS, BaseException} from 'angular2/src/facade/lang';
 
 /**
  *
- * Connection class used by MockBackend
- *
- * This class is typically not instantiated directly, but instances can be retrieved by subscribing
- *to the `connections` Observable of
- * {@link MockBackend} in order to mock responses to requests.
+ * Mock Connection to represent a {@link Connection} for tests.
  *
  **/
 @IMPLEMENTS(Connection)
@@ -32,9 +28,8 @@ export class MockConnection {
   request: Request;
 
   /**
-   * [RxJS
-   * Observable](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md)
-   * of {@link Response}. Can be subscribed to in order to be notified when a response is available.
+   * {@link EventEmitter} of {@link Response}. Can be subscribed to in order to be notified when a
+   * response is available.
    */
   response: EventEmitter;
 
@@ -55,7 +50,7 @@ export class MockConnection {
 
   /**
    * Sends a mock response to the connection. This response is the value that is emitted to the
-   * `Observable` returned by {@link Http}.
+   * {@link EventEmitter} returned by {@link Http}.
    *
    * #Example
    *
@@ -91,7 +86,8 @@ export class MockConnection {
 
   // TODO(jeffbcross): consider using Response type
   /**
-   * Emits the provided error object as an error to the {@link Response} observable returned
+   * Emits the provided error object as an error to the {@link Response} {@link EventEmitter}
+   * returned
    * from {@link Http}.
    */
   mockError(err?) {
@@ -137,8 +133,7 @@ export class MockConnection {
 @IMPLEMENTS(ConnectionBackend)
 export class MockBackend {
   /**
-   * [RxJS
-   * Subject](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/subjects/subject.md)
+   * {@link EventEmitter}
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
    * to in order to respond to connections.
    *
@@ -162,7 +157,7 @@ export class MockBackend {
    *   http.request('something.json').subscribe(res => {
    *     text = res.text();
    *   });
-   *   connection.mockRespond(new Response('Something'));
+   *   connection.mockRespond(new Response({body: 'Something'}));
    *   expect(text).toBe('Something');
    * });
    * ```
@@ -179,8 +174,8 @@ export class MockBackend {
    */
   connectionsArray: Array<MockConnection>;
   /**
-   * [Observable](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md)
-   * of {@link MockConnection} instances that haven't yet been resolved (i.e. with a `readyState`
+   * {@link EventEmitter} of {@link MockConnection} instances that haven't yet been resolved (i.e.
+   * with a `readyState`
    * less than 4). Used internally to verify that no connections are pending via the
    * `verifyNoPendingRequests` method.
    *
@@ -193,7 +188,6 @@ export class MockBackend {
     ObservableWrapper.subscribe(this.connections,
                                 connection => this.connectionsArray.push(connection));
     this.pendingConnections = new EventEmitter();
-    // Observable.fromArray(this.connectionsArray).filter((c) => c.readyState < ReadyStates.DONE);
   }
 
   /**
@@ -218,10 +212,10 @@ export class MockBackend {
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new
    * MockConnection()`, except that it also will emit the new `Connection` to the `connections`
-   * observable of this `MockBackend` instance. This method will usually only be used by tests
+   * emitter of this `MockBackend` instance. This method will usually only be used by tests
    * against the framework itself, not by end-users.
    */
-  createConnection(req: Request) {
+  createConnection(req: Request): Connection {
     if (!isPresent(req) || !(req instanceof Request)) {
       throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }

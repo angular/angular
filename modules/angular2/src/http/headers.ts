@@ -42,6 +42,9 @@ export class Headers {
     }
   }
 
+  /**
+   * Appends a header to existing list of header values for a given header name.
+   */
   append(name: string, value: string): void {
     var mapName = this._headersMap.get(name);
     var list = isListLikeIterable(mapName) ? mapName : [];
@@ -49,26 +52,36 @@ export class Headers {
     this._headersMap.set(name, list);
   }
 
+  /**
+   * Deletes all header values for the given name.
+   */
   delete (name: string): void { MapWrapper.delete(this._headersMap, name); }
 
   forEach(fn: Function) { MapWrapper.forEach(this._headersMap, fn); }
 
+  /**
+   * Returns first header that matches given name.
+   */
   get(header: string): string { return ListWrapper.first(this._headersMap.get(header)); }
 
+  /**
+   * Check for existence of header by given name.
+   */
   has(header: string): boolean { return this._headersMap.has(header); }
 
+  /**
+   * Provides names of set headers
+   */
   keys(): List<string> { return MapWrapper.keys(this._headersMap); }
 
+  /**
+   * Sets or overrides header value for given name.
+   */
   set(header: string, value: string | List<string>): void {
     var list = [];
-    var isDart = false;
-    // Dart hack
-    if (list.toString().length === 2) {
-      isDart = true;
-    }
+
     if (isListLikeIterable(value)) {
-      var pushValue = (<List<string>>value).toString();
-      if (isDart) pushValue = pushValue.substring(1, pushValue.length - 1);
+      var pushValue = (<List<string>>value).join(',');
       list.push(pushValue);
     } else {
       list.push(value);
@@ -77,12 +90,21 @@ export class Headers {
     this._headersMap.set(header, list);
   }
 
+  /**
+   * Returns values of all headers.
+   */
   values(): List<List<string>> { return MapWrapper.values(this._headersMap); }
 
+  /**
+   * Returns list of header values for a given name.
+   */
   getAll(header: string): Array<string> {
     var headers = this._headersMap.get(header);
     return isListLikeIterable(headers) ? headers : [];
   }
 
+  /**
+   * This method is not implemented.
+   */
   entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
 }
