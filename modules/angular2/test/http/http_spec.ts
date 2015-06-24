@@ -11,7 +11,7 @@ import {
   xit,
   SpyObject
 } from 'angular2/test_lib';
-import {Http, HttpFactory} from 'angular2/src/http/http';
+import {Http} from 'angular2/src/http/http';
 import {Injector, bind} from 'angular2/di';
 import {MockBackend} from 'angular2/src/http/backends/mock_backend';
 import {Response} from 'angular2/src/http/static_response';
@@ -40,13 +40,10 @@ export function main() {
     var injector: Injector;
     var backend: MockBackend;
     var baseResponse;
-    var httpFactory;
     beforeEach(() => {
       injector = Injector.resolveAndCreate([
         BaseRequestOptions,
         MockBackend,
-        bind(ConnectionBackend).toClass(MockBackend),
-        bind(HttpFactory).toFactory(HttpFactory, [MockBackend, BaseRequestOptions]),
         bind(Http).toFactory(
             function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
               return new Http(backend, defaultOptions);
@@ -54,54 +51,11 @@ export function main() {
             [MockBackend, BaseRequestOptions])
       ]);
       http = injector.get(Http);
-      httpFactory = injector.get(HttpFactory);
       backend = injector.get(MockBackend);
       baseResponse = new Response({body: 'base response'});
     });
 
     afterEach(() => backend.verifyNoPendingRequests());
-
-    describe('HttpFactory', () => {
-      it('should return an Observable', () => {
-        expect(ObservableWrapper.isObservable(httpFactory(url))).toBe(true);
-        backend.resolveAllConnections();
-      });
-
-
-      it('should perform a get request for given url if only passed a string',
-         inject([AsyncTestCompleter], (async) => {
-           ObservableWrapper.subscribe(backend.connections, c => c.mockRespond(baseResponse));
-           ObservableWrapper.subscribe(httpFactory('http://basic.connection'), res => {
-             expect(res.text()).toBe('base response');
-             async.done();
-           });
-
-         }));
-
-
-      it('should accept a fully-qualified request as its only parameter',
-         inject([AsyncTestCompleter], (async) => {
-           var req = new Request(new RequestOptions({url: 'https://google.com'}));
-           ObservableWrapper.subscribe(backend.connections, c => {
-             expect(c.request.url).toBe('https://google.com');
-             c.mockRespond(new Response({body: 'Thank you'}));
-             async.done();
-           });
-           ObservableWrapper.subscribe(httpFactory(req), (res) => {});
-         }));
-
-      // TODO: make dart not complain about "argument type 'Map' cannot be assigned to the parameter
-      // type 'IRequestOptions'"
-      // xit('should perform a get request for given url if passed a dictionary',
-      //     inject([AsyncTestCompleter], async => {
-      //       ObservableWrapper.subscribe(backend.connections, c => c.mockRespond(baseResponse));
-      //       ObservableWrapper.subscribe(httpFactory(url, {method: RequestMethods.GET}), res => {
-      //         expect(res.text()).toBe('base response');
-      //         async.done();
-      //       });
-      //     }));
-    });
-
 
     describe('Http', () => {
       describe('.request()', () => {
