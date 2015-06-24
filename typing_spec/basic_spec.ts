@@ -1,4 +1,4 @@
-///<reference path="../dist/docs/angular2.d.ts"/>
+///<reference path="../dist/docs/typings/angular2/angular2.d.ts"/>
 
 import {Component, bootstrap, View} from 'angular2/angular2'
 
