@@ -18,7 +18,7 @@ import {AppProtoView} from './view';
 import {ElementBinder} from './element_binder';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
-import {TemplateResolver} from './template_resolver';
+import {ViewResolver} from './view_resolver';
 import {View} from '../annotations_impl/view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
@@ -66,21 +66,21 @@ export class Compiler {
   private _reader: DirectiveResolver;
   private _compilerCache: CompilerCache;
   private _compiling: Map<Type, Promise<AppProtoView>>;
-  private _templateResolver: TemplateResolver;
+  private _viewResolver: ViewResolver;
   private _componentUrlMapper: ComponentUrlMapper;
   private _urlResolver: UrlResolver;
   private _appUrl: string;
   private _render: renderApi.RenderCompiler;
   private _protoViewFactory: ProtoViewFactory;
 
-  constructor(reader: DirectiveResolver, cache: CompilerCache, templateResolver: TemplateResolver,
+  constructor(reader: DirectiveResolver, cache: CompilerCache, viewResolver: ViewResolver,
               componentUrlMapper: ComponentUrlMapper, urlResolver: UrlResolver,
               render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory,
               appUrl: AppRootUrl) {
     this._reader = reader;
     this._compilerCache = cache;
     this._compiling = new Map();
-    this._templateResolver = templateResolver;
+    this._viewResolver = viewResolver;
     this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
     this._appUrl = appUrl.value;
@@ -139,7 +139,7 @@ export class Compiler {
       // It happens when a template references a component multiple times.
       return pvPromise;
     }
-    var template = this._templateResolver.resolve(component);
+    var template = this._viewResolver.resolve(component);
 
     var directives = this._flattenDirectives(template);
 

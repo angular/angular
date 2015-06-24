@@ -10,7 +10,7 @@ import {
 
 import {stringify} from 'angular2/src/facade/lang';
 
-import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
+import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 
 import {Component, View} from 'angular2/angular2';
 
@@ -19,13 +19,13 @@ import {isBlank} from 'angular2/src/facade/lang';
 import * as viewImpl from 'angular2/src/core/annotations_impl/view';
 
 export function main() {
-  describe('MockTemplateResolver', () => {
+  describe('MockViewResolver', () => {
     var resolver;
 
-    beforeEach(() => { resolver = new MockTemplateResolver(); });
+    beforeEach(() => { resolver = new MockViewResolver(); });
 
     describe('View overriding', () => {
-      it('should fallback to the default TemplateResolver when templates are not overridden',
+      it('should fallback to the default ViewResolver when templates are not overridden',
          () => {
            var template = resolver.resolve(SomeComponent);
            expect(template.template).toEqual('template');
@@ -40,7 +40,7 @@ export function main() {
 
       });
 
-      it('should not allow overriding a template after it has been resolved', () => {
+      it('should not allow overriding a view after it has been resolved', () => {
         resolver.resolve(SomeComponent);
         expect(() => {
           resolver.setView(SomeComponent, new viewImpl.View({template: 'overridden template'}));
@@ -65,7 +65,7 @@ export function main() {
         expect(template.template).toEqual('overridden template x 2');
       });
 
-      it('should not allow overriding a template after it has been resolved', () => {
+      it('should not allow overriding a view after it has been resolved', () => {
         resolver.resolve(SomeComponent);
         expect(() => { resolver.setInlineTemplate(SomeComponent, 'overridden template'); })
             .toThrowError(
@@ -75,7 +75,7 @@ export function main() {
 
 
     describe('Directive overriding', () => {
-      it('should allow overriding a directive from the default template', () => {
+      it('should allow overriding a directive from the default view', () => {
         resolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);
         var template = resolver.resolve(SomeComponent);
         expect(template.directives.length).toEqual(1);
@@ -97,7 +97,7 @@ export function main() {
                 `Overriden directive ${stringify(SomeOtherDirective)} not found in the template of ${stringify(SomeComponent)}`);
       });
 
-      it('should not allow overriding a directive after its template has been resolved', () => {
+      it('should not allow overriding a directive after its view has been resolved', () => {
         resolver.resolve(SomeComponent);
         expect(() => {
           resolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);

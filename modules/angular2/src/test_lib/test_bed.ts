@@ -7,7 +7,7 @@ import {List} from 'angular2/src/facade/collection';
 
 import {View} from 'angular2/src/core/annotations_impl/view';
 
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {
@@ -40,7 +40,7 @@ export class TestBed {
    * @param {ViewDefinition} template
    */
   overrideView(component: Type, template: View): void {
-    this._injector.get(TemplateResolver).setView(component, template);
+    this._injector.get(ViewResolver).setView(component, template);
   }
 
   /**
@@ -51,7 +51,7 @@ export class TestBed {
    * @param {string} html
    */
   setInlineTemplate(component: Type, html: string): void {
-    this._injector.get(TemplateResolver).setInlineTemplate(component, html);
+    this._injector.get(ViewResolver).setInlineTemplate(component, html);
   }
 
   /**
@@ -62,7 +62,7 @@ export class TestBed {
    * @param {Type} to
    */
   overrideDirective(component: Type, from: Type, to: Type): void {
-    this._injector.get(TemplateResolver).overrideViewDirective(component, from, to);
+    this._injector.get(ViewResolver).overrideViewDirective(component, from, to);
   }
 
   /**

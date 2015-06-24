@@ -12,7 +12,7 @@ import {
 } from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
@@ -31,7 +31,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 
-import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
+import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockXHR} from 'angular2/src/render/xhr_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
@@ -101,7 +101,7 @@ function _getAppBindings() {
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,
-    bind(TemplateResolver).toClass(MockTemplateResolver),
+    bind(ViewResolver).toClass(MockViewResolver),
     bind(PipeRegistry).toValue(defaultPipeRegistry),
     bind(ChangeDetection).toClass(DynamicChangeDetection),
     ViewLoader,
