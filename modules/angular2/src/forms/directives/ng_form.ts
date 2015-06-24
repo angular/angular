@@ -135,7 +135,7 @@ export class NgForm extends ControlContainer implements Form {
 
   _later(fn) {
     var c = PromiseWrapper.completer();
-    PromiseWrapper.then(c.promise, fn, (_) => {});
+    PromiseWrapper.then(c.promise, fn, (_) => null);
     c.resolve(null);
   }
 }

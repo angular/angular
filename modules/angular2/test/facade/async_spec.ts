@@ -77,11 +77,13 @@ export function main() {
            PromiseWrapper.then(one.promise, (_) => {
              expect(allCalled).toBe(false);
              two.resolve('two');
+             return null;
            });
 
            PromiseWrapper.then(all, (_) => {
              allCalled = true;
              async.done();
+             return null;
            });
 
            one.resolve('one');
