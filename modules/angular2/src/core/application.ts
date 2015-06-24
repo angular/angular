@@ -27,7 +27,7 @@ import {ExceptionHandler} from './exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
-import {TemplateResolver} from './compiler/template_resolver';
+import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -118,7 +118,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     AppViewListener,
     Compiler,
     CompilerCache,
-    TemplateResolver,
+    ViewResolver,
     bind(PipeRegistry).toValue(defaultPipeRegistry),
     bind(ChangeDetection).toClass(bestChangeDetection),
     ViewLoader,

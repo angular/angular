@@ -26,7 +26,7 @@ import {Attribute, View, Component, Directive} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {
   ComponentUrlMapper,
   RuntimeComponentUrlMapper
@@ -47,7 +47,7 @@ export function main() {
 
     beforeEach(() => {
       directiveResolver = new DirectiveResolver();
-      tplResolver = new FakeTemplateResolver();
+      tplResolver = new FakeViewResolver();
       cmpUrlMapper = new RuntimeComponentUrlMapper();
       renderCompiler = new SpyRenderCompiler();
       renderCompiler.spy('compileHost')
@@ -567,7 +567,7 @@ class FakeAppRootUrl extends AppRootUrl {
   get value() { return 'http://www.app.com'; }
 }
 
-class FakeTemplateResolver extends TemplateResolver {
+class FakeViewResolver extends ViewResolver {
   _cmpViews: Map<Type, viewAnn.View> = new Map();
 
   constructor() { super(); }

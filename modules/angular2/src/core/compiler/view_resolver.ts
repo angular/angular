@@ -8,7 +8,7 @@ import {reflector} from 'angular2/src/reflection/reflection';
 
 
 @Injectable()
-export class TemplateResolver {
+export class ViewResolver {
   _cache: Map<Type, /*node*/ any> = new Map();
 
   resolve(component: Type): View {
