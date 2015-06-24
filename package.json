@@ -123,7 +123,7 @@
     "through2": "^0.6.1",
     "ts2dart": "^0.6.0",
     "tsd": "^0.6.0",
-    "typescript": "alexeagle/TypeScript#error_is_class",
+    "typescript": "microsoft/TypeScript#release-1.5",
     "vinyl": "^0.4.6",
     "walk-sync": "^0.1.3",
     "xtend": "^4.0.0",
