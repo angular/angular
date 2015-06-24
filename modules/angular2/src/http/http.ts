@@ -144,36 +144,3 @@ export class Http {
                                                                RequestMethods.HEAD, url)));
   }
 }
-
-/**
- *
- * Alias to the `request` method of {@link Http}, for those who'd prefer a simple function instead
- * of an object. In order to get TypeScript type information about the `HttpFactory`, the {@link
- * IHttp} interface can be used as shown in the following example.
- *
- * #Example
- *
- * ```
- * import {httpInjectables, HttpFactory, IHttp} from 'angular2/http';
- * @Component({
- *   appInjector: [httpInjectables]
- * })
- * @View({
- *   templateUrl: 'people.html'
- * })
- * class MyComponent {
- *  constructor(@Inject(HttpFactory) http:IHttp) {
- *    http('people.json').subscribe(res => this.people = res.json());
- *  }
- * }
- * ```
- **/
-export function HttpFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-  return function(url: string | Request, options?: IRequestOptions) {
-    if (isString(url)) {
-      return httpRequest(backend, new Request(mergeOptions(defaultOptions, options, null, url)));
-    } else if (url instanceof Request) {
-      return httpRequest(backend, url);
-    }
-  };
-}
