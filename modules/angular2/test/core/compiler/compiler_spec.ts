@@ -133,8 +133,7 @@ export function main() {
            cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
            captureTemplate(new viewAnn.View({templateUrl: 'tpl/main.html'}))
                .then((renderTpl) => {
-                 expect(renderTpl.templateAbsUrl)
-                     .toEqual('http://www.app.com/cmp/tpl/main.html');
+                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/cmp/tpl/main.html');
                  async.done();
                });
          }));
@@ -144,10 +143,8 @@ export function main() {
            captureTemplate(new viewAnn.View({styleUrls: ['css/1.css', 'css/2.css']}))
                .then((renderTpl) => {
                  expect(renderTpl.styleAbsUrls)
-                     .toEqual([
-                       'http://www.app.com/cmp/css/1.css',
-                       'http://www.app.com/cmp/css/2.css'
-                     ]);
+                     .toEqual(
+                         ['http://www.app.com/cmp/css/1.css', 'http://www.app.com/cmp/css/2.css']);
                  async.done();
                });
          }));

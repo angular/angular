@@ -24,7 +24,7 @@ import {
   defaultPipeRegistry
 } from 'angular2/change_detection';
 import {ExceptionHandler} from './exception_handler';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {TemplateResolver} from './compiler/template_resolver';
@@ -121,7 +121,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     TemplateResolver,
     bind(PipeRegistry).toValue(defaultPipeRegistry),
     bind(ChangeDetection).toClass(bestChangeDetection),
-    TemplateLoader,
+    ViewLoader,
     DirectiveResolver,
     Parser,
     Lexer,

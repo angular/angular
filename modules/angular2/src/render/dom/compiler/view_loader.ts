@@ -16,7 +16,7 @@ import {StyleUrlResolver} from './style_url_resolver';
  * TODO: Make public API once we are more confident in this approach.
  */
 @Injectable()
-export class TemplateLoader {
+export class ViewLoader {
   _cache: Map<string, Promise<string>> = new Map();
 
   constructor(private _xhr: XHR, private _styleInliner: StyleInliner,

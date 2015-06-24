@@ -11,7 +11,7 @@ import {
   defaultPipeRegistry
 } from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
@@ -104,7 +104,7 @@ function _getAppBindings() {
     bind(TemplateResolver).toClass(MockTemplateResolver),
     bind(PipeRegistry).toValue(defaultPipeRegistry),
     bind(ChangeDetection).toClass(DynamicChangeDetection),
-    TemplateLoader,
+    ViewLoader,
     DynamicComponentLoader,
     DirectiveResolver,
     Parser,

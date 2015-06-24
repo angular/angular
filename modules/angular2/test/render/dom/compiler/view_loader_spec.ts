@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -23,7 +23,7 @@ import {XHR} from 'angular2/src/render/xhr';
 import {MockXHR} from 'angular2/src/render/xhr_mock';
 
 export function main() {
-  describe('TemplateLoader', () => {
+  describe('ViewLoader', () => {
     var loader, xhr, styleUrlResolver, urlResolver;
 
     beforeEach(() => {
@@ -31,7 +31,7 @@ export function main() {
       urlResolver = new UrlResolver();
       styleUrlResolver = new StyleUrlResolver(urlResolver);
       let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
-      loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
+      loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
     });
 
     describe('html', () => {
@@ -71,7 +71,7 @@ export function main() {
            xhr.reply('http://ng.io/foo.css', '/* foo.css */');
 
            let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
-           let loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
+           let loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
 
            var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/foo.html'});
            loader.load(view).then((el) => {
@@ -168,7 +168,7 @@ export function main() {
            xhr.reply('http://ng.io/foo.css', '/* foo.css */');
 
            let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
-           let loader = new TemplateLoader(xhr, styleInliner, styleUrlResolver);
+           let loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
 
            var view = new ViewDefinition(
                {templateAbsUrl: 'http://ng.io/foo.html', styles: ['@import "foo.css";']});
