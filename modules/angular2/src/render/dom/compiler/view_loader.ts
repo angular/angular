@@ -12,7 +12,7 @@ import {StyleInliner} from './style_inliner';
 import {StyleUrlResolver} from './style_url_resolver';
 
 /**
- * Strategy to load component templates.
+ * Strategy to load component views.
  * TODO: Make public API once we are more confident in this approach.
  */
 @Injectable()

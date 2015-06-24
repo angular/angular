@@ -10,9 +10,7 @@ export class MockViewResolver extends ViewResolver {
   _viewCache: Map<Type, View> = new Map();
   _directiveOverrides: Map<Type, Map<Type, Type>> = new Map();
 
-  constructor() {
-    super();
-  }
+  constructor() { super(); }
 
   /**
    * Overrides the {@link View} for a component.

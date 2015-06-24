@@ -139,9 +139,9 @@ export class Compiler {
       // It happens when a template references a component multiple times.
       return pvPromise;
     }
-    var template = this._viewResolver.resolve(component);
+    var view = this._viewResolver.resolve(component);
 
-    var directives = this._flattenDirectives(template);
+    var directives = this._flattenDirectives(view);
 
     for (var i = 0; i < directives.length; i++) {
       if (!Compiler._isValidDirective(directives[i])) {
@@ -153,7 +153,7 @@ export class Compiler {
     var boundDirectives =
         ListWrapper.map(directives, (directive) => this._bindDirective(directive));
 
-    var renderTemplate = this._buildRenderTemplate(component, template, boundDirectives);
+    var renderTemplate = this._buildRenderTemplate(component, view, boundDirectives);
     pvPromise =
         this._render.compile(renderTemplate)
             .then((renderPv) => {

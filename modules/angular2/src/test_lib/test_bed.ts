@@ -37,10 +37,10 @@ export class TestBed {
    * @see setInlineTemplate() to only override the html
    *
    * @param {Type} component
-   * @param {ViewDefinition} template
+   * @param {ViewDefinition} view
    */
-  overrideView(component: Type, template: View): void {
-    this._injector.get(ViewResolver).setView(component, template);
+  overrideView(component: Type, view: View): void {
+    this._injector.get(ViewResolver).setView(component, view);
   }
 
   /**
