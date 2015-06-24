@@ -1,6 +1,6 @@
-import {bootstrap, Component, View, NgFor, Inject} from 'angular2/angular2';
+import {Component, View, NgFor} from 'angular2/angular2';
+import {Http} from 'angular2/http';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {Http, httpInjectables} from 'angular2/http';
 
 @Component({selector: 'http-app'})
 @View({

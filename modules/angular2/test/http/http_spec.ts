@@ -17,6 +17,7 @@ import {MockBackend} from 'angular2/src/http/backends/mock_backend';
 import {Response} from 'angular2/src/http/static_response';
 import {RequestMethods} from 'angular2/src/http/enums';
 import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
+import {ResponseOptions} from 'angular2/src/http/base_response_options';
 import {Request} from 'angular2/src/http/static_request';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ConnectionBackend} from 'angular2/src/http/interfaces';
@@ -52,7 +53,7 @@ export function main() {
       ]);
       http = injector.get(Http);
       backend = injector.get(MockBackend);
-      baseResponse = new Response({body: 'base response'});
+      baseResponse = new Response(new ResponseOptions({body: 'base response'}));
     });
 
     afterEach(() => backend.verifyNoPendingRequests());
@@ -67,7 +68,7 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              ObservableWrapper.subscribe(backend.connections, c => {
                expect(c.request.url).toBe('https://google.com');
-               c.mockRespond(new Response({body: 'Thank you'}));
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
                async.done();
              });
              ObservableWrapper.subscribe(

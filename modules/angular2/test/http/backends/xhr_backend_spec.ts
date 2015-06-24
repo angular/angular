@@ -1,5 +1,6 @@
 import {
   AsyncTestCompleter,
+  afterEach,
   beforeEach,
   ddescribe,
   describe,
@@ -10,35 +11,47 @@ import {
   xit,
   SpyObject
 } from 'angular2/test_lib';
-import {BrowserXHR} from 'angular2/src/http/backends/browser_xhr';
+import {ObservableWrapper} from 'angular2/src/facade/async';
+import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
 import {bind, Injector} from 'angular2/di';
 import {Request} from 'angular2/src/http/static_request';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {RequestOptions} from 'angular2/src/http/base_request_options';
+import {Map} from 'angular2/src/facade/collection';
+import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
+import {ResponseTypes} from 'angular2/src/http/enums';
 
 var abortSpy;
 var sendSpy;
 var openSpy;
 var addEventListenerSpy;
+var existingXHRs = [];
 
-class MockBrowserXHR extends BrowserXHR {
+class MockBrowserXHR extends BrowserXhr {
   abort: any;
   send: any;
   open: any;
-  addEventListener: any;
   response: any;
   responseText: string;
+  callbacks: Map<string, Function>;
   constructor() {
     super();
     var spy = new SpyObject();
     this.abort = abortSpy = spy.spy('abort');
     this.send = sendSpy = spy.spy('send');
     this.open = openSpy = spy.spy('open');
-    this.addEventListener = addEventListenerSpy = spy.spy('addEventListener');
+    this.callbacks = new Map();
   }
 
-  build() { return new MockBrowserXHR(); }
+  addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
+
+  dispatchEvent(type: string) { this.callbacks.get(type)({}); }
+
+  build() {
+    var xhr = new MockBrowserXHR();
+    existingXHRs.push(xhr);
+    return xhr;
+  }
 }
 
 export function main() {
@@ -47,17 +60,35 @@ export function main() {
     var sampleRequest;
 
     beforeEach(() => {
-      var injector =
-          Injector.resolveAndCreate([bind(BrowserXHR).toClass(MockBrowserXHR), XHRBackend]);
+      var injector = Injector.resolveAndCreate([
+        bind(ResponseOptions)
+            .toClass(BaseResponseOptions),
+        bind(BrowserXhr).toClass(MockBrowserXHR),
+        XHRBackend
+      ]);
       backend = injector.get(XHRBackend);
-      sampleRequest = new Request(new RequestOptions({url: 'https://google.com'}));
+      var base = new BaseRequestOptions();
+      sampleRequest = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));
     });
+
+    afterEach(() => { existingXHRs = []; });
 
     it('should create a connection',
        () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
 
 
     describe('XHRConnection', () => {
+      it('should use the injected BaseResponseOptions to create the response',
+         inject([AsyncTestCompleter], async => {
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({type: ResponseTypes.Error}));
+           ObservableWrapper.subscribe(connection.response, res => {
+             expect(res.type).toBe(ResponseTypes.Error);
+             async.done();
+           });
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
       it('should call abort when disposed', () => {
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
         connection.dispose();
@@ -73,7 +104,9 @@ export function main() {
 
       it('should automatically call send on the backend with request body', () => {
         var body = 'Some body to love';
-        new XHRConnection(new Request(new RequestOptions({body: body})), new MockBrowserXHR());
+        var base = new BaseRequestOptions();
+        new XHRConnection(new Request(base.merge(new RequestOptions({body: body}))),
+                          new MockBrowserXHR());
         expect(sendSpy).toHaveBeenCalledWith(body);
       });
     });

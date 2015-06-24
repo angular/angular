@@ -13,12 +13,21 @@ function httpRequest(backend: ConnectionBackend, request: Request): EventEmitter
 function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
   var newOptions = defaultOpts;
   if (isPresent(providedOpts)) {
-    newOptions = newOptions.merge(providedOpts);
+    // Hack so Dart can used named parameters
+    newOptions = newOptions.merge(new RequestOptions({
+      method: providedOpts.method,
+      url: providedOpts.url,
+      headers: providedOpts.headers,
+      body: providedOpts.body,
+      mode: providedOpts.mode,
+      credentials: providedOpts.credentials,
+      cache: providedOpts.cache
+    }));
   }
   if (isPresent(method)) {
-    return newOptions.merge({method: method, url: url});
+    return newOptions.merge(new RequestOptions({method: method, url: url}));
   } else {
-    return newOptions.merge({url: url});
+    return newOptions.merge(new RequestOptions({url: url}));
   }
 }
 
@@ -26,9 +35,8 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
- * `request` returns an
- * [Observable](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md),
- * which will emit a single {@link Response} when a response is
+ * `request` returns an {@link EventEmitter} which will emit a single {@link Response} when a
+ *response is
  * received.
  *
  * #Example
@@ -73,7 +81,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  **/
 @Injectable()
 export class Http {
-  constructor(private _backend: ConnectionBackend, private _defaultOptions: BaseRequestOptions) {}
+  constructor(private _backend: ConnectionBackend, private _defaultOptions: RequestOptions) {}
 
   /**
    * Performs any type of http request. First argument is required, and can either be a url or
@@ -96,7 +104,7 @@ export class Http {
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: IRequestOptions) {
+  get(url: string, options?: IRequestOptions): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.GET, url)));
   }
@@ -104,25 +112,27 @@ export class Http {
   /**
    * Performs a request with `post` http method.
    */
-  post(url: string, body: string, options?: IRequestOptions) {
-    return httpRequest(this._backend,
-                       new Request(mergeOptions(this._defaultOptions.merge({body: body}), options,
-                                                RequestMethods.POST, url)));
+  post(url: string, body: string, options?: IRequestOptions): EventEmitter {
+    return httpRequest(
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
+                                 options, RequestMethods.POST, url)));
   }
 
   /**
    * Performs a request with `put` http method.
    */
-  put(url: string, body: string, options?: IRequestOptions) {
-    return httpRequest(this._backend,
-                       new Request(mergeOptions(this._defaultOptions.merge({body: body}), options,
-                                                RequestMethods.PUT, url)));
+  put(url: string, body: string, options?: IRequestOptions): EventEmitter {
+    return httpRequest(
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
+                                 options, RequestMethods.PUT, url)));
   }
 
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: IRequestOptions) {
+  delete (url: string, options?: IRequestOptions): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.DELETE, url)));
   }
@@ -130,16 +140,17 @@ export class Http {
   /**
    * Performs a request with `patch` http method.
    */
-  patch(url: string, body: string, options?: IRequestOptions) {
-    return httpRequest(this._backend,
-                       new Request(mergeOptions(this._defaultOptions.merge({body: body}), options,
-                                                RequestMethods.PATCH, url)));
+  patch(url: string, body: string, options?: IRequestOptions): EventEmitter {
+    return httpRequest(
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
+                                 options, RequestMethods.PATCH, url)));
   }
 
   /**
    * Performs a request with `head` http method.
    */
-  head(url: string, options?: IRequestOptions) {
+  head(url: string, options?: IRequestOptions): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.HEAD, url)));
   }

@@ -4,7 +4,7 @@ import 'dart:html' show HttpRequest;
 import 'package:angular2/di.dart';
 
 @Injectable()
-class BrowserXHR {
+class BrowserXhr {
 	HttpRequest build() {
 		return new HttpRequest();
 	}
