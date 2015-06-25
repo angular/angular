@@ -20,7 +20,7 @@ export class NgStyle {
   }
 
   onCheck() {
-    var diff = this._pipe.transform(this._rawStyle);
+    var diff = this._pipe.transform(this._rawStyle, null);
     if (isPresent(diff) && isPresent(diff.wrapped)) {
       this._applyChanges(diff.wrapped);
     }

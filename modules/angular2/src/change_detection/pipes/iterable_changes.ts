@@ -16,12 +16,13 @@ import {
 } from 'angular2/src/facade/lang';
 
 import {WrappedValue, Pipe, BasePipe, PipeFactory} from './pipe';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 @CONST()
 export class IterableChangesFactory implements PipeFactory {
   supports(obj): boolean { return IterableChanges.supportsObj(obj); }
 
-  create(cdRef): Pipe { return new IterableChanges(); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new IterableChanges(); }
 }
 
 /**
@@ -89,7 +90,7 @@ export class IterableChanges extends BasePipe {
     }
   }
 
-  transform(collection): any {
+  transform(collection, args: List<any> = null): any {
     if (this.check(collection)) {
       return WrappedValue.wrap(this);
     } else {
