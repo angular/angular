@@ -14,7 +14,7 @@ import '../common/read_file.dart';
 
 void allTests() {
   var codegen = new Codegen('web/index.dart', ['web/index.ng_deps.dart']);
-  var code = readFile('reflection_remover/index.dart');
+  var code = readFile('reflection_remover/index.dart').replaceAll('\r\n', '\n');
 
   it('should remove uses of mirrors & '
       'insert calls to generated code by default.', () {
