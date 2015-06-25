@@ -10,6 +10,7 @@ import {PromisePipeFactory} from './pipes/promise_pipe';
 import {UpperCaseFactory} from './pipes/uppercase_pipe';
 import {LowerCaseFactory} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
+import {LimitToPipeFactory} from './pipes/limit_to_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Inject, Injectable, OpaqueToken, Optional} from 'angular2/di';
@@ -64,8 +65,16 @@ export const lowercase: List<PipeFactory> =
  *
  * @exportedAs angular2/pipes
  */
-export const json: List<PipeFactory | Pipe> =
+export const json: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new JsonPipe()), CONST_EXPR(new NullPipeFactory())]);
+
+/**
+ * LimitTo text transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const limitTo: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new LimitToPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 export const defaultPipes = CONST_EXPR({
   "iterableDiff": iterableDiff,
@@ -73,7 +82,8 @@ export const defaultPipes = CONST_EXPR({
   "async": async,
   "uppercase": uppercase,
   "lowercase": lowercase,
-  "json": json
+  "json": json,
+  "limitTo": limitTo
 });
 
 /**
