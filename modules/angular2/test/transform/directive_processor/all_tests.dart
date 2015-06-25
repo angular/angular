@@ -4,6 +4,8 @@ import 'package:barback/barback.dart';
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/logging.dart' as log;
+import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 import 'package:path/path.dart' as path;
@@ -67,12 +69,29 @@ void allTests() {
 
   _testNgDeps('should not include superclasses in `interfaces`.',
       'superclass_files/soup.dart');
+
+  _testNgDeps(
+      'should not throw/hang on invalid urls', 'invalid_url_files/hello.dart',
+      expectedLogs: [
+    'ERROR: Uri /bad/absolute/url.html not supported from angular2|test/'
+        'transform/directive_processor/invalid_url_files/hello.dart, could not '
+        'build AssetId',
+    'ERROR: Could not read asset at uri package:invalid/package.css from '
+        'angular2|test/transform/directive_processor/invalid_url_files/'
+        'hello.dart',
+    'ERROR: Could not read asset at uri bad_relative_url.css from angular2|'
+        'test/transform/directive_processor/invalid_url_files/hello.dart'
+  ]);
 }
 
 void _testNgDeps(String name, String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [], AssetId assetId,
-    AssetReader reader}) {
+    AssetReader reader, List<String> expectedLogs}) {
   it(name, () async {
+    if (expectedLogs != null) {
+      log.setLogger(new RecordingLogger());
+    }
+
     var inputId = _assetIdForPath(inputPath);
     if (reader == null) {
       reader = new TestAssetReader();
@@ -93,8 +112,35 @@ void _testNgDeps(String name, String inputPath,
       expect(formatter.format(output))
           .toEqual((await reader.readAsString(expectedId)).replaceAll('\r\n', '\n'));
     }
+
+    if (expectedLogs != null) {
+      expect((log.logger as RecordingLogger).logs, expectedLogs);
+    }
   });
 }
 
 AssetId _assetIdForPath(String path) =>
     new AssetId('angular2', 'test/transform/directive_processor/$path');
+
+class RecordingLogger implements BuildLogger {
+  @override
+  final String detailsUri = '';
+  @override
+  final bool convertErrorsToWarnings = false;
+
+  List<String> logs = [];
+
+  void _record(prefix, msg) => logs.add('$prefix: $msg');
+
+  void info(msg, {AssetId asset, SourceSpan span}) => _record('INFO', msg);
+
+  void fine(msg, {AssetId asset, SourceSpan span}) => _record('FINE', msg);
+
+  void warning(msg, {AssetId asset, SourceSpan span}) => _record('WARN', msg);
+
+  void error(msg, {AssetId asset, SourceSpan span}) => _record('ERROR', msg);
+
+  Future writeOutput() => throw new UnimplementedError();
+  Future addLogFilesFromAsset(AssetId id, [int nextNumber = 1]) =>
+      throw new UnimplementedError();
+}
