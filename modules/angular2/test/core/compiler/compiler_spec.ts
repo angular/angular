@@ -373,6 +373,26 @@ export function main() {
              });
        }));
 
+    it('should not bind directives for cached components', inject([AsyncTestCompleter], (async) => {
+         // set up the cache with the test proto view
+         var mainPv: AppProtoView = createProtoView();
+         var cache: CompilerCache = new CompilerCache();
+         cache.setHost(MainComponent, mainPv);
+
+         // create the spy resolver
+         var reader: any = new SpyDirectiveResolver();
+
+         // create the compiler
+         var compiler = new Compiler(reader, cache, tplResolver, cmpUrlMapper, new UrlResolver(),
+                                     renderCompiler, protoViewFactory, new FakeAppRootUrl());
+         compiler.compileInHost(MainComponent)
+             .then((protoViewRef) => {
+               // the test should have failed if the resolver was called, so we're good
+               async.done();
+             });
+       }));
+
+
     it('should cache compiled nested components', inject([AsyncTestCompleter], (async) => {
          tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
          tplResolver.setView(MainComponent2, new viewAnn.View({template: '<div></div>'}));
@@ -560,6 +580,13 @@ class DirectiveWithAttributes {
 @IMPLEMENTS(RenderCompiler)
 class SpyRenderCompiler extends SpyObject {
   constructor() { super(RenderCompiler); }
+  noSuchMethod(m) { return super.noSuchMethod(m) }
+}
+
+@proxy
+@IMPLEMENTS(DirectiveResolver)
+class SpyDirectiveResolver extends SpyObject {
+  constructor() { super(DirectiveResolver); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
