@@ -1,5 +1,6 @@
 import {isString, StringWrapper, CONST} from 'angular2/src/facade/lang';
-import {Pipe} from './pipe';
+import {Pipe, PipeFactory} from './pipe';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * Implements uppercase transforms to text.
@@ -30,7 +31,7 @@ export class UpperCasePipe implements Pipe {
 
   onDestroy(): void { this._latestValue = null; }
 
-  transform(value: string): string {
+  transform(value: string, args: List<any> = null): string {
     if (this._latestValue !== value) {
       this._latestValue = value;
       return StringWrapper.toUpperCase(value);
@@ -44,8 +45,8 @@ export class UpperCasePipe implements Pipe {
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class UpperCaseFactory {
+export class UpperCaseFactory implements PipeFactory {
   supports(str): boolean { return isString(str); }
 
-  create(): Pipe { return new UpperCasePipe(); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new UpperCasePipe(); }
 }

@@ -300,6 +300,7 @@ var _availableDefinitions = [
   '{z: 1}',
   '{z: a}',
   'name | pipe',
+  "name | pipe:'one':address.city",
   'value',
   'a',
   'address.city',

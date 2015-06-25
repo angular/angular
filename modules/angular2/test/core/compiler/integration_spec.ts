@@ -1473,7 +1473,7 @@ class DoublePipe implements Pipe {
 
   supports(obj) { return true; }
 
-  transform(value) { return `${value}${value}`; }
+  transform(value, args = null) { return `${value}${value}`; }
 }
 
 @Injectable()

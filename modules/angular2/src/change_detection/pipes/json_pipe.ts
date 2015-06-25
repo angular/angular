@@ -1,5 +1,6 @@
 import {isBlank, isPresent, Json, CONST} from 'angular2/src/facade/lang';
 import {Pipe, BasePipe, PipeFactory} from './pipe';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * Implements json transforms to any object.
@@ -27,8 +28,8 @@ import {Pipe, BasePipe, PipeFactory} from './pipe';
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class JsonPipe extends BasePipe {
-  transform(value): string { return Json.stringify(value); }
+export class JsonPipe extends BasePipe implements PipeFactory {
+  transform(value, args: List<any> = null): string { return Json.stringify(value); }
 
-  create(cdRef): Pipe { return this }
+  create(cdRef: ChangeDetectorRef): Pipe { return this }
 }

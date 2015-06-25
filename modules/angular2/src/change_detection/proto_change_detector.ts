@@ -181,7 +181,8 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
 
   visitPipe(ast: BindingPipe): number {
     var value = ast.exp.visit(this);
-    return this._addRecord(RecordType.PIPE, ast.name, ast.name, [], null, value);
+    var args = this._visitAll(ast.args);
+    return this._addRecord(RecordType.PIPE, ast.name, ast.name, args, null, value);
   }
 
   visitKeyedAccess(ast: KeyedAccess): number {

@@ -55,7 +55,7 @@ export class NgFor {
   }
 
   onCheck() {
-    var diff = this._pipe.transform(this._ngForOf);
+    var diff = this._pipe.transform(this._ngForOf, null);
     if (isPresent(diff)) this._applyChanges(diff.wrapped);
   }
 
