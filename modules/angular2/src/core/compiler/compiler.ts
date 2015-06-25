@@ -2,6 +2,7 @@ import {Binding, resolveForwardRef, Injectable} from 'angular2/di';
 import {
   Type,
   isBlank,
+  isType,
   isPresent,
   BaseException,
   normalizeBlank,
@@ -103,16 +104,18 @@ export class Compiler {
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
   compileInHost(componentTypeOrBinding: Type | Binding): Promise<ProtoViewRef> {
-    var componentBinding = this._bindDirective(componentTypeOrBinding);
-    Compiler._assertTypeIsComponent(componentBinding);
+    var componentType = isType(componentTypeOrBinding) ? componentTypeOrBinding :
+                                                         (<Binding>componentTypeOrBinding).token;
 
-    var directiveMetadata = componentBinding.metadata;
+    var hostAppProtoView = this._compilerCache.getHost(componentType);
     var hostPvPromise;
-    var component = <Type>componentBinding.key.token;
-    var hostAppProtoView = this._compilerCache.getHost(component);
     if (isPresent(hostAppProtoView)) {
       hostPvPromise = PromiseWrapper.resolve(hostAppProtoView);
     } else {
+      var componentBinding = this._bindDirective(componentTypeOrBinding);
+      Compiler._assertTypeIsComponent(componentBinding);
+
+      var directiveMetadata = componentBinding.metadata;
       hostPvPromise = this._render.compileHost(directiveMetadata)
                           .then((hostRenderPv) => {
                             return this._compileNestedProtoViews(componentBinding, hostRenderPv,
