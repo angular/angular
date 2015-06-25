@@ -85,7 +85,6 @@ class _TemplateExtractor {
 
   _TemplateExtractor(XHR xhr)
       : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
-
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
@@ -110,8 +109,7 @@ class _TemplateExtractor {
 
     var compileElements =
         pipeline.process(templateEl, ViewType.COMPONENT, viewDef.componentId);
-    var protoViewDto = compileElements[0].inheritedProtoView
-        .build();
+    var protoViewDto = compileElements[0].inheritedProtoView.build();
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 
