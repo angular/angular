@@ -56,6 +56,7 @@
     "broccoli-writer": "^0.1.1",
     "canonical-path": "0.0.2",
     "chokidar": "^1.0.1",
+    "clang-format": "^1.0.25",
     "conventional-changelog": "^0.0.17",
     "css": "mlaval/css#issue65",
     "del": "~1",
