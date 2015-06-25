@@ -9,6 +9,8 @@ import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 
+main() => allTests();
+
 void allTests() {
   var reader = new TestAssetReader();
 
@@ -18,8 +20,8 @@ void allTests() {
     var expected = formatter.format(
         readFile('bind_generator/basic_bind_files/expected/bar.ng_deps.dart'));
 
-    var output = formatter
-        .format(await createNgSetters(reader, new AssetId('a', inputPath)));
+    var output = formatter.format(
+        await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
     expect(output).toEqual(expected);
   });
 
@@ -30,8 +32,19 @@ void allTests() {
     var expected = formatter.format(readFile(
         'bind_generator/duplicate_bind_name_files/expected/soup.ng_deps.dart'));
 
-    var output = formatter
-        .format(await createNgSetters(reader, new AssetId('a', inputPath)));
+    var output = formatter.format(
+        await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
+    expect(output).toEqual(expected);
+  });
+
+  it('should generate a getter for a `events` property in an annotation.',
+      () async {
+    var inputPath = 'bind_generator/events_files/bar.ng_deps.dart';
+    var expected = formatter.format(
+      readFile('bind_generator/events_files/expected/bar.ng_deps.dart'));
+
+    var output = formatter.format(
+      await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
     expect(output).toEqual(expected);
   });
 }
