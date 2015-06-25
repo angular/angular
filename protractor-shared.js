@@ -62,7 +62,7 @@ var BROWSER_CAPS = {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
       'mobileEmulation': CHROME_MOBILE_EMULATION,
-      'binary': process.env.DARTIUM
+      'binary': process.env.DARTIUM_BIN
     }),
     loggingPrefs: {
       performance: 'ALL',
