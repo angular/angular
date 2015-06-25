@@ -1,5 +1,6 @@
 library angular2.transform.directive_processor.visitors;
 
+import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
@@ -263,7 +264,7 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       var url = node.expression.accept(_evaluator);
       if (url is String) {
         writer.print("template: r'''");
-        writer.asyncPrint(_xhr.get(url));
+        writer.asyncPrint(_readOrEmptyString(url));
         writer.print("'''");
         return null;
       } else {
@@ -276,7 +277,7 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       for (var url in urls) {
         if (url is String) {
           writer.print("r'''");
-          writer.asyncPrint(_xhr.get(url));
+          writer.asyncPrint(_readOrEmptyString(url));
           writer.print("''', ");
         } else {
           logger.warning('style url is not a String ${url}');
@@ -286,5 +287,15 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       return null;
     }
     return super.visitNamedExpression(node);
+  }
+
+  /// Attempts to read the content from {@link url}, if it returns null then
+  /// just return the empty string.
+  Future<String> _readOrEmptyString(String url) async {
+    var content = await _xhr.get(url);
+    if (content == null) {
+      content = '';
+    }
+    return content;
   }
 }

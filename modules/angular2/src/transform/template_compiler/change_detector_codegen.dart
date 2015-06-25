@@ -222,8 +222,7 @@ class _CodegenState {
 
   List<String> _getNonNullPipeNames() {
     return _records
-        .where((r) =>
-            r.mode == RecordType.PIPE)
+        .where((r) => r.mode == RecordType.PIPE)
         .map((r) => _pipeNames[r.selfIndex])
         .toList();
   }
