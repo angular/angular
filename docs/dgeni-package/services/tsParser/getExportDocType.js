@@ -45,7 +45,7 @@ module.exports = function getExportDocType(log) {
     var node = symbol.valueDeclaration;
     while(node) {
       if ( node.flags & 0x2000 /* const */) {
-        return 'const';
+        return 'var'; // change to const when targetting TS 1.5
       }
       node = node.parent;
     }
