@@ -233,10 +233,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _pipeCheck(proto: ProtoRecord, throwOnChange: boolean) {
     var context = this._readContext(proto);
+    var args = this._readArgs(proto);
+
     var pipe = this._pipeFor(proto, context);
     var prevValue = this._readSelf(proto);
-
-    var currValue = pipe.transform(context);
+    var currValue = pipe.transform(context, args);
 
     if (!isSame(prevValue, currValue)) {
       currValue = ChangeDetectionUtil.unwrapValue(currValue);

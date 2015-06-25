@@ -333,6 +333,15 @@ export function main() {
             val.changeDetector.detectChanges();
             expect(val.dispatcher.loggedValues).toEqual(['bob state:0']);
           });
+
+          it('should support arguments in pipes', () => {
+            var registry = new FakePipeRegistry('pipe', () => new MultiArgPipe());
+            var address = new Address('two');
+            var person = new Person('value', address);
+            var val = _createChangeDetector("name | pipe:'one':address.city", person, registry);
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual(['value one two default']);
+          });
         });
 
         it('should notify the dispatcher on all changes done', () => {
@@ -861,7 +870,7 @@ class CountingPipe implements Pipe {
 
   supports(newValue) { return true; }
 
-  transform(value) { return `${value} state:${this.state ++}`; }
+  transform(value, args = null) { return `${value} state:${this.state ++}`; }
 }
 
 class OncePipe implements Pipe {
@@ -872,7 +881,7 @@ class OncePipe implements Pipe {
 
   onDestroy() { this.destroyCalled = true; }
 
-  transform(value) {
+  transform(value, args = null) {
     this.called = true;
     return value;
   }
@@ -883,7 +892,7 @@ class IdentityPipe implements Pipe {
 
   onDestroy() {}
 
-  transform(value) { return value; }
+  transform(value, args = null) { return value; }
 }
 
 class WrappedPipe implements Pipe {
@@ -891,7 +900,18 @@ class WrappedPipe implements Pipe {
 
   onDestroy() {}
 
-  transform(value) { return WrappedValue.wrap(value); }
+  transform(value, args = null) { return WrappedValue.wrap(value); }
+}
+
+class MultiArgPipe implements Pipe {
+  transform(value, args = null) {
+    var arg1 = args[0];
+    var arg2 = args[1];
+    var arg3 = args.length > 2 ? args[2] : 'default';
+    return `${value} ${arg1} ${arg2} ${arg3}`;
+  }
+  supports(obj): boolean { return true; }
+  onDestroy(): void {}
 }
 
 class FakePipeRegistry extends PipeRegistry {

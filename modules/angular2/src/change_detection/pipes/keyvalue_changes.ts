@@ -1,6 +1,6 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {stringify, looseIdentical, isJsObject, CONST} from 'angular2/src/facade/lang';
-
+import {ChangeDetectorRef} from '../change_detector_ref';
 import {WrappedValue, BasePipe, Pipe, PipeFactory} from './pipe';
 
 /**
@@ -10,7 +10,7 @@ import {WrappedValue, BasePipe, Pipe, PipeFactory} from './pipe';
 export class KeyValueChangesFactory implements PipeFactory {
   supports(obj): boolean { return KeyValueChanges.supportsObj(obj); }
 
-  create(cdRef): Pipe { return new KeyValueChanges(); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new KeyValueChanges(); }
 }
 
 /**
@@ -31,7 +31,7 @@ export class KeyValueChanges extends BasePipe {
 
   supports(obj): boolean { return KeyValueChanges.supportsObj(obj); }
 
-  transform(map): any {
+  transform(map, args: List<any> = null): any {
     if (this.check(map)) {
       return WrappedValue.wrap(this);
     } else {

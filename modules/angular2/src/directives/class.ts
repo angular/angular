@@ -28,7 +28,7 @@ export class CSSClass {
   }
 
   onCheck(): void {
-    var diff = this._pipe.transform(this._rawClass);
+    var diff = this._pipe.transform(this._rawClass, null);
     if (isPresent(diff) && isPresent(diff.wrapped)) {
       if (diff.wrapped instanceof IterableChanges) {
         this._applyArrayChanges(diff.wrapped);

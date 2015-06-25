@@ -46,7 +46,7 @@ export class ObservablePipe implements Pipe {
     }
   }
 
-  transform(obs: Observable): any {
+  transform(obs: Observable, args: List<any> = null): any {
     if (isBlank(this._subscription)) {
       this._subscribe(obs);
       return null;
@@ -94,5 +94,5 @@ export class ObservablePipe implements Pipe {
 export class ObservablePipeFactory implements PipeFactory {
   supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 
-  create(cdRef): Pipe { return new ObservablePipe(cdRef); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new ObservablePipe(cdRef); }
 }
