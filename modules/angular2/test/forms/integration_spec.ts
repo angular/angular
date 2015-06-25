@@ -2,14 +2,14 @@ import {Component, Directive, View} from 'angular2/angular2';
 import {
   afterEach,
   AsyncTestCompleter,
+  TestComponentBuilder,
+  By,
   beforeEach,
   ddescribe,
   describe,
   dispatchEvent,
   fakeAsync,
-  flushMicrotasks,
   tick,
-  el,
   expect,
   it,
   inject,
@@ -18,7 +18,6 @@ import {
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {NgIf, NgFor} from 'angular2/directives';
 
 import {
@@ -34,248 +33,237 @@ import {
 export function main() {
   describe("integration tests", () => {
     it("should initialize DOM elements with the given form object",
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-         var ctx = MyComp.create({form: new ControlGroup({"login": new Control("loginValue")})});
-
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var t = `<div [ng-form-model]="form">
                 <input type="text" ng-control="login">
                </div>`;
 
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+           rootTC.componentInstance.form = new ControlGroup({"login": new Control("loginValue")});
+           rootTC.detectChanges();
 
-               var input = view.querySelector("input");
-               expect(input.value).toEqual("loginValue");
-               async.done();
-             });
+           var input = rootTC.query(By.css("input"));
+           expect(input.nativeElement.value).toEqual("loginValue");
+           async.done();
+         });
        }));
 
     it("should update the control group values on DOM change",
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
-         var ctx = MyComp.create({form: form});
 
          var t = `<div [ng-form-model]="form">
                 <input type="text" ng-control="login">
               </div>`;
 
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
-               var input = view.querySelector("input");
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+           rootTC.componentInstance.form = form;
+           rootTC.detectChanges();
+           var input = rootTC.query(By.css("input"));
 
-               input.value = "updatedValue";
-               dispatchEvent(input, "change");
+           input.nativeElement.value = "updatedValue";
+           dispatchEvent(input.nativeElement, "change");
 
-               expect(form.value).toEqual({"login": "updatedValue"});
-               async.done();
-             });
+           expect(form.value).toEqual({"login": "updatedValue"});
+           async.done();
+         });
        }));
 
     it("should emit ng-submit event on submit",
-       inject([TestBed], fakeAsync(tb => {
-                var form = new ControlGroup({});
-                var ctx = MyComp.create({form: form, name: 'old'});
+       inject(
+           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+             var t =
+                 `<div><form [ng-form-model]="form" (ng-submit)="name='updated'"></form><span>{{name}}</span></div>`;
 
-                var t =
-                    `<div><form [ng-form-model]="form" (ng-submit)="name='updated'"></form></div>`;
+             var rootTC;
 
-                tb.createView(MyComp, {context: ctx, html: t})
-                    .then((view) => {
-                      var form = view.querySelector("form");
+             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
+             tick();
+             rootTC.componentInstance.form = new ControlGroup({});
+             rootTC.componentInstance.name = 'old';
 
-                      dispatchEvent(form, "submit");
-                      tick();
+             tick();
 
-                      expect(ctx.name).toEqual("updated");
-                    });
-              })));
+             var form = rootTC.query(By.css("form"));
+             dispatchEvent(form.nativeElement, "submit");
+
+             tick();
+             expect(rootTC.componentInstance.name).toEqual('updated');
+           })));
 
     it("should work with single controls",
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var control = new Control("loginValue");
-         var ctx = MyComp.create({form: control});
 
          var t = `<div><input type="text" [ng-form-control]="form"></div>`;
 
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
-               var input = view.querySelector("input");
-               expect(input.value).toEqual("loginValue");
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+           rootTC.componentInstance.form = control;
+           rootTC.detectChanges();
 
-               input.value = "updatedValue";
-               dispatchEvent(input, "change");
+           var input = rootTC.query(By.css("input"));
+           expect(input.nativeElement.value).toEqual("loginValue");
 
-               expect(control.value).toEqual("updatedValue");
-               async.done();
-             });
+           input.nativeElement.value = "updatedValue";
+           dispatchEvent(input.nativeElement, "change");
+
+           expect(control.value).toEqual("updatedValue");
+           async.done();
+         });
        }));
 
     it("should update DOM elements when rebinding the control group",
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-         var form = new ControlGroup({"login": new Control("oldValue")});
-         var ctx = MyComp.create({form: form});
-
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var t = `<div [ng-form-model]="form">
                 <input type="text" ng-control="login">
                </div>`;
 
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
-               ctx.form = new ControlGroup({"login": new Control("newValue")});
-               view.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+           rootTC.componentInstance.form = new ControlGroup({"login": new Control("oldValue")});
+           rootTC.detectChanges();
 
-               var input = view.querySelector("input");
-               expect(input.value).toEqual("newValue");
-               async.done();
-             });
+           rootTC.componentInstance.form = new ControlGroup({"login": new Control("newValue")});
+           rootTC.detectChanges();
+
+           var input = rootTC.query(By.css("input"));
+           expect(input.nativeElement.value).toEqual("newValue");
+           async.done();
+         });
        }));
 
     it("should update DOM elements when updating the value of a control",
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
-         var ctx = MyComp.create({form: form});
 
          var t = `<div [ng-form-model]="form">
                 <input type="text" ng-control="login">
                </div>`;
 
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+           rootTC.componentInstance.form = form;
+           rootTC.detectChanges();
 
-               login.updateValue("newValue");
+           login.updateValue("newValue");
 
-               view.detectChanges();
+           rootTC.detectChanges();
 
-               var input = view.querySelector("input");
-               expect(input.value).toEqual("newValue");
-               async.done();
-             });
+           var input = rootTC.query(By.css("input"));
+           expect(input.nativeElement.value).toEqual("newValue");
+           async.done();
+         });
        }));
 
     it("should mark controls as touched after interacting with the DOM control",
-       inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
-         var ctx = MyComp.create({form: form});
 
          var t = `<div [ng-form-model]="form">
                 <input type="text" ng-control="login">
                </div>`;
 
-         tb.createView(MyComp, {context: ctx, html: t})
-             .then((view) => {
-               view.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+           rootTC.componentInstance.form = form;
+           rootTC.detectChanges();
 
-               var loginEl = view.querySelector("input");
+           var loginEl = rootTC.query(By.css("input"));
+           expect(login.touched).toBe(false);
 
-               expect(login.touched).toBe(false);
+           dispatchEvent(loginEl.nativeElement, "blur");
 
-               dispatchEvent(loginEl, "blur");
+           expect(login.touched).toBe(true);
 
-               expect(login.touched).toBe(true);
-
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     describe("different control types", () => {
       it("should support <input type=text>",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
-
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
                   <input type="text" ng-control="text">
                 </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var input = view.querySelector("input");
-                 expect(input.value).toEqual("old");
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"text": new Control("old")});
+             rootTC.detectChanges();
 
-                 input.value = "new";
-                 dispatchEvent(input, "input");
+             var input = rootTC.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("old");
 
-                 expect(ctx.form.value).toEqual({"text": "new"});
-                 async.done();
-               });
+             input.nativeElement.value = "new";
+             dispatchEvent(input.nativeElement, "input");
+
+             expect(rootTC.componentInstance.form.value).toEqual({"text": "new"});
+             async.done();
+           });
          }));
 
       it("should support <input> without type",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var ctx = MyComp.create({form: new ControlGroup({"text": new Control("old")})});
-
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
                   <input ng-control="text">
                 </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var input = view.querySelector("input");
-                 expect(input.value).toEqual("old");
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"text": new Control("old")});
+             rootTC.detectChanges();
+             var input = rootTC.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("old");
 
-                 input.value = "new";
-                 dispatchEvent(input, "input");
+             input.nativeElement.value = "new";
+             dispatchEvent(input.nativeElement, "input");
 
-                 expect(ctx.form.value).toEqual({"text": "new"});
-                 async.done();
-               });
+             expect(rootTC.componentInstance.form.value).toEqual({"text": "new"});
+             async.done();
+           });
          }));
 
       it("should support <textarea>",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var ctx = MyComp.create({form: new ControlGroup({"text": new Control('old')})});
-
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
                   <textarea ng-control="text"></textarea>
                 </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var textarea = view.querySelector("textarea");
-                 expect(textarea.value).toEqual("old");
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"text": new Control('old')});
+             rootTC.detectChanges();
 
-                 textarea.value = "new";
-                 dispatchEvent(textarea, "input");
+             var textarea = rootTC.query(By.css("textarea"));
+             expect(textarea.nativeElement.value).toEqual("old");
 
-                 expect(ctx.form.value).toEqual({"text": 'new'});
-                 async.done();
-               });
+             textarea.nativeElement.value = "new";
+             dispatchEvent(textarea.nativeElement, "input");
+
+             expect(rootTC.componentInstance.form.value).toEqual({"text": 'new'});
+             async.done();
+           });
          }));
 
       it("should support <type=checkbox>",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var ctx = MyComp.create({form: new ControlGroup({"checkbox": new Control(true)})});
-
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
                   <input type="checkbox" ng-control="checkbox">
                 </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var input = view.querySelector("input");
-                 expect(input.checked).toBe(true);
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"checkbox": new Control(true)});
+             rootTC.detectChanges();
 
-                 input.checked = false;
-                 dispatchEvent(input, "change");
+             var input = rootTC.query(By.css("input"));
+             expect(input.nativeElement.checked).toBe(true);
 
-                 expect(ctx.form.value).toEqual({"checkbox": false});
-                 async.done();
-               });
+             input.nativeElement.checked = false;
+             dispatchEvent(input.nativeElement, "change");
+
+             expect(rootTC.componentInstance.form.value).toEqual({"checkbox": false});
+             async.done();
+           });
          }));
 
-      it("should support <select>", inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var ctx = MyComp.create({form: new ControlGroup({"city": new Control("SF")})});
-
+      it("should support <select>",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
                     <select ng-control="city">
                       <option value="SF"></option>
@@ -283,124 +271,117 @@ export function main() {
                     </select>
                   </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var select = view.querySelector("select");
-                 var sfOption = view.querySelector("option");
-                 expect(select.value).toEqual('SF');
-                 expect(sfOption.selected).toBe(true);
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"city": new Control("SF")});
+             rootTC.detectChanges();
 
-                 select.value = 'NYC';
-                 dispatchEvent(select, "change");
+             var select = rootTC.query(By.css("select"));
+             var sfOption = rootTC.query(By.css("option"));
+             expect(select.nativeElement.value).toEqual('SF');
+             expect(sfOption.nativeElement.selected).toBe(true);
 
-                 expect(ctx.form.value).toEqual({"city": 'NYC'});
-                 expect(sfOption.selected).toBe(false);
-                 async.done();
-               });
+             select.nativeElement.value = 'NYC';
+             dispatchEvent(select.nativeElement, "change");
+
+             expect(rootTC.componentInstance.form.value).toEqual({"city": 'NYC'});
+             expect(sfOption.nativeElement.selected).toBe(false);
+             async.done();
+           });
          }));
 
       it("should support <select> with a dynamic list of options",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create(
-                      {form: new ControlGroup({"city": new Control("NYC")}), data: ['SF', 'NYC']});
-
-                  var t = `<div [ng-form-model]="form">
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
                       <select ng-control="city">
                         <option *ng-for="#c of data" [value]="c"></option>
                       </select>
                   </div>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
-                        tick();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"city": new Control("NYC")});
+             rootTC.componentInstance.data = ['SF', 'NYC'];
+             rootTC.detectChanges();
 
-                        var select = view.querySelector('select');
-
-                        expect(select.value).toEqual('NYC');
-                      });
-                })));
+             var select = rootTC.query(By.css('select'));
+             expect(select.nativeElement.value).toEqual('NYC');
+             async.done();
+           });
+         }));
 
       it("should support custom value accessors",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
-           var ctx = MyComp.create({form: new ControlGroup({"name": new Control("aa")})});
-
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
                   <input type="text" ng-control="name" wrapped-value>
                 </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var input = view.querySelector("input");
-                 expect(input.value).toEqual("!aa!");
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = new ControlGroup({"name": new Control("aa")});
+             rootTC.detectChanges();
+             var input = rootTC.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("!aa!");
 
-                 input.value = "!bb!";
-                 dispatchEvent(input, "change");
+             input.nativeElement.value = "!bb!";
+             dispatchEvent(input.nativeElement, "change");
 
-                 expect(ctx.form.value).toEqual({"name": "bb"});
-                 async.done();
-               });
+             expect(rootTC.componentInstance.form.value).toEqual({"name": "bb"});
+             async.done();
+           });
          }));
     });
 
     describe("validations", () => {
       it("should use validators defined in html",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup({"login": new Control("aa")});
-           var ctx = MyComp.create({form: form});
 
            var t = `<div [ng-form-model]="form">
                   <input type="text" ng-control="login" required>
                  </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 expect(form.valid).toEqual(true);
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
+             expect(form.valid).toEqual(true);
 
-                 var input = view.querySelector("input");
+             var input = rootTC.query(By.css("input"));
 
-                 input.value = "";
-                 dispatchEvent(input, "change");
+             input.nativeElement.value = "";
+             dispatchEvent(input.nativeElement, "change");
 
-                 expect(form.valid).toEqual(false);
-                 async.done();
-               });
+             expect(form.valid).toEqual(false);
+             async.done();
+           });
          }));
 
       it("should use validators defined in the model",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
-           var ctx = MyComp.create({form: form});
 
            var t = `<div [ng-form-model]="form">
                   <input type="text" ng-control="login">
                  </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 expect(form.valid).toEqual(true);
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
+             expect(form.valid).toEqual(true);
 
-                 var input = view.querySelector("input");
+             var input = rootTC.query(By.css("input"));
 
-                 input.value = "";
-                 dispatchEvent(input, "change");
+             input.nativeElement.value = "";
+             dispatchEvent(input.nativeElement, "change");
 
-                 expect(form.valid).toEqual(false);
-                 async.done();
-               });
+             expect(form.valid).toEqual(false);
+             async.done();
+           });
          }));
     });
 
     describe("nested forms", () => {
       it("should init DOM with the given form object",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
-           var ctx = MyComp.create({form: form});
 
            var t = `<div [ng-form-model]="form">
                   <div ng-control-group="nested">
@@ -408,20 +389,20 @@ export function main() {
                   </div>
               </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var input = view.querySelector("input");
-                 expect(input.value).toEqual("value");
-                 async.done();
-               });
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
+
+             var input = rootTC.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("value");
+             async.done();
+           });
          }));
 
       it("should update the control group values on DOM change",
-         inject([TestBed, AsyncTestCompleter], (tb: TestBed, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
-           var ctx = MyComp.create({form: form});
 
            var t = `<div [ng-form-model]="form">
                     <div ng-control-group="nested">
@@ -429,157 +410,155 @@ export function main() {
                     </div>
                 </div>`;
 
-           tb.createView(MyComp, {context: ctx, html: t})
-               .then((view) => {
-                 view.detectChanges();
-                 var input = view.querySelector("input");
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
+             var input = rootTC.query(By.css("input"));
 
-                 input.value = "updatedValue";
-                 dispatchEvent(input, "change");
+             input.nativeElement.value = "updatedValue";
+             dispatchEvent(input.nativeElement, "change");
 
-                 expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
-                 async.done();
-               });
+             expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
+             async.done();
+           });
          }));
     });
 
     it("should support ng-model for complex forms",
        inject(
-           [TestBed], fakeAsync(tb => {
+           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
              var form = new ControlGroup({"name": new Control("")});
-             var ctx = MyComp.create({name: "oldValue", form: form});
 
              var t =
                  `<div [ng-form-model]="form"><input type="text" ng-control="name" [(ng-model)]="name"></div>`;
 
-             tb.createView(MyComp, {context: ctx, html: t})
-                 .then((view) => {
-                   view.detectChanges();
+             var rootTC;
+             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
+             tick();
 
-                   var input = view.querySelector("input");
-                   expect(input.value).toEqual("oldValue");
+             rootTC.componentInstance.name = 'oldValue';
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
 
-                   input.value = "updatedValue";
-                   dispatchEvent(input, "change");
+             var input = rootTC.query(By.css("input")).nativeElement;
+             expect(input.value).toEqual("oldValue");
 
-                   tick();
+             input.value = "updatedValue";
+             dispatchEvent(input, "change");
 
-                   expect(ctx.name).toEqual("updatedValue");
-                 });
+             tick();
+             expect(rootTC.componentInstance.name).toEqual("updatedValue");
            })));
 
     it("should support ng-model for single fields",
-       inject([TestBed], fakeAsync(tb => {
-                var form = new Control("");
-                var ctx = MyComp.create({name: "oldValue", form: form});
+       inject(
+           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+             var form = new Control("");
 
-                var t =
-                    `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
+             var t = `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
 
-                tb.createView(MyComp, {context: ctx, html: t})
-                    .then((view) => {
-                      view.detectChanges();
+             var rootTC;
+             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
+             tick();
+             rootTC.componentInstance.form = form;
+             rootTC.componentInstance.name = "oldValue";
+             rootTC.detectChanges();
 
-                      var input = view.querySelector("input");
-                      expect(input.value).toEqual("oldValue");
+             var input = rootTC.query(By.css("input")).nativeElement;
+             expect(input.value).toEqual("oldValue");
 
-                      input.value = "updatedValue";
-                      dispatchEvent(input, "change");
+             input.value = "updatedValue";
+             dispatchEvent(input, "change");
+             tick();
 
-                      tick();
-
-                      expect(ctx.name).toEqual("updatedValue");
-                    });
-              })));
+             expect(rootTC.componentInstance.name).toEqual("updatedValue");
+           })));
 
     describe("template-driven forms", () => {
       it("should add new controls and control groups",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: null});
-
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
                      <div ng-control-group="user">
                       <input type="text" ng-control="login">
                      </div>
                </form>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
-                        var form = view.rawView.elementInjectors[0].get(NgForm);
-                        expect(form.controls['user']).not.toBeDefined();
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = null;
+                  rootTC.detectChanges();
 
-                        tick();
+                  var form = rootTC.componentViewChildren[0].inject(NgForm);
+                  expect(form.controls['user']).not.toBeDefined();
 
-                        expect(form.controls['user']).toBeDefined();
-                        expect(form.controls['user'].controls['login']).toBeDefined();
-                      });
+                  tick();
+
+                  expect(form.controls['user']).toBeDefined();
+                  expect(form.controls['user'].controls['login']).toBeDefined();
                 })));
 
       it("should emit ng-submit event on submit",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: 'old'});
-
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<div><form (ng-submit)="name='updated'"></form></div>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        var form = view.querySelector("form");
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = 'old';
+                  var form = rootTC.query(By.css("form"));
 
-                        dispatchEvent(form, "submit");
-                        tick();
+                  dispatchEvent(form.nativeElement, "submit");
+                  tick();
 
-                        expect(ctx.name).toEqual("updated");
-                      });
+                  expect(rootTC.componentInstance.name).toEqual("updated");
                 })));
 
       it("should not create a template-driven form when ng-no-form is used",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: null});
-
-                  var t = `<form ng-no-form>
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<form ng-no-form>
                </form>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.name = null;
+             rootTC.detectChanges();
 
-                        expect(view.rawView.elementInjectors.length).toEqual(0);
-                      });
-                })));
+             expect(rootTC.componentViewChildren.length).toEqual(0);
+             async.done();
+           });
+         }));
 
-      it("should remove controls", inject([TestBed], fakeAsync((tb: TestBed) => {
-                                            var ctx = MyComp.create({name: 'show'});
-
-                                            var t = `<form>
+      it("should remove controls",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var t = `<form>
                     <div *ng-if="name == 'show'">
                       <input type="text" ng-control="login">
                     </div>
                   </form>`;
 
-                                            tb.createView(MyComp, {context: ctx, html: t})
-                                                .then((view) => {
-                                                  view.detectChanges();
-                                                  var form =
-                                                      view.rawView.elementInjectors[0].get(NgForm);
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = 'show';
+                  rootTC.detectChanges();
+                  tick();
+                  var form = rootTC.componentViewChildren[0].inject(NgForm);
 
-                                                  tick();
 
-                                                  expect(form.controls['login']).toBeDefined();
+                  expect(form.controls['login']).toBeDefined();
 
-                                                  ctx.name = 'hide';
-                                                  view.detectChanges();
-                                                  tick();
+                  rootTC.componentInstance.name = 'hide';
+                  rootTC.detectChanges();
+                  tick();
 
-                                                  expect(form.controls['login']).not.toBeDefined();
-                                                });
-                                          })));
+                  expect(form.controls['login']).not.toBeDefined();
+                })));
 
       it("should remove control groups",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: 'show'});
-
-
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
                      <div *ng-if="name=='show'" ng-control-group="user">
                       <input type="text" ng-control="login">
@@ -587,170 +566,160 @@ export function main() {
                </form>`;
 
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
-                        var form = view.rawView.elementInjectors[0].get(NgForm);
-                        flushMicrotasks();
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = 'show';
+                  rootTC.detectChanges();
+                  tick();
+                  var form = rootTC.componentViewChildren[0].inject(NgForm);
 
-                        expect(form.controls['user']).toBeDefined();
+                  expect(form.controls['user']).toBeDefined();
 
-                        ctx.name = 'hide';
-                        view.detectChanges();
-                        flushMicrotasks();
+                  rootTC.componentInstance.name = 'hide';
+                  rootTC.detectChanges();
+                  tick();
 
-                        expect(form.controls['user']).not.toBeDefined();
-                      });
-                  flushMicrotasks();
+                  expect(form.controls['user']).not.toBeDefined();
                 })));
 
       it("should support ng-model for complex forms",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: "oldValue"});
-
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
                       <input type="text" ng-control="name" [(ng-model)]="name">
                </form>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
-                        tick();
-                        view.detectChanges();
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = "oldValue";
+                  rootTC.detectChanges();
+                  tick();
 
-                        var input = view.querySelector("input");
-                        expect(input.value).toEqual("oldValue");
+                  var input = rootTC.query(By.css("input")).nativeElement;
+                  expect(input.value).toEqual("oldValue");
 
-                        input.value = "updatedValue";
-                        dispatchEvent(input, "change");
+                  input.value = "updatedValue";
+                  dispatchEvent(input, "change");
+                  tick();
 
-                        tick();
-
-                        expect(ctx.name).toEqual("updatedValue");
-                      });
+                  expect(rootTC.componentInstance.name).toEqual("updatedValue");
                 })));
 
 
       it("should support ng-model for single fields",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: "oldValue"});
-
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<div><input type="text" [(ng-model)]="name"></div>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = "oldValue";
+                  rootTC.detectChanges();
 
-                        var input = view.querySelector("input");
-                        expect(input.value).toEqual("oldValue");
+                  var input = rootTC.query(By.css("input")).nativeElement;
+                  expect(input.value).toEqual("oldValue");
 
-                        input.value = "updatedValue";
-                        dispatchEvent(input, "change");
+                  input.value = "updatedValue";
+                  dispatchEvent(input, "change");
+                  tick();
 
-                        tick();
-
-                        expect(ctx.name).toEqual("updatedValue");
-                      });
-                  flushMicrotasks();
+                  expect(rootTC.componentInstance.name).toEqual("updatedValue");
                 })));
     });
 
 
     describe("setting status classes", () => {
       it("should work with single fields",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var form = new Control("", Validators.required);
-                  var ctx = MyComp.create({form: form});
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var form = new Control("", Validators.required);
 
-                  var t = `<div><input type="text" [ng-form-control]="form"></div>`;
+           var t = `<div><input type="text" [ng-form-control]="form"></div>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
 
-                        var input = view.querySelector("input");
-                        expect(DOM.classList(input))
-                            .toEqual(['ng-binding', 'ng-untouched', 'ng-pristine', 'ng-invalid']);
+             var input = rootTC.query(By.css("input")).nativeElement;
+             expect(DOM.classList(input))
+                 .toEqual(['ng-binding', 'ng-untouched', 'ng-pristine', 'ng-invalid']);
 
-                        dispatchEvent(input, "blur");
-                        view.detectChanges();
+             dispatchEvent(input, "blur");
+             rootTC.detectChanges();
 
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
 
-                        input.value = "updatedValue";
-                        dispatchEvent(input, "change");
-                        view.detectChanges();
+             input.value = "updatedValue";
+             dispatchEvent(input, "change");
+             rootTC.detectChanges();
 
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
-                        tick();
-                      });
-                  flushMicrotasks();
-                })));
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             async.done();
+           });
+         }));
 
       it("should work with complex model-driven forms",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var form = new ControlGroup({"name": new Control("", Validators.required)});
-                  var ctx = MyComp.create({form: form});
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var form = new ControlGroup({"name": new Control("", Validators.required)});
 
-                  var t =
-                      `<form [ng-form-model]="form"><input type="text" ng-control="name"></form>`;
+           var t = `<form [ng-form-model]="form"><input type="text" ng-control="name"></form>`;
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.form = form;
+             rootTC.detectChanges();
 
-                        var input = view.querySelector("input");
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+             var input = rootTC.query(By.css("input")).nativeElement;
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
 
-                        dispatchEvent(input, "blur");
-                        view.detectChanges();
+             dispatchEvent(input, "blur");
+             rootTC.detectChanges();
 
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
 
-                        input.value = "updatedValue";
-                        dispatchEvent(input, "change");
-                        view.detectChanges();
+             input.value = "updatedValue";
+             dispatchEvent(input, "change");
+             rootTC.detectChanges();
 
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
-                        tick();
-                      });
-                  flushMicrotasks();
-                })));
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             async.done();
+           });
+         }));
 
       it("should work with ng-model",
-         inject([TestBed], fakeAsync((tb: TestBed) => {
-                  var ctx = MyComp.create({name: ""});
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div><input [(ng-model)]="name" required></div>`;
 
-                  var t = `<div><input [(ng-model)]="name" required></div>`;
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.componentInstance.name = "";
+             rootTC.detectChanges();
 
-                  tb.createView(MyComp, {context: ctx, html: t})
-                      .then((view) => {
-                        view.detectChanges();
+             var input = rootTC.query(By.css("input")).nativeElement;
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
 
-                        var input = view.querySelector("input");
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+             dispatchEvent(input, "blur");
+             rootTC.detectChanges();
 
-                        dispatchEvent(input, "blur");
-                        view.detectChanges();
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
 
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+             input.value = "updatedValue";
+             dispatchEvent(input, "change");
+             rootTC.detectChanges();
 
-                        input.value = "updatedValue";
-                        dispatchEvent(input, "change");
-                        view.detectChanges();
-
-                        expect(DOM.classList(input))
-                            .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
-                        tick();
-                      });
-                })));
+             expect(DOM.classList(input))
+                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             async.done();
+           });
+         }));
     });
   });
 }
@@ -779,12 +748,4 @@ class MyComp {
   form: any;
   name: string;
   data: any;
-
-  static create({form, name, data}: {form?: any, name?: any, data?: any}) {
-    var mc = new MyComp();
-    mc.form = form;
-    mc.name = name;
-    mc.data = data;
-    return mc;
-  }
 }
