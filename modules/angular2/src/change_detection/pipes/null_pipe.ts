@@ -1,5 +1,6 @@
 import {isBlank, CONST} from 'angular2/src/facade/lang';
 import {Pipe, BasePipe, WrappedValue, PipeFactory} from './pipe';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * @exportedAs angular2/pipes
@@ -8,7 +9,7 @@ import {Pipe, BasePipe, WrappedValue, PipeFactory} from './pipe';
 export class NullPipeFactory implements PipeFactory {
   supports(obj): boolean { return NullPipe.supportsObj(obj); }
 
-  create(cdRef): Pipe { return new NullPipe(); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new NullPipe(); }
 }
 
 /**
@@ -21,7 +22,7 @@ export class NullPipe extends BasePipe {
 
   supports(obj): boolean { return NullPipe.supportsObj(obj); }
 
-  transform(value): WrappedValue {
+  transform(value, args: List<any> = null): WrappedValue {
     if (!this.called) {
       this.called = true;
       return WrappedValue.wrap(null);

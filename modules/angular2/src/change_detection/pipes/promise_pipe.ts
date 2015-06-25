@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
-import {Pipe, WrappedValue} from './pipe';
+import {Pipe, PipeFactory, WrappedValue} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
@@ -45,7 +45,7 @@ export class PromisePipe implements Pipe {
     }
   }
 
-  transform(promise: Promise<any>): any {
+  transform(promise: Promise<any>, args: List<any> = null): any {
     if (isBlank(this._sourcePromise)) {
       this._sourcePromise = promise;
       promise.then((val) => {
@@ -81,8 +81,8 @@ export class PromisePipe implements Pipe {
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class PromisePipeFactory {
+export class PromisePipeFactory implements PipeFactory {
   supports(promise): boolean { return isPromise(promise); }
 
-  create(cdRef): Pipe { return new PromisePipe(cdRef); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new PromisePipe(cdRef); }
 }

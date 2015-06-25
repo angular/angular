@@ -1,4 +1,5 @@
 import {ABSTRACT, BaseException, CONST} from 'angular2/src/facade/lang';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * Indicates that the result of a {@link Pipe} transformation has changed even though the reference
@@ -43,7 +44,7 @@ var _wrappedIndex = 0;
  *
  *  onDestroy() {}
  *
- *  transform(value) {
+ *  transform(value, args = []) {
  *    return `${value}${value}`;
  *  }
  * }
@@ -54,7 +55,7 @@ var _wrappedIndex = 0;
 export interface Pipe {
   supports(obj): boolean;
   onDestroy(): void;
-  transform(value: any): any;
+  transform(value: any, args: List<any>): any;
 }
 
 /**
@@ -74,12 +75,12 @@ export interface Pipe {
 export class BasePipe implements Pipe {
   supports(obj): boolean { return true; }
   onDestroy(): void {}
-  transform(value: any): any { return _abstract(); }
+  transform(value: any, args: List<any>): any { return _abstract(); }
 }
 
 export interface PipeFactory {
   supports(obs): boolean;
-  create(cdRef): Pipe;
+  create(cdRef: ChangeDetectorRef): Pipe;
 }
 
 function _abstract() {
