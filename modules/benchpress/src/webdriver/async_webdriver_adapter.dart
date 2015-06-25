@@ -17,7 +17,7 @@ class AsyncWebDriverAdapter extends WebDriverAdapter {
   }
 
   Future executeAsyncScript(String script) {
-    return _driver.executeAsync(script);
+    return _driver.executeAsync(script, const []);
   }
 
   Future<Map> capabilities() {

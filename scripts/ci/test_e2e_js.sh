@@ -28,7 +28,7 @@ if [[ -n "$E2E_BROWSERS" ]]; then
   OPTIONS="--browsers=$E2E_BROWSERS";
 fi
 
-./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS
-./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS --benchmark --dryrun
+# ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS
+# ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS --benchmark --dryrun
 ./node_modules/.bin/protractor dist/js/cjs/benchpress/test/firefox_extension/conf.js
 
