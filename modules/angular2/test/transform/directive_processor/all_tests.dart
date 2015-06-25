@@ -49,8 +49,8 @@ void allTests() {
       readFile(
           'directive_processor/absolute_url_expression_files/template.css'));
   _testNgDeps('should inline `templateUrl` and `styleUrls` values expressed as'
-      ' absolute urls.',
-      'absolute_url_expression_files/hello.dart', reader: absoluteReader);
+      ' absolute urls.', 'absolute_url_expression_files/hello.dart',
+      reader: absoluteReader);
 
   _testNgDeps(
       'should inline multiple `styleUrls` values expressed as absolute urls.',
