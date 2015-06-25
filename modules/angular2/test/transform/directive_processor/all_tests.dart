@@ -91,7 +91,7 @@ void _testNgDeps(String name, String inputPath,
       expect(await reader.hasInput(expectedId)).toBeFalse();
     } else {
       expect(formatter.format(output))
-          .toEqual(await reader.readAsString(expectedId));
+          .toEqual((await reader.readAsString(expectedId)).replaceAll('\r\n', '\n'));
     }
   });
 }
