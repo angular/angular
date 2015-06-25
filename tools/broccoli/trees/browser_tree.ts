@@ -147,7 +147,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var scriptPathPatternReplacement = {
     match: '@@FILENAME_NO_EXT',
-    replacement: function(replacement, relativePath) { return relativePath.replace(/\.\w+$/, ''); }
+    replacement: function(replacement, relativePath) {
+      return relativePath.replace(/\.\w+$/, '').replace(/\\/g, '/');
+    }
   };
 
   var htmlTree = new Funnel(modulesTree, {include: ['*/src/**/*.html'], destDir: '/'});
