@@ -1667,6 +1667,14 @@
         }
       }
     },
+    "clang-format": {
+      "version": "1.0.25",
+      "dependencies": {
+        "resolve": {
+          "version": "1.1.6"
+        }
+      }
+    },
     "conventional-changelog": {
       "version": "0.0.17",
       "dependencies": {
@@ -3948,13 +3956,10 @@
       }
     },
     "gulp-clang-format": {
-      "version": "1.0.19",
+      "version": "1.0.21",
       "dependencies": {
-        "clang-format": {
-          "version": "1.0.21"
-        },
         "gulp-util": {
-          "version": "3.0.5",
+          "version": "3.0.6",
           "dependencies": {
             "array-differ": {
               "version": "1.0.0"
@@ -3997,7 +4002,7 @@
                   "version": "4.0.1"
                 },
                 "meow": {
-                  "version": "3.1.0",
+                  "version": "3.3.0",
                   "dependencies": {
                     "camelcase-keys": {
                       "version": "1.0.0",
@@ -4091,10 +4096,49 @@
               }
             },
             "object-assign": {
-              "version": "2.0.0"
+              "version": "3.0.0"
             },
             "replace-ext": {
               "version": "0.0.1"
+            },
+            "through2": {
+              "version": "2.0.0",
+              "dependencies": {
+                "readable-stream": {
+                  "version": "2.0.1",
+                  "dependencies": {
+                    "core-util-is": {
+                      "version": "1.0.1"
+                    },
+                    "inherits": {
+                      "version": "2.0.1"
+                    },
+                    "isarray": {
+                      "version": "0.0.1"
+                    },
+                    "process-nextick-args": {
+                      "version": "1.0.1"
+                    },
+                    "string_decoder": {
+                      "version": "0.10.31"
+                    },
+                    "util-deprecate": {
+                      "version": "1.0.1"
+                    }
+                  }
+                }
+              }
+            },
+            "vinyl": {
+              "version": "0.5.0",
+              "dependencies": {
+                "clone": {
+                  "version": "1.0.2"
+                },
+                "clone-stats": {
+                  "version": "0.0.1"
+                }
+              }
             }
           }
         },
@@ -9752,5 +9796,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.27"
+  "version": "2.0.0-alpha.28"
 }

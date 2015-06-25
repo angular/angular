@@ -1,11 +1,12 @@
 'use strict';
 
 var autoprefixer = require('gulp-autoprefixer');
+var clangFormat = require('clang-format');
 var del = require('del');
-var format = require('gulp-clang-format');
 var exec = require('child_process').exec;
 var fork = require('child_process').fork;
 var gulp = require('gulp');
+var gulpFormat = require('gulp-clang-format');
 var gulpPlugins = require('gulp-load-plugins')();
 var sass = require('gulp-sass');
 var shell = require('gulp-shell');
@@ -204,7 +205,7 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 
 function doCheckFormat() {
   return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
-      .pipe(format.checkFormat('file'));
+      .pipe(gulpFormat.checkFormat('file', clangFormat));
 }
 
 gulp.task('check-format', function() {
