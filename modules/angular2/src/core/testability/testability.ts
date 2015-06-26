@@ -20,7 +20,7 @@ export class Testability {
     this._callbacks = [];
   }
 
-  increaseCount(delta: number = 1) {
+  increaseCount(delta: number = 1): number {
     this._pendingCount += delta;
     if (this._pendingCount < 0) {
       throw new BaseException('pending async requests below zero');

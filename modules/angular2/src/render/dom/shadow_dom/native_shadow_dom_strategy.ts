@@ -10,5 +10,5 @@ import {ShadowDomStrategy} from './shadow_dom_strategy';
  */
 @Injectable()
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
-  prepareShadowRoot(el) { return DOM.createShadowRoot(el); }
+  prepareShadowRoot(el): /*(#2770) Node*/ any { return DOM.createShadowRoot(el); }
 }

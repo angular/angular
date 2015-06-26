@@ -19,11 +19,11 @@ export class ElementBinder {
     }
   }
 
-  hasStaticComponent() {
+  hasStaticComponent(): boolean {
     return isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
   }
 
-  hasEmbeddedProtoView() {
+  hasEmbeddedProtoView(): boolean {
     return !isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
   }
 }

@@ -326,7 +326,7 @@ export class ApplicationRef {
 
   dispose() {
     // TODO: We also need to clean up the Zone, ... here!
-    return this._hostComponent.dispose();
+    this._hostComponent.dispose();
   }
 
   get injector() { return this._injector; }

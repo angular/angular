@@ -50,7 +50,7 @@ var _chromeNumKeyPadMap = {
 
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
-  hasProperty(element, name: string) { return name in element; }
+  hasProperty(element, name: string): boolean { return name in element; }
   setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
   getProperty(el: /*element*/ any, name: string): any { return el[name]; }
   invoke(el: /*element*/ any, methodName: string, args: List<any>): any {
@@ -87,8 +87,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     evt.preventDefault();
     evt.returnValue = false;
   }
-  getInnerHTML(el) { return el.innerHTML; }
-  getOuterHTML(el) { return el.outerHTML; }
+  getInnerHTML(el): string { return el.innerHTML; }
+  getOuterHTML(el): string { return el.outerHTML; }
   nodeName(node: Node): string { return node.nodeName; }
   nodeValue(node: Node): string { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
@@ -101,7 +101,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   firstChild(el): Node { return el.firstChild; }
   nextSibling(el): Node { return el.nextSibling; }
-  parentElement(el) { return el.parentElement; }
+  parentElement(el): Node { return el.parentElement; }
   childNodes(el): List<Node> { return el.childNodes; }
   childNodesAsList(el): List<any> {
     var childNodes = el.childNodes;
@@ -119,7 +119,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   appendChild(el, node) { el.appendChild(node); }
   removeChild(el, node) { el.removeChild(node); }
   replaceChild(el: Node, newChild, oldChild) { el.replaceChild(newChild, oldChild); }
-  remove(el) {
+  remove(el): Node {
     var parent = el.parentNode;
     parent.removeChild(el);
     return el;
@@ -130,12 +130,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   insertAfter(el, node) { el.parentNode.insertBefore(node, el.nextSibling); }
   setInnerHTML(el, value) { el.innerHTML = value; }
-  getText(el) { return el.textContent; }
+  getText(el): string { return el.textContent; }
   // TODO(vicb): removed Element type because it does not support StyleElement
   setText(el, value: string) { el.textContent = value; }
-  getValue(el) { return el.value; }
+  getValue(el): string { return el.value; }
   setValue(el, value: string) { el.value = value; }
-  getChecked(el) { return el.checked; }
+  getChecked(el): boolean { return el.checked; }
   setChecked(el, value: boolean) { el.checked = value; }
   createTemplate(html): HTMLElement {
     var t = document.createElement('template');
@@ -157,22 +157,26 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   createShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).createShadowRoot(); }
   getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
-  clone(node: Node) { return node.cloneNode(true); }
-  getElementsByClassName(element, name: string) { return element.getElementsByClassName(name); }
-  getElementsByTagName(element, name: string) { return element.getElementsByTagName(name); }
+  clone(node: Node): Node { return node.cloneNode(true); }
+  getElementsByClassName(element, name: string): List<HTMLElement> {
+    return element.getElementsByClassName(name);
+  }
+  getElementsByTagName(element, name: string): List<HTMLElement> {
+    return element.getElementsByTagName(name);
+  }
   classList(element): List<any> {
     return <List<any>>Array.prototype.slice.call(element.classList, 0);
   }
   addClass(element, classname: string) { element.classList.add(classname); }
   removeClass(element, classname: string) { element.classList.remove(classname); }
-  hasClass(element, classname: string) { return element.classList.contains(classname); }
+  hasClass(element, classname: string): boolean { return element.classList.contains(classname); }
   setStyle(element, stylename: string, stylevalue: string) {
     element.style[stylename] = stylevalue;
   }
   removeStyle(element, stylename: string) { element.style[stylename] = null; }
-  getStyle(element, stylename: string) { return element.style[stylename]; }
+  getStyle(element, stylename: string): string { return element.style[stylename]; }
   tagName(element): string { return element.tagName; }
-  attributeMap(element) {
+  attributeMap(element): Map<string, string> {
     var res = new Map();
     var elAttrs = element.attributes;
     for (var i = 0; i < elAttrs.length; i++) {
@@ -181,14 +185,16 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return res;
   }
-  hasAttribute(element, attribute: string) { return element.hasAttribute(attribute); }
-  getAttribute(element, attribute: string) { return element.getAttribute(attribute); }
+  hasAttribute(element, attribute: string): boolean { return element.hasAttribute(attribute); }
+  getAttribute(element, attribute: string): string { return element.getAttribute(attribute); }
   setAttribute(element, name: string, value: string) { element.setAttribute(name, value); }
-  removeAttribute(element, attribute: string) { return element.removeAttribute(attribute); }
-  templateAwareRoot(el) { return this.isTemplateElement(el) ? this.content(el) : el; }
-  createHtmlDocument() { return document.implementation.createHTMLDocument('fakeTitle'); }
-  defaultDoc() { return document; }
-  getBoundingClientRect(el) {
+  removeAttribute(element, attribute: string) { element.removeAttribute(attribute); }
+  templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
+  createHtmlDocument(): HTMLDocument {
+    return document.implementation.createHTMLDocument('fakeTitle');
+  }
+  defaultDoc(): HTMLDocument { return document; }
+  getBoundingClientRect(el): any {
     try {
       return el.getBoundingClientRect();
     } catch (e) {
@@ -209,7 +215,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
   hasShadowRoot(node): boolean { return node instanceof HTMLElement && isPresent(node.shadowRoot); }
   isShadowRoot(node): boolean { return node instanceof DocumentFragment; }
-  importIntoDoc(node: Node) {
+  importIntoDoc(node: Node): any {
     var toImport = node;
     if (this.isTemplateElement(node)) {
       toImport = this.content(node);
@@ -256,9 +262,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return document.body;
     }
   }
-  getHistory() { return window.history; }
-  getLocation() { return window.location; }
-  getBaseHref() { return relativePath(document.baseURI); }
+  getHistory(): History { return window.history; }
+  getLocation(): Location { return window.location; }
+  getBaseHref(): string { return relativePath(document.baseURI); }
   getUserAgent(): string { return window.navigator.userAgent; }
   setData(element, name: string, value: string) { element.dataset[name] = value; }
   getData(element, name: string): string { return element.dataset[name]; }
@@ -268,7 +274,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
 // based on urlUtils.js in AngularJS 1
 var urlParsingNode = null;
-function relativePath(url) {
+function relativePath(url): string {
   if (isBlank(urlParsingNode)) {
     urlParsingNode = document.createElement("a");
   }

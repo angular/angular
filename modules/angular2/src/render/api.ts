@@ -217,7 +217,7 @@ export class DirectiveMetadata {
     callOnAllChangesDone?: boolean,
     changeDetection?: string,
     exportAs?: string
-  }) {
+  }): DirectiveMetadata {
     let hostListeners = new Map();
     let hostProperties = new Map();
     let hostAttributes = new Map();

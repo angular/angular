@@ -6,7 +6,7 @@ import {DomAdapter} from './dom_adapter';
  * Provides DOM operations in any browser environment.
  */
 export class GenericBrowserDomAdapter extends DomAdapter {
-  getDistributedNodes(el) { return el.getDistributedNodes(); }
+  getDistributedNodes(el): List</*(#2770) Node*/ any> { return el.getDistributedNodes(); }
   resolveAndSetHref(el, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;
   }
@@ -19,7 +19,7 @@ export class GenericBrowserDomAdapter extends DomAdapter {
       // with an @import
       // https://bugzilla.mozilla.org/show_bug.cgi?id=625013
       try {
-        var rawRules = style.sheet.cssRules;
+        var rawRules = (<any>style.sheet).cssRules;
         rules = ListWrapper.createFixedSize(rawRules.length);
         for (var i = 0; i < rawRules.length; i++) {
           rules[i] = rawRules[i];
@@ -34,5 +34,7 @@ export class GenericBrowserDomAdapter extends DomAdapter {
     return rules;
   }
   supportsDOMEvents(): boolean { return true; }
-  supportsNativeShadowDOM(): boolean { return isFunction(this.defaultDoc().body.createShadowRoot); }
+  supportsNativeShadowDOM(): boolean {
+    return isFunction((<any>this.defaultDoc().body).createShadowRoot);
+  }
 }

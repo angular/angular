@@ -72,7 +72,7 @@ class StarSegment {
 var paramMatcher = RegExpWrapper.create("^:([^\/]+)$");
 var wildcardMatcher = RegExpWrapper.create("^\\*([^\/]+)$");
 
-function parsePathString(route: string) {
+function parsePathString(route: string): StringMap<string, any> {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
   if (StringWrapper.startsWith(route, "/")) {
@@ -117,8 +117,10 @@ function parsePathString(route: string) {
       specificity += 100 * (100 - i);
     }
   }
-
-  return {segments: results, specificity};
+  var result = StringMapWrapper.create();
+  StringMapWrapper.set(result, 'segments', results);
+  StringMapWrapper.set(result, 'specificity', specificity);
+  return result;
 }
 
 function splitBySlash(url: string): List<string> {

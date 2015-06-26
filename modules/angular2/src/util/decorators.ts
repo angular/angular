@@ -11,7 +11,7 @@ export interface TypeDecorator {
   Class(obj: ClassDefinition): Type;
 }
 
-function extractAnnotation(annotation: any) {
+function extractAnnotation(annotation: any): any {
   if (isFunction(annotation) && annotation.hasOwnProperty('annotation')) {
     // it is a decorator, extract annotation
     annotation = annotation.annotation;
@@ -121,7 +121,7 @@ export function makeDecorator(annotationCls, chainFn: (fn: Function) => void = n
 }
 
 export function makeParamDecorator(annotationCls): any {
-  function ParamDecoratorFactory(...args) {
+  function ParamDecoratorFactory(...args): any {
     var annotationInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(annotationInstance, args);
     if (this instanceof annotationCls) {
@@ -131,7 +131,7 @@ export function makeParamDecorator(annotationCls): any {
       return ParamDecorator;
     }
 
-    function ParamDecorator(cls, unusedKey, index) {
+    function ParamDecorator(cls, unusedKey, index): any {
       var parameters: Array<Array<any>> = Reflect.getMetadata('parameters', cls);
       parameters = parameters || [];
 

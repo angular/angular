@@ -33,11 +33,11 @@ export class CompileElement {
     }
   }
 
-  isBound() {
+  isBound(): boolean {
     return isPresent(this.inheritedElementBinder) && this.distanceToInheritedBinder === 0;
   }
 
-  bindElement() {
+  bindElement(): ElementBinderBuilder {
     if (!this.isBound()) {
       var parentBinder = this.inheritedElementBinder;
       this.inheritedElementBinder =
