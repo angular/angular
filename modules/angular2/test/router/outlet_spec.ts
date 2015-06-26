@@ -1,5 +1,7 @@
 import {
   AsyncTestCompleter,
+  TestComponentBuilder,
+  asNativeElements,
   beforeEach,
   ddescribe,
   xdescribe,
@@ -12,8 +14,6 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-
-import {TestBed} from 'angular2/test';
 
 import {Injector, bind} from 'angular2/di';
 import {Component, View} from 'angular2/src/core/annotations/decorators';
@@ -37,9 +37,8 @@ var teamCmpCount;
 export function main() {
   describe('Outlet Directive', () => {
 
-    var ctx: MyComp;
-    var tb: TestBed;
-    var view, rtr, location;
+    var tcb: TestComponentBuilder;
+    var rootTC, rtr, location;
 
     beforeEachBindings(() => [
       Pipeline,
@@ -52,20 +51,20 @@ export function main() {
                      [RouteRegistry, Pipeline, Location])
     ]);
 
-    beforeEach(inject([TestBed, Router, Location], (testBed, router, loc) => {
-      tb = testBed;
-      ctx = new MyComp();
+    beforeEach(inject([TestComponentBuilder, Router, Location], (tcBuilder, router, loc) => {
+      tcb = tcBuilder;
       rtr = router;
       location = loc;
       teamCmpCount = 0;
     }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
-      tb.overrideView(
-          MyComp,
-          new annotations.View(
-              {template: ('<div>' + template + '</div>'), directives: [RouterOutlet, RouterLink]}));
-      return tb.createView(MyComp, {context: ctx}).then((v) => { view = v; });
+      return tcb.overrideView(MyComp, new annotations.View({
+                  template: ('<div>' + template + '</div>'),
+                  directives: [RouterOutlet, RouterLink]
+                }))
+          .createAsync(MyComp)
+          .then((tc) => { rootTC = tc; });
     }
 
     it('should work in a simple case', inject([AsyncTestCompleter], (async) => {
@@ -73,8 +72,8 @@ export function main() {
              .then((_) => rtr.config({'path': '/test', 'component': HelloCmp}))
              .then((_) => rtr.navigate('/test'))
              .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('hello');
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('hello');
                async.done();
              });
        }));
@@ -86,13 +85,13 @@ export function main() {
              .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp}))
              .then((_) => rtr.navigate('/user/brian'))
              .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('hello brian');
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('hello brian');
              })
              .then((_) => rtr.navigate('/user/igor'))
              .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('hello igor');
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('hello igor');
                async.done();
              });
        }));
@@ -103,8 +102,8 @@ export function main() {
              .then((_) => rtr.config({'path': '/a/...', 'component': ParentCmp}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('outer { inner { hello } }');
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('outer { inner { hello } }');
                async.done();
              });
        }));
@@ -116,14 +115,16 @@ export function main() {
              .then((_) => rtr.config({'path': '/redirected', 'component': A}))
              .then((_) => rtr.navigate('/original'))
              .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('A');
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('A');
                expect(location.urlChanges).toEqual(['/redirected']);
                async.done();
              });
        }));
 
-    function getHref(view) { return DOM.getAttribute(view.rootNodes[0].childNodes[0], 'href'); }
+    function getHref(tc) {
+      return DOM.getAttribute(tc.componentViewChildren[0].nativeElement, 'href');
+    }
 
     it('should generate absolute hrefs that include the base href',
        inject([AsyncTestCompleter], (async) => {
@@ -132,8 +133,8 @@ export function main() {
              .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
-               view.detectChanges();
-               expect(getHref(view)).toEqual('/my/base/user');
+               rootTC.detectChanges();
+               expect(getHref(rootTC)).toEqual('/my/base/user');
                async.done();
              });
        }));
@@ -144,8 +145,8 @@ export function main() {
              .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
-               view.detectChanges();
-               expect(getHref(view)).toEqual('/user');
+               rootTC.detectChanges();
+               expect(getHref(rootTC)).toEqual('/user');
                async.done();
              });
        }));
@@ -156,29 +157,29 @@ export function main() {
              .then((_) => rtr.config({'path': '/team/:id/...', 'component': TeamCmp}))
              .then((_) => rtr.navigate('/team/angular/user/rado'))
              .then((_) => {
-               view.detectChanges();
+               rootTC.detectChanges();
                expect(teamCmpCount).toBe(1);
-               expect(view.rootNodes).toHaveText('team angular { hello rado }');
+               expect(rootTC.nativeElement).toHaveText('team angular { hello rado }');
              })
              .then((_) => rtr.navigate('/team/angular/user/victor'))
              .then((_) => {
-               view.detectChanges();
+               rootTC.detectChanges();
                expect(teamCmpCount).toBe(1);
-               expect(view.rootNodes).toHaveText('team angular { hello victor }');
+               expect(rootTC.nativeElement).toHaveText('team angular { hello victor }');
                async.done();
              });
        }));
 
 
     it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
-         ctx.name = 'brian';
          compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
              .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp, 'as': 'user'}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
-               view.detectChanges();
-               expect(view.rootNodes).toHaveText('brian');
-               expect(DOM.getAttribute(view.rootNodes[0].childNodes[0], 'href'))
+               rootTC.componentInstance.name = 'brian';
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('brian');
+               expect(DOM.getAttribute(rootTC.componentViewChildren[0].nativeElement, 'href'))
                    .toEqual('/user/brian');
                async.done();
              });
@@ -187,7 +188,7 @@ export function main() {
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
-        var anchorEl = view.rootNodes[0].childNodes[0];
+        var anchorEl = rootTC.componentViewChildren[0].nativeElement;
         var dispatchedEvent = DOM.createMouseEvent('click');
         DOM.dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
@@ -200,9 +201,9 @@ export function main() {
                .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
                .then((_) => rtr.navigate('/a/b'))
                .then((_) => {
-                 view.detectChanges();
+                 rootTC.detectChanges();
 
-                 var dispatchedEvent = clickOnElement(view);
+                 var dispatchedEvent = clickOnElement(rootTC);
                  expect(dispatchedEvent.defaultPrevented || !dispatchedEvent.returnValue)
                      .toBe(true);
 
@@ -221,9 +222,9 @@ export function main() {
                .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
                .then((_) => rtr.navigate('/a/b'))
                .then((_) => {
-                 view.detectChanges();
+                 rootTC.detectChanges();
 
-                 var dispatchedEvent = clickOnElement(view);
+                 var dispatchedEvent = clickOnElement(rootTC);
                  expect(dispatchedEvent.defaultPrevented || !dispatchedEvent.returnValue)
                      .toBe(true);
 
