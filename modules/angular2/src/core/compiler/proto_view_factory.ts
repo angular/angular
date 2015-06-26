@@ -286,7 +286,7 @@ function _collectNestedProtoViewsVariableNames(
   return nestedPvVariableNames;
 }
 
-function _createVariableNames(parentVariableNames, renderProtoView): List<string> {
+function _createVariableNames(parentVariableNames, renderProtoView): Object[] {
   var res = isBlank(parentVariableNames) ? [] : ListWrapper.clone(parentVariableNames);
   MapWrapper.forEach(renderProtoView.variableBindings,
                      (mappedName, varName) => { res.push(mappedName); });

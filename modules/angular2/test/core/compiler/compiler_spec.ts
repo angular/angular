@@ -58,8 +58,9 @@ export function main() {
       rootProtoView = createRootProtoView(directiveResolver, MainComponent);
     });
 
-    function createCompiler(renderCompileResults: List<renderApi.ProtoViewDto>,
-                            protoViewFactoryResults: List<List<AppProtoView>>) {
+    function createCompiler(
+        renderCompileResults: List<renderApi.ProtoViewDto | Promise<renderApi.ProtoViewDto>>,
+        protoViewFactoryResults: List<List<AppProtoView>>) {
       var urlResolver = new UrlResolver();
       renderCompileRequests = [];
       renderCompiler.spy('compile').andCallFake((view) => {

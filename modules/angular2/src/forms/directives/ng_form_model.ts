@@ -124,7 +124,7 @@ export class NgFormModel extends ControlContainer implements Form {
     c.updateValue(value);
   }
 
-  onSubmit() {
+  onSubmit(): boolean {
     ObservableWrapper.callNext(this.ngSubmit, null);
     return false;
   }

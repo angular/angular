@@ -150,7 +150,7 @@ export class Injector {
    *binding).
    * @returns an instance represented by the token. Throws if not found.
    */
-  get(token) { return this._getByKey(Key.get(token), false, false, false); }
+  get(token): any { return this._getByKey(Key.get(token), false, false, false); }
 
 
   /**
@@ -159,7 +159,7 @@ export class Injector {
    * @param `token`: usually a `Type`. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Returns `null` if not found.
    */
-  getOptional(token) { return this._getByKey(Key.get(token), false, false, true); }
+  getOptional(token): any { return this._getByKey(Key.get(token), false, false, true); }
 
   /**
    * Retrieves an instance from the injector asynchronously. Used with asynchronous bindings.
@@ -256,14 +256,14 @@ export class Injector {
 }
 
 interface _InjectorStrategy {
-  readFromCache(key: Key);
-  instantiate(key: Key);
+  readFromCache(key: Key): any;
+  instantiate(key: Key): any;
 }
 
 class _SyncInjectorStrategy implements _InjectorStrategy {
   constructor(private _injector: Injector) {}
 
-  readFromCache(key: Key) {
+  readFromCache(key: Key): any {
     if (key.token === Injector) {
       return this._injector;
     }
@@ -279,7 +279,7 @@ class _SyncInjectorStrategy implements _InjectorStrategy {
     }
   }
 
-  instantiate(key: Key) {
+  instantiate(key: Key): any {
     var binding = this._injector._getBinding(key);
     if (isBlank(binding)) return _notFound;
 
@@ -307,7 +307,7 @@ class _SyncInjectorStrategy implements _InjectorStrategy {
 class _AsyncInjectorStrategy implements _InjectorStrategy {
   constructor(private _injector: Injector) {}
 
-  readFromCache(key: Key) {
+  readFromCache(key: Key): any {
     if (key.token === Injector) {
       return PromiseWrapper.resolve(this._injector);
     }
@@ -325,7 +325,7 @@ class _AsyncInjectorStrategy implements _InjectorStrategy {
     }
   }
 
-  instantiate(key: Key) /* Promise?? */ {
+  instantiate(key: Key): any {
     var binding = this._injector._getBinding(key);
     if (isBlank(binding)) return _notFound;
 

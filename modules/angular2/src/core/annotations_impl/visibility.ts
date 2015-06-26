@@ -9,7 +9,7 @@ export class Visibility extends DependencyAnnotation {
   }
 
   get includeSelf(): boolean { return isBlank(this._includeSelf) ? false : this._includeSelf; }
-  toString() {
+  toString(): string {
     return `@Visibility(depth: ${this.depth}, crossComponentBoundaries: ${this.crossComponentBoundaries}, includeSelf: ${this.includeSelf}})`;
   }
 }
@@ -54,7 +54,7 @@ export class Visibility extends DependencyAnnotation {
 @CONST()
 export class Self extends Visibility {
   constructor() { super(0, false, true); }
-  toString() { return `@Self()`; }
+  toString(): string { return `@Self()`; }
 }
 
 // make constants after switching to ts2dart
@@ -106,7 +106,7 @@ export var self = new Self();
 @CONST()
 export class Parent extends Visibility {
   constructor({self}: {self?: boolean} = {}) { super(1, false, self); }
-  toString() { return `@Parent(self: ${this.includeSelf}})`; }
+  toString(): string { return `@Parent(self: ${this.includeSelf}})`; }
 }
 
 /**
@@ -169,7 +169,7 @@ export class Parent extends Visibility {
 @CONST()
 export class Ancestor extends Visibility {
   constructor({self}: {self?: boolean} = {}) { super(999999, false, self); }
-  toString() { return `@Ancestor(self: ${this.includeSelf}})`; }
+  toString(): string { return `@Ancestor(self: ${this.includeSelf}})`; }
 }
 
 /**
@@ -209,5 +209,5 @@ export class Ancestor extends Visibility {
 @CONST()
 export class Unbounded extends Visibility {
   constructor({self}: {self?: boolean} = {}) { super(999999, true, self); }
-  toString() { return `@Unbounded(self: ${this.includeSelf}})`; }
+  toString(): string { return `@Unbounded(self: ${this.includeSelf}})`; }
 }

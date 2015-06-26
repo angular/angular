@@ -82,10 +82,8 @@ export function main() {
                            tc.detectChanges();
 
                            var newlyInsertedElement = DOM.childNodes(tc.nativeElement)[1];
-                           expect(newlyInsertedElement.id)
-                               .toEqual("new value")
-
-                                   async.done();
+                           expect((<any>newlyInsertedElement).id).toEqual("new value");
+                           async.done();
                          });
                    });
              }));
@@ -178,10 +176,9 @@ export function main() {
                               tc.detectChanges();
 
                               var newlyInsertedElement = DOM.nextSibling(tc.nativeElement);
-                              expect(newlyInsertedElement.id)
-                                  .toEqual("new value")
+                              expect((<any>newlyInsertedElement).id).toEqual("new value");
 
-                                      async.done();
+                              async.done();
                             });
                       });
                 }));

@@ -9,7 +9,7 @@ import {DomElement} from './element';
 import {RenderViewRef, EventDispatcher} from '../../api';
 import {camelCaseToDashCase} from '../util';
 
-export function resolveInternalDomView(viewRef: RenderViewRef) {
+export function resolveInternalDomView(viewRef: RenderViewRef): DomView {
   return (<DomViewRef>viewRef)._view;
 }
 

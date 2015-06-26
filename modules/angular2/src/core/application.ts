@@ -326,7 +326,7 @@ export class ApplicationRef {
 
   get hostComponent() { return this._hostComponent.instance; }
 
-  dispose() {
+  dispose(): any {
     // TODO: We also need to clean up the Zone, ... here!
     return this._hostComponent.dispose();
   }

@@ -17,7 +17,8 @@ export class CompileControl {
   constructor(public _steps: List<CompileStep>) {}
 
   // only public so that it can be used by compile_pipeline
-  internalProcess(results: any[], startStepIndex, parent: CompileElement, current: CompileElement) {
+  internalProcess(results: any[], startStepIndex, parent: CompileElement,
+                  current: CompileElement): any[] {
     this._results = results;
     var previousStepIndex = this._currentStepIndex;
     var previousParent = this._parent;

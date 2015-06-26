@@ -28,7 +28,7 @@ export class Dependency {
   constructor(public key: Key, public asPromise: boolean, public lazy: boolean,
               public optional: boolean, public properties: List<any>) {}
 
-  static fromKey(key: Key) { return new Dependency(key, false, false, false, []); }
+  static fromKey(key: Key): Dependency { return new Dependency(key, false, false, false, []); }
 }
 
 const _EMPTY_LIST = CONST_EXPR([]);

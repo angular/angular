@@ -134,12 +134,12 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
     }
   }
 
-  getDirectiveFor(directive: DirectiveIndex) {
+  getDirectiveFor(directive: DirectiveIndex): any {
     var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  getDetectorFor(directive: DirectiveIndex) {
+  getDetectorFor(directive: DirectiveIndex): any {
     var childView = this.componentChildViews[directive.elementIndex];
     return isPresent(childView) ? childView.changeDetector : null;
   }

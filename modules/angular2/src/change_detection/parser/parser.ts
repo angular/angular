@@ -217,7 +217,7 @@ class _ParseAST {
     return ast;
   }
 
-  parsePipe() {
+  parsePipe(): AST {
     var result = this.parseExpression();
     if (this.optionalOperator("|")) {
       if (this.parseAction) {
@@ -237,7 +237,7 @@ class _ParseAST {
     return result;
   }
 
-  parseExpression() {
+  parseExpression(): AST {
     var start = this.inputIndex;
     var result = this.parseConditional();
 
@@ -259,7 +259,7 @@ class _ParseAST {
     return result;
   }
 
-  parseConditional() {
+  parseConditional(): AST {
     var start = this.inputIndex;
     var result = this.parseLogicalOr();
 
@@ -277,7 +277,7 @@ class _ParseAST {
     }
   }
 
-  parseLogicalOr() {
+  parseLogicalOr(): AST {
     // '||'
     var result = this.parseLogicalAnd();
     while (this.optionalOperator('||')) {
@@ -286,7 +286,7 @@ class _ParseAST {
     return result;
   }
 
-  parseLogicalAnd() {
+  parseLogicalAnd(): AST {
     // '&&'
     var result = this.parseEquality();
     while (this.optionalOperator('&&')) {
@@ -295,7 +295,7 @@ class _ParseAST {
     return result;
   }
 
-  parseEquality() {
+  parseEquality(): AST {
     // '==','!=','===','!=='
     var result = this.parseRelational();
     while (true) {
@@ -313,7 +313,7 @@ class _ParseAST {
     }
   }
 
-  parseRelational() {
+  parseRelational(): AST {
     // '<', '>', '<=', '>='
     var result = this.parseAdditive();
     while (true) {
@@ -331,7 +331,7 @@ class _ParseAST {
     }
   }
 
-  parseAdditive() {
+  parseAdditive(): AST {
     // '+', '-'
     var result = this.parseMultiplicative();
     while (true) {
@@ -345,7 +345,7 @@ class _ParseAST {
     }
   }
 
-  parseMultiplicative() {
+  parseMultiplicative(): AST {
     // '*', '%', '/'
     var result = this.parsePrefix();
     while (true) {
@@ -361,7 +361,7 @@ class _ParseAST {
     }
   }
 
-  parsePrefix() {
+  parsePrefix(): AST {
     if (this.optionalOperator('+')) {
       return this.parsePrefix();
     } else if (this.optionalOperator('-')) {
@@ -398,7 +398,7 @@ class _ParseAST {
     }
   }
 
-  parsePrimary() {
+  parsePrimary(): AST {
     if (this.optionalCharacter($LPAREN)) {
       let result = this.parsePipe();
       this.expectCharacter($RPAREN);
@@ -468,7 +468,7 @@ class _ParseAST {
     return result;
   }
 
-  parseLiteralMap() {
+  parseLiteralMap(): LiteralMap {
     var keys = [];
     var values = [];
     this.expectCharacter($LBRACE);
@@ -502,7 +502,7 @@ class _ParseAST {
     }
   }
 
-  parseCallArguments() {
+  parseCallArguments(): BindingPipe[] {
     if (this.next.isCharacter($RPAREN)) return [];
     var positionals = [];
     do {
@@ -545,7 +545,7 @@ class _ParseAST {
   /**
    * An identifier, a keyword, a string with an optional `-` inbetween.
    */
-  expectTemplateBindingKey() {
+  expectTemplateBindingKey(): string {
     var result = '';
     var operatorFound = false;
     do {
@@ -559,7 +559,7 @@ class _ParseAST {
     return result.toString();
   }
 
-  parseTemplateBindings() {
+  parseTemplateBindings(): any[] {
     var bindings = [];
     var prefix = null;
     while (this.index < this.tokens.length) {
@@ -607,7 +607,7 @@ class _ParseAST {
 }
 
 class SimpleExpressionChecker implements AstVisitor {
-  static check(ast: AST) {
+  static check(ast: AST): boolean {
     var s = new SimpleExpressionChecker();
     ast.visit(s);
     return s.simple;
@@ -645,7 +645,7 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitKeyedAccess(ast: KeyedAccess) { this.simple = false; }
 
-  visitAll(asts: List<any>) {
+  visitAll(asts: List<any>): List<any> {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);

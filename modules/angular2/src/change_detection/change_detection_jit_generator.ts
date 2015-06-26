@@ -138,9 +138,9 @@ export class ChangeDetectorJITGenerator {
         .map((d) => this._genGetDetector(d.directiveIndex));
   }
 
-  _genGetDirective(d: DirectiveIndex) { return `this.directive_${d.name}`; }
+  _genGetDirective(d: DirectiveIndex): string { return `this.directive_${d.name}`; }
 
-  _genGetDetector(d: DirectiveIndex) { return `this.detector_${d.name}`; }
+  _genGetDetector(d: DirectiveIndex): string { return `this.detector_${d.name}`; }
 
   _getNonNullPipeNames(): List<string> {
     var pipes = [];
@@ -152,7 +152,7 @@ export class ChangeDetectorJITGenerator {
     return pipes;
   }
 
-  _genFieldDefinitions() {
+  _genFieldDefinitions(): string {
     var fields = [];
     fields = fields.concat(this._fieldNames);
     fields = fields.concat(this._getNonNullPipeNames());
@@ -226,7 +226,7 @@ export class ChangeDetectorJITGenerator {
     return `${rec}${this._maybeGenLastInDirective(r)}`;
   }
 
-  _genDirectiveLifecycle(r: ProtoRecord) {
+  _genDirectiveLifecycle(r: ProtoRecord): string {
     if (r.name === "onCheck") {
       return this._genOnCheck(r);
     } else if (r.name === "onInit") {

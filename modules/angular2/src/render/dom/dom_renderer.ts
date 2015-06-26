@@ -53,7 +53,7 @@ export class DomRenderer extends Renderer {
     // noop for now
   }
 
-  getNativeElementSync(location: RenderElementRef) {
+  getNativeElementSync(location: RenderElementRef): DomElement {
     return resolveInternalDomView(location.renderView)
         .boundElements[location.boundElementIndex]
         .element;

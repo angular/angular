@@ -54,7 +54,7 @@ export class RouterLink {
 
   set params(changes: StringMap<string, string>) { this._params = changes; }
 
-  onClick() {
+  onClick(): boolean {
     this._router.navigate(this._navigationHref);
     return false;
   }

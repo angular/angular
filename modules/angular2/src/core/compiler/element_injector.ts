@@ -174,7 +174,7 @@ export class DependencyWithVisibility extends Dependency {
 
   static _visibility(properties): Visibility {
     if (properties.length == 0) return self;
-    var p = ListWrapper.find(properties, p => p instanceof Visibility);
+    var p = <Visibility>ListWrapper.find(properties, p => p instanceof Visibility);
     return isPresent(p) ? p : self;
   }
 }
@@ -203,11 +203,13 @@ export class DirectiveDependency extends DependencyWithVisibility {
   }
 
   static _attributeName(properties): string {
-    var p = ListWrapper.find(properties, (p) => p instanceof Attribute);
+    var p = <Attribute>ListWrapper.find(properties, (p) => p instanceof Attribute);
     return isPresent(p) ? p.attributeName : null;
   }
 
-  static _query(properties) { return ListWrapper.find(properties, (p) => p instanceof Query); }
+  static _query(properties): Query {
+    return <Query>ListWrapper.find(properties, (p) => p instanceof Query);
+  }
 }
 
 export class DirectiveBinding extends ResolvedBinding {
@@ -306,7 +308,7 @@ export class PreBuiltObjects {
 export class EventEmitterAccessor {
   constructor(public eventName: string, public getter: Function) {}
 
-  subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object) {
+  subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
     return ObservableWrapper.subscribe(
         eventEmitter,
@@ -317,7 +319,7 @@ export class EventEmitterAccessor {
 export class HostActionAccessor {
   constructor(public methodName: string, public getter: Function) {}
 
-  subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object) {
+  subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
     return ObservableWrapper.subscribe(
         eventEmitter,
@@ -332,9 +334,9 @@ const LIGHT_DOM_AND_SHADOW_DOM = 3;
 export class BindingData {
   constructor(public binding: ResolvedBinding, public visibility: number) {}
 
-  getKeyId() { return this.binding.key.id; }
+  getKeyId(): number { return this.binding.key.id; }
 
-  createEventEmitterAccessors() {
+  createEventEmitterAccessors(): List<EventEmitterAccessor> {
     if (!(this.binding instanceof DirectiveBinding)) return [];
     var db = <DirectiveBinding>this.binding;
     return ListWrapper.map(db.eventEmitters, eventConfig => {
@@ -349,11 +351,11 @@ export class BindingData {
         // short format: 'name' when fieldName and eventName are the same
         fieldName = eventName = eventConfig;
       }
-      return new EventEmitterAccessor(eventName, reflector.getter(fieldName))
+      return new EventEmitterAccessor(eventName, reflector.getter(fieldName));
     });
   }
 
-  createHostActionAccessors() {
+  createHostActionAccessors(): HostActionAccessor[] {
     if (!(this.binding instanceof DirectiveBinding)) return [];
     var res = [];
     var db = <DirectiveBinding>this.binding;
@@ -394,7 +396,7 @@ export class ProtoElementInjector {
 
   static create(parent: ProtoElementInjector, index: number, bindings: List<ResolvedBinding>,
                 firstBindingIsComponent: boolean, distanceToParent: number,
-                directiveVariableBindings: Map<string, number>) {
+                directiveVariableBindings: Map<string, number>): ProtoElementInjector {
     var bd = [];
 
     ProtoElementInjector._createDirectiveBindingData(bindings, bd, firstBindingIsComponent);
@@ -644,7 +646,7 @@ class _ProtoElementInjectorDynamicStrategy implements _ProtoElementInjectorStrat
     return this._bindings[index];
   }
 
-  createElementInjectorStrategy(ei: ElementInjector) {
+  createElementInjectorStrategy(ei: ElementInjector): _ElementInjectorStrategy {
     return new ElementInjectorDynamicStrategy(this, ei);
   }
 }
@@ -1135,7 +1137,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     return this._strategy.getObjByKeyId(keyId, visibility);
   }
 
-  getDirectiveAtIndex(index: number) { return this._strategy.getDirectiveAtIndex(index); }
+  getDirectiveAtIndex(index: number): any { return this._strategy.getDirectiveAtIndex(index); }
 
   hasInstances(): boolean { return this._constructionCounter > 0; }
 
@@ -1368,7 +1370,7 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     return _undefined;
   }
 
-  getDirectiveAtIndex(index: number) {
+  getDirectiveAtIndex(index: number): any {
     if (index == 0) return this._obj0;
     if (index == 1) return this._obj1;
     if (index == 2) return this._obj2;

@@ -72,7 +72,12 @@ class StarSegment {
 var paramMatcher = RegExpWrapper.create("^:([^\/]+)$");
 var wildcardMatcher = RegExpWrapper.create("^\\*([^\/]+)$");
 
-function parsePathString(route: string) {
+interface ParsedPathString {
+  segments: Segment[];
+  specificity: number
+}
+
+function parsePathString(route: string): ParsedPathString {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
   if (StringWrapper.startsWith(route, "/")) {
