@@ -1,7 +1,7 @@
 import {Injector, bind, Binding} from 'angular2/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Sampler, SampleState} from './sampler';
 import {ConsoleReporter} from './reporter/console_reporter';
@@ -50,9 +50,31 @@ export class Runner {
     if (isPresent(bindings)) {
       sampleBindings.push(bindings);
     }
-    return Injector.resolveAndCreate(sampleBindings)
-        .asyncGet(Sampler)
-        .then((sampler) => sampler.sample());
+
+    var inj = Injector.resolveAndCreate(sampleBindings);
+    var adapter = inj.get(WebDriverAdapter);
+
+    return PromiseWrapper
+        .all([adapter.capabilities(), adapter.executeScript('return window.navigator.userAgent;')])
+        .then((args) => {
+          var capabilities = args[0];
+          var userAgent = args[1];
+
+          // This might still create instances twice. We are creating a new injector with all the
+          // bindings.
+          // Only WebDriverAdapter is reused.
+          // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
+          // injectors are handled better.
+          var injector = Injector.resolveAndCreate([
+            sampleBindings,
+            bind(Options.CAPABILITIES).toValue(capabilities),
+            bind(Options.USER_AGENT).toValue(userAgent),
+            bind(WebDriverAdapter).toValue(adapter)
+          ]);
+
+          var sampler = injector.get(Sampler);
+          return sampler.sample();
+        });
   }
 }
 
@@ -74,10 +96,4 @@ var _DEFAULT_BINDINGS = [
   Validator.bindTo(RegressionSlopeValidator),
   WebDriverExtension.bindTo([ChromeDriverExtension, FirefoxDriverExtension, IOsDriverExtension]),
   Metric.bindTo(MultiMetric),
-
-  bind(Options.CAPABILITIES)
-      .toAsyncFactory((adapter) => adapter.capabilities(), [WebDriverAdapter]),
-  bind(Options.USER_AGENT)
-      .toAsyncFactory((adapter) => adapter.executeScript('return window.navigator.userAgent;'),
-                      [WebDriverAdapter])
 ];

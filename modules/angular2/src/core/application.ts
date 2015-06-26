@@ -79,20 +79,19 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
         .toValue(DOM.defaultDoc()),
     bind(appComponentTypeToken).toValue(appComponentType),
     bind(appComponentRefToken)
-        .toAsyncFactory(
+        .toFactory(
             (dynamicComponentLoader, injector, testability, registry) => {
-
               // TODO(rado): investigate whether to support bindings on root component.
               return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
                   .then((componentRef) => {
                     registry.registerApplication(componentRef.location.nativeElement, testability);
-
                     return componentRef;
                   });
             },
             [DynamicComponentLoader, Injector, Testability, TestabilityRegistry]),
 
-    bind(appComponentType).toFactory((ref) => ref.instance, [appComponentRefToken]),
+    bind(appComponentType)
+        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [appComponentRefToken]),
     bind(LifeCycle)
         .toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),
                    [ExceptionHandler]),
@@ -293,20 +292,19 @@ export function bootstrap(appComponentType: Type,
     // index.html and main.js are possible.
 
     var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
+    var compRefToken: Promise<any> =
+        PromiseWrapper.wrap(() => appInjector.get(appComponentRefToken));
+    var tick = (componentRef) => {
+      var appChangeDetector = internalView(componentRef.hostView).changeDetector;
+      // retrieve life cycle: may have already been created if injected in root component
+      var lc = appInjector.get(LifeCycle);
+      lc.registerWith(zone, appChangeDetector);
+      lc.tick();  // the first tick that will bootstrap the app
 
-    PromiseWrapper.then(
-        appInjector.asyncGet(appComponentRefToken),
-        (componentRef) => {
-          var appChangeDetector = internalView(componentRef.hostView).changeDetector;
-          // retrieve life cycle: may have already been created if injected in root component
-          var lc = appInjector.get(LifeCycle);
-          lc.registerWith(zone, appChangeDetector);
-          lc.tick();  // the first tick that will bootstrap the app
-
-          bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
-        },
-
-        (err, stackTrace) => {bootstrapProcess.reject(err, stackTrace)});
+      bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
+    };
+    PromiseWrapper.then(compRefToken, tick,
+                        (err, stackTrace) => {bootstrapProcess.reject(err, stackTrace)});
   });
 
   return bootstrapProcess.promise;

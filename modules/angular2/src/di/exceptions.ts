@@ -140,15 +140,17 @@ export class CyclicDependencyError extends AbstractBindingError {
 export class InstantiationError extends AbstractBindingError {
   cause;
   causeKey;
+  stack;
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(cause, key) {
+  constructor(cause, stack, key) {
     super(key, function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}. ORIGINAL ERROR: ${cause}`;
     });
     this.cause = cause;
     this.causeKey = key;
+    this.stack = stack;
   }
 }
 
@@ -194,6 +196,21 @@ export class NoAnnotationError extends BaseException {
     this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +
                    signature.join(', ') + "). " +
                    'Make sure they all have valid type or annotations.';
+  }
+
+  toString(): string { return this.message; }
+}
+
+/**
+ * Thrown when getting an object by index.
+ *
+ * @exportedAs angular2/di_errors
+ */
+export class OutOfBoundsError extends BaseException {
+  message: string;
+  constructor(index) {
+    super();
+    this.message = `Index ${index} is out-of-bounds.`;
   }
 
   toString(): string { return this.message; }

@@ -19,11 +19,12 @@ import {Reporter, MultiReporter, bind, Injector, MeasureValues} from 'benchpress
 
 export function main() {
   function createReporters(ids) {
-    return Injector.resolveAndCreate([
-                     ListWrapper.map(ids, (id) => bind(id).toValue(new MockReporter(id))),
-                     MultiReporter.createBindings(ids)
-                   ])
-        .asyncGet(MultiReporter);
+    var r = Injector.resolveAndCreate([
+                      ListWrapper.map(ids, (id) => bind(id).toValue(new MockReporter(id))),
+                      MultiReporter.createBindings(ids)
+                    ])
+                .get(MultiReporter);
+    return PromiseWrapper.resolve(r);
   }
 
   describe('multi reporter', () => {

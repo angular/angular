@@ -13,9 +13,10 @@ import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
 import {
   Inject,
-  InjectLazy,
-  InjectPromise,
+  Injectable,
+  Visibility,
   Optional,
+  unbounded,
   DependencyAnnotation
 } from './annotations_impl';
 import {NoAnnotationError} from './exceptions';
@@ -25,10 +26,10 @@ import {resolveForwardRef} from './forward_ref';
  * @private
  */
 export class Dependency {
-  constructor(public key: Key, public asPromise: boolean, public lazy: boolean,
-              public optional: boolean, public properties: List<any>) {}
+  constructor(public key: Key, public optional: boolean, public visibility: Visibility,
+              public properties: List<any>) {}
 
-  static fromKey(key: Key) { return new Dependency(key, false, false, false, []); }
+  static fromKey(key: Key) { return new Dependency(key, false, _defaulVisiblity(key.token), []); }
 }
 
 const _EMPTY_LIST = CONST_EXPR([]);
@@ -158,35 +159,7 @@ export class Binding {
   toFactory: Function;
 
   /**
-   * Binds a key to a function which computes the value asynchronously.
-   *
-   * ## Example
-   *
-   * ```javascript
-   * var injector = Injector.resolveAndCreate([
-   *   new Binding(Number, { toAsyncFactory: () => {
-   *     return new Promise((resolve) => resolve(1 + 2));
-   *   }}),
-   *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
-   *                         dependencies: [Number]})
-   * ]);
-   *
-   * injector.asyncGet(Number).then((v) => expect(v).toBe(3));
-   * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
-   * ```
-   *
-   * The interesting thing to note is that event though `Number` has an async factory, the `String`
-   * factory function takes the resolved value. This shows that the {@link Injector} delays
-   *executing the
-   *`String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using
-   * the `asyncGet` API in the {@link Injector}.
-   *
-   */
-  toAsyncFactory: Function;
-
-  /**
-   * Used in conjunction with `toFactory` or `toAsyncFactory` and specifies a set of dependencies
+   * Used in conjunction with `toFactory` and specifies a set of dependencies
    * (as `token`s) which should be injected into the factory function.
    *
    * ## Example
@@ -204,12 +177,11 @@ export class Binding {
    */
   dependencies: List<any>;
 
-  constructor(token, {toClass, toValue, toAlias, toFactory, toAsyncFactory, deps}: {
+  constructor(token, {toClass, toValue, toAlias, toFactory, deps}: {
     toClass?: Type,
     toValue?: any,
     toAlias?: any,
     toFactory?: Function,
-    toAsyncFactory?: Function,
     deps?: List<any>
   }) {
     this.token = token;
@@ -217,7 +189,6 @@ export class Binding {
     this.toValue = toValue;
     this.toAlias = toAlias;
     this.toFactory = toFactory;
-    this.toAsyncFactory = toAsyncFactory;
     this.dependencies = deps;
   }
 
@@ -230,7 +201,6 @@ export class Binding {
   resolve(): ResolvedBinding {
     var factoryFn: Function;
     var resolvedDeps;
-    var isAsync = false;
     if (isPresent(this.toClass)) {
       var toClass = resolveForwardRef(this.toClass);
       factoryFn = reflector.factory(toClass);
@@ -241,16 +211,12 @@ export class Binding {
     } else if (isPresent(this.toFactory)) {
       factoryFn = this.toFactory;
       resolvedDeps = _constructDependencies(this.toFactory, this.dependencies);
-    } else if (isPresent(this.toAsyncFactory)) {
-      factoryFn = this.toAsyncFactory;
-      resolvedDeps = _constructDependencies(this.toAsyncFactory, this.dependencies);
-      isAsync = true;
     } else {
       factoryFn = () => this.toValue;
       resolvedDeps = _EMPTY_LIST;
     }
 
-    return new ResolvedBinding(Key.get(this.token), factoryFn, resolvedDeps, isAsync);
+    return new ResolvedBinding(Key.get(this.token), factoryFn, resolvedDeps);
   }
 }
 
@@ -278,12 +244,7 @@ export class ResolvedBinding {
       /**
        * Arguments (dependencies) to the `factory` function.
        */
-      public dependencies: List<Dependency>,
-
-      /**
-       * Specifies whether the `factory` function returns a `Promise`.
-       */
-      public providedAsPromise: boolean) {}
+      public dependencies: List<Dependency>) {}
 }
 
 /**
@@ -417,33 +378,6 @@ export class BindingBuilder {
   toFactory(factoryFunction: Function, dependencies?: List<any>): Binding {
     return new Binding(this.token, {toFactory: factoryFunction, deps: dependencies});
   }
-
-  /**
-   * Binds a key to a function which computes the value asynchronously.
-   *
-   * ## Example
-   *
-   * ```javascript
-   * var injector = Injector.resolveAndCreate([
-   *   bind(Number).toAsyncFactory(() => {
-   *     return new Promise((resolve) => resolve(1 + 2));
-   *   }),
-   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number])
-   * ]);
-   *
-   * injector.asyncGet(Number).then((v) => expect(v).toBe(3));
-   * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
-   * ```
-   *
-   * The interesting thing to note is that event though `Number` has an async factory, the `String`
-   * factory function takes the resolved value. This shows that the {@link Injector} delays
-   * executing of the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using
-   * the `asyncGet` API in the {@link Injector}.
-   */
-  toAsyncFactory(factoryFunction: Function, dependencies?: List<any>): Binding {
-    return new Binding(this.token, {toAsyncFactory: factoryFunction, deps: dependencies});
-  }
 }
 
 function _constructDependencies(factoryFunction: Function,
@@ -470,32 +404,29 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
   var depProps = [];
   var token = null;
   var optional = false;
-  var lazy = false;
-  var asPromise = false;
 
   if (!isArray(annotations)) {
-    return _createDependency(annotations, asPromise, lazy, optional, depProps);
+    return _createDependency(annotations, optional, _defaulVisiblity(annotations), depProps);
   }
+
+  var visibility = null;
+  var defaultVisibility = unbounded;
 
   for (var i = 0; i < annotations.length; ++i) {
     var paramAnnotation = annotations[i];
 
     if (paramAnnotation instanceof Type) {
       token = paramAnnotation;
+      defaultVisibility = _defaulVisiblity(token);
 
     } else if (paramAnnotation instanceof Inject) {
       token = paramAnnotation.token;
 
-    } else if (paramAnnotation instanceof InjectPromise) {
-      token = paramAnnotation.token;
-      asPromise = true;
-
-    } else if (paramAnnotation instanceof InjectLazy) {
-      token = paramAnnotation.token;
-      lazy = true;
-
     } else if (paramAnnotation instanceof Optional) {
       optional = true;
+
+    } else if (paramAnnotation instanceof Visibility) {
+      visibility = paramAnnotation;
 
     } else if (paramAnnotation instanceof DependencyAnnotation) {
       if (isPresent(paramAnnotation.token)) {
@@ -505,15 +436,29 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
     }
   }
 
+  if (isBlank(visibility)) {
+    visibility = defaultVisibility;
+  }
+
   token = resolveForwardRef(token);
 
   if (isPresent(token)) {
-    return _createDependency(token, asPromise, lazy, optional, depProps);
+    return _createDependency(token, optional, visibility, depProps);
   } else {
     throw new NoAnnotationError(typeOrFunc, params);
   }
 }
 
-function _createDependency(token, asPromise, lazy, optional, depProps): Dependency {
-  return new Dependency(Key.get(token), asPromise, lazy, optional, depProps);
+function _defaulVisiblity(typeOrFunc) {
+  try {
+    if (!(typeOrFunc instanceof Type)) return unbounded;
+    var f = ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof Injectable);
+    return f.length === 0 ? unbounded : f[0].visibility;
+  } catch (e) {
+    return unbounded;
+  }
+}
+
+function _createDependency(token, optional, visibility, depProps): Dependency {
+  return new Dependency(Key.get(token), optional, visibility, depProps);
 }

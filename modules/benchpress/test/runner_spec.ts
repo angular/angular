@@ -52,7 +52,7 @@ export function main() {
     it('should set SampleDescription.id', inject([AsyncTestCompleter], (async) => {
          createRunner()
              .sample({id: 'someId'})
-             .then((_) => injector.asyncGet(SampleDescription))
+             .then((_) => injector.get(SampleDescription))
              .then((desc) => {
                expect(desc.id).toBe('someId');
                async.done();
@@ -62,9 +62,8 @@ export function main() {
     it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
          createRunner([bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1})])
              .sample({id: 'someId', bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
-             .then((_) => injector.asyncGet(SampleDescription))
+             .then((_) => injector.get(SampleDescription))
              .then((desc) => {
-
                expect(desc.description)
                    .toEqual(
                        {'forceGc': false, 'userAgent': 'someUserAgent', 'a': 1, 'b': 2, 'v': 11});
@@ -76,7 +75,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          createRunner()
              .sample({id: 'someId'})
-             .then((_) => injector.asyncGet(SampleDescription))
+             .then((_) => injector.get(SampleDescription))
              .then((desc) => {
 
                expect(desc.metrics).toEqual({'m1': 'some metric'});
@@ -125,10 +124,10 @@ export function main() {
                      .toValue({'a': 2}),
                ]
              })
-             .then((_) => injector.asyncGet(SampleDescription))
+             .then((_) => injector.get(SampleDescription))
              .then((desc) => {
 
-               expect(injector.get(SampleDescription).description['a']).toBe(2);
+               expect(desc.description['a']).toBe(2);
                async.done();
              });
 
@@ -139,6 +138,7 @@ export function main() {
 
 class MockWebDriverAdapter extends WebDriverAdapter {
   executeScript(script): Promise<string> { return PromiseWrapper.resolve('someUserAgent'); }
+  capabilities() { return null; }
 }
 
 class MockValidator extends Validator {

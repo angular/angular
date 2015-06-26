@@ -18,15 +18,15 @@ import {Metric, MultiMetric, bind, Injector} from 'benchpress/common';
 
 export function main() {
   function createMetric(ids) {
-    return Injector.resolveAndCreate([
-                     ListWrapper.map(ids, (id) => bind(id).toValue(new MockMetric(id))),
-                     MultiMetric.createBindings(ids)
-                   ])
-        .asyncGet(MultiMetric);
+    var m = Injector.resolveAndCreate([
+                      ListWrapper.map(ids, (id) => bind(id).toValue(new MockMetric(id))),
+                      MultiMetric.createBindings(ids)
+                    ])
+                .get(MultiMetric);
+    return PromiseWrapper.resolve(m);
   }
 
   describe('multi metric', () => {
-
     it('should merge descriptions', inject([AsyncTestCompleter], (async) => {
          createMetric(['m1', 'm2'])
              .then((m) => {
