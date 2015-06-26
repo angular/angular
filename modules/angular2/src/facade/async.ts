@@ -28,6 +28,16 @@ export class PromiseWrapper {
     return promise.then(success, rejection);
   }
 
+  static wrap<T>(computation: () => T): Promise<T> {
+    return new Promise((res, rej) => {
+      try {
+        res(computation());
+      } catch (e) {
+        rej(e);
+      }
+    });
+  }
+
   static completer() {
     var resolve;
     var reject;
