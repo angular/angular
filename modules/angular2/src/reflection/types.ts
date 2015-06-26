@@ -5,9 +5,9 @@ export {Function as GetterFn};
 export {Function as SetterFn};
 export {Function as MethodFn};
 
-// TODO replace once dgeni is fixed
-/**
-export type SetterFn = (obj: any, value: any) => void;
-export type GetterFn = (obj: any) => any;
-export type MethodFn = (obj: any, args: List<any>) => any;
-**/
+import {global} from 'angular2/src/facade/lang';
+
+// This is here only so that after TS transpilation the file is not empty.
+// TODO(rado): find a better way to fix this, or remove if likely culprit
+// https://github.com/systemjs/systemjs/issues/487 gets closed.
+var __ignore_me = global;
