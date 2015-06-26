@@ -37,7 +37,6 @@ import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
-import {TestBed} from './test_bed';
 import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/di';
@@ -117,7 +116,6 @@ function _getAppBindings() {
     AppRootUrl,
     StyleUrlResolver,
     StyleInliner,
-    TestBed,
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
     bind(EventManager)
