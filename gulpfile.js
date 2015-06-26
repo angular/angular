@@ -223,7 +223,7 @@ gulp.task('enforce-format', function() {
   });
 });
 
-gulp.task('lint', ["build.tools"], function() {
+gulp.task('lint', ['build.tools'], function() {
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
     "rules": {
@@ -231,9 +231,9 @@ gulp.task('lint', ["build.tools"], function() {
     }
   };
 
-  return gulp.src('modules/angular2/src/**/*.ts')
-        .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
-        .pipe(tslint.report('prose', {emitError: false}));
+  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
+      .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
+      .pipe(tslint.report('prose'));
 });
 
 // ------------
@@ -582,7 +582,7 @@ gulp.task('pre-test-checks', function(done) {
 });
 
 gulp.task('post-test-checks', function(done) {
-  runSequence('enforce-format', sequenceComplete(done));
+  runSequence('lint', 'enforce-format', sequenceComplete(done));
 });
 
 
