@@ -137,10 +137,13 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       let errorMessages = [];
 
       allDiagnostics.forEach(diagnostic => {
-        var {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+        var pos = '';
+        if (diagnostic.file) {
+          var {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+          pos = `${diagnostic.file.fileName} (${line + 1}, ${character + 1}): `
+        }
         var message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-        errorMessages.push(
-            `  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+        errorMessages.push(`  ${pos}${message}`);
       });
 
       if (errorMessages.length) {
