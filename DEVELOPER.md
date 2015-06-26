@@ -8,7 +8,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Environment Variable Setup](#environment-variable-setup)
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
 * [Running Tests Locally](#running-tests-locally)
-* [Formatting](#formatting)
+* [Formatting](#formatting-with-clang-format)
 * [Project Information](#project-information)
 * [CI using Travis](#ci-using-travis)
 * [Transforming Dart code](#transforming-dart-code)
@@ -237,7 +237,7 @@ Make sure it is executable. Then, in the angular repo, run
     - Program: [path to clang-format, try `$ echo $(npm config get prefix)/bin/clang-format`]
     - Parameters: `-i -style=file $FilePath$`
     - Working directory: `$ProjectFileDir$`
-    
+
 ## Project Information
 
 ### Folder structure
