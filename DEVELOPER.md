@@ -256,9 +256,7 @@ to some whitespace difference.
 
 ### File suffixes
 
-* `*.js`: JavaScript files that get transpiled to Dart and EcmaScript 5
-* `*.es6`: JavaScript files that get transpiled only to EcmaScript 5
-* `*.es5`: JavaScript files that don't get transpiled
+* `*.ts`: TypeScript files that get transpiled to Dart and EcmaScript 5/6
 * `*.dart`: Dart files that don't get transpiled
 
 ## CI using Travis
