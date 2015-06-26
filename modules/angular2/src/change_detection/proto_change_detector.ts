@@ -43,7 +43,7 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
     this._records = this._createRecords(definition);
   }
 
-  instantiate(dispatcher: any) {
+  instantiate(dispatcher: any): ChangeDetector {
     return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
                                      this._pipeRegistry, this._records,
                                      this.definition.directiveRecords);
@@ -95,19 +95,19 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     b.ast.visit(c);
   }
 
-  visitImplicitReceiver(ast: ImplicitReceiver) { return this._bindingRecord.implicitReceiver; }
+  visitImplicitReceiver(ast: ImplicitReceiver): any { return this._bindingRecord.implicitReceiver; }
 
-  visitInterpolation(ast: Interpolation) {
+  visitInterpolation(ast: Interpolation): number {
     var args = this._visitAll(ast.expressions);
     return this._addRecord(RecordType.INTERPOLATE, "interpolate", _interpolationFn(ast.strings),
                            args, ast.strings, 0);
   }
 
-  visitLiteralPrimitive(ast: LiteralPrimitive) {
+  visitLiteralPrimitive(ast: LiteralPrimitive): number {
     return this._addRecord(RecordType.CONST, "literal", ast.value, [], null, 0);
   }
 
-  visitAccessMember(ast: AccessMember) {
+  visitAccessMember(ast: AccessMember): number {
     var receiver = ast.receiver.visit(this);
     if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name) &&
             ast.receiver instanceof
@@ -118,12 +118,12 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     }
   }
 
-  visitSafeAccessMember(ast: SafeAccessMember) {
+  visitSafeAccessMember(ast: SafeAccessMember): number {
     var receiver = ast.receiver.visit(this);
     return this._addRecord(RecordType.SAFE_PROPERTY, ast.name, ast.getter, [], null, receiver);
   }
 
-  visitMethodCall(ast: MethodCall) {
+  visitMethodCall(ast: MethodCall): number {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
     if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name)) {
@@ -134,44 +134,44 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     }
   }
 
-  visitSafeMethodCall(ast: SafeMethodCall) {
+  visitSafeMethodCall(ast: SafeMethodCall): number {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
     return this._addRecord(RecordType.SAFE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
   }
 
-  visitFunctionCall(ast: FunctionCall) {
+  visitFunctionCall(ast: FunctionCall): number {
     var target = ast.target.visit(this);
     var args = this._visitAll(ast.args);
     return this._addRecord(RecordType.INVOKE_CLOSURE, "closure", null, args, null, target);
   }
 
-  visitLiteralArray(ast: LiteralArray) {
+  visitLiteralArray(ast: LiteralArray): number {
     var primitiveName = `arrayFn${ast.expressions.length}`;
     return this._addRecord(RecordType.PRIMITIVE_OP, primitiveName, _arrayFn(ast.expressions.length),
                            this._visitAll(ast.expressions), null, 0);
   }
 
-  visitLiteralMap(ast: LiteralMap) {
+  visitLiteralMap(ast: LiteralMap): number {
     return this._addRecord(RecordType.PRIMITIVE_OP, _mapPrimitiveName(ast.keys),
                            ChangeDetectionUtil.mapFn(ast.keys), this._visitAll(ast.values), null,
                            0);
   }
 
-  visitBinary(ast: Binary) {
+  visitBinary(ast: Binary): number {
     var left = ast.left.visit(this);
     var right = ast.right.visit(this);
     return this._addRecord(RecordType.PRIMITIVE_OP, _operationToPrimitiveName(ast.operation),
                            _operationToFunction(ast.operation), [left, right], null, 0);
   }
 
-  visitPrefixNot(ast: PrefixNot) {
+  visitPrefixNot(ast: PrefixNot): number {
     var exp = ast.expression.visit(this);
     return this._addRecord(RecordType.PRIMITIVE_OP, "operation_negate",
                            ChangeDetectionUtil.operation_negate, [exp], null, 0);
   }
 
-  visitConditional(ast: Conditional) {
+  visitConditional(ast: Conditional): number {
     var c = ast.condition.visit(this);
     var t = ast.trueExp.visit(this);
     var f = ast.falseExp.visit(this);
@@ -179,12 +179,12 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
                            null, 0);
   }
 
-  visitPipe(ast: BindingPipe) {
+  visitPipe(ast: BindingPipe): number {
     var value = ast.exp.visit(this);
     return this._addRecord(RecordType.PIPE, ast.name, ast.name, [], null, value);
   }
 
-  visitKeyedAccess(ast: KeyedAccess) {
+  visitKeyedAccess(ast: KeyedAccess): number {
     var obj = ast.obj.visit(this);
     var key = ast.key.visit(this);
     return this._addRecord(RecordType.KEYED_ACCESS, "keyedAccess", ChangeDetectionUtil.keyedAccess,
@@ -328,7 +328,7 @@ function _operationToFunction(operation: string): Function {
   }
 }
 
-function s(v) {
+function s(v): string {
   return isPresent(v) ? `${v}` : '';
 }
 

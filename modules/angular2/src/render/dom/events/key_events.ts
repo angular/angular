@@ -11,13 +11,12 @@ import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {EventManagerPlugin} from './event_manager';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
-var modifierKeyGetters: StringMap<string, Function> =
-    {
-      'alt': (event) => event.altKey,
-      'control': (event) => event.ctrlKey,
-      'meta': (event) => event.metaKey,
-      'shift': (event) => event.shiftKey
-    }
+var modifierKeyGetters: StringMap<string, Function> = {
+  'alt': (event) => event.altKey,
+  'control': (event) => event.ctrlKey,
+  'meta': (event) => event.metaKey,
+  'shift': (event) => event.shiftKey
+};
 
 export class KeyEventsPlugin extends EventManagerPlugin {
   constructor() { super(); }
@@ -38,7 +37,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string) /* {'domEventName': string, 'fullKey': string} */ {
+  static parseEventName(eventName: string): StringMap<string, string> {
     var parts = eventName.toLowerCase().split('.');
 
     var domEventName = ListWrapper.removeAt(parts, 0);
@@ -63,8 +62,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       // returning null instead of throwing to let another plugin process the event
       return null;
     }
-
-    return {'domEventName': domEventName, 'fullKey': fullKey};
+    var result = StringMapWrapper.create();
+    StringMapWrapper.set(result, 'domEventName', domEventName);
+    StringMapWrapper.set(result, 'fullKey', fullKey);
+    return result;
   }
 
   static getEventFullKey(event): string {
@@ -88,7 +89,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element, shouldSupportBubble, fullKey, handler, zone) {
+  static eventCallback(element, shouldSupportBubble, fullKey, handler,
+                       zone): (event: Event) => void {
     return (event) => {
       var correctElement = shouldSupportBubble || event.target === element;
       if (correctElement && StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {

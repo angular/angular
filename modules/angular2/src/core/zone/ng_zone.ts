@@ -103,7 +103,7 @@ export class NgZone {
    * });
    * ```
    */
-  run(fn) {
+  run(fn): any {
     if (this._disabled) {
       return fn();
     } else {
@@ -127,7 +127,7 @@ export class NgZone {
    * });
    * ```
    */
-  runOutsideAngular(fn) {
+  runOutsideAngular(fn): any {
     if (this._disabled) {
       return fn();
     } else {

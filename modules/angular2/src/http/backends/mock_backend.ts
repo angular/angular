@@ -229,7 +229,7 @@ export class MockBackend implements ConnectionBackend {
    * observable of this `MockBackend` instance. This method will usually only be used by tests
    * against the framework itself, not by end-users.
    */
-  createConnection(req: Request) {
+  createConnection(req: Request): Connection {
     if (!req || !(req instanceof Request)) {
       throw new Error(`createConnection requires an instance of Request, got ${req}`);
     }

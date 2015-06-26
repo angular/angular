@@ -135,7 +135,7 @@ export class CssSelector {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
-  static createNotMatcher(notSelectors: List<CssSelector>) {
+  static createNotMatcher(notSelectors: List<CssSelector>): SelectorMatcher {
     var notMatcher = new SelectorMatcher();
     notMatcher.addSelectables(notSelectors, null);
     return notMatcher;
@@ -353,7 +353,7 @@ class SelectorContext {
     this.notSelectors = selector.notSelectors;
   }
 
-  finalize(cssSelector: CssSelector, callback /*: (CssSelector, any) => void*/) {
+  finalize(cssSelector: CssSelector, callback /*: (CssSelector, any) => void*/): boolean {
     var result = true;
     if (this.notSelectors.length > 0 &&
         (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {

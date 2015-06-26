@@ -122,7 +122,7 @@ export class AbstractControl {
 
   find(path: List<string | number>| string): AbstractControl { return _find(this, path); }
 
-  getError(errorCode: string, path: List<string> = null) {
+  getError(errorCode: string, path: List<string> = null): any {
     var c = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
     if (isPresent(c) && isPresent(c._errors)) {
       return StringMapWrapper.get(c._errors, errorCode);
@@ -131,7 +131,7 @@ export class AbstractControl {
     }
   }
 
-  hasError(errorCode: string, path: List<string> = null) {
+  hasError(errorCode: string, path: List<string> = null): boolean {
     return isPresent(this.getError(errorCode, path));
   }
 

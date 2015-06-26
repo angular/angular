@@ -8,12 +8,12 @@ export const EVENT_TARGET_SEPARATOR = ':';
 var CAMEL_CASE_REGEXP = RegExpWrapper.create('([A-Z])');
 var DASH_CASE_REGEXP = RegExpWrapper.create('-([a-z])');
 
-export function camelCaseToDashCase(input: string) {
+export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
                                         (m) => { return '-' + m[1].toLowerCase(); });
 }
 
-export function dashCaseToCamelCase(input: string) {
+export function dashCaseToCamelCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
                                         (m) => { return m[1].toUpperCase(); });
 }

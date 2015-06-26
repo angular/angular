@@ -286,12 +286,14 @@ function _collectNestedProtoViewsVariableNames(
   return nestedPvVariableNames;
 }
 
-function _createVariableNames(parentVariableNames, renderProtoView): List<string> {
-  var res = isBlank(parentVariableNames) ? [] : ListWrapper.clone(parentVariableNames);
+function _createVariableNames(parentVariableNames: List<string>, renderProtoView): List<string> {
+  var res =
+      isBlank(parentVariableNames) ? <List<string>>[] : ListWrapper.clone(parentVariableNames);
   MapWrapper.forEach(renderProtoView.variableBindings,
                      (mappedName, varName) => { res.push(mappedName); });
   ListWrapper.forEach(renderProtoView.elementBinders, binder => {
-    MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => { res.push(mappedName); });
+    MapWrapper.forEach(binder.variableBindings,
+                       (mappedName: string, varName: string) => { res.push(mappedName); });
   });
   return res;
 }

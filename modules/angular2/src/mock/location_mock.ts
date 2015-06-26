@@ -30,7 +30,7 @@ export class SpyLocation extends SpyObject {
 
   simulateUrlPop(pathname: string) { ObservableWrapper.callNext(this._subject, {'url': pathname}); }
 
-  normalizeAbsolutely(url) { return this._baseHref + url; }
+  normalizeAbsolutely(url): string { return this._baseHref + url; }
 
   go(url: string) {
     url = this.normalizeAbsolutely(url);
@@ -53,5 +53,5 @@ export class SpyLocation extends SpyObject {
     ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 
-  noSuchMethod(m) { return super.noSuchMethod(m); }
+  noSuchMethod(m) { super.noSuchMethod(m); }
 }

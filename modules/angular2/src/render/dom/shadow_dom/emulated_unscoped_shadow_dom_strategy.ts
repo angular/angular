@@ -20,7 +20,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
 
   hasNativeContentElement(): boolean { return false; }
 
-  prepareShadowRoot(el) { return el; }
+  prepareShadowRoot(el): /*(#2770) Node*/ any { return el; }
 
   constructLightDom(lightDomView: viewModule.DomView, el): LightDom {
     return new LightDom(lightDomView, el);

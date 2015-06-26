@@ -78,9 +78,9 @@ import {BaseQueryList} from './base_query_list';
 export class QueryList<T> extends BaseQueryList<T> {
   /**
    */
-  onChange(callback) { return super.onChange(callback); }
+  onChange(callback) { super.onChange(callback); }
 
   /**
    */
-  removeCallback(callback) { return super.removeCallback(callback); }
+  removeCallback(callback) { super.removeCallback(callback); }
 }

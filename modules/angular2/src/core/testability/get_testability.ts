@@ -8,7 +8,7 @@ class PublicTestability {
 
   whenStable(callback: Function) { this._testability.whenStable(callback); }
 
-  findBindings(using, binding: string, exactMatch: boolean) {
+  findBindings(using, binding: string, exactMatch: boolean): List<any> {
     return this._testability.findBindings(using, binding, exactMatch);
   }
 }

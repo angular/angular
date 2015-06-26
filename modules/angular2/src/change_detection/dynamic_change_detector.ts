@@ -318,7 +318,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   }
 }
 
-function isSame(a, b) {
+function isSame(a, b): boolean {
   if (a === b) return true;
   if (a instanceof String && b instanceof String && a == b) return true;
   if ((a !== a) && (b !== b)) return true;

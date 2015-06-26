@@ -19,9 +19,9 @@ export class NullPipe extends BasePipe {
 
   static supportsObj(obj): boolean { return isBlank(obj); }
 
-  supports(obj) { return NullPipe.supportsObj(obj); }
+  supports(obj): boolean { return NullPipe.supportsObj(obj); }
 
-  transform(value) {
+  transform(value): WrappedValue {
     if (!this.called) {
       this.called = true;
       return WrappedValue.wrap(null);
