@@ -1,5 +1,5 @@
-import {Directive, Ancestor, onDestroy, onInit} from 'angular2/angular2';
-import {Inject, forwardRef, Binding} from 'angular2/di';
+import {Directive, onDestroy, onInit} from 'angular2/angular2';
+import {Inject, Ancestor, forwardRef, Binding} from 'angular2/di';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 

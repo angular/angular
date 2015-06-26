@@ -34,17 +34,13 @@ import {
 } from 'angular2/src/core/compiler/element_injector';
 import * as dirAnn from 'angular2/src/core/annotations_impl/annotations';
 import {
-  Parent,
-  Ancestor,
-  Unbounded,
   Attribute,
   Query,
   Component,
   Directive,
   onDestroy
 } from 'angular2/annotations';
-import * as ngDiAnn from 'angular2/src/core/annotations_impl/visibility';
-import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable} from 'angular2/di';
+import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self} from 'angular2/di';
 import * as diAnn from 'angular2/src/di/annotations_impl';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
@@ -78,13 +74,16 @@ class DummyElementRef extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
 
+@Injectable(self)
 class SimpleDirective {}
 
 class SimpleService {}
 
+@Injectable(self)
 class SomeOtherDirective {}
 
 var _constructionCount = 0;
+@Injectable(self)
 class CountingDirective {
   count;
   constructor() {
@@ -93,6 +92,7 @@ class CountingDirective {
   }
 }
 
+@Injectable(self)
 class FancyCountingDirective extends CountingDirective {
   constructor() { super(); }
 }
@@ -137,6 +137,12 @@ class NeedsDirectiveFromAnAncestorShadowDom {
 class NeedsService {
   service: any;
   constructor(@Inject("service") service) { this.service = service; }
+}
+
+@Injectable()
+class NeedsAncestorService {
+  service: any;
+  constructor(@Ancestor() @Inject("service") service) { this.service = service; }
 }
 
 class HasEventEmitter {
@@ -581,7 +587,6 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-
           it("should instantiate hostInjector injectables that have dependencies with set visibility",
              function() {
                var childInj = parentChildInjectors(
@@ -597,7 +602,7 @@ export function main() {
                        bind('injectable2')
                            .toFactory(
                                (val) => `${val}-injectable2`,
-                               [[new diAnn.Inject('injectable1'), new ngDiAnn.Parent()]])
+                               [[new diAnn.Inject('injectable1'), new diAnn.Parent()]])
                      ]
                    }))]);
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
@@ -648,7 +653,8 @@ export function main() {
             expect(shadowInj.get(NeedsService).service).toEqual('hostService');
           });
 
-          it("should not instantiate a directive in a view that depends on hostInjector bindings of a decorator directive", () => {
+          it("should not instantiate a directive in a view that has an ancestor dependency on hostInjector"+
+            " bindings of a decorator directive", () => {
             expect(() => {
               hostShadowInjectors(
                 ListWrapper.concat([
@@ -657,7 +663,7 @@ export function main() {
                       hostInjector: [bind('service').toValue('hostService')]})
                   )], extraBindings),
 
-                ListWrapper.concat([NeedsService], extraBindings)
+                ListWrapper.concat([NeedsAncestorService], extraBindings)
               );
             }).toThrowError(new RegExp("No provider for service!"));
           });

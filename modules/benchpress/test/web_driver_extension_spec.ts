@@ -19,12 +19,14 @@ import {WebDriverExtension, bind, Injector, Options} from 'benchpress/common';
 
 export function main() {
   function createExtension(ids, caps) {
-    return Injector.resolveAndCreate([
-                     ListWrapper.map(ids, (id) => bind(id).toValue(new MockExtension(id))),
-                     bind(Options.CAPABILITIES).toValue(caps),
-                     WebDriverExtension.bindTo(ids)
-                   ])
-        .asyncGet(WebDriverExtension);
+    return PromiseWrapper.wrap(() => {
+      return Injector.resolveAndCreate([
+                       ListWrapper.map(ids, (id) => bind(id).toValue(new MockExtension(id))),
+                       bind(Options.CAPABILITIES).toValue(caps),
+                       WebDriverExtension.bindTo(ids)
+                     ])
+          .get(WebDriverExtension);
+    });
   }
 
   describe('WebDriverExtension.bindTo', () => {
@@ -44,7 +46,6 @@ export function main() {
            async.done();
          });
        }));
-
   });
 }
 

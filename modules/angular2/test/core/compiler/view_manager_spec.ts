@@ -210,7 +210,7 @@ export function main() {
       });
 
       it('should hydrate the view', () => {
-        var injector = new Injector([], null, false);
+        var injector = Injector.resolveAndCreate([]);
         manager.createRootHostView(wrapPv(hostProtoView), null, injector);
         expect(utils.spy('hydrateRootHostView')).toHaveBeenCalledWith(createdViews[0], injector);
         expect(renderer.spy('hydrateView')).toHaveBeenCalledWith(createdViews[0].render);
@@ -301,7 +301,7 @@ export function main() {
         });
 
         it('should hydrate the view', () => {
-          var injector = new Injector([], null, false);
+          var injector = Injector.resolveAndCreate([]);
           var contextView =
               createView(createProtoView([createEmptyElBinder(), createEmptyElBinder()]));
           manager.createViewInContainer(elementRef(parentView, 0), 0, wrapPv(childProtoView),

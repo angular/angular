@@ -42,7 +42,7 @@ export function main() {
     var directiveResolver;
     var utils;
 
-    function createInjector() { return new Injector([], null, false); }
+    function createInjector() { return Injector.resolveAndCreate([]); }
 
     function createDirectiveBinding(type) {
       var annotation = directiveResolver.resolve(type);

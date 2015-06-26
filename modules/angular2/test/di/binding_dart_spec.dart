@@ -28,14 +28,10 @@ main() {
       expect(const Binding(Foo, toFactory: fn).toFactory).toBe(fn);
     });
 
-    it('can create constant from async factory', () {
-      expect(const Binding(Foo, toAsyncFactory: fn).toAsyncFactory).toBe(fn);
-    });
-
     it('can be used in annotation', () {
       ClassMirror mirror = reflectType(Annotated);
       var bindings = mirror.metadata[0].reflectee.bindings;
-      expect(bindings.length).toBe(6);
+      expect(bindings.length).toBe(5);
       bindings.forEach((b) {
         expect(b).toBeA(Binding);
       });
@@ -57,7 +53,6 @@ class Annotation {
   const Binding(Foo, toClass: Bar),
   const Binding(Foo, toValue: 5),
   const Binding(Foo, toAlias: Bar),
-  const Binding(Foo, toFactory: fn),
-  const Binding(Foo, toAsyncFactory: fn),
+  const Binding(Foo, toFactory: fn)
 ])
 class Annotated {}

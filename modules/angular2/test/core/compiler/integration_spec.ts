@@ -33,7 +33,18 @@ import {
 } from 'angular2/src/facade/lang';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Injector, bind, Injectable, Binding, forwardRef, OpaqueToken, Inject} from 'angular2/di';
+import {
+  Injector,
+  bind,
+  Injectable,
+  Binding,
+  forwardRef,
+  OpaqueToken,
+  Inject,
+  Parent,
+  Ancestor,
+  Unbounded
+} from 'angular2/di';
 import {
   PipeFactory,
   PipeRegistry,
@@ -45,18 +56,9 @@ import {
   ON_PUSH
 } from 'angular2/change_detection';
 
-import {
-  Directive,
-  Component,
-  View,
-  Parent,
-  Ancestor,
-  Unbounded,
-  Attribute,
-  Query
-} from 'angular2/annotations';
+import {Directive, Component, View, Attribute, Query} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
-import * as visAnn from 'angular2/src/core/annotations_impl/visibility';
+import * as visAnn from 'angular2/src/di/annotations_impl';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 

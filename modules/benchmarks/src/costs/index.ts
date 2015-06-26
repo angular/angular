@@ -23,7 +23,7 @@ export function main() {
   bootstrap(AppComponent)
       .then((ref) => {
         var injector = ref.injector;
-        var app: AppComponent = injector.get(AppComponent);
+        var app: AppComponent = ref.hostComponent;
         var lifeCycle = injector.get(LifeCycle);
 
         bindAction('#reset', function() {

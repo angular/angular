@@ -125,7 +125,7 @@ export function main() {
     bootstrap(AppComponent, _createBindings())
         .then((ref) => {
           var injector = ref.injector;
-          app = injector.get(AppComponent);
+          app = ref.hostComponent;
           lifecycle = injector.get(LifeCycle);
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);

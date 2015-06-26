@@ -14,11 +14,11 @@ import {Options} from './common_options';
 @ABSTRACT()
 export class WebDriverExtension {
   static bindTo(childTokens): List<Binding> {
-    return [
+    var res = [
       bind(_CHILDREN)
-          .toAsyncFactory((injector) => PromiseWrapper.all(
-                              ListWrapper.map(childTokens, (token) => injector.asyncGet(token))),
-                          [Injector]),
+          .toFactory(
+              (injector: Injector) => ListWrapper.map(childTokens, (token) => injector.get(token)),
+              [Injector]),
       bind(WebDriverExtension)
           .toFactory(
               (children, capabilities) => {
@@ -35,6 +35,7 @@ export class WebDriverExtension {
               },
               [_CHILDREN, Options.CAPABILITIES])
     ];
+    return res;
   }
 
   gc(): Promise<any> { throw new BaseException('NYI'); }
