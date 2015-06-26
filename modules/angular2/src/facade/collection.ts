@@ -65,10 +65,10 @@ export class MapWrapper {
   }
   static createFromPairs(pairs: List<any>): Map<any, any> { return createMapFromPairs(pairs); }
   static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
-  static size(m: Map<any, any>) { return m.size; }
+  static size(m: Map<any, any>): number { return m.size; }
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
   static clearValues(m: Map<any, any>) { _clearValues(m); }
-  static iterable(m) { return m; }
+  static iterable<T>(m: T): T { return m; }
   static keys<K>(m: Map<K, any>): List<K> { return (<any>Array).from(m.keys()); }
   static values<V>(m: Map<any, V>): List<V> { return (<any>Array).from(m.values()); }
 }
@@ -83,13 +83,15 @@ export class StringMapWrapper {
     // http://jsperf.com/ng2-object-create-null
     return {};
   }
-  static contains(map: StringMap<string, any>, key: string) { return map.hasOwnProperty(key); }
+  static contains(map: StringMap<string, any>, key: string): boolean {
+    return map.hasOwnProperty(key);
+  }
   static get<V>(map: StringMap<string, V>, key: string): V {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }
   static set<V>(map: StringMap<string, V>, key: string, value: V) { map[key] = value; }
   static keys(map: StringMap<string, any>): List<string> { return Object.keys(map); }
-  static isEmpty(map: StringMap<string, any>) {
+  static isEmpty(map: StringMap<string, any>): boolean {
     for (var prop in map) {
       return false;
     }
@@ -139,57 +141,59 @@ export class StringMapWrapper {
   }
 }
 
+export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean; }
+
 export class ListWrapper {
   // JS has no way to express a staticly fixed size list, but dart does so we
   // keep both methods.
   static createFixedSize(size): List<any> { return new List(size); }
   static createGrowableSize(size): List<any> { return new List(size); }
-  static get(m, k) { return m[k]; }
+  static get(m, k): any { return m[k]; }
   static set(m, k, v) { m[k] = v; }
-  static clone(array: List<any>) { return array.slice(0); }
-  static map(array, fn) { return array.map(fn); }
+  static clone<T>(array: List<T>): T[] { return array.slice(0); }
+  static map(array, fn): any { return array.map(fn); }
   static forEach(array: List<any>, fn: Function) {
     for (var i = 0; i < array.length; i++) {
       fn(array[i]);
     }
   }
-  static first(array) {
+  static first<T>(array: List<T>): T {
     if (!array) return null;
     return array[0];
   }
-  static last(array) {
+  static last<T>(array: List<T>): T {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
   }
-  static find(list: List<any>, pred: Function) {
+  static find<T>(list: List<T>, pred: Predicate<T>): T {
     for (var i = 0; i < list.length; ++i) {
       if (pred(list[i])) return list[i];
     }
     return null;
   }
-  static indexOf(array: List<any>, value, startIndex = 0) {
+  static indexOf(array: List<any>, value, startIndex = 0): number {
     return array.indexOf(value, startIndex);
   }
   static reduce<T, E>(list: List<T>,
                       fn: (accumValue: E, currentValue: T, currentIndex: number, array: T[]) => E,
-                      init: E) {
+                      init: E): E {
     return list.reduce(fn, init);
   }
-  static filter(array, pred: Function) { return array.filter(pred); }
-  static any(list: List<any>, pred: Function) {
+  static filter<T>(array: List<T>, pred: Predicate<T>): T[] { return array.filter(pred); }
+  static any(list: List<any>, pred: Function): boolean {
     for (var i = 0; i < list.length; ++i) {
       if (pred(list[i])) return true;
     }
     return false;
   }
-  static contains(list: List<any>, el) { return list.indexOf(el) !== -1; }
-  static reversed(array) {
+  static contains(list: List<any>, el): boolean { return list.indexOf(el) !== -1; }
+  static reversed<T>(array: List<T>): T[] {
     var a = ListWrapper.clone(array);
     return a.reverse();
   }
-  static concat(a, b) { return a.concat(b); }
+  static concat(a, b): List<any> { return a.concat(b); }
   static insert(list, index: int, value) { list.splice(index, 0, value); }
-  static removeAt(list, index: int) {
+  static removeAt<T>(list: List<T>, index: int): T {
     var res = list[index];
     list.splice(index, 1);
     return res;
@@ -210,8 +214,8 @@ export class ListWrapper {
     return false;
   }
   static clear(list) { list.splice(0, list.length); }
-  static join(list, s) { return list.join(s); }
-  static isEmpty(list) { return list.length == 0; }
+  static join(list, s: string): string { return list.join(s); }
+  static isEmpty(list): boolean { return list.length == 0; }
   static fill(list: List<any>, value, start: int = 0, end: int = null) {
     list.fill(value, start, end === null ? undefined : end);
   }

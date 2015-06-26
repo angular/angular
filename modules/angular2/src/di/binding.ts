@@ -29,7 +29,9 @@ export class Dependency {
   constructor(public key: Key, public optional: boolean, public visibility: Visibility,
               public properties: List<any>) {}
 
-  static fromKey(key: Key) { return new Dependency(key, false, _defaulVisiblity(key.token), []); }
+  static fromKey(key: Key): Dependency {
+    return new Dependency(key, false, _defaulVisiblity(key.token), []);
+  }
 }
 
 const _EMPTY_LIST = CONST_EXPR([]);

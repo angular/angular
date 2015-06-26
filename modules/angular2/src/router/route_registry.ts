@@ -106,7 +106,7 @@ export class RouteRegistry {
         ListWrapper.map(possibleMatches, (candidate) => this._completeRouteMatch(candidate));
 
     return PromiseWrapper.all(matchPromises)
-        .then((solutions) => {
+        .then((solutions: List<Instruction>) => {
           // remove nulls
           var fullSolutions = ListWrapper.filter(solutions, (solution) => isPresent(solution));
 

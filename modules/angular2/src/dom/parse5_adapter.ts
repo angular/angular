@@ -26,7 +26,9 @@ function _notImplemented(methodName) {
 export class Parse5DomAdapter extends DomAdapter {
   static makeCurrent() { setRootDomAdapter(new Parse5DomAdapter()); }
 
-  hasProperty(element, name: string) { return _HTMLElementPropertyList.indexOf(name) > -1; }
+  hasProperty(element, name: string): boolean {
+    return _HTMLElementPropertyList.indexOf(name) > -1;
+  }
   // TODO(tbosch): don't even call this method when we run the tests on server side
   // by not using the DomRenderer in tests. Keeping this for now to make tests happy...
   setProperty(el: /*element*/ any, name: string, value: any) {
@@ -45,8 +47,8 @@ export class Parse5DomAdapter extends DomAdapter {
   get attrToPropMap() { return _attrToPropMap; }
 
   query(selector) { throw _notImplemented('query'); }
-  querySelector(el, selector: string) { return this.querySelectorAll(el, selector)[0]; }
-  querySelectorAll(el, selector: string) {
+  querySelector(el, selector: string): any { return this.querySelectorAll(el, selector)[0]; }
+  querySelectorAll(el, selector: string): List<any> {
     var res = [];
     var _recursive = (result, node, selector, matcher) => {
       var cNodes = node.childNodes;
@@ -130,18 +132,18 @@ export class Parse5DomAdapter extends DomAdapter {
       this.dispatchEvent(el._window, evt);
     }
   }
-  createMouseEvent(eventType) { return this.createEvent(eventType); }
-  createEvent(eventType) {
-    var evt = {
+  createMouseEvent(eventType): Event { return this.createEvent(eventType); }
+  createEvent(eventType: string): Event {
+    var evt = <Event>{
       type: eventType,
       defaultPrevented: false,
-      preventDefault: () => { evt.defaultPrevented = true }
+      preventDefault: () => { evt.defaultPrevented = true; }
     };
     return evt;
   }
   preventDefault(evt) { evt.returnValue = false; }
-  getInnerHTML(el) { return serializer.serialize(this.templateAwareRoot(el)); }
-  getOuterHTML(el) {
+  getInnerHTML(el): string { return serializer.serialize(this.templateAwareRoot(el)); }
+  getOuterHTML(el): string {
     serializer.html = '';
     serializer._serializeElement(el);
     return serializer.html;
@@ -149,11 +151,11 @@ export class Parse5DomAdapter extends DomAdapter {
   nodeName(node): string { return node.tagName; }
   nodeValue(node): string { return node.nodeValue; }
   type(node: any): string { throw _notImplemented('type'); }
-  content(node) { return node.childNodes[0]; }
-  firstChild(el) { return el.firstChild; }
-  nextSibling(el) { return el.nextSibling; }
-  parentElement(el) { return el.parent; }
-  childNodes(el) { return el.childNodes; }
+  content(node): string { return node.childNodes[0]; }
+  firstChild(el): Node { return el.firstChild; }
+  nextSibling(el): Node { return el.nextSibling; }
+  parentElement(el): Node { return el.parent; }
+  childNodes(el): Node[] { return el.childNodes; }
   childNodesAsList(el): List<any> {
     var childNodes = el.childNodes;
     var res = ListWrapper.createFixedSize(childNodes.length);
@@ -176,7 +178,7 @@ export class Parse5DomAdapter extends DomAdapter {
       this.remove(node);
     }
   }
-  remove(el) {
+  remove(el): HTMLElement {
     var parent = el.parent;
     if (parent) {
       var index = parent.childNodes.indexOf(el);
@@ -216,7 +218,7 @@ export class Parse5DomAdapter extends DomAdapter {
       treeAdapter.appendChild(el, content.childNodes[i]);
     }
   }
-  getText(el) {
+  getText(el): string {
     if (this.isTextNode(el)) {
       return el.data;
     } else if (isBlank(el.childNodes) || el.childNodes.length == 0) {
@@ -237,40 +239,40 @@ export class Parse5DomAdapter extends DomAdapter {
       if (value !== '') treeAdapter.insertText(el, value);
     }
   }
-  getValue(el) { return el.value; }
+  getValue(el): string { return el.value; }
   setValue(el, value: string) { el.value = value; }
-  getChecked(el) { return el.checked; }
+  getChecked(el): boolean { return el.checked; }
   setChecked(el, value: boolean) { el.checked = value; }
-  createTemplate(html) {
+  createTemplate(html): HTMLElement {
     var template = treeAdapter.createElement("template", 'http://www.w3.org/1999/xhtml', []);
     var content = parser.parseFragment(html);
     treeAdapter.appendChild(template, content);
     return template;
   }
-  createElement(tagName) {
+  createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
-  createTextNode(text: string) { throw _notImplemented('createTextNode'); }
-  createScriptTag(attrName: string, attrValue: string) {
+  createTextNode(text: string): Text { throw _notImplemented('createTextNode'); }
+  createScriptTag(attrName: string, attrValue: string): HTMLElement {
     return treeAdapter.createElement("script", 'http://www.w3.org/1999/xhtml',
                                      [{name: attrName, value: attrValue}]);
   }
-  createStyleElement(css: string) {
+  createStyleElement(css: string): HTMLStyleElement {
     var style = this.createElement('style');
     this.setText(style, css);
-    return style;
+    return <HTMLStyleElement>style;
   }
-  createShadowRoot(el) {
+  createShadowRoot(el): HTMLElement {
     el.shadowRoot = treeAdapter.createDocumentFragment();
     el.shadowRoot.parent = el;
     return el.shadowRoot;
   }
-  getShadowRoot(el) { return el.shadowRoot; }
-  getHost(el) { return el.host; }
-  getDistributedNodes(el: any): List<any> { throw _notImplemented('getDistributedNodes'); }
-  clone(node) {
+  getShadowRoot(el): Element { return el.shadowRoot; }
+  getHost(el): string { return el.host; }
+  getDistributedNodes(el: any): List<Node> { throw _notImplemented('getDistributedNodes'); }
+  clone(node: Node): Node {
     // e.g. document fragment
-    if (node.type === 'root') {
+    if ((<any>node).type === 'root') {
       var serialized = serializer.serialize(node);
       var newParser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
       return newParser.parseFragment(serialized);
@@ -282,10 +284,10 @@ export class Parse5DomAdapter extends DomAdapter {
       return newParser.parseFragment(serialized).childNodes[0];
     }
   }
-  getElementsByClassName(element, name: string) {
+  getElementsByClassName(element, name: string): List<HTMLElement> {
     return this.querySelectorAll(element, "." + name);
   }
-  getElementsByTagName(element: any, name: string): List<any> {
+  getElementsByTagName(element: any, name: string): List<HTMLElement> {
     throw _notImplemented('getElementsByTagName');
   }
   classList(element): List<string> {
@@ -312,7 +314,7 @@ export class Parse5DomAdapter extends DomAdapter {
       element.attribs["class"] = element.className = ListWrapper.join(classList, " ");
     }
   }
-  hasClass(element, classname: string) {
+  hasClass(element, classname: string): boolean {
     return ListWrapper.contains(this.classList(element), classname);
   }
   _readStyleAttribute(element) {
@@ -346,12 +348,12 @@ export class Parse5DomAdapter extends DomAdapter {
     this._writeStyleAttribute(element, styleMap);
   }
   removeStyle(element, stylename: string) { this.setStyle(element, stylename, null); }
-  getStyle(element, stylename: string) {
+  getStyle(element, stylename: string): string {
     var styleMap = this._readStyleAttribute(element);
     return styleMap.hasOwnProperty(stylename) ? styleMap[stylename] : "";
   }
   tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
-  attributeMap(element) {
+  attributeMap(element): Map<string, string> {
     var res = new Map();
     var elAttrs = treeAdapter.getAttrList(element);
     for (var i = 0; i < elAttrs.length; i++) {
@@ -360,10 +362,10 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return res;
   }
-  hasAttribute(element, attribute: string) {
+  hasAttribute(element, attribute: string): boolean {
     return element.attribs && element.attribs.hasOwnProperty(attribute);
   }
-  getAttribute(element, attribute: string) {
+  getAttribute(element, attribute: string): string {
     return element.attribs && element.attribs.hasOwnProperty(attribute) ?
                element.attribs[attribute] :
                null;
@@ -378,8 +380,8 @@ export class Parse5DomAdapter extends DomAdapter {
       StringMapWrapper.delete(element.attribs, attribute);
     }
   }
-  templateAwareRoot(el) { return this.isTemplateElement(el) ? this.content(el) : el; }
-  createHtmlDocument() {
+  templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
+  createHtmlDocument(): Document {
     var newDoc = treeAdapter.createDocument();
     newDoc.title = "fake title";
     var head = treeAdapter.createElement("head", null, []);
@@ -391,14 +393,14 @@ export class Parse5DomAdapter extends DomAdapter {
     StringMapWrapper.set(newDoc, "_window", StringMapWrapper.create());
     return newDoc;
   }
-  defaultDoc() {
+  defaultDoc(): Document {
     if (defDoc === null) {
       defDoc = this.createHtmlDocument();
     }
     return defDoc;
   }
-  getBoundingClientRect(el) { return {left: 0, top: 0, width: 0, height: 0}; }
-  getTitle() { return this.defaultDoc().title || ""; }
+  getBoundingClientRect(el): any { return {left: 0, top: 0, width: 0, height: 0}; }
+  getTitle(): string { return this.defaultDoc().title || ""; }
   setTitle(newTitle: string) { this.defaultDoc().title = newTitle; }
   isTemplateElement(el: any): boolean {
     return this.isElementNode(el) && this.tagName(el) === "template";
@@ -408,7 +410,7 @@ export class Parse5DomAdapter extends DomAdapter {
   isElementNode(node): boolean { return node ? treeAdapter.isElementNode(node) : false; }
   hasShadowRoot(node): boolean { return isPresent(node.shadowRoot); }
   isShadowRoot(node): boolean { return this.getShadowRoot(node) == node; }
-  importIntoDoc(node) { return this.clone(node); }
+  importIntoDoc(node): any { return this.clone(node); }
   isPageRule(rule): boolean {
     return rule.type === 6;  // CSSRule.PAGE_RULE
   }
@@ -476,18 +478,18 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   supportsDOMEvents(): boolean { return false; }
   supportsNativeShadowDOM(): boolean { return false; }
-  getGlobalEventTarget(target: string) {
+  getGlobalEventTarget(target: string): any {
     if (target == "window") {
-      return this.defaultDoc()._window;
+      return (<any>this.defaultDoc())._window;
     } else if (target == "document") {
       return this.defaultDoc();
     } else if (target == "body") {
       return this.defaultDoc().body;
     }
   }
-  getHistory() { throw 'not implemented'; }
-  getLocation() { throw 'not implemented'; }
-  getUserAgent() { return "Fake user agent"; }
+  getHistory(): History { throw 'not implemented'; }
+  getLocation(): Location { throw 'not implemented'; }
+  getUserAgent(): string { return "Fake user agent"; }
   getData(el, name: string): string { return this.getAttribute(el, 'data-' + name); }
   setData(el, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
   // TODO(tbosch): move this into a separate environment class once we have it

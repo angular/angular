@@ -42,7 +42,7 @@ export class Attribute extends DependencyAnnotation {
     // account.
     return this;
   }
-  toString() { return `@Attribute(${stringify(this.attributeName)})`; }
+  toString(): string { return `@Attribute(${stringify(this.attributeName)})`; }
 }
 
 /**
@@ -67,5 +67,5 @@ export class Query extends DependencyAnnotation {
 
   get varBindings(): List<string> { return StringWrapper.split(this.selector, new RegExp(",")); }
 
-  toString() { return `@Query(${stringify(this.selector)})`; }
+  toString(): string { return `@Query(${stringify(this.selector)})`; }
 }

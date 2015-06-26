@@ -42,7 +42,9 @@ export class ViewContainerRef {
     return this.viewManager.attachViewInContainer(this.element, atIndex, viewRef);
   }
 
-  indexOf(viewRef: ViewRef) { return ListWrapper.indexOf(this._getViews(), internalView(viewRef)); }
+  indexOf(viewRef: ViewRef): number {
+    return ListWrapper.indexOf(this._getViews(), internalView(viewRef));
+  }
 
   remove(atIndex: number = -1): void {
     if (atIndex == -1) atIndex = this.length - 1;

@@ -6,7 +6,7 @@ export class DomViewContainer {
   // The order in this list matches the DOM order.
   views: List<viewModule.DomView> = [];
 
-  contentTagContainers() { return this.views; }
+  contentTagContainers(): List<viewModule.DomView> { return this.views; }
 
   nodes(): List</*node*/ any> {
     var r = [];

@@ -14,7 +14,7 @@ export class BaseQueryList<T> {
   protected _callbacks = [];
   protected _dirty = false;
 
-  [Symbol.iterator]() { return this._results[Symbol.iterator](); }
+  [Symbol.iterator](): any { return this._results[Symbol.iterator](); }
 
   reset(newList) {
     this._results = newList;
@@ -33,9 +33,9 @@ export class BaseQueryList<T> {
     }
   }
 
-  onChange(callback) { this._callbacks.push(callback); }
+  onChange(callback): void { this._callbacks.push(callback); }
 
-  removeCallback(callback) { ListWrapper.remove(this._callbacks, callback); }
+  removeCallback(callback): void { ListWrapper.remove(this._callbacks, callback); }
 
   get length() { return this._results.length; }
   get first() { return ListWrapper.first(this._results); }

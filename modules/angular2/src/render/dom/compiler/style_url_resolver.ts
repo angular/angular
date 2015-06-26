@@ -12,7 +12,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 export class StyleUrlResolver {
   constructor(public _resolver: UrlResolver) {}
 
-  resolveUrls(cssText: string, baseUrl: string) {
+  resolveUrls(cssText: string, baseUrl: string): string {
     cssText = this._replaceUrls(cssText, _cssUrlRe, baseUrl);
     cssText = this._replaceUrls(cssText, _cssImportRe, baseUrl);
     return cssText;

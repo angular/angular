@@ -293,7 +293,7 @@ export class EventBuilder extends AstTransformer {
     return result;
   }
 
-  visitAccessMember(ast: AccessMember) {
+  visitAccessMember(ast: AccessMember): AccessMember {
     var isEventAccess = false;
     var current: AST = ast;
     while (!isEventAccess && (current instanceof AccessMember)) {
@@ -313,11 +313,11 @@ export class EventBuilder extends AstTransformer {
     }
   }
 
-  buildEventLocals() { return this.locals; }
+  buildEventLocals(): List<AST> { return this.locals; }
 
-  buildLocalEvents() { return this.localEvents; }
+  buildLocalEvents(): List<Event> { return this.localEvents; }
 
-  buildGlobalEvents() { return this.globalEvents; }
+  buildGlobalEvents(): List<Event> { return this.globalEvents; }
 
   merge(eventBuilder: EventBuilder) {
     this._merge(this.localEvents, eventBuilder.localEvents);
@@ -343,9 +343,10 @@ const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 
-function buildElementPropertyBindings(protoElement: /*element*/ any, isNgComponent: boolean,
-                                      bindingsInTemplate: Map<string, ASTWithSource>,
-                                      directiveTempaltePropertyNames: Set<string>) {
+function buildElementPropertyBindings(
+    protoElement: /*element*/ any, isNgComponent: boolean,
+    bindingsInTemplate: Map<string, ASTWithSource>,
+    directiveTempaltePropertyNames: Set<string>): List<api.ElementPropertyBinding> {
   var propertyBindings = [];
   MapWrapper.forEach(bindingsInTemplate, (ast, propertyNameInTemplate) => {
     var propertyBinding = createElementPropertyBinding(ast, propertyNameInTemplate);

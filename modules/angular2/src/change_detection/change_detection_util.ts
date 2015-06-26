@@ -35,7 +35,7 @@ var _simpleChanges = [
   new SimpleChange(null, null)
 ];
 
-function _simpleChange(previousValue, currentValue) {
+function _simpleChange(previousValue, currentValue): SimpleChange {
   var index = _simpleChangesIndex++ % 20;
   var s = _simpleChanges[index];
   s.previousValue = previousValue;
@@ -44,41 +44,43 @@ function _simpleChange(previousValue, currentValue) {
 }
 
 export class ChangeDetectionUtil {
-  static uninitialized() { return uninitialized; }
+  static uninitialized(): Object { return uninitialized; }
 
-  static arrayFn0() { return []; }
-  static arrayFn1(a1) { return [a1]; }
-  static arrayFn2(a1, a2) { return [a1, a2]; }
-  static arrayFn3(a1, a2, a3) { return [a1, a2, a3]; }
-  static arrayFn4(a1, a2, a3, a4) { return [a1, a2, a3, a4]; }
-  static arrayFn5(a1, a2, a3, a4, a5) { return [a1, a2, a3, a4, a5]; }
-  static arrayFn6(a1, a2, a3, a4, a5, a6) { return [a1, a2, a3, a4, a5, a6]; }
-  static arrayFn7(a1, a2, a3, a4, a5, a6, a7) { return [a1, a2, a3, a4, a5, a6, a7]; }
-  static arrayFn8(a1, a2, a3, a4, a5, a6, a7, a8) { return [a1, a2, a3, a4, a5, a6, a7, a8]; }
-  static arrayFn9(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+  static arrayFn0(): any[] { return []; }
+  static arrayFn1(a1): any[] { return [a1]; }
+  static arrayFn2(a1, a2): any[] { return [a1, a2]; }
+  static arrayFn3(a1, a2, a3): any[] { return [a1, a2, a3]; }
+  static arrayFn4(a1, a2, a3, a4): any[] { return [a1, a2, a3, a4]; }
+  static arrayFn5(a1, a2, a3, a4, a5): any[] { return [a1, a2, a3, a4, a5]; }
+  static arrayFn6(a1, a2, a3, a4, a5, a6): any[] { return [a1, a2, a3, a4, a5, a6]; }
+  static arrayFn7(a1, a2, a3, a4, a5, a6, a7): any[] { return [a1, a2, a3, a4, a5, a6, a7]; }
+  static arrayFn8(a1, a2, a3, a4, a5, a6, a7, a8): any[] {
+    return [a1, a2, a3, a4, a5, a6, a7, a8];
+  }
+  static arrayFn9(a1, a2, a3, a4, a5, a6, a7, a8, a9): any[] {
     return [a1, a2, a3, a4, a5, a6, a7, a8, a9];
   }
 
-  static operation_negate(value) { return !value; }
-  static operation_add(left, right) { return left + right; }
-  static operation_subtract(left, right) { return left - right; }
-  static operation_multiply(left, right) { return left * right; }
-  static operation_divide(left, right) { return left / right; }
-  static operation_remainder(left, right) { return left % right; }
-  static operation_equals(left, right) { return left == right; }
-  static operation_not_equals(left, right) { return left != right; }
-  static operation_identical(left, right) { return left === right; }
-  static operation_not_identical(left, right) { return left !== right; }
-  static operation_less_then(left, right) { return left < right; }
-  static operation_greater_then(left, right) { return left > right; }
-  static operation_less_or_equals_then(left, right) { return left <= right; }
-  static operation_greater_or_equals_then(left, right) { return left >= right; }
-  static operation_logical_and(left, right) { return left && right; }
-  static operation_logical_or(left, right) { return left || right; }
-  static cond(cond, trueVal, falseVal) { return cond ? trueVal : falseVal; }
+  static operation_negate(value): any { return !value; }
+  static operation_add(left, right): any { return left + right; }
+  static operation_subtract(left, right): any { return left - right; }
+  static operation_multiply(left, right): any { return left * right; }
+  static operation_divide(left, right): any { return left / right; }
+  static operation_remainder(left, right): any { return left % right; }
+  static operation_equals(left, right): any { return left == right; }
+  static operation_not_equals(left, right): any { return left != right; }
+  static operation_identical(left, right): any { return left === right; }
+  static operation_not_identical(left, right): any { return left !== right; }
+  static operation_less_then(left, right): any { return left < right; }
+  static operation_greater_then(left, right): any { return left > right; }
+  static operation_less_or_equals_then(left, right): any { return left <= right; }
+  static operation_greater_or_equals_then(left, right): any { return left >= right; }
+  static operation_logical_and(left, right): any { return left && right; }
+  static operation_logical_or(left, right): any { return left || right; }
+  static cond(cond, trueVal, falseVal): any { return cond ? trueVal : falseVal; }
 
-  static mapFn(keys: List<any>) {
-    function buildMap(values) {
+  static mapFn(keys: List<any>): any {
+    function buildMap(values): StringMap<any, any> {
       var res = StringMapWrapper.create();
       for (var i = 0; i < keys.length; ++i) {
         StringMapWrapper.set(res, keys[i], values[i]);
@@ -113,7 +115,7 @@ export class ChangeDetectionUtil {
     }
   }
 
-  static keyedAccess(obj, args) { return obj[args[0]]; }
+  static keyedAccess(obj, args): any { return obj[args[0]]; }
 
   static unwrapValue(value: any): any {
     if (value instanceof WrappedValue) {
@@ -129,7 +131,7 @@ export class ChangeDetectionUtil {
 
   static throwDehydrated() { throw new DehydratedException(); }
 
-  static changeDetectionMode(strategy: string) {
+  static changeDetectionMode(strategy: string): string {
     return strategy == ON_PUSH ? CHECK_ONCE : CHECK_ALWAYS;
   }
 
@@ -137,7 +139,7 @@ export class ChangeDetectionUtil {
     return _simpleChange(previousValue, currentValue);
   }
 
-  static addChange(changes, propertyName: string, change) {
+  static addChange(changes, propertyName: string, change): Map<any, any> {
     if (isBlank(changes)) {
       changes = {};
     }

@@ -7,6 +7,12 @@ import * as Rx from 'rx';
 
 export var Promise = (<any>global).Promise;
 
+export interface PromiseCompleter<R> {
+  promise: Promise<R>;
+  resolve: (value?: R | Thenable<R>) => void;
+  reject: (error?: any, stackTrace?: string) => void;
+}
+
 export class PromiseWrapper {
   static resolve(obj): Promise<any> { return Promise.resolve(obj); }
 
@@ -38,7 +44,7 @@ export class PromiseWrapper {
     });
   }
 
-  static completer() {
+  static completer(): PromiseCompleter<any> {
     var resolve;
     var reject;
 
@@ -103,7 +109,7 @@ export class EventEmitter extends Observable {
     }
   }
 
-  observer(generator) {
+  observer(generator): Rx.IDisposable {
     return this._subject.observeOn(this._immediateScheduler)
         .subscribe((value) => { setTimeout(() => generator.next(value)); },
                    (error) => generator.throw ? generator.throw(error) : null,

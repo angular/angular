@@ -90,6 +90,8 @@ class StringMapWrapper {
   }
 }
 
+typedef bool Predicate<T>(T item);
+
 class ListWrapper {
   static List clone(Iterable l) => new List.from(l);
   static List createFixedSize(int size) => new List(size);

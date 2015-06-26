@@ -37,18 +37,18 @@ export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
 
-export function CONST() {
+export function CONST():<T>(target: T) => T {
   return (target) => target;
 }
 
-export function ABSTRACT() {
+export function ABSTRACT():<T>(target: T) => T {
   return (t) => t;
 }
 
 // Note: This is only a marker annotation needed for ts2dart.
 // This is written so that is can be used as a Traceur annotation
 // or a Typescript decorator.
-export function IMPLEMENTS(_) {
+export function IMPLEMENTS(_):<T>(target: T) => T {
   return (t) => t;
 }
 
@@ -152,7 +152,7 @@ export class NumberParseError extends BaseException {
 
   constructor(public message: string) { super(); }
 
-  toString() { return this.message; }
+  toString(): string { return this.message; }
 }
 
 
@@ -211,7 +211,11 @@ export class RegExpWrapper {
     return regExp.exec(input);
   }
   static test(regExp: RegExp, input: string): boolean { return regExp.test(input); }
-  static matcher(regExp, input) {
+  static matcher(regExp, input): {
+    re: RegExp;
+    input: string
+  }
+  {
     // Reset regex state for the case
     // someone did not loop over all matches
     // last time.
@@ -221,11 +225,11 @@ export class RegExpWrapper {
 }
 
 export class RegExpMatcherWrapper {
-  static next(matcher) { return matcher.re.exec(matcher.input); }
+  static next(matcher): string { return matcher.re.exec(matcher.input); }
 }
 
 export class FunctionWrapper {
-  static apply(fn: Function, posArgs) { return fn.apply(null, posArgs); }
+  static apply(fn: Function, posArgs): any { return fn.apply(null, posArgs); }
 }
 
 // JS has NaN !== NaN
@@ -235,11 +239,11 @@ export function looseIdentical(a, b): boolean {
 
 // JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
 // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-export function getMapKey(value) {
+export function getMapKey(value): any {
   return value;
 }
 
-export function normalizeBlank(obj) {
+export function normalizeBlank(obj): any {
   return isBlank(obj) ? null : obj;
 }
 
@@ -261,7 +265,7 @@ export function print(obj) {
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
 export class Json {
-  static parse(s: string) { return _global.JSON.parse(s); }
+  static parse(s: string): Object { return _global.JSON.parse(s); }
   static stringify(data): string {
     // Dart doesn't take 3 arguments
     return _global.JSON.stringify(data, null, 2);
@@ -269,8 +273,8 @@ export class Json {
 }
 
 export class DateWrapper {
-  static fromMillis(ms) { return new Date(ms); }
-  static toMillis(date: Date) { return date.getTime(); }
-  static now() { return new Date(); }
-  static toJson(date) { return date.toJSON(); }
+  static fromMillis(ms): Date { return new Date(ms); }
+  static toMillis(date: Date): number { return date.getTime(); }
+  static now(): Date { return new Date(); }
+  static toJson(date): string { return date.toJSON(); }
 }
