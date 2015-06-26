@@ -74,12 +74,12 @@ class DiffingPluginWrapper implements BroccoliTree {
       // Otherwise, `this.diffResult` was produced from the output of the
       // inputTree's rebuild() method, and can be used without being checked.
       // Set `this.diffResult` to null and return the previously stored value.
-      if (!tree.diffResult) {
-        let differ = index === false ? this.treeDiffer : this.treeDiffers[index];
-        return differ.diffTree();
-      }
       let diffResult = tree.diffResult;
       tree.diffResult = null;
+      if (!diffResult) {
+        let differ = index === false ? this.treeDiffer : this.treeDiffers[index];
+        diffResult = differ.diffTree();
+      }
       return diffResult;
     };
 
@@ -93,10 +93,11 @@ class DiffingPluginWrapper implements BroccoliTree {
   }
 
   private maybeStoreDiffResult(value: (DiffResult | void)) {
-    this.diffResult = value ? <DiffResult>(value) : null;
+    if (!(value instanceof DiffResult)) value = null;
+    this.diffResult = <DiffResult>(value);
   }
 
-  rebuild() {
+  rebuild(): (Promise<any>| void) {
     try {
       let firstRun = !this.initialized;
       this.init();
