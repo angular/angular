@@ -93,6 +93,5 @@ if [[ -z $ENV_SET ]]; then
   echo PATH=$PATH
   echo NGDART_BASE_DIR=$NGDART_BASE_DIR
   echo NGDART_SCRIPT_DIR=$NGDART_SCRIPT_DIR
-  $DART --version 2>&1
 
 fi
