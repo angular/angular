@@ -10,43 +10,44 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 
-import {RouteRecognizer} from 'angular2/src/router/route_recognizer';
+import {RouteRecognizer, RouteMatch} from 'angular2/src/router/route_recognizer';
 
 export function main() {
   describe('RouteRecognizer', () => {
     var recognizer;
-    var handler = {'components': {'a': 'b'}};
-    var handler2 = {'components': {'b': 'c'}};
+    var handler = {'component': DummyCmpA};
+    var handler2 = {'component': DummyCmpB};
 
     beforeEach(() => { recognizer = new RouteRecognizer(); });
 
 
     it('should recognize a static segment', () => {
       recognizer.addConfig('/test', handler);
-      expect(recognizer.recognize('/test')[0].handler).toEqual(handler);
+      var solution = recognizer.recognize('/test')[0];
+      expect(getComponentType(solution)).toEqual(handler['component']);
     });
 
 
     it('should recognize a single slash', () => {
       recognizer.addConfig('/', handler);
       var solution = recognizer.recognize('/')[0];
-      expect(solution.handler).toEqual(handler);
+      expect(getComponentType(solution)).toEqual(handler['component']);
     });
 
 
     it('should recognize a dynamic segment', () => {
       recognizer.addConfig('/user/:name', handler);
       var solution = recognizer.recognize('/user/brian')[0];
-      expect(solution.handler).toEqual(handler);
-      expect(solution.params).toEqual({'name': 'brian'});
+      expect(getComponentType(solution)).toEqual(handler['component']);
+      expect(solution.params()).toEqual({'name': 'brian'});
     });
 
 
     it('should recognize a star segment', () => {
       recognizer.addConfig('/first/*rest', handler);
       var solution = recognizer.recognize('/first/second/third')[0];
-      expect(solution.handler).toEqual(handler);
-      expect(solution.params).toEqual({'rest': 'second/third'});
+      expect(getComponentType(solution)).toEqual(handler['component']);
+      expect(solution.params()).toEqual({'rest': 'second/third'});
     });
 
 
@@ -72,7 +73,7 @@ export function main() {
       expect(solutions.length).toBe(1);
 
       var solution = solutions[0];
-      expect(solution.handler).toEqual(handler);
+      expect(getComponentType(solution)).toEqual(handler['component']);
       expect(solution.matchedUrl).toEqual('/b');
     });
 
@@ -83,7 +84,7 @@ export function main() {
       expect(solutions.length).toBe(1);
 
       var solution = solutions[0];
-      expect(solution.handler).toEqual(handler);
+      expect(getComponentType(solution)).toEqual(handler['component']);
       expect(solution.matchedUrl).toEqual('/bar');
     });
 
@@ -106,16 +107,23 @@ export function main() {
          expect(solutions[0].matchedUrl).toBe('/matias');
        });
 
-    it('should generate URLs', () => {
+    it('should generate URLs with params', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
-      expect(recognizer.generate('user', {'name': 'misko'})).toEqual('/app/user/misko');
+      expect(recognizer.generate('user', {'name': 'misko'})['url']).toEqual('app/user/misko');
     });
 
 
     it('should throw in the absence of required params URLs', () => {
-      recognizer.addConfig('/app/user/:name', handler, 'user');
-      expect(() => recognizer.generate('user', {}))
+      recognizer.addConfig('app/user/:name', handler, 'user');
+      expect(() => recognizer.generate('user', {})['url'])
           .toThrowError('Route generator for \'name\' was not included in parameters passed.');
     });
   });
 }
+
+function getComponentType(routeMatch: RouteMatch): any {
+  return routeMatch.recognizer.handler.componentType;
+}
+
+class DummyCmpA {}
+class DummyCmpB {}

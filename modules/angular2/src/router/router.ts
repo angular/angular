@@ -191,8 +191,8 @@ export class Router {
    * Generate a URL from a component name and optional map of parameters. The URL is relative to the
    * app's base href.
    */
-  generate(name: string, params: StringMap<string, string>): string {
-    return this._registry.generate(name, params, this.hostComponent);
+  generate(linkDsl: List<any>): string {
+    return this._registry.generate(linkDsl, this.hostComponent);
   }
 }
 

@@ -8,6 +8,7 @@ import {
   BaseException,
   normalizeBlank
 } from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {
   Map,
   MapWrapper,
@@ -19,6 +20,7 @@ import {
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {escapeRegex} from './url';
+import {RouteHandler} from './route_handler';
 
 // TODO(jeffbcross): implement as interface when ts2dart adds support:
 // https://github.com/angular/ts2dart/issues/173
@@ -27,7 +29,7 @@ export class Segment {
   regex: string;
 }
 
-export class ContinuationSegment extends Segment {
+class ContinuationSegment extends Segment {
   generate(params): string { return ''; }
 }
 
@@ -52,7 +54,7 @@ class DynamicSegment {
   generate(params: StringMap<string, string>): string {
     if (!StringMapWrapper.contains(params, this.name)) {
       throw new BaseException(
-          `Route generator for '${this.name}' was not included in parameters passed.`)
+          `Route generator for '${this.name}' was not included in parameters passed.`);
     }
     return normalizeBlank(StringMapWrapper.get(params, this.name));
   }
@@ -135,7 +137,7 @@ export class PathRecognizer {
   specificity: number;
   terminal: boolean = true;
 
-  constructor(public path: string, public handler: any) {
+  constructor(public path: string, public handler: RouteHandler) {
     var parsed = parsePathString(path);
     var specificity = parsed['specificity'];
     var segments = parsed['segments'];
@@ -178,7 +180,9 @@ export class PathRecognizer {
   }
 
   generate(params: StringMap<string, string>): string {
-    return ListWrapper.join(
-        ListWrapper.map(this.segments, (segment) => '/' + segment.generate(params)), '');
+    return ListWrapper.join(ListWrapper.map(this.segments, (segment) => segment.generate(params)),
+                            '/');
   }
+
+  resolveComponentType(): Promise<any> { return this.handler.resolveComponentType(); }
 }
