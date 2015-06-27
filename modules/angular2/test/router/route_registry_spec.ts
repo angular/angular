@@ -19,7 +19,7 @@ export function main() {
   describe('RouteRegistry', () => {
     var registry, rootHostComponent = new Object();
 
-    beforeEach(() => { registry = new RouteRegistry(); });
+    beforeEach(() => { registry = new RouteRegistry(rootHostComponent); });
 
     it('should match the full URL', inject([AsyncTestCompleter], (async) => {
          registry.config(rootHostComponent, {'path': '/', 'component': DummyCompA});
@@ -31,6 +31,33 @@ export function main() {
                async.done();
              });
        }));
+
+
+    it('should generate URLs starting at the given component', () => {
+      registry.config(rootHostComponent,
+                      {'path': '/first/...', 'component': DummyParentComp, 'as': 'first'});
+
+      expect(registry.generate(['first', 'second'], rootHostComponent)).toBe('/first/second');
+      expect(registry.generate(['second'], DummyParentComp)).toBe('/second');
+    });
+
+
+    it('should generate URLs with params', () => {
+      registry.config(
+          rootHostComponent,
+          {'path': '/first/:param/...', 'component': DummyParentParamComp, 'as': 'first'});
+
+      var url = registry.generate(['first', {param: 1}, 'second', {param: 2}], rootHostComponent);
+      expect(url).toBe('/first/1/second/2');
+    });
+
+    it('should generate URLs from the root component when the path starts with /', () => {
+      registry.config(rootHostComponent,
+                      {'path': '/first/...', 'component': DummyParentComp, 'as': 'first'});
+
+      expect(registry.generate(['/', 'first', 'second'], rootHostComponent)).toBe('/first/second');
+      expect(registry.generate(['/', 'first', 'second'], DummyParentComp)).toBe('/first/second');
+    });
 
     it('should prefer static segments to dynamic', inject([AsyncTestCompleter], (async) => {
          registry.config(rootHostComponent, {'path': '/:site', 'component': DummyCompB});
@@ -172,6 +199,11 @@ class DummyAsyncComp {
 class DummyCompA {}
 class DummyCompB {}
 
-@RouteConfig([{'path': '/second', 'component': DummyCompB}])
+@RouteConfig([{'path': '/second', 'component': DummyCompB, 'as': 'second'}])
 class DummyParentComp {
+}
+
+
+@RouteConfig([{'path': '/second/:param', 'component': DummyCompB, 'as': 'second'}])
+class DummyParentParamComp {
 }

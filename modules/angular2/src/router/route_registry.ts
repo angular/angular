@@ -13,6 +13,7 @@ import {
   isPresent,
   isBlank,
   isType,
+  isString,
   isStringMap,
   isFunction,
   StringWrapper,
@@ -29,7 +30,9 @@ import {Injectable} from 'angular2/di';
  */
 @Injectable()
 export class RouteRegistry {
-  _rules: Map<any, RouteRecognizer> = new Map();
+  private _rules: Map<any, RouteRecognizer> = new Map();
+
+  constructor(private _rootHostComponent: any) {}
 
   /**
    * Given a component and a configuration object, add the route to this registry
@@ -119,39 +122,69 @@ export class RouteRegistry {
 
 
   _completeRouteMatch(candidate: RouteMatch): Promise<Instruction> {
-    return componentHandlerToComponentType(candidate.handler)
-        .then((componentType) => {
-          this.configFromComponent(componentType);
+    return candidate.resolveComponentType().then((componentType) => {
+      this.configFromComponent(componentType);
 
-          if (candidate.unmatchedUrl.length == 0) {
+      if (candidate.unmatchedUrl.length == 0) {
+        return new Instruction({
+          component: componentType,
+          params: candidate.params,
+          matchedUrl: candidate.matchedUrl,
+          parentSpecificity: candidate.specificity
+        });
+      }
+
+      return this.recognize(candidate.unmatchedUrl, componentType)
+          .then(childInstruction => {
+            if (isBlank(childInstruction)) {
+              return null;
+            }
             return new Instruction({
               component: componentType,
+              child: childInstruction,
               params: candidate.params,
               matchedUrl: candidate.matchedUrl,
               parentSpecificity: candidate.specificity
             });
-          }
-
-          return this.recognize(candidate.unmatchedUrl, componentType)
-              .then(childInstruction => {
-                if (isBlank(childInstruction)) {
-                  return null;
-                }
-                return new Instruction({
-                  component: componentType,
-                  child: childInstruction,
-                  params: candidate.params,
-                  matchedUrl: candidate.matchedUrl,
-                  parentSpecificity: candidate.specificity
-                });
-              });
-        });
+          });
+    });
   }
 
-  generate(name: string, params: StringMap<string, string>, hostComponent): string {
+  generate(linkDsl: List<any>, parentComponent): string {
     // TODO: implement for hierarchical routes
-    var componentRecognizer = this._rules.get(hostComponent);
-    return isPresent(componentRecognizer) ? componentRecognizer.generate(name, params) : null;
+
+    let componentCursor = parentComponent;
+    let url = '/';
+
+    for (let i = 0; i < linkDsl.length; i += 1) {
+      let segment = linkDsl[i];
+      if (!isString(segment)) {
+        throw new BaseException(`Unexpected segment "${segment}" in link DSL. Expected a string.`);
+      }
+      if (segment == '/') {
+        componentCursor = this._rootHostComponent;
+        continue;
+      }
+      let params = null;
+      if (i + 1 < linkDsl.length) {
+        let nextSegment = linkDsl[i + 1];
+        if (isStringMap(nextSegment)) {
+          // TODO: implement params
+          params = nextSegment;
+          i += 1;
+        }
+      }
+
+      var componentRecognizer = this._rules.get(componentCursor);
+      if (isBlank(componentCursor)) {
+        throw new BaseException(`Could not find route info for "${componentCursor}".`);
+      }
+      var response = componentRecognizer.generate(segment, params);
+      url += response['url'];
+      componentCursor = response['nextComponent'];
+    }
+
+    return url;
   }
 }
 
@@ -197,19 +230,6 @@ function normalizeComponentDeclaration(config: any): StringMap<string, any> {
     return config;
   } else {
     throw new BaseException(`Component declaration should be either a Map or a Type`);
-  }
-}
-
-function componentHandlerToComponentType(handler): Promise<any> {
-  var componentDeclaration = handler['component'], type = componentDeclaration['type'];
-
-  if (type == 'constructor') {
-    return PromiseWrapper.resolve(componentDeclaration['constructor']);
-  } else if (type == 'loader') {
-    var resolverFunction = componentDeclaration['loader'];
-    return resolverFunction();
-  } else {
-    throw new BaseException(`Cannot extract the component type from a '${type}' component`);
   }
 }
 

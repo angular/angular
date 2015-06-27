@@ -31,7 +31,7 @@ export function main() {
 
     beforeEachBindings(() => [
       Pipeline,
-      RouteRegistry,
+      bind(RouteRegistry).toFactory(() => new RouteRegistry(AppCmp)),
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)

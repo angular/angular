@@ -2,6 +2,7 @@ import {
   RegExp,
   RegExpWrapper,
   StringWrapper,
+  isBlank,
   isPresent,
   BaseException
 } from 'angular2/src/facade/lang';
@@ -14,7 +15,9 @@ import {
   StringMapWrapper
 } from 'angular2/src/facade/collection';
 
-import {PathRecognizer, ContinuationSegment} from './path_recognizer';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+
+import {PathRecognizer} from './path_recognizer';
 
 /**
  * `RouteRecognizer` is responsible for recognizing routes for a single component.
@@ -65,27 +68,27 @@ export class RouteRecognizer {
         if (path == url) {
           url = target;
         }
-      } else if (StringWrapper.startsWith(url, path)) {
-        url = target + StringWrapper.substring(url, path.length);
+      } else if (url.startsWith(path)) {
+        url = target + url.substring(path.length);
       }
     });
 
     MapWrapper.forEach(this.matchers, (pathRecognizer, regex) => {
       var match;
       if (isPresent(match = RegExpWrapper.firstMatch(regex, url))) {
-        // TODO(btford): determine a good generic way to deal with terminal matches
         var matchedUrl = '/';
         var unmatchedUrl = '';
         if (url != '/') {
           matchedUrl = match[0];
-          unmatchedUrl = StringWrapper.substring(url, match[0].length);
+          unmatchedUrl = url.substring(match[0].length);
         }
         solutions.push(new RouteMatch({
           specificity: pathRecognizer.specificity,
           handler: pathRecognizer.handler,
           params: pathRecognizer.parseParams(url),
           matchedUrl: matchedUrl,
-          unmatchedUrl: unmatchedUrl
+          unmatchedUrl: unmatchedUrl,
+          onResolve: (componentType) => { pathRecognizer.targetComponent = componentType; }
         }));
       }
     });
@@ -95,9 +98,13 @@ export class RouteRecognizer {
 
   hasRoute(name: string): boolean { return this.names.has(name); }
 
-  generate(name: string, params: any): string {
-    var pathRecognizer = this.names.get(name);
-    return isPresent(pathRecognizer) ? pathRecognizer.generate(params) : null;
+  generate(name: string, params: any) {
+    var pathRecognizer: PathRecognizer = this.names.get(name);
+    if (isBlank(pathRecognizer)) {
+      return null;
+    }
+    var url = pathRecognizer.generate(params);
+    return {url, 'nextComponent': pathRecognizer.targetComponent};
   }
 }
 
@@ -107,18 +114,37 @@ export class RouteMatch {
   params: StringMap<string, string>;
   matchedUrl: string;
   unmatchedUrl: string;
+  _onResolve: Function;
 
-  constructor({specificity, handler, params, matchedUrl, unmatchedUrl}: {
+  constructor({specificity, handler, params, matchedUrl, unmatchedUrl, onResolve}: {
     specificity?: number,
     handler?: StringMap<string, any>,
     params?: StringMap<string, string>,
     matchedUrl?: string,
-    unmatchedUrl?: string
+    unmatchedUrl?: string,
+    onResolve?: Function
   } = {}) {
     this.specificity = specificity;
     this.handler = handler;
     this.params = params;
     this.matchedUrl = matchedUrl;
     this.unmatchedUrl = unmatchedUrl;
+    this._onResolve = onResolve;
+  }
+
+  resolveComponentType(): Promise<any> {
+    var componentDeclaration = this.handler['component'], type = componentDeclaration['type'];
+
+    if (type == 'constructor') {
+      return PromiseWrapper.resolve(componentDeclaration['constructor']);
+    } else if (type == 'loader') {
+      var resolverFunction = componentDeclaration['loader'];
+      return resolverFunction().then((componentType) => {
+        this._onResolve(componentType);
+        return componentType;
+      });
+    } else {
+      throw new BaseException(`Cannot extract the component type from a '${type}' component`);
+    }
   }
 }

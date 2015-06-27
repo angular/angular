@@ -27,7 +27,7 @@ export class Segment {
   regex: string;
 }
 
-export class ContinuationSegment extends Segment {
+class ContinuationSegment extends Segment {
   generate(params): string { return ''; }
 }
 
@@ -52,7 +52,7 @@ class DynamicSegment {
   generate(params: StringMap<string, string>): string {
     if (!StringMapWrapper.contains(params, this.name)) {
       throw new BaseException(
-          `Route generator for '${this.name}' was not included in parameters passed.`)
+          `Route generator for '${this.name}' was not included in parameters passed.`);
     }
     return normalizeBlank(StringMapWrapper.get(params, this.name));
   }
@@ -132,6 +132,7 @@ export class PathRecognizer {
   regex: RegExp;
   specificity: number;
   terminal: boolean = true;
+  targetComponent: any = null;
 
   constructor(public path: string, public handler: any) {
     var parsed = parsePathString(path);
@@ -154,6 +155,12 @@ export class PathRecognizer {
     this.regex = RegExpWrapper.create(regexString);
     this.segments = segments;
     this.specificity = specificity;
+
+    var componentDeclaration = handler['component'], type = componentDeclaration['type'];
+
+    if (type == 'constructor') {
+      this.targetComponent = componentDeclaration['constructor'];
+    }
   }
 
   parseParams(url: string): StringMap<string, string> {
@@ -176,7 +183,7 @@ export class PathRecognizer {
   }
 
   generate(params: StringMap<string, string>): string {
-    return ListWrapper.join(
-        ListWrapper.map(this.segments, (segment) => '/' + segment.generate(params)), '');
+    return ListWrapper.join(ListWrapper.map(this.segments, (segment) => segment.generate(params)),
+                            '/');
   }
 }

@@ -15,8 +15,8 @@ import {RouteRecognizer} from 'angular2/src/router/route_recognizer';
 export function main() {
   describe('RouteRecognizer', () => {
     var recognizer;
-    var handler = {'components': {'a': 'b'}};
-    var handler2 = {'components': {'b': 'c'}};
+    var handler = {'component': DummyCmpA};
+    var handler2 = {'component': DummyCmpB};
 
     beforeEach(() => { recognizer = new RouteRecognizer(); });
 
@@ -108,14 +108,17 @@ export function main() {
 
     it('should generate URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
-      expect(recognizer.generate('user', {'name': 'misko'})).toEqual('/app/user/misko');
+      expect(recognizer.generate('user', {'name': 'misko'}).url).toEqual('app/user/misko');
     });
 
 
     it('should throw in the absence of required params URLs', () => {
-      recognizer.addConfig('/app/user/:name', handler, 'user');
-      expect(() => recognizer.generate('user', {}))
+      recognizer.addConfig('app/user/:name', handler, 'user');
+      expect(() => recognizer.generate('user', {}).url)
           .toThrowError('Route generator for \'name\' was not included in parameters passed.');
     });
   });
 }
+
+class DummyCmpA {}
+class DummyCmpB {}
