@@ -1,6 +1,5 @@
-export * from './src/test_lib/test_lib';
+// Test library and utilities for internal use.
+export * from './test';
 export * from './src/test_lib/spies';
 export * from './src/test_lib/utils';
 export * from './src/test_lib/fake_async';
-export * from './src/test_lib/test_component_builder';
-export * from './debug';
