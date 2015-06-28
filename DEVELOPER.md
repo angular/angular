@@ -134,6 +134,12 @@ You can selectively build either the JS or Dart versions as follows:
 * `$(npm bin)/gulp build.js`
 * `$(npm bin)/gulp build.dart`
 
+Also note that in order for the whole test suite to succeed you will need to generate the docs by running:
+
+```shell
+$(npm bin)/gulp docs
+```
+
 To clean out the `dist` folder, run:
 
 ```shell
