@@ -250,7 +250,7 @@ export function main() {
       } catch (e) {
         expect(e.message)
             .toContain(`Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
-        expect(e.cause instanceof BaseException).toBeTruthy();
+        expect(e.originalException instanceof BaseException).toBeTruthy();
         expect(e.causeKey.token).toEqual(Engine);
       }
     });

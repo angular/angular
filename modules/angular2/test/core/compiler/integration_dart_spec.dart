@@ -55,8 +55,7 @@ main() {
   });
 
   describe('Error handling', () {
-    //TODO: vsavkin reenable this test after merging DI and EI
-    xit('should preserve Error stack traces thrown from components', inject([
+    it('should preserve Error stack traces thrown from components', inject([
       TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
@@ -65,13 +64,13 @@ main() {
           directives: [ThrowingComponent]))
 
       .createAsync(Dummy).catchError((e, stack) {
-        expect(stack.toString().split('\n')[0]).toEqual(e.message);
+        expect(e.message).toContain("MockException");
+        expect(e.message).toContain("functionThatThrows");
         async.done();
       });
     }));
 
-    //TODO: vsavkin reenable this test after merging DI and EI
-    xit('should preserve non-Error stack traces thrown from components', inject([
+    it('should preserve non-Error stack traces thrown from components', inject([
       TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
@@ -80,7 +79,8 @@ main() {
           directives: [ThrowingComponent2]))
 
       .createAsync(Dummy).catchError((e, stack) {
-        expect(stack.toString().split('\n')[0]).toEqual(e.message);
+        expect(e.message).toContain("NonError");
+        expect(e.message).toContain("functionThatThrows");
         async.done();
       });
     }));

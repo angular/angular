@@ -36,8 +36,8 @@ export class AbstractBindingError extends BaseException {
   keys: List<any>;
   constructResolvingMessage: Function;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(key, constructResolvingMessage: Function) {
-    super();
+  constructor(key, constructResolvingMessage: Function, originalException?, originalStack?) {
+    super(null, originalException, originalStack);
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
     this.message = this.constructResolvingMessage(this.keys);
@@ -138,19 +138,18 @@ export class CyclicDependencyError extends AbstractBindingError {
  * @exportedAs angular2/di_errors
  */
 export class InstantiationError extends AbstractBindingError {
-  cause;
   causeKey;
-  stack;
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(cause, stack, key) {
+  constructor(originalException, originalStack, key) {
     super(key, function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}. ORIGINAL ERROR: ${cause}`;
-    });
-    this.cause = cause;
+      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
+             ` ORIGINAL ERROR: ${originalException}` +
+             `\n\n ORIGINAL STACK: ${originalStack}`;
+    }, originalException, originalStack);
+
     this.causeKey = key;
-    this.stack = stack;
   }
 }
 
