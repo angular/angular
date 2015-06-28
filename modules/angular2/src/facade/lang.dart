@@ -176,8 +176,10 @@ class FunctionWrapper {
 
 class BaseException extends Error {
   final String message;
+  final originalException;
+  final originalStack;
 
-  BaseException([this.message]);
+  BaseException([this.message, this.originalException, this.originalStack]);
 
   String toString() {
     return this.message;

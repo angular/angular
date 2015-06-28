@@ -6,11 +6,9 @@ export var Type = Function;
 export type Type = new (...args: any[]) => any;
 
 export class BaseException extends Error {
-  message;
   stack;
-  constructor(message?: string) {
+  constructor(public message?: string, public originalException?, public originalStack?) {
     super(message);
-    this.message = message;
     this.stack = (<any>new Error(message)).stack;
   }
 
