@@ -1,4 +1,4 @@
-import {Injector, Binding, Injectable} from 'angular2/di';
+import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as viewModule from './view';
 import {ElementRef} from './element_ref';
@@ -73,6 +73,7 @@ export class AppViewManager {
 
     this._utils.hydrateRootHostView(hostView, injector);
     this._viewHydrateRecurse(hostView);
+
     return hostView.ref;
   }
 
@@ -89,7 +90,7 @@ export class AppViewManager {
 
   createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         protoViewRef: ProtoViewRef, context: ElementRef = null,
-                        injector: Injector = null): ViewRef {
+                        bindings: ResolvedBinding[] = null): ViewRef {
     var protoView = internalProtoView(protoViewRef);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
@@ -106,7 +107,7 @@ export class AppViewManager {
     this._utils.attachViewInContainer(parentView, boundElementIndex, contextView,
                                       contextBoundElementIndex, atIndex, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView,
-                                       contextBoundElementIndex, atIndex, injector);
+                                       contextBoundElementIndex, atIndex, bindings);
     this._viewHydrateRecurse(view);
     return view.ref;
   }

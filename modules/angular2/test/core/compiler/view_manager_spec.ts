@@ -301,13 +301,12 @@ export function main() {
         });
 
         it('should hydrate the view', () => {
-          var injector = Injector.resolveAndCreate([]);
           var contextView =
               createView(createProtoView([createEmptyElBinder(), createEmptyElBinder()]));
           manager.createViewInContainer(elementRef(parentView, 0), 0, wrapPv(childProtoView),
-                                        elementRef(contextView, 1), injector);
+                                        elementRef(contextView, 1), []);
           expect(utils.spy('hydrateViewInContainer'))
-              .toHaveBeenCalledWith(parentView, 0, contextView, 1, 0, injector);
+              .toHaveBeenCalledWith(parentView, 0, contextView, 1, 0, []);
           expect(renderer.spy('hydrateView')).toHaveBeenCalledWith(createdViews[0].render);
         });
 

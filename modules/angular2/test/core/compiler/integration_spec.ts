@@ -1319,18 +1319,17 @@ class SimpleImperativeViewComponent {
   }
 }
 
-
 @Directive({selector: 'dynamic-vp'})
 @Injectable()
 class DynamicViewport {
   done;
-  constructor(vc: ViewContainerRef, inj: Injector, compiler: Compiler) {
+  constructor(vc: ViewContainerRef, compiler: Compiler) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
+
+    var bindings = Injector.resolve([bind(MyService).toValue(myService)]);
     this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.create(hostPv, 0, null,
-                                                 inj.createChildFromResolved(Injector.resolve(
-                                                     [bind(MyService).toValue(myService)])))});
+                    .then((hostPv) => {vc.create(hostPv, 0, null, bindings)});
   }
 }
 
@@ -1398,7 +1397,7 @@ class ComponentWithPipes {
   prop: string;
 }
 
-@Component({selector: 'child-cmp', properties: ['dirProp'], appInjector: [MyService]})
+@Component({selector: 'child-cmp', properties: ['dirProp'], viewInjector: [MyService]})
 @View({directives: [MyDir], template: '{{ctxProp}}'})
 @Injectable()
 class ChildComp {
@@ -1448,7 +1447,7 @@ class CompWithAncestor {
   constructor(@Ancestor() someComp: SomeDirective) { this.myAncestor = someComp; }
 }
 
-@Component({selector: '[child-cmp2]', appInjector: [MyService]})
+@Component({selector: '[child-cmp2]', viewInjector: [MyService]})
 @Injectable()
 class ChildComp2 {
   ctxProp: string;

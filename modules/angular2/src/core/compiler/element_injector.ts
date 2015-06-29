@@ -16,8 +16,6 @@ import {
   PUBLIC,
   PRIVATE,
   undefinedValue,
-  InjectorInlineStrategy,
-  InjectorDynamicStrategy,
   Key,
   Dependency,
   bind,
@@ -32,6 +30,11 @@ import {
   VisibilityAnnotation,
   self
 } from 'angular2/di';
+import {
+  InjectorInlineStrategy,
+  InjectorDynamicStrategy,
+  BindingWithVisibility
+} from 'angular2/src/di/injector';
 
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 
@@ -201,7 +204,6 @@ export class DirectiveDependency extends Dependency {
 
 export class DirectiveBinding extends ResolvedBinding {
   constructor(key: Key, factory: Function, dependencies: List<Dependency>,
-              public resolvedAppInjectables: List<ResolvedBinding>,
               public resolvedHostInjectables: List<ResolvedBinding>,
               public resolvedViewInjectables: List<ResolvedBinding>,
               public metadata: DirectiveMetadata) {
@@ -235,9 +237,6 @@ export class DirectiveBinding extends ResolvedBinding {
 
     var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    var resolvedAppInjectables = ann instanceof Component && isPresent(ann.appInjector) ?
-                                                    Injector.resolve(ann.appInjector) :
-                                                    [];
     var resolvedHostInjectables =
         isPresent(ann.hostInjector) ? resolveBindings(ann.hostInjector) : [];
     var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ?
@@ -265,8 +264,8 @@ export class DirectiveBinding extends ResolvedBinding {
 
       exportAs: ann.exportAs
     });
-    return new DirectiveBinding(rb.key, rb.factory, deps, resolvedAppInjectables,
-                                resolvedHostInjectables, resolvedViewInjectables, metadata);
+    return new DirectiveBinding(rb.key, rb.factory, deps, resolvedHostInjectables,
+                                resolvedViewInjectables, metadata);
   }
 
   static _readAttributes(deps) {
@@ -313,39 +312,35 @@ export class HostActionAccessor {
   }
 }
 
-export class BindingData {
-  constructor(public binding: ResolvedBinding, public visibility: number) {}
+function _createEventEmitterAccessors(bwv: BindingWithVisibility): EventEmitterAccessor[] {
+  var binding = bwv.binding;
+  if (!(binding instanceof DirectiveBinding)) return [];
+  var db = <DirectiveBinding>binding;
+  return ListWrapper.map(db.eventEmitters, eventConfig => {
+    let fieldName;
+    let eventName;
+    var colonIdx = eventConfig.indexOf(':');
+    if (colonIdx > -1) {
+      // long format: 'fieldName: eventName'
+      fieldName = StringWrapper.substring(eventConfig, 0, colonIdx).trim();
+      eventName = StringWrapper.substring(eventConfig, colonIdx + 1).trim();
+    } else {
+      // short format: 'name' when fieldName and eventName are the same
+      fieldName = eventName = eventConfig;
+    }
+    return new EventEmitterAccessor(eventName, reflector.getter(fieldName));
+  });
+}
 
-  getKeyId(): number { return this.binding.key.id; }
-
-  createEventEmitterAccessors(): List<EventEmitterAccessor> {
-    if (!(this.binding instanceof DirectiveBinding)) return [];
-    var db = <DirectiveBinding>this.binding;
-    return ListWrapper.map(db.eventEmitters, eventConfig => {
-      let fieldName;
-      let eventName;
-      var colonIdx = eventConfig.indexOf(':');
-      if (colonIdx > -1) {
-        // long format: 'fieldName: eventName'
-        fieldName = StringWrapper.substring(eventConfig, 0, colonIdx).trim();
-        eventName = StringWrapper.substring(eventConfig, colonIdx + 1).trim();
-      } else {
-        // short format: 'name' when fieldName and eventName are the same
-        fieldName = eventName = eventConfig;
-      }
-      return new EventEmitterAccessor(eventName, reflector.getter(fieldName));
-    });
-  }
-
-  createHostActionAccessors(): HostActionAccessor[] {
-    if (!(this.binding instanceof DirectiveBinding)) return [];
-    var res = [];
-    var db = <DirectiveBinding>this.binding;
-    MapWrapper.forEach(db.hostActions, (actionExpression, actionName) => {
-      res.push(new HostActionAccessor(actionExpression, reflector.getter(actionName)));
-    });
-    return res;
-  }
+function _createHostActionAccessors(bwv: BindingWithVisibility): HostActionAccessor[] {
+  var binding = bwv.binding;
+  if (!(binding instanceof DirectiveBinding)) return [];
+  var res = [];
+  var db = <DirectiveBinding>binding;
+  MapWrapper.forEach(db.hostActions, (actionExpression, actionName) => {
+    res.push(new HostActionAccessor(actionExpression, reflector.getter(actionName)));
+  });
+  return res;
 }
 
 export class ProtoElementInjector {
@@ -360,62 +355,65 @@ export class ProtoElementInjector {
                 directiveVariableBindings: Map<string, number>): ProtoElementInjector {
     var bd = [];
 
-    ProtoElementInjector._createDirectiveBindingData(bindings, bd, firstBindingIsComponent);
+    ProtoElementInjector._createDirectiveBindingWithVisibility(bindings, bd,
+                                                               firstBindingIsComponent);
     if (firstBindingIsComponent) {
-      ProtoElementInjector._createViewInjectorBindingData(bindings, bd);
+      ProtoElementInjector._createViewInjectorBindingWithVisibility(bindings, bd);
     }
-    ProtoElementInjector._createHostInjectorBindingData(bindings, bd, firstBindingIsComponent);
+    ProtoElementInjector._createHostInjectorBindingWithVisibility(bindings, bd,
+                                                                  firstBindingIsComponent);
     return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent,
                                     directiveVariableBindings);
   }
 
-  private static _createDirectiveBindingData(dirBindings: List<ResolvedBinding>,
-                                             bd: List<BindingData>,
-                                             firstBindingIsComponent: boolean) {
+  private static _createDirectiveBindingWithVisibility(dirBindings: List<ResolvedBinding>,
+                                                       bd: BindingWithVisibility[],
+                                                       firstBindingIsComponent: boolean) {
     ListWrapper.forEach(dirBindings, dirBinding => {
-      bd.push(ProtoElementInjector._createBindingData(firstBindingIsComponent, dirBinding,
-                                                      dirBindings, dirBinding));
+      bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent, dirBinding,
+                                                                dirBindings, dirBinding));
     });
   }
 
-  private static _createHostInjectorBindingData(dirBindings: List<ResolvedBinding>,
-                                                bd: List<BindingData>,
-                                                firstBindingIsComponent: boolean) {
+  private static _createHostInjectorBindingWithVisibility(dirBindings: List<ResolvedBinding>,
+                                                          bd: BindingWithVisibility[],
+                                                          firstBindingIsComponent: boolean) {
     ListWrapper.forEach(dirBindings, dirBinding => {
       ListWrapper.forEach(dirBinding.resolvedHostInjectables, b => {
-        bd.push(ProtoElementInjector._createBindingData(firstBindingIsComponent, dirBinding,
-                                                        dirBindings, b));
+        bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent,
+                                                                  dirBinding, dirBindings, b));
       });
     });
   }
 
-  private static _createBindingData(firstBindingIsComponent, dirBinding, dirBindings, binding) {
+  private static _createBindingWithVisibility(firstBindingIsComponent, dirBinding, dirBindings,
+                                              binding) {
     var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
-    return new BindingData(binding, isComponent ? PUBLIC_AND_PRIVATE : PUBLIC);
+    return new BindingWithVisibility(binding, isComponent ? PUBLIC_AND_PRIVATE : PUBLIC);
   }
 
-  private static _createViewInjectorBindingData(bindings: List<ResolvedBinding>,
-                                                bd: List<BindingData>) {
+  private static _createViewInjectorBindingWithVisibility(bindings: List<ResolvedBinding>,
+                                                          bd: BindingWithVisibility[]) {
     var db = <DirectiveBinding>bindings[0];
-    ListWrapper.forEach(db.resolvedViewInjectables, b => bd.push(new BindingData(b, PRIVATE)));
+    ListWrapper.forEach(db.resolvedViewInjectables,
+                        b => bd.push(new BindingWithVisibility(b, PRIVATE)));
   }
 
 
 
-  constructor(public parent: ProtoElementInjector, public index: int, bd: List<BindingData>,
+  constructor(public parent: ProtoElementInjector, public index: int, bwv: BindingWithVisibility[],
               public distanceToParent: number, public _firstBindingIsComponent: boolean,
               public directiveVariableBindings: Map<string, number>) {
-    var length = bd.length;
+    var length = bwv.length;
 
-    this.protoInjector =
-        new ProtoInjector(isPresent(parent) ? parent.protoInjector : null, bd, distanceToParent);
+    this.protoInjector = new ProtoInjector(bwv, distanceToParent);
 
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
     this.hostActionAccessors = ListWrapper.createFixedSize(length);
 
     for (var i = 0; i < length; ++i) {
-      this.eventEmitterAccessors[i] = bd[i].createEventEmitterAccessors();
-      this.hostActionAccessors[i] = bd[i].createHostActionAccessors();
+      this.eventEmitterAccessors[i] = _createEventEmitterAccessors(bwv[i]);
+      this.hostActionAccessors[i] = _createHostActionAccessors(bwv[i]);
     }
   }
 
@@ -432,10 +430,7 @@ export class ProtoElementInjector {
 
 
 export class ElementInjector extends TreeNode<ElementInjector> {
-  private _lightDomAppInjector: Injector = null;
-  private _shadowDomAppInjector: Injector = null;
   private _host: ElementInjector;
-
   private _preBuiltObjects = null;
 
   // Queries are added during construction or linking with a new parent.
@@ -453,9 +448,10 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     super(parent);
 
     this._injector = new Injector(this._proto.protoInjector);
+    this._injector.ei = this;  // TODO savkin remove after mergin DI and EI
 
     // we couple ourselves to the injector strategy to avoid polymoprhic calls
-    var injectorStrategy = <any>this._injector.strategy;
+    var injectorStrategy = <any>this._injector.internalStrategy;
     this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
                                                      new ElementInjectorInlineStrategy(
                                                          injectorStrategy, this) :
@@ -472,10 +468,8 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this.hydrated = false;
     this._host = null;
     this._preBuiltObjects = null;
-    this._lightDomAppInjector = null;
-    this._shadowDomAppInjector = null;
     this._strategy.callOnDestroy();
-    this._injector.dehydrate();
+    this._injector.internalStrategy.dehydrate();
   }
 
   onAllChangesDone(): void {
@@ -490,29 +484,70 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  hydrate(injector: Injector, host: ElementInjector, preBuiltObjects: PreBuiltObjects): void {
-    var p = this._proto;
-
+  hydrate(imperativelyCreatedInjector: Injector, host: ElementInjector,
+          preBuiltObjects: PreBuiltObjects): void {
     this._host = host;
-    this._lightDomAppInjector = injector;
     this._preBuiltObjects = preBuiltObjects;
 
-    if (p._firstBindingIsComponent) {
-      this._shadowDomAppInjector =
-          this._createShadowDomAppInjector(this._strategy.getComponentBinding(), injector);
-    }
-
-    this._checkShadowDomAppInjector(this._shadowDomAppInjector);
-
-    var parentInjector = isPresent(this._parent) ? this._parent._injector : null;
-    var hostInjector = isPresent(host) ? host._injector : null;
-
-    this._injector.hydrate(parentInjector, hostInjector, this);
+    this._hydrateInjector(imperativelyCreatedInjector, host);
 
     this._addDirectivesToQueries();
     this._addVarBindingsToQueries();
 
     this.hydrated = true;
+  }
+
+  private _hydrateInjector(imperativelyCreatedInjector: Injector, host: ElementInjector): void {
+    if (isPresent(this._parent)) {
+      this._reattachInjector(this._injector, this._parent._injector, false);
+    } else {
+      // This injector is at the boundary.
+      //
+      // The injector tree we are assembling:
+      //
+      // host._injector (only if present)
+      //   |
+      //   |boundary
+      //   |
+      // imperativelyCreatedInjector (only if present)
+      //   |
+      //   |boundary
+      //   |
+      // this._injector
+      //
+
+      // host._injector (only if present)
+      //   |
+      //   |boundary
+      //   |
+      // imperativelyCreatedInjector (only if present)
+      if (isPresent(imperativelyCreatedInjector) && isPresent(host)) {
+        this._reattachInjector(imperativelyCreatedInjector, host._injector, true);
+      }
+
+      // host._injector OR imperativelyCreatedInjector OR null
+      //   |
+      //   |boundary
+      //   |
+      // this._injector
+      var parent = this._getParentInjector(imperativelyCreatedInjector, host);
+      this._reattachInjector(this._injector, parent, true);
+    }
+  }
+
+  private _getParentInjector(injector: Injector, host: ElementInjector): Injector {
+    if (isPresent(injector)) {
+      return injector;
+    } else if (isPresent(host)) {
+      return host._injector;
+    } else {
+      return null;
+    }
+  }
+
+  private _reattachInjector(injector: Injector, parentInjector: Injector, isBoundary: boolean) {
+    injector.internalStrategy.attach(parentInjector, isBoundary);
+    injector.internalStrategy.hydrate();
   }
 
   hasVariableBinding(name: string): boolean {
@@ -523,25 +558,6 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   getVariableBinding(name: string): any {
     var index = this._proto.directiveVariableBindings.get(name);
     return isPresent(index) ? this.getDirectiveAtIndex(<number>index) : this.getElementRef();
-  }
-
-  private _createShadowDomAppInjector(componentDirective: DirectiveBinding,
-                                      appInjector: Injector): Injector {
-    if (!ListWrapper.isEmpty(componentDirective.resolvedAppInjectables)) {
-      return appInjector.createChildFromResolved(componentDirective.resolvedAppInjectables);
-    } else {
-      return appInjector;
-    }
-  }
-
-  private _checkShadowDomAppInjector(shadowDomAppInjector: Injector): void {
-    if (this._proto._firstBindingIsComponent && isBlank(shadowDomAppInjector)) {
-      throw new BaseException(
-          'A shadowDomAppInjector is required as this ElementInjector contains a component');
-    } else if (!this._proto._firstBindingIsComponent && isPresent(shadowDomAppInjector)) {
-      throw new BaseException(
-          'No shadowDomAppInjector allowed as there is not component stored in this ElementInjector');
-    }
   }
 
   get(token): any { return this._injector.get(token); }
@@ -573,7 +589,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   isComponentKey(key: Key): boolean { return this._strategy.isComponentKey(key); }
 
   getDependency(dep: any): any {
-    var key = dep.key;
+    var key: Key = dep.key;
 
     if (!(dep instanceof DirectiveDependency)) return undefinedValue;
 
@@ -802,21 +818,9 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     if (this._query2 == query) this._query2 = null;
   }
 
-  appInjector(requestor: Key): Injector {
-    if (isPresent(requestor) && this.isComponentKey(requestor)) {
-      return this._shadowDomAppInjector;
-    } else {
-      return this._lightDomAppInjector;
-    }
-  }
-
-  getDirectiveAtIndex(index: number): any { return this._injector.getObjAtIndex(index); }
+  getDirectiveAtIndex(index: number): any { return this._injector.getAt(index); }
 
   hasInstances(): boolean { return this._proto.hasBindings && this.hydrated; }
-
-  getLightDomAppInjector(): Injector { return this._lightDomAppInjector; }
-
-  getShadowDomAppInjector(): Injector { return this._shadowDomAppInjector; }
 
   getHost(): ElementInjector { return this._host; }
 

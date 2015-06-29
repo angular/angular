@@ -8,7 +8,7 @@ import {
   ComponentRef,
   DomRenderer
 } from 'angular2/angular2';
-import {bind, Injector, Injectable, forwardRef} from 'angular2/di';
+import {bind, Injectable, forwardRef, ResolvedBinding, Injector} from 'angular2/di';
 
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, Type} from 'angular2/src/facade/lang';
@@ -46,17 +46,15 @@ export class MdDialog {
    * @param options
    * @returns Promise for a reference to the dialog.
    */
-  open(type: Type, elementRef: ElementRef, parentInjector: Injector,
-       options: MdDialogConfig = null): Promise<MdDialogRef> {
+  open(type: Type, elementRef: ElementRef, options: MdDialogConfig = null): Promise<MdDialogRef> {
     var config = isPresent(options) ? options : new MdDialogConfig();
 
     // Create the dialogRef here so that it can be injected into the content component.
     var dialogRef = new MdDialogRef();
 
-    var dialogRefBinding = bind(MdDialogRef).toValue(dialogRef);
-    var contentInjector = parentInjector.resolveAndCreateChild([dialogRefBinding]);
+    var bindings = Injector.resolve([bind(MdDialogRef).toValue(dialogRef)]);
 
-    var backdropRefPromise = this._openBackdrop(elementRef, contentInjector);
+    var backdropRefPromise = this._openBackdrop(elementRef, bindings);
 
     // First, load the MdDialogContainer, into which the given component will be loaded.
     return this.componentLoader.loadNextToLocation(MdDialogContainer, elementRef)
@@ -87,7 +85,7 @@ export class MdDialog {
 
           // Now load the given component into the MdDialogContainer.
           return this.componentLoader.loadNextToLocation(type, containerRef.instance.contentRef,
-                                                         contentInjector)
+                                                         bindings)
               .then(contentRef => {
 
                 // Wrap both component refs for the container and the content so that we can return
@@ -106,8 +104,8 @@ export class MdDialog {
   }
 
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
-  _openBackdrop(elementRef: ElementRef, injector: Injector): Promise<ComponentRef> {
-    return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, injector)
+  _openBackdrop(elementRef: ElementRef, bindings: ResolvedBinding[]): Promise<ComponentRef> {
+    return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, bindings)
         .then((componentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)

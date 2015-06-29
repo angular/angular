@@ -822,8 +822,7 @@ export interface DirectiveArgs {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child {@link Injector} which is configured with the `appInjector` for the
- * {@link Component}.
+ * - creates all the injectable objects configured with `hostInjector` and `viewInjector`.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
@@ -864,59 +863,6 @@ export class Component extends Directive {
    * tells it to do so.
    */
   changeDetection: string;
-
-  /**
-   * Defines the set of injectable objects that are visible to a Component and its children.
-   *
-   * The `appInjector` defined in the Component annotation allow you to configure a set of bindings
-   * for the component's
-   * injector.
-   *
-   * When a component is instantiated, Angular creates a new child Injector, which is configured
-   * with the bindings in
-   * the Component `appInjector` annotation. The injectable objects then become available for
-   * injection to the component
-   * itself and any of the directives in the component's template, i.e. they are not available to
-   * the directives which
-   * are children in the component's light DOM.
-   *
-   *
-   * The syntax for configuring the `appInjector` injectable is identical to {@link Injector}
-   * injectable configuration.
-   * See {@link Injector} for additional detail.
-   *
-   *
-   * ## Simple Example
-   *
-   * Here is an example of a class that can be injected:
-   *
-   * ```
-   * class Greeter {
-   *    greet(name:string) {
-   *      return 'Hello ' + name + '!';
-   *    }
-   * }
-   *
-   * @Component({
-   *   selector: 'greet',
-   *   appInjector: [
-   *     Greeter
-   *   ]
-   * })
-   * @View({
-   *   template: `{{greeter.greet('world')}}!`,
-   *   directives: [Child]
-   * })
-   * class HelloWorld {
-   *   greeter:Greeter;
-   *
-   *   constructor(greeter:Greeter) {
-   *     this.greeter = greeter;
-   *   }
-   * }
-   * ```
-   */
-  appInjector: List<any>;
 
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
@@ -960,9 +906,8 @@ export class Component extends Directive {
    */
   viewInjector: List<any>;
 
-  constructor({selector, properties, events, host, exportAs, appInjector, lifecycle, hostInjector,
-               viewInjector, changeDetection = DEFAULT,
-               compileChildren = true}: ComponentArgs = {}) {
+  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
+               changeDetection = DEFAULT, compileChildren = true}: ComponentArgs = {}) {
     super({
       selector: selector,
       properties: properties,
@@ -975,13 +920,11 @@ export class Component extends Directive {
     });
 
     this.changeDetection = changeDetection;
-    this.appInjector = appInjector;
     this.viewInjector = viewInjector;
   }
 }
 
 export interface ComponentArgs extends DirectiveArgs {
-  appInjector?: List<any>;
   viewInjector?: List<any>;
   changeDetection?: string;
 }

@@ -348,7 +348,7 @@ function _findParentProtoElementInjectorWithDistance(
       }
     }
   } while (binderIndex !== -1);
-  return new ParentProtoElementInjectorWithDistance(null, -1);
+  return new ParentProtoElementInjectorWithDistance(null, 0);
 }
 
 function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderElementBinder,

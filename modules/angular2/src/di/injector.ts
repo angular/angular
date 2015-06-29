@@ -1,7 +1,7 @@
 /// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
 
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {ResolvedBinding, Binding, BindingBuilder, bind} from './binding';
+import {ResolvedBinding, Binding, Dependency, BindingBuilder, bind} from './binding';
 import {
   AbstractBindingError,
   NoBindingError,
@@ -14,7 +14,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {self, unbounded} from './annotations_impl';
+import {Visibility, unbounded} from './annotations_impl';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -67,58 +67,58 @@ export class ProtoInjectorInlineStrategy implements ProtoInjectorStrategy {
   visibility8: number = null;
   visibility9: number = null;
 
-  constructor(protoEI: ProtoInjector, bd: any[]) {
-    var length = bd.length;
+  constructor(protoEI: ProtoInjector, bwv: BindingWithVisibility[]) {
+    var length = bwv.length;
 
     if (length > 0) {
-      this.binding0 = bd[0].binding;
-      this.keyId0 = bd[0].getKeyId();
-      this.visibility0 = bd[0].visibility;
+      this.binding0 = bwv[0].binding;
+      this.keyId0 = bwv[0].getKeyId();
+      this.visibility0 = bwv[0].visibility;
     }
     if (length > 1) {
-      this.binding1 = bd[1].binding;
-      this.keyId1 = bd[1].getKeyId();
-      this.visibility1 = bd[1].visibility;
+      this.binding1 = bwv[1].binding;
+      this.keyId1 = bwv[1].getKeyId();
+      this.visibility1 = bwv[1].visibility;
     }
     if (length > 2) {
-      this.binding2 = bd[2].binding;
-      this.keyId2 = bd[2].getKeyId();
-      this.visibility2 = bd[2].visibility;
+      this.binding2 = bwv[2].binding;
+      this.keyId2 = bwv[2].getKeyId();
+      this.visibility2 = bwv[2].visibility;
     }
     if (length > 3) {
-      this.binding3 = bd[3].binding;
-      this.keyId3 = bd[3].getKeyId();
-      this.visibility3 = bd[3].visibility;
+      this.binding3 = bwv[3].binding;
+      this.keyId3 = bwv[3].getKeyId();
+      this.visibility3 = bwv[3].visibility;
     }
     if (length > 4) {
-      this.binding4 = bd[4].binding;
-      this.keyId4 = bd[4].getKeyId();
-      this.visibility4 = bd[4].visibility;
+      this.binding4 = bwv[4].binding;
+      this.keyId4 = bwv[4].getKeyId();
+      this.visibility4 = bwv[4].visibility;
     }
     if (length > 5) {
-      this.binding5 = bd[5].binding;
-      this.keyId5 = bd[5].getKeyId();
-      this.visibility5 = bd[5].visibility;
+      this.binding5 = bwv[5].binding;
+      this.keyId5 = bwv[5].getKeyId();
+      this.visibility5 = bwv[5].visibility;
     }
     if (length > 6) {
-      this.binding6 = bd[6].binding;
-      this.keyId6 = bd[6].getKeyId();
-      this.visibility6 = bd[6].visibility;
+      this.binding6 = bwv[6].binding;
+      this.keyId6 = bwv[6].getKeyId();
+      this.visibility6 = bwv[6].visibility;
     }
     if (length > 7) {
-      this.binding7 = bd[7].binding;
-      this.keyId7 = bd[7].getKeyId();
-      this.visibility7 = bd[7].visibility;
+      this.binding7 = bwv[7].binding;
+      this.keyId7 = bwv[7].getKeyId();
+      this.visibility7 = bwv[7].visibility;
     }
     if (length > 8) {
-      this.binding8 = bd[8].binding;
-      this.keyId8 = bd[8].getKeyId();
-      this.visibility8 = bd[8].visibility;
+      this.binding8 = bwv[8].binding;
+      this.keyId8 = bwv[8].getKeyId();
+      this.visibility8 = bwv[8].visibility;
     }
     if (length > 9) {
-      this.binding9 = bd[9].binding;
-      this.keyId9 = bd[9].getKeyId();
-      this.visibility9 = bd[9].visibility;
+      this.binding9 = bwv[9].binding;
+      this.keyId9 = bwv[9].getKeyId();
+      this.visibility9 = bwv[9].visibility;
     }
   }
 
@@ -146,17 +146,17 @@ export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
   keyIds: number[];
   visibilities: number[];
 
-  constructor(protoInj: ProtoInjector, bd: any[]) {
-    var len = bd.length;
+  constructor(protoInj: ProtoInjector, bwv: BindingWithVisibility[]) {
+    var len = bwv.length;
 
     this.bindings = ListWrapper.createFixedSize(len);
     this.keyIds = ListWrapper.createFixedSize(len);
     this.visibilities = ListWrapper.createFixedSize(len);
 
     for (var i = 0; i < len; i++) {
-      this.bindings[i] = bd[i].binding;
-      this.keyIds[i] = bd[i].getKeyId();
-      this.visibilities[i] = bd[i].visibility;
+      this.bindings[i] = bwv[i].binding;
+      this.keyIds[i] = bwv[i].getKeyId();
+      this.visibilities[i] = bwv[i].visibility;
     }
   }
 
@@ -175,10 +175,10 @@ export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
 export class ProtoInjector {
   _strategy: ProtoInjectorStrategy;
 
-  constructor(public parent: ProtoInjector, rb: any[], public distanceToParent: number) {
-    this._strategy = rb.length > _MAX_CONSTRUCTION_COUNTER ?
-                         new ProtoInjectorDynamicStrategy(this, rb) :
-                         new ProtoInjectorInlineStrategy(this, rb);
+  constructor(bwv: BindingWithVisibility[], public distanceToParent: number) {
+    this._strategy = bwv.length > _MAX_CONSTRUCTION_COUNTER ?
+                         new ProtoInjectorDynamicStrategy(this, bwv) :
+                         new ProtoInjectorInlineStrategy(this, bwv);
   }
 
   getBindingAtIndex(index: number): any { return this._strategy.getBindingAtIndex(index); }
@@ -191,6 +191,7 @@ export interface InjectorStrategy {
   getObjAtIndex(index: number): any;
   getMaxNumberOfObjects(): number;
 
+  attach(parent: Injector, isBoundary: boolean): void;
   hydrate(): void;
   dehydrate(): void;
 }
@@ -213,16 +214,25 @@ export class InjectorInlineStrategy implements InjectorStrategy {
     var p = this.protoStrategy;
     var inj = this.injector;
 
-    if (isPresent(p.keyId0) && isBlank(this.obj0)) this.obj0 = inj._new(p.binding0);
-    if (isPresent(p.keyId1) && isBlank(this.obj1)) this.obj1 = inj._new(p.binding1);
-    if (isPresent(p.keyId2) && isBlank(this.obj2)) this.obj2 = inj._new(p.binding2);
-    if (isPresent(p.keyId3) && isBlank(this.obj3)) this.obj3 = inj._new(p.binding3);
-    if (isPresent(p.keyId4) && isBlank(this.obj4)) this.obj4 = inj._new(p.binding4);
-    if (isPresent(p.keyId5) && isBlank(this.obj5)) this.obj5 = inj._new(p.binding5);
-    if (isPresent(p.keyId6) && isBlank(this.obj6)) this.obj6 = inj._new(p.binding6);
-    if (isPresent(p.keyId7) && isBlank(this.obj7)) this.obj7 = inj._new(p.binding7);
-    if (isPresent(p.keyId8) && isBlank(this.obj8)) this.obj8 = inj._new(p.binding8);
-    if (isPresent(p.keyId9) && isBlank(this.obj9)) this.obj9 = inj._new(p.binding9);
+    inj._constructionCounter = 0;
+
+
+    if (isPresent(p.keyId0) && isBlank(this.obj0)) this.obj0 = inj._new(p.binding0, p.visibility0);
+    if (isPresent(p.keyId1) && isBlank(this.obj1)) this.obj1 = inj._new(p.binding1, p.visibility1);
+    if (isPresent(p.keyId2) && isBlank(this.obj2)) this.obj2 = inj._new(p.binding2, p.visibility2);
+    if (isPresent(p.keyId3) && isBlank(this.obj3)) this.obj3 = inj._new(p.binding3, p.visibility3);
+    if (isPresent(p.keyId4) && isBlank(this.obj4)) this.obj4 = inj._new(p.binding4, p.visibility4);
+    if (isPresent(p.keyId5) && isBlank(this.obj5)) this.obj5 = inj._new(p.binding5, p.visibility5);
+    if (isPresent(p.keyId6) && isBlank(this.obj6)) this.obj6 = inj._new(p.binding6, p.visibility6);
+    if (isPresent(p.keyId7) && isBlank(this.obj7)) this.obj7 = inj._new(p.binding7, p.visibility7);
+    if (isPresent(p.keyId8) && isBlank(this.obj8)) this.obj8 = inj._new(p.binding8, p.visibility8);
+    if (isPresent(p.keyId9) && isBlank(this.obj9)) this.obj9 = inj._new(p.binding9, p.visibility9);
+  }
+
+  attach(parent: Injector, isBoundary: boolean): void {
+    var inj = this.injector;
+    inj._parent = parent;
+    inj._isBoundary = isBoundary;
   }
 
   dehydrate() {
@@ -244,61 +254,61 @@ export class InjectorInlineStrategy implements InjectorStrategy {
 
     if (p.keyId0 === keyId && (p.visibility0 & visibility) > 0) {
       if (isBlank(this.obj0)) {
-        this.obj0 = inj._new(p.binding0);
+        this.obj0 = inj._new(p.binding0, p.visibility0);
       }
       return this.obj0;
     }
     if (p.keyId1 === keyId && (p.visibility1 & visibility) > 0) {
       if (isBlank(this.obj1)) {
-        this.obj1 = inj._new(p.binding1);
+        this.obj1 = inj._new(p.binding1, p.visibility1);
       }
       return this.obj1;
     }
     if (p.keyId2 === keyId && (p.visibility2 & visibility) > 0) {
       if (isBlank(this.obj2)) {
-        this.obj2 = inj._new(p.binding2);
+        this.obj2 = inj._new(p.binding2, p.visibility2);
       }
       return this.obj2;
     }
     if (p.keyId3 === keyId && (p.visibility3 & visibility) > 0) {
       if (isBlank(this.obj3)) {
-        this.obj3 = inj._new(p.binding3);
+        this.obj3 = inj._new(p.binding3, p.visibility3);
       }
       return this.obj3;
     }
     if (p.keyId4 === keyId && (p.visibility4 & visibility) > 0) {
       if (isBlank(this.obj4)) {
-        this.obj4 = inj._new(p.binding4);
+        this.obj4 = inj._new(p.binding4, p.visibility4);
       }
       return this.obj4;
     }
     if (p.keyId5 === keyId && (p.visibility5 & visibility) > 0) {
       if (isBlank(this.obj5)) {
-        this.obj5 = inj._new(p.binding5);
+        this.obj5 = inj._new(p.binding5, p.visibility5);
       }
       return this.obj5;
     }
     if (p.keyId6 === keyId && (p.visibility6 & visibility) > 0) {
       if (isBlank(this.obj6)) {
-        this.obj6 = inj._new(p.binding6);
+        this.obj6 = inj._new(p.binding6, p.visibility6);
       }
       return this.obj6;
     }
     if (p.keyId7 === keyId && (p.visibility7 & visibility) > 0) {
       if (isBlank(this.obj7)) {
-        this.obj7 = inj._new(p.binding7);
+        this.obj7 = inj._new(p.binding7, p.visibility7);
       }
       return this.obj7;
     }
     if (p.keyId8 === keyId && (p.visibility8 & visibility) > 0) {
       if (isBlank(this.obj8)) {
-        this.obj8 = inj._new(p.binding8);
+        this.obj8 = inj._new(p.binding8, p.visibility8);
       }
       return this.obj8;
     }
     if (p.keyId9 === keyId && (p.visibility9 & visibility) > 0) {
       if (isBlank(this.obj9)) {
-        this.obj9 = inj._new(p.binding9);
+        this.obj9 = inj._new(p.binding9, p.visibility9);
       }
       return this.obj9;
     }
@@ -335,9 +345,15 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     var p = this.protoStrategy;
     for (var i = 0; i < p.keyIds.length; i++) {
       if (isPresent(p.keyIds[i]) && isBlank(this.objs[i])) {
-        this.objs[i] = this.injector._new(p.bindings[i]);
+        this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
       }
     }
+  }
+
+  attach(parent: Injector, isBoundary: boolean): void {
+    var inj = this.injector;
+    inj._parent = parent;
+    inj._isBoundary = isBoundary;
   }
 
   dehydrate(): void { ListWrapper.fill(this.objs, null); }
@@ -348,7 +364,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     for (var i = 0; i < p.keyIds.length; i++) {
       if (p.keyIds[i] === keyId && (p.visibilities[i] & visibility) > 0) {
         if (isBlank(this.objs[i])) {
-          this.objs[i] = this.injector._new(p.bindings[i]);
+          this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
         }
 
         return this.objs[i];
@@ -369,7 +385,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
   getMaxNumberOfObjects(): number { return this.objs.length; }
 }
 
-export class BindingData {
+export class BindingWithVisibility {
   constructor(public binding: ResolvedBinding, public visibility: number){};
 
   getKeyId(): number { return this.binding.key.id; }
@@ -449,15 +465,10 @@ export class Injector {
    * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a
    *recursive list of more
    * bindings.
-   * @param `defaultBindings` Setting to true will auto-create bindings.
    */
-  static resolveAndCreate(bindings: List<Type | Binding | List<any>>,
-                          {defaultBindings = false}: any = {}): Injector {
+  static resolveAndCreate(bindings: List<Type | Binding | List<any>>): Injector {
     var resolvedBindings = Injector.resolve(bindings);
-    var bd = resolvedBindings.map(b => new BindingData(b, PUBLIC));
-    var proto = new ProtoInjector(null, bd, 0);
-    var inj = new Injector(proto);
-    return inj;
+    return Injector.fromResolvedBindings(resolvedBindings);
   }
 
   /**
@@ -466,48 +477,63 @@ export class Injector {
    *
    * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the
    * {@link Injector}.
-   * @param `defaultBindings` Setting to true will auto-create bindings.
    */
-  static fromResolvedBindings(bindings: List<ResolvedBinding>,
-                              {defaultBindings = false}: any = {}): Injector {
-    var bd = bindings.map(b => new BindingData(b, PUBLIC));
-    var proto = new ProtoInjector(null, bd, 0);
+  static fromResolvedBindings(bindings: List<ResolvedBinding>): Injector {
+    var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
+    var proto = new ProtoInjector(bd, 0);
     var inj = new Injector(proto);
     return inj;
   }
 
   _strategy: InjectorStrategy;
-  _parent: Injector;
-  _host: Injector;
+  _isBoundary: boolean = false;
   _constructionCounter: number = 0;
 
   // TODO vsavkin remove it after DI and EI are merged
-  private _ei: any;
+  ei: any;
 
-  constructor(public _proto: ProtoInjector) {
+  constructor(public _proto: ProtoInjector, public _parent: Injector = null) {
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
 
-  get(token): any { return this._getByKey(Key.get(token), unbounded, false, null); }
+  /**
+   * Retrieves an instance from the injector.
+   *
+   * @param `token`: usually the `Type` of an object. (Same as the token used while setting up a
+   *binding).
+   * @returns an instance represented by the token. Throws if not found.
+   */
+  get(token): any { return this._getByKey(Key.get(token), unbounded, false, PUBLIC_AND_PRIVATE); }
 
-  getOptional(token): any { return this._getByKey(Key.get(token), unbounded, true, null); }
-
-  getObjAtIndex(index: number): any { return this._strategy.getObjAtIndex(index); }
-
-  get parent(): Injector { return this._parent; }
-
-  get strategy() { return this._strategy; }
-
-  hydrate(parent: Injector, host: Injector, ei: any) {
-    this._constructionCounter = 0;
-    this._parent = parent;
-    this._host = host;
-    this._ei = ei;
-
-    this._strategy.hydrate();
+  /**
+   * Retrieves an instance from the injector.
+   *
+   * @param `token`: usually a `Type`. (Same as the token used while setting up a binding).
+   * @returns an instance represented by the token. Returns `null` if not found.
+   */
+  getOptional(token): any {
+    return this._getByKey(Key.get(token), unbounded, true, PUBLIC_AND_PRIVATE);
   }
 
-  dehydrate(): void { this._strategy.dehydrate(); }
+  /**
+   * Retrieves an instance from the injector.
+   *
+   * @param `index`: index of an instance.
+   * @returns an instance represented by the index. Throws if not found.
+   */
+  getAt(index: number): any { return this._strategy.getObjAtIndex(index); }
+
+  /**
+   * Direct parent of this injector.
+   */
+  get parent(): Injector { return this._parent; }
+
+  /**
+   * Internal. Do not use.
+   *
+   * We return `any` not to export the InjectorStrategy type.
+   */
+  get internalStrategy(): any { return this._strategy; }
 
   /**
   * Creates a child injector and loads a new set of bindings into it.
@@ -522,11 +548,7 @@ export class Injector {
   */
   resolveAndCreateChild(bindings: List<Type | Binding | List<any>>): Injector {
     var resovledBindings = Injector.resolve(bindings);
-    var bd = resovledBindings.map(b => new BindingData(b, PUBLIC));
-    var proto = new ProtoInjector(this._proto, bd, 1);
-    var inj = new Injector(proto);
-    inj._parent = this;
-    return inj;
+    return this.createChildFromResolved(resovledBindings);
   }
 
   /**
@@ -537,14 +559,14 @@ export class Injector {
    * @returns a new child {@link Injector}.
    */
   createChildFromResolved(bindings: List<ResolvedBinding>): Injector {
-    var bd = bindings.map(b => new BindingData(b, PUBLIC));
-    var proto = new ProtoInjector(this._proto, bd, 1);
+    var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
+    var proto = new ProtoInjector(bd, 1);
     var inj = new Injector(proto);
     inj._parent = this;
     return inj;
   }
 
-  _new(binding: ResolvedBinding): any {
+  _new(binding: ResolvedBinding, visibility: number): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
       throw new CyclicDependencyError(binding.key);
     }
@@ -555,26 +577,26 @@ export class Injector {
 
     var d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18, d19;
     try {
-      d0 = length > 0 ? this._getByDependency(deps[0], binding.key) : null;
-      d1 = length > 1 ? this._getByDependency(deps[1], binding.key) : null;
-      d2 = length > 2 ? this._getByDependency(deps[2], binding.key) : null;
-      d3 = length > 3 ? this._getByDependency(deps[3], binding.key) : null;
-      d4 = length > 4 ? this._getByDependency(deps[4], binding.key) : null;
-      d5 = length > 5 ? this._getByDependency(deps[5], binding.key) : null;
-      d6 = length > 6 ? this._getByDependency(deps[6], binding.key) : null;
-      d7 = length > 7 ? this._getByDependency(deps[7], binding.key) : null;
-      d8 = length > 8 ? this._getByDependency(deps[8], binding.key) : null;
-      d9 = length > 9 ? this._getByDependency(deps[9], binding.key) : null;
-      d10 = length > 10 ? this._getByDependency(deps[10], binding.key) : null;
-      d11 = length > 11 ? this._getByDependency(deps[11], binding.key) : null;
-      d12 = length > 12 ? this._getByDependency(deps[12], binding.key) : null;
-      d13 = length > 13 ? this._getByDependency(deps[13], binding.key) : null;
-      d14 = length > 14 ? this._getByDependency(deps[14], binding.key) : null;
-      d15 = length > 15 ? this._getByDependency(deps[15], binding.key) : null;
-      d16 = length > 16 ? this._getByDependency(deps[16], binding.key) : null;
-      d17 = length > 17 ? this._getByDependency(deps[17], binding.key) : null;
-      d18 = length > 18 ? this._getByDependency(deps[18], binding.key) : null;
-      d19 = length > 19 ? this._getByDependency(deps[19], binding.key) : null;
+      d0 = length > 0 ? this._getByDependency(deps[0], visibility) : null;
+      d1 = length > 1 ? this._getByDependency(deps[1], visibility) : null;
+      d2 = length > 2 ? this._getByDependency(deps[2], visibility) : null;
+      d3 = length > 3 ? this._getByDependency(deps[3], visibility) : null;
+      d4 = length > 4 ? this._getByDependency(deps[4], visibility) : null;
+      d5 = length > 5 ? this._getByDependency(deps[5], visibility) : null;
+      d6 = length > 6 ? this._getByDependency(deps[6], visibility) : null;
+      d7 = length > 7 ? this._getByDependency(deps[7], visibility) : null;
+      d8 = length > 8 ? this._getByDependency(deps[8], visibility) : null;
+      d9 = length > 9 ? this._getByDependency(deps[9], visibility) : null;
+      d10 = length > 10 ? this._getByDependency(deps[10], visibility) : null;
+      d11 = length > 11 ? this._getByDependency(deps[11], visibility) : null;
+      d12 = length > 12 ? this._getByDependency(deps[12], visibility) : null;
+      d13 = length > 13 ? this._getByDependency(deps[13], visibility) : null;
+      d14 = length > 14 ? this._getByDependency(deps[14], visibility) : null;
+      d15 = length > 15 ? this._getByDependency(deps[15], visibility) : null;
+      d16 = length > 16 ? this._getByDependency(deps[16], visibility) : null;
+      d17 = length > 17 ? this._getByDependency(deps[17], visibility) : null;
+      d18 = length > 18 ? this._getByDependency(deps[18], visibility) : null;
+      d19 = length > 19 ? this._getByDependency(deps[19], visibility) : null;
     } catch (e) {
       if (e instanceof AbstractBindingError) e.addKey(binding.key);
       throw e;
@@ -656,38 +678,37 @@ export class Injector {
     return obj;
   }
 
-  private _getByDependency(dep: any, requestor: Key): any {
-    var special = isPresent(this._ei) ? this._ei.getDependency(dep) : undefinedValue;
+  private _getByDependency(dep: Dependency, bindingVisibility: number): any {
+    var special = isPresent(this.ei) ? this.ei.getDependency(dep) : undefinedValue;
     if (special !== undefinedValue) {
       return special;
     } else {
-      return this._getByKey(dep.key, dep.visibility, dep.optional, requestor);
+      return this._getByKey(dep.key, dep.visibility, dep.optional, bindingVisibility);
     }
   }
 
-  private _getByKey(key: Key, depVisibility: any, optional: boolean, requestor: Key): any {
+  private _getByKey(key: Key, depVisibility: Visibility, optional: boolean,
+                    bindingVisibility: number): any {
     if (key.token === Injector) {
       return this;
     }
 
     var inj = this;
-    var ei = this._ei;
-
-    // TODO vsavkin remove after DI and EI are merged
-    var bindingVisibility =
-        isPresent(ei) && ei.isComponentKey(requestor) ? PUBLIC_AND_PRIVATE : PUBLIC;
-
+    var lastInjector = false;
     var depth = depVisibility.depth;
 
     if (!depVisibility.includeSelf) {
       depth -= inj._proto.distanceToParent;
 
-      if (isPresent(inj._parent)) {
-        inj = inj._parent;
-      } else {
-        inj = inj._host;
-        bindingVisibility = depVisibility.crossComponentBoundaries ? PUBLIC : PRIVATE;
+      if (inj._isBoundary) {
+        if (depVisibility.crossBoundaries) {
+          bindingVisibility = PUBLIC_AND_PRIVATE;
+        } else {
+          bindingVisibility = PRIVATE;
+          lastInjector = true;
+        }
       }
+      inj = inj._parent;
     }
 
     while (inj != null && depth >= 0) {
@@ -696,25 +717,17 @@ export class Injector {
 
       depth -= inj._proto.distanceToParent;
 
-      // we check only one mode with the PRIVATE visibility
-      if (bindingVisibility === PRIVATE) break;
+      if (lastInjector) break;
 
-      if (isPresent(inj._parent)) {
-        inj = inj._parent;
-      } else {
-        inj = inj._host;
-        bindingVisibility = depVisibility.crossComponentBoundaries ? PUBLIC : PRIVATE;
+      if (inj._isBoundary) {
+        if (depVisibility.crossBoundaries) {
+          bindingVisibility = PUBLIC_AND_PRIVATE;
+        } else {
+          bindingVisibility = PRIVATE;
+          lastInjector = true;
+        }
       }
-    }
-
-    // TODO vsavkin remove after DI and EI are merged
-    if (isPresent(ei)) {
-      var appInj = <Injector>this._ei.appInjector(requestor);
-      if (optional) {
-        return appInj.getOptional(key);
-      } else {
-        return appInj.get(key);
-      }
+      inj = inj._parent;
     }
 
     if (optional) {
@@ -722,12 +735,6 @@ export class Injector {
     } else {
       throw new NoBindingError(key);
     }
-  }
-
-  // TODO vsavkin remove after DI and EI are merged
-  getAppInjector(): Injector {
-    if (isBlank(this._ei)) return this;
-    return <Injector>this._ei.appInjector(null);
   }
 }
 

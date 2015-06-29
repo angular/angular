@@ -36,9 +36,7 @@ export {
   PUBLIC_AND_PRIVATE,
   PUBLIC,
   PRIVATE,
-  undefinedValue,
-  InjectorInlineStrategy,
-  InjectorDynamicStrategy
+  undefinedValue
 } from './src/di/injector';
 export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/di/binding';
 export {Key, KeyRegistry, TypeLiteral} from './src/di/key';

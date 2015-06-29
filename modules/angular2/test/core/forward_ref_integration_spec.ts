@@ -29,7 +29,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'app', appInjector: [forwardRef(() => Frame)]})
+@Component({selector: 'app', viewInjector: [forwardRef(() => Frame)]})
 @View({
   template: `<door><lock></lock></door>`,
   directives: [

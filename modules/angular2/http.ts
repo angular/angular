@@ -48,7 +48,7 @@ export {URLSearchParams} from 'angular2/src/http/url_search_params';
  *
  * ```
  * import {httpInjectables, Http} from 'angular2/http';
- * @Component({selector: 'http-app', appInjector: [httpInjectables]})
+ * @Component({selector: 'http-app', viewInjector: [httpInjectables]})
  * @View({template: '{{data}}'})
  * class MyApp {
  *   constructor(http:Http) {

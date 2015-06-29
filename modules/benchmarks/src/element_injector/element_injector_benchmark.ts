@@ -12,8 +12,6 @@ export function main() {
   var iterations = getIntParameter('iterations');
 
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var appInjector = Injector.resolveAndCreate([]);
-
   var bindings = [
     DirectiveBinding.createFromType(A, null),
     DirectiveBinding.createFromType(B, null),
@@ -25,14 +23,14 @@ export function main() {
   function instantiate() {
     for (var i = 0; i < iterations; ++i) {
       var ei = proto.instantiate(null);
-      ei.hydrate(appInjector, null, null);
+      ei.hydrate(null, null, null);
     }
   }
 
   function hydrate() {
     for (var i = 0; i < iterations; ++i) {
       elementInjector.dehydrate();
-      elementInjector.hydrate(appInjector, null, null);
+      elementInjector.hydrate(null, null, null);
     }
   }
 
