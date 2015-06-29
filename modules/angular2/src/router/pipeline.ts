@@ -1,11 +1,13 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Instruction} from './instruction';
+import {Injectable} from 'angular2/di';
 
 /**
  * Responsible for performing each step of navigation.
  * "Steps" are conceptually similar to "middleware"
  */
+@Injectable()
 export class Pipeline {
   steps: List<Function>;
 
