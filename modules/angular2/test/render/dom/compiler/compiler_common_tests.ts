@@ -160,6 +160,14 @@ export function runCompilerCommonTests() {
                });
          }));
 
+        it('should report selector errors', () => {
+          try{
+            var compiler = createCompiler(EMPTY_STEP);
+            compiler.compileHost(invalidSelectorComponent)
+          } catch(e) {
+            expect(e.message).toEqual('Failed to execute \'createElement\' on \'Document\': The tag name provided (\'some-comp invalid\') is not a valid name.');
+          }    
+        });
     });
 
   });
@@ -219,5 +227,17 @@ class FakeTemplateLoader extends TemplateLoader {
   }
 }
 
-var someComponent = DirectiveMetadata.create(
-    {selector: 'some-comp', id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE});
+var validComponentDefinition = {
+  selector: 'some-comp',
+  id: 'someComponent',
+  type: DirectiveMetadata.COMPONENT_TYPE
+};
+
+var invalidSelectorComponentDefinition = {
+  selector: 'some-comp invalid',
+  id: 'someComponent',
+  type: DirectiveMetadata.COMPONENT_TYPE
+};
+
+var someComponent = DirectiveMetadata.create(validComponentDefinition);
+var invalidSelectorComponent = DirectiveMetadata.create(invalidSelectorComponentDefinition);
