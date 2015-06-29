@@ -133,11 +133,11 @@ var BENCHPRESS_BUNDLE_CONFIG = {
   entries: ['./dist/js/cjs/benchpress/index.js'],
   packageJson: './dist/js/cjs/benchpress/package.json',
   includes: [
-    'angular2',
-    'traceur',
-    'reflect-metadata'
+    'angular2'
   ],
   excludes: [
+    'traceur',
+    'reflect-metadata',
     'selenium-webdriver',
     'rtts_assert',
     'zone.js'
