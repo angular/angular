@@ -137,6 +137,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
   ],
   excludes: [
     'traceur',
+    'traceur/bin/traceur-runtime',
     'reflect-metadata',
     'selenium-webdriver',
     'rtts_assert',
