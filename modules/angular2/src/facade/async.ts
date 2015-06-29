@@ -1,5 +1,5 @@
 /// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
-/// <reference path="../../typings/rx/rx.all.d.ts" />
+/// <reference path="../../typings/rx/rx.d.ts" />
 
 import {global, isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';

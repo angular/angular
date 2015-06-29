@@ -1,4 +1,4 @@
-/// <reference path="../../typings/rx/rx.all.d.ts" />
+/// <reference path="../../typings/rx/rx.d.ts" />
 
 import {Injectable} from 'angular2/src/di/decorators';
 import {IRequestOptions, Connection, IHttp} from './interfaces';
