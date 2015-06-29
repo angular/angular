@@ -15,10 +15,12 @@ import {
   viewRootNodes,
   TestComponentBuilder,
   RootTestComponent,
-  inspectElement
+  inspectElement,
+  By
 } from 'angular2/test_lib';
 
 import {Injector} from 'angular2/di';
+import {NgIf} from 'angular2/directives';
 import {Component, View, onDestroy} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
@@ -61,6 +63,37 @@ export function main() {
                             .then(ref => {
                               ref.dispose();
                               expect(tc.nativeElement).toHaveText("Location;");
+                              async.done();
+                            });
+                      });
+                }));
+
+      it('should allow to dispose even if the location has been removed',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb: TestComponentBuilder, async) => {
+                  tcb.overrideView(MyComp, new viewAnn.View({
+                       template: '<child-cmp *ng-if="ctxBoolProp"></child-cmp>',
+                       directives: [NgIf, ChildComp]
+                     }))
+                      .overrideView(
+                          ChildComp,
+                          new viewAnn.View(
+                              {template: '<location #loc></location>', directives: [Location]}))
+                      .createAsync(MyComp)
+                      .then((tc) => {
+                        tc.componentInstance.ctxBoolProp = true;
+                        tc.detectChanges();
+                        var childCompEl = tc.query(By.css('child-cmp'));
+                        loader.loadIntoLocation(DynamicallyLoaded, childCompEl.elementRef, 'loc')
+                            .then(ref => {
+                              expect(tc.nativeElement).toHaveText("Location;DynamicallyLoaded;");
+
+                              tc.componentInstance.ctxBoolProp = false;
+                              tc.detectChanges();
+                              expect(tc.nativeElement).toHaveText("");
+
+                              ref.dispose();
+                              expect(tc.nativeElement).toHaveText("");
                               async.done();
                             });
                       });
