@@ -17,12 +17,11 @@ export const appBaseHrefToken: OpaqueToken = CONST_EXPR(new OpaqueToken('locatio
  */
 @Injectable()
 export class Location {
-  private _subject: EventEmitter;
+  private _subject: EventEmitter = new EventEmitter();
   private _baseHref: string;
 
   constructor(public _platformStrategy: LocationStrategy,
               @Optional() @Inject(appBaseHrefToken) href?: string) {
-    this._subject = new EventEmitter();
     this._baseHref = stripTrailingSlash(
         stripIndexHtml(isPresent(href) ? href : this._platformStrategy.getBaseHref()));
     this._platformStrategy.onPopState((_) => this._onPopState(_));

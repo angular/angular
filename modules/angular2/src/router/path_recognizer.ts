@@ -33,11 +33,10 @@ export class ContinuationSegment extends Segment {
 
 class StaticSegment extends Segment {
   regex: string;
-  name: string;
+  name: string = '';
 
   constructor(public string: string) {
     super();
-    this.name = '';
     this.regex = escapeRegex(string);
   }
 
@@ -46,8 +45,9 @@ class StaticSegment extends Segment {
 
 @IMPLEMENTS(Segment)
 class DynamicSegment {
-  regex: string;
-  constructor(public name: string) { this.regex = "([^/]+)"; }
+  regex: string = "([^/]+)";
+
+  constructor(public name: string) {}
 
   generate(params: StringMap<string, string>): string {
     if (!StringMapWrapper.contains(params, this.name)) {
@@ -60,8 +60,8 @@ class DynamicSegment {
 
 
 class StarSegment {
-  regex: string;
-  constructor(public name: string) { this.regex = "(.+)"; }
+  regex: string = "(.+)";
+  constructor(public name: string) {}
 
   generate(params: StringMap<string, string>): string {
     return normalizeBlank(StringMapWrapper.get(params, this.name));
@@ -134,10 +134,6 @@ export class PathRecognizer {
   terminal: boolean = true;
 
   constructor(public path: string, public handler: any) {
-    this.segments = [];
-
-    // TODO: use destructuring assignment
-    // see https://github.com/angular/ts2dart/issues/158
     var parsed = parsePathString(path);
     var specificity = parsed['specificity'];
     var segments = parsed['segments'];

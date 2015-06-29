@@ -29,9 +29,7 @@ import {Injectable} from 'angular2/di';
  */
 @Injectable()
 export class RouteRegistry {
-  _rules: Map<any, RouteRecognizer>;
-
-  constructor() { this._rules = new Map(); }
+  _rules: Map<any, RouteRecognizer> = new Map();
 
   /**
    * Given a component and a configuration object, add the route to this registry

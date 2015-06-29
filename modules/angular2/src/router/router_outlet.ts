@@ -22,10 +22,10 @@ import {Instruction, RouteParams} from './instruction'
   selector: 'router-outlet'
 })
 export class RouterOutlet {
-  private _childRouter: routerMod.Router;
-  private _componentRef: ComponentRef;
+  private _childRouter: routerMod.Router = null;
+  private _componentRef: ComponentRef = null;
   private _elementRef: ElementRef;
-  private _currentInstruction: Instruction;
+  private _currentInstruction: Instruction = null;
   private _injector: Injector;
 
   constructor(elementRef: ElementRef, private _loader: DynamicComponentLoader,
@@ -38,10 +38,6 @@ export class RouterOutlet {
 
     this._injector = _injector.getAppInjector();
     this._elementRef = elementRef;
-
-    this._childRouter = null;
-    this._componentRef = null;
-    this._currentInstruction = null;
     this._parentRouter.registerOutlet(this);
   }
 
