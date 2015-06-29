@@ -1,4 +1,4 @@
-import {Injector, Binding, Injectable} from 'angular2/di';
+import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import * as eli from './element_injector';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
@@ -74,15 +74,14 @@ export class AppViewManagerUtils {
     hostView.componentChildViews[boundElementIndex] = null;
   }
 
-  hydrateComponentView(hostView: viewModule.AppView, boundElementIndex: number,
-                       injector: Injector = null) {
+  hydrateComponentView(hostView: viewModule.AppView, boundElementIndex: number) {
     var elementInjector = hostView.elementInjectors[boundElementIndex];
     var componentView = hostView.componentChildViews[boundElementIndex];
     var component = this.getComponentInstance(hostView, boundElementIndex);
-    this._hydrateView(componentView, injector, elementInjector, component, null);
+    this._hydrateView(componentView, null, elementInjector, component, null);
   }
 
-  hydrateRootHostView(hostView: viewModule.AppView, injector: Injector = null) {
+  hydrateRootHostView(hostView: viewModule.AppView, injector: Injector) {
     this._hydrateView(hostView, injector, null, new Object(), null);
   }
 
@@ -132,7 +131,7 @@ export class AppViewManagerUtils {
 
   hydrateViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                          contextView: viewModule.AppView, contextBoundElementIndex: number,
-                         atIndex: number, injector: Injector) {
+                         atIndex: number, bindings: ResolvedBinding[]) {
     if (isBlank(contextView)) {
       contextView = parentView;
       contextBoundElementIndex = boundElementIndex;
@@ -140,21 +139,15 @@ export class AppViewManagerUtils {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
-    if (isBlank(elementInjector.getHost()) && isBlank(injector)) {
-      injector = elementInjector.getShadowDomAppInjector();
-    }
+
+    var injector = isPresent(bindings) ? Injector.fromResolvedBindings(bindings) : null;
+
     this._hydrateView(view, injector, elementInjector.getHost(), contextView.context,
                       contextView.locals);
   }
 
-  _hydrateView(view: viewModule.AppView, appInjector: Injector,
+  _hydrateView(view: viewModule.AppView, injector: Injector,
                hostElementInjector: eli.ElementInjector, context: Object, parentLocals: Locals) {
-    if (isBlank(appInjector)) {
-      appInjector = hostElementInjector.getShadowDomAppInjector();
-    }
-    if (isBlank(appInjector)) {
-      appInjector = hostElementInjector.getLightDomAppInjector();
-    }
     view.context = context;
     view.locals.parent = parentLocals;
 
@@ -163,7 +156,7 @@ export class AppViewManagerUtils {
       var elementInjector = view.elementInjectors[i];
 
       if (isPresent(elementInjector)) {
-        elementInjector.hydrate(appInjector, hostElementInjector, view.preBuiltObjects[i]);
+        elementInjector.hydrate(injector, hostElementInjector, view.preBuiltObjects[i]);
         this._populateViewLocals(view, elementInjector);
         this._setUpEventEmitters(view, elementInjector, i);
         this._setUpHostActions(view, elementInjector, i);

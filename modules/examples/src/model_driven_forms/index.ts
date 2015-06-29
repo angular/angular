@@ -72,7 +72,7 @@ class ShowError {
 }
 
 
-@Component({selector: 'model-driven-forms', appInjector: [FormBuilder]})
+@Component({selector: 'model-driven-forms', viewInjector: [FormBuilder]})
 @View({
   template: `
     <h1>Checkout Form (Model Driven)</h1>
