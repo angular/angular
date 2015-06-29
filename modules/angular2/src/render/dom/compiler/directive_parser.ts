@@ -31,8 +31,28 @@ export class DirectiveParser implements CompileStep {
     for (var i = 0; i < _directives.length; i++) {
       var directive = _directives[i];
       var selector = CssSelector.parse(directive.selector);
+      this._ensureDirectiveSelectorIsFlat(selector, directive);
       this._ensureComponentOnlyHasElementSelector(selector, directive);
       this._selectorMatcher.addSelectables(selector, i);
+    }
+  }
+
+  _ensureDirectiveSelectorIsFlat(selector, directive) {
+    var flatExceptionText = `Directive must not span element boundaries, but had '${directive.selector}'`;
+    var element;
+
+    if(selector.length === 1 && selector[0].isElementSelector()) {
+      try {
+        element = DOM.createElement(directive.selector);
+        if(directive.selector.indexOf(' ') > -1) {
+          throw new BaseException(flatExceptionText);
+        }
+      } catch(e) { // For Dart and JS
+        if(!element || directive.selector.indexOf(' ') > -1) {
+          throw new BaseException(flatExceptionText);
+        }
+      }
+
     }
   }
 
