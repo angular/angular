@@ -30,6 +30,16 @@ class DestCopy implements DiffingBroccoliPlugin {
       // TODO: what about obsolete directories? we are not cleaning those up yet
       fs.unlinkSync(destFilePath);
     });
+
+
+    // Write log of added/changed/removed files to be used when we call `karma run` from gulp.
+    var karmaArgs = '';
+    karmaArgs += treeDiff.addedPaths.length ? ' --addedFiles ' + treeDiff.addedPaths.join(',') : '';
+    karmaArgs +=
+        treeDiff.changedPaths.length ? ' --changedFiles ' + treeDiff.changedPaths.join(',') : '';
+    karmaArgs +=
+        treeDiff.removedPaths.length ? ' --removedFiles ' + treeDiff.removedPaths.join(',') : '';
+    fs.writeFileSync(path.join('tmp', 'build-log-karma-args.txt'), karmaArgs, {encoding: 'utf-8'});
   }
 }
 

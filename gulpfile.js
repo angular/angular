@@ -401,9 +401,22 @@ gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
 // CI tests suites
 
 function runKarma(configFile, done) {
+  var fs = require('fs');
+  var path = require('path');
   var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
                                            'node node_modules/.bin/karma run ';
   cmd += configFile;
+
+  // this file is written into the tmp folder by DestCopy broccoli plugin after each build
+  var karmaArgsPath = path.join('tmp', 'build-log-karma-args.txt');
+
+  if (fs.existsSync(karmaArgsPath)) {
+    var changedFilesArgs = fs.readFileSync(karmaArgsPath, {encoding: 'utf-8'});
+    if (changedFilesArgs.length > 10 && changedFilesArgs.length < 1100) {
+      cmd += changedFilesArgs;
+    }
+  }
+
   exec(cmd, function(e, stdout) {
     // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
     // karma server will print all test failures
