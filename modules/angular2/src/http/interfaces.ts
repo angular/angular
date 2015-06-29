@@ -1,4 +1,4 @@
-/// <reference path="../../typings/rx/rx.all.d.ts" />
+/// <reference path="../../typings/rx/rx.d.ts" />
 
 import {
   ReadyStates,
