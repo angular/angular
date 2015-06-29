@@ -31,8 +31,19 @@ export class DirectiveParser implements CompileStep {
     for (var i = 0; i < _directives.length; i++) {
       var directive = _directives[i];
       var selector = CssSelector.parse(directive.selector);
+      this._ensureDirectiveSelectorIsFlat(selector, directive);
       this._ensureComponentOnlyHasElementSelector(selector, directive);
       this._selectorMatcher.addSelectables(selector, i);
+    }
+  }
+
+  _ensureDirectiveSelectorIsFlat(selector, directive) {
+    if(selector.length === 1 && selector[0].isElementSelector()) {
+      try {
+        DOM.createElement(directive.selector);
+      } catch(e) {
+        throw new BaseException(e.message);
+      }
     }
   }
 

@@ -166,6 +166,12 @@ export function main() {
               new RegExp('flat'));
     });
 
+    it('should throw when the provided selector is not flat', () => {
+      expect(() => { createPipeline(null, [directiveWithNonFlatElementSelector]); })
+          .toThrowError(
+              new RegExp('flat'));
+    });
+
     // TODO: assertions should be enabled when running tests:
     // https://github.com/angular/angular/issues/1340
     describe('component directives', () => {
