@@ -38,7 +38,7 @@ import {Renderer} from 'angular2/src/render/api';
 })
 export class RouterLink {
   private _route: string;
-  private _params: StringMap<string, string>;
+  private _params: StringMap<string, string> = StringMapWrapper.create();
 
   // the url displayed on the anchor element.
   _visibleHref: string;
@@ -46,15 +46,13 @@ export class RouterLink {
   _navigationHref: string;
 
   constructor(private _elementRef: ElementRef, private _router: Router, private _location: Location,
-              private _renderer: Renderer) {
-    this._params = StringMapWrapper.create();
-  }
+              private _renderer: Renderer) {}
 
   set route(changes: string) { this._route = changes; }
 
   set params(changes: StringMap<string, string>) { this._params = changes; }
 
-  onClick() {
+  onClick(): boolean {
     this._router.navigate(this._navigationHref);
     return false;
   }

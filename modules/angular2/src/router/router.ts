@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent, Type} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Type, isArray} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
@@ -28,25 +28,19 @@ import {Location} from './location';
  * @exportedAs angular2/router
  */
 export class Router {
-  navigating: boolean;
+  navigating: boolean = false;
   lastNavigationAttempt: string;
-  previousUrl: string;
+  previousUrl: string = null;
 
-  private _currentInstruction: Instruction;
-  private _currentNavigation: Promise<any>;
-  private _outlet: RouterOutlet;
-  private _subject: EventEmitter;
+  private _currentInstruction: Instruction = null;
+  private _currentNavigation: Promise<any> = PromiseWrapper.resolve(true);
+  private _outlet: RouterOutlet = null;
+  private _subject: EventEmitter = new EventEmitter();
+
   // todo(jeffbcross): rename _registry to registry since it is accessed from subclasses
   // todo(jeffbcross): rename _pipeline to pipeline since it is accessed from subclasses
   constructor(public _registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
-              public hostComponent: any) {
-    this.navigating = false;
-    this.previousUrl = null;
-    this._outlet = null;
-    this._subject = new EventEmitter();
-    this._currentInstruction = null;
-    this._currentNavigation = PromiseWrapper.resolve(true);
-  }
+              public hostComponent: any) {}
 
 
   /**
@@ -88,8 +82,8 @@ export class Router {
    * ]);
    * ```
    */
-  config(config: any): Promise<any> {
-    if (config instanceof List) {
+  config(config: StringMap<string, any>| List<StringMap<string, any>>): Promise<any> {
+    if (isArray(config)) {
       (<List<any>>config)
           .forEach((configObject) => { this._registry.config(this.hostComponent, configObject); });
     } else {
