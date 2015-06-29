@@ -73,7 +73,9 @@ export class DynamicComponentLoader {
 
           var dispose = () => {
             var index = viewContainer.indexOf(hostViewRef);
-            viewContainer.remove(index);
+            if (index !== -1) {
+              viewContainer.remove(index);
+            }
           };
           return new ComponentRef(newLocation, component, dispose);
         });
