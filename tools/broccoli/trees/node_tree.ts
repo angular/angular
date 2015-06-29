@@ -63,7 +63,8 @@ module.exports = function makeNodeTree(destinationPath) {
     license: BASE_PACKAGE_JSON.license,
     contributors: BASE_PACKAGE_JSON.contributors,
     dependencies: BASE_PACKAGE_JSON.dependencies,
-    devDependencies: {
+    devDependencies: BASE_PACKAGE_JSON.devDependencies,
+    defaultDevDependencies: {
       "yargs": BASE_PACKAGE_JSON.devDependencies['yargs'],
       "gulp-sourcemaps": BASE_PACKAGE_JSON.devDependencies['gulp-sourcemaps'],
       "gulp-traceur": BASE_PACKAGE_JSON.devDependencies['gulp-traceur'],

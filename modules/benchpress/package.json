@@ -9,11 +9,12 @@
   "license": "<%= packageJson.license %>",
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
-    "firefox-profile": "<%= packageJson.devDependencies['firefox-profile'] %>",
-    "jpm": "<%= packageJson.devDependencies.jpm %>",
     "traceur": "<%= packageJson.dependencies.traceur %>",
     "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>"
   },
-  "devDependencies": <%= JSON.stringify(packageJson.devDependencies) %>
+  "optionalDependencies": {
+    "jpm": "<%= packageJson.devDependencies.jpm %>",
+    "firefox-profile": "<%= packageJson.devDependencies['firefox-profile'] %>"
+  }
 }
