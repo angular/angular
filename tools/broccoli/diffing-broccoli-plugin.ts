@@ -75,12 +75,9 @@ class DiffingPluginWrapper implements BroccoliTree {
       // inputTree's rebuild() method, and can be used without being checked.
       // Set `this.diffResult` to null and return the previously stored value.
       let diffResult = tree.diffResult;
-      tree.diffResult = null;
-      if (!diffResult) {
-        let differ = index === false ? this.treeDiffer : this.treeDiffers[index];
-        diffResult = differ.diffTree();
-      }
-      return diffResult;
+      if (diffResult) return diffResult;
+      let differ = index === false ? this.treeDiffer : this.treeDiffers[index];
+      return differ.diffTree();
     };
 
     if (this.inputTrees) {
