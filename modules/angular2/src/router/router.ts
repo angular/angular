@@ -8,6 +8,9 @@ import {Instruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
 
+let _resolveToTrue = PromiseWrapper.resolve(true);
+let _resolveToFalse = PromiseWrapper.resolve(false);
+
 /**
  * # Router
  * The router is responsible for mapping URLs to components.
@@ -33,7 +36,7 @@ export class Router {
   previousUrl: string = null;
 
   private _currentInstruction: Instruction = null;
-  private _currentNavigation: Promise<any> = PromiseWrapper.resolve(true);
+  private _currentNavigation: Promise<any> = _resolveToTrue;
   private _outlet: RouterOutlet = null;
   private _subject: EventEmitter = new EventEmitter();
 
@@ -60,7 +63,7 @@ export class Router {
     if (isPresent(this._currentInstruction)) {
       return outlet.activate(this._currentInstruction);
     }
-    return PromiseWrapper.resolve(true);
+    return _resolveToTrue;
   }
 
 
@@ -106,7 +109,7 @@ export class Router {
     this.lastNavigationAttempt = url;
     return this._currentNavigation = this.recognize(url).then((matchedInstruction) => {
       if (isBlank(matchedInstruction)) {
-        return PromiseWrapper.resolve(false);
+        return _resolveToFalse;
       }
 
       if (isPresent(this._currentInstruction)) {
@@ -148,7 +151,7 @@ export class Router {
     if (isPresent(this._outlet)) {
       return this._outlet.activate(instruction);
     }
-    return PromiseWrapper.resolve(true);
+    return _resolveToTrue;
   }
 
 
@@ -159,7 +162,7 @@ export class Router {
     if (isPresent(this._outlet)) {
       return this._outlet.deactivate();
     }
-    return PromiseWrapper.resolve(true);
+    return _resolveToTrue;
   }
 
 
