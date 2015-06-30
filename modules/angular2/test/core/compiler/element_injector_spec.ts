@@ -34,24 +34,19 @@ import {
 } from 'angular2/src/core/compiler/element_injector';
 import * as dirAnn from 'angular2/src/core/annotations_impl/annotations';
 import {
-  Parent,
-  Ancestor,
-  Unbounded,
   Attribute,
   Query,
   Component,
   Directive,
   onDestroy
 } from 'angular2/annotations';
-import * as ngDiAnn from 'angular2/src/core/annotations_impl/visibility';
-import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable} from 'angular2/di';
+import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self} from 'angular2/di';
 import * as diAnn from 'angular2/src/di/annotations_impl';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
-import {Renderer} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 @proxy
@@ -59,22 +54,36 @@ import {QueryList} from 'angular2/src/core/compiler/query_list';
 class DummyView extends SpyObject {
   componentChildViews;
   changeDetector;
-  constructor() {
-    super();
+  elementRefs;
+  constructor(elementCount = 0) {
+    super(AppView);
     this.componentChildViews = [];
     this.changeDetector = null;
+    this.elementRefs = ListWrapper.createFixedSize(elementCount);
+    for (var i=0; i<elementCount; i++) {
+      this.elementRefs[i] = new DummyElementRef();
+    }
   }
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
 
+@proxy
+@IMPLEMENTS(ElementRef)
+class DummyElementRef extends SpyObject {
+  constructor() { super(ElementRef); }
+  noSuchMethod(m) { return super.noSuchMethod(m); }
+}
 
+@Injectable(self)
 class SimpleDirective {}
 
 class SimpleService {}
 
+@Injectable(self)
 class SomeOtherDirective {}
 
 var _constructionCount = 0;
+@Injectable(self)
 class CountingDirective {
   count;
   constructor() {
@@ -83,6 +92,7 @@ class CountingDirective {
   }
 }
 
+@Injectable(self)
 class FancyCountingDirective extends CountingDirective {
   constructor() { super(); }
 }
@@ -127,6 +137,12 @@ class NeedsDirectiveFromAnAncestorShadowDom {
 class NeedsService {
   service: any;
   constructor(@Inject("service") service) { this.service = service; }
+}
+
+@Injectable()
+class NeedsAncestorService {
+  service: any;
+  constructor(@Ancestor() @Inject("service") service) { this.service = service; }
 }
 
 class HasEventEmitter {
@@ -225,7 +241,7 @@ class TestNode extends TreeNode<TestNode> {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>new DummyView(1), null);
   var appInjector = Injector.resolveAndCreate([]);
 
   // An injector with more than 10 bindings will switch to the dynamic strategy
@@ -446,7 +462,7 @@ export function main() {
         expect(inj.hostActionAccessors.length).toEqual(1);
 
         var accessor = inj.hostActionAccessors[0][0];
-        expect(accessor.actionExpression).toEqual('onAction');
+        expect(accessor.methodName).toEqual('onAction');
         expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });
@@ -571,7 +587,6 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-
           it("should instantiate hostInjector injectables that have dependencies with set visibility",
              function() {
                var childInj = parentChildInjectors(
@@ -587,7 +602,7 @@ export function main() {
                        bind('injectable2')
                            .toFactory(
                                (val) => `${val}-injectable2`,
-                               [[new diAnn.Inject('injectable1'), new ngDiAnn.Parent()]])
+                               [[new diAnn.Inject('injectable1'), new diAnn.Parent()]])
                      ]
                    }))]);
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
@@ -638,7 +653,8 @@ export function main() {
             expect(shadowInj.get(NeedsService).service).toEqual('hostService');
           });
 
-          it("should not instantiate a directive in a view that depends on hostInjector bindings of a decorator directive", () => {
+          it("should not instantiate a directive in a view that has an ancestor dependency on hostInjector"+
+            " bindings of a decorator directive", () => {
             expect(() => {
               hostShadowInjectors(
                 ListWrapper.concat([
@@ -647,7 +663,7 @@ export function main() {
                       hostInjector: [bind('service').toValue('hostService')]})
                   )], extraBindings),
 
-                ListWrapper.concat([NeedsService], extraBindings)
+                ListWrapper.concat([NeedsAncestorService], extraBindings)
               );
             }).toThrowError(new RegExp("No provider for service!"));
           });
@@ -893,7 +909,7 @@ export function main() {
         describe("refs", () => {
           it("should inject ElementRef", () => {
             var inj = injector(ListWrapper.concat([NeedsElementRef], extraBindings));
-            expect(inj.get(NeedsElementRef).elementRef).toBeAnInstanceOf(ElementRef);
+            expect(inj.get(NeedsElementRef).elementRef).toBe(defaultPreBuiltObjects.view.elementRefs[0]);
           });
 
           it('should inject ChangeDetectorRef', () => {
@@ -1005,7 +1021,7 @@ export function main() {
             var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
                                false, preBuildObjects, null, dirVariableBindings);
 
-            expect(inj.get(NeedsQueryByVarBindings).query.first).toBeAnInstanceOf(ElementRef);
+            expect(inj.get(NeedsQueryByVarBindings).query.first).toBe(defaultPreBuiltObjects.view.elementRefs[0]);
           });
 
           it('should contain directives on the same injector when querying by variable bindings' +
@@ -1138,15 +1154,4 @@ export function main() {
 class ContextWithHandler {
   handler;
   constructor(handler) { this.handler = handler; }
-}
-
-class FakeRenderer extends Renderer {
-  log: List<List<any>>;
-  constructor() {
-    super();
-    this.log = [];
-  }
-  setElementProperty(viewRef, elementIndex, propertyName, value) {
-    this.log.push([viewRef, elementIndex, propertyName, value]);
-  }
 }

@@ -11,7 +11,7 @@ import {
 } from 'angular2/src/facade/lang';
 
 /**
- * This file is a port of shadowCSS from webcomponents.js to AtScript.
+ * This file is a port of shadowCSS from webcomponents.js to TypeScript.
  *
  * Please make sure to keep to edits in sync with the source file.
  *

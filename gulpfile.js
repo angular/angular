@@ -1,11 +1,12 @@
 'use strict';
 
 var autoprefixer = require('gulp-autoprefixer');
+var clangFormat = require('clang-format');
 var del = require('del');
-var format = require('gulp-clang-format');
 var exec = require('child_process').exec;
 var fork = require('child_process').fork;
 var gulp = require('gulp');
+var gulpFormat = require('gulp-clang-format');
 var gulpPlugins = require('gulp-load-plugins')();
 var sass = require('gulp-sass');
 var shell = require('gulp-shell');
@@ -36,6 +37,7 @@ var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
+var tslint = require('gulp-tslint');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.9.0',
@@ -123,9 +125,30 @@ var CONFIG = {
     },
     dart: 'dist/dart',
     docs: 'dist/docs',
-    docs_angular_io: 'dist/angular.io'
+    docs_angular_io: 'dist/angular.io',
+    benchpress_bundle: 'dist/build/benchpress_bundle/'
   }
 };
+
+var BENCHPRESS_BUNDLE_CONFIG = {
+  entries: ['./dist/js/cjs/benchpress/index.js'],
+  packageJson: './dist/js/cjs/benchpress/package.json',
+  includes: [
+    'angular2'
+  ],
+  excludes: [
+    'traceur',
+    'traceur/bin/traceur-runtime',
+    'reflect-metadata',
+    'selenium-webdriver',
+    'rtts_assert',
+    'zone.js'
+  ],
+  ignore: [
+    'rx'
+  ],
+  dest: CONFIG.dest.benchpress_bundle
+}
 
 // ------------
 // clean
@@ -150,6 +173,9 @@ gulp.task('build/clean.docs_angular_io', function(done) {
   del(CONFIG.dest.docs_angular_io, done);
 });
 
+gulp.task('build/clean.benchpress.bundle', function(done) {
+  del(CONFIG.dest.benchpress_bundle, done);
+});
 
 // ------------
 // transpile
@@ -204,7 +230,7 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 
 function doCheckFormat() {
   return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
-      .pipe(format.checkFormat('file'));
+      .pipe(gulpFormat.checkFormat('file', clangFormat));
 }
 
 gulp.task('check-format', function() {
@@ -219,6 +245,19 @@ gulp.task('enforce-format', function() {
     console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
     process.exit(1);
   });
+});
+
+gulp.task('lint', ['build.tools'], function() {
+  // https://github.com/palantir/tslint#supported-rules
+  var tslintConfig = {
+    "rules": {
+      "requireReturnType": true
+    }
+  };
+
+  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
+      .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
+      .pipe(tslint.report('prose'));
 });
 
 // ------------
@@ -389,7 +428,7 @@ function runKarma(configFile, done) {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
-              'test.unit.cjs/ci', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -560,6 +599,38 @@ gulp.task('test.transpiler.unittest', function(done) {
 });
 
 // -----------------
+// Pre/Post-test checks
+
+gulp.task('pre-test-checks', function(done) {
+  runSequence('build/checkCircularDependencies', sequenceComplete(done));
+});
+
+gulp.task('post-test-checks', function(done) {
+  runSequence('lint', 'enforce-format', sequenceComplete(done));
+});
+
+
+gulp.task('!pre.test.typings', [], function() {
+  return gulp
+    .src([
+      'modules/angular2/typings/**/*'], {
+        base: 'modules/angular2/typings/**'
+      }
+    )
+    .pipe(gulp.dest('dist/docs/typings/*'));
+});
+
+// -----------------
+// TODO: Use a version of TypeScript that matches what is used by DefinitelyTyped.
+gulp.task('test.typings', ['!pre.test.typings'], function() {
+  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/angular2.d.ts'])
+      .pipe(tsc({target: 'ES5', module: 'commonjs',
+                 // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
+                 // see https://github.com/ivogabe/gulp-typescript#typescript-version
+                 typescript: require('typescript')}));
+});
+
+// -----------------
 // orchestrated targets
 
 // Pure Dart packages only contain Dart code and conform to pub package layout.
@@ -686,8 +757,6 @@ gulp.task('!broccoli.js.prod', function() {
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
     'broccoli.js.dev',
-    'build/checkCircularDependencies',
-    'check-format',
     sequenceComplete(done)
   );
 });
@@ -787,6 +856,19 @@ gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
     { sourceMaps: true });
 });
 
+gulp.task('mock.bundle.js.dev', ['build.js.dev'], function() {
+  var devBundleConfig = merge(true, bundleConfig);
+  devBundleConfig.paths =
+    merge(true, devBundleConfig.paths, {
+      "*": "dist/js/dev/es6/*.js"
+    });
+  return bundler.bundle(
+    devBundleConfig,
+    'angular2/mock - angular2/angular2',
+    './dist/bundle/mock.dev.js',
+    { sourceMaps: true });
+});
+
 // self-executing development build
 // This bundle executes its main module - angular2_sfx, when loaded, without
 // a corresponding System.import call. It is aimed at ES5 developers that do not
@@ -842,11 +924,11 @@ gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
       .pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps', 'router.bundle.js.dev']);
+gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps', 'router.bundle.js.dev', 'mock.bundle.js.dev']);
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps', 'benchpress.bundle']);
 
-gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', 'build/clean.docs']);
+gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', 'build/clean.docs', 'build/clean.benchpress.bundle']);
 
 gulp.task('build', ['build.js', 'build.dart']);
 
@@ -914,6 +996,18 @@ gulp.task('cleanup.builder', function(done) {
                       // this is here just to cleanup old files that we leaked in the past
   });
 });
+
+gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs'], function(cb) {
+  bundler.benchpressBundle(
+    BENCHPRESS_BUNDLE_CONFIG.entries,
+    BENCHPRESS_BUNDLE_CONFIG.packageJson,
+    BENCHPRESS_BUNDLE_CONFIG.includes,
+    BENCHPRESS_BUNDLE_CONFIG.excludes,
+    BENCHPRESS_BUNDLE_CONFIG.ignore,
+    BENCHPRESS_BUNDLE_CONFIG.dest,
+    cb
+  );
+})
 
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)

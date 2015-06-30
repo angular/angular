@@ -24,8 +24,10 @@ import {
   defaultPipeRegistry
 } from 'angular2/change_detection';
 import {ExceptionHandler} from './exception_handler';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
-import {TemplateResolver} from './compiler/template_resolver';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
+import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -42,8 +44,7 @@ import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -56,7 +57,6 @@ import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
-import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
@@ -79,23 +79,19 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
         .toValue(DOM.defaultDoc()),
     bind(appComponentTypeToken).toValue(appComponentType),
     bind(appComponentRefToken)
-        .toAsyncFactory(
+        .toFactory(
             (dynamicComponentLoader, injector, testability, registry) => {
-
               // TODO(rado): investigate whether to support bindings on root component.
               return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
                   .then((componentRef) => {
-                    var domView = resolveInternalDomView(componentRef.hostView.render);
-                    // We need to do this here to ensure that we create Testability and
-                    // it's ready on the window for users.
-                    registry.registerApplication(domView.boundElements[0].element, testability);
-
+                    registry.registerApplication(componentRef.location.nativeElement, testability);
                     return componentRef;
                   });
             },
             [DynamicComponentLoader, Injector, Testability, TestabilityRegistry]),
 
-    bind(appComponentType).toFactory((ref) => ref.instance, [appComponentRefToken]),
+    bind(appComponentType)
+        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [appComponentRefToken]),
     bind(LifeCycle)
         .toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),
                    [ExceptionHandler]),
@@ -108,9 +104,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
             },
             [NgZone]),
     bind(ShadowDomStrategy)
-        .toFactory((styleInliner, styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(
-                       styleInliner, styleUrlResolver, doc.head),
-                   [StyleInliner, StyleUrlResolver, DOCUMENT_TOKEN]),
+        .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),
@@ -123,10 +117,10 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     AppViewListener,
     Compiler,
     CompilerCache,
-    TemplateResolver,
+    ViewResolver,
     bind(PipeRegistry).toValue(defaultPipeRegistry),
     bind(ChangeDetection).toClass(bestChangeDetection),
-    TemplateLoader,
+    ViewLoader,
     DirectiveResolver,
     Parser,
     Lexer,
@@ -137,7 +131,8 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     StyleUrlResolver,
     StyleInliner,
     DynamicComponentLoader,
-    Testability
+    Testability,
+    AppRootUrl
   ];
 }
 
@@ -297,20 +292,19 @@ export function bootstrap(appComponentType: Type,
     // index.html and main.js are possible.
 
     var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
+    var compRefToken: Promise<any> =
+        PromiseWrapper.wrap(() => appInjector.get(appComponentRefToken));
+    var tick = (componentRef) => {
+      var appChangeDetector = internalView(componentRef.hostView).changeDetector;
+      // retrieve life cycle: may have already been created if injected in root component
+      var lc = appInjector.get(LifeCycle);
+      lc.registerWith(zone, appChangeDetector);
+      lc.tick();  // the first tick that will bootstrap the app
 
-    PromiseWrapper.then(
-        appInjector.asyncGet(appComponentRefToken),
-        (componentRef) => {
-          var appChangeDetector = internalView(componentRef.hostView).changeDetector;
-          // retrieve life cycle: may have already been created if injected in root component
-          var lc = appInjector.get(LifeCycle);
-          lc.registerWith(zone, appChangeDetector);
-          lc.tick();  // the first tick that will bootstrap the app
-
-          bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
-        },
-
-        (err, stackTrace) => {bootstrapProcess.reject(err, stackTrace)});
+      bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
+    };
+    PromiseWrapper.then(compRefToken, tick,
+                        (err, stackTrace) => {bootstrapProcess.reject(err, stackTrace)});
   });
 
   return bootstrapProcess.promise;
@@ -332,7 +326,7 @@ export class ApplicationRef {
 
   dispose() {
     // TODO: We also need to clean up the Zone, ... here!
-    return this._hostComponent.dispose();
+    this._hostComponent.dispose();
   }
 
   get injector() { return this._injector; }

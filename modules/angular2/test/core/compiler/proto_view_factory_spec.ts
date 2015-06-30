@@ -156,7 +156,7 @@ export function main() {
 }
 
 function directiveBinding({metadata}: {metadata?: any} = {}) {
-  return new DirectiveBinding(Key.get("dummy"), null, [], false, [], [], [], metadata);
+  return new DirectiveBinding(Key.get("dummy"), null, [], [], [], [], metadata);
 }
 
 function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {

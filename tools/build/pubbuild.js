@@ -48,7 +48,7 @@ function replaceDartWithJsScripts(gulp, folder) {
 function removeWebFolder(gulp, folder) {
   var folders = [].slice.call(glob.sync(path.join(folder, 'web', '*')));
   folders.forEach(function(subFolder) {
-    fs.renameSync(subFolder, subFolder.replace(path.sep + 'web' + path.sep, path.sep));
+    fs.renameSync(subFolder, subFolder.replace('/web/', '/'));
   });
   fs.rmdirSync(path.join(folder, 'web'));
   return Q.resolve();

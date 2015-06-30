@@ -9,7 +9,7 @@ import {Validators} from '../validators';
 import {Renderer, ElementRef, QueryList} from 'angular2/angular2';
 
 
-export function controlPath(name, parent: ControlContainer) {
+export function controlPath(name: string, parent: ControlContainer): string[] {
   var p = ListWrapper.clone(parent.path);
   p.push(name);
   return p;
@@ -49,6 +49,5 @@ function _throwError(dir: NgControl, message: string): void {
 
 export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
                             propValue: any) {
-  renderer.setElementProperty(elementRef.parentView.render, elementRef.boundElementIndex, propName,
-                              propValue);
+  renderer.setElementProperty(elementRef, propName, propValue);
 }

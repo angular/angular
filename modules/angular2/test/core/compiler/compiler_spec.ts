@@ -26,7 +26,7 @@ import {Attribute, View, Component, Directive} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {
   ComponentUrlMapper,
   RuntimeComponentUrlMapper
@@ -34,6 +34,7 @@ import {
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 
 import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import * as renderApi from 'angular2/src/render/api';
 // TODO(tbosch): Spys don't support named modules...
 import {RenderCompiler} from 'angular2/src/render/api';
@@ -46,7 +47,7 @@ export function main() {
 
     beforeEach(() => {
       directiveResolver = new DirectiveResolver();
-      tplResolver = new FakeTemplateResolver();
+      tplResolver = new FakeViewResolver();
       cmpUrlMapper = new RuntimeComponentUrlMapper();
       renderCompiler = new SpyRenderCompiler();
       renderCompiler.spy('compileHost')
@@ -57,18 +58,19 @@ export function main() {
       rootProtoView = createRootProtoView(directiveResolver, MainComponent);
     });
 
-    function createCompiler(renderCompileResults: List<renderApi.ProtoViewDto>,
-                            protoViewFactoryResults: List<List<AppProtoView>>) {
-      var urlResolver = new FakeUrlResolver();
+    function createCompiler(
+        renderCompileResults: List<renderApi.ProtoViewDto | Promise<renderApi.ProtoViewDto>>,
+        protoViewFactoryResults: List<List<AppProtoView>>) {
+      var urlResolver = new UrlResolver();
       renderCompileRequests = [];
-      renderCompiler.spy('compile').andCallFake((template) => {
-        renderCompileRequests.push(template);
+      renderCompiler.spy('compile').andCallFake((view) => {
+        renderCompileRequests.push(view);
         return PromiseWrapper.resolve(ListWrapper.removeAt(renderCompileResults, 0));
       });
 
       protoViewFactory = new FakeProtoViewFactory(protoViewFactoryResults);
       return new Compiler(directiveResolver, new CompilerCache(), tplResolver, cmpUrlMapper,
-                          urlResolver, renderCompiler, protoViewFactory);
+                          urlResolver, renderCompiler, protoViewFactory, new FakeAppRootUrl());
     }
 
     describe('serialize template', () => {
@@ -110,17 +112,17 @@ export function main() {
 
       it('should fill templateAbsUrl given inline templates',
          inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
            captureTemplate(new viewAnn.View({template: '<div></div>'}))
                .then((renderTpl) => {
-                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/mainComponent');
+                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/cmp/main.js');
                  async.done();
                });
          }));
 
       it('should not fill templateAbsUrl given no inline template or template url',
          inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
            captureTemplate(new viewAnn.View({template: null, templateUrl: null}))
                .then((renderTpl) => {
                  expect(renderTpl.templateAbsUrl).toBe(null);
@@ -129,24 +131,21 @@ export function main() {
          }));
 
       it('should fill templateAbsUrl given url template', inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
-           captureTemplate(new viewAnn.View({templateUrl: '/someTemplate'}))
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
+           captureTemplate(new viewAnn.View({templateUrl: 'tpl/main.html'}))
                .then((renderTpl) => {
-                 expect(renderTpl.templateAbsUrl)
-                     .toEqual('http://www.app.com/mainComponent/someTemplate');
+                 expect(renderTpl.templateAbsUrl).toEqual('http://www.app.com/cmp/tpl/main.html');
                  async.done();
                });
          }));
 
       it('should fill styleAbsUrls given styleUrls', inject([AsyncTestCompleter], (async) => {
-           cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
-           captureTemplate(new viewAnn.View({styleUrls: ['/1.css', '/2.css']}))
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
+           captureTemplate(new viewAnn.View({styleUrls: ['css/1.css', 'css/2.css']}))
                .then((renderTpl) => {
                  expect(renderTpl.styleAbsUrls)
-                     .toEqual([
-                       'http://www.app.com/mainComponent/1.css',
-                       'http://www.app.com/mainComponent/2.css'
-                     ]);
+                     .toEqual(
+                         ['http://www.app.com/cmp/css/1.css', 'http://www.app.com/cmp/css/2.css']);
                  async.done();
                });
          }));
@@ -375,6 +374,26 @@ export function main() {
              });
        }));
 
+    it('should not bind directives for cached components', inject([AsyncTestCompleter], (async) => {
+         // set up the cache with the test proto view
+         var mainPv: AppProtoView = createProtoView();
+         var cache: CompilerCache = new CompilerCache();
+         cache.setHost(MainComponent, mainPv);
+
+         // create the spy resolver
+         var reader: any = new SpyDirectiveResolver();
+
+         // create the compiler
+         var compiler = new Compiler(reader, cache, tplResolver, cmpUrlMapper, new UrlResolver(),
+                                     renderCompiler, protoViewFactory, new FakeAppRootUrl());
+         compiler.compileInHost(MainComponent)
+             .then((protoViewRef) => {
+               // the test should have failed if the resolver was called, so we're good
+               async.done();
+             });
+       }));
+
+
     it('should cache compiled nested components', inject([AsyncTestCompleter], (async) => {
          tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
          tplResolver.setView(MainComponent2, new viewAnn.View({template: '<div></div>'}));
@@ -466,12 +485,12 @@ export function main() {
   });
 }
 
-function createDirectiveBinding(directiveResolver, type) {
+function createDirectiveBinding(directiveResolver, type): DirectiveBinding {
   var annotation = directiveResolver.resolve(type);
   return DirectiveBinding.createFromType(type, annotation);
 }
 
-function createProtoView(elementBinders = null) {
+function createProtoView(elementBinders = null): AppProtoView {
   var pv = new AppProtoView(null, null, new Map(), null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
@@ -480,18 +499,19 @@ function createProtoView(elementBinders = null) {
   return pv;
 }
 
-function createComponentElementBinder(directiveResolver, type) {
+function createComponentElementBinder(directiveResolver, type): ElementBinder {
   var binding = createDirectiveBinding(directiveResolver, type);
   return new ElementBinder(0, null, 0, null, binding);
 }
 
-function createViewportElementBinder(nestedProtoView) {
+function createViewportElementBinder(nestedProtoView): ElementBinder {
   var elBinder = new ElementBinder(0, null, 0, null, null);
   elBinder.nestedProtoView = nestedProtoView;
   return elBinder;
 }
 
-function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {
+function createRenderProtoView(elementBinders = null,
+                               type: renderApi.ViewType = null): renderApi.ProtoViewDto {
   if (isBlank(type)) {
     type = renderApi.ViewType.COMPONENT;
   }
@@ -501,16 +521,16 @@ function createRenderProtoView(elementBinders = null, type: renderApi.ViewType =
   return new renderApi.ProtoViewDto({elementBinders: elementBinders, type: type});
 }
 
-function createRenderComponentElementBinder(directiveIndex) {
+function createRenderComponentElementBinder(directiveIndex): renderApi.ElementBinder {
   return new renderApi.ElementBinder(
       {directives: [new renderApi.DirectiveBinder({directiveIndex: directiveIndex})]});
 }
 
-function createRenderViewportElementBinder(nestedProtoView) {
+function createRenderViewportElementBinder(nestedProtoView): renderApi.ElementBinder {
   return new renderApi.ElementBinder({nestedProtoView: nestedProtoView});
 }
 
-function createRootProtoView(directiveResolver, type) {
+function createRootProtoView(directiveResolver, type): AppProtoView {
   return createProtoView([createComponentElementBinder(directiveResolver, type)]);
 }
 
@@ -564,37 +584,28 @@ class SpyRenderCompiler extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-class FakeUrlResolver extends UrlResolver {
-  constructor() { super(); }
-
-  resolve(baseUrl: string, url: string): string {
-    if (baseUrl === null && url == './') {
-      return 'http://www.app.com';
-    }
-
-    return baseUrl + url;
-  }
+@proxy
+@IMPLEMENTS(DirectiveResolver)
+class SpyDirectiveResolver extends SpyObject {
+  constructor() { super(DirectiveResolver); }
+  noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
+class FakeAppRootUrl extends AppRootUrl {
+  get value() { return 'http://www.app.com'; }
+}
 
-class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map<Type, viewAnn.View>;
+class FakeViewResolver extends ViewResolver {
+  _cmpViews: Map<Type, viewAnn.View> = new Map();
 
-  constructor() {
-    super();
-    this._cmpTemplates = new Map();
-  }
+  constructor() { super(); }
 
   resolve(component: Type): viewAnn.View {
-    var template = this._cmpTemplates.get(component);
-    if (isBlank(template)) {
-      // dynamic component
-      return null;
-    }
-    return template;
+    // returns null for dynamic components
+    return this._cmpViews.has(component) ? this._cmpViews.get(component) : null;
   }
 
-  setView(component: Type, template: viewAnn.View) { this._cmpTemplates.set(component, template); }
+  setView(component: Type, view: viewAnn.View): void { this._cmpViews.set(component, view); }
 }
 
 class FakeProtoViewFactory extends ProtoViewFactory {

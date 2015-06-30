@@ -85,6 +85,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var refPromise =
              bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e, t) => { throw e; });
+
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message)
                .toContain(
@@ -107,24 +108,6 @@ export function main() {
       var refPromise = bootstrap(HelloRootCmp, testBindings);
       expect(refPromise).not.toBe(null);
     });
-
-    it('should resolve an injector promise and contain bindings',
-       inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootCmp, testBindings);
-         refPromise.then((ref) => {
-           expect(ref.injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
-           async.done();
-         });
-       }));
-
-    it('should provide the application component in the injector',
-       inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootCmp, testBindings);
-         refPromise.then((ref) => {
-           expect(ref.injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
-           async.done();
-         });
-       }));
 
     it('should display hello world', inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(HelloRootCmp, testBindings);
@@ -151,7 +134,7 @@ export function main() {
              bootstrap(HelloRootCmp3, [testBindings, bind("appBinding").toValue("BoundValue")]);
 
          refPromise.then((ref) => {
-           expect(ref.injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
+           expect(ref.hostComponent.appBinding).toEqual("BoundValue");
            async.done();
          });
        }));
@@ -161,7 +144,7 @@ export function main() {
          var refPromise = bootstrap(HelloRootCmp4, testBindings);
 
          refPromise.then((ref) => {
-           expect(ref.injector.get(HelloRootCmp4).lc).toBe(ref.injector.get(LifeCycle));
+           expect(ref.hostComponent.lc).toBe(ref.injector.get(LifeCycle));
            async.done();
          });
        }));
@@ -183,7 +166,7 @@ export function main() {
              .then((refs: ApplicationRef[]) => {
                var registry = refs[0].injector.get(TestabilityRegistry);
                var testabilities =
-                   [refs[0].injector.asyncGet(Testability), refs[1].injector.asyncGet(Testability)];
+                   [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
                PromiseWrapper.all(testabilities)
                    .then((testabilities: Testability[]) => {
                      expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);

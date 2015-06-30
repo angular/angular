@@ -1,28 +1,30 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Injectable} from 'angular2/di';
+import {LocationStrategy} from './location_strategy';
 import {EventListener, History, Location} from 'angular2/src/facade/browser';
 
 @Injectable()
-export class BrowserLocation {
+export class HashLocationStrategy extends LocationStrategy {
   private _location: Location;
   private _history: History;
-  private _baseHref: string;
 
   constructor() {
+    super();
     this._location = DOM.getLocation();
     this._history = DOM.getHistory();
-    this._baseHref = DOM.getBaseHref();
   }
 
   onPopState(fn: EventListener): void {
     DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
-  getBaseHref(): string { return this._baseHref; }
+  getBaseHref(): string { return ''; }
 
-  path(): string { return this._location.pathname; }
+  path(): string { return this._location.hash; }
 
-  pushState(state: any, title: string, url: string) { this._history.pushState(state, title, url); }
+  pushState(state: any, title: string, url: string) {
+    this._history.pushState(state, title, '#' + url);
+  }
 
   forward(): void { this._history.forward(); }
 

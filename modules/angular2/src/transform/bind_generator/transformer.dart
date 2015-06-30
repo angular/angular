@@ -31,11 +31,11 @@ class BindGenerator extends Transformer {
     try {
       var id = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var transformedCode = await createNgSetters(reader, id);
+      var transformedCode = await createNgSettersAndGetters(reader, id);
       transform.addOutput(new Asset.fromString(
           id, formatter.format(transformedCode, uri: id.path)));
     } catch (ex, stackTrace) {
-      log.logger.error('Creating ng setters failed.\n'
+      log.logger.error('Creating ng setters/getters failed.\n'
           'Exception: $ex\n'
           'Stack Trace: $stackTrace');
     }

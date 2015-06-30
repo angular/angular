@@ -49,8 +49,8 @@ class MapWrapper {
     }
   }
   static Iterable iterable(Map m) => new IterableMap(m);
-  static Iterable keys(Map m) => m.keys;
-  static Iterable values(Map m) => m.values;
+  static List keys(Map m) => m.keys.toList();
+  static List values(Map m) => m.values.toList();
 }
 
 class StringMapWrapper {
@@ -90,9 +90,13 @@ class StringMapWrapper {
   }
 }
 
+typedef bool Predicate<T>(T item);
+
 class ListWrapper {
   static List clone(Iterable l) => new List.from(l);
   static List createFixedSize(int size) => new List(size);
+  static List createGrowableSize(int size) =>
+      new List.generate(size, (_) => null, growable: true);
   static get(List m, int k) => m[k];
   static void set(List m, int k, v) {
     m[k] = v;

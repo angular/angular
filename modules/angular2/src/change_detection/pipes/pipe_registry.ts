@@ -5,6 +5,7 @@ import {Injectable} from 'angular2/src/di/decorators';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 @Injectable()
+@CONST()
 export class PipeRegistry {
   constructor(public config) {}
 

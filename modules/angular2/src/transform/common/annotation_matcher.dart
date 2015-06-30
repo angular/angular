@@ -25,6 +25,8 @@ const DIRECTIVES = const [
   const AnnotationDescriptor('Directive',
       'package:angular2/src/core/annotations/annotations.dart', 'Injectable'),
   const AnnotationDescriptor('Directive',
+      'package:angular2/src/core/annotations/decorators.dart', 'Injectable'),
+  const AnnotationDescriptor('Directive',
       'package:angular2/src/core/annotations_impl/annotations.dart',
       'Injectable'),
   const AnnotationDescriptor(
@@ -38,6 +40,8 @@ const DIRECTIVES = const [
 const COMPONENTS = const [
   const AnnotationDescriptor('Component',
       'package:angular2/src/core/annotations/annotations.dart', 'Directive'),
+  const AnnotationDescriptor('Component',
+      'package:angular2/src/core/annotations/decorators.dart', 'Directive'),
   const AnnotationDescriptor('Component',
       'package:angular2/src/core/annotations_impl/annotations.dart',
       'Directive'),

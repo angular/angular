@@ -13,11 +13,10 @@ import {
   RenderProtoViewRef
 } from '../../api';
 import {CompilePipeline} from './compile_pipeline';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
-import {PropertySetterFactory} from '../view/property_setter_factory';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -25,18 +24,13 @@ import {PropertySetterFactory} from '../view/property_setter_factory';
  * the CompilePipeline and the CompileSteps.
  */
 export class DomCompiler extends RenderCompiler {
-  _propertySetterFactory: PropertySetterFactory = new PropertySetterFactory();
+  constructor(public _stepFactory: CompileStepFactory, public _viewLoader: ViewLoader) { super(); }
 
-  constructor(public _stepFactory: CompileStepFactory, public _templateLoader: TemplateLoader) {
-    super();
-  }
-
-  compile(template: ViewDefinition): Promise<ProtoViewDto> {
-    var tplPromise = this._templateLoader.load(template);
+  compile(view: ViewDefinition): Promise<ProtoViewDto> {
+    var tplPromise = this._viewLoader.load(view);
     return PromiseWrapper.then(
-        tplPromise, (el) => this._compileTemplate(template, el, ViewType.COMPONENT), (e) => {
-          throw new BaseException(
-              `Failed to load the template for "${template.componentId}" : ${e}`);
+        tplPromise, (el) => this._compileTemplate(view, el, ViewType.COMPONENT), (e) => {
+          throw new BaseException(`Failed to load the template for "${view.componentId}" : ${e}`);
         });
   }
 
@@ -60,24 +54,16 @@ export class DomCompiler extends RenderCompiler {
 
   _compileTemplate(viewDef: ViewDefinition, tplElement,
                    protoViewType: ViewType): Promise<ProtoViewDto> {
-    var subTaskPromises = [];
-    var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef, subTaskPromises));
+    var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef));
     var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);
 
-    var protoView = compileElements[0].inheritedProtoView.build(this._propertySetterFactory);
-
-    if (subTaskPromises.length > 0) {
-      return PromiseWrapper.all(subTaskPromises).then((_) => protoView);
-    } else {
-      return PromiseWrapper.resolve(protoView);
-    }
+    return PromiseWrapper.resolve(compileElements[0].inheritedProtoView.build());
   }
 }
 
 @Injectable()
 export class DefaultDomCompiler extends DomCompiler {
-  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy,
-              templateLoader: TemplateLoader) {
-    super(new DefaultStepFactory(parser, shadowDomStrategy), templateLoader);
+  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy, viewLoader: ViewLoader) {
+    super(new DefaultStepFactory(parser, shadowDomStrategy), viewLoader);
   }
 }

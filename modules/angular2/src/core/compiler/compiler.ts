@@ -2,6 +2,7 @@ import {Binding, resolveForwardRef, Injectable} from 'angular2/di';
 import {
   Type,
   isBlank,
+  isType,
   isPresent,
   BaseException,
   normalizeBlank,
@@ -18,11 +19,12 @@ import {AppProtoView} from './view';
 import {ElementBinder} from './element_binder';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
-import {TemplateResolver} from './template_resolver';
+import {ViewResolver} from './view_resolver';
 import {View} from '../annotations_impl/view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 
 import * as renderApi from 'angular2/src/render/api';
 
@@ -65,23 +67,24 @@ export class Compiler {
   private _reader: DirectiveResolver;
   private _compilerCache: CompilerCache;
   private _compiling: Map<Type, Promise<AppProtoView>>;
-  private _templateResolver: TemplateResolver;
+  private _viewResolver: ViewResolver;
   private _componentUrlMapper: ComponentUrlMapper;
   private _urlResolver: UrlResolver;
   private _appUrl: string;
   private _render: renderApi.RenderCompiler;
   private _protoViewFactory: ProtoViewFactory;
 
-  constructor(reader: DirectiveResolver, cache: CompilerCache, templateResolver: TemplateResolver,
+  constructor(reader: DirectiveResolver, cache: CompilerCache, viewResolver: ViewResolver,
               componentUrlMapper: ComponentUrlMapper, urlResolver: UrlResolver,
-              render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory) {
+              render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory,
+              appUrl: AppRootUrl) {
     this._reader = reader;
     this._compilerCache = cache;
     this._compiling = new Map();
-    this._templateResolver = templateResolver;
+    this._viewResolver = viewResolver;
     this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
-    this._appUrl = urlResolver.resolve(null, './');
+    this._appUrl = appUrl.value;
     this._render = render;
     this._protoViewFactory = protoViewFactory;
   }
@@ -101,16 +104,18 @@ export class Compiler {
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
   compileInHost(componentTypeOrBinding: Type | Binding): Promise<ProtoViewRef> {
-    var componentBinding = this._bindDirective(componentTypeOrBinding);
-    Compiler._assertTypeIsComponent(componentBinding);
+    var componentType = isType(componentTypeOrBinding) ? componentTypeOrBinding :
+                                                         (<Binding>componentTypeOrBinding).token;
 
-    var directiveMetadata = componentBinding.metadata;
+    var hostAppProtoView = this._compilerCache.getHost(componentType);
     var hostPvPromise;
-    var component = <Type>componentBinding.key.token;
-    var hostAppProtoView = this._compilerCache.getHost(component);
     if (isPresent(hostAppProtoView)) {
       hostPvPromise = PromiseWrapper.resolve(hostAppProtoView);
     } else {
+      var componentBinding = this._bindDirective(componentTypeOrBinding);
+      Compiler._assertTypeIsComponent(componentBinding);
+
+      var directiveMetadata = componentBinding.metadata;
       hostPvPromise = this._render.compileHost(directiveMetadata)
                           .then((hostRenderPv) => {
                             return this._compileNestedProtoViews(componentBinding, hostRenderPv,
@@ -137,9 +142,9 @@ export class Compiler {
       // It happens when a template references a component multiple times.
       return pvPromise;
     }
-    var template = this._templateResolver.resolve(component);
+    var view = this._viewResolver.resolve(component);
 
-    var directives = this._flattenDirectives(template);
+    var directives = this._flattenDirectives(view);
 
     for (var i = 0; i < directives.length; i++) {
       if (!Compiler._isValidDirective(directives[i])) {
@@ -151,7 +156,7 @@ export class Compiler {
     var boundDirectives =
         ListWrapper.map(directives, (directive) => this._bindDirective(directive));
 
-    var renderTemplate = this._buildRenderTemplate(component, template, boundDirectives);
+    var renderTemplate = this._buildRenderTemplate(component, view, boundDirectives);
     pvPromise =
         this._render.compile(renderTemplate)
             .then((renderPv) => {

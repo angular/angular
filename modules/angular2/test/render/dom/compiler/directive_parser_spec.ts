@@ -27,8 +27,7 @@ export function main() {
         someDirectiveWithInvalidHostProperties,
         someDirectiveWithHostAttributes,
         someDirectiveWithEvents,
-        someDirectiveWithGlobalEvents,
-        someDirectiveWithHostActions
+        someDirectiveWithGlobalEvents
       ];
       parser = new Parser(new Lexer());
     });
@@ -160,13 +159,7 @@ export function main() {
       expect(eventBinding.fullName).toEqual('window:resize');
       expect(eventBinding.source.source).toEqual('doItGlobal()');
     });
-
-    it('should bind directive host actions', () => {
-      var results = process(el('<div some-decor-host-actions></div>'));
-      var directiveBinding = results[0].directives[0];
-      expect(directiveBinding.hostActions[0].actionName).toEqual('focus');
-    });
-
+    
     it('should throw when the provided selector is not flat', () => {
       expect(() => { createPipeline(null, [directiveWithNonFlatElementSelector]); })
           .toThrowError(
@@ -260,11 +253,6 @@ var someDirectiveWithHostAttributes = DirectiveMetadata.create({
 
 var someDirectiveWithEvents = DirectiveMetadata.create(
     {selector: '[some-decor-events]', host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})});
-
-var someDirectiveWithHostActions = DirectiveMetadata.create({
-  selector: '[some-decor-host-actions]',
-  host: MapWrapper.createFromStringMap({'@focus': 'focus()'})
-});
 
 var someDirectiveWithGlobalEvents = DirectiveMetadata.create({
   selector: '[some-decor-globalevents]',

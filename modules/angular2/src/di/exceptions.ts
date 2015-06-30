@@ -36,8 +36,8 @@ export class AbstractBindingError extends BaseException {
   keys: List<any>;
   constructResolvingMessage: Function;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(key, constructResolvingMessage: Function) {
-    super();
+  constructor(key, constructResolvingMessage: Function, originalException?, originalStack?) {
+    super(null, originalException, originalStack);
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
     this.message = this.constructResolvingMessage(this.keys);
@@ -138,16 +138,17 @@ export class CyclicDependencyError extends AbstractBindingError {
  * @exportedAs angular2/di_errors
  */
 export class InstantiationError extends AbstractBindingError {
-  cause;
   causeKey;
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(cause, key) {
+  constructor(originalException, originalStack, key) {
     super(key, function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}. ORIGINAL ERROR: ${cause}`;
-    });
-    this.cause = cause;
+      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
+             ` ORIGINAL ERROR: ${originalException}` +
+             `\n\n ORIGINAL STACK: ${originalStack}`;
+    }, originalException, originalStack);
+
     this.causeKey = key;
   }
 }
@@ -194,6 +195,21 @@ export class NoAnnotationError extends BaseException {
     this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +
                    signature.join(', ') + "). " +
                    'Make sure they all have valid type or annotations.';
+  }
+
+  toString(): string { return this.message; }
+}
+
+/**
+ * Thrown when getting an object by index.
+ *
+ * @exportedAs angular2/di_errors
+ */
+export class OutOfBoundsError extends BaseException {
+  message: string;
+  constructor(index) {
+    super();
+    this.message = `Index ${index} is out-of-bounds.`;
   }
 
   toString(): string { return this.message; }

@@ -1,4 +1,5 @@
-import {Directive, Parent} from 'angular2/annotations';
+import {Directive} from 'angular2/annotations';
+import {Parent} from 'angular2/di';
 import {ViewContainerRef, ProtoViewRef} from 'angular2/core';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
@@ -38,7 +39,7 @@ export class SwitchView {
  * <ANY [ng-switch]="expression">
  *   <template [ng-switch-when]="whenExpression1">...</template>
  *   <template [ng-switch-when]="whenExpression1">...</template>
- *   <template [ng-switch-default]>...</template>
+ *   <template ng-switch-default>...</template>
  * </ANY>
  * ```
  *
@@ -148,7 +149,7 @@ export class NgSwitch {
  * <template [ng-switch-when]="contextVariable">...</template>
  *
  * // match against a constant string
- * <template [ng-switch-when]="'stringValue'">...</template>
+ * <template ng-switch-when="stringValue">...</template>
  * ```
  *
  * @exportedAs angular2/directives
@@ -184,7 +185,7 @@ export class NgSwitchWhen {
  * Example:
  *
  * ```
- * <template [ng-switch-default]>...</template>
+ * <template ng-switch-default>...</template>
  * ```
  *
  * @exportedAs angular2/directives

@@ -1,6 +1,6 @@
-// load traceur runtime as our tests are written in es6
-require('traceur/bin/traceur-runtime.js');
-require('reflect-metadata');
+// benchpress will also load traceur runtime as our tests are written in es6
+var benchpress = require('./dist/build/benchpress_bundle');
+global.benchpress = benchpress;
 var fs = require('fs-extra');
 
 var argv = require('yargs')
@@ -62,7 +62,7 @@ var BROWSER_CAPS = {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
       'mobileEmulation': CHROME_MOBILE_EMULATION,
-      'binary': process.env.DARTIUM
+      'binary': process.env.DARTIUM_BIN
     }),
     loggingPrefs: {
       performance: 'ALL',
@@ -202,7 +202,6 @@ function patchProtractorWait(browser) {
 
 exports.createBenchpressRunner = function(options) {
   var nodeUuid = require('node-uuid');
-  var benchpress = require('./dist/js/cjs/benchpress/benchpress');
 
   // TODO(tbosch): add cloud reporter again (only when !options.test)
   // var cloudReporterConfig;

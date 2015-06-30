@@ -8,10 +8,10 @@ export class MultiMetric extends Metric {
   static createBindings(childTokens): List<Binding> {
     return [
       bind(_CHILDREN)
-          .toAsyncFactory((injector) => PromiseWrapper.all(
-                              ListWrapper.map(childTokens, (token) => injector.asyncGet(token))),
-                          [Injector]),
-      bind(MultiMetric).toFactory((children) => new MultiMetric(children), [_CHILDREN])
+          .toFactory(
+              (injector: Injector) => ListWrapper.map(childTokens, (token) => injector.get(token)),
+              [Injector]),
+      bind(MultiMetric).toFactory(children => new MultiMetric(children), [_CHILDREN])
     ];
   }
 

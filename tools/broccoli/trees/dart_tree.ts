@@ -29,7 +29,7 @@ function replaceScriptTagInHtml(placeholder: string, relativePath: string): stri
   if (relativePath.match(/^benchmarks/)) {
     scriptTags += '<script src="url_params_to_form.js" type="text/javascript"></script>\n';
   }
-  var scriptName = relativePath.replace(/.*\/([^/]+)\.html$/, '$1.dart');
+  var scriptName = relativePath.replace(/\\/g, '/').replace(/.*\/([^/]+)\.html$/, '$1.dart');
   scriptTags += '<script src="' + scriptName + '" type="application/dart"></script>\n' +
                 '<script src="packages/browser/dart.js" type="text/javascript"></script>';
   return scriptTags;

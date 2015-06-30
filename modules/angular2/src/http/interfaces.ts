@@ -20,7 +20,7 @@ export interface IRequestOptions {
   cache?: RequestCacheOpts;
 }
 
-export interface Request {
+export interface IRequest {
   method: RequestMethods;
   mode: RequestModesOpts;
   credentials: RequestCredentialsOpts;
@@ -34,7 +34,7 @@ export interface ResponseOptions {
   url?: string;
 }
 
-export interface Response {
+export interface IResponse {
   headers: Headers;
   ok: boolean;
   status: number;
@@ -49,12 +49,14 @@ export interface Response {
   json(): Object;
 }
 
-export interface ConnectionBackend { createConnection(observer: any, config: Request): Connection; }
+export interface ConnectionBackend {
+  createConnection(observer: any, config: IRequest): Connection;
+}
 
 export interface Connection {
   readyState: ReadyStates;
-  request: Request;
-  response: Rx.Subject<Response>;
+  request: IRequest;
+  response: Rx.Subject<IResponse>;
   dispose(): void;
 }
 
@@ -81,4 +83,4 @@ export interface Connection {
  */
 // Prefixed as IHttp because used in conjunction with Http class, but interface is callable
 // constructor(@Inject(Http) http:IHttp)
-export interface IHttp { (url: string, options?: IRequestOptions): Rx.Observable<Response> }
+export interface IHttp { (url: string, options?: IRequestOptions): Rx.Observable<IResponse> }

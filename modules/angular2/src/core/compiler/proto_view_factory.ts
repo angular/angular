@@ -66,9 +66,20 @@ class BindingRecordsCreator {
 
   _createElementPropertyRecords(bindings: List<BindingRecord>, boundElementIndex: number,
                                 renderElementBinder: renderApi.ElementBinder) {
-    MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
-
-      bindings.push(BindingRecord.createForElement(astWithSource, boundElementIndex, propertyName));
+    ListWrapper.forEach(renderElementBinder.propertyBindings, (binding) => {
+      if (binding.type === renderApi.PropertyBindingType.PROPERTY) {
+        bindings.push(BindingRecord.createForElementProperty(binding.astWithSource,
+                                                             boundElementIndex, binding.property));
+      } else if (binding.type === renderApi.PropertyBindingType.ATTRIBUTE) {
+        bindings.push(BindingRecord.createForElementAttribute(binding.astWithSource,
+                                                              boundElementIndex, binding.property));
+      } else if (binding.type === renderApi.PropertyBindingType.CLASS) {
+        bindings.push(BindingRecord.createForElementClass(binding.astWithSource, boundElementIndex,
+                                                          binding.property));
+      } else if (binding.type === renderApi.PropertyBindingType.STYLE) {
+        bindings.push(BindingRecord.createForElementStyle(binding.astWithSource, boundElementIndex,
+                                                          binding.property, binding.unit));
+      }
     });
   }
 
@@ -103,10 +114,21 @@ class BindingRecordsCreator {
     for (var i = 0; i < directiveBinders.length; i++) {
       var directiveBinder = directiveBinders[i];
       // host properties
-      MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
+      ListWrapper.forEach(directiveBinder.hostPropertyBindings, (binding) => {
         var dirIndex = new DirectiveIndex(boundElementIndex, i);
-
-        bindings.push(BindingRecord.createForHostProperty(dirIndex, astWithSource, propertyName));
+        if (binding.type === renderApi.PropertyBindingType.PROPERTY) {
+          bindings.push(BindingRecord.createForHostProperty(dirIndex, binding.astWithSource,
+                                                            binding.property));
+        } else if (binding.type === renderApi.PropertyBindingType.ATTRIBUTE) {
+          bindings.push(BindingRecord.createForHostAttribute(dirIndex, binding.astWithSource,
+                                                             binding.property));
+        } else if (binding.type === renderApi.PropertyBindingType.CLASS) {
+          bindings.push(
+              BindingRecord.createForHostClass(dirIndex, binding.astWithSource, binding.property));
+        } else if (binding.type === renderApi.PropertyBindingType.STYLE) {
+          bindings.push(BindingRecord.createForHostStyle(dirIndex, binding.astWithSource,
+                                                         binding.property, binding.unit));
+        }
       });
     }
   }
@@ -264,12 +286,14 @@ function _collectNestedProtoViewsVariableNames(
   return nestedPvVariableNames;
 }
 
-function _createVariableNames(parentVariableNames, renderProtoView): List<string> {
-  var res = isBlank(parentVariableNames) ? [] : ListWrapper.clone(parentVariableNames);
+function _createVariableNames(parentVariableNames: List<string>, renderProtoView): List<string> {
+  var res =
+      isBlank(parentVariableNames) ? <List<string>>[] : ListWrapper.clone(parentVariableNames);
   MapWrapper.forEach(renderProtoView.variableBindings,
                      (mappedName, varName) => { res.push(mappedName); });
   ListWrapper.forEach(renderProtoView.elementBinders, binder => {
-    MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => { res.push(mappedName); });
+    MapWrapper.forEach(binder.variableBindings,
+                       (mappedName: string, varName: string) => { res.push(mappedName); });
   });
   return res;
 }

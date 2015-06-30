@@ -90,7 +90,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
                                  DomEventsPlugin.sameElementCallback(element, handler, zone);
   }
 
-  static sameElementCallback(element, handler, zone) {
+  static sameElementCallback(element, handler, zone): (event: Event) => void {
     return (event) => {
       if (event.target === element) {
         zone.run(() => handler(event));
@@ -98,7 +98,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
     };
   }
 
-  static bubbleCallback(element, handler, zone) {
+  static bubbleCallback(element, handler, zone): (event: Event) => void {
     return (event) => zone.run(() => handler(event));
   }
 }

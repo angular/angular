@@ -6,9 +6,9 @@ import {List, StringMap} from 'angular2/src/facade/collection';
 import * as viewModule from './view';
 
 export class ElementBinder {
-  // updated later when events are bound
-  nestedProtoView: viewModule.AppProtoView = null;
   // updated later, so we are able to resolve cycles
+  nestedProtoView: viewModule.AppProtoView = null;
+  // updated later when events are bound
   hostListeners: StringMap<string, Map<number, AST>> = null;
 
   constructor(public index: int, public parent: ElementBinder, public distanceToParent: int,
@@ -19,11 +19,11 @@ export class ElementBinder {
     }
   }
 
-  hasStaticComponent() {
+  hasStaticComponent(): boolean {
     return isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
   }
 
-  hasEmbeddedProtoView() {
+  hasEmbeddedProtoView(): boolean {
     return !isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
   }
 }

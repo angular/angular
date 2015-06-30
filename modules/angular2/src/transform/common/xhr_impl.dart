@@ -16,9 +16,14 @@ class XhrImpl implements XHR {
   Future<String> get(String url) async {
     var assetId = uriToAssetId(_entryPoint, url, logger, null /* span */,
         errorOnAbsolute: false);
+    if (assetId == null) {
+      logger.error(
+          'Uri $url not supported from $_entryPoint, could not build AssetId');
+      return null;
+    }
     var templateExists = await _reader.hasInput(assetId);
     if (!templateExists) {
-      logger.error('Could not read template at uri $url from $_entryPoint');
+      logger.error('Could not read asset at uri $url from $_entryPoint');
       return null;
     }
     return await _reader.readAsString(assetId);

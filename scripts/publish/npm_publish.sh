@@ -6,7 +6,7 @@ ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd $ROOT_DIR
 
 gulp clean
-gulp build.js.prod build.js.dev build.js.cjs
+gulp build.js.prod build.js.dev build.js.cjs benchpress.bundle
 
 NPM_DIR=$ROOT_DIR/dist/npm
 rm -fr $NPM_DIR
@@ -38,7 +38,14 @@ function publishModule {
   mkdir -p $PUBLISH_DIR/ts
   cp -r $ROOT_DIR/modules/$NAME/$FILES $PUBLISH_DIR/ts
 
-  cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
+  if [ $NAME = "benchpress" ]; then
+    cp -r $ROOT_DIR/dist/build/benchpress_bundle/$FILES $PUBLISH_DIR
+    cp -r $ROOT_DIR/dist/js/cjs/benchpress/README.md $PUBLISH_DIR
+    cp -r $ROOT_DIR/dist/js/cjs/benchpress/LICENSE $PUBLISH_DIR
+    cp -r $ROOT_DIR/dist/js/cjs/benchpress/docs $PUBLISH_DIR
+  else
+    cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
+  fi
 
   npm publish $PUBLISH_DIR
 }

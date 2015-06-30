@@ -6,7 +6,7 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {View} from 'angular2/src/core/annotations_impl/view';
 
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {
@@ -74,7 +74,7 @@ export class TestComponentBuilder {
 
   /**
    * Overrides only the html of a {@link Component}.
-   * All the other propoerties of the component's {@link View} are preserved.
+   * All the other properties of the component's {@link View} are preserved.
    *
    * @param {Type} component
    * @param {string} html
@@ -127,15 +127,14 @@ export class TestComponentBuilder {
    * @return {Promise<RootTestComponent>}
    */
   createAsync(rootComponentType: Type): Promise<RootTestComponent> {
-    var mockTemplateResolver = this._injector.get(TemplateResolver);
+    var mockViewResolver = this._injector.get(ViewResolver);
     MapWrapper.forEach(this._viewOverrides,
-                       (view, type) => { mockTemplateResolver.setView(type, view); });
-    MapWrapper.forEach(this._templateOverrides, (template, type) => {
-      mockTemplateResolver.setInlineTemplate(type, template);
-    });
+                       (view, type) => { mockViewResolver.setView(type, view); });
+    MapWrapper.forEach(this._templateOverrides,
+                       (template, type) => { mockViewResolver.setInlineTemplate(type, template); });
     MapWrapper.forEach(this._directiveOverrides, (overrides, component) => {
       MapWrapper.forEach(overrides, (to, from) => {
-        mockTemplateResolver.overrideViewDirective(component, from, to);
+        mockViewResolver.overrideViewDirective(component, from, to);
       });
     });
 
@@ -145,6 +144,8 @@ export class TestComponentBuilder {
 
     // TODO(juliemr): can/should this be optional?
     DOM.appendChild(doc.body, rootEl);
+
+
     return this._injector.get(DynamicComponentLoader)
         .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector)
         .then((componentRef) => { return new RootTestComponent(componentRef); });

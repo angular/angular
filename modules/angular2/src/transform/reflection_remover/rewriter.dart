@@ -113,7 +113,7 @@ class Rewriter {
 
   String _importDebugReflectionCapabilities(ImportDirective node) {
     var uri = '${node.uri}';
-    uri = path.join(path.dirname(uri), 'debug_${path.basename(uri)}');
+    uri = path.join(path.dirname(uri), 'debug_${path.basename(uri)}').replaceAll('\\', '/');
     var asClause = node.prefix != null ? ' as ${node.prefix}' : '';
     return 'import $uri$asClause;';
   }

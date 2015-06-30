@@ -33,11 +33,10 @@ export class ContinuationSegment extends Segment {
 
 class StaticSegment extends Segment {
   regex: string;
-  name: string;
+  name: string = '';
 
   constructor(public string: string) {
     super();
-    this.name = '';
     this.regex = escapeRegex(string);
   }
 
@@ -46,8 +45,9 @@ class StaticSegment extends Segment {
 
 @IMPLEMENTS(Segment)
 class DynamicSegment {
-  regex: string;
-  constructor(public name: string) { this.regex = "([^/]+)"; }
+  regex: string = "([^/]+)";
+
+  constructor(public name: string) {}
 
   generate(params: StringMap<string, string>): string {
     if (!StringMapWrapper.contains(params, this.name)) {
@@ -60,8 +60,8 @@ class DynamicSegment {
 
 
 class StarSegment {
-  regex: string;
-  constructor(public name: string) { this.regex = "(.+)"; }
+  regex: string = "(.+)";
+  constructor(public name: string) {}
 
   generate(params: StringMap<string, string>): string {
     return normalizeBlank(StringMapWrapper.get(params, this.name));
@@ -72,7 +72,7 @@ class StarSegment {
 var paramMatcher = RegExpWrapper.create("^:([^\/]+)$");
 var wildcardMatcher = RegExpWrapper.create("^\\*([^\/]+)$");
 
-function parsePathString(route: string) {
+function parsePathString(route: string): StringMap<string, any> {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
   if (StringWrapper.startsWith(route, "/")) {
@@ -117,8 +117,10 @@ function parsePathString(route: string) {
       specificity += 100 * (100 - i);
     }
   }
-
-  return {segments: results, specificity};
+  var result = StringMapWrapper.create();
+  StringMapWrapper.set(result, 'segments', results);
+  StringMapWrapper.set(result, 'specificity', specificity);
+  return result;
 }
 
 function splitBySlash(url: string): List<string> {
@@ -134,10 +136,6 @@ export class PathRecognizer {
   terminal: boolean = true;
 
   constructor(public path: string, public handler: any) {
-    this.segments = [];
-
-    // TODO: use destructuring assignment
-    // see https://github.com/angular/ts2dart/issues/158
     var parsed = parsePathString(path);
     var specificity = parsed['specificity'];
     var segments = parsed['segments'];

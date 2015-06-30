@@ -22,15 +22,9 @@ import {PathRecognizer, ContinuationSegment} from './path_recognizer';
  * components.
  */
 export class RouteRecognizer {
-  names: Map<string, PathRecognizer>;
-  redirects: Map<string, string>;
-  matchers: Map<RegExp, PathRecognizer>;
-
-  constructor() {
-    this.names = new Map();
-    this.matchers = new Map();
-    this.redirects = new Map();
-  }
+  names: Map<string, PathRecognizer> = new Map();
+  redirects: Map<string, string> = new Map();
+  matchers: Map<RegExp, PathRecognizer> = new Map();
 
   addRedirect(path: string, target: string): void {
     if (path == '/') {
@@ -113,6 +107,7 @@ export class RouteMatch {
   params: StringMap<string, string>;
   matchedUrl: string;
   unmatchedUrl: string;
+
   constructor({specificity, handler, params, matchedUrl, unmatchedUrl}: {
     specificity?: number,
     handler?: StringMap<string, any>,

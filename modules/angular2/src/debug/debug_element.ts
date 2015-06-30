@@ -1,5 +1,5 @@
 import {Type, isPresent, BaseException, isBlank} from 'angular2/src/facade/lang';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper, Predicate} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -7,8 +7,6 @@ import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-
-import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 
 /**
  * @exportedAs angular2/test
@@ -35,13 +33,9 @@ export class DebugElement {
     return this._elementInjector.getComponent();
   }
 
-  get domElement(): any {
-    return resolveInternalDomView(this._parentView.render)
-        .boundElements[this._boundElementIndex]
-        .element;
-  }
+  get nativeElement(): any { return this.elementRef.nativeElement; }
 
-  get elementRef(): ElementRef { return this._elementInjector.getElementRef(); }
+  get elementRef(): ElementRef { return this._parentView.elementRefs[this._boundElementIndex]; }
 
   getDirectiveInstance(directiveIndex: number): any {
     return this._elementInjector.getDirectiveAtIndex(directiveIndex);
@@ -93,8 +87,10 @@ export class DebugElement {
     return this._elementInjector.get(type);
   }
 
+  getLocal(name: string): any { return this._parentView.locals.get(name); }
+
   /**
-   * Return the first descendant TestElememt matching the given predicate
+   * Return the first descendant TestElement matching the given predicate
    * and scope.
    *
    * @param {Function: boolean} predicate
@@ -102,7 +98,7 @@ export class DebugElement {
    *
    * @return {DebugElement}
    */
-  query(predicate: Function, scope = Scope.all): DebugElement {
+  query(predicate: Predicate<DebugElement>, scope = Scope.all): DebugElement {
     var results = this.queryAll(predicate, scope);
     return results.length > 0 ? results[0] : null;
   }
@@ -116,7 +112,7 @@ export class DebugElement {
    *
    * @return {List<DebugElement>}
    */
-  queryAll(predicate: Function, scope = Scope.all): List<DebugElement> {
+  queryAll(predicate: Predicate<DebugElement>, scope = Scope.all): List<DebugElement> {
     var elementsInScope = scope(this);
 
     return ListWrapper.filter(elementsInScope, predicate);
@@ -147,6 +143,10 @@ export class DebugElement {
 
 export function inspectElement(elementRef: ElementRef): DebugElement {
   return DebugElement.create(elementRef);
+}
+
+export function asNativeElements(arr: List<DebugElement>): List<any> {
+  return arr.map((debugEl) => debugEl.nativeElement);
 }
 
 /**
@@ -191,10 +191,10 @@ export class Scope {
 export class By {
   static all(): Function { return (debugElement) => true; }
 
-  static css(selector: string): Function {
-    return (debugElement) => { return DOM.elementMatches(debugElement.domElement, selector); };
+  static css(selector: string): Predicate<DebugElement> {
+    return (debugElement) => { return DOM.elementMatches(debugElement.nativeElement, selector); };
   }
-  static directive(type: Type): Function {
+  static directive(type: Type): Predicate<DebugElement> {
     return (debugElement) => { return debugElement.hasDirective(type); };
   }
 }

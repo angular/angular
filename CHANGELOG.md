@@ -1,3 +1,67 @@
+<a name"2.0.0-alpha.28"></a>
+### 2.0.0-alpha.28 (2015-06-24)
+
+
+#### Bug Fixes
+
+* **ShadowDomStrategy:** always inline import rules ([1c4d233f](https://github.com/angular/angular/commit/1c4d233f), closes [#1694](https://github.com/angular/angular/issues/1694))
+* **XHRImpl:** file:/// and IE9 bugs ([cd735c48](https://github.com/angular/angular/commit/cd735c48))
+* **annotations:** swap DirectiveArgs & ComponentArgs ([dcc4bc27](https://github.com/angular/angular/commit/dcc4bc27))
+* **benchmarks:** add waits for naive scrolling benchmark to ensure loading ([d8929c1d](https://github.com/angular/angular/commit/d8929c1d), closes [#1706](https://github.com/angular/angular/issues/1706))
+* **benchpress:** do not throw on unkown frame timestamp event ([ed3af5f7](https://github.com/angular/angular/commit/ed3af5f7), closes [#2622](https://github.com/angular/angular/issues/2622))
+* **change detection:** preserve memoized results from pure functions ([5beaf6d7](https://github.com/angular/angular/commit/5beaf6d7))
+* **compiler:** make text interpolation more robust ([9d4111d6](https://github.com/angular/angular/commit/9d4111d6), closes [#2591](https://github.com/angular/angular/issues/2591))
+* **docs:** Fix docs for Directive.compileChildren ([9700e806](https://github.com/angular/angular/commit/9700e806))
+* **injectors:** sync injector tree with dom element tree. ([d800d2f5](https://github.com/angular/angular/commit/d800d2f5))
+* **parse5:** do not try to insert empty text node ([0a2f6ddc](https://github.com/angular/angular/commit/0a2f6ddc))
+* **render:** fix failing tests in dynamic_component_loader.ts ([6149ce28](https://github.com/angular/angular/commit/6149ce28))
+* **router:** return promise with error handler ([bc798b18](https://github.com/angular/angular/commit/bc798b18))
+* **transformer:** Throw unimplemented errors in HtmlAdapter. ([f9d72bd8](https://github.com/angular/angular/commit/f9d72bd8), closes [#2624](https://github.com/angular/angular/issues/2624), [#2627](https://github.com/angular/angular/issues/2627))
+* **views:** remove dynamic component views, free host views, free embedded views ([5dee8e26](https://github.com/angular/angular/commit/5dee8e26), closes [#2472](https://github.com/angular/angular/issues/2472), [#2339](https://github.com/angular/angular/issues/2339))
+
+
+#### Features
+
+* update clang-format to 1.0.21. ([254e58c2](https://github.com/angular/angular/commit/254e58c2))
+* remove MapWrapper.clear(). ([94136201](https://github.com/angular/angular/commit/94136201))
+* remove MapWrapper.contains(). ([dfd30910](https://github.com/angular/angular/commit/dfd30910))
+* remove MapWrapper.create()/get()/set(). ([be7ac9fd](https://github.com/angular/angular/commit/be7ac9fd))
+* add constructors without type arguments. ([35e882e7](https://github.com/angular/angular/commit/35e882e7))
+* upgrade ts2dart to 0.6.4. ([58b38c92](https://github.com/angular/angular/commit/58b38c92))
+* **CSSClass:** add support for string and array expresions ([8c993dca](https://github.com/angular/angular/commit/8c993dca), closes [#2025](https://github.com/angular/angular/issues/2025))
+* **compiler:** detect dangling property bindings ([d7b9345b](https://github.com/angular/angular/commit/d7b9345b), closes [#2598](https://github.com/angular/angular/issues/2598))
+* **element_injector:** support multiple injectables with the same token ([c899b0a7](https://github.com/angular/angular/commit/c899b0a7))
+* **host:** limits host properties to renames ([92ffc465](https://github.com/angular/angular/commit/92ffc465))
+* **mock:** add mock module and bundle ([29323777](https://github.com/angular/angular/commit/29323777), closes [#2325](https://github.com/angular/angular/issues/2325))
+* **query:** added support for querying by var bindings ([b0e2ebda](https://github.com/angular/angular/commit/b0e2ebda))
+* **render:** don’t use the reflector for setting properties ([0a51ccbd](https://github.com/angular/angular/commit/0a51ccbd), closes [#2637](https://github.com/angular/angular/issues/2637))
+* **router:**
+  * add support for hash-based location ([a67f2314](https://github.com/angular/angular/commit/a67f2314), closes [#2555](https://github.com/angular/angular/issues/2555))
+  * enforce usage of ... syntax for parent to child component routes ([2d2ae9b8](https://github.com/angular/angular/commit/2d2ae9b8))
+* **transformers:** inline styleUrls to view directive ([f2ef90b2](https://github.com/angular/angular/commit/f2ef90b2), closes [#2566](https://github.com/angular/angular/issues/2566))
+* **typings:** add typing specs ([24646e7e](https://github.com/angular/angular/commit/24646e7e))
+
+
+#### Breaking Changes
+
+* compiler will throw on binding to non-existing properties.
+
+Till now it was possible to have a binding to a non-existing property,
+ex.: `<div [foo]="exp">`. From now on this is compilation error - any
+property binding needs to have at least one associated property:
+eaither on an HTML element or on any directive associated with a
+given element (directives' properites need to be declared using the
+`properties` field in the `@Directive` / `@Component` annotation).
+
+Closes #2598
+
+ ([d7b9345b](https://github.com/angular/angular/commit/d7b9345b))
+* 
+This PR remove an ability to use pipes in the properties config. Instead, inject the pipe registry.
+
+ ([20a8f0db](https://github.com/angular/angular/commit/20a8f0db))
+
+
 <a name"2.0.0-alpha.27"></a>
 ### 2.0.0-alpha.27 (2015-06-16)
 

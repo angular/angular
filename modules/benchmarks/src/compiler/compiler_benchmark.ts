@@ -13,11 +13,10 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -34,17 +33,15 @@ export function main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var reader = new DirectiveResolver();
   var cache = new CompilerCache();
-  var templateResolver = new MultipleTemplateResolver(
+  var viewResolver = new MultipleViewResolver(
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
   var urlResolver = new UrlResolver();
-  var styleUrlResolver = new StyleUrlResolver(urlResolver);
-  var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
-  var shadowDomStrategy = new NativeShadowDomStrategy(styleInliner, styleUrlResolver);
+  var shadowDomStrategy = new NativeShadowDomStrategy();
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
-                                                 new TemplateLoader(null, urlResolver));
-  var compiler =
-      new Compiler(reader, cache, templateResolver, new ComponentUrlMapper(), urlResolver,
-                   renderCompiler, new ProtoViewFactory(new DynamicChangeDetection(null)));
+                                                 new ViewLoader(null, null, null));
+  var compiler = new Compiler(
+      reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
+      new ProtoViewFactory(new DynamicChangeDetection(null)), new FakeAppRootUrl());
 
   function measureWrapper(func, desc) {
     return function() {
@@ -96,7 +93,7 @@ class Dir4 {
   constructor(dir3: Dir3) {}
 }
 
-class MultipleTemplateResolver extends TemplateResolver {
+class MultipleViewResolver extends ViewResolver {
   _multiple: number;
   _cache: Map<any, any>;
 
@@ -163,4 +160,8 @@ class BenchmarkComponentNoBindings {
 </div>`
 })
 class BenchmarkComponentWithBindings {
+}
+
+class FakeAppRootUrl extends AppRootUrl {
+  get value() { return ''; }
 }

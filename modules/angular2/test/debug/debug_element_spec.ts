@@ -142,25 +142,26 @@ export function main() {
                var rootCompChildren = rootTestComponent.componentViewChildren;
                // The root component has 3 elements in its shadow view.
                expect(rootCompChildren.length).toEqual(3);
-               expect(DOM.hasClass(rootCompChildren[0].domElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(rootCompChildren[1].domElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(rootCompChildren[2].domElement, 'child-comp-class')).toBe(true);
+               expect(DOM.hasClass(rootCompChildren[0].nativeElement, 'parent')).toBe(true);
+               expect(DOM.hasClass(rootCompChildren[1].nativeElement, 'parent')).toBe(true);
+               expect(DOM.hasClass(rootCompChildren[2].nativeElement, 'child-comp-class'))
+                   .toBe(true);
 
                var nested = rootCompChildren[0].children;
                expect(nested.length).toEqual(1);
-               expect(DOM.hasClass(nested[0].domElement, 'parentnested')).toBe(true);
+               expect(DOM.hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
 
                var childComponent = rootCompChildren[2];
                expect(childComponent.children.length).toEqual(0);
 
                var childCompChildren = childComponent.componentViewChildren;
                expect(childCompChildren.length).toEqual(2);
-               expect(DOM.hasClass(childCompChildren[0].domElement, 'child')).toBe(true);
-               expect(DOM.hasClass(childCompChildren[1].domElement, 'child')).toBe(true);
+               expect(DOM.hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
+               expect(DOM.hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
 
                var childNested = childCompChildren[0].children;
                expect(childNested.length).toEqual(1);
-               expect(DOM.hasClass(childNested[0].domElement, 'childnested')).toBe(true);
+               expect(DOM.hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
 
                async.done();
              });
@@ -193,10 +194,10 @@ export function main() {
                var childTestEls = rootTestComponent.queryAll(By.directive(MessageDir));
 
                expect(childTestEls.length).toBe(4);
-               expect(DOM.hasClass(childTestEls[0].domElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childTestEls[1].domElement, 'parentnested')).toBe(true);
-               expect(DOM.hasClass(childTestEls[2].domElement, 'child')).toBe(true);
-               expect(DOM.hasClass(childTestEls[3].domElement, 'childnested')).toBe(true);
+               expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
+               expect(DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
+               expect(DOM.hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
+               expect(DOM.hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
                async.done();
              });
        }));
@@ -213,7 +214,7 @@ export function main() {
                var childTestEls = parentEl.queryAll(By.directive(MessageDir), Scope.light);
 
                expect(childTestEls.length).toBe(1);
-               expect(DOM.hasClass(childTestEls[0].domElement, 'parentnested')).toBe(true);
+               expect(DOM.hasClass(childTestEls[0].nativeElement, 'parentnested')).toBe(true);
 
                async.done();
              });
@@ -229,8 +230,8 @@ export function main() {
                var childTestEls = rootTestComponent.queryAll(By.directive(MessageDir), Scope.view);
 
                expect(childTestEls.length).toBe(2);
-               expect(DOM.hasClass(childTestEls[0].domElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childTestEls[1].domElement, 'parentnested')).toBe(true);
+               expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
+               expect(DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
 
                async.done();
              });

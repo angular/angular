@@ -10,7 +10,7 @@ module.exports = function createTypeDefinitionFile() {
         id: 'type-definition',
         aliases: ['type-definition'],
         path: 'type-definition',
-        outputPath: 'angular2.d.ts',
+        outputPath: 'typings/angular2/angular2.d.ts',
         modules: []
       };
       _.forEach(docs, function(doc) {

@@ -10,7 +10,12 @@
         "outDir": "dist/js/cjs"
     },
     "filesGlob": [
-        "./**/*.ts",
-        "!./node_modules/**/*.ts"
+        "./src/**/*.ts",
+        "./tools/**/*.ts",
+        "!./node_modules/**",
+        "!./modules_dart/**",
+        "!./packages/**",
+        "!./dist/**",
+        "!./temp/**"
     ]
 }

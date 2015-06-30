@@ -45,7 +45,9 @@ module.exports = function getExportDocType(log) {
     var node = symbol.valueDeclaration;
     while(node) {
       if ( node.flags & 0x2000 /* const */) {
-        return 'const';
+        // DefinitelyTyped is still TS 1.4 so const is not allowed.
+        // https://github.com/borisyankov/DefinitelyTyped/issues/4564
+        return 'var'; // change to const when targetting TS 1.5
       }
       node = node.parent;
     }

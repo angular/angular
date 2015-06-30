@@ -101,9 +101,11 @@ describe('transpile to cjs', function() {
 
   function compileAndWrite(input) {
     var transpiledCode = compiler.compile(options, "test.js", input).js;
-    var tempFile = temp.openSync('ng2transpiler');
-    fs.writeSync(tempFile.fd, transpiledCode);
-    return tempFile.path;
+    var tempPath = temp.path({prefix: "ng2transpiler", suffix: ''});
+    var fd = fs.openSync(tempPath, 'w+');
+    fs.writeSync(fd, transpiledCode);
+    fs.closeSync(fd);
+    return tempPath.replace(/\\/g, '/');
   }
 
   it('should transpile export *', function() {

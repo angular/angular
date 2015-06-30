@@ -2,22 +2,15 @@ import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent, BaseException, stringify, isBlank} from 'angular2/src/facade/lang';
 
 import {View} from 'angular2/src/core/annotations_impl/view';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 
+export class MockViewResolver extends ViewResolver {
+  _views: Map<Type, View> = new Map();
+  _inlineTemplates: Map<Type, string> = new Map();
+  _viewCache: Map<Type, View> = new Map();
+  _directiveOverrides: Map<Type, Map<Type, Type>> = new Map();
 
-export class MockTemplateResolver extends TemplateResolver {
-  _views: Map<Type, View>;
-  _inlineTemplates: Map<Type, string>;
-  _viewCache: Map<Type, View>;
-  _directiveOverrides: Map<Type, Map<Type, Type>>;
-
-  constructor() {
-    super();
-    this._views = new Map();
-    this._inlineTemplates = new Map();
-    this._viewCache = new Map();
-    this._directiveOverrides = new Map();
-  }
+  constructor() { super(); }
 
   /**
    * Overrides the {@link View} for a component.
@@ -64,7 +57,7 @@ export class MockTemplateResolver extends TemplateResolver {
   /**
    * Returns the {@link View} for a component:
    * - Set the {@link View} to the overridden view when it exists or fallback to the default
-   * `TemplateResolver`,
+   * `ViewResolver`,
    *   see `setView`.
    * - Override the directives, see `overrideViewDirective`.
    * - Override the @View definition, see `setInlineTemplate`.

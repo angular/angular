@@ -20,16 +20,16 @@ import {
 } from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
+import {Injectable} from 'angular2/di';
 
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
  * It is responsible for creating Instructions from URLs, and generating URLs based on route and
  * parameters.
  */
+@Injectable()
 export class RouteRegistry {
-  _rules: Map<any, RouteRecognizer>;
-
-  constructor() { this._rules = new Map(); }
+  _rules: Map<any, RouteRecognizer> = new Map();
 
   /**
    * Given a component and a configuration object, add the route to this registry
@@ -106,7 +106,7 @@ export class RouteRegistry {
         ListWrapper.map(possibleMatches, (candidate) => this._completeRouteMatch(candidate));
 
     return PromiseWrapper.all(matchPromises)
-        .then((solutions) => {
+        .then((solutions: List<Instruction>) => {
           // remove nulls
           var fullSolutions = ListWrapper.filter(solutions, (solution) => isPresent(solution));
 

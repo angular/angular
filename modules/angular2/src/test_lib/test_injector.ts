@@ -11,8 +11,8 @@ import {
   defaultPipeRegistry
 } from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
@@ -22,19 +22,21 @@ import {
 import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 
-import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
+import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockXHR} from 'angular2/src/render/xhr_mock';
+import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
-import {TestBed} from './test_bed';
 import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/di';
@@ -85,9 +87,7 @@ function _getAppBindings() {
     bind(DOCUMENT_TOKEN)
         .toValue(appDoc),
     bind(ShadowDomStrategy)
-        .toFactory((styleInliner, styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(
-                       styleInliner, styleUrlResolver, doc.head),
-                   [StyleInliner, StyleUrlResolver, DOCUMENT_TOKEN]),
+        .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),
@@ -100,21 +100,22 @@ function _getAppBindings() {
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,
-    bind(TemplateResolver).toClass(MockTemplateResolver),
+    bind(ViewResolver).toClass(MockViewResolver),
     bind(PipeRegistry).toValue(defaultPipeRegistry),
     bind(ChangeDetection).toClass(DynamicChangeDetection),
-    TemplateLoader,
+    ViewLoader,
     DynamicComponentLoader,
     DirectiveResolver,
     Parser,
     Lexer,
     ExceptionHandler,
+    bind(LocationStrategy).toClass(MockLocationStrategy),
     bind(XHR).toClass(MockXHR),
     ComponentUrlMapper,
     UrlResolver,
+    AppRootUrl,
     StyleUrlResolver,
     StyleInliner,
-    TestBed,
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
     bind(EventManager)

@@ -10,7 +10,7 @@ var _nextComponentUID: int = 0;
 var _sharedStyleTexts: Map<string, boolean> = new Map();
 var _lastInsertedStyleEl;
 
-export function getComponentId(componentStringId: string) {
+export function getComponentId(componentStringId: string): number {
   var id = _componentUIDs.get(componentStringId);
   if (isBlank(id)) {
     id = _nextComponentUID++;
@@ -43,12 +43,12 @@ export function insertStyleElement(host, styleEl) {
 }
 
 // Return the attribute to be added to the component
-export function getHostAttribute(id: int) {
+export function getHostAttribute(id: int): string {
   return `_nghost-${id}`;
 }
 
 // Returns the attribute to be added on every single element nodes in the component
-export function getContentAttribute(id: int) {
+export function getContentAttribute(id: int): string {
   return `_ngcontent-${id}`;
 }
 

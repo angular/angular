@@ -49,13 +49,13 @@ export class Headers {
 
   delete (name: string): void { MapWrapper.delete(this._headersMap, name); }
 
-  forEach(fn: Function) { return MapWrapper.forEach(this._headersMap, fn); }
+  forEach(fn: Function) { MapWrapper.forEach(this._headersMap, fn); }
 
   get(header: string): string { return ListWrapper.first(this._headersMap.get(header)); }
 
-  has(header: string) { return this._headersMap.has(header); }
+  has(header: string): boolean { return this._headersMap.has(header); }
 
-  keys() { return MapWrapper.keys(this._headersMap); }
+  keys(): List<string> { return MapWrapper.keys(this._headersMap); }
 
   // TODO: this implementation seems wrong. create list then check if it's iterable?
   set(header: string, value: string | List<string>): void {
@@ -69,7 +69,7 @@ export class Headers {
     this._headersMap.set(header, list);
   }
 
-  values() { return MapWrapper.values(this._headersMap); }
+  values(): List<List<string>> { return MapWrapper.values(this._headersMap); }
 
   getAll(header: string): Array<string> { return this._headersMap.get(header) || []; }
 

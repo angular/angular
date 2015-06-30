@@ -7,8 +7,9 @@ import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
 import 'package:angular2/src/core/compiler/proto_view_factory.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compile_pipeline.dart';
-import 'package:angular2/src/render/dom/compiler/template_loader.dart';
-import 'package:angular2/src/render/dom/view/property_setter_factory.dart';
+import 'package:angular2/src/render/dom/compiler/style_inliner.dart';
+import 'package:angular2/src/render/dom/compiler/style_url_resolver.dart';
+import 'package:angular2/src/render/dom/compiler/view_loader.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
@@ -80,11 +81,16 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
 /// reflectively accessed from that template.
 class _TemplateExtractor {
   final CompileStepFactory _factory;
-  final TemplateLoader _loader;
+  ViewLoader _loader;
 
   _TemplateExtractor(XHR xhr)
-      : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())),
-        _loader = new TemplateLoader(xhr, new UrlResolver());
+      : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
+    var urlResolver = new UrlResolver();
+    var styleUrlResolver = new StyleUrlResolver(urlResolver);
+    var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
+
+    _loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
+  }
 
   Future<_ExtractResult> extractTemplates(ViewDefinition viewDef) async {
     // Check for "imperative views".
@@ -99,20 +105,15 @@ class _TemplateExtractor {
     var recordingCapabilities = new RecordingReflectionCapabilities();
     reflector.reflectionCapabilities = recordingCapabilities;
 
-    var subtaskPromises = [];
-    var pipeline =
-        new CompilePipeline(_factory.createSteps(viewDef, subtaskPromises));
+    var pipeline = new CompilePipeline(_factory.createSteps(viewDef));
 
     var compileElements =
         pipeline.process(templateEl, ViewType.COMPONENT, viewDef.componentId);
-    var protoViewDto = compileElements[0].inheritedProtoView
-        .build(new PropertySetterFactory());
+    var protoViewDto = compileElements[0].inheritedProtoView.build();
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 
-    return Future
-        .wait(subtaskPromises)
-        .then((_) => new _ExtractResult(recordingCapabilities, protoViewDto));
+    return new _ExtractResult(recordingCapabilities, protoViewDto);
   }
 }
 

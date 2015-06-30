@@ -1,7 +1,6 @@
 library angular.core.facade.dom;
 
 import 'dart:html';
-import 'dart:js' show JsObject;
 import 'dom_adapter.dart' show setRootDomAdapter;
 import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import '../facade/browser.dart';
@@ -97,9 +96,28 @@ final _keyCodeToKeyMap = const {
 };
 
 class BrowserDomAdapter extends GenericBrowserDomAdapter {
+  js.JsFunction _setProperty;
+  js.JsFunction _getProperty;
+  js.JsFunction _hasProperty;
+  BrowserDomAdapter() {
+    _setProperty = js.context.callMethod('eval', ['(function(el, prop, value) { el[prop] = value; })']);
+    _getProperty = js.context.callMethod('eval', ['(function(el, prop) { return el[prop]; })']);
+    _hasProperty = js.context.callMethod('eval', ['(function(el, prop) { return prop in el; })']);
+  }
   static void makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
+  bool hasProperty(Element element, String name) =>
+      _hasProperty.apply([element, name]);
+
+  void setProperty(Element element, String name, Object value) =>
+      _setProperty.apply([element, name, value]);
+
+  getProperty(Element element, String name) =>
+      _getProperty.apply([element, name]);
+
+  invoke(Element element, String methodName, List args) =>
+      this.getProperty(element, methodName).apply(args, thisArg: element);
 
   // TODO(tbosch): move this into a separate environment class once we have it
   logError(error) {
@@ -108,7 +126,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   @override
   Map<String, String> get attrToPropMap => const <String, String>{
-    'innerHtml': 'innerHtml',
+    'innerHtml': 'innerHTML',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
@@ -221,8 +239,6 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   ShadowRoot getShadowRoot(Element el) => el.shadowRoot;
   Element getHost(Element el) => (el as ShadowRoot).host;
   clone(Node node) => node.clone(true);
-  bool hasProperty(Element element, String name) =>
-      new JsObject.fromBrowserObject(element).hasProperty(name);
   List<Node> getElementsByClassName(Element element, String name) =>
       element.getElementsByClassName(name);
   List<Node> getElementsByTagName(Element element, String name) =>

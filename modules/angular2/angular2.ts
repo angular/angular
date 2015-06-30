@@ -17,19 +17,27 @@ export {
   JitChangeDetection,
   PreGeneratedChangeDetection,
   preGeneratedProtoDetectors,
-  defaultPipeRegistry
+  defaultPipeRegistry,
+  DirectiveIndex,
+  BindingRecord,
+  ProtoChangeDetector,
+  ChangeDispatcher,
+  ChangeDetector,
+  Locals,
+  ChangeDetectorDefinition,
+  BasePipe,
+  DirectiveRecord
 } from './change_detection';
 
 export {
   Inject,
-  InjectPromise,
-  InjectLazy,
   Optional,
   Injectable,
   forwardRef,
   resolveForwardRef,
   ForwardRefFn,
   Injector,
+  ProtoInjector,
   Binding,
   bind,
   Key,
@@ -40,7 +48,15 @@ export {
   InstantiationError,
   InvalidBindingError,
   NoAnnotationError,
-  OpaqueToken
+  OpaqueToken,
+  ResolvedBinding,
+  BindingBuilder,
+  Dependency,
+  Visibility,
+  Self,
+  Parent,
+  Ancestor,
+  Unbounded
 } from './di';
 
 export * from './core';

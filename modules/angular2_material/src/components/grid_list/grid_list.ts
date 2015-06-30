@@ -225,7 +225,7 @@ export class MdGridList {
     '[style.left]': 'styleLeft',
     '[style.marginTop]': 'styleMarginTop',
     '[style.paddingTop]': 'stylePaddingTop',
-    '[role]': '"listitem"'
+    '[attr.role]': '"listitem"'
   },
   lifecycle: [onDestroy, onChange]
 })

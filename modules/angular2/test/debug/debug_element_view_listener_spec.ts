@@ -15,7 +15,7 @@ import {
   TestComponentBuilder,
   By,
   Scope,
-  inspectDomElement
+  inspectNativeElement
 } from 'angular2/test_lib';
 
 import {global} from 'angular2/src/facade/lang';
@@ -45,7 +45,7 @@ export function main() {
          tcb.overrideTemplate(MyComp, '<div some-dir></div>')
              .createAsync(MyComp)
              .then((rootTestComponent) => {
-               expect(inspectDomElement(rootTestComponent.domElement).componentInstance)
+               expect(inspectNativeElement(rootTestComponent.nativeElement).componentInstance)
                    .toBeAnInstanceOf(MyComp);
 
                async.done();
@@ -58,7 +58,7 @@ export function main() {
              .createAsync(MyComp)
              .then((rootTestComponent) => {
                rootTestComponent.destroy();
-               expect(inspectDomElement(rootTestComponent.domElement)).toBe(null);
+               expect(inspectNativeElement(rootTestComponent.nativeElement)).toBe(null);
 
                async.done();
              });
@@ -71,7 +71,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, '')
                .createAsync(MyComp)
                .then((rootTestComponent) => {
-                 expect(global['ngProbe'](rootTestComponent.domElement).componentInstance)
+                 expect(global['ngProbe'](rootTestComponent.nativeElement).componentInstance)
                      .toBeAnInstanceOf(MyComp);
 
                  async.done();

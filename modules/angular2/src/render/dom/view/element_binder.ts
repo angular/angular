@@ -1,5 +1,4 @@
 import {AST} from 'angular2/change_detection';
-import {SetterFn} from 'angular2/src/reflection/types';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import * as protoViewModule from './proto_view';
 
@@ -13,13 +12,10 @@ export class ElementBinder {
   componentId: string;
   parentIndex: number;
   distanceToParent: number;
-  propertySetters: Map<string, SetterFn>;
-  hostActions: Map<string, AST>;
   elementIsEmpty: boolean;
 
   constructor({textNodeIndices, contentTagSelector, nestedProtoView, componentId, eventLocals,
-               localEvents, globalEvents, hostActions, parentIndex, distanceToParent,
-               propertySetters, elementIsEmpty}: {
+               localEvents, globalEvents, parentIndex, distanceToParent, elementIsEmpty}: {
     contentTagSelector?: string,
     textNodeIndices?: List<number>,
     nestedProtoView?: protoViewModule.DomProtoView,
@@ -29,8 +25,6 @@ export class ElementBinder {
     componentId?: string,
     parentIndex?: number,
     distanceToParent?: number,
-    propertySetters?: Map<string, SetterFn>,
-    hostActions?: Map<string, AST>,
     elementIsEmpty?: boolean
   } = {}) {
     this.textNodeIndices = textNodeIndices;
@@ -40,10 +34,8 @@ export class ElementBinder {
     this.eventLocals = eventLocals;
     this.localEvents = localEvents;
     this.globalEvents = globalEvents;
-    this.hostActions = hostActions;
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
-    this.propertySetters = propertySetters;
     this.elementIsEmpty = elementIsEmpty;
   }
 }

@@ -16,7 +16,7 @@ export class Locals {
     return false;
   }
 
-  get(name: string) {
+  get(name: string): any {
     if (this.current.has(name)) {
       return this.current.get(name);
     }
