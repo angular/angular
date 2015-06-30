@@ -159,6 +159,12 @@ export function main() {
       expect(eventBinding.fullName).toEqual('window:resize');
       expect(eventBinding.source.source).toEqual('doItGlobal()');
     });
+    
+    it('should throw when the provided selector is not flat', () => {
+      expect(() => { createPipeline(null, [directiveWithNonFlatElementSelector]); })
+          .toThrowError(
+              new RegExp('flat'));
+    });
 
     // TODO: assertions should be enabled when running tests:
     // https://github.com/angular/angular/issues/1340
@@ -257,4 +263,9 @@ var componentWithNonElementSelector = DirectiveMetadata.create({
   id: 'componentWithNonElementSelector',
   selector: '[attr]',
   type: DirectiveMetadata.COMPONENT_TYPE
+});
+
+var directiveWithNonFlatElementSelector = DirectiveMetadata.create({
+  id: 'directiveWithNonFlatElementSelector',
+  selector: 'not flat'
 });

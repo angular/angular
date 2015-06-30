@@ -35,14 +35,20 @@ export class DomCompiler extends RenderCompiler {
   }
 
   compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> {
-    var hostViewDef = new ViewDefinition({
-      componentId: directiveMetadata.id,
-      templateAbsUrl: null, template: null,
-      styles: null,
-      styleAbsUrls: null,
-      directives: [directiveMetadata]
-    });
-    var element = DOM.createElement(directiveMetadata.selector);
+    try {
+      var hostViewDef = new ViewDefinition({
+        componentId: directiveMetadata.id,
+        templateAbsUrl: null, 
+        template: null,
+        styles: null,
+        styleAbsUrls: null,
+        directives: [directiveMetadata]
+      });
+      var element = DOM.createElement(directiveMetadata.selector);
+    } catch(e) {
+       throw new BaseException(e.message);
+       return;
+    }
     return this._compileTemplate(hostViewDef, element, ViewType.HOST);
   }
 
