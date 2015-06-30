@@ -42,7 +42,7 @@ export function main() {
 
     beforeEachBindings(() => [
       Pipeline,
-      RouteRegistry,
+      bind(RouteRegistry).toFactory(() => new RouteRegistry(MyComp)),
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)
@@ -129,7 +129,7 @@ export function main() {
     it('should generate absolute hrefs that include the base href',
        inject([AsyncTestCompleter], (async) => {
          location.setBaseHref('/my/base');
-         compile('<a href="hello" router-link="user"></a>')
+         compile('<a href="hello" [router-link]="[\'./user\']"></a>')
              .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
@@ -141,7 +141,7 @@ export function main() {
 
 
     it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
-         compile('<a href="hello" router-link="user"></a>')
+         compile('<a href="hello" [router-link]="[\'./user\']"></a>')
              .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
@@ -172,7 +172,7 @@ export function main() {
 
 
     it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
-         compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
+         compile('<a href="hello" [router-link]="[\'./user\', {name: name}]">{{name}}</a>')
              .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp, 'as': 'user'}))
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
@@ -194,10 +194,8 @@ export function main() {
         return dispatchedEvent;
       };
 
-      it('test', inject([AsyncTestCompleter], (async) => { async.done(); }));
-
       it('should navigate to link hrefs without params', inject([AsyncTestCompleter], (async) => {
-           compile('<a href="hello" router-link="user"></a>')
+           compile('<a href="hello" [router-link]="[\'./user\']"></a>')
                .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
                .then((_) => rtr.navigate('/a/b'))
                .then((_) => {
@@ -218,7 +216,7 @@ export function main() {
       it('should navigate to link hrefs in presence of base href',
          inject([AsyncTestCompleter], (async) => {
            location.setBaseHref('/base');
-           compile('<a href="hello" router-link="user"></a>')
+           compile('<a href="hello" [router-link]="[\'./user\']"></a>')
                .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
                .then((_) => rtr.navigate('/a/b'))
                .then((_) => {

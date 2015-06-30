@@ -1,7 +1,7 @@
 import {onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {Directive} from 'angular2/src/core/annotations/decorators';
 import {ElementRef} from 'angular2/core';
-import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {isPresent} from 'angular2/src/facade/lang';
 
@@ -25,20 +25,21 @@ import {Renderer} from 'angular2/src/render/api';
  * When linking to a route, you can write:
  *
  * ```
- * <a router-link="user">link to user component</a>
+ * <a [router-link]="['./user']">link to user component</a>
  * ```
+ *
+ * RouterLink expects the value to be an array of route names
  *
  * @exportedAs angular2/router
  */
 @Directive({
   selector: '[router-link]',
-  properties: ['route: routerLink', 'params: routerParams'],
+  properties: ['routeParams: routerLink'],
   lifecycle: [onAllChangesDone],
   host: {'(^click)': 'onClick()'}
 })
 export class RouterLink {
-  private _route: string;
-  private _params: StringMap<string, string> = StringMapWrapper.create();
+  private _routeParams: List<any>;
 
   // the url displayed on the anchor element.
   _visibleHref: string;
@@ -48,9 +49,7 @@ export class RouterLink {
   constructor(private _elementRef: ElementRef, private _router: Router, private _location: Location,
               private _renderer: Renderer) {}
 
-  set route(changes: string) { this._route = changes; }
-
-  set params(changes: StringMap<string, string>) { this._params = changes; }
+  set routeParams(changes: List<any>) { this._routeParams = changes; }
 
   onClick(): boolean {
     this._router.navigate(this._navigationHref);
@@ -58,8 +57,8 @@ export class RouterLink {
   }
 
   onAllChangesDone(): void {
-    if (isPresent(this._route) && isPresent(this._params)) {
-      this._navigationHref = this._router.generate(this._route, this._params);
+    if (isPresent(this._routeParams)) {
+      this._navigationHref = this._router.generate(this._routeParams);
       this._visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
       // Keeping the link on the element to support contextual menu `copy link`
       // and other in-browser affordances.
