@@ -47,6 +47,7 @@ function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
   return ListWrapper.find(rs, (rr) => rr.mode !== RecordType.DIRECTIVE_LIFECYCLE &&
                                       rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
                                       rr.contextIndex === r.contextIndex &&
+                                      rr.name === r.name &&
                                       ListWrapper.equals(rr.args, r.args));
 }
 
