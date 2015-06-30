@@ -4,6 +4,7 @@
 packages
 pubspec.lock
 .pub
+.packages
 
 /dist/
 .buildlog
