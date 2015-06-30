@@ -172,11 +172,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
     var ctor = _getCtor(node);
 
-    if (!_foundNgInjectable) {
-      // The receiver for cascaded calls.
-      writer.print(REFLECTOR_VAR_NAME);
-      _foundNgInjectable = true;
-    }
+    _maybeWriteReflector();
     writer.print('..registerType(');
     node.name.accept(this);
     writer.print(''', {'factory': ''');
@@ -236,4 +232,32 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitSimpleIdentifier(SimpleIdentifier node) => _nodeToSource(node);
+
+  @override
+  bool visitFunctionDeclaration(FunctionDeclaration node) {
+    if (!node.metadata.any((a) => _annotationMatcher.hasMatch(a, assetId))) {
+      return null;
+    }
+
+    _maybeWriteReflector();
+    writer.print('..registerFunction(');
+    node.name.accept(this);
+    writer.print(''', {'parameters': const [''');
+    var parameters = node.childEntities
+        .firstWhere((child) => child is FunctionExpression).parameters;
+    parameters.accept(_paramsVisitor);
+    writer.print('''], 'annotations': ''');
+    node.metadata.accept(_metaVisitor);
+    writer.print('})');
+    return null;
+  }
+
+  /// Writes out the reflector variable the first time it is called.
+  void _maybeWriteReflector() {
+    if (_foundNgInjectable) return;
+    _foundNgInjectable = true;
+
+    // The receiver for cascaded calls.
+    writer.print(REFLECTOR_VAR_NAME);
+  }
 }

@@ -13,22 +13,26 @@ export {SetterFn, GetterFn, MethodFn} from './types';
 export {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 
 export class Reflector {
-  _typeInfo: Map<Type, any>;
+  _injectableInfo: Map<any, StringMap<string, any>>;
   _getters: Map<string, GetterFn>;
   _setters: Map<string, SetterFn>;
   _methods: Map<string, MethodFn>;
   reflectionCapabilities: PlatformReflectionCapabilities;
 
   constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
-    this._typeInfo = new Map();
+    this._injectableInfo = new Map();
     this._getters = new Map();
     this._setters = new Map();
     this._methods = new Map();
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
+  registerFunction(func: Function, funcInfo: StringMap<string, any>): void {
+    this._injectableInfo.set(func, funcInfo);
+  }
+
   registerType(type: Type, typeInfo: StringMap<string, any>): void {
-    this._typeInfo.set(type, typeInfo);
+    this._injectableInfo.set(type, typeInfo);
   }
 
   registerGetters(getters: StringMap<string, GetterFn>): void {
@@ -52,7 +56,7 @@ export class Reflector {
   }
 
   parameters(typeOrFunc): List<any> {
-    if (this._typeInfo.has(typeOrFunc)) {
+    if (this._injectableInfo.has(typeOrFunc)) {
       return this._getTypeInfoField(typeOrFunc, "parameters", []);
     } else {
       return this.reflectionCapabilities.parameters(typeOrFunc);
@@ -60,7 +64,7 @@ export class Reflector {
   }
 
   annotations(typeOrFunc): List<any> {
-    if (this._typeInfo.has(typeOrFunc)) {
+    if (this._injectableInfo.has(typeOrFunc)) {
       return this._getTypeInfoField(typeOrFunc, "annotations", []);
     } else {
       return this.reflectionCapabilities.annotations(typeOrFunc);
@@ -68,7 +72,7 @@ export class Reflector {
   }
 
   interfaces(type): List<any> {
-    if (this._typeInfo.has(type)) {
+    if (this._injectableInfo.has(type)) {
       return this._getTypeInfoField(type, "interfaces", []);
     } else {
       return this.reflectionCapabilities.interfaces(type);
@@ -100,11 +104,11 @@ export class Reflector {
   }
 
   _getTypeInfoField(typeOrFunc, key, defaultValue) {
-    var res = this._typeInfo.get(typeOrFunc)[key];
+    var res = this._injectableInfo.get(typeOrFunc)[key];
     return isPresent(res) ? res : defaultValue;
   }
 
-  _containsTypeInfo(typeOrFunc) { return this._typeInfo.has(typeOrFunc); }
+  _containsTypeInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
 }
 
 function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {
