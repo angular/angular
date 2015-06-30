@@ -41,10 +41,10 @@ void allTests() {
       () async {
     var inputPath = 'bind_generator/events_files/bar.ng_deps.dart';
     var expected = formatter.format(
-      readFile('bind_generator/events_files/expected/bar.ng_deps.dart'));
+        readFile('bind_generator/events_files/expected/bar.ng_deps.dart'));
 
     var output = formatter.format(
-      await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
+        await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
     expect(output).toEqual(expected);
   });
 }
