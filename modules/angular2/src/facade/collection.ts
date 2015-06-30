@@ -238,6 +238,8 @@ export class ListWrapper {
     }
   }
   static toString<T>(l: List<T>): string { return l.toString(); }
+  static toJSON<T>(l: List<T>): string { return JSON.stringify(l); }
+
 }
 
 export function isListLikeIterable(obj): boolean {

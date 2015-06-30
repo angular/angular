@@ -1,8 +1,11 @@
 library facade.collection;
 
 import 'dart:collection' show IterableBase, Iterator;
+import 'dart:convert' show JsonEncoder;
 export 'dart:core' show Map, List, Set;
 import 'dart:math' show max, min;
+
+var jsonEncoder = new JsonEncoder();
 
 class MapIterator extends Iterator<List> {
   final Iterator _iterator;
@@ -168,6 +171,10 @@ class ListWrapper {
     } else {
       l.sort(compareFn);
     }
+  }
+
+  static String toJSON(List l) {
+    return jsonEncoder.convert(l);
   }
 
   // JS splice, slice, fill functions can take start < 0 which indicates a position relative to
