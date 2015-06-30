@@ -13,6 +13,7 @@ import {
   isPresent,
   isBlank,
   isType,
+  isString,
   isStringMap,
   isFunction,
   StringWrapper,
@@ -29,7 +30,9 @@ import {Injectable} from 'angular2/di';
  */
 @Injectable()
 export class RouteRegistry {
-  _rules: Map<any, RouteRecognizer> = new Map();
+  private _rules: Map<any, RouteRecognizer> = new Map();
+
+  constructor(private _rootHostComponent: any) {}
 
   /**
    * Given a component and a configuration object, add the route to this registry
@@ -118,40 +121,80 @@ export class RouteRegistry {
   }
 
 
-  _completeRouteMatch(candidate: RouteMatch): Promise<Instruction> {
-    return componentHandlerToComponentType(candidate.handler)
-        .then((componentType) => {
-          this.configFromComponent(componentType);
+  _completeRouteMatch(partialMatch: RouteMatch): Promise<Instruction> {
+    var recognizer = partialMatch.recognizer;
+    var handler = recognizer.handler;
+    return handler.resolveComponentType().then((componentType) => {
+      this.configFromComponent(componentType);
 
-          if (candidate.unmatchedUrl.length == 0) {
-            return new Instruction({
-              component: componentType,
-              params: candidate.params,
-              matchedUrl: candidate.matchedUrl,
-              parentSpecificity: candidate.specificity
-            });
-          }
+      if (partialMatch.unmatchedUrl.length == 0) {
+        return new Instruction(componentType, partialMatch.matchedUrl, recognizer);
+      }
 
-          return this.recognize(candidate.unmatchedUrl, componentType)
-              .then(childInstruction => {
-                if (isBlank(childInstruction)) {
-                  return null;
-                }
-                return new Instruction({
-                  component: componentType,
-                  child: childInstruction,
-                  params: candidate.params,
-                  matchedUrl: candidate.matchedUrl,
-                  parentSpecificity: candidate.specificity
-                });
-              });
-        });
+      return this.recognize(partialMatch.unmatchedUrl, componentType)
+          .then(childInstruction => {
+            if (isBlank(childInstruction)) {
+              return null;
+            } else {
+              return new Instruction(componentType, partialMatch.matchedUrl, recognizer,
+                                     childInstruction);
+            }
+          });
+    });
   }
 
-  generate(name: string, params: StringMap<string, string>, hostComponent): string {
-    // TODO: implement for hierarchical routes
-    var componentRecognizer = this._rules.get(hostComponent);
-    return isPresent(componentRecognizer) ? componentRecognizer.generate(name, params) : null;
+  /**
+   * Given a list with component names and params like: `['./user', {id: 3 }]`
+   * generates a url with a leading slash relative to the provided `parentComponent`.
+   */
+  generate(linkParams: List<any>, parentComponent): string {
+    let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
+    let url = '/';
+
+    let componentCursor = parentComponent;
+
+    // The first segment should be either '.' (generate from parent) or '' (generate from root).
+    // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
+    if (normalizedLinkParams[0] == '') {
+      componentCursor = this._rootHostComponent;
+    } else if (normalizedLinkParams[0] != '.') {
+      throw new BaseException(
+          `Link "${ListWrapper.toJSON(linkParams)}" must start with "/" or "./"`);
+    }
+
+    if (normalizedLinkParams[normalizedLinkParams.length - 1] == '') {
+      ListWrapper.removeLast(normalizedLinkParams);
+    }
+
+    if (normalizedLinkParams.length < 2) {
+      throw new BaseException(
+          `Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`);
+    }
+
+    for (let i = 1; i < normalizedLinkParams.length; i += 1) {
+      let segment = normalizedLinkParams[i];
+      if (!isString(segment)) {
+        throw new BaseException(`Unexpected segment "${segment}" in link DSL. Expected a string.`);
+      }
+      let params = null;
+      if (i + 1 < normalizedLinkParams.length) {
+        let nextSegment = normalizedLinkParams[i + 1];
+        if (isStringMap(nextSegment)) {
+          params = nextSegment;
+          i += 1;
+        }
+      }
+
+      var componentRecognizer = this._rules.get(componentCursor);
+      if (isBlank(componentRecognizer)) {
+        throw new BaseException(`Could not find route config for "${segment}".`);
+      }
+      var response = componentRecognizer.generate(segment, params);
+      url += response['url'];
+      componentCursor = response['nextComponent'];
+    }
+
+    return url;
   }
 }
 
@@ -200,19 +243,6 @@ function normalizeComponentDeclaration(config: any): StringMap<string, any> {
   }
 }
 
-function componentHandlerToComponentType(handler): Promise<any> {
-  var componentDeclaration = handler['component'], type = componentDeclaration['type'];
-
-  if (type == 'constructor') {
-    return PromiseWrapper.resolve(componentDeclaration['constructor']);
-  } else if (type == 'loader') {
-    var resolverFunction = componentDeclaration['loader'];
-    return resolverFunction();
-  } else {
-    throw new BaseException(`Cannot extract the component type from a '${type}' component`);
-  }
-}
-
 /*
  * Given a list of instructions, returns the most specific instruction
  */
@@ -243,4 +273,19 @@ function assertTerminalComponent(component, path) {
       }
     }
   }
+}
+
+/*
+ * Given: ['/a/b', {c: 2}]
+ * Returns: ['', 'a', 'b', {c: 2}]
+ */
+var SLASH = new RegExp('/');
+function splitAndFlattenLinkParams(linkParams: List<any>): List<any> {
+  return ListWrapper.reduce(linkParams, (accumulation, item) => {
+    if (isString(item)) {
+      return ListWrapper.concat(accumulation, StringWrapper.split(item, SLASH));
+    }
+    accumulation.push(item);
+    return accumulation;
+  }, []);
 }

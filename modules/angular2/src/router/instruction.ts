@@ -6,7 +6,9 @@ import {
   List,
   ListWrapper
 } from 'angular2/src/facade/collection';
-import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
+
+import {PathRecognizer} from './path_recognizer';
 
 export class RouteParams {
   constructor(public params: StringMap<string, string>) {}
@@ -14,34 +16,24 @@ export class RouteParams {
   get(param: string): string { return normalizeBlank(StringMapWrapper.get(this.params, param)); }
 }
 
+
 /**
  * An `Instruction` represents the component hierarchy of the application based on a given route
  */
 export class Instruction {
-  component: any;
-  child: Instruction;
-
-  // the part of the URL captured by this instruction
-  capturedUrl: string;
-
-  // the part of the URL captured by this instruction and all children
+  // "capturedUrl" is the part of the URL captured by this instruction
+  // "accumulatedUrl" is the part of the URL captured by this instruction and all children
   accumulatedUrl: string;
 
-  params: StringMap<string, string>;
-  reuse: boolean;
+  reuse: boolean = false;
   specificity: number;
 
-  constructor({params, component, child, matchedUrl, parentSpecificity}: {
-    params?: StringMap<string, any>,
-    component?: any,
-    child?: Instruction,
-    matchedUrl?: string,
-    parentSpecificity?: number
-  } = {}) {
-    this.reuse = false;
-    this.capturedUrl = matchedUrl;
-    this.accumulatedUrl = matchedUrl;
-    this.specificity = parentSpecificity;
+  private _params: StringMap<string, string>;
+
+  constructor(public component: any, public capturedUrl: string,
+              private _recognizer: PathRecognizer, public child: Instruction = null) {
+    this.accumulatedUrl = capturedUrl;
+    this.specificity = _recognizer.specificity;
     if (isPresent(child)) {
       this.child = child;
       this.specificity += child.specificity;
@@ -49,11 +41,14 @@ export class Instruction {
       if (isPresent(childUrl)) {
         this.accumulatedUrl += childUrl;
       }
-    } else {
-      this.child = null;
     }
-    this.component = component;
-    this.params = params;
+  }
+
+  params(): StringMap<string, string> {
+    if (isBlank(this._params)) {
+      this._params = this._recognizer.parseParams(this.capturedUrl);
+    }
+    return this._params;
   }
 
   hasChild(): boolean { return isPresent(this.child); }
@@ -73,5 +68,5 @@ export class Instruction {
 
 function shouldReuseComponent(instr1: Instruction, instr2: Instruction): boolean {
   return instr1.component == instr2.component &&
-         StringMapWrapper.equals(instr1.params, instr2.params);
+         StringMapWrapper.equals(instr1.params(), instr2.params());
 }

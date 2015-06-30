@@ -2,7 +2,10 @@ import {
   RegExp,
   RegExpWrapper,
   StringWrapper,
+  isBlank,
   isPresent,
+  isType,
+  isStringMap,
   BaseException
 } from 'angular2/src/facade/lang';
 import {
@@ -14,7 +17,10 @@ import {
   StringMapWrapper
 } from 'angular2/src/facade/collection';
 
-import {PathRecognizer, ContinuationSegment} from './path_recognizer';
+import {PathRecognizer} from './path_recognizer';
+import {RouteHandler} from './route_handler';
+import {AsyncRouteHandler} from './async_route_handler';
+import {SyncRouteHandler} from './sync_route_handler';
 
 /**
  * `RouteRecognizer` is responsible for recognizing routes for a single component.
@@ -33,7 +39,8 @@ export class RouteRecognizer {
     this.redirects.set(path, target);
   }
 
-  addConfig(path: string, handler: any, alias: string = null): boolean {
+  addConfig(path: string, handlerObj: any, alias: string = null): boolean {
+    var handler = configObjToHandler(handlerObj['component']);
     var recognizer = new PathRecognizer(path, handler);
     MapWrapper.forEach(this.matchers, (matcher, _) => {
       if (recognizer.regex.toString() == matcher.regex.toString()) {
@@ -65,28 +72,21 @@ export class RouteRecognizer {
         if (path == url) {
           url = target;
         }
-      } else if (StringWrapper.startsWith(url, path)) {
-        url = target + StringWrapper.substring(url, path.length);
+      } else if (url.startsWith(path)) {
+        url = target + url.substring(path.length);
       }
     });
 
     MapWrapper.forEach(this.matchers, (pathRecognizer, regex) => {
       var match;
       if (isPresent(match = RegExpWrapper.firstMatch(regex, url))) {
-        // TODO(btford): determine a good generic way to deal with terminal matches
         var matchedUrl = '/';
         var unmatchedUrl = '';
         if (url != '/') {
           matchedUrl = match[0];
-          unmatchedUrl = StringWrapper.substring(url, match[0].length);
+          unmatchedUrl = url.substring(match[0].length);
         }
-        solutions.push(new RouteMatch({
-          specificity: pathRecognizer.specificity,
-          handler: pathRecognizer.handler,
-          params: pathRecognizer.parseParams(url),
-          matchedUrl: matchedUrl,
-          unmatchedUrl: unmatchedUrl
-        }));
+        solutions.push(new RouteMatch(pathRecognizer, matchedUrl, unmatchedUrl));
       }
     });
 
@@ -95,30 +95,39 @@ export class RouteRecognizer {
 
   hasRoute(name: string): boolean { return this.names.has(name); }
 
-  generate(name: string, params: any): string {
-    var pathRecognizer = this.names.get(name);
-    return isPresent(pathRecognizer) ? pathRecognizer.generate(params) : null;
+  generate(name: string, params: any): StringMap<string, any> {
+    var pathRecognizer: PathRecognizer = this.names.get(name);
+    if (isBlank(pathRecognizer)) {
+      return null;
+    }
+    var url = pathRecognizer.generate(params);
+    return {url, 'nextComponent': pathRecognizer.handler.componentType};
   }
 }
 
 export class RouteMatch {
-  specificity: number;
-  handler: StringMap<string, any>;
-  params: StringMap<string, string>;
-  matchedUrl: string;
-  unmatchedUrl: string;
+  constructor(public recognizer: PathRecognizer, public matchedUrl: string,
+              public unmatchedUrl: string) {}
 
-  constructor({specificity, handler, params, matchedUrl, unmatchedUrl}: {
-    specificity?: number,
-    handler?: StringMap<string, any>,
-    params?: StringMap<string, string>,
-    matchedUrl?: string,
-    unmatchedUrl?: string
-  } = {}) {
-    this.specificity = specificity;
-    this.handler = handler;
-    this.params = params;
-    this.matchedUrl = matchedUrl;
-    this.unmatchedUrl = unmatchedUrl;
+  params(): StringMap<string, string> { return this.recognizer.parseParams(this.matchedUrl); }
+}
+
+function configObjToHandler(config: any): RouteHandler {
+  if (isType(config)) {
+    return new SyncRouteHandler(config);
+  } else if (isStringMap(config)) {
+    if (isBlank(config['type'])) {
+      throw new BaseException(
+          `Component declaration when provided as a map should include a 'type' property`);
+    }
+    var componentType = config['type'];
+    if (componentType == 'constructor') {
+      return new SyncRouteHandler(config['constructor']);
+    } else if (componentType == 'loader') {
+      return new AsyncRouteHandler(config['loader']);
+    } else {
+      throw new BaseException(`oops`);
+    }
   }
+  throw new BaseException(`Unexpected component "${config}".`);
 }

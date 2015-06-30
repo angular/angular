@@ -57,7 +57,7 @@ export class RouterOutlet {
     this._childRouter = this._parentRouter.childRouter(instruction.component);
     var outletInjector = this._injector.resolveAndCreateChild([
       bind(RouteParams)
-          .toValue(new RouteParams(instruction.params)),
+          .toValue(new RouteParams(instruction.params())),
       bind(routerMod.Router).toValue(this._childRouter)
     ]);
 

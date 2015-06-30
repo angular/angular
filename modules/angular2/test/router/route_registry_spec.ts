@@ -11,6 +11,7 @@ import {
 } from 'angular2/test_lib';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig} from 'angular2/src/router/route_config_decorator';
@@ -19,7 +20,7 @@ export function main() {
   describe('RouteRegistry', () => {
     var registry, rootHostComponent = new Object();
 
-    beforeEach(() => { registry = new RouteRegistry(); });
+    beforeEach(() => { registry = new RouteRegistry(rootHostComponent); });
 
     it('should match the full URL', inject([AsyncTestCompleter], (async) => {
          registry.config(rootHostComponent, {'path': '/', 'component': DummyCompA});
@@ -31,6 +32,68 @@ export function main() {
                async.done();
              });
        }));
+
+    it('should generate URLs starting at the given component', () => {
+      registry.config(rootHostComponent,
+                      {'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+
+      expect(registry.generate(['./firstCmp/secondCmp'], rootHostComponent))
+          .toEqual('/first/second');
+      expect(registry.generate(['./secondCmp'], DummyParentComp)).toEqual('/second');
+    });
+
+    it('should generate URLs with params', () => {
+      registry.config(
+          rootHostComponent,
+          {'path': '/first/:param/...', 'component': DummyParentParamComp, 'as': 'firstCmp'});
+
+      var url = registry.generate(['./firstCmp', {param: 'one'}, 'secondCmp', {param: 'two'}],
+                                  rootHostComponent);
+      expect(url).toEqual('/first/one/second/two');
+    });
+
+    it('should generate URLs from the root component when the path starts with /', () => {
+      registry.config(rootHostComponent,
+                      {'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+
+      expect(registry.generate(['/firstCmp', 'secondCmp'], rootHostComponent))
+          .toEqual('/first/second');
+      expect(registry.generate(['/firstCmp', 'secondCmp'], DummyParentComp))
+          .toEqual('/first/second');
+      expect(registry.generate(['/firstCmp/secondCmp'], DummyParentComp)).toEqual('/first/second');
+    });
+
+    it('should generate URLs of loaded components after they are loaded',
+       inject([AsyncTestCompleter], (async) => {
+         registry.config(rootHostComponent, {
+           'path': '/first/...',
+           'component': {'type': 'loader', 'loader': AsyncParentLoader},
+           'as': 'firstCmp'
+         });
+
+         expect(() => registry.generate(['/firstCmp/secondCmp'], rootHostComponent))
+             .toThrowError('Could not find route config for "secondCmp".');
+
+         registry.recognize('/first/second', rootHostComponent)
+             .then((_) => {
+               expect(registry.generate(['/firstCmp/secondCmp'], rootHostComponent))
+                   .toEqual('/first/second');
+               async.done();
+             });
+       }));
+
+    it('should throw when linkParams does not start with a "/" or "./"', () => {
+      expect(() => registry.generate(['firstCmp', 'secondCmp'], rootHostComponent))
+          .toThrowError(
+              `Link "${ListWrapper.toJSON(['firstCmp', 'secondCmp'])}" must start with "/" or "./"`);
+    });
+
+    it('should throw when linkParams does not include a route name', () => {
+      expect(() => registry.generate(['./'], rootHostComponent))
+          .toThrowError(`Link "${ListWrapper.toJSON(['./'])}" must include a route name.`);
+      expect(() => registry.generate(['/'], rootHostComponent))
+          .toThrowError(`Link "${ListWrapper.toJSON(['/'])}" must include a route name.`);
+    });
 
     it('should prefer static segments to dynamic', inject([AsyncTestCompleter], (async) => {
          registry.config(rootHostComponent, {'path': '/:site', 'component': DummyCompB});
@@ -172,6 +235,11 @@ class DummyAsyncComp {
 class DummyCompA {}
 class DummyCompB {}
 
-@RouteConfig([{'path': '/second', 'component': DummyCompB}])
+@RouteConfig([{'path': '/second', 'component': DummyCompB, 'as': 'secondCmp'}])
 class DummyParentComp {
+}
+
+
+@RouteConfig([{'path': '/second/:param', 'component': DummyCompB, 'as': 'secondCmp'}])
+class DummyParentParamComp {
 }

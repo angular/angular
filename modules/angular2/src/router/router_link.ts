@@ -1,17 +1,11 @@
-import {onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {Directive} from 'angular2/src/core/annotations/decorators';
-import {ElementRef} from 'angular2/core';
-import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-
-import {isPresent} from 'angular2/src/facade/lang';
+import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {Router} from './router';
 import {Location} from './location';
-import {Renderer} from 'angular2/src/render/api';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
- *
  *
  * Consider the following route configuration:
 
@@ -22,48 +16,47 @@ import {Renderer} from 'angular2/src/render/api';
  * class MyComp {}
  * ```
  *
- * When linking to a route, you can write:
+ * When linking to this `user` route, you can write:
  *
  * ```
- * <a router-link="user">link to user component</a>
+ * <a [router-link]="['./user']">link to user component</a>
  * ```
+ *
+ * RouterLink expects the value to be an array of route names, followed by the params
+ * for that level of routing. For instance `['/team', {teamId: 1}, 'user', {userId: 2}]`
+ * means that we want to generate a link for the `team` route with params `{teamId: 1}`,
+ * and with a child route `user` with params `{userId: 2}`.
+ *
+ * The first route name should be prepended with either `./` or `/`.
+ * If the route begins with `/`, the router will look up the route from the root of the app.
+ * If the route begins with `./`, the router will instead look in the current component's
+ * children for the route.
  *
  * @exportedAs angular2/router
  */
 @Directive({
   selector: '[router-link]',
-  properties: ['route: routerLink', 'params: routerParams'],
-  lifecycle: [onAllChangesDone],
-  host: {'(^click)': 'onClick()'}
+  properties: ['routeParams: routerLink'],
+  host: {'(^click)': 'onClick()', '[attr.href]': 'visibleHref'}
 })
 export class RouterLink {
-  private _route: string;
-  private _params: StringMap<string, string> = StringMapWrapper.create();
+  private _routeParams: List<any>;
 
   // the url displayed on the anchor element.
-  _visibleHref: string;
+  visibleHref: string;
   // the url passed to the router navigation.
   _navigationHref: string;
 
-  constructor(private _elementRef: ElementRef, private _router: Router, private _location: Location,
-              private _renderer: Renderer) {}
+  constructor(private _router: Router, private _location: Location) {}
 
-  set route(changes: string) { this._route = changes; }
-
-  set params(changes: StringMap<string, string>) { this._params = changes; }
+  set routeParams(changes: List<any>) {
+    this._routeParams = changes;
+    this._navigationHref = this._router.generate(this._routeParams);
+    this.visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
+  }
 
   onClick(): boolean {
     this._router.navigate(this._navigationHref);
     return false;
-  }
-
-  onAllChangesDone(): void {
-    if (isPresent(this._route) && isPresent(this._params)) {
-      this._navigationHref = this._router.generate(this._route, this._params);
-      this._visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
-      // Keeping the link on the element to support contextual menu `copy link`
-      // and other in-browser affordances.
-      this._renderer.setElementAttribute(this._elementRef, 'href', this._visibleHref);
-    }
   }
 }
