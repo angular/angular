@@ -5,9 +5,9 @@ import {RecordType, ProtoRecord} from 'angular2/src/change_detection/proto_recor
 
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false,
-             mode = RecordType.PROPERTY) {
-    return new ProtoRecord(mode, "name", funcOrValue, args, null, contextIndex, null, selfIndex,
-                           null, null, lastInBinding, false);
+             mode = RecordType.PROPERTY, name = "name") {
+    return new ProtoRecord(mode, name, funcOrValue, args, null, contextIndex, null, selfIndex, null,
+                           null, lastInBinding, false);
   }
 
   describe("change detection - coalesce", () => {
@@ -58,6 +58,15 @@ export function main() {
         r("onCheck", [], 0, 1, true, RecordType.DIRECTIVE_LIFECYCLE)
       ]);
 
+      expect(rs.length).toEqual(2);
+    });
+
+    it("should not coalesce protos with different names but same value", () => {
+      var nullFunc = () => {};
+      var rs = coalesce([
+        r(nullFunc, [], 0, 1, false, RecordType.PROPERTY, "foo"),
+        r(nullFunc, [], 0, 1, false, RecordType.PROPERTY, "bar"),
+      ]);
       expect(rs.length).toEqual(2);
     });
   });
