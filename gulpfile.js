@@ -416,27 +416,9 @@ gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
 // CI tests suites
 
 function runKarma(configFile, done) {
-  var fs = require('fs');
-  var path = require('path');
   var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
                                            'node node_modules/.bin/karma run ';
   cmd += configFile;
-
-  // this file is written into the tmp folder by DestCopy broccoli plugin after each build
-  var karmaArgsPath = path.join('tmp', 'build-log-karma-args.txt');
-
-  if (fs.existsSync(karmaArgsPath)) {
-    var changedFilesArgs = fs.readFileSync(karmaArgsPath, {encoding: 'utf-8'});
-
-    // windows has a limit for the length of the command it can execute, so on win we check the
-    // length of args provide them only if the length is not over the limit.
-    // additionally, the arguments don't help the speedup the initial run, so we can safely ignore
-    // the args when there is lots of them on all platforms
-    if (changedFilesArgs.length > 10 && changedFilesArgs.length + cmd.length < 0x2000) {
-      cmd += changedFilesArgs;
-    }
-  }
-
   exec(cmd, function(e, stdout) {
     // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
     // karma server will print all test failures
