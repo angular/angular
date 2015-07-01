@@ -167,8 +167,7 @@ export class RouteRegistry {
     }
 
     if (normalizedLinkParams.length < 2) {
-      throw new BaseException(
-          `Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`);
+      throw new BaseException(`Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`);
     }
 
     for (let i = 1; i < normalizedLinkParams.length; i += 1) {
