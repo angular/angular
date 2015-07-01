@@ -36,8 +36,17 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
  * `request` returns an {@link EventEmitter} which will emit a single {@link Response} when a
- *response is
- * received.
+ * response is received.
+ *
+ *
+ * ## Breaking Change
+ *
+ * Previously, methods of `Http` would return an RxJS Observable directly. For now,
+ * the `toRx()` method of {@link EventEmitter} needs to be called in order to get the RxJS
+ * Subject. `EventEmitter` does not provide combinators like `map`, and has different semantics for
+ * subscribing/observing. This is temporary; the result of all `Http` method calls will be either an
+ * Observable
+ * or Dart Stream when [issue #2794](https://github.com/angular/angular/issues/2794) is resolved.
  *
  * #Example
  *
@@ -47,7 +56,9 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * @View({templateUrl: 'people.html'})
  * class PeopleComponent {
  *   constructor(http: Http) {
- *     http('people.json')
+ *     http.get('people.json')
+ *       //Get the RxJS Subject
+ *       .toRx()
  *       // Call map on the response observable to get the parsed people object
  *       .map(res => res.json())
  *       // Subscribe to the observable to get the parsed people object and attach it to the
@@ -55,6 +66,16 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *       .subscribe(people => this.people = people);
  *   }
  * }
+ * ```
+ *
+ * To use the {@link EventEmitter} returned by `Http`, simply pass a generator (See "interface
+ *Generator" in the Async Generator spec: https://github.com/jhusain/asyncgenerator) to the
+ *`observer` method of the returned emitter, with optional methods of `next`, `throw`, and `return`.
+ *
+ * #Example
+ *
+ * ```
+ * http.get('people.json').observer({next: (value) => this.people = people});
  * ```
  *
  * The default construct used to perform requests, `XMLHttpRequest`, is abstracted as a "Backend" (
@@ -75,7 +96,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *       [MockBackend, BaseRequestOptions])
  * ]);
  * var http = injector.get(Http);
- * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
+ * http.get('request-from-mock-backend.json').toRx().subscribe((res:Response) => doSomething(res));
  * ```
  *
  **/
