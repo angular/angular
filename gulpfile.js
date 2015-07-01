@@ -1022,11 +1022,8 @@ gulp.task('build.dart.material', ['build/packages.dart'], function() {
 });
 
 
-gulp.task('cleanup.builder', function(done) {
-  angularBuilder.cleanup().then(function() {
-    del('tmp', done); // TODO(iminar): remove after 2015-06-01
-                      // this is here just to cleanup old files that we leaked in the past
-  });
+gulp.task('cleanup.builder', function() {
+  return angularBuilder.cleanup();
 });
 
 gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs'], function(cb) {
