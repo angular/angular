@@ -22,9 +22,7 @@ function checkNodeModules(logOutput, purgeIfStale) {
       var nodeModulesPath = path.join(PROJECT_ROOT, 'node_modules');
 
       if (fs.existsSync(nodeModulesPath)) {
-        // lazy-load fs-extra
-        var fse = require('fs-extra');
-        fse.removeSync(nodeModulesPath);
+        _deleteDir(nodeModulesPath);
       }
     }
   }
@@ -44,6 +42,26 @@ function _checkCache(markerFile, cacheMarkerFile) {
   var cacheMarkerContent = fs.readFileSync(absoluteCacheMarkerFilePath, FS_OPTS);
 
   return markerContent == cacheMarkerContent;
+}
+
+
+/**
+ * Custom implementation of recursive `rm` because we can't rely on the state of node_modules to
+ * pull in existing module.
+ */
+function _deleteDir(path) {
+  if( fs.existsSync(path) ) {
+    var subpaths = fs.readdirSync(path);
+    subpaths.forEach(function(subpath) {
+      var curPath = path + "/" + subpath;
+      if(fs.lstatSync(curPath).isDirectory()) {
+        _deleteDir(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
 }
 
 
