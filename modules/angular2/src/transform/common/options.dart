@@ -61,8 +61,7 @@ class TransformerOptions {
       MirrorMode mirrorMode: MirrorMode.none, bool initReflector: true,
       List<AnnotationDescriptor> customAnnotationDescriptors: const [],
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
-      bool inlineViews: true,
-      bool generateChangeDetectors: true}) {
+      bool inlineViews: true, bool generateChangeDetectors: true}) {
     if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {
       reflectionEntryPoints = entryPoints;
     }

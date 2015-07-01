@@ -424,7 +424,9 @@ class _CodegenState {
   String _genInterpolation(ProtoRecord r) {
     var res = new StringBuffer();
     for (var i = 0; i < r.args.length; ++i) {
-      res.write('${JSON.encode(r.fixedArgs[i])} + ${_localNames[r.args[i]]} +');
+      var name = _localNames[r.args[i]];
+      res.write(
+          '${JSON.encode(r.fixedArgs[i])} "\$\{$name == null ? "" : $name\}" ');
     }
     res.write(JSON.encode(r.fixedArgs[r.args.length]));
     return '$res';

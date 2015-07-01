@@ -111,4 +111,3 @@ Map<String, String> _createEventsMap(NgDeps ngDeps) {
   });
   return bindMap;
 }
-
