@@ -30,7 +30,8 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
     'function',
     'var',
     'const',
-    'enum'
+    'enum',
+    'type-alias'
   ];
 })
 
