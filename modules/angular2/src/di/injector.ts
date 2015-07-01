@@ -755,13 +755,6 @@ export function resolveBindings(bindings: List<Type | Binding | List<any>>): Lis
   return resolvedList;
 }
 
-function flattenBindings(bindings: List<ResolvedBinding>): List<ResolvedBinding> {
-  var map = _flattenBindings(bindings, new Map());
-  var res = [];
-  MapWrapper.forEach(map, (binding, keyId) => res.push(binding));
-  return res;
-}
-
 function _createListOfBindings(
     flattenedBindings: Map<number, ResolvedBinding>): List<ResolvedBinding> {
   return MapWrapper.values(flattenedBindings);
