@@ -95,7 +95,7 @@ export class RouteRegistry {
 
   /**
    * Given a URL and a parent component, return the most specific instruction for navigating
-   * the application into the state specified by the
+   * the application into the state specified by the url
    */
   recognize(url: string, parentComponent): Promise<Instruction> {
     var componentRecognizer = this._rules.get(parentComponent);
