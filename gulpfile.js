@@ -208,6 +208,31 @@ gulp.task('build/pubspec.dart', pubget.subDir(gulp, gulpPlugins, {
   command: DART_SDK.PUB
 }));
 
+
+// This is a hacky way to work around dart's pub that creates `packages` symlink in every directory
+// that contains a dart file with the main method. For our tests this means that every test subfolder
+// has a link to the root `packages` directory which causes Karma to sift through 80k files during
+// each `karma run` invocation.
+//
+// Since these directories are not needed for karma tests to run, it's safe to delete them without
+// breaking any functionality.
+//
+// See #2437 for more info.
+gulp.task('!build/remove-pub-symlinks', function(done) {
+  if (process.platform == 'win32') {
+    done();
+    return;
+  }
+
+  exec('find dist/dart/angular2/test/ -name packages | xargs rm -r', function (error, stdout, stderr) {
+    if (error) {
+      done(stderr);
+      return;
+    }
+    done();
+  });
+});
+
 // ------------
 // dartanalyzer
 
@@ -480,6 +505,7 @@ gulp.task('test.unit.dart', function (done) {
     'build/tree.dart',
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
+    '!build/remove-pub-symlinks',
     '!test.unit.dart/karma-server',
     '!test.unit.dart/karma-run',
     function(error) {
