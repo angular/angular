@@ -45,6 +45,11 @@ export class XHRConnection implements Connection {
       ObservableWrapper.callNext(this.response, new Response(responseOptions))
     });
     // TODO(jeffbcross): make this more dynamic based on body type
+
+    if (isPresent(req.headers)) {
+      req.headers.forEach((value, name) => { this._xhr.setRequestHeader(name, value); });
+    }
+
     this._xhr.send(this.request.text());
   }
 
