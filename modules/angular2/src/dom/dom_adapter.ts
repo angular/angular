@@ -17,11 +17,9 @@ function _abstract() {
  */
 export class DomAdapter {
   hasProperty(element, name: string): boolean { throw _abstract(); }
-  setProperty(el: /*(#2770) Element*/ any, name: string, value: any) { throw _abstract(); }
-  getProperty(el: /*(#2770) Element*/ any, name: string): any { throw _abstract(); }
-  invoke(el: /*(#2770) Element*/ any, methodName: string, args: List<any>): any {
-    throw _abstract();
-  }
+  setProperty(el: Element, name: string, value: any) { throw _abstract(); }
+  getProperty(el: Element, name: string): any { throw _abstract(); }
+  invoke(el: Element, methodName: string, args: List<any>): any { throw _abstract(); }
 
   logError(error) { throw _abstract(); }
 
@@ -47,16 +45,16 @@ export class DomAdapter {
   nodeValue(node): string { throw _abstract(); }
   type(node): string { throw _abstract(); }
   content(node): any { throw _abstract(); }
-  firstChild(el): /*(#2770) Node*/ any { throw _abstract(); }
-  nextSibling(el): /*(#2770) Node*/ any { throw _abstract(); }
-  parentElement(el): /*(#2770) Node*/ any { throw _abstract(); }
-  childNodes(el): List</*(#2770) Node*/ any> { throw _abstract(); }
-  childNodesAsList(el): List</*(#2770) Node*/ any> { throw _abstract(); }
+  firstChild(el): Node { throw _abstract(); }
+  nextSibling(el): Node { throw _abstract(); }
+  parentElement(el): Node { throw _abstract(); }
+  childNodes(el): List<Node> { throw _abstract(); }
+  childNodesAsList(el): List<Node> { throw _abstract(); }
   clearNodes(el) { throw _abstract(); }
   appendChild(el, node) { throw _abstract(); }
   removeChild(el, node) { throw _abstract(); }
   replaceChild(el, newNode, oldNode) { throw _abstract(); }
-  remove(el): /*(#2770) Node*/ any { throw _abstract(); }
+  remove(el): Node { throw _abstract(); }
   insertBefore(el, node) { throw _abstract(); }
   insertAllBefore(el, nodes) { throw _abstract(); }
   insertAfter(el, node) { throw _abstract(); }
@@ -67,26 +65,20 @@ export class DomAdapter {
   setValue(el, value: string) { throw _abstract(); }
   getChecked(el): boolean { throw _abstract(); }
   setChecked(el, value: boolean) { throw _abstract(); }
-  createTemplate(html): /*(#2770) HTMLElement*/ any { throw _abstract(); }
-  createElement(tagName, doc = null): /*(#2770) HTMLElement*/ any { throw _abstract(); }
-  createTextNode(text: string, doc = null): /*(#2770) Text*/ any { throw _abstract(); }
-  createScriptTag(attrName: string, attrValue: string, doc = null): /*(#2770) HTMLElement*/ any {
+  createTemplate(html): HTMLElement { throw _abstract(); }
+  createElement(tagName, doc = null): HTMLElement { throw _abstract(); }
+  createTextNode(text: string, doc = null): Text { throw _abstract(); }
+  createScriptTag(attrName: string, attrValue: string, doc = null): HTMLElement {
     throw _abstract();
   }
-  createStyleElement(css: string, doc = null): /*(#2770) HTMLStyleElement*/ any {
-    throw _abstract();
-  }
+  createStyleElement(css: string, doc = null): HTMLStyleElement { throw _abstract(); }
   createShadowRoot(el): any { throw _abstract(); }
   getShadowRoot(el): any { throw _abstract(); }
   getHost(el): any { throw _abstract(); }
-  getDistributedNodes(el): List</*(#2770) Node*/ any> { throw _abstract(); }
-  clone(node: /*(#2770) Node*/ any): /*(#2770) Node*/ any { throw _abstract(); }
-  getElementsByClassName(element, name: string): List</*(#2770) HTMLElement*/ any> {
-    throw _abstract();
-  }
-  getElementsByTagName(element, name: string): List</*(#2770) HTMLElement*/ any> {
-    throw _abstract();
-  }
+  getDistributedNodes(el): List<Node> { throw _abstract(); }
+  clone(node: Node): Node { throw _abstract(); }
+  getElementsByClassName(element, name: string): List<HTMLElement> { throw _abstract(); }
+  getElementsByTagName(element, name: string): List<HTMLElement> { throw _abstract(); }
   classList(element): List<any> { throw _abstract(); }
   addClass(element, classname: string) { throw _abstract(); }
   removeClass(element, classname: string) { throw _abstract(); }
@@ -101,8 +93,8 @@ export class DomAdapter {
   setAttribute(element, name: string, value: string) { throw _abstract(); }
   removeAttribute(element, attribute: string) { throw _abstract(); }
   templateAwareRoot(el) { throw _abstract(); }
-  createHtmlDocument(): /*(#2770) HTMLDocument*/ any { throw _abstract(); }
-  defaultDoc(): /*(#2770) HTMLDocument*/ any { throw _abstract(); }
+  createHtmlDocument(): HTMLDocument { throw _abstract(); }
+  defaultDoc(): HTMLDocument { throw _abstract(); }
   getBoundingClientRect(el) { throw _abstract(); }
   getTitle(): string { throw _abstract(); }
   setTitle(newTitle: string) { throw _abstract(); }
@@ -125,8 +117,8 @@ export class DomAdapter {
   supportsDOMEvents(): boolean { throw _abstract(); }
   supportsNativeShadowDOM(): boolean { throw _abstract(); }
   getGlobalEventTarget(target: string): any { throw _abstract(); }
-  getHistory(): /*(#2770) History*/ any { throw _abstract(); }
-  getLocation(): /*(#2770) Location*/ any { throw _abstract(); }
+  getHistory(): History { throw _abstract(); }
+  getLocation(): Location { throw _abstract(); }
   getBaseHref(): string { throw _abstract(); }
   getUserAgent(): string { throw _abstract(); }
   setData(element, name: string, value: string) { throw _abstract(); }

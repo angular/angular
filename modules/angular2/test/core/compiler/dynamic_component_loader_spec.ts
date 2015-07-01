@@ -115,8 +115,7 @@ export function main() {
                            tc.detectChanges();
 
                            var newlyInsertedElement = DOM.childNodes(tc.nativeElement)[1];
-                           expect((</*(#2770) HTMLElement*/ any>newlyInsertedElement).id)
-                               .toEqual("new value");
+                           expect((<HTMLElement>newlyInsertedElement).id).toEqual("new value");
                            async.done();
                          });
                    });
@@ -210,8 +209,7 @@ export function main() {
                               tc.detectChanges();
 
                               var newlyInsertedElement = DOM.nextSibling(tc.nativeElement);
-                              expect((</*(#2770) HTMLElement*/ any>newlyInsertedElement).id)
-                                  .toEqual("new value");
+                              expect((<HTMLElement>newlyInsertedElement).id).toEqual("new value");
 
                               async.done();
                             });
