@@ -197,16 +197,16 @@ export interface InjectorStrategy {
 }
 
 export class InjectorInlineStrategy implements InjectorStrategy {
-  obj0: any = null;
-  obj1: any = null;
-  obj2: any = null;
-  obj3: any = null;
-  obj4: any = null;
-  obj5: any = null;
-  obj6: any = null;
-  obj7: any = null;
-  obj8: any = null;
-  obj9: any = null;
+  obj0: any = undefinedValue;
+  obj1: any = undefinedValue;
+  obj2: any = undefinedValue;
+  obj3: any = undefinedValue;
+  obj4: any = undefinedValue;
+  obj5: any = undefinedValue;
+  obj6: any = undefinedValue;
+  obj7: any = undefinedValue;
+  obj8: any = undefinedValue;
+  obj9: any = undefinedValue;
 
   constructor(public injector: Injector, public protoStrategy: ProtoInjectorInlineStrategy) {}
 
@@ -217,16 +217,26 @@ export class InjectorInlineStrategy implements InjectorStrategy {
     inj._constructionCounter = 0;
 
 
-    if (isPresent(p.keyId0) && isBlank(this.obj0)) this.obj0 = inj._new(p.binding0, p.visibility0);
-    if (isPresent(p.keyId1) && isBlank(this.obj1)) this.obj1 = inj._new(p.binding1, p.visibility1);
-    if (isPresent(p.keyId2) && isBlank(this.obj2)) this.obj2 = inj._new(p.binding2, p.visibility2);
-    if (isPresent(p.keyId3) && isBlank(this.obj3)) this.obj3 = inj._new(p.binding3, p.visibility3);
-    if (isPresent(p.keyId4) && isBlank(this.obj4)) this.obj4 = inj._new(p.binding4, p.visibility4);
-    if (isPresent(p.keyId5) && isBlank(this.obj5)) this.obj5 = inj._new(p.binding5, p.visibility5);
-    if (isPresent(p.keyId6) && isBlank(this.obj6)) this.obj6 = inj._new(p.binding6, p.visibility6);
-    if (isPresent(p.keyId7) && isBlank(this.obj7)) this.obj7 = inj._new(p.binding7, p.visibility7);
-    if (isPresent(p.keyId8) && isBlank(this.obj8)) this.obj8 = inj._new(p.binding8, p.visibility8);
-    if (isPresent(p.keyId9) && isBlank(this.obj9)) this.obj9 = inj._new(p.binding9, p.visibility9);
+    if (isPresent(p.keyId0) && this.obj0 === undefinedValue)
+      this.obj0 = inj._new(p.binding0, p.visibility0);
+    if (isPresent(p.keyId1) && this.obj1 === undefinedValue)
+      this.obj1 = inj._new(p.binding1, p.visibility1);
+    if (isPresent(p.keyId2) && this.obj2 === undefinedValue)
+      this.obj2 = inj._new(p.binding2, p.visibility2);
+    if (isPresent(p.keyId3) && this.obj3 === undefinedValue)
+      this.obj3 = inj._new(p.binding3, p.visibility3);
+    if (isPresent(p.keyId4) && this.obj4 === undefinedValue)
+      this.obj4 = inj._new(p.binding4, p.visibility4);
+    if (isPresent(p.keyId5) && this.obj5 === undefinedValue)
+      this.obj5 = inj._new(p.binding5, p.visibility5);
+    if (isPresent(p.keyId6) && this.obj6 === undefinedValue)
+      this.obj6 = inj._new(p.binding6, p.visibility6);
+    if (isPresent(p.keyId7) && this.obj7 === undefinedValue)
+      this.obj7 = inj._new(p.binding7, p.visibility7);
+    if (isPresent(p.keyId8) && this.obj8 === undefinedValue)
+      this.obj8 = inj._new(p.binding8, p.visibility8);
+    if (isPresent(p.keyId9) && this.obj9 === undefinedValue)
+      this.obj9 = inj._new(p.binding9, p.visibility9);
   }
 
   attach(parent: Injector, isBoundary: boolean): void {
@@ -236,16 +246,16 @@ export class InjectorInlineStrategy implements InjectorStrategy {
   }
 
   dehydrate() {
-    this.obj0 = null;
-    this.obj1 = null;
-    this.obj2 = null;
-    this.obj3 = null;
-    this.obj4 = null;
-    this.obj5 = null;
-    this.obj6 = null;
-    this.obj7 = null;
-    this.obj8 = null;
-    this.obj9 = null;
+    this.obj0 = undefinedValue;
+    this.obj1 = undefinedValue;
+    this.obj2 = undefinedValue;
+    this.obj3 = undefinedValue;
+    this.obj4 = undefinedValue;
+    this.obj5 = undefinedValue;
+    this.obj6 = undefinedValue;
+    this.obj7 = undefinedValue;
+    this.obj8 = undefinedValue;
+    this.obj9 = undefinedValue;
   }
 
   getObjByKeyId(keyId: number, visibility: number): any {
@@ -253,61 +263,61 @@ export class InjectorInlineStrategy implements InjectorStrategy {
     var inj = this.injector;
 
     if (p.keyId0 === keyId && (p.visibility0 & visibility) > 0) {
-      if (isBlank(this.obj0)) {
+      if (this.obj0 === undefinedValue) {
         this.obj0 = inj._new(p.binding0, p.visibility0);
       }
       return this.obj0;
     }
     if (p.keyId1 === keyId && (p.visibility1 & visibility) > 0) {
-      if (isBlank(this.obj1)) {
+      if (this.obj1 === undefinedValue) {
         this.obj1 = inj._new(p.binding1, p.visibility1);
       }
       return this.obj1;
     }
     if (p.keyId2 === keyId && (p.visibility2 & visibility) > 0) {
-      if (isBlank(this.obj2)) {
+      if (this.obj2 === undefinedValue) {
         this.obj2 = inj._new(p.binding2, p.visibility2);
       }
       return this.obj2;
     }
     if (p.keyId3 === keyId && (p.visibility3 & visibility) > 0) {
-      if (isBlank(this.obj3)) {
+      if (this.obj3 === undefinedValue) {
         this.obj3 = inj._new(p.binding3, p.visibility3);
       }
       return this.obj3;
     }
     if (p.keyId4 === keyId && (p.visibility4 & visibility) > 0) {
-      if (isBlank(this.obj4)) {
+      if (this.obj4 === undefinedValue) {
         this.obj4 = inj._new(p.binding4, p.visibility4);
       }
       return this.obj4;
     }
     if (p.keyId5 === keyId && (p.visibility5 & visibility) > 0) {
-      if (isBlank(this.obj5)) {
+      if (this.obj5 === undefinedValue) {
         this.obj5 = inj._new(p.binding5, p.visibility5);
       }
       return this.obj5;
     }
     if (p.keyId6 === keyId && (p.visibility6 & visibility) > 0) {
-      if (isBlank(this.obj6)) {
+      if (this.obj6 === undefinedValue) {
         this.obj6 = inj._new(p.binding6, p.visibility6);
       }
       return this.obj6;
     }
     if (p.keyId7 === keyId && (p.visibility7 & visibility) > 0) {
-      if (isBlank(this.obj7)) {
+      if (this.obj7 === undefinedValue) {
         this.obj7 = inj._new(p.binding7, p.visibility7);
       }
       return this.obj7;
     }
     if (p.keyId8 === keyId && (p.visibility8 & visibility) > 0) {
-      if (isBlank(this.obj8)) {
+      if (this.obj8 === undefinedValue) {
         this.obj8 = inj._new(p.binding8, p.visibility8);
       }
       return this.obj8;
     }
     if (p.keyId9 === keyId && (p.visibility9 & visibility) > 0) {
-      if (isBlank(this.obj9)) {
+      if (this.obj9 === undefinedValue) {
         this.obj9 = inj._new(p.binding9, p.visibility9);
       }
       return this.obj9;
@@ -339,12 +349,13 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
 
   constructor(public protoStrategy: ProtoInjectorDynamicStrategy, public injector: Injector) {
     this.objs = ListWrapper.createFixedSize(protoStrategy.bindings.length);
+    ListWrapper.fill(this.objs, undefinedValue);
   }
 
   hydrate(): void {
     var p = this.protoStrategy;
     for (var i = 0; i < p.keyIds.length; i++) {
-      if (isPresent(p.keyIds[i]) && isBlank(this.objs[i])) {
+      if (isPresent(p.keyIds[i]) && this.objs[i] === undefinedValue) {
         this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
       }
     }
@@ -356,14 +367,14 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     inj._isBoundary = isBoundary;
   }
 
-  dehydrate(): void { ListWrapper.fill(this.objs, null); }
+  dehydrate(): void { ListWrapper.fill(this.objs, undefinedValue); }
 
   getObjByKeyId(keyId: number, visibility: number): any {
     var p = this.protoStrategy;
 
     for (var i = 0; i < p.keyIds.length; i++) {
       if (p.keyIds[i] === keyId && (p.visibilities[i] & visibility) > 0) {
-        if (isBlank(this.objs[i])) {
+        if (this.objs[i] === undefinedValue) {
           this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
         }
 
