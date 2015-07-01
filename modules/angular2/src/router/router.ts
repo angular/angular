@@ -219,4 +219,10 @@ class ChildRouter extends Router {
     super(parent._registry, parent._pipeline, parent, hostComponent);
     this.parent = parent;
   }
+
+
+  navigate(url: string): Promise<any> {
+    // Delegate navigation to the root router
+    return this.parent.navigate(url);
+  }
 }
