@@ -46,18 +46,9 @@ class _CtorTransformVisitor extends ToSourceVisitor {
   /// `_withParameterNames` is true, this method outputs `node`'s identifier.
   Object _visitNormalFormalParameter(
       NodeList<Annotation> metadata, TypeName type, SimpleIdentifier name) {
-    if (_withParameterAnnotations && metadata != null) {
-      assert(_withParameterTypes);
-      for (var i = 0, iLen = metadata.length; i < iLen; ++i) {
-        if (i != 0) {
-          writer.print(', ');
-        }
-        metadata[i].accept(this);
-      }
-      writer.print(type != null && metadata.isNotEmpty ? ', ' : '');
-    }
     var needCompileTimeConstants = !_withParameterNames;
-    if (_withParameterTypes && type != null) {
+    var needType = _withParameterTypes && type != null;
+    if (needType) {
       _visitNodeWithSuffix(type.name, ' ');
       if (!needCompileTimeConstants) {
         // Types with arguments are not compile-time constants.
@@ -66,6 +57,15 @@ class _CtorTransformVisitor extends ToSourceVisitor {
     }
     if (_withParameterNames) {
       _visitNode(name);
+    }
+    if (_withParameterAnnotations && metadata != null) {
+      assert(_withParameterTypes);
+      for (var i = 0, iLen = metadata.length; i < iLen; ++i) {
+        if (i != 0 || needType) {
+          writer.print(', ');
+        }
+        metadata[i].accept(this);
+      }
     }
     return null;
   }

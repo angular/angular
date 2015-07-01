@@ -243,9 +243,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     writer.print('..registerFunction(');
     node.name.accept(this);
     writer.print(''', {'parameters': const [''');
-    var parameters = node.childEntities
-        .firstWhere((child) => child is FunctionExpression).parameters;
-    parameters.accept(_paramsVisitor);
+    node.functionExpression.parameters.accept(_paramsVisitor);
     writer.print('''], 'annotations': ''');
     node.metadata.accept(_metaVisitor);
     writer.print('})');
