@@ -1,3 +1,81 @@
+<a name"2.0.0-alpha.29"></a>
+### 2.0.0-alpha.29 (2015-07-01)
+
+
+#### Bug Fixes
+
+* export top-level pipe factories as const ([393f703a](https://github.com/angular/angular/commit/393f703a))
+* **Router:** mark Pipeline and RouteRegistry as Injectable ([eea989be](https://github.com/angular/angular/commit/eea989be))
+* **build:**
+  * Reduce rx typings to what we actually require. ([8bab6dd2](https://github.com/angular/angular/commit/8bab6dd2))
+  * add missing return types now enforced by linter ([44891996](https://github.com/angular/angular/commit/44891996))
+  * fix paths in `test.typings` task ([1c8a5896](https://github.com/angular/angular/commit/1c8a5896))
+* **bundle:**
+  * don’t bundle traceur/reflect into benchpress - amended change ([d629ed7d](https://github.com/angular/angular/commit/d629ed7d))
+  * don’t bundle traceur/reflect into benchpress ([da4de21f](https://github.com/angular/angular/commit/da4de21f))
+* **change detectors:** Fix deduping of protos in transformed dart mode. ([73a939e7](https://github.com/angular/angular/commit/73a939e7))
+* **compiler:** don't trigger duplicated directives ([0598226e](https://github.com/angular/angular/commit/0598226e), closes [#2756](https://github.com/angular/angular/issues/2756), [#2568](https://github.com/angular/angular/issues/2568))
+* **docs:**
+  * to run js test 'gulp docs' is needed ([3e650378](https://github.com/angular/angular/commit/3e650378), closes [#2762](https://github.com/angular/angular/issues/2762))
+  * link to clang-format ([f1cf5298](https://github.com/angular/angular/commit/f1cf5298))
+* **dynamic_component_loader:** check whether the dynamically loaded component has already been destroyed ([d6cef88d](https://github.com/angular/angular/commit/d6cef88d), closes [#2748](https://github.com/angular/angular/issues/2748), [#2767](https://github.com/angular/angular/issues/2767))
+* **transformer:**
+  * Add getters for `events`. ([5a21dc53](https://github.com/angular/angular/commit/5a21dc53))
+  * Don't hang on bad urls and log better errors ([d037c082](https://github.com/angular/angular/commit/d037c082))
+  * Fix annotation_matcher for NgForm directive. ([9c768501](https://github.com/angular/angular/commit/9c768501))
+* **typings:** Minor issues preventing angular2.d.ts from working in TS 1.4. ([7a4a3c85](https://github.com/angular/angular/commit/7a4a3c85))
+
+
+#### Features
+
+* upgrade clang-format and gulp-clang-format. ([1f7296c0](https://github.com/angular/angular/commit/1f7296c0))
+* **NgStyle:** add new NgStyle directive ([b50edfd1](https://github.com/angular/angular/commit/b50edfd1), closes [#2665](https://github.com/angular/angular/issues/2665))
+* **async:** added PromiseWrapper.wrap ([b688dee4](https://github.com/angular/angular/commit/b688dee4))
+* **benchpress:** initial support for firefox ([0949a4b0](https://github.com/angular/angular/commit/0949a4b0), closes [#2419](https://github.com/angular/angular/issues/2419))
+* **build:** add tslint to the build. ([bc585f27](https://github.com/angular/angular/commit/bc585f27))
+* **di:**
+  * removed app injector ([f0e962c5](https://github.com/angular/angular/commit/f0e962c5))
+  * changed InstantiationError to print the original stack ([eb0fd796](https://github.com/angular/angular/commit/eb0fd796))
+* **facade:** add ListWrapper.toJSON method ([23350755](https://github.com/angular/angular/commit/23350755))
+* **http:** refactor library to work in dart ([55bf0e55](https://github.com/angular/angular/commit/55bf0e55), closes [#2415](https://github.com/angular/angular/issues/2415))
+* **lang:** added originalException and originalStack to BaseException ([56245c6a](https://github.com/angular/angular/commit/56245c6a))
+* **pipes:**
+  * add limitTo pipe ([0b502588](https://github.com/angular/angular/commit/0b502588))
+  * support arguments in transform function ([600d53c6](https://github.com/angular/angular/commit/600d53c6))
+* **router:** support deep-linking to anywhere in the app ([f66ce096](https://github.com/angular/angular/commit/f66ce096), closes [#2642](https://github.com/angular/angular/issues/2642))
+* **transformers:** provide a flag to disable inlining views ([dcdd7306](https://github.com/angular/angular/commit/dcdd7306), closes [#2658](https://github.com/angular/angular/issues/2658))
+
+
+#### Breaking Changes
+
+* 
+THe appInjector property has been removed. Instead use viewInjector or hostInjector.
+
+ ([f0e962c5](https://github.com/angular/angular/commit/f0e962c5))
+*     The Http module previously would return RxJS Observables from method calls
+    of the Http class. In order to support Dart, the module was refactored to
+    return the EventEmitter abstraction instead, which does not contain the same
+    combinators or subscription semantics as an RxJS Observable. However, the
+    EventEmitter provides a toRx() method which will return an RxJS Subject,
+    providing the same subscription and combinator conveniences as were
+    available prior to this refactor.
+
+    This is temporary, until issue #2794 is resolved, when Observables will
+    again be returned directly from Http class methods.
+
+ ([34eaf65a](https://github.com/angular/angular/commit/34eaf65a))
+* HttpFactory is no longer available. 
+    This factory provided a function alternative to the `request` method of the
+    Http class, but added no real value. The additional factory required an
+    additional IHttp interface, an odd way to inject while preserving type information
+    (`@Inject(HttpFactory) http:IHttp`), and required additional documentation in the
+    http module.
+
+Closes #2564
+
+ ([146dbf12](https://github.com/angular/angular/commit/146dbf12))
+
+
 <a name"2.0.0-alpha.28"></a>
 ### 2.0.0-alpha.28 (2015-06-24)
 
