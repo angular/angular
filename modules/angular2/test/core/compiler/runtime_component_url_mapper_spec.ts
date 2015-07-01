@@ -1,9 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
 
-import {
-  ComponentUrlMapper,
-  RuntimeComponentUrlMapper
-} from 'angular2/src/core/compiler/component_url_mapper';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {RuntimeComponentUrlMapper} from 'angular2/src/core/compiler/runtime_component_url_mapper';
 
 export function main() {
   describe('RuntimeComponentUrlMapper', () => {

@@ -27,10 +27,8 @@ import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {
-  ComponentUrlMapper,
-  RuntimeComponentUrlMapper
-} from 'angular2/src/core/compiler/component_url_mapper';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {RuntimeComponentUrlMapper} from 'angular2/src/core/compiler/runtime_component_url_mapper';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 
 import {UrlResolver} from 'angular2/src/services/url_resolver';

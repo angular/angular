@@ -1,6 +1,5 @@
 import {Injectable} from 'angular2/di';
-import {Type, isPresent} from 'angular2/src/facade/lang';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Type} from 'angular2/src/facade/lang';
 
 @Injectable()
 export class ComponentUrlMapper {
@@ -9,21 +8,4 @@ export class ComponentUrlMapper {
   // - an absolute URL,
   // - a path relative to the application
   getUrl(component: Type): string { return './'; }
-}
-
-export class RuntimeComponentUrlMapper extends ComponentUrlMapper {
-  _componentUrls: Map<Type, string>;
-
-  constructor() {
-    super();
-    this._componentUrls = new Map();
-  }
-
-  setComponentUrl(component: Type, url: string) { this._componentUrls.set(component, url); }
-
-  getUrl(component: Type): string {
-    var url = this._componentUrls.get(component);
-    if (isPresent(url)) return url;
-    return super.getUrl(component);
-  }
 }
