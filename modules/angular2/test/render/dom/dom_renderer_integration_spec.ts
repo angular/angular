@@ -107,11 +107,10 @@ export function main() {
 
                var el = DOM.childNodes(tb.rootEl)[0];
                tb.renderer.setElementProperty(elRef(cmpView.viewRef, 0), 'value', 'hello');
-               expect((</*(#2770) HTMLInputElement*/ any>el).value).toEqual('hello');
+               expect((<HTMLInputElement>el).value).toEqual('hello');
 
                tb.renderer.setElementClass(elRef(cmpView.viewRef, 0), 'a', true);
-               expect((</*(#2770) HTMLInputElement*/ any>DOM.childNodes(tb.rootEl)[0]).value)
-                   .toEqual('hello');
+               expect((<HTMLInputElement>DOM.childNodes(tb.rootEl)[0]).value).toEqual('hello');
                tb.renderer.setElementClass(elRef(cmpView.viewRef, 0), 'a', false);
                expect(DOM.hasClass(el, 'a')).toBe(false);
 
