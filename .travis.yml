@@ -24,10 +24,7 @@ env:
   matrix:
   - MODE=js DART_CHANNEL=dev
   - MODE=dart DART_CHANNEL=stable
-  # Deactivate dev mode for Dart as there are breaking changes.
-  # Reactivate when https://github.com/angular/angular/issues/2798 is fixed!
-  # (Note: we need the dev channel as Google3 is close to it and ahead of stable channel)
-  # - MODE=dart DART_CHANNEL=dev
+  - MODE=dart DART_CHANNEL=dev
 
 addons:
   firefox: "38.0"
