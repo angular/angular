@@ -26,6 +26,18 @@ declare module "{$ module.id $}" {
   {%- endif %}
   {$ export.docType $} {$ export.name $}{$ export.typeParams $}{$ export.heritage $}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
+  {%- if export.newMember -%}
+    {$ commentBlock(export.newMember, 5) $}
+    new ({% for param in export.newMember.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %})
+    {%- if export.newMember.returnType %}: {$ export.newMember.returnType $}{%- else -%}: any{% endif -%}
+    ;
+  {% endif %}
+  {%- if export.callMember -%}
+    {$ commentBlock(export.callMember, 5) $}
+    ({% for param in export.callMember.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %})
+    {%- if export.callMember.returnType %}: {$ export.callMember.returnType $}{%- else -%}: any{% endif -%}
+    ;
+  {% endif %}
   {%- for member in export.members -%}
     {$ commentBlock(member, 5) $}
     {$ member.name $}

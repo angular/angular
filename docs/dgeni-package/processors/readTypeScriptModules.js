@@ -83,6 +83,12 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
               } else if (!hidePrivateMembers || memberSymbol.name.charAt(0) !== '_') {
                 docs.push(memberDoc);
                 exportDoc.members.push(memberDoc);
+              } else if (memberSymbol.name === '__call' && memberSymbol.flags & ts.SymbolFlags.Signature) {
+                docs.push(memberDoc);
+                exportDoc.callMember = memberDoc;
+              } else if (memberSymbol.name === '__new' && memberSymbol.flags & ts.SymbolFlags.Signature) {
+                docs.push(memberDoc);
+                exportDoc.newMember = memberDoc;
               }
             }
 
@@ -196,7 +202,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       location: getLocation(memberSymbol)
     };
 
-    if (memberSymbol.flags & ts.SymbolFlags.Method) {
+    if (memberSymbol.flags & (ts.SymbolFlags.Method | ts.SymbolFlags.Signature)) {
       // NOTE: we use the property name `parameters` here so we don't conflict
       // with the `params` property that will be updated by dgeni reading the
       // `@param` tags from the docs
@@ -208,7 +214,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       memberDoc.name = 'constructor';
     }
 
-    if(memberSymbol.flags & ts.SymbolFlags.Value) {
+    if(memberSymbol.flags & (ts.SymbolFlags.Value | ts.SymbolFlags.Signature) ) {
       memberDoc.returnType = getReturnType(typeChecker, memberSymbol);
     }
 

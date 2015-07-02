@@ -1,4 +1,5 @@
 export interface MyInterface {
-  optionalProperty? : string,
+  optionalProperty? : string
   (param: string) : string
+  new (param: number) : MyInterface
 }

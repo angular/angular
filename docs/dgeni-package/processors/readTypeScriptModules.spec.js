@@ -58,6 +58,22 @@ describe('readTypeScriptModules', function() {
       expect(member.name).toEqual('optionalProperty');
       expect(member.optional).toEqual(true);
     });
+
+
+    it('should handle "call" type interfaces', function() {
+      processor.sourceFiles = [ 'interfaces.ts'];
+      var docs = [];
+      processor.$process(docs);
+
+      var moduleDoc = docs[0];
+      var exportedInterface = moduleDoc.exports[0];
+      expect(exportedInterface.callMember).toBeDefined();
+      expect(exportedInterface.callMember.parameters).toBeDefined();
+      expect(exportedInterface.callMember.returnType).toBeDefined();
+      expect(exportedInterface.newMember).toBeDefined();
+      expect(exportedInterface.newMember.parameters).toBeDefined();
+      expect(exportedInterface.newMember.returnType).toBeDefined();
+    });
   });
 
 
