@@ -6,43 +6,56 @@ import {
 } from './annotations';
 import {ViewAnnotation, ViewArgs} from './view';
 import {AttributeAnnotation, QueryAnnotation} from './di';
-import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
+import {
+  makeDecorator,
+  makeParamDecorator,
+  TypeDecorator,
+  ParamaterDecorator,
+  Class
+} from '../../util/decorators';
 import {Type} from 'angular2/src/facade/lang';
 
-export {ClassDefinition, TypeDecorator} from '../../util/decorators';
+export interface DirectiveDecorator extends TypeDecorator {}
 
-export interface DirectiveTypeDecorator extends TypeDecorator {}
+export interface ComponentDecorator extends TypeDecorator { View(obj: ViewArgs): ViewDecorator; }
 
-export interface ComponentTypeDecorator extends TypeDecorator {
-  View(obj: ViewArgs): ViewTypeDecorator;
-}
+export interface ViewDecorator extends TypeDecorator { View(obj: ViewArgs): ViewDecorator }
 
-export interface ViewTypeDecorator extends TypeDecorator { View(obj: ViewArgs): ViewTypeDecorator }
-
-export interface IDirective {
-  (obj: DirectiveArgs): DirectiveTypeDecorator;
+export interface DirectiveFactory {
+  (obj: DirectiveArgs): DirectiveDecorator;
   new (obj: DirectiveAnnotation): DirectiveAnnotation;
 }
 
-export interface IComponent {
-  (obj: ComponentArgs): ComponentTypeDecorator;
+export interface ComponentFactory {
+  (obj: ComponentArgs): ComponentDecorator;
   new (obj: ComponentAnnotation): ComponentAnnotation;
 }
 
-export interface IView {
-  (obj: ViewArgs): ViewTypeDecorator;
+export interface ViewFactory {
+  (obj: ViewArgs): ViewDecorator;
   new (obj: ViewArgs): ViewAnnotation;
+}
+
+export interface AttributeFactory {
+  (name: string): TypeDecorator;
+  new (name: string): AttributeAnnotation;
+}
+
+export interface QueryFactory {
+  (selector: Type | string, {descendants}?: {descendants?: boolean}): ParameterDecorator;
+  new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryAnnotation;
 }
 
 
 /* from annotations */
-export var Component: IComponent =
-    <IComponent>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
-export var Directive: IDirective = <IDirective>makeDecorator(DirectiveAnnotation);
+export var Component: ComponentFactory =
+    <ComponentFactory>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
+export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(DirectiveAnnotation);
 
 /* from view */
-export var View: IView = <IView>makeDecorator(ViewAnnotation, (fn: any) => fn.View = View);
+export var View: ViewFactory =
+    <ViewFactory>makeDecorator(ViewAnnotation, (fn: any) => fn.View = View);
 
 /* from di */
-export var Attribute = makeParamDecorator(AttributeAnnotation);
-export var Query = makeParamDecorator(QueryAnnotation);
+export var Attribute: AttributeFactory = makeParamDecorator(AttributeAnnotation);
+export var Query: QueryFactory = makeParamDecorator(QueryAnnotation);

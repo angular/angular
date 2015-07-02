@@ -6,10 +6,12 @@ export interface ClassDefinition {
 }
 
 export interface TypeDecorator {
-  (cls: any): any;
+  <T>(cls: T): T;
   annotations: Array<any>;
   Class(obj: ClassDefinition): Type;
 }
+
+export interface ParamaterDecorator { (cls: Type, unusedKey: any, index: number): void }
 
 function extractAnnotation(annotation: any): any {
   if (isFunction(annotation) && annotation.hasOwnProperty('annotation')) {

@@ -32,7 +32,7 @@
 {% block staticDeclarations %}{% endblock %}
 {% for alias, module in doc.moduleDocs %}
 {$ commentBlock(module.doc, 1) $}
-declare module "{$ module.id $}" {
+declare module ng {
 
   {%- for export in module.doc.exports -%}
   {%- if export.content -%}
@@ -68,3 +68,6 @@ declare module "{$ module.id $}" {
 
 {% endfor %}
 
+declare module "angular2/angular2" {
+  export = ng;
+}
