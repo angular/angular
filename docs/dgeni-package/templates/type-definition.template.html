@@ -5,7 +5,6 @@
 {$ doc.content | trim | replace(r/^/gm, "* ") | indent(level, true) | replace(r/\n$/, "") $}
 {$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
 {%- endmacro -%}
-
 // Type definitions for Angular v{$ versionInfo.currentVersion.full | replace(r/\+/, "_") $}
 // Project: http://angular.io/
 // Definitions by: angular team <https://github.com/angular/>
@@ -16,34 +15,12 @@
 // Please do not create manual edits or send pull requests
 // modifying this file.
 // ***********************************************************
-
-// Angular depends transitively on these libraries.
-// If you don't have them installed you can run
-// $ tsd query es6-promise rx rx-lite --action install --save
-///<reference path="../es6-promise/es6-promise.d.ts"/>
-///<reference path="../rx/rx.d.ts"/>
-
-interface List<T> extends Array<T> {}
-interface Map<K,V> {}
-interface StringMap<K,V> extends Map<K,V> {}
-interface Type {}
-
-declare module "angular2/angular2" {
-  type SetterFn = typeof Function;
-  type int = number;
-
-  // See https://github.com/Microsoft/TypeScript/issues/1168
-  class BaseException /* extends Error */ {
-    message: string;
-    stack: string;
-    toString(): string;
-  }
-}
-{% for module in doc.modules %}
-{$ commentBlock(module, 1) $}
+{% block staticDeclarations %}{% endblock %}
+{% for alias, module in doc.moduleDocs %}
+{$ commentBlock(module.doc, 1) $}
 declare module "{$ module.id $}" {
 
-  {%- for export in module.exports -%}
+  {%- for export in module.doc.exports -%}
   {%- if export.content -%}
     {$ commentBlock(export, 3) $}
   {%- endif %}
