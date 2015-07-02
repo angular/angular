@@ -71,10 +71,7 @@ export function main() {
 
         expect(function() {
           wf.name = true;
-        }).toThrowError(IS_DARTIUM ?
-          // Dart
-          "type 'bool' is not a subtype of type 'String' of 'value'" :
-          // JavaScript
+        }).toThrowError(
           // TODO(vojta): Better error, it's not first argument, it's setting a field.
           'Invalid arguments given!\n' +
           '  - 1st argument has to be an instance of string, got true'
@@ -86,10 +83,7 @@ export function main() {
       it('should fail when setting wrong type value', function() {
         expect(function() {
           WithFields.id = true;
-        }).toThrowError(IS_DARTIUM ?
-          // Dart
-          "type 'bool' is not a subtype of type 'num' of 'id'" :
-          // JavaScript
+        }).toThrowError(
           // TODO(vojta): Better error, it's not first argument, it's setting a field.
           'Invalid arguments given!\n' +
           '  - 1st argument has to be an instance of number, got true'

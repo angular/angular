@@ -1,34 +1,61 @@
-var _global = typeof window === 'undefined' ? global : window;
+/// <reference path="../../globals.d.ts" />
+var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : window);
 export {_global as global};
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export var Type = Function;
+export type Type = new (...args: any[]) => any;
+
+export class BaseException extends Error {
+  stack;
+  constructor(public message?: string, public originalException?, public originalStack?) {
+    super(message);
+    this.stack = (<any>new Error(message)).stack;
+  }
+
+  toString(): string { return this.message; }
+}
+
 export var Math = _global.Math;
 export var Date = _global.Date;
 
-var assertionsEnabled_ = typeof assert !== 'undefined';
-
-var int;
-// global assert support, as Dart has it...
-// TODO: `assert` calls need to be removed in production code!
-if (assertionsEnabled_) {
-  _global.assert = assert;
-  // `int` is not a valid JS type
-  int = assert.define(
-      'int', function(value) { return typeof value === 'number' && value % 1 === 0; });
-} else {
-  int = {};
-  _global.assert = function() {};
+var assertionsEnabled_ = typeof _global['assert'] !== 'undefined';
+export function assertionsEnabled(): boolean {
+  return assertionsEnabled_;
 }
-export {int};
 
-export class CONST {}
-export class ABSTRACT {}
-export class IMPLEMENTS {}
+// TODO: remove calls to assert in production environment
+// Note: Can't just export this and import in in other files
+// as `assert` is a reserved keyword in Dart
+_global.assert = function assert(condition) {
+  if (assertionsEnabled_) {
+    _global['assert'].call(condition);
+  }
+};
+
+export function ENUM_INDEX(value: int): int {
+  return value;
+}
+
+// This function is needed only to properly support Dart's const expressions
+// see https://github.com/angular/ts2dart/pull/151 for more info
+export function CONST_EXPR<T>(expr: T): T {
+  return expr;
+}
+
+export function CONST():<T>(target: T) => T {
+  return (target) => target;
+}
+
+export function ABSTRACT():<T>(target: T) => T {
+  return (t) => t;
+}
+
+// Note: This is only a marker annotation needed for ts2dart.
+// This is written so that is can be used as a Traceur annotation
+// or a Typescript decorator.
+export function IMPLEMENTS(_):<T>(target: T) => T {
+  return (t) => t;
+}
 
 export function isPresent(obj): boolean {
   return obj !== undefined && obj !== null;
@@ -44,6 +71,22 @@ export function isString(obj): boolean {
 
 export function isFunction(obj): boolean {
   return typeof obj === "function";
+}
+
+export function isType(obj): boolean {
+  return isFunction(obj);
+}
+
+export function isStringMap(obj): boolean {
+  return typeof obj === 'object' && obj !== null;
+}
+
+export function isPromise(obj): boolean {
+  return obj instanceof (<any>_global).Promise;
+}
+
+export function isArray(obj): boolean {
+  return Array.isArray(obj);
 }
 
 export function stringify(token): string {
@@ -65,9 +108,9 @@ export function stringify(token): string {
 export class StringWrapper {
   static fromCharCode(code: int): string { return String.fromCharCode(code); }
 
-  static charCodeAt(s: string, index: int) { return s.charCodeAt(index); }
+  static charCodeAt(s: string, index: int): number { return s.charCodeAt(index); }
 
-  static split(s: string, regExp) { return s.split(regExp); }
+  static split(s: string, regExp): List<string> { return s.split(regExp); }
 
   static equals(s: string, s2: string): boolean { return s === s2; }
 
@@ -79,9 +122,13 @@ export class StringWrapper {
     return s.replace(from, replace);
   }
 
-  static startsWith(s: string, start: string) { return s.startsWith(start); }
+  static toUpperCase(s: string): string { return s.toUpperCase(); }
 
-  static substring(s: string, start: int, end: int = null) {
+  static toLowerCase(s: string): string { return s.toLowerCase(); }
+
+  static startsWith(s: string, start: string): boolean { return s.startsWith(start); }
+
+  static substring(s: string, start: int, end: int = null): string {
     return s.substring(start, end === null ? undefined : end);
   }
 
@@ -100,17 +147,17 @@ export class StringWrapper {
 export class StringJoiner {
   constructor(public parts = []) {}
 
-  add(part: string) { this.parts.push(part); }
+  add(part: string): void { this.parts.push(part); }
 
   toString(): string { return this.parts.join(""); }
 }
 
-export class NumberParseError implements Error {
+export class NumberParseError extends BaseException {
   name: string;
 
-  constructor(public message: string) {}
+  constructor(public message: string) { super(); }
 
-  toString() { return this.message; }
+  toString(): string { return this.message; }
 }
 
 
@@ -163,12 +210,17 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp, input) {
+  static firstMatch(regExp: RegExp, input: string): List<string> {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);
   }
-  static matcher(regExp, input) {
+  static test(regExp: RegExp, input: string): boolean { return regExp.test(input); }
+  static matcher(regExp, input): {
+    re: RegExp;
+    input: string
+  }
+  {
     // Reset regex state for the case
     // someone did not loop over all matches
     // last time.
@@ -178,15 +230,12 @@ export class RegExpWrapper {
 }
 
 export class RegExpMatcherWrapper {
-  static next(matcher) { return matcher.re.exec(matcher.input); }
+  static next(matcher): string { return matcher.re.exec(matcher.input); }
 }
 
 export class FunctionWrapper {
-  static apply(fn: Function, posArgs) { return fn.apply(null, posArgs); }
+  static apply(fn: Function, posArgs): any { return fn.apply(null, posArgs); }
 }
-
-// No subclass so that we preserve error stack.
-export var BaseException = Error;
 
 // JS has NaN !== NaN
 export function looseIdentical(a, b): boolean {
@@ -195,20 +244,20 @@ export function looseIdentical(a, b): boolean {
 
 // JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
 // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-export function getMapKey(value) {
+export function getMapKey(value): any {
   return value;
 }
 
-export function normalizeBlank(obj) {
+export function normalizeBlank(obj): any {
   return isBlank(obj) ? null : obj;
+}
+
+export function normalizeBool(obj: boolean): boolean {
+  return isBlank(obj) ? false : obj;
 }
 
 export function isJsObject(o): boolean {
   return o !== null && (typeof o === "function" || typeof o === "object");
-}
-
-export function assertionsEnabled(): boolean {
-  return assertionsEnabled_;
 }
 
 export function print(obj) {
@@ -220,11 +269,17 @@ export function print(obj) {
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
-export var Json = _global.JSON;
+export class Json {
+  static parse(s: string): Object { return _global.JSON.parse(s); }
+  static stringify(data): string {
+    // Dart doesn't take 3 arguments
+    return _global.JSON.stringify(data, null, 2);
+  }
+}
 
 export class DateWrapper {
-  static fromMillis(ms) { return new Date(ms); }
-  static toMillis(date: Date) { return date.getTime(); }
-  static now() { return new Date(); }
-  static toJson(date) { return date.toJSON(); }
+  static fromMillis(ms): Date { return new Date(ms); }
+  static toMillis(date: Date): number { return date.getTime(); }
+  static now(): Date { return new Date(); }
+  static toJson(date): string { return date.toJSON(); }
 }

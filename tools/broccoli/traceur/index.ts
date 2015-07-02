@@ -1,55 +1,56 @@
-/// <reference path="../broccoli-writer.d.ts" />
 /// <reference path="../../typings/fs-extra/fs-extra.d.ts" />
 /// <reference path="../../typings/node/node.d.ts" />
+
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
-var traceur = require('../../../tools/transpiler');
-var walkSync = require('walk-sync');
-import Writer = require('broccoli-writer');
-var xtend = require('xtend');
+import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from '../diffing-broccoli-plugin';
 
-class TraceurFilter extends Writer {
-  static RUNTIME_PATH = traceur.RUNTIME_PATH;
+let traceur = require('../../../../tools/transpiler');
+let xtend = require('xtend');
 
-  constructor(private inputTree, private destExtension: string,
-              private destSourceMapExtension: string, private options = {}) {
-    super();
-  }
 
-  write(readTree, destDir) {
-    return readTree(this.inputTree)
-        .then(srcDir => {
-          walkSync(srcDir)
-              .filter(filepath =>
-                      {
-                        var extension = path.extname(filepath).toLowerCase();
-                        return extension === '.js' || extension === '.es6' || extension === '.cjs';
-                      })
-              .map(filepath => {
-                var options = xtend({filename: filepath}, this.options);
+class DiffingTraceurCompiler implements DiffingBroccoliPlugin {
+  constructor(public inputPath: string, public cachePath: string, public options) {}
 
-                var fsOpts = {encoding: 'utf-8'};
-                var sourcecode = fs.readFileSync(path.join(srcDir, filepath), fsOpts);
+  static includeExtensions = ['.js', '.cjs'];
 
-                var result = traceur.compile(options, filepath, sourcecode);
+  rebuild(treeDiff: DiffResult) {
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((changedFilePath) => {
+          var traceurOpts = xtend({filename: changedFilePath}, this.options.traceurOptions);
 
-                // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
-                // (but we might switch to typescript first)
-                var mapFilepath = filepath.replace(/\.\w+$/, '') + this.destSourceMapExtension;
-                result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(mapFilepath);
+          var fsOpts = {encoding: 'utf-8'};
+          var absoluteInputFilePath = path.join(this.inputPath, changedFilePath);
+          var sourcecode = fs.readFileSync(absoluteInputFilePath, fsOpts);
 
-                var destFilepath = filepath.replace(/\.\w+$/, this.destExtension);
-                var destFile = path.join(destDir, destFilepath);
-                fse.mkdirsSync(path.dirname(destFile));
-                fs.writeFileSync(destFile, result.js, fsOpts);
+          var result = traceur.compile(traceurOpts, changedFilePath, sourcecode);
 
-                var destMap = path.join(destDir, mapFilepath);
-                result.sourceMap.file = destFilepath;
-                fs.writeFileSync(destMap, JSON.stringify(result.sourceMap), fsOpts);
-              });
+          // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
+          // (but we might switch to typescript first)
+          var mapFilepath =
+              changedFilePath.replace(/\.\w+$/, '') + this.options.destSourceMapExtension;
+          result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(mapFilepath);
+
+          var destFilepath = changedFilePath.replace(/\.\w+$/, this.options.destExtension);
+          var destFile = path.join(this.cachePath, destFilepath);
+          fse.mkdirsSync(path.dirname(destFile));
+          fs.writeFileSync(destFile, result.js, fsOpts);
+
+          var destMap = path.join(this.cachePath, mapFilepath);
+          result.sourceMap.file = destFilepath;
+          fs.writeFileSync(destMap, JSON.stringify(result.sourceMap), fsOpts);
         });
+
+    treeDiff.removedPaths.forEach((removedFilePath) => {
+      var destFilepath = removedFilePath.replace(/\.\w+$/, this.options.destExtension);
+      var absoluteOuputFilePath = path.join(this.cachePath, destFilepath);
+      fs.unlinkSync(absoluteOuputFilePath);
+    });
   }
 }
 
-module.exports = TraceurFilter;
+let transpileWithTraceur = wrapDiffingPlugin(DiffingTraceurCompiler);
+let TRACEUR_RUNTIME_PATH = traceur.RUNTIME_PATH;
+
+export {transpileWithTraceur as default, TRACEUR_RUNTIME_PATH};

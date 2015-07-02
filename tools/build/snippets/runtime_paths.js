@@ -1,6 +1,6 @@
 System.paths = {
   '*': '/*.js',
-  'rx/dist/*': '*.js'
+  'rx': 'rx.js'
 };
 register(System);
 cjs(System);

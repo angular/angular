@@ -5,7 +5,7 @@ projected to DOM as well as which DOM events should invoke which methods on the 
 syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of the template syntax has these properties:
- 
+
 
 * All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity whether the value should be
   interpreted as string literal or as an expression.)
@@ -372,8 +372,8 @@ Where:
   inserted. The template can be defined implicitly with `template` attribute, which turns the current element into
   a template, or explicitly with `<template>` element. Explicit declaration is longer, but it allows for having
   templates which have more than one root DOM node.
-* `viewport` is required for templates. The Viewport directive is responsible for deciding when
-  and in which order should child views be inserted into this location. An Viewport directive usually has one or
+* `viewport` is required for templates. The directive is responsible for deciding when
+  and in which order should child views be inserted into this location. Such a directive usually has one or
   more bindings and can be represented as either `viewport-directive-bindings` or
   `viewport-directive-microsyntax` on `template` element or attribute. See template microsyntax for more details.
 
@@ -382,48 +382,46 @@ Example of conditionally included template:
 
 ```
 Hello {{user}}!
-<div template="if: isAdministrator">
+<div template="ng-if: isAdministrator">
   ...administrator menu here...
 </div>
 ```
 
-In the above example the `if` Viewport determines whether the child view (an instance of the child template) should be
-inserted into the root view. The `if` makes this decision based on if the `isAdministrator` binding is true.
+In the above example the `ng-if` directive determines whether the child view (an instance of the child template) should be
+inserted into the root view. The `ng-if` makes this decision based on if the `isAdministrator` binding is true.
 
 The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
 identical.
 
 ```
 Hello {{user}}!
-<template [if]="isAdministrator">
+<template [ng-if]="isAdministrator">
   <div>
     ...administrator menu here...
   </div>
 </template>
 ```
 
-NOTE: Only Viewport directives can be placed on the template element. (Decorators and Components are not allowed.)
-
 
 ### Template Microsyntax
 
 Often times it is necessary to encode a lot of different bindings into a template to control how the instantiation
-of the templates occurs. One such example is `for`.
+of the templates occurs. One such example is `ng-for`.
 
 ```
 <form #foo=form>
 </form>
 <ul>
-  <template for #person [in]="people" #i="index">
+  <template [ng-for] #person [ng-for-of]="people" #i="index">
     <li>{{i}}. {{person}}<li>
   </template>
 </ul>
 ```
 
 Where:
-* `for` triggers the for directive.
-* `[in]="people"` binds an iterable object to the `for` controller.
-* `#person` exports the implicit `for` item.
+* `[ng-for]` triggers the for directive.
+* `#person` exports the implicit `ng-for` item. 
+* `[ng-for-of]="people"` binds an iterable object to the `ng-for` controller.
 * `#i=index` exports item index as `i`.
 
 The above example is explicit but quite wordy. For this reason in most situations a short hand version of the
@@ -431,7 +429,7 @@ syntax is preferable.
 
 ```
 <ul>
-  <li template="for; #person; in=people; #i=index;">{{i}}. {{person}}<li>
+  <li template="ng-for; #person; of=people; #i=index;">{{i}}. {{person}}<li>
 </ul>
 ```
 
@@ -441,24 +439,24 @@ which allows us to further shorten the text.
 
 ```
 <ul>
-  <li template="for #person of people #i=index">{{i}}. {{person}}<li>
+  <li template="ng-for #person of people #i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
 We can also optionally use `var` instead of `#` and add `:` to `for` which creates the following recommended
-microsyntax for `for`.
+microsyntax for `ng-for`.
 
 ```
 <ul>
-  <li template="for: var person of people; var i=index">{{i}}. {{person}}<li>
+  <li template="ng-for: var person of people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
-Finally, we can move the `for` keyword to the left hand side and prefix it with `*` as so:
+Finally, we can move the `ng-for` keyword to the left hand side and prefix it with `*` as so:
 
 ```
 <ul>
-  <li *for="var person of people; var i=index">{{i}}. {{person}}<li>
+  <li *ng-for="var person of people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
@@ -489,7 +487,7 @@ Where
 
 
 NOTE: the `template` attribute must be present to make it clear to the user that a sub-template is being created. This
-goes along the philosophy that the developer should be able to reason about the template without understanding the
+goes along with the philosophy that the developer should be able to reason about the template without understanding the
 semantics of the instantiator directive.
 
 
@@ -512,13 +510,14 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 
 Where:
 * `some-element` Any element which can generate DOM events (or has an angular directive which generates the event).
-* `some-event` (escaped with `()` or `bind-`) is the name of the event `some-event`. In this case the
+* `some-event` (escaped with `()` or `on-`) is the name of the event `some-event`. In this case the
   dash-case is converted into camel-case `someEvent`.
 * `statement` is a valid statement (as defined in section below).
+If the execution of the statement returns `false`, then `preventDefault`is applied on the DOM event.
 
 By default, angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
-events (as in the case of clicking on any child) use the bubble option (`(^event)` or `on-bubble-event`) as shown
-bellow.
+events (as in the case of clicking on any child) use the bubble option (`(event)` or `on-bubble-event`) as shown
+below.
 
 <table>
   <tr>
@@ -570,7 +569,7 @@ Angular are:
 <div title="{{expression}}">{{expression}}</div>
 <div [title]="expression">...</div>
 <div bind-title="expression">...</div>
-<div template="if: expression">...</div>
+<div template="ng-if: expression">...</div>
 ```
 
 Expressions are simplified version of expression in the language in which you are writing your application. (i.e.

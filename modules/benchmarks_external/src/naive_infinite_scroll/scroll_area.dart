@@ -9,9 +9,7 @@ import 'random_data.dart';
 @Component(
     selector: 'scroll-area',
     templateUrl: 'scroll_area.html',
-    map: const {
-      'scroll-top': '=>scrollTop',
-    })
+    map: const {'scroll-top': '=>scrollTop',})
 class ScrollAreaComponent implements ShadowRootAware {
   Element scrollDiv;
   List<Offering> _fullList;
@@ -32,10 +30,10 @@ class ScrollAreaComponent implements ShadowRootAware {
     scrollDiv = shadowRoot.querySelector('#scrollDiv');
     onScroll();
     scrollDivStyle.addAll({
-        'height': '${VIEW_PORT_HEIGHT}px',
-        'width': '1000px',
-        'border': '1px solid #000',
-        'overflow': 'scroll',
+      'height': '${VIEW_PORT_HEIGHT}px',
+      'width': '1000px',
+      'border': '1px solid #000',
+      'overflow': 'scroll',
     });
     innerStyle['width'] = '${ROW_WIDTH}px';
   }
@@ -52,7 +50,8 @@ class ScrollAreaComponent implements ShadowRootAware {
     int padding = iStart * ITEM_HEIGHT;
     innerStyle['height'] = '${HEIGHT - padding}px';
     paddingStyle['height'] = '${padding}px';
-    visibleItems..clear()..addAll(_fullList.getRange(iStart, iEnd));
+    visibleItems
+      ..clear()
+      ..addAll(_fullList.getRange(iStart, iEnd));
   }
-
 }

@@ -1,10 +1,12 @@
 {% include "lib/paramList.html" -%}
+{% include "lib/githubLinks.html" -%}
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
-<h1 class="class export">{$ doc.name $} <span class="type">class</span></h1>
-<p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a><br/>
-defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a></p>
+<h1 class="class export">{$ doc.name $} <span class="type">{$ doc.docType $}</span></h1>
+<p class="module">exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }<br/>
+defined in {$ githubViewLink(doc) $}
+</p>
 <p>{$ doc.description | marked $}</p>
 
 {%- if doc.constructorDoc or doc.members.length -%}
@@ -12,22 +14,22 @@ defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ do
 
 {%- if doc.constructorDoc %}
   <section class="member constructor">
-    <h1 class="name">{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h1>
+    <h1 id="constructor" class="name">{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h1>
     {% marked %}
       {$ doc.constructorDoc.description $}
     {% endmarked %}
   </section>
 {% endif -%}
 
-{%- for member in doc.members %}
+{%- for member in doc.members %}{% if not member.private %}
   <section class="member">
-    <h1 class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
+    <h1 id="{$ member.name $}" class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
     {% marked %}
       {$ member.description $}
     {% endmarked %}
   </section>
 
-{% endfor %}
+{% endif %}{% endfor %}
 {%- endif -%}
 
 {% endblock %}

@@ -1,0 +1,21 @@
+{
+    "version": "1.5.0",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "outDir": "dist/js/cjs"
+    },
+    "filesGlob": [
+        "./src/**/*.ts",
+        "./tools/**/*.ts",
+        "!./node_modules/**",
+        "!./modules_dart/**",
+        "!./packages/**",
+        "!./dist/**",
+        "!./temp/**"
+    ]
+}

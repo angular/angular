@@ -1,15 +1,17 @@
 /// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../angular_builder.d.ts" />
 'use strict';
 
-import {MultiCopy} from './multi_copy';
+import {MultiCopy} from './../multi_copy';
+import destCopy from '../broccoli-dest-copy';
 var Funnel = require('broccoli-funnel');
-var glob = require('glob');
-var mergeTrees = require('broccoli-merge-trees');
+import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
-var renderLodashTemplate = require('broccoli-lodash');
-var replace = require('broccoli-replace');
+import renderLodashTemplate from '../broccoli-lodash';
 var stew = require('broccoli-stew');
-var ts2dart = require('../broccoli-ts2dart');
+import ts2dart from '../broccoli-ts2dart';
+import dartfmt from '../broccoli-dartfmt';
+import replace from '../broccoli-replace';
 
 /**
  * A funnel starting at modules, including the given filters, and moving into the root.
@@ -22,15 +24,15 @@ function modulesFunnel(include: string[], exclude?: string[]) {
 /**
  * Replaces $SCRIPT$ in .html files with actual <script> tags.
  */
-function replaceScriptTagInHtml(content: string, relativePath: string): string {
+function replaceScriptTagInHtml(placeholder: string, relativePath: string): string {
   var scriptTags = '';
   if (relativePath.match(/^benchmarks/)) {
     scriptTags += '<script src="url_params_to_form.js" type="text/javascript"></script>\n';
   }
-  var scriptName = relativePath.replace(/.*\/([^/]+)\.html$/, '$1.dart');
+  var scriptName = relativePath.replace(/\\/g, '/').replace(/.*\/([^/]+)\.html$/, '$1.dart');
   scriptTags += '<script src="' + scriptName + '" type="application/dart"></script>\n' +
                 '<script src="packages/browser/dart.js" type="text/javascript"></script>';
-  return content.replace('$SCRIPTS$', scriptTags);
+  return scriptTags;
 }
 
 function stripModulePrefix(relativePath: string): string {
@@ -43,9 +45,13 @@ function stripModulePrefix(relativePath: string): string {
 function getSourceTree() {
   // Transpile everything in 'modules' except for rtts_assertions.
   var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*']);
-  var transpiled = ts2dart.transpile(tsInputTree);
+  var transpiled = ts2dart(tsInputTree, {
+    generateLibraryName: true,
+    generateSourceMap: false,
+    translateBuiltins: true,
+  });
   // Native sources, dart only examples, etc.
-  var dartSrcs = modulesFunnel(['**/*.dart']);
+  var dartSrcs = modulesFunnel(['**/*.dart', '**/*.ng_meta.json', '**/css/**']);
   return mergeTrees([transpiled, dartSrcs]);
 }
 
@@ -78,7 +84,11 @@ function fixDartFolderLayout(sourceTree) {
 
 function getHtmlSourcesTree() {
   // Replace $SCRIPT$ markers in HTML files.
-  var htmlSrcsTree = stew.map(modulesFunnel(['*/src/**/*.html']), replaceScriptTagInHtml);
+  var htmlSrcsTree = modulesFunnel(['*/src/**/*.html']);
+  htmlSrcsTree = replace(
+      htmlSrcsTree,
+      {files: ['*/**'], patterns: [{match: '$SCRIPTS$', replacement: replaceScriptTagInHtml}]});
+
   // Copy a url_params_to_form.js for each benchmark html file.
   var urlParamsToFormTree = new MultiCopy('', {
     srcPath: 'tools/build/snippets/url_params_to_form.js',
@@ -88,10 +98,15 @@ function getHtmlSourcesTree() {
   return mergeTrees([htmlSrcsTree, urlParamsToFormTree]);
 }
 
+function getExamplesJsonTree() {
+  // Copy JSON files
+  return modulesFunnel(['examples/**/*.json']);
+}
+
 
 function getTemplatedPubspecsTree() {
   // The JSON structure for templating pubspec.yaml files.
-  var BASE_PACKAGE_JSON = require('../../../package.json');
+  var BASE_PACKAGE_JSON = require('../../../../package.json');
   var COMMON_PACKAGE_JSON = {
     version: BASE_PACKAGE_JSON.version,
     homepage: BASE_PACKAGE_JSON.homepage,
@@ -109,13 +124,9 @@ function getTemplatedPubspecsTree() {
     }
   };
   // Generate pubspec.yaml from templates.
-  // Lodash insists on dropping one level of extension, so first artificially rename the yaml
-  // files to .yaml.template.
-  var pubspecs = stew.rename(modulesFunnel(['**/pubspec.yaml']), '.yaml', '.yaml.template');
+  var pubspecs = modulesFunnel(['**/pubspec.yaml']);
   // Then render the templates.
-  return renderLodashTemplate(
-      pubspecs,
-      {files: ['**/pubspec.yaml.template'], context: {'packageJson': COMMON_PACKAGE_JSON}});
+  return renderLodashTemplate(pubspecs, {context: {'packageJson': COMMON_PACKAGE_JSON}});
 }
 
 function getDocsTree() {
@@ -137,12 +148,12 @@ function getDocsTree() {
   return mergeTrees([licenses, mdTree, docs]);
 }
 
-module.exports = function makeDartTree() {
-  var sourceTree = mergeTrees([getSourceTree(), getHtmlSourcesTree()]);
+module.exports = function makeDartTree(options: AngularBuilderOptions) {
+  var dartSources = dartfmt(getSourceTree(), {dartSDK: options.dartSDK, logs: options.logs});
+  var sourceTree = mergeTrees([dartSources, getHtmlSourcesTree(), getExamplesJsonTree()]);
   sourceTree = fixDartFolderLayout(sourceTree);
 
-  var mergedResult = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);
+  var dartTree = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);
 
-  // Move the tree under the 'dart' folder.
-  return stew.mv(mergedResult, 'dart');
+  return destCopy(dartTree, options.outputPath);
 };

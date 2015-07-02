@@ -16,7 +16,7 @@ md-radio-button {
 
 md-radio-group {
   border: 1px dotted transparent;
-  display: block;
+  display: inline-block;
   outline: none;
 }
 
@@ -69,6 +69,11 @@ md-radio-group {
   white-space: normal;
   //  pointer-events: none;  ???
   width: auto;
+}
+
+.md-radio-root {
+  display: block;
+  cursor: pointer;
 }
 
 

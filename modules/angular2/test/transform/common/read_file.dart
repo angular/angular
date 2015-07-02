@@ -19,15 +19,29 @@ String readFile(String path) {
 }
 
 class TestAssetReader implements AssetReader {
-  Future<String> readAsString(AssetId id, {Encoding encoding}) =>
-      new Future.value(readFile(id.path));
+  /// This allows "faking"
+  final Map<AssetId, String> _overrideAssets = <AssetId, String>{};
+
+  Future<String> readAsString(AssetId id, {Encoding encoding}) {
+    if (_overrideAssets.containsKey(id)) {
+      return new Future.value(_overrideAssets[id]);
+    } else {
+      return new Future.value(readFile(id.path));
+    }
+  }
 
   Future<bool> hasInput(AssetId id) {
-    var exists = false;
+    var exists = _overrideAssets.containsKey(id);
+    if (exists) return new Future.value(true);
+
     for (var myPath in [id.path, 'test/transform/${id.path}']) {
       var file = new File(myPath);
       exists = exists || file.existsSync();
     }
     return new Future.value(exists);
+  }
+
+  void addAsset(AssetId id, String contents) {
+    _overrideAssets[id] = contents;
   }
 }

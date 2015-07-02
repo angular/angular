@@ -1,9 +1,9 @@
 library bar;
 
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'package:angular2/src/core/annotations_impl/annotations.dart';
 import 'foo.dart' as prefix;
 
-@Component(selector: prefix.preDefinedSelector)
+@Component(selector: 'soup')
 class MyComponent {
   final prefix.MyContext c;
   final String generatedValue;

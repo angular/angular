@@ -8,7 +8,7 @@ DartFormatter _formatter = null;
 
 void init(DartFormatter formatter) {
   if (_formatter != null) {
-    logger.warning('Formatter is being overwritten.');
+    logger.info('Formatter is being overwritten.');
   }
   _formatter = formatter;
 }

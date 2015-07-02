@@ -1,8 +1,9 @@
+{% include "lib/githubLinks.html" -%}
 {% extends 'layout/base.template.html' %}
 
 {% block body %}
 <h1 class="id">{$ doc.id $} <span class="type">module</span></h1>
-
+<p>defined in {$ githubViewLink(doc) $}</p>
 <p>{$ doc.description | marked $}</p>
 
 {% if doc.exports.length %}
@@ -10,7 +11,7 @@
 <ul>
 {%- for exportDoc in doc.exports %}
   {% if not exportDoc.private -%}
-  <li><a href="/{$ exportDoc.path $}"><strong>{$ exportDoc.name $}</strong> {$ exportDoc.docType $}</a></li>
+  <li><a href="{$ exportDoc.path $}"><strong>{$ exportDoc.name $}</strong> {$ exportDoc.docType $}</a></li>
   {%- endif %}
 {%- endfor %}
 </ul>

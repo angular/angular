@@ -6,31 +6,22 @@ import 'package:angular2/src/transform/common/logging.dart';
 /// Visitor responsible for crawling the "annotations" value in a
 /// `registerType` call and pulling out the properties of any "bind"
 /// values found.
-class ExtractSettersVisitor extends Object with RecursiveAstVisitor<Object> {
-  final Map<String, String> bindMappings = {};
+class ExtractNamedExpressionVisitor extends Object with
+    RecursiveAstVisitor<Object> {
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
+  final List<String> bindConfig = [];
+  final String nameToExtract;
 
-  void _extractFromMapLiteral(MapLiteral map) {
-    map.entries.forEach((entry) {
-      // TODO(kegluneq): Remove this restriction
-      if (entry.key is SimpleStringLiteral &&
-          entry.value is SimpleStringLiteral) {
-        bindMappings[stringLiteralToString(entry.key)] =
-            stringLiteralToString(entry.value);
-      } else {
-        logger.error('`properties` currently only supports string literals '
-            '(${entry})');
-      }
-    });
-  }
+  ExtractNamedExpressionVisitor(this.nameToExtract);
 
   @override
   Object visitNamedExpression(NamedExpression node) {
-    if ('${node.name.label}' == 'properties') {
-      // TODO(kegluneq): Remove this restriction.
-      if (node.expression is MapLiteral) {
-        _extractFromMapLiteral(node.expression);
+    if ('${node.name.label}' == nameToExtract) {
+      var evaluated = node.expression.accept(_evaluator);
+      if (evaluated is List) {
+        bindConfig.addAll(evaluated);
       } else {
-        logger.error('`properties` currently only supports map literals');
+        logger.error('`$nameToExtract` currently only supports List values');
       }
       return null;
     }

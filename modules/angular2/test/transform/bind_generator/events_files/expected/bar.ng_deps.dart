@@ -1,0 +1,20 @@
+library bar.ng_deps.dart;
+
+import 'bar.dart';
+import 'package:angular2/src/core/annotations_impl/annotations.dart';
+
+var _visited = false;
+void initReflector(reflector) {
+  if (_visited) return;
+  _visited = true;
+  reflector
+    ..registerType(ToolTip, {
+      'factory': () => new ToolTip(),
+      'parameters': const [],
+      'annotations': const [
+        const Directive(
+            selector: '[tool-tip]', events: ['onOpen', 'close: onClose'])
+      ]
+    })
+    ..registerGetters({'onOpen': (o) => o.onOpen, 'onClose': (o) => o.close});
+}

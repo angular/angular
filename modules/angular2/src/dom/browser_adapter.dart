@@ -1,10 +1,10 @@
 library angular.core.facade.dom;
 
 import 'dart:html';
-import 'dart:js' show JsObject;
 import 'dom_adapter.dart' show setRootDomAdapter;
 import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import '../facade/browser.dart';
+import 'dart:js' as js;
 
 // WARNING: Do not expose outside this class. Parsing HTML using this
 // sanitizer is a security risk.
@@ -96,13 +96,37 @@ final _keyCodeToKeyMap = const {
 };
 
 class BrowserDomAdapter extends GenericBrowserDomAdapter {
+  js.JsFunction _setProperty;
+  js.JsFunction _getProperty;
+  js.JsFunction _hasProperty;
+  BrowserDomAdapter() {
+    _setProperty = js.context.callMethod('eval', ['(function(el, prop, value) { el[prop] = value; })']);
+    _getProperty = js.context.callMethod('eval', ['(function(el, prop) { return el[prop]; })']);
+    _hasProperty = js.context.callMethod('eval', ['(function(el, prop) { return prop in el; })']);
+  }
   static void makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
+  }
+  bool hasProperty(Element element, String name) =>
+      _hasProperty.apply([element, name]);
+
+  void setProperty(Element element, String name, Object value) =>
+      _setProperty.apply([element, name, value]);
+
+  getProperty(Element element, String name) =>
+      _getProperty.apply([element, name]);
+
+  invoke(Element element, String methodName, List args) =>
+      this.getProperty(element, methodName).apply(args, thisArg: element);
+
+  // TODO(tbosch): move this into a separate environment class once we have it
+  logError(error) {
+    window.console.error(error);
   }
 
   @override
   Map<String, String> get attrToPropMap => const <String, String>{
-    'innerHtml': 'innerHtml',
+    'innerHtml': 'innerHTML',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
@@ -130,7 +154,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   MouseEvent createMouseEvent(String eventType) =>
       new MouseEvent(eventType, canBubble: true);
-  Event createEvent(eventType) => new Event(eventType, canBubble: true);
+  Event createEvent(String eventType) => new Event(eventType, canBubble: true);
+  void preventDefault(Event evt) {
+    evt.preventDefault();
+  }
   String getInnerHTML(Element el) => el.innerHtml;
   String getOuterHTML(Element el) => el.outerHtml;
   void setInnerHTML(Element el, String value) {
@@ -151,13 +178,13 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   void appendChild(Node el, Node node) {
     el.append(node);
   }
-  void removeChild(Element el, Node node) {
+  void removeChild(el, Node node) {
     node.remove();
   }
   void replaceChild(Node el, Node newNode, Node oldNode) {
     oldNode.replaceWith(newNode);
   }
-  Element remove(Element el) {
+  ChildNode remove(ChildNode el) {
     return el..remove();
   }
   void insertBefore(Node el, node) {
@@ -212,8 +239,6 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   ShadowRoot getShadowRoot(Element el) => el.shadowRoot;
   Element getHost(Element el) => (el as ShadowRoot).host;
   clone(Node node) => node.clone(true);
-  bool hasProperty(Element element, String name) =>
-      new JsObject.fromBrowserObject(element).hasProperty(name);
   List<Node> getElementsByClassName(Element element, String name) =>
       element.getElementsByClassName(name);
   List<Node> getElementsByTagName(Element element, String name) =>
@@ -243,6 +268,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   Map<String, String> attributeMap(Element element) {
     return new Map.from(element.attributes);
   }
+
+  bool hasAttribute(Element element, String attribute) =>
+      element.attributes.containsKey(attribute);
 
   String getAttribute(Element element, String attribute) =>
       element.getAttribute(attribute);
@@ -292,7 +320,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   String getEventKey(KeyboardEvent event) {
     int keyCode = event.keyCode;
-    return _keyCodeToKeyMap.containsKey(keyCode) ? _keyCodeToKeyMap[keyCode] : 'Unidentified';
+    return _keyCodeToKeyMap.containsKey(keyCode)
+        ? _keyCodeToKeyMap[keyCode]
+        : 'Unidentified';
   }
   getGlobalEventTarget(String target) {
     if (target == "window") {
@@ -302,5 +332,29 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     } else if (target == "body") {
       return document.body;
     }
+  }
+  getHistory() {
+    return window.history;
+  }
+  getLocation() {
+    return window.location;
+  }
+  getBaseHref() {
+    var uri = document.baseUri;
+    var baseUri = Uri.parse(uri);
+    return baseUri.path;
+  }
+  String getUserAgent() {
+    return window.navigator.userAgent;
+  }
+  void setData(Element element, String name, String value) {
+    element.dataset[name] = value;
+  }
+  String getData(Element element, String name) {
+    return element.dataset[name];
+  }
+  // TODO(tbosch): move this into a separate environment class once we have it
+  setGlobalVar(String name, value) {
+    js.context[name] = value;
   }
 }

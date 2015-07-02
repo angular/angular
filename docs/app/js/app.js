@@ -14,7 +14,6 @@ angular.module('app', ['ngMaterial', 'navigation-modules', 'navigation-guides', 
   ];
 
   this.updateCurrentPage = function(path) {
-    path = path.replace(/^\//, '');
     console.log('path', path);
     this.currentPage = null;
 

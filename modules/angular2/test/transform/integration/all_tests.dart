@@ -1,7 +1,6 @@
 library angular2.test.transform.integration;
 
 import 'package:angular2/src/dom/html_adapter.dart';
-import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/transformer.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
@@ -14,8 +13,7 @@ main() {
 
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
-    ['web/index.dart'],
-    reflectionEntryPoints: ['web/index.dart'], modeName: TRANSFORM_MODE));
+    ['web/index.dart'], reflectionEntryPoints: ['web/index.dart']));
 
 class IntegrationTestConfig {
   final String name;
@@ -39,14 +37,14 @@ void allTests() {
    * every test.
    */
   var commonInputs = {
-    'angular2|lib/src/core/annotations/annotations.dart':
-        '../../../lib/src/core/annotations/annotations.dart',
+    'angular2|lib/src/core/annotations_impl/annotations.dart':
+        '../../../lib/src/core/annotations_impl/annotations.dart',
     'angular2|lib/src/core/application.dart': '../common/application.dart',
     'angular2|lib/src/reflection/reflection_capabilities.dart':
         '../common/reflection_capabilities.dart',
     'angular2|lib/di.dart': '../../../lib/di.dart',
-    'angular2|lib/src/di/annotations.dart':
-        '../../../lib/src/di/annotations.dart',
+    'angular2|lib/src/di/annotations_impl.dart':
+        '../../../lib/src/di/annotations_impl.dart',
   };
 
   var tests = [
@@ -59,12 +57,13 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart':
           'simple_annotation_files/expected/bar.ng_deps.dart',
+      'a|web/bar.ng_meta.json':
+          'simple_annotation_files/expected/bar.ng_meta.json',
       'a|web/index.ng_deps.dart':
           'simple_annotation_files/expected/index.ng_deps.dart'
     }),
     new IntegrationTestConfig(
-        'should generate proper code for a Component using a selector defined '
-        'in another file.',
+        'should generate proper code for a Component with multiple deps.',
         inputs: {
       'a|web/index.dart': 'two_deps_files/index.dart',
       'a|web/foo.dart': 'two_deps_files/foo.dart',
@@ -97,8 +96,8 @@ void allTests() {
         inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations/view.dart':
-          '../../../lib/src/core/annotations/view.dart'
+      'angular2|lib/src/core/annotations_impl/view.dart':
+          '../../../lib/src/core/annotations_impl/view.dart'
     },
         outputs: {
       'a|web/bar.ng_deps.dart':

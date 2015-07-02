@@ -1,33 +1,36 @@
-/// <reference path="./broccoli-filter.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 
-import Filter = require('broccoli-filter');
+import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
+import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 /**
  * Intercepts each file as it is copied to the destination tempdir,
  * and tees a copy to the given path outside the tmp dir.
  */
-class DestCopy extends Filter {
-  constructor(private inputTree, private outputRoot: string) { super(inputTree); }
+class DestCopy implements DiffingBroccoliPlugin {
+  constructor(private inputPath, private cachePath, private outputRoot: string) {}
 
-  getDestFilePath(relativePath: string): string { return relativePath; }
 
-  processString(content: string, relativePath: string): string { return content; }
+  rebuild(treeDiff: DiffResult) {
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((changedFilePath) => {
+          var destFilePath = path.join(this.outputRoot, changedFilePath);
 
-  processFile(srcDir, destDir, relativePath): Promise<any> {
-    return super.processFile(srcDir, destDir, relativePath)
-        .then(x => {
-          var destFile = path.join(this.outputRoot, this.getDestFilePath(relativePath));
-          var dir = path.dirname(destFile);
-          fse.mkdirsSync(dir);
-          fse.copySync(path.join(srcDir, relativePath), destFile);
+          var destDirPath = path.dirname(destFilePath);
+          fse.mkdirsSync(destDirPath);
+          fse.copySync(path.join(this.inputPath, changedFilePath), destFilePath);
         });
+
+    treeDiff.removedPaths.forEach((removedFilePath) => {
+      var destFilePath = path.join(this.outputRoot, removedFilePath);
+
+      // TODO: what about obsolete directories? we are not cleaning those up yet
+      fs.unlinkSync(destFilePath);
+    });
   }
 }
 
-export = function destCopy(inputTree, outputRoot) {
-  return new DestCopy(inputTree, outputRoot);
-}
+export default wrapDiffingPlugin(DestCopy);

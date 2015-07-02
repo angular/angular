@@ -1,56 +1,52 @@
-/// <reference path="./broccoli-writer.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
+/// <reference path="./ts2dart.d.ts" />
 
-import Writer = require('broccoli-writer');
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
 import ts2dart = require('ts2dart');
+import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
-type Set = {
-  [s: string]: boolean
-};
+class TSToDartTranspiler implements DiffingBroccoliPlugin {
+  static includeExtensions = ['.ts'];
 
-class TypeScriptToDartTranspiler extends Writer {
-  constructor(private inputTree, private includePattern = /\.(js|ts)$/) { super(); }
+  private basePath: string;
+  private transpiler: ts2dart.Transpiler;
 
-  write(readTree, destDir): Promise<void> {
-    return readTree(this.inputTree).then(dir => this.transpile(dir, destDir));
+  constructor(public inputPath: string, public cachePath: string, public options) {
+    options.basePath = inputPath;
+    this.transpiler = new ts2dart.Transpiler(options);
   }
 
-  private transpile(inputDir: string, destDir: string) {
-    var files = this.listRecursive(inputDir);
-    var toTranspile = [];
-    for (var f in files) {
-      // If it's not matching, don't translate.
-      if (!f.match(this.includePattern)) continue;
-      var dartVariant = f.replace(this.includePattern, '.dart');
-      // A .dart file of the same name takes precedence over transpiled code.
-      if (files.hasOwnProperty(dartVariant)) continue;
-      toTranspile.push(f);
-    }
-    var transpiler = new ts2dart.Transpiler(
-        {generateLibraryName: true, generateSourceMap: false, basePath: inputDir});
-    transpiler.transpile(toTranspile, destDir);
-  }
+  rebuild(treeDiff: DiffResult) {
+    let toEmit = [];
+    let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((changedPath) => {
+          let inputFilePath = path.resolve(this.inputPath, changedPath);
 
-  private listRecursive(root: string, res: Set = {}): Set {
-    var paths = fs.readdirSync(root);
-    paths.forEach((p) => {
-      p = path.join(root, p);
-      var stat = fs.statSync(p);
-      if (stat.isDirectory()) {
-        this.listRecursive(p, res);
-      } else {
-        // Collect *all* files so we can check .dart files that already exist and exclude them.
-        res[p] = true;
-      }
+          // Ignore files which don't need to be transpiled to Dart
+          let dartInputFilePath = getDartFilePath(inputFilePath);
+          if (fs.existsSync(dartInputFilePath)) return;
+
+          // Prepare to rebuild
+          toEmit.push(path.resolve(this.inputPath, changedPath));
+        });
+
+    treeDiff.removedPaths.forEach((removedPath) => {
+      let absolutePath = path.resolve(this.inputPath, removedPath);
+
+      // Ignore files which don't need to be transpiled to Dart
+      let dartInputFilePath = getDartFilePath(absolutePath);
+      if (fs.existsSync(dartInputFilePath)) return;
+
+      let dartOutputFilePath = getDartFilePath(removedPath);
+      fs.unlinkSync(path.join(this.cachePath, dartOutputFilePath));
     });
-    return res;
+
+    this.transpiler.transpile(toEmit, this.cachePath);
   }
 }
 
-export function transpile(inputTree) {
-  return new TypeScriptToDartTranspiler(inputTree);
-}
+export default wrapDiffingPlugin(TSToDartTranspiler);

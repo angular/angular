@@ -11,14 +11,17 @@ class HammerGesturesPlugin extends HammerGesturesPluginCommon {
     if (!super.supports(eventName)) return false;
 
     if (!js.context.hasProperty('Hammer')) {
-      throw new BaseException('Hammer.js is not loaded, can not bind ${eventName} event');
+      throw new BaseException(
+          'Hammer.js is not loaded, can not bind ${eventName} event');
     }
 
     return true;
   }
 
-  addEventListener(Element element, String eventName, Function handler, bool shouldSupportBubble) {
-    if (shouldSupportBubble) throw new BaseException('Hammer.js plugin does not support bubbling gestures.');
+  addEventListener(Element element, String eventName, Function handler,
+      bool shouldSupportBubble) {
+    if (shouldSupportBubble) throw new BaseException(
+        'Hammer.js plugin does not support bubbling gestures.');
     var zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
 

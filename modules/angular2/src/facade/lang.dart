@@ -3,12 +3,15 @@ library angular.core.facade.lang;
 export 'dart:core' show Type, RegExp, print, DateTime;
 import 'dart:math' as math;
 import 'dart:convert' as convert;
+import 'dart:async' show Future;
 
 class Math {
   static final _random = new math.Random();
   static int floor(num n) => n.floor();
   static double random() => _random.nextDouble();
 }
+
+int ENUM_INDEX(value) => value.index;
 
 class CONST {
   const CONST();
@@ -25,6 +28,10 @@ bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;
 bool isFunction(obj) => obj is Function;
+bool isType(obj) => obj is Type;
+bool isStringMap(obj) => obj is Map;
+bool isArray(obj) => obj is List;
+bool isPromise(obj) => obj is Future;
 
 String stringify(obj) => obj.toString();
 
@@ -61,6 +68,14 @@ class StringWrapper {
 
   static String replaceAll(String s, RegExp from, String replace) {
     return s.replaceAll(from, replace);
+  }
+
+  static String toUpperCase(String s) {
+    return s.toUpperCase();
+  }
+
+  static String toLowerCase(String s) {
+    return s.toLowerCase();
   }
 
   static startsWith(String s, String start) {
@@ -122,10 +137,14 @@ class RegExpWrapper {
   static RegExp create(regExpStr, [String flags = '']) {
     bool multiLine = flags.contains('m');
     bool caseSensitive = !flags.contains('i');
-    return new RegExp(regExpStr, multiLine: multiLine, caseSensitive: caseSensitive);
+    return new RegExp(regExpStr,
+        multiLine: multiLine, caseSensitive: caseSensitive);
   }
   static Match firstMatch(RegExp regExp, String input) {
     return regExp.firstMatch(input);
+  }
+  static bool test(RegExp regExp, String input) {
+    return regExp.hasMatch(input);
   }
   static Iterator<Match> matcher(RegExp regExp, String input) {
     return regExp.allMatches(input).iterator;
@@ -146,7 +165,7 @@ class _JSLikeMatch {
 
   _JSLikeMatch(this._m);
 
-  String operator[](index) => _m[index];
+  String operator [](index) => _m[index];
   int get index => _m.start;
   int get length => _m.groupCount + 1;
 }
@@ -159,8 +178,10 @@ class FunctionWrapper {
 
 class BaseException extends Error {
   final String message;
+  final originalException;
+  final originalStack;
 
-  BaseException(this.message);
+  BaseException([this.message, this.originalException, this.originalStack]);
 
   String toString() {
     return this.message;
@@ -183,6 +204,10 @@ dynamic normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
 }
 
+bool normalizeBool(bool obj) {
+  return isBlank(obj) ? false : obj;
+}
+
 bool isJsObject(o) {
   return false;
 }
@@ -199,7 +224,10 @@ bool assertionsEnabled() {
 // Can't be all uppercase as our transpiler would think it is a special directive...
 class Json {
   static parse(String s) => convert.JSON.decode(s);
-  static String stringify(data) => convert.JSON.encode(data);
+  static String stringify(data) {
+    var encoder = new convert.JsonEncoder.withIndent("  ");
+    return encoder.convert(data);
+  }
 }
 
 class DateWrapper {
@@ -216,3 +244,6 @@ class DateWrapper {
     return date.toUtc().toIso8601String();
   }
 }
+
+// needed to match the exports from lang.js
+var global = null;

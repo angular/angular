@@ -1,11 +1,12 @@
 language: node_js
 sudo: false
 node_js:
-- '0.10'
+- '0.12'
 
 cache:
   directories:
     - node_modules
+    - $HOME/.pub-cache
 
 env:
   global:
@@ -23,7 +24,13 @@ env:
   matrix:
   - MODE=js DART_CHANNEL=dev
   - MODE=dart DART_CHANNEL=stable
-  - MODE=dart DART_CHANNEL=dev
+  # Deactivate dev mode for Dart as there are breaking changes.
+  # Reactivate when https://github.com/angular/angular/issues/2798 is fixed!
+  # (Note: we need the dev channel as Google3 is close to it and ahead of stable channel)
+  # - MODE=dart DART_CHANNEL=dev
+
+addons:
+  firefox: "38.0"
 
 before_install:
 - echo ${TSDRC} > .tsdrc
@@ -36,12 +43,12 @@ before_install:
 
 install:
   # Update npm
-  - npm install -g npm@2.7.4
+  - npm install -g npm@2.9.1
   - npm --version
   # Check the size of caches
   - du -sh ./node_modules || true
-  # Install npm dependecies and ensure that npm cache is not stale
-  - tools/npm/install-dependencies.sh
+  # Install npm dependecies
+  - npm install
 
 before_script:
 - mkdir -p $LOGS_DIR

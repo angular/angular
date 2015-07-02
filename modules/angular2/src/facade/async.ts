@@ -1,19 +1,22 @@
 /// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
-/// <reference path="../../typings/rx/rx.all.d.ts" />
+/// <reference path="../../typings/rx/rx.d.ts" />
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
-import {int, global, isPresent} from 'angular2/src/facade/lang';
+import {global, isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import * as Rx from 'rx';
+
+export var Promise = (<any>global).Promise;
+
+export interface PromiseCompleter<R> {
+  promise: Promise<R>;
+  resolve: (value?: R | Thenable<R>) => void;
+  reject: (error?: any, stackTrace?: string) => void;
+}
 
 export class PromiseWrapper {
   static resolve(obj): Promise<any> { return Promise.resolve(obj); }
 
-  static reject(obj): Promise<any> { return Promise.reject(obj); }
+  static reject(obj, _): Promise<any> { return Promise.reject(obj); }
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
@@ -21,17 +24,27 @@ export class PromiseWrapper {
     return promise.catch(onError);
   }
 
-  static all(promises: List<Promise<any>>): Promise<any> {
+  static all(promises: List<any>): Promise<any> {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }
 
   static then<T>(promise: Promise<T>, success: (value: any) => T | Thenable<T>,
-                 rejection: (error: any) => T | Thenable<T>): Promise<T> {
+                 rejection?: (error: any, stack?: any) => T | Thenable<T>): Promise<T> {
     return promise.then(success, rejection);
   }
 
-  static completer() {
+  static wrap<T>(computation: () => T): Promise<T> {
+    return new Promise((res, rej) => {
+      try {
+        res(computation());
+      } catch (e) {
+        rej(e);
+      }
+    });
+  }
+
+  static completer(): PromiseCompleter<any> {
     var resolve;
     var reject;
 
@@ -42,17 +55,24 @@ export class PromiseWrapper {
 
     return {promise: p, resolve: resolve, reject: reject};
   }
-
-  static setTimeout(fn: Function, millis: int) { global.setTimeout(fn, millis); }
-
-  static isPromise(maybePromise): boolean { return maybePromise instanceof Promise; }
 }
 
+export class TimerWrapper {
+  static setTimeout(fn: Function, millis: int): int { return global.setTimeout(fn, millis); }
+  static clearTimeout(id: int): void { global.clearTimeout(id); }
+
+  static setInterval(fn: Function, millis: int): int { return global.setInterval(fn, millis); }
+  static clearInterval(id: int): void { global.clearInterval(id); }
+}
 
 export class ObservableWrapper {
-  static subscribe(emitter: EventEmitter, onNext, onThrow = null, onReturn = null) {
+  static subscribe(emitter: Observable, onNext, onThrow = null, onReturn = null): Object {
     return emitter.observer({next: onNext, throw: onThrow, return: onReturn});
   }
+
+  static isObservable(obs: any): boolean { return obs instanceof Observable; }
+
+  static dispose(subscription: any) { subscription.dispose(); }
 
   static callNext(emitter: EventEmitter, value: any) { emitter.next(value); }
 
@@ -63,7 +83,7 @@ export class ObservableWrapper {
 
 // TODO: vsavkin change to interface
 export class Observable {
-  observer(generator: any) {}
+  observer(generator: any): Object { return null; }
 }
 
 /**
@@ -74,15 +94,23 @@ export class Observable {
  */
 export class EventEmitter extends Observable {
   _subject: Rx.Subject<any>;
+  _immediateScheduler;
 
   constructor() {
     super();
-    this._subject = new Rx.Subject<any>();
+
+    // System creates a different object for import * than Typescript es5 emit.
+    if (Rx.hasOwnProperty('default')) {
+      this._subject = new (<any>Rx).default.Rx.Subject();
+      this._immediateScheduler = (<any>Rx).default.Rx.Scheduler.immediate;
+    } else {
+      this._subject = new Rx.Subject<any>();
+      this._immediateScheduler = (<any>Rx.Scheduler).immediate;
+    }
   }
 
-  observer(generator) {
-    var immediateScheduler = (<any>Rx.Scheduler).immediate;
-    return this._subject.observeOn(immediateScheduler)
+  observer(generator): Rx.IDisposable {
+    return this._subject.observeOn(this._immediateScheduler)
         .subscribe((value) => { setTimeout(() => generator.next(value)); },
                    (error) => generator.throw ? generator.throw(error) : null,
                    () => generator.return ? generator.return () : null);
@@ -94,5 +122,5 @@ export class EventEmitter extends Observable {
 
   throw(error) { this._subject.onError(error); }
 
-  return (value) { this._subject.onCompleted(); }
+  return (value?) { this._subject.onCompleted(); }
 }

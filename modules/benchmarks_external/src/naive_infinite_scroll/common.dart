@@ -23,32 +23,25 @@ const DUE_DATE_WIDTH = 100;
 const END_DATE_WIDTH = 100;
 const AAT_STATUS_WIDTH = 100;
 const ROW_WIDTH = COMPANY_NAME_WIDTH +
-  OPPORTUNITY_NAME_WIDTH +
-  OFFERING_NAME_WIDTH +
-  ACCOUNT_CELL_WIDTH +
-  BASE_POINTS_WIDTH +
-  KICKER_POINTS_WIDTH +
-  STAGE_BUTTONS_WIDTH +
-  BUNDLES_WIDTH +
-  DUE_DATE_WIDTH +
-  END_DATE_WIDTH +
-  AAT_STATUS_WIDTH;
+    OPPORTUNITY_NAME_WIDTH +
+    OFFERING_NAME_WIDTH +
+    ACCOUNT_CELL_WIDTH +
+    BASE_POINTS_WIDTH +
+    KICKER_POINTS_WIDTH +
+    STAGE_BUTTONS_WIDTH +
+    BUNDLES_WIDTH +
+    DUE_DATE_WIDTH +
+    END_DATE_WIDTH +
+    AAT_STATUS_WIDTH;
 
-const STATUS_LIST = const [
-    'Planned', 'Pitched', 'Won', 'Lost'
-];
+const STATUS_LIST = const ['Planned', 'Pitched', 'Won', 'Lost'];
 
-const AAT_STATUS_LIST = const [
-    'Active', 'Passive', 'Abandoned'
-];
+const AAT_STATUS_LIST = const ['Active', 'Passive', 'Abandoned'];
 
 // Imitate Streamy entities.
 
-class RawEntity
-extends Object
-with MapMixin<String, dynamic>
-implements ObservableMap<String, dynamic> {
-
+class RawEntity extends Object with MapMixin<String, dynamic>
+    implements ObservableMap<String, dynamic> {
   ObservableMap _data = new ObservableMap();
 
   @override
@@ -60,7 +53,7 @@ implements ObservableMap<String, dynamic> {
   }
 
   @override
-  operator[](String key) {
+  operator [](String key) {
     if (!key.contains('.')) {
       return _data[key];
     }
@@ -74,7 +67,7 @@ implements ObservableMap<String, dynamic> {
   }
 
   @override
-  operator[]=(String key, value) {
+  operator []=(String key, value) {
     if (!key.contains('.')) {
       _data[key] = value;
       return;
@@ -115,7 +108,7 @@ implements ObservableMap<String, dynamic> {
   bool deliverChanges() => _data.deliverChanges();
   @override
   notifyPropertyChange(Symbol field, Object oldValue, Object newValue) =>
-  _data.notifyPropertyChange(field, oldValue, newValue);
+      _data.notifyPropertyChange(field, oldValue, newValue);
   @override
   void notifyChange(ChangeRecord record) {
     _data.notifyChange(record);
@@ -199,7 +192,6 @@ class Opportunity extends RawEntity {
   set name(String val) {
     this['name'] = val;
   }
-
 }
 
 class Account extends RawEntity {

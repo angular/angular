@@ -1,0 +1,50 @@
+{% include "lib/githubLinks.html" -%}
+{% include "lib/paramList.html" -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body %}
+p.location-badge.
+  exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }
+  defined in {$ githubViewLink(doc) $}
+
+:markdown
+{$ doc.description | indent(2, true) $}
+
+{%- if doc.constructorDoc or doc.members.length -%}
+.l-main-section
+  h2 Members
+
+{%- if doc.constructorDoc %}
+  .l-sub-section
+    h3 {$ doc.constructorDoc.name $}
+
+    {% if doc.constructorDoc.parameters %}
+    pre.prettyprint
+      code.
+        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.parameters) | indent(4, true) | trim $}
+    {% endif %}
+    :markdown
+{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') $}
+
+
+{% endif -%}
+
+{%- for member in doc.members %}{% if not member.private %}
+  .l-sub-section
+    h3 {$ member.name $}
+
+    {% if member.parameters %}
+    pre.prettyprint
+      code.
+        {$ member.name $}{$ paramList(member.parameters) | indent(4, true) | trim $}{$ returnType(doc.returnType) $}
+    {% endif %}
+    :markdown
+
+{$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '')  $}
+
+
+
+{% endif %}{% endfor %}
+{%- endif -%}
+
+{% endblock %}

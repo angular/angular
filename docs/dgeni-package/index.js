@@ -3,6 +3,8 @@ require('../../tools/transpiler/index.js').init();
 var Package = require('dgeni').Package;
 var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
+var linksPackage = require('../links-package');
+var gitPackage = require('dgeni-packages/git');
 var path = require('canonical-path');
 
 var PARTIAL_PATH = 'partials';
@@ -10,59 +12,62 @@ var MODULES_DOCS_PATH = PARTIAL_PATH + '/modules';
 var GUIDES_PATH = PARTIAL_PATH + '/guides';
 
 // Define the dgeni package for generating the docs
-module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
+module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPackage, gitPackage])
 
 // Register the services and file readers
 .factory(require('./services/modules'))
-.factory(require('./services/atParser'))
-.factory(require('./services/getJSDocComment'))
-.factory(require('./services/SourceFile'))
-.factory(require('./services/TraceurParser'))
-.factory(require('./services/traceurOptions'))
-.factory(require('./services/ParseTreeVisitor'))
-.factory(require('./services/AttachCommentTreeVisitor'))
-.factory(require('./services/ExportTreeVisitor'))
-
-.factory(require('./readers/atScript'))
+.factory(require('./services/tsParser'))
+.factory(require('./services/tsParser/createCompilerHost'))
+.factory(require('./services/tsParser/getFileInfo'))
+.factory(require('./services/tsParser/getExportDocType'))
+.factory(require('./services/tsParser/getContent'))
 .factory(require('./readers/ngdoc'))
 
 .factory('EXPORT_DOC_TYPES', function() {
   return [
     'class',
+    'interface',
     'function',
     'var',
-    'const'
+    'const',
+    'enum',
+    'type-alias'
   ];
 })
 
 
 // Register the processors
-.processor(require('./processors/captureModuleExports'))
-.processor(require('./processors/captureClassMembers'))
-.processor(require('./processors/captureModuleDocs'))
-.processor(require('./processors/attachModuleDocs'))
-.processor(require('./processors/cloneExportedFromDocs'))
+.processor(require('./processors/readTypeScriptModules'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
+.processor(require('./processors/createTypeDefinitionFile'))
 
 
 // Configure the log service
 .config(function(log) {
-  log.level = 'warning';
+  log.level = 'warn';
 })
 
 
+.config(function(renderDocsProcessor, versionInfo) {
+  renderDocsProcessor.extraData.versionInfo = versionInfo;
+})
+
 // Configure file reading
-.config(function(readFilesProcessor, atScriptFileReader, ngdocFileReader) {
-  readFilesProcessor.fileReaders = [atScriptFileReader, ngdocFileReader];
+.config(function(readFilesProcessor, ngdocFileReader, readTypeScriptModules) {
+  readFilesProcessor.fileReaders = [ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
-    { include: 'modules/*/*.js', basePath: 'modules' },
-    { include: 'modules/*/src/**/*.js', basePath: 'modules' },
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
   ];
+
+  readTypeScriptModules.sourceFiles = [
+    '*/*.@(js|es6|ts)',
+    '*/src/**/*.@(js|es6|ts)'
+  ];
+  readTypeScriptModules.basePath = 'modules';
 })
 
 
@@ -70,6 +75,21 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/public'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/private'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/exportedAs'));
+
+  // We actually don't want to parse param docs in this package as we are getting the data out using TS
+  parseTagsProcessor.tagDefinitions.forEach(function(tagDef) {
+    if (tagDef.name === 'param') {
+      tagDef.docProperty = 'paramData';
+      tagDef.transforms = [];
+    }
+  });
+
+})
+
+
+// Configure links
+.config(function(getLinkInfo) {
+  getLinkInfo.useFirstAmbiguousLink = true;
 })
 
 
@@ -105,12 +125,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
 
   computeIdsProcessor.idTemplates.push({
-    docTypes: EXPORT_DOC_TYPES,
-    idTemplate: '${moduleDoc.id}.${name}',
-    getAliases: function(doc) { return [doc.id]; }
-  });
-
-  computeIdsProcessor.idTemplates.push({
     docTypes: ['member'],
     idTemplate: '${classDoc.id}.${name}',
     getAliases: function(doc) { return [doc.id]; }
@@ -133,7 +147,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
-    pathTemplate: '${id}',
+    pathTemplate: '/${id}',
     outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.html'
   });
 
@@ -152,7 +166,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['guide'],
-    pathTemplate: '${id}',
+    pathTemplate: '/${id}',
     outputPathTemplate: GUIDES_PATH + '/${id}.html'
   });
 });

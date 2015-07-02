@@ -12,9 +12,9 @@ import 'package:barback/barback.dart';
 
 import 'generator.dart';
 
-/// [Transformer] responsible for detecting and processing Angular 2 templates.
+/// {@link Transformer} responsible for detecting and processing Angular 2 templates.
 ///
-/// [TemplateCompiler] uses the Angular 2 `Compiler` to process the templates,
+/// {@link TemplateCompiler} uses the Angular 2 `Compiler` to process the templates,
 /// extracting information about what reflection is necessary to render and
 /// use that template. It then generates code in place of those reflective
 /// accesses.
@@ -34,8 +34,8 @@ class TemplateCompiler extends Transformer {
       Html5LibDomAdapter.makeCurrent();
       var id = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var transformedCode =
-          formatter.format(await processTemplates(reader, id));
+      var transformedCode = formatter.format(await processTemplates(reader, id,
+          generateChangeDetectors: options.generateChangeDetectors));
       transform.addOutput(new Asset.fromString(id, transformedCode));
     } catch (ex, stackTrace) {
       log.logger.error('Parsing ng templates failed.\n'

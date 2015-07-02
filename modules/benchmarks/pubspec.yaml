@@ -7,10 +7,10 @@ authors:
 description: Angular2 benchmarks
 homepage: <%= packageJson.homepage %>
 environment:
-  sdk: '>=1.9.0-dev.8.0'
+  sdk: '>=1.10.0-dev.1.10 <2.0.0'
 dependencies:
   angular2: '^<%= packageJson.version %>'
-  browser: '>=0.10.0 <0.11.0'
+  browser: '^0.10.0'
 dependency_overrides:
   angular2:
     path: ../angular2
@@ -18,11 +18,17 @@ transformers:
 - angular2:
     entry_points:
         - web/src/compiler/compiler_benchmark.dart
+        - web/src/costs/index.dart
         - web/src/di/di_benchmark.dart
         - web/src/element_injector/element_injector_benchmark.dart
         - web/src/largetable/largetable_benchmark.dart
         - web/src/naive_infinite_scroll/index.dart
         - web/src/tree/tree_benchmark.dart
+    generate_change_detectors: false
 - $dart2js:
     minify: false
-    commandLineOptions: ['--dump-info', '--trust-type-annotations', '--trust-primitives']
+    commandLineOptions:
+    - --dump-info
+    - --trust-type-annotations
+    - --trust-primitives
+    - --show-package-warnings

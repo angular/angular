@@ -1,6 +1,4 @@
 import {Compiler as TraceurCompiler} from 'traceur/src/Compiler';
-import {DartTransformer} from './codegeneration/DartTransformer';
-import {DartParseTreeWriter} from './outputgeneration/DartParseTreeWriter';
 import {CollectingErrorReporter} from 'traceur/src/util/CollectingErrorReporter';
 import {Parser} from './parser';
 import {SourceFile} from 'traceur/src/syntax/SourceFile';
@@ -11,28 +9,6 @@ export class Compiler extends TraceurCompiler {
   constructor(options, sourceRoot) {
     super(options, sourceRoot);
     this.moduleName_ = sourceRoot;
-  }
-
-  transform(tree, moduleName = undefined) {
-    if (this.options_.outputLanguage.toLowerCase() === 'dart') {
-      var errorReporter = new CollectingErrorReporter();
-      var transformer = new DartTransformer(errorReporter, this.options_);
-      var transformedTree = transformer.transform(tree);
-      this.throwIfErrors(errorReporter);
-      return transformedTree;
-    } else {
-      return super.transform(tree, moduleName);
-    }
-  }
-
-  write(tree, outputName = undefined, sourceRoot = undefined) {
-    if (this.options_.outputLanguage.toLowerCase() === 'dart') {
-      var writer = new DartParseTreeWriter(this.moduleName_, outputName);
-      writer.visitAny(tree);
-      return writer.toString();
-    } else {
-      return super.write(tree, outputName, sourceRoot);
-    }
   }
 
   // Copy of the original method to use our custom Parser

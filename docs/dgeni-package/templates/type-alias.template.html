@@ -1,0 +1,10 @@
+{% include "lib/githubLinks.html" -%}
+{% extends 'layout/base.template.html' %}
+
+{% block body %}
+<h1>{$ doc.name $} <span class="type">type alias</span></h1>
+<p class="module">exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }<br/>
+defined in {$ githubViewLink(doc) $}</p>
+<p>{$ doc.description | marked $}</p>
+
+{% endblock %}

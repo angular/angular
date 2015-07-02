@@ -3,15 +3,31 @@ library angular2.dom.htmlAdapter;
 import 'dom_adapter.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
+import 'dart:io';
 
 class Html5LibDomAdapter implements DomAdapter {
   static void makeCurrent() {
     setRootDomAdapter(new Html5LibDomAdapter());
   }
 
+  hasProperty(element, String name) {
+    // This is needed for serverside compile to generate the right getters/setters...
+    return true;
+  }
+
+  void setProperty(Element element, String name, Object value) => throw 'not implemented';
+
+  getProperty(Element element, String name) => throw 'not implemented';
+
+  invoke(Element element, String methodName, List args) => throw 'not implemented';
+
+  logError(error) {
+    stderr.writeln('${error}');
+  }
+
   @override
   final attrToPropMap = const {
-    'innerHtml': 'innerHtml',
+    'innerHtml': 'innerHTML',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
@@ -51,10 +67,10 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   querySelector(el, String selector) {
-    throw 'not implemented';
+    return el.querySelector(selector);
   }
   List querySelectorAll(el, String selector) {
-    throw 'not implemented';
+    return el.querySelectorAll(selector);
   }
   on(el, evt, listener) {
     throw 'not implemented';
@@ -71,21 +87,33 @@ class Html5LibDomAdapter implements DomAdapter {
   createEvent(eventType) {
     throw 'not implemented';
   }
+  preventDefault(evt) {
+    throw 'not implemented';
+  }
   getInnerHTML(el) {
     return el.innerHtml;
   }
   getOuterHTML(el) {
-    throw 'not implemented';
+    return el.outerHtml;
   }
   String nodeName(node) {
-    throw 'not implemented';
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        return (node as Element).localName;
+      case Node.TEXT_NODE:
+        return '#text';
+      default:
+        throw 'not implemented for type ${node.nodeType}. '
+            'See http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1950641247'
+            ' for node types definitions.';
+    }
   }
   String nodeValue(node) => node.data;
   String type(node) {
     throw 'not implemented';
   }
   content(node) {
-    throw 'not implemented';
+    return node;
   }
 
   firstChild(el) => el is NodeList ? el.first : el.firstChild;
@@ -102,19 +130,22 @@ class Html5LibDomAdapter implements DomAdapter {
   }
 
   parentElement(el) {
-    throw 'not implemented';
+    return el.parent;
   }
   List childNodes(el) => el.nodes;
   List childNodesAsList(el) => el.nodes;
   clearNodes(el) {
-    throw 'not implemented';
+    el.nodes.forEach((e) => e.remove());
   }
-  appendChild(el, node) => null;
+  appendChild(el, node) => el.append(node.remove());
   removeChild(el, node) {
     throw 'not implemented';
   }
-  remove(el) => null;
-  insertBefore(el, node) => null;
+  remove(el) => el.remove();
+  insertBefore(el, node) {
+    if (el.parent == null) throw '$el must have a parent';
+    el.parent.insertBefore(node, el);
+  }
   insertAllBefore(el, nodes) {
     throw 'not implemented';
   }
@@ -122,10 +153,10 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   setInnerHTML(el, value) {
-    throw 'not implemented';
+    el.innerHtml = value;
   }
   getText(el) {
-    throw 'not implemented';
+    return el.text;
   }
   setText(el, String value) => el.text = value;
 
@@ -141,7 +172,7 @@ class Html5LibDomAdapter implements DomAdapter {
   setChecked(el, bool value) {
     throw 'not implemented';
   }
-  createTemplate(html) => createElement('template')..innerHtml = html;
+  createTemplate(String html) => createElement('template')..innerHtml = html;
   createElement(tagName, [doc]) {
     return new Element.tag(tagName);
   }
@@ -163,21 +194,15 @@ class Html5LibDomAdapter implements DomAdapter {
   getHost(el) {
     throw 'not implemented';
   }
-  clone(node) {
-    throw 'not implemented';
-  }
-  hasProperty(element, String name) {
-    throw 'not implemented';
-  }
+  clone(node) => node.clone(true);
   getElementsByClassName(element, String name) {
     throw 'not implemented';
   }
   getElementsByTagName(element, String name) {
     throw 'not implemented';
   }
-  List classList(element) {
-    throw 'not implemented';
-  }
+  List classList(element) => element.classes.toList();
+
   addClass(element, String classname) {
     element.classes.add(classname);
   }
@@ -200,19 +225,24 @@ class Html5LibDomAdapter implements DomAdapter {
   String tagName(element) => element.localName;
 
   attributeMap(element) {
-    // `attributes` keys can be [AttributeName]s.
+    // `attributes` keys can be {@link AttributeName}s.
     var map = <String, String>{};
     element.attributes.forEach((key, value) {
       map['$key'] = value;
     });
     return map;
   }
+  hasAttribute(element, String attribute) {
+    throw 'not implemented';
+  }
   getAttribute(element, String attribute) {
     throw 'not implemented';
   }
-  setAttribute(element, String name, String value) => null;
+  setAttribute(element, String name, String value) {
+    element.attributes[name] = value;
+  }
   removeAttribute(element, String attribute) {
-    throw 'not implemented';
+    element.attributes.remove(attribute);
   }
 
   templateAwareRoot(el) => el;
@@ -275,5 +305,27 @@ class Html5LibDomAdapter implements DomAdapter {
   }
   bool supportsNativeShadowDOM() {
     throw 'not implemented';
+  }
+  getHistory() {
+    throw 'not implemented';
+  }
+  getLocation() {
+    throw 'not implemented';
+  }
+  getBaseHref() {
+    throw 'not implemented';
+  }
+  String getUserAgent() {
+    throw 'not implemented';
+  }
+  void setData(Element element, String name, String value) {
+    this.setAttribute(element, 'data-${name}', value);
+  }
+  String getData(Element element, String name) {
+    return this.getAttribute(element, 'data-${name}');
+  }
+  // TODO(tbosch): move this into a separate environment class once we have it
+  setGlobalVar(String name, value) {
+    // noop on the server
   }
 }

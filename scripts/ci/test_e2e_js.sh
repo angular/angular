@@ -15,6 +15,8 @@ function killServer () {
 ./node_modules/.bin/gulp serve.js.prod&
 serverPid=$!
 
+./node_modules/.bin/gulp build.css.material&
+
 trap killServer EXIT
 
 # wait for server to come up!
@@ -28,3 +30,5 @@ fi
 
 ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS
 ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS --benchmark --dryrun
+./node_modules/.bin/protractor dist/js/cjs/benchpress/test/firefox_extension/conf.js
+

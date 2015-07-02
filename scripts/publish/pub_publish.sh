@@ -5,6 +5,11 @@
 set -ex
 shopt -s extglob
 
+DRY_RUN=false
+if [[ $1 == '--dry_run' ]]; then
+  DRY_RUN=true
+fi;
+
 ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd $ROOT_DIR
 
@@ -12,6 +17,7 @@ gulp clean
 gulp build/packages.dart
 gulp build/pubspec.dart
 gulp build/analyze.dart
+gulp build.dart.material
 
 PKG_DIR=$ROOT_DIR/dist/pub
 rm -fr $PKG_DIR
@@ -27,9 +33,12 @@ function publishModule {
 
   node scripts/publish/pubspec_cleaner.js --pubspec-file=$PUBLISH_DIR/pubspec.yaml
 
-  (cd $PUBLISH_DIR && pub publish)
+  if [[ ! $DRY_RUN ]]; then
+    (cd $PUBLISH_DIR && pub publish)
+  fi;
 }
 
 publishModule angular2
 publishModule benchpress
 publishModule benchmarks
+publishModule angular2_material

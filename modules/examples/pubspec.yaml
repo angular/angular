@@ -1,25 +1,32 @@
 name: examples
 environment:
-  sdk: '>=1.4.0'
+  sdk: '>=1.10.0-dev.1.10 <2.0.0'
 dependencies:
   angular2: '^<%= packageJson.version %>'
   angular2_material: '^<%= packageJson.version %>'
-  browser: '>=0.10.0 <0.11.0'
+  browser: '^0.10.0'
+dev_dependencies:
+  guinness: '^0.1.17'
+  benchpress:
+    path: ../benchpress
 dependency_overrides:
   angular2:
     path: ../angular2
   angular2_material:
     path: ../angular2_material
-dev_dependencies:
-  guinness: ">=0.1.17 <0.2.0"
-  benchpress:
-    path: ../benchpress
 transformers:
-  - angular2:
-      entry_points: web/src/hello_world/index_common.dart
-      reflection_entry_points: web/src/hello_world/index.dart
-  - $dart2js:
-      minify: false
-      #commandLineOptions: [--trust-type-annotations, --trust-primitives, --dump-info]
-      #commandLineOptions: [--trust-type-annotations, --dump-info]
-      commandLineOptions: [--dump-info]
+- angular2:
+    entry_points:
+        - web/src/hello_world/index_common.dart
+        - web/src/todo/index.dart
+    reflection_entry_points:
+        - web/src/hello_world/index.dart
+        - web/src/todo/index.dart
+- $dart2js:
+    minify: false
+    commandLineOptions:
+    - --dump-info
+    - --show-package-warnings
+    - --trust-type-annotations
+    - --trust-primitives
+    - --enable-experimental-mirrors

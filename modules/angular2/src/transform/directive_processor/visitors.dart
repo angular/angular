@@ -1,10 +1,13 @@
 library angular2.transform.directive_processor.visitors;
 
+import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
+import 'package:angular2/src/render/xhr.dart' show XHR;
+import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 
-/// `ToSourceVisitor` designed to accept [ConstructorDeclaration] nodes.
+/// `ToSourceVisitor` designed to accept {@link ConstructorDeclaration} nodes.
 class _CtorTransformVisitor extends ToSourceVisitor {
   bool _withParameterAnnotations = true;
   bool _withParameterTypes = true;
@@ -12,7 +15,7 @@ class _CtorTransformVisitor extends ToSourceVisitor {
   final PrintWriter writer;
 
   /// Maps field names to their declared types. This is populated whenever
-  /// the listener visits a [ConstructorDeclaration] node.
+  /// the listener visits a {@link ConstructorDeclaration} node.
   final Map<String, TypeName> _fieldNameToType = {};
 
   _CtorTransformVisitor(PrintWriter writer)
@@ -39,8 +42,8 @@ class _CtorTransformVisitor extends ToSourceVisitor {
     }
   }
 
-  /// If [_withParameterTypes] is true, this method outputs [node]'s type. If
-  /// [_withParameterNames] is true, this method outputs [node]'s identifier.
+  /// If `_withParameterTypes` is true, this method outputs `node`'s type. If
+  /// `_withParameterNames` is true, this method outputs `node`'s identifier.
   Object _visitNormalFormalParameter(
       NodeList<Annotation> metadata, TypeName type, SimpleIdentifier name) {
     if (_withParameterAnnotations && metadata != null) {
@@ -144,7 +147,7 @@ class _CtorTransformVisitor extends ToSourceVisitor {
 }
 
 /// ToSourceVisitor designed to print 'parameters' values for Angular2's
-/// [registerType] calls.
+/// `registerType` calls.
 class ParameterTransformVisitor extends _CtorTransformVisitor {
   ParameterTransformVisitor(PrintWriter writer) : super(writer) {
     _withParameterNames = false;
@@ -178,7 +181,7 @@ class ParameterTransformVisitor extends _CtorTransformVisitor {
 }
 
 /// ToSourceVisitor designed to print 'factory' values for Angular2's
-/// [registerType] calls.
+/// `registerType` calls.
 class FactoryTransformVisitor extends _CtorTransformVisitor {
   FactoryTransformVisitor(PrintWriter writer) : super(writer) {
     _withParameterAnnotations = false;
@@ -200,11 +203,20 @@ class FactoryTransformVisitor extends _CtorTransformVisitor {
   }
 }
 
-/// ToSourceVisitor designed to print a [ClassDeclaration] node as a
-/// 'annotations' value for Angular2's [registerType] calls.
+// TODO(kegluenq): Use pull #1772 to detect when available.
+bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
+
+/// ToSourceVisitor designed to print a `ClassDeclaration` node as a
+/// 'annotations' value for Angular2's `registerType` calls.
 class AnnotationsTransformVisitor extends ToSourceVisitor {
-  final PrintWriter writer;
-  AnnotationsTransformVisitor(PrintWriter writer)
+  final AsyncStringWriter writer;
+  final XHR _xhr;
+  final bool _inlineViews;
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
+  bool _processingView = false;
+
+  AnnotationsTransformVisitor(
+      AsyncStringWriter writer, this._xhr, this._inlineViews)
       : this.writer = writer,
         super(writer);
 
@@ -226,6 +238,7 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
   Object visitAnnotation(Annotation node) {
     writer.print('const ');
     if (node.name != null) {
+      _processingView = _isViewAnnotation(node);
       node.name.accept(this);
     }
     if (node.constructorName != null) {
@@ -236,5 +249,57 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       node.arguments.accept(this);
     }
     return null;
+  }
+
+  /// These correspond to the annotation parameters.
+  @override
+  Object visitNamedExpression(NamedExpression node) {
+    // TODO(kegluneq): Remove this limitation.
+    if (!_processingView ||
+        node.name is! Label ||
+        node.name.label is! SimpleIdentifier) {
+      return super.visitNamedExpression(node);
+    }
+    var keyString = '${node.name.label}';
+    if (_inlineViews) {
+      if (keyString == 'templateUrl') {
+        // Inline the templateUrl
+        var url = node.expression.accept(_evaluator);
+        if (url is String) {
+          writer.print("template: r'''");
+          writer.asyncPrint(_readOrEmptyString(url));
+          writer.print("'''");
+          return null;
+        } else {
+          logger.warning('template url is not a String $url');
+        }
+      } else if (keyString == 'styleUrls') {
+        // Inline the styleUrls
+        var urls = node.expression.accept(_evaluator);
+        writer.print('styles: const [');
+        for (var url in urls) {
+          if (url is String) {
+            writer.print("r'''");
+            writer.asyncPrint(_readOrEmptyString(url));
+            writer.print("''', ");
+          } else {
+            logger.warning('style url is not a String ${url}');
+          }
+        }
+        writer.print(']');
+        return null;
+      }
+    }
+    return super.visitNamedExpression(node);
+  }
+
+  /// Attempts to read the content from {@link url}, if it returns null then
+  /// just return the empty string.
+  Future<String> _readOrEmptyString(String url) async {
+    var content = await _xhr.get(url);
+    if (content == null) {
+      content = '';
+    }
+    return content;
   }
 }

@@ -2,9 +2,9 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Decorator, View, NgElement;
+    show bootstrap, Component, Directive, View, NgElement;
 
-bool _visited = false;
+var _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
@@ -14,9 +14,10 @@ void initReflector(reflector) {
       'parameters': const [const []],
       'annotations': const [
         const Component(selector: 'hello-app'),
-        const View(template: '{{greeting}}')
+        const View(template: '<div [a]="b">{{greeting}}</div>')
       ]
     })
-    ..registerGetters({'greeting': (o) => o.greeting})
-    ..registerSetters({'greeting': (o, v) => o.greeting = v});
+    ..registerGetters({'b': (o) => o.b, 'greeting': (o) => o.greeting})
+    ..registerSetters(
+        {'b': (o, v) => o.b = v, 'greeting': (o, v) => o.greeting = v});
 }
