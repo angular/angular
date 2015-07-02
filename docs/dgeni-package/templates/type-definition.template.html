@@ -24,13 +24,16 @@
 ///<reference path="../rx/rx.d.ts"/>
 
 interface List<T> extends Array<T> {}
-interface Map<K,V> {}
-interface StringMap<K,V> extends Map<K,V> {}
-interface Type {}
+interface Map<K, V> {}
+interface StringMap<K, V> extends Map<K, V> {}
+declare type Type = ng.Type;
 
-declare module "angular2/angular2" {
+declare module ng {
   type SetterFn = typeof Function;
   type int = number;
+  interface Type extends Function {
+    new (...args);
+  }
 
   // See https://github.com/Microsoft/TypeScript/issues/1168
   class BaseException /* extends Error */ {
@@ -41,7 +44,7 @@ declare module "angular2/angular2" {
 }
 {% for module in doc.modules %}
 {$ commentBlock(module, 1) $}
-declare module "{$ module.id $}" {
+declare module ng {
 
   {%- for export in module.exports -%}
   {%- if export.content -%}
@@ -75,3 +78,6 @@ declare module "{$ module.id $}" {
 
 {% endfor %}
 
+declare module "angular2/angular2" {
+  export = ng;
+}

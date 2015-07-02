@@ -19,7 +19,7 @@ export {DependencyAnnotation} from './src/di/annotations_impl';
 // But it breaks the build.
 export {Directive, LifecycleEvent} from './src/core/annotations_impl/annotations';
 export {Form} from './src/forms/directives/form_interface';
-export {TypeDecorator, ClassDefinition} from './src/util/decorators';
+export {Decorator, ClassDefinition} from './src/util/decorators';
 export {Query} from './src/core/annotations_impl/di';
 export {ControlContainer} from './src/forms/directives/control_container';
 export {Injectable, Visibility} from './src/di/annotations_impl';
