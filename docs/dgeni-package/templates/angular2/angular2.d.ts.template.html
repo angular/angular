@@ -9,11 +9,14 @@
 interface List<T> extends Array<T> {}
 interface Map<K,V> {}
 interface StringMap<K,V> extends Map<K,V> {}
-interface Type {}
+declare type Type = ng.Type;
 
-declare module "angular2/angular2" {
+declare module ng {
   type SetterFn = typeof Function;
   type int = number;
+  interface Type extends Function {
+    new (...args);
+  }
 
   // See https://github.com/Microsoft/TypeScript/issues/1168
   class BaseException /* extends Error */ {
@@ -23,3 +26,7 @@ declare module "angular2/angular2" {
   }
 }
 {% endblock %}
+
+declare module "angular2/angular2" {
+  export = ng;
+}
