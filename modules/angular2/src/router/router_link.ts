@@ -10,9 +10,9 @@ import {Location} from './location';
  * Consider the following route configuration:
 
  * ```
- * @RouteConfig({
- *   path: '/user', component: UserCmp, as: 'user'
- * });
+ * @RouteConfig([
+ *   { path: '/user', component: UserCmp, as: 'user' }
+ * ]);
  * class MyComp {}
  * ```
  *
