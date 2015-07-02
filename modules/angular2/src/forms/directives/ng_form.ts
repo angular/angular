@@ -1,7 +1,7 @@
 import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
-import {Directive} from 'angular2/src/core/annotations/decorators';
+import {Directive} from 'angular2/annotations';
 import {forwardRef, Binding} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
