@@ -212,6 +212,10 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       memberDoc.returnType = getReturnType(typeChecker, memberSymbol);
     }
 
+    if(memberSymbol.flags & ts.SymbolFlags.Optional) {
+      memberDoc.optional = true;
+    }
+
     return memberDoc;
   }
 

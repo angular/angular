@@ -45,6 +45,22 @@ describe('readTypeScriptModules', function() {
   });
 
 
+  describe('interfaces', function() {
+
+    it('should mark optional properties', function() {
+      processor.sourceFiles = [ 'interfaces.ts'];
+      var docs = [];
+      processor.$process(docs);
+
+      var moduleDoc = docs[0];
+      var exportedInterface = moduleDoc.exports[0];
+      var member = exportedInterface.members[0];
+      expect(member.name).toEqual('optionalProperty');
+      expect(member.optional).toEqual(true);
+    });
+  });
+
+
   describe('ordering of members', function() {
     it('should order class members in order of appearance (by default)', function() {
       processor.sourceFiles = ['orderingOfMembers.ts'];
