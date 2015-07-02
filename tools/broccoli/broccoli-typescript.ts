@@ -41,6 +41,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     this.tsOpts = Object.create(options);
     this.tsOpts.outDir = this.cachePath;
     this.tsOpts.target = (<any>ts).ScriptTarget[options.target];
+    this.tsOpts.experimentalDecorators = true;
     this.rootFilePaths = options.rootFilePaths ? options.rootFilePaths.splice(0) : [];
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
