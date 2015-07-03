@@ -51,6 +51,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   rebuild(treeDiff: DiffResult) {
     let pathsToEmit = [];
     let pathsWithErrors = [];
+    let errorMessages = [];
 
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((tsFilePath) => {
@@ -80,9 +81,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
         let output = this.tsService.getEmitOutput(tsFilePath);
 
         if (output.emitSkipped) {
-          let errorFound = this.logError(tsFilePath);
+          let errorFound = this.collectErrors(tsFilePath);
           if (errorFound) {
             pathsWithErrors.push(tsFilePath);
+            errorMessages.push(errorFound);
           }
         } else {
           output.outputFiles.forEach(o => {
@@ -95,7 +97,8 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
       if (pathsWithErrors.length) {
         this.previousRunFailed = true;
-        var error = new Error('Typescript found errors listed above...');
+        var error =
+            new Error('Typescript found the following errors:\n' + errorMessages.join('\n'));
         error['showStack'] = false;
         throw error;
       } else if (this.previousRunFailed) {
@@ -105,23 +108,25 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   }
 
 
-  private logError(tsFilePath) {
+  private collectErrors(tsFilePath): String {
     let allDiagnostics = this.tsService.getCompilerOptionsDiagnostics()
                              .concat(this.tsService.getSyntacticDiagnostics(tsFilePath))
                              .concat(this.tsService.getSemanticDiagnostics(tsFilePath));
+    let errors = [];
 
     allDiagnostics.forEach(diagnostic => {
       let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
       if (diagnostic.file) {
         let{line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-        console.log(`  Error ${diagnostic.file.fileName} (${line + 1},${character + 1}): ` +
-                    `${message}`);
+        errors.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
       } else {
-        console.log(`  Error: ${message}`);
+        errors.push(`  Error: ${message}`);
       }
     });
 
-    return !!allDiagnostics.length;
+    if (errors.length) {
+      return errors.join('\n');
+    }
   }
 
 
@@ -148,8 +153,8 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
       if (errorMessages.length) {
         this.previousRunFailed = true;
-        console.log(errorMessages.join('\n'));
-        var error = new Error('Typescript found errors listed above...');
+        var error =
+            new Error('Typescript found the following errors:\n' + errorMessages.join('\n'));
         error['showStack'] = false;
         throw error;
       } else {
