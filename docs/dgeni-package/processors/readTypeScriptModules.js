@@ -202,6 +202,8 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       location: getLocation(memberSymbol)
     };
 
+    memberDoc.typeParameters = getTypeParameters(typeChecker, memberSymbol);
+
     if (memberSymbol.flags & (ts.SymbolFlags.Method | ts.SymbolFlags.Signature)) {
       // NOTE: we use the property name `parameters` here so we don't conflict
       // with the `params` property that will be updated by dgeni reading the
@@ -246,6 +248,16 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       }
       return paramText.trim();
     });
+  }
+
+  function getTypeParameters(typeChecker, symbol) {
+    var declaration = symbol.valueDeclaration || symbol.declarations[0];
+    var sourceFile = ts.getSourceFileOfNode(declaration);
+    if (!declaration.typeParameters) return;
+    var typeParams = declaration.typeParameters.map(function(type) {
+      return getText(sourceFile, type).trim();
+    });
+    return typeParams;
   }
 
   function getReturnType(typeChecker, symbol) {
