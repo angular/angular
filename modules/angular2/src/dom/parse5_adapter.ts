@@ -254,6 +254,7 @@ export class Parse5DomAdapter extends DomAdapter {
   createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
+  registerElement(tagName, tagType): void { throw _notImplemented('registerElement'); }
   createTextNode(text: string): Text { throw _notImplemented('createTextNode'); }
   createScriptTag(attrName: string, attrValue: string): HTMLElement {
     return treeAdapter.createElement("script", 'http://www.w3.org/1999/xhtml',
@@ -507,6 +508,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   supportsDOMEvents(): boolean { return false; }
   supportsNativeShadowDOM(): boolean { return false; }
+  supportsCustomElements(): boolean { return false; }
   getGlobalEventTarget(target: string): any {
     if (target == "window") {
       return (<any>this.defaultDoc())._window;

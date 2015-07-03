@@ -67,6 +67,7 @@ export class DomAdapter {
   setChecked(el, value: boolean) { throw _abstract(); }
   createTemplate(html): HTMLElement { throw _abstract(); }
   createElement(tagName, doc = null): HTMLElement { throw _abstract(); }
+  registerElement(tagName, tagType): void { throw _abstract(); }
   createTextNode(text: string, doc = null): Text { throw _abstract(); }
   createScriptTag(attrName: string, attrValue: string, doc = null): HTMLElement {
     throw _abstract();
@@ -116,6 +117,7 @@ export class DomAdapter {
   cssToRules(css: string): List<any> { throw _abstract(); }
   supportsDOMEvents(): boolean { throw _abstract(); }
   supportsNativeShadowDOM(): boolean { throw _abstract(); }
+  supportsCustomElements(): boolean { throw _abstract(); }
   getGlobalEventTarget(target: string): any { throw _abstract(); }
   getHistory(): History { throw _abstract(); }
   getLocation(): Location { throw _abstract(); }

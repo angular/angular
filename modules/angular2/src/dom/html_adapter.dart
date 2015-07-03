@@ -178,6 +178,9 @@ class Html5LibDomAdapter implements DomAdapter {
   createElement(tagName, [doc]) {
     return new Element.tag(tagName);
   }
+  registerElement(String tagName, tagType) {
+    throw 'not implemented';
+  }
   createTextNode(String text, [doc]) {
     throw 'not implemented';
   }
@@ -311,6 +314,9 @@ class Html5LibDomAdapter implements DomAdapter {
   }
   bool supportsNativeShadowDOM() {
     throw 'not implemented';
+  }
+  bool supportsCustomElements() {
+    return false;
   }
   getHistory() {
     throw 'not implemented';

@@ -37,4 +37,5 @@ export class GenericBrowserDomAdapter extends DomAdapter {
   supportsNativeShadowDOM(): boolean {
     return isFunction((<any>this.defaultDoc().body).createShadowRoot);
   }
+  supportsCustomElements(): boolean { return isFunction((<any>this.defaultDoc()).registerElement); }
 }
