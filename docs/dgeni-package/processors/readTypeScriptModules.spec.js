@@ -67,12 +67,14 @@ describe('readTypeScriptModules', function() {
 
       var moduleDoc = docs[0];
       var exportedInterface = moduleDoc.exports[0];
+
       expect(exportedInterface.callMember).toBeDefined();
-      expect(exportedInterface.callMember.parameters).toBeDefined();
-      expect(exportedInterface.callMember.returnType).toBeDefined();
+      expect(exportedInterface.callMember.parameters).toEqual(['param: T']);
+      expect(exportedInterface.callMember.returnType).toEqual('U');
+      expect(exportedInterface.callMember.typeParameters).toEqual(['T', 'U extends Findable<T>']);
       expect(exportedInterface.newMember).toBeDefined();
-      expect(exportedInterface.newMember.parameters).toBeDefined();
-      expect(exportedInterface.newMember.returnType).toBeDefined();
+      expect(exportedInterface.newMember.parameters).toEqual(['param: number']);
+      expect(exportedInterface.newMember.returnType).toEqual('MyInterface');
     });
   });
 
