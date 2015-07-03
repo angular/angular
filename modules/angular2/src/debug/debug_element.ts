@@ -11,7 +11,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 /**
  * @exportedAs angular2/test
  *
- * An DebugElement contains information from the Angular compiler about an
+ * A DebugElement contains information from the Angular compiler about an
  * element and provides access to the corresponding ElementInjector and
  * underlying dom Element, as well as a way to query for children.
  */
