@@ -13,8 +13,7 @@
      {$ member.name $}{% if member.optional %}?{% endif -%}
 {% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
 {%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
-{%- if member.returnType -%}
-  : {$ member.returnType $}{%- else -%}: void
+{%- if member.returnType == 'Directive' %}: DirectiveAnnotation{%- elif member.returnType -%}: {$ member.returnType $}{%- else -%}: void
 {%- endif -%};
 {%- endmacro -%}
 
@@ -38,7 +37,7 @@ declare module ng {
   {%- if export.content -%}
     {$ commentBlock(export, 3) $}
   {%- endif %}
-  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{$ export.heritage $}
+  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{%- if export.heritage == ' extends Directive' %} extends DirectiveAnnotation{% else %}{$ export.heritage $}{% endif %}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
   {%- if export.newMember %}
     {$ memberInfo(export.newMember) $}
