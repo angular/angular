@@ -20,7 +20,10 @@ export class HashLocationStrategy extends LocationStrategy {
 
   getBaseHref(): string { return ''; }
 
-  path(): string { return this._location.hash; }
+  path(): string {
+    var hash = this._location.hash;
+    return hash.length == 0 ? hash : hash.substring(1);
+  }
 
   pushState(state: any, title: string, url: string) {
     this._history.pushState(state, title, '#' + url);
