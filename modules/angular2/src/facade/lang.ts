@@ -93,6 +93,10 @@ export function isNumber(obj): boolean {
   return typeof obj === 'number';
 }
 
+export function isDate(obj): boolean {
+  return obj instanceof Date && !isNaN(obj.valueOf());
+}
+
 export function stringify(token): string {
   if (typeof token === 'string') {
     return token;
@@ -282,8 +286,12 @@ export class Json {
 }
 
 export class DateWrapper {
-  static fromMillis(ms): Date { return new Date(ms); }
-  static toMillis(date: Date): number { return date.getTime(); }
+  static create(year: int, month: int = 1, day: int = 1, hour: int = 0, minutes: int = 0,
+                seconds: int = 0, milliseconds: int = 0): Date {
+    return new Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
+  }
+  static fromMillis(ms: int): Date { return new Date(ms); }
+  static toMillis(date: Date): int { return date.getTime(); }
   static now(): Date { return new Date(); }
-  static toJson(date): string { return date.toJSON(); }
+  static toJson(date: Date): string { return date.toJSON(); }
 }

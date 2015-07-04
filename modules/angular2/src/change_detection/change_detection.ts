@@ -11,6 +11,7 @@ import {UpperCaseFactory} from './pipes/uppercase_pipe';
 import {LowerCaseFactory} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
 import {LimitToPipeFactory} from './pipes/limit_to_pipe';
+import {DatePipe} from './pipes/date_pipe';
 import {DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
@@ -101,6 +102,15 @@ export const percent: List<PipeFactory> =
 export const currency: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new CurrencyPipe()), CONST_EXPR(new NullPipeFactory())]);
 
+/**
+ * Date/time formatter.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const date: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new DatePipe()), CONST_EXPR(new NullPipeFactory())]);
+
+
 export const defaultPipes = CONST_EXPR({
   "iterableDiff": iterableDiff,
   "keyValDiff": keyValDiff,
@@ -111,7 +121,8 @@ export const defaultPipes = CONST_EXPR({
   "limitTo": limitTo,
   "number": decimal,
   "percent": percent,
-  "currency": currency
+  "currency": currency,
+  "date": date
 });
 
 /**

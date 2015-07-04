@@ -40,3 +40,21 @@ class NumberFormatter {
     return formatter.format(number);
   }
 }
+
+class DateFormatter {
+  static RegExp _multiPartRegExp = new RegExp(r'^([yMdE]+)([Hjms]+)$');
+
+  static String format(DateTime date, String locale, String pattern) {
+    locale = _normalizeLocale(locale);
+    var formatter = new DateFormat(null, locale);
+    var matches = _multiPartRegExp.firstMatch(pattern);
+    if (matches != null) {
+      // Support for patterns which have known date and time components.
+      formatter.addPattern(matches[1]);
+      formatter.addPattern(matches[2], ', ');
+    } else {
+      formatter.addPattern(pattern);
+    }
+    return formatter.format(date);
+  }
+}
