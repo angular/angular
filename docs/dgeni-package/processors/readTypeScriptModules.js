@@ -204,7 +204,20 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
 
     memberDoc.typeParameters = getTypeParameters(typeChecker, memberSymbol);
 
-    if (memberSymbol.flags & (ts.SymbolFlags.Method | ts.SymbolFlags.Signature)) {
+    if(memberSymbol.flags & (ts.SymbolFlags.Signature) ) {
+      memberDoc.parameters = getParameters(typeChecker, memberSymbol);
+      memberDoc.returnType = getReturnType(typeChecker, memberSymbol);
+      switch(memberDoc.name) {
+        case '__call':
+          memberDoc.name = '';
+          break;
+        case '__new':
+          memberDoc.name = 'new';
+          break;
+      }
+    }
+
+    if (memberSymbol.flags & ts.SymbolFlags.Method) {
       // NOTE: we use the property name `parameters` here so we don't conflict
       // with the `params` property that will be updated by dgeni reading the
       // `@param` tags from the docs
@@ -216,7 +229,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       memberDoc.name = 'constructor';
     }
 
-    if(memberSymbol.flags & (ts.SymbolFlags.Value | ts.SymbolFlags.Signature) ) {
+    if(memberSymbol.flags & ts.SymbolFlags.Value) {
       memberDoc.returnType = getReturnType(typeChecker, memberSymbol);
     }
 
