@@ -41,7 +41,11 @@ class DiffingReplace implements DiffingBroccoliPlugin {
             });
             fs.writeFileSync(destFilePath, content, FILE_ENCODING);
           } else if (!fs.existsSync(destFilePath)) {
-            fs.symlinkSync(sourceFilePath, destFilePath);
+            try {
+              fs.symlinkSync(sourceFilePath, destFilePath);
+            } catch (e) {
+              fs.writeFileSync(destFilePath, fs.readFileSync(sourceFilePath));
+            }
           }
         });
 

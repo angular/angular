@@ -15,11 +15,33 @@ module.exports = function(gulp, plugins, config) {
       var linkDir = path.join(nodeModulesDir, relativeFolder);
       if (!fs.existsSync(linkDir)) {
         console.log('creating link', linkDir, sourceDir);
-        fs.symlinkSync(sourceDir, linkDir, 'dir');
+        try {
+          fs.symlinkSync(sourceDir, linkDir, 'dir');
+        }
+        catch(e) {
+          var sourceDir = path.join(config.dir, relativeFolder);
+          console.log('linking failed: trying to hard copy', linkDir, sourceDir);
+          copyRecursiveSync(sourceDir, linkDir);
+        }
       }
     });
   };
 };
+
+function copyRecursiveSync (src, dest) {
+  if (fs.existsSync(src)) {
+    var stats = fs.statSync(src);
+    if (stats.isDirectory()) {
+      fs.mkdirSync(dest);
+      fs.readdirSync(src).forEach(function(childItemName) {
+        copyRecursiveSync(path.join(src, childItemName),
+                          path.join(dest, childItemName));
+      });
+    } else {
+      fs.writeFileSync(dest, fs.readFileSync(src));
+    }
+  }
+}
 
 function getSubdirs(rootDir) {
   return fs.readdirSync(rootDir).filter(function(file) {
