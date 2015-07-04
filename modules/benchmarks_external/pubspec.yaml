@@ -7,6 +7,8 @@ dependencies:
 dev_dependencies:
   angular2:
     path: ../angular2
+dependency_overrides:
+  intl: '^0.12.4' # angular depends on an older version of intl.
 transformers:
 - angular:
     $exclude: "web/e2e_test"

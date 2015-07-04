@@ -12,4 +12,5 @@ export {ObservablePipe} from './src/change_detection/pipes/observable_pipe';
 export {JsonPipe} from './src/change_detection/pipes/json_pipe';
 export {IterableChanges} from './src/change_detection/pipes/iterable_changes';
 export {KeyValueChanges} from './src/change_detection/pipes/keyvalue_changes';
+export {DecimalPipe, PercentPipe, CurrencyPipe} from './src/change_detection/pipes/number_pipe';
 export {LimitToPipe} from './src/change_detection/pipes/limit_to_pipe';

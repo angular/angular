@@ -11,6 +11,7 @@ import {UpperCaseFactory} from './pipes/uppercase_pipe';
 import {LowerCaseFactory} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
 import {LimitToPipeFactory} from './pipes/limit_to_pipe';
+import {DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Inject, Injectable, OpaqueToken, Optional} from 'angular2/di';
@@ -76,6 +77,30 @@ export const json: List<PipeFactory> =
 export const limitTo: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new LimitToPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
+/**
+ * Number number transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const decimal: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new DecimalPipe()), CONST_EXPR(new NullPipeFactory())]);
+
+/**
+ * Percent number transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const percent: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new PercentPipe()), CONST_EXPR(new NullPipeFactory())]);
+
+/**
+ * Currency number transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const currency: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new CurrencyPipe()), CONST_EXPR(new NullPipeFactory())]);
+
 export const defaultPipes = CONST_EXPR({
   "iterableDiff": iterableDiff,
   "keyValDiff": keyValDiff,
@@ -83,7 +108,10 @@ export const defaultPipes = CONST_EXPR({
   "uppercase": uppercase,
   "lowercase": lowercase,
   "json": json,
-  "limitTo": limitTo
+  "limitTo": limitTo,
+  "number": decimal,
+  "percent": percent,
+  "currency": currency
 });
 
 /**
