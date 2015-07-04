@@ -1,11 +1,4 @@
-import {
-  isPresent,
-  isBlank,
-  BaseException,
-  assertionsEnabled,
-  RegExpWrapper,
-  StringWrapper
-} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/facade/lang';
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Parser} from 'angular2/change_detection';
@@ -18,7 +11,7 @@ import {CompileControl} from './compile_control';
 
 import {DirectiveMetadata} from '../../api';
 import {dashCaseToCamelCase, camelCaseToDashCase, EVENT_TARGET_SEPARATOR} from '../util';
-import {DirectiveBuilder} from '../view/proto_view_builder';
+import {DirectiveBuilder, ElementBinderBuilder} from '../view/proto_view_builder';
 
 /**
  * Parses the directives on a single element. Assumes ViewSplitter has already created
@@ -47,36 +40,32 @@ export class DirectiveParser implements CompileStep {
   process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
     var classList = current.classList();
-
     var cssSelector = new CssSelector();
-    var nodeName = DOM.nodeName(current.element);
-    cssSelector.setElement(nodeName);
+    var foundDirectiveIndices = [];
+    var elementBinder: ElementBinderBuilder = null;
+
+    cssSelector.setElement(DOM.nodeName(current.element));
     for (var i = 0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }
-
     MapWrapper.forEach(attrs,
                        (attrValue, attrName) => { cssSelector.addAttribute(attrName, attrValue); });
 
-    var componentDirective;
-    var foundDirectiveIndices = [];
-    var elementBinder = null;
     this._selectorMatcher.match(cssSelector, (selector, directiveIndex) => {
-      elementBinder = current.bindElement();
       var directive = this._directives[directiveIndex];
+
+      elementBinder = current.bindElement();
       if (directive.type === DirectiveMetadata.COMPONENT_TYPE) {
+        this._ensureHasOnlyOneComponent(elementBinder, current.elementDescription);
+
         // components need to go first, so it is easier to locate them in the result.
         ListWrapper.insert(foundDirectiveIndices, 0, directiveIndex);
-        if (isPresent(componentDirective)) {
-          throw new BaseException(
-              `Only one component directive is allowed per element - check ${current.elementDescription}`);
-        }
-        componentDirective = directive;
         elementBinder.setComponentId(directive.id);
       } else {
         foundDirectiveIndices.push(directiveIndex);
       }
     });
+
     ListWrapper.forEach(foundDirectiveIndices, (directiveIndex) => {
       var dirMetadata = this._directives[directiveIndex];
       var directiveBinderBuilder = elementBinder.bindDirective(directiveIndex);
@@ -106,6 +95,13 @@ export class DirectiveParser implements CompileStep {
                             (attrName) => { elementBinder.readAttribute(attrName); });
       }
     });
+  }
+
+  _ensureHasOnlyOneComponent(elementBinder: ElementBinderBuilder, elDescription: string): void {
+    if (isPresent(elementBinder.componentId)) {
+      throw new BaseException(
+          `Only one component directive is allowed per element - check ${elDescription}`);
+    }
   }
 
   _bindDirectiveProperty(bindConfig: string, compileElement: CompileElement,
