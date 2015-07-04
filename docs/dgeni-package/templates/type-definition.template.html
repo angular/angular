@@ -8,9 +8,9 @@
 {%- endmacro -%}
 
 
-{%- macro memberInfo(member, level) -%}
-{$ commentBlock(member, level) $}
-{$ member.name $}{% if member.optional %}?{% endif -%}
+{%- macro memberInfo(member) -%}
+{$ commentBlock(member, 5) $}
+     {$ member.name $}{% if member.optional %}?{% endif -%}
 {% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
 {%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
 {%- if member.returnType -%}
@@ -41,13 +41,13 @@ declare module "{$ module.id $}" {
   {$ export.docType $} {$ export.name $}{$ export.typeParams $}{$ export.heritage $}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
   {%- if export.newMember %}
-    {$ memberInfo(export.newMember, 5) $}
+    {$ memberInfo(export.newMember) $}
   {% endif %}
   {%- if export.callMember %}
-    {$ memberInfo(export.callMember, 5) $}
+    {$ memberInfo(export.callMember) $}
   {% endif -%}
   {%- for member in export.members %}
-    {$ memberInfo(member, 5) $}
+    {$ memberInfo(member) $}
   {%- endfor %}
   }
 
