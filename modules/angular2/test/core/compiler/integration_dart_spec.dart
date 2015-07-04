@@ -195,7 +195,7 @@ class NoPropertyAccess {
 
 @Component(selector: 'on-change',
     // TODO: needed because of https://github.com/angular/angular/issues/2120
-    lifecycle: const [onChange], properties: const ['prop'])
+    lifecycle: const [LifecycleEvent.onChange], properties: const ['prop'])
 @View(template: '')
 class OnChangeComponent implements OnChange {
   Map changes;

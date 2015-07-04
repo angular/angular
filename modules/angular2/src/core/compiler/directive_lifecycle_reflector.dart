@@ -11,15 +11,15 @@ bool hasLifecycleHook(LifecycleEvent e, type, Directive annotation) {
     final List interfaces = reflector.interfaces(type);
     var interface;
 
-    if (e == onChange) {
+    if (e == LifecycleEvent.onChange) {
       interface = OnChange;
-    } else if (e == onDestroy) {
+    } else if (e == LifecycleEvent.onDestroy) {
       interface = OnDestroy;
-    } else if (e == onAllChangesDone) {
+    } else if (e == LifecycleEvent.onAllChangesDone) {
       interface = OnAllChangesDone;
-    } else if (e == onCheck) {
+    } else if (e == LifecycleEvent.onCheck) {
       interface = OnCheck;
-    } else if (e == onInit) {
+    } else if (e == LifecycleEvent.onInit) {
       interface = OnInit;
     }
 

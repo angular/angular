@@ -8,9 +8,5 @@ export {
   Directive as DirectiveAnnotation,
   ComponentArgs,
   DirectiveArgs,
-  onDestroy,
-  onChange,
-  onCheck,
-  onInit,
-  onAllChangesDone
+  LifecycleEvent
 } from '../annotations_impl/annotations';
