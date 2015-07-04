@@ -8,11 +8,7 @@ import 'package:angular2/angular2.dart'
         Directive,
         View,
         NgElement,
-        onChange,
-        onDestroy,
-        onInit,
-        onCheck,
-        onAllChangesDone;
+        LifecycleEvent;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -24,7 +20,8 @@ void initReflector(reflector) {
       'parameters': const [const []],
       'annotations': const [
         const Component(
-            lifecycle: [onChange, onDestroy, onInit, onCheck, onAllChangesDone])
+            lifecycle: [LifecycleEvent.onChange, LifecycleEvent.onDestroy, LifecycleEvent.onInit,
+                        LifecycleEvent.onCheck, LifecycleEvent.onAllChangesDone])
       ]
     });
 }

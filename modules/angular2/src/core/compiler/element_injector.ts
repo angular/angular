@@ -41,15 +41,7 @@ import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
 import {ProtoViewRef, ViewRef} from './view_ref';
-import {
-  Directive,
-  Component,
-  onChange,
-  onDestroy,
-  onCheck,
-  onInit,
-  onAllChangesDone
-} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, Component, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {ChangeDetector, ChangeDetectorRef, Pipes} from 'angular2/change_detection';
 import {QueryList} from './query_list';
@@ -253,11 +245,11 @@ export class DirectiveBinding extends ResolvedBinding {
       properties: ann.properties,
       readAttributes: DirectiveBinding._readAttributes(deps),
 
-      callOnDestroy: hasLifecycleHook(onDestroy, rb.key.token, ann),
-      callOnChange: hasLifecycleHook(onChange, rb.key.token, ann),
-      callOnCheck: hasLifecycleHook(onCheck, rb.key.token, ann),
-      callOnInit: hasLifecycleHook(onInit, rb.key.token, ann),
-      callOnAllChangesDone: hasLifecycleHook(onAllChangesDone, rb.key.token, ann),
+      callOnDestroy: hasLifecycleHook(LifecycleEvent.onDestroy, rb.key.token, ann),
+      callOnChange: hasLifecycleHook(LifecycleEvent.onChange, rb.key.token, ann),
+      callOnCheck: hasLifecycleHook(LifecycleEvent.onCheck, rb.key.token, ann),
+      callOnInit: hasLifecycleHook(LifecycleEvent.onInit, rb.key.token, ann),
+      callOnAllChangesDone: hasLifecycleHook(LifecycleEvent.onAllChangesDone, rb.key.token, ann),
 
       changeDetection: ann instanceof Component ? ann.changeDetection : null,
 

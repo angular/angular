@@ -2,8 +2,7 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Directive, Query, onChange} from 'angular2/annotations';
-import {QueryList} from 'angular2/core';
+import {Directive, LifecycleEvent, QueryList, Query} from 'angular2/angular2';
 import {forwardRef, Ancestor, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';
@@ -34,7 +33,7 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   hostInjector: [formControlBinding],
   properties: ['model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [onChange],
+  lifecycle: [LifecycleEvent.onChange],
   exportAs: 'form'
 })
 export class NgModel extends NgControl {

@@ -933,130 +933,132 @@ export class Component extends Directive {
  * - `onCheck`,
  * - `onAllChangesDone`
  */
-@CONST()
-export class LifecycleEvent {
-  constructor(public name: string) {}
+export enum LifecycleEvent {
+  /**
+   * Notify a directive whenever a {@link View} that contains it is destroyed.
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   ...,
+   *   lifecycle: [LifecycleEvent.onDestroy]
+   * })
+   * class ClassSet {
+   *   onDestroy() {
+   *     // invoked to notify directive of the containing view destruction.
+   *   }
+   * }
+   * ```
+   * @exportedAs angular2/annotations
+   */
+  onDestroy,
+
+
+  /**
+   * Notify a directive when any of its bindings have changed.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked only if at least one of the directive's bindings has changed.
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   properties: [
+   *     'propA',
+   *     'propB'
+   *   ],
+   *   lifecycle: [LifecycleEvent.onChange]
+   * })
+   * class ClassSet {
+   *   propA;
+   *   propB;
+   *   onChange(changes:{[idx: string, PropertyUpdate]}) {
+   *     // This will get called after any of the properties have been updated.
+   *     if (changes['propA']) {
+   *       // if propA was updated
+   *     }
+   *     if (changes['propA']) {
+   *       // if propB was updated
+   *     }
+   *   }
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  onChange,
+
+  /**
+   * Notify a directive when it has been checked.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked every time even when none of the directive's bindings has changed.
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.onCheck]
+   * })
+   * class ClassSet {
+   *   onCheck() {
+   *   }
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  onCheck,
+
+  /**
+   * Notify a directive when it has been checked the first itme.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked only once.
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.onInit]
+   * })
+   * class ClassSet {
+   *   onInit() {
+   *   }
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  onInit,
+
+  /**
+   * Notify a directive when the bindings of all its children have been checked (whether they have
+   * changed or not).
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.onAllChangesDone]
+   * })
+   * class ClassSet {
+   *
+   *   onAllChangesDone() {
+   *   }
+   *
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  onAllChangesDone
 }
-
-/**
- * Notify a directive whenever a {@link View} that contains it is destroyed.
- *
- * ## Example
- *
- * ```
- * @Directive({
- *   ...,
- *   lifecycle: [onDestroy]
- * })
- * class ClassSet {
- *   onDestroy() {
- *     // invoked to notify directive of the containing view destruction.
- *   }
- * }
- * ```
- */
-export const onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestroy"));
-
-
-/**
- * Notify a directive when any of its bindings have changed.
- *
- * This method is called right after the directive's bindings have been checked,
- * and before any of its children's bindings have been checked.
- *
- * It is invoked only if at least one of the directive's bindings has changed.
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   properties: [
- *     'propA',
- *     'propB'
- *   ],
- *   lifecycle: [onChange]
- * })
- * class ClassSet {
- *   propA;
- *   propB;
- *   onChange(changes:{[idx: string, PropertyUpdate]}) {
- *     // This will get called after any of the properties have been updated.
- *     if (changes['propA']) {
- *       // if propA was updated
- *     }
- *     if (changes['propA']) {
- *       // if propB was updated
- *     }
- *   }
- * }
- *  ```
- */
-export const onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"));
-
-/**
- * Notify a directive when it has been checked.
- *
- * This method is called right after the directive's bindings have been checked,
- * and before any of its children's bindings have been checked.
- *
- * It is invoked every time even when none of the directive's bindings has changed.
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   lifecycle: [onCheck]
- * })
- * class ClassSet {
- *   onCheck() {
- *   }
- * }
- *  ```
- */
-export const onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"));
-
-/**
- * Notify a directive when it has been checked the first itme.
- *
- * This method is called right after the directive's bindings have been checked,
- * and before any of its children's bindings have been checked.
- *
- * It is invoked only once.
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   lifecycle: [onInit]
- * })
- * class ClassSet {
- *   onInit() {
- *   }
- * }
- *  ```
- */
-export const onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
-
-/**
- * Notify a directive when the bindings of all its children have been checked (whether they have
- * changed or not).
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   lifecycle: [onAllChangesDone]
- * })
- * class ClassSet {
- *
- *   onAllChangesDone() {
- *   }
- *
- * }
- *  ```
- */
-export const onAllChangesDone: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));

@@ -38,7 +38,7 @@ import {
   Query,
   Component,
   Directive,
-  onDestroy
+  LifecycleEvent
 } from 'angular2/annotations';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, InjectMetadata, ParentMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
@@ -831,7 +831,7 @@ export function main() {
           it("should call onDestroy on directives subscribed to this event", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(DirectiveWithDestroy,
-                                                 new dirAnn.Directive({lifecycle: [onDestroy]}))],
+                                                 new dirAnn.Directive({lifecycle: [LifecycleEvent.onDestroy]}))],
                 extraBindings));
             var destroy = inj.get(DirectiveWithDestroy);
             inj.dehydrate();

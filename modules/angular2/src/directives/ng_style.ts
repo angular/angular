@@ -1,4 +1,4 @@
-import {Directive, onCheck} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
 import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
@@ -27,7 +27,11 @@ import {Renderer} from 'angular2/src/render/api';
  * - `<div ng-style="{'text-align': alignEpr}"></div>`
  * - `<div ng-style="styleExp"></div>`
  */
-@Directive({selector: '[ng-style]', lifecycle: [onCheck], properties: ['rawStyle: ng-style']})
+@Directive({
+  selector: '[ng-style]',
+  lifecycle: [LifecycleEvent.onCheck],
+  properties: ['rawStyle: ng-style']
+})
 export class NgStyle {
   _pipe: Pipe;
   _rawStyle;

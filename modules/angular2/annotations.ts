@@ -13,12 +13,7 @@
 export {
   ComponentAnnotation,
   DirectiveAnnotation,
-  LifecycleEvent,
-  onDestroy,
-  onChange,
-  onCheck,
-  onInit,
-  onAllChangesDone
+  LifecycleEvent
 } from './src/core/annotations/annotations';
 
 export {ViewAnnotation} from 'angular2/src/core/annotations/view';
