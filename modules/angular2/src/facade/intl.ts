@@ -14,9 +14,7 @@ declare module Intl {
     format(value: number): string;
   }
 
-  var NumberFormat: {
-    new (locale?: string, options?: NumberFormatOptions): NumberFormat;
-  }
+  var NumberFormat: { new (locale?: string, options?: NumberFormatOptions): NumberFormat; }
 
   interface DateTimeFormatOptions {
     localeMatcher?: string;
@@ -37,9 +35,7 @@ declare module Intl {
     format(date?: Date | number): string;
   }
 
-  var DateTimeFormat: {
-    new (locale?: string, options?: DateTimeFormatOptions): DateTimeFormat;
-  }
+  var DateTimeFormat: { new (locale?: string, options?: DateTimeFormatOptions): DateTimeFormat; }
 }
 
 export enum NumberFormatStyle {
@@ -69,5 +65,80 @@ export class NumberFormatter {
       intlOptions.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
     return new Intl.NumberFormat(locale, intlOptions).format(number);
+  }
+}
+
+function digitCondition(len: int): string {
+  return len == 2 ? '2-digit' : 'numeric';
+}
+function nameCondition(len: int): string {
+  return len < 4 ? 'short' : 'long';
+}
+function extractComponents(pattern: string): Intl.DateTimeFormatOptions {
+  var ret: Intl.DateTimeFormatOptions = {};
+  var i = 0, j;
+  while (i < pattern.length) {
+    j = i;
+    while (j < pattern.length && pattern[j] == pattern[i]) j++;
+    let len = j - i;
+    switch (pattern[i]) {
+      case 'G':
+        ret.era = nameCondition(len);
+        break;
+      case 'y':
+        ret.year = digitCondition(len);
+        break;
+      case 'M':
+        if (len >= 3)
+          ret.month = nameCondition(len);
+        else
+          ret.month = digitCondition(len);
+        break;
+      case 'd':
+        ret.day = digitCondition(len);
+        break;
+      case 'E':
+        ret.weekday = nameCondition(len);
+        break;
+      case 'j':
+        ret.hour = digitCondition(len);
+        break;
+      case 'h':
+        ret.hour = digitCondition(len);
+        ret.hour12 = true;
+        break;
+      case 'H':
+        ret.hour = digitCondition(len);
+        ret.hour12 = false;
+        break;
+      case 'm':
+        ret.minute = digitCondition(len);
+        break;
+      case 's':
+        ret.second = digitCondition(len);
+        break;
+      case 'z':
+        ret.timeZoneName = 'long';
+        break;
+      case 'Z':
+        ret.timeZoneName = 'short';
+        break;
+    }
+    i = j;
+  }
+  return ret;
+}
+
+var dateFormatterCache: Map<string, Intl.DateTimeFormat> = new Map<string, Intl.DateTimeFormat>();
+
+export class DateFormatter {
+  static format(date: Date, locale: string, pattern: string): string {
+    var key = locale + pattern;
+    if (dateFormatterCache.has(key)) {
+      return dateFormatterCache.get(key).format(date);
+    }
+    var formatter = new Intl.DateTimeFormat(locale, extractComponents(pattern));
+    dateFormatterCache.set(key, formatter);
+    return formatter.format(date);
   }
 }

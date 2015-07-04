@@ -33,6 +33,7 @@ bool isStringMap(obj) => obj is Map;
 bool isArray(obj) => obj is List;
 bool isPromise(obj) => obj is Future;
 bool isNumber(obj) => obj is num;
+bool isDate(obj) => obj is DateTime;
 
 String stringify(obj) => obj.toString();
 
@@ -232,8 +233,12 @@ class Json {
 }
 
 class DateWrapper {
+  static DateTime create(int year, [int month = 1, int day = 1, int hour = 0,
+      int minutes = 0, int seconds = 0, int milliseconds = 0]) {
+    return new DateTime(year, month, day, hour, minutes, seconds, milliseconds);
+  }
   static DateTime fromMillis(int ms) {
-    return new DateTime.fromMillisecondsSinceEpoch(ms);
+    return new DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
   }
   static int toMillis(DateTime date) {
     return date.millisecondsSinceEpoch;
@@ -241,7 +246,7 @@ class DateWrapper {
   static DateTime now() {
     return new DateTime.now();
   }
-  static toJson(DateTime date) {
+  static String toJson(DateTime date) {
     return date.toUtc().toIso8601String();
   }
 }
