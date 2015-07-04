@@ -1,4 +1,3 @@
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {
   CompanyNameComponent,
   OpportunityNameComponent,
@@ -37,7 +36,10 @@ import {
     FormattedCellComponent
   ],
   template: `
-    <div class="row" [style]="itemStyle">
+    <div class="row"
+      [style.height.px]="itemHeight"
+      [style.line-height.px]="itemHeight"
+      style="font-size: 18px; display: flex; justify-content: space-between;">
         <company-name [company]="offering.company"
                       [cell-width]="companyNameWidth">
         </company-name>
@@ -75,27 +77,20 @@ import {
 })
 export class ScrollItemComponent {
   offering: Offering;
-  itemStyle;
 
-  constructor() {
-    this.itemStyle = MapWrapper.createFromPairs([
-      ['height', `${ITEM_HEIGHT}px`],
-      ['line-height', `${ITEM_HEIGHT}px`],
-      ['font-size', '18px'],
-      ['display', 'flex'],
-      ['justify-content', 'space-between']
-    ]);
-  }
+  itemHeight: number;
 
-  get companyNameWidth() { return `${COMPANY_NAME_WIDTH}px`; }
-  get opportunityNameWidth() { return `${OPPORTUNITY_NAME_WIDTH}px`; }
-  get offeringNameWidth() { return `${OFFERING_NAME_WIDTH}px`; }
-  get accountCellWidth() { return `${ACCOUNT_CELL_WIDTH}px`; }
-  get basePointsWidth() { return `${BASE_POINTS_WIDTH}px`; }
-  get kickerPointsWidth() { return `${KICKER_POINTS_WIDTH}px`; }
-  get stageButtonsWidth() { return `${STAGE_BUTTONS_WIDTH}px`; }
-  get bundlesWidth() { return `${BUNDLES_WIDTH}px`; }
-  get dueDateWidth() { return `${DUE_DATE_WIDTH}px`; }
-  get endDateWidth() { return `${END_DATE_WIDTH}px`; }
-  get aatStatusWidth() { return `${AAT_STATUS_WIDTH}px`; }
+  constructor() { this.itemHeight = ITEM_HEIGHT; }
+
+  get companyNameWidth() { return COMPANY_NAME_WIDTH; }
+  get opportunityNameWidth() { return OPPORTUNITY_NAME_WIDTH; }
+  get offeringNameWidth() { return OFFERING_NAME_WIDTH; }
+  get accountCellWidth() { return ACCOUNT_CELL_WIDTH; }
+  get basePointsWidth() { return BASE_POINTS_WIDTH; }
+  get kickerPointsWidth() { return KICKER_POINTS_WIDTH; }
+  get stageButtonsWidth() { return STAGE_BUTTONS_WIDTH; }
+  get bundlesWidth() { return BUNDLES_WIDTH; }
+  get dueDateWidth() { return DUE_DATE_WIDTH; }
+  get endDateWidth() { return END_DATE_WIDTH; }
+  get aatStatusWidth() { return AAT_STATUS_WIDTH; }
 }
