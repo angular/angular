@@ -261,7 +261,7 @@ class _DirectiveMetadataVisitor extends Object
           '$lifecycleValue');
     }
     ListLiteral l = lifecycleValue;
-    var lifecycleEvents = l.elements.map((s) => s.toSource());
+    var lifecycleEvents = l.elements.map((s) => s.toSource().split('.').last);
     _callOnDestroy = lifecycleEvents.contains("onDestroy");
     _callOnChange = lifecycleEvents.contains("onChange");
     _callOnCheck = lifecycleEvents.contains("onCheck");

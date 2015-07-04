@@ -6,10 +6,5 @@
 export {
   Component as ComponentAnnotation,
   Directive as DirectiveAnnotation,
-  LifecycleEvent,
-  onDestroy,
-  onChange,
-  onCheck,
-  onInit,
-  onAllChangesDone
+  LifecycleEvent
 } from '../annotations_impl/annotations';

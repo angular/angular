@@ -1,5 +1,12 @@
 import {Directive} from 'angular2/annotations';
-import {ViewContainerRef, ViewRef, ProtoViewRef, Pipes, onCheck, Pipe} from 'angular2/angular2';
+import {
+  ViewContainerRef,
+  ViewRef,
+  ProtoViewRef,
+  Pipes,
+  LifecycleEvent,
+  Pipe
+} from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -32,7 +39,8 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
-@Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [onCheck]})
+@Directive(
+    {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.onCheck]})
 export class NgFor {
   _ngForOf: any;
   _pipe: Pipe;

@@ -1,4 +1,12 @@
-import {Component, View, onChange, Parent, Ancestor, Attribute, Optional} from 'angular2/angular2';
+import {
+  Component,
+  View,
+  LifecycleEvent,
+  Parent,
+  Ancestor,
+  Attribute,
+  Optional
+} from 'angular2/angular2';
 
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
@@ -24,7 +32,7 @@ var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
-  lifecycle: [onChange],
+  lifecycle: [LifecycleEvent.onChange],
   events: ['change'],
   properties: ['disabled', 'value'],
   host: {
@@ -179,7 +187,7 @@ export class MdRadioGroup {
 
 @Component({
   selector: 'md-radio-button',
-  lifecycle: [onChange],
+  lifecycle: [LifecycleEvent.onChange],
   properties: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
     '(keydown)': 'onKeydown($event)',

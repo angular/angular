@@ -1,4 +1,4 @@
-import {Directive, onDestroy, onInit} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/angular2';
 import {Inject, Ancestor, forwardRef, Binding} from 'angular2/di';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
@@ -52,7 +52,7 @@ const controlGroupBinding =
   selector: '[ng-control-group]',
   hostInjector: [controlGroupBinding],
   properties: ['name: ng-control-group'],
-  lifecycle: [onInit, onDestroy],
+  lifecycle: [LifecycleEvent.onInit, LifecycleEvent.onDestroy],
   exportAs: 'form'
 })
 export class NgControlGroup extends ControlContainer {

@@ -6,6 +6,20 @@ export function hasLifecycleHook(e: LifecycleEvent, type, annotation: Directive)
     return annotation.lifecycle.indexOf(e) !== -1;
   } else {
     if (!(type instanceof Type)) return false;
-    return e.name in(<any>type).prototype;
+    var proto = (<any>type).prototype;
+    switch (e) {
+      case LifecycleEvent.onAllChangesDone:
+        return !!proto.onAllChangesDone;
+      case LifecycleEvent.onChange:
+        return !!proto.onChange;
+      case LifecycleEvent.onCheck:
+        return !!proto.onCheck;
+      case LifecycleEvent.onDestroy:
+        return !!proto.onDestroy;
+      case LifecycleEvent.onInit:
+        return !!proto.onInit;
+      default:
+        return false;
+    }
   }
 }

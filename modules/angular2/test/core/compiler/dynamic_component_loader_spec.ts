@@ -21,7 +21,7 @@ import {
 
 import {Injector} from 'angular2/di';
 import {NgIf} from 'angular2/directives';
-import {Component, View, onDestroy} from 'angular2/annotations';
+import {Component, View, LifecycleEvent} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -267,7 +267,7 @@ class DynamicallyCreatedComponentService {}
 @Component({
   selector: 'hello-cmp',
   viewInjector: [DynamicallyCreatedComponentService],
-  lifecycle: [onDestroy]
+  lifecycle: [LifecycleEvent.onDestroy]
 })
 @View({template: "{{greeting}}"})
 class DynamicallyCreatedCmp {

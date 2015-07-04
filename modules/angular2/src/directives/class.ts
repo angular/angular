@@ -1,4 +1,4 @@
-import {Directive, onCheck} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
@@ -28,7 +28,8 @@ import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/fa
  * </div>
  * ```
  */
-@Directive({selector: '[class]', lifecycle: [onCheck], properties: ['rawClass: class']})
+@Directive(
+    {selector: '[class]', lifecycle: [LifecycleEvent.onCheck], properties: ['rawClass: class']})
 export class CSSClass {
   _pipe: Pipe;
   _rawClass;

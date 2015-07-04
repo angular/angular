@@ -14,15 +14,7 @@ import {
 } from 'angular2/test_lib';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {
-  Directive,
-  Component,
-  View,
-  onCheck,
-  onInit,
-  onChange,
-  onAllChangesDone
-} from 'angular2/angular2';
+import {Directive, Component, View, LifecycleEvent} from 'angular2/angular2';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 
 export function main() {
@@ -62,7 +54,12 @@ export function main() {
 @Directive({
   selector: "[lifecycle]",
   properties: ['field'],
-  lifecycle: [onChange, onCheck, onInit, onAllChangesDone]
+  lifecycle: [
+    LifecycleEvent.onChange,
+    LifecycleEvent.onCheck,
+    LifecycleEvent.onInit,
+    LifecycleEvent.onAllChangesDone
+  ]
 })
 class LifecycleDir {
   field;
