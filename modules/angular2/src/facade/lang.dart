@@ -32,6 +32,7 @@ bool isType(obj) => obj is Type;
 bool isStringMap(obj) => obj is Map;
 bool isArray(obj) => obj is List;
 bool isPromise(obj) => obj is Future;
+bool isNumber(obj) => obj is num;
 
 String stringify(obj) => obj.toString();
 

@@ -14,6 +14,7 @@ dependencies:
   code_transformers: '^0.2.8'
   dart_style: '^0.1.8'
   html: '^0.12.0'
+  intl: '^0.12.4'
   logging: '>=0.9.0 <0.12.0'
   source_span: '^1.0.0'
   stack_trace: '^1.1.1'
