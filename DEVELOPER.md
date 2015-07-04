@@ -181,6 +181,9 @@ Karma is run against the new output.
 much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test and a group of
 tests respectively.
 
+**Note**: **watch mode** needs symlinks to work, so if you're using windows, ensure you have the
+rights to built them in your operating system.
+
 ### E2E tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder).
