@@ -15,6 +15,7 @@ export * from './src/directives/class';
 export * from './src/directives/ng_for';
 export * from './src/directives/ng_if';
 export * from './src/directives/ng_non_bindable';
+export * from './src/directives/ng_style';
 export * from './src/directives/ng_switch';
 
 /**
