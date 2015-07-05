@@ -542,16 +542,15 @@ export function main() {
         });
       });
 
-      // TODO vsavkin: implement it
       describe('error handling', () => {
-        xit('should wrap exceptions into ChangeDetectionError', () => {
-          var val = _createChangeDetector('invalidProp');
+        it('should wrap exceptions into ChangeDetectionError', () => {
+          var val = _createChangeDetector('invalidFn(1)');
           try {
             val.changeDetector.detectChanges();
             throw new BaseException('fail');
           } catch (e) {
             expect(e).toBeAnInstanceOf(ChangeDetectionError);
-            expect(e.location).toEqual('invalidProp in someComponent');
+            expect(e.location).toEqual('invalidFn(1) in location');
           }
         });
       });

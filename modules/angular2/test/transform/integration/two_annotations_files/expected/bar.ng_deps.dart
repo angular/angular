@@ -40,6 +40,14 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     if (!hydrated()) {
       _gen.ChangeDetectionUtil.throwDehydrated();
     }
+    try {
+      this.__detectChangesInRecords(throwOnChange);
+    } catch (e, s) {
+      this.throwError(currentProto, e, s);
+    }
+  }
+  
+  void __detectChangesInRecords(throwOnChange) {
     var context = null;
     var change_context = false;
     var isChanged = false;
@@ -48,7 +56,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
 
     context = _context;
 
-    _alreadyChecked = true;
+    _alreadyChecked = true;  
   }
 
   void callOnAllChangesDone() {
