@@ -2,6 +2,8 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
+import {ChangeDetectionError} from './exceptions';
+import {ProtoRecord} from './proto_record';
 import {Locals} from './parser/locals';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
@@ -78,5 +80,9 @@ export class AbstractChangeDetector implements ChangeDetector {
       if (c.mode === CHECKED) c.mode = CHECK_ONCE;
       c = c.parent;
     }
+  }
+
+  throwError(proto: ProtoRecord, exception: any, stack: any): void {
+    throw new ChangeDetectionError(proto, exception, stack);
   }
 }

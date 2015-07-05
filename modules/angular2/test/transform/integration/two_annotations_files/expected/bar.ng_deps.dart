@@ -32,6 +32,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
   dynamic _alreadyChecked = false;
+  dynamic currentProto = null;
   MyComponent _context = null;
   dynamic _myNum0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
@@ -44,6 +45,14 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     if (!hydrated()) {
       _gen.ChangeDetectionUtil.throwDehydrated();
     }
+    try {
+      this.__detectChangesInRecords(throwOnChange);
+    } catch (e, s) {
+      this.throwError(currentProto, e, s);
+    }
+  }
+
+  void __detectChangesInRecords(throwOnChange) {
     var context = null;
     var myNum0 = null;
     var interpolate1 = null;
@@ -51,7 +60,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     var change_myNum0 = false;
     var change_interpolate1 = false;
     var isChanged = false;
-    var currentProto;
+    currentProto = null;
     var changes = null;
 
     context = _context;

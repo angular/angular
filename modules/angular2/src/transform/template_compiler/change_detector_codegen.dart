@@ -131,6 +131,7 @@ class _CodegenState {
             $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
         dynamic $_ALREADY_CHECKED_ACCESSOR = false;
+        dynamic $_CURRENT_PROTO = null;
         ${_allFields().map((f) {
           if (f == _CONTEXT_ACCESSOR) {
             return '$_contextTypeName $f = null;';
@@ -148,10 +149,18 @@ class _CodegenState {
           if (!hydrated()) {
             $_UTIL.throwDehydrated();
           }
+          try {
+            this.__detectChangesInRecords(throwOnChange);
+          } catch (e, s) {
+            this.throwError($_CURRENT_PROTO, e, s);
+          }
+        }
+  
+        void __detectChangesInRecords(throwOnChange) {
           ${_genLocalDefinitions()}
           ${_genChangeDefinitons()}
           var $_IS_CHANGED_LOCAL = false;
-          var $_CURRENT_PROTO;
+          $_CURRENT_PROTO = null;
           var $_CHANGES_LOCAL = null;
 
           context = $_CONTEXT_ACCESSOR;
@@ -159,7 +168,7 @@ class _CodegenState {
 
           $_ALREADY_CHECKED_ACCESSOR = true;
         }
-
+        
         void callOnAllChangesDone() {
           ${_getCallOnAllChangesDoneBody()}
         }

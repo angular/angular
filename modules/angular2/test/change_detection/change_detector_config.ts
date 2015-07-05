@@ -309,5 +309,6 @@ var _availableDefinitions = [
   'sayHi("Jim")',
   'a()(99)',
   'a.sayHi("Jim")',
-  'passThrough([12])'
+  'passThrough([12])',
+  'invalidFn(1)'
 ];

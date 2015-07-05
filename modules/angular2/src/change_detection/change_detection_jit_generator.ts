@@ -28,7 +28,7 @@ var IS_CHANGED_LOCAL = "isChanged";
 var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
 var MODE_ACCESSOR = "this.mode";
-var CURRENT_PROTO = "currentProto";
+var CURRENT_PROTO = "this.currentProto";
 var ALREADY_CHECKED_ACCESSOR = "this.alreadyChecked";
 
 
@@ -74,6 +74,7 @@ export class ChangeDetectorJITGenerator {
         ${PROTOS_ACCESSOR} = protos;
         ${DIRECTIVES_ACCESSOR} = directiveRecords;
         ${LOCALS_ACCESSOR} = null;
+        ${CURRENT_PROTO} = null;        
         ${ALREADY_CHECKED_ACCESSOR} = false;
         ${this._genFieldDefinitions()}
       }
@@ -84,19 +85,28 @@ export class ChangeDetectorJITGenerator {
         if (!this.hydrated()) {
           ${UTIL}.throwDehydrated();
         }
+        try {
+          this.__detectChangesInRecords(throwOnChange);
+        } catch (e) {
+          this.throwError(${CURRENT_PROTO}, e, e.stack);
+        }
+      }
+      
+      ${typeName}.prototype.__detectChangesInRecords = function(throwOnChange) {
+        ${CURRENT_PROTO} = null;
+          
         ${this._genLocalDefinitions()}
         ${this._genChangeDefinitions()}
         var ${IS_CHANGED_LOCAL} = false;
-        var ${CURRENT_PROTO};
         var ${CHANGES_LOCAL} = null;
-
+  
         context = ${CONTEXT_ACCESSOR};
-
+  
         ${this.records.map((r) => this._genRecord(r)).join("\n")}
-
+  
         ${ALREADY_CHECKED_ACCESSOR} = true;
       }
-
+      
       ${typeName}.prototype.callOnAllChangesDone = function() {
         ${this._genCallOnAllChangesDoneBody()}
       }

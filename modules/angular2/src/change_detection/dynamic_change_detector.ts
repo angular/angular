@@ -10,8 +10,6 @@ import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detecti
 
 import {ProtoRecord, RecordType} from './proto_record';
 
-import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
-
 export class DynamicChangeDetector extends AbstractChangeDetector {
   locals: Locals = null;
   values: List<any>;
@@ -149,7 +147,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         return this._referenceCheck(proto, throwOnChange);
       }
     } catch (e) {
-      throw new ChangeDetectionError(proto, e);
+      this.throwError(proto, e, e.stack);
     }
   }
 
