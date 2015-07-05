@@ -39,6 +39,7 @@ class MockBrowserXHR extends BrowserXhr {
   responseText: string;
   setRequestHeader: any;
   callbacks: Map<string, Function>;
+  status: number;
   constructor() {
     super();
     var spy = new SpyObject();
@@ -49,6 +50,7 @@ class MockBrowserXHR extends BrowserXhr {
     this.callbacks = new Map();
   }
 
+  setStatusCode(status) { this.status = status; }
   addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
 
   dispatchEvent(type: string) { this.callbacks.get(type)({}); }
@@ -135,6 +137,35 @@ export function main() {
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', ['text/xml']);
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', ['<3']);
       });
+
+      it('should return the correct status code', inject([AsyncTestCompleter], async => {
+           var statusCode = 418;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           ObservableWrapper.subscribe(connection.response, res => {
+             expect(res.status).toBe(statusCode);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should normalize IE\'s 1223 status code into 204', inject([AsyncTestCompleter], async => {
+           var statusCode = 1223;
+           var normalizedCode = 204;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           ObservableWrapper.subscribe(connection.response, res => {
+             expect(res.status).toBe(normalizedCode);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
     });
   });
 }
