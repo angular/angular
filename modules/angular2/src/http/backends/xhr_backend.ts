@@ -36,8 +36,21 @@ export class XHRConnection implements Connection {
     // TODO(jeffbcross): implement error listening/propagation
     this._xhr.open(requestMethodsMap.getMethod(ENUM_INDEX(req.method)), req.url);
     this._xhr.addEventListener('load', (_) => {
-      var responseOptions = new ResponseOptions(
-          {body: isPresent(this._xhr.response) ? this._xhr.response : this._xhr.responseText});
+      // responseText is the old-school way of retrieving response (supported by IE8 & 9)
+      // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
+      let response = isPresent(this._xhr.response) ? this._xhr.response : this._xhr.responseText;
+
+      // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
+      let status = this._xhr.status === 1223 ? 204 : this._xhr.status;
+
+      // fix status code when it is 0 (0 status is undocumented).
+      // Occurs when accessing file resources or on Android 4.1 stock browser
+      // while retrieving files from application cache.
+      if (status === 0) {
+        status = response ? 200 : 0;
+      }
+
+      var responseOptions = new ResponseOptions({body: response, status: status});
       if (isPresent(baseResponseOptions)) {
         responseOptions = baseResponseOptions.merge(responseOptions);
       }
