@@ -13,15 +13,17 @@ export class DirectiveRecord {
   callOnChange: boolean;
   callOnCheck: boolean;
   callOnInit: boolean;
+  isComponent: boolean;
   changeDetection: string;
 
   constructor({directiveIndex, callOnAllChangesDone, callOnChange, callOnCheck, callOnInit,
-               changeDetection}: {
+               changeDetection, isComponent}: {
     directiveIndex?: DirectiveIndex,
     callOnAllChangesDone?: boolean,
     callOnChange?: boolean,
     callOnCheck?: boolean,
     callOnInit?: boolean,
+    isComponent?: boolean,
     changeDetection?: string
   } = {}) {
     this.directiveIndex = directiveIndex;
@@ -29,6 +31,7 @@ export class DirectiveRecord {
     this.callOnChange = normalizeBool(callOnChange);
     this.callOnCheck = normalizeBool(callOnCheck);
     this.callOnInit = normalizeBool(callOnInit);
+    this.isComponent = normalizeBool(isComponent);
     this.changeDetection = changeDetection;
   }
 

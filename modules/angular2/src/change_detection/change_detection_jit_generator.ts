@@ -107,6 +107,10 @@ export class ChangeDetectorJITGenerator {
         ${ALREADY_CHECKED_ACCESSOR} = true;
       }
       
+      ${typeName}.prototype._detectChangesInShadowDomChildren = function(throwOnChange) {
+        ${this._genGetDetectorFieldNames().map(f => f + "._detectChanges(throwOnChange);").join("\n")}
+      }
+  
       ${typeName}.prototype.callOnAllChangesDone = function() {
         ${this._genCallOnAllChangesDoneBody()}
       }
@@ -144,7 +148,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genGetDetectorFieldNames(): List<string> {
-    return this.directiveRecords.filter(r => r.isOnPushChangeDetection())
+    return this.directiveRecords.filter(r => r.isComponent)
         .map((d) => this._genGetDetector(d.directiveIndex));
   }
 

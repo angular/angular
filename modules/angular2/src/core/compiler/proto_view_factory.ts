@@ -138,6 +138,7 @@ class BindingRecordsCreator {
     var id = boundElementIndex * 100 + directiveIndex;
 
     if (!this._directiveRecordsMap.has(id)) {
+      var isComponent = directiveMetadata.type === renderApi.DirectiveMetadata.COMPONENT_TYPE;
       this._directiveRecordsMap.set(
           id, new DirectiveRecord({
             directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),
@@ -145,7 +146,8 @@ class BindingRecordsCreator {
             callOnChange: directiveMetadata.callOnChange,
             callOnCheck: directiveMetadata.callOnCheck,
             callOnInit: directiveMetadata.callOnInit,
-            changeDetection: directiveMetadata.changeDetection
+            changeDetection: directiveMetadata.changeDetection,
+            isComponent: isComponent
           }));
     }
 
