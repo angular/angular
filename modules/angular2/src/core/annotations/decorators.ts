@@ -36,7 +36,8 @@ export interface IView {
 
 
 /* from annotations */
-export var Component: IComponent = <IComponent>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
+export var Component: IComponent =
+    <IComponent>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
 export var Directive: IDirective = <IDirective>makeDecorator(DirectiveAnnotation);
 
 /* from view */

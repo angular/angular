@@ -35,29 +35,39 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  */
 @CONST()
 export class View {
+  templateUrl: string;
+  template: string;
+  styleUrls: List<string>;
+  styles: List<string>;
+  // TODO(tbosch): use Type | Binding | List<any> when Dart supports union types,
+  // as otherwise we would need to import Binding type and Dart would warn
+  // for an unused import.
+  directives: List<Type | any | List<any>>;
+  renderer: string;
+
+  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: ViewArgs = {}) {
+    this.templateUrl = templateUrl;
+    this.template = template;
+    this.styleUrls = styleUrls;
+    this.styles = styles;
+    this.directives = directives;
+    this.renderer = renderer;
+  }
+}
+export interface ViewArgs {
   /**
    * Specifies a template URL for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
-  templateUrl: string;
+  templateUrl?: string;
 
   /**
    * Specifies an inline template for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
-  template: string;
-
-  /**
-   * Specifies stylesheet URLs for an angular component.
-   */
-  styleUrls: List<string>;
-
-  /**
-   * Specifies an inline stylesheet for an angular component.
-   */
-  styles: List<string>;
+  template?: string;
 
   /**
    * Specifies a list of directives that can be used within a template.
@@ -81,32 +91,22 @@ export class View {
    * }
    * ```
    */
-  // TODO(tbosch): use Type | Binding | List<any> when Dart supports union types,
-  // as otherwise we would need to import Binding type and Dart would warn
-  // for an unused import.
-  directives: List<Type | any | List<any>>;
+  directives?: List<Type | any | List<any>>;
 
   /**
    * Specify a custom renderer for this View.
    * If this is set, neither `template`, `templateUrl`, `styles`, `styleUrls` nor `directives` are
    * used.
    */
-  renderer: string;
-
-  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: ViewArgs = {}) {
-    this.templateUrl = templateUrl;
-    this.template = template;
-    this.styleUrls = styleUrls;
-    this.styles = styles;
-    this.directives = directives;
-    this.renderer = renderer;
-  }
-}
-export interface ViewArgs {
-  templateUrl?: string;
-  template?: string;
-  directives?: List<Type | any | List<any>>;
   renderer?: string;
+
+  /**
+   * Specifies an inline stylesheet for an angular component.
+   */
   styles?: List<string>;
+
+  /**
+   * Specifies stylesheet URLs for an angular component.
+   */
   styleUrls?: List<string>;
 }

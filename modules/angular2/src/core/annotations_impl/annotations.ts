@@ -3,8 +3,6 @@ import {List} from 'angular2/src/facade/collection';
 import {Injectable, self} from 'angular2/src/di/annotations_impl';
 import {DEFAULT} from 'angular2/change_detection';
 
-// type StringMap = {[idx: string]: string};
-
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
@@ -410,6 +408,33 @@ import {DEFAULT} from 'angular2/change_detection';
  */
 @CONST()
 export class Directive extends Injectable {
+  selector: string;
+  properties: List<string>;
+  events: List<string>;
+  host: StringMap<string, string>;
+  lifecycle: List<LifecycleEvent>;
+  // TODO(vsavkin): This would better fall under the Macro directive concept.
+  compileChildren: boolean;
+  hostInjector: List<any>;
+  exportAs: string;
+
+  constructor({
+                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
+                  compileChildren = true,
+              }: DirectiveArgs = {}) {
+    super(self);
+    this.selector = selector;
+    this.properties = properties;
+    this.events = events;
+    this.host = host;
+    this.exportAs = exportAs;
+    this.lifecycle = lifecycle;
+    this.compileChildren = compileChildren;
+    this.hostInjector = hostInjector;
+  }
+}
+
+export interface DirectiveArgs {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -442,7 +467,7 @@ export class Directive extends Injectable {
    * The directive would only be instantiated on the `<input type="text">` element.
    *
    */
-  selector: string;
+  selector?: string;
 
   /**
    * Enumerates the set of properties that accept data binding for a directive.
@@ -537,7 +562,7 @@ export class Directive extends Injectable {
    * keyValDiff`.
    *
    */
-  properties: List<string>;
+  properties?: List<string>;
 
   /**
    * Enumerates the set of emitted events.
@@ -582,7 +607,7 @@ export class Directive extends Injectable {
    * ```
    *
    */
-  events: List<string>;
+  events?: List<string>;
 
   /**
    * Specifiy the events, actions, properties and attributes related to the host element.
@@ -709,7 +734,7 @@ export class Directive extends Injectable {
    *
    * In this example calling focus on InputDirective will result in calling focus on the input.
    */
-  host: StringMap<string, string>;
+  host?: StringMap<string, string>;
 
   /**
    * Specifies which lifecycle should be notified to the directive.
@@ -717,13 +742,7 @@ export class Directive extends Injectable {
    * See {@link onChange}, {@link onDestroy}, {@link onCheck},
    * {@link onInit}, {@link onAllChangesDone} for details.
    */
-  lifecycle: List<LifecycleEvent>;
-
-  /**
-   * If set to false the compiler does not compile the children of this directive.
-   */
-  // TODO(vsavkin): This would better fall under the Macro directive concept.
-  compileChildren: boolean;
+  lifecycle?: List<LifecycleEvent>;
 
   /**
    * Defines the set of injectable objects that are visible to a Directive and its light dom
@@ -755,7 +774,7 @@ export class Directive extends Injectable {
    * }
    * ```
    */
-  hostInjector: List<any>;
+  hostInjector?: List<any>;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -782,32 +801,11 @@ export class Directive extends Injectable {
    *
    * ```
    */
-  exportAs: string;
-
-  constructor({
-                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
-                  compileChildren = true,
-              }: DirectiveArgs = {}) {
-    super(self);
-    this.selector = selector;
-    this.properties = properties;
-    this.events = events;
-    this.host = host;
-    this.exportAs = exportAs;
-    this.lifecycle = lifecycle;
-    this.compileChildren = compileChildren;
-    this.hostInjector = hostInjector;
-  }
-}
-
-export interface DirectiveArgs {
-  selector?: string;
-  properties?: List<string>;
-  events?: List<string>;
-  host?: StringMap<string, string>;
-  lifecycle?: List<LifecycleEvent>;
-  hostInjector?: List<any>;
   exportAs?: string;
+
+  /**
+   * If set to false the compiler does not compile the children of this directive.
+   */
   compileChildren?: boolean;
 }
 
@@ -851,19 +849,28 @@ export interface DirectiveArgs {
  */
 @CONST()
 export class Component extends Directive {
-  /**
-   * Defines the used change detection strategy.
-   *
-   * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating
-   * the component's bindings.
-   *
-   * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component
-   * tells it to do so.
-   */
   changeDetection: string;
+  viewInjector: List<any>;
 
+  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
+               changeDetection = DEFAULT, compileChildren = true}: ComponentArgs = {}) {
+    super({
+      selector: selector,
+      properties: properties,
+      events: events,
+      host: host,
+      exportAs: exportAs,
+      hostInjector: hostInjector,
+      lifecycle: lifecycle,
+      compileChildren: compileChildren
+    });
+
+    this.changeDetection = changeDetection;
+    this.viewInjector = viewInjector;
+  }
+}
+
+export interface ComponentArgs extends DirectiveArgs {
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
    *
@@ -904,28 +911,19 @@ export class Component extends Directive {
    *
    * ```
    */
-  viewInjector: List<any>;
-
-  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
-               changeDetection = DEFAULT, compileChildren = true}: ComponentArgs = {}) {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      host: host,
-      exportAs: exportAs,
-      hostInjector: hostInjector,
-      lifecycle: lifecycle,
-      compileChildren: compileChildren
-    });
-
-    this.changeDetection = changeDetection;
-    this.viewInjector = viewInjector;
-  }
-}
-
-export interface ComponentArgs extends DirectiveArgs {
   viewInjector?: List<any>;
+
+  /**
+   * Defines the used change detection strategy.
+   *
+   * When a component is instantiated, Angular creates a change detector, which is responsible for
+   * propagating
+   * the component's bindings.
+   *
+   * The `changeDetection` property defines, whether the change detection will be checked every time
+   * or only when the component
+   * tells it to do so.
+   */
   changeDetection?: string;
 }
 
@@ -959,7 +957,7 @@ export class LifecycleEvent {
  * ```
  * @exportedAs angular2/annotations
  */
-export const onDestroy = CONST_EXPR(new LifecycleEvent("onDestroy"));
+export const onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestroy"));
 
 
 /**
@@ -997,7 +995,7 @@ export const onDestroy = CONST_EXPR(new LifecycleEvent("onDestroy"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onChange = CONST_EXPR(new LifecycleEvent("onChange"));
+export const onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"));
 
 /**
  * Notify a directive when it has been checked.
@@ -1021,7 +1019,7 @@ export const onChange = CONST_EXPR(new LifecycleEvent("onChange"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onCheck = CONST_EXPR(new LifecycleEvent("onCheck"));
+export const onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"));
 
 /**
  * Notify a directive when it has been checked the first itme.
@@ -1045,7 +1043,7 @@ export const onCheck = CONST_EXPR(new LifecycleEvent("onCheck"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onInit = CONST_EXPR(new LifecycleEvent("onInit"));
+export const onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
 
 /**
  * Notify a directive when the bindings of all its children have been checked (whether they have
@@ -1067,4 +1065,4 @@ export const onInit = CONST_EXPR(new LifecycleEvent("onInit"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onAllChangesDone = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));
+export const onAllChangesDone: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));
