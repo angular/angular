@@ -8242,94 +8242,192 @@
       }
     },
     "karma": {
-      "version": "0.12.31",
+      "version": "0.13.0-rc.6",
       "dependencies": {
-        "di": {
-          "version": "0.0.1"
+        "bluebird": {
+          "version": "2.9.30"
         },
-        "socket.io": {
-          "version": "0.9.16",
+        "body-parser": {
+          "version": "1.13.1",
           "dependencies": {
-            "socket.io-client": {
-              "version": "0.9.16",
+            "bytes": {
+              "version": "2.1.0"
+            },
+            "content-type": {
+              "version": "1.0.1"
+            },
+            "debug": {
+              "version": "2.2.0",
               "dependencies": {
-                "uglify-js": {
-                  "version": "1.2.5"
-                },
-                "ws": {
-                  "version": "0.4.32",
-                  "dependencies": {
-                    "commander": {
-                      "version": "2.1.0"
-                    },
-                    "nan": {
-                      "version": "1.0.0"
-                    },
-                    "tinycolor": {
-                      "version": "0.0.1"
-                    },
-                    "options": {
-                      "version": "0.0.6"
-                    }
-                  }
-                },
-                "xmlhttprequest": {
-                  "version": "1.4.2"
-                },
-                "active-x-obfuscator": {
-                  "version": "0.0.1",
-                  "dependencies": {
-                    "zeparser": {
-                      "version": "0.0.5"
-                    }
-                  }
+                "ms": {
+                  "version": "0.7.1"
                 }
               }
             },
-            "policyfile": {
-              "version": "0.0.4"
+            "depd": {
+              "version": "1.0.1"
             },
-            "base64id": {
-              "version": "0.1.0"
-            },
-            "redis": {
-              "version": "0.7.3"
-            }
-          }
-        },
-        "glob": {
-          "version": "3.2.11",
-          "dependencies": {
-            "inherits": {
-              "version": "2.0.1"
-            },
-            "minimatch": {
-              "version": "0.3.0",
+            "http-errors": {
+              "version": "1.3.1",
               "dependencies": {
-                "lru-cache": {
-                  "version": "2.6.2"
+                "inherits": {
+                  "version": "2.0.1"
                 },
-                "sigmund": {
+                "statuses": {
+                  "version": "1.2.1"
+                }
+              }
+            },
+            "iconv-lite": {
+              "version": "0.4.10"
+            },
+            "on-finished": {
+              "version": "2.3.0",
+              "dependencies": {
+                "ee-first": {
+                  "version": "1.1.1"
+                }
+              }
+            },
+            "qs": {
+              "version": "2.4.2"
+            },
+            "raw-body": {
+              "version": "2.1.1",
+              "dependencies": {
+                "unpipe": {
                   "version": "1.0.0"
                 }
               }
+            },
+            "type-is": {
+              "version": "1.6.3",
+              "dependencies": {
+                "media-typer": {
+                  "version": "0.3.0"
+                },
+                "mime-types": {
+                  "version": "2.1.2",
+                  "dependencies": {
+                    "mime-db": {
+                      "version": "1.14.0"
+                    }
+                  }
+                }
+              }
             }
           }
         },
-        "minimatch": {
-          "version": "0.2.14",
+        "colors": {
+          "version": "1.1.2"
+        },
+        "connect": {
+          "version": "3.4.0",
           "dependencies": {
-            "lru-cache": {
-              "version": "2.6.2"
+            "debug": {
+              "version": "2.2.0",
+              "dependencies": {
+                "ms": {
+                  "version": "0.7.1"
+                }
+              }
             },
-            "sigmund": {
+            "finalhandler": {
+              "version": "0.4.0",
+              "dependencies": {
+                "escape-html": {
+                  "version": "1.0.2"
+                },
+                "on-finished": {
+                  "version": "2.3.0",
+                  "dependencies": {
+                    "ee-first": {
+                      "version": "1.1.1"
+                    }
+                  }
+                },
+                "unpipe": {
+                  "version": "1.0.0"
+                }
+              }
+            },
+            "parseurl": {
+              "version": "1.3.0"
+            },
+            "utils-merge": {
               "version": "1.0.0"
             }
           }
         },
+        "core-js": {
+          "version": "0.9.18"
+        },
+        "di": {
+          "version": "0.0.1"
+        },
+        "expand-braces": {
+          "version": "0.1.1",
+          "dependencies": {
+            "array-slice": {
+              "version": "0.2.3"
+            },
+            "array-uniq": {
+              "version": "1.0.2"
+            },
+            "braces": {
+              "version": "0.1.5",
+              "dependencies": {
+                "expand-range": {
+                  "version": "0.1.1",
+                  "dependencies": {
+                    "is-number": {
+                      "version": "0.1.1"
+                    },
+                    "repeat-string": {
+                      "version": "0.2.2"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "glob": {
+          "version": "5.0.12",
+          "dependencies": {
+            "inflight": {
+              "version": "1.0.4",
+              "dependencies": {
+                "wrappy": {
+                  "version": "1.0.1"
+                }
+              }
+            },
+            "inherits": {
+              "version": "2.0.1"
+            },
+            "once": {
+              "version": "1.3.2",
+              "dependencies": {
+                "wrappy": {
+                  "version": "1.0.1"
+                }
+              }
+            },
+            "path-is-absolute": {
+              "version": "1.0.0"
+            }
+          }
+        },
+        "graceful-fs": {
+          "version": "3.0.8"
+        },
         "http-proxy": {
           "version": "0.10.4",
           "dependencies": {
+            "colors": {
+              "version": "0.6.2"
+            },
             "pkginfo": {
               "version": "0.3.0"
             },
@@ -8346,7 +8444,7 @@
                   "version": "0.3.3"
                 },
                 "mkdirp": {
-                  "version": "0.5.0",
+                  "version": "0.5.1",
                   "dependencies": {
                     "minimist": {
                       "version": "0.0.8"
@@ -8360,31 +8458,11 @@
             }
           }
         },
-        "optimist": {
-          "version": "0.6.1",
-          "dependencies": {
-            "wordwrap": {
-              "version": "0.0.3"
-            },
-            "minimist": {
-              "version": "0.0.10"
-            }
-          }
-        },
-        "rimraf": {
-          "version": "2.2.8"
-        },
-        "q": {
-          "version": "0.9.7"
-        },
-        "colors": {
-          "version": "0.6.2"
-        },
-        "mime": {
-          "version": "1.2.11"
+        "lodash": {
+          "version": "3.10.0"
         },
         "log4js": {
-          "version": "0.6.24",
+          "version": "0.6.26",
           "dependencies": {
             "async": {
               "version": "0.2.10"
@@ -8411,397 +8489,414 @@
             }
           }
         },
-        "useragent": {
-          "version": "2.0.10",
+        "memoizee": {
+          "version": "0.3.8",
           "dependencies": {
-            "lru-cache": {
-              "version": "2.2.4"
+            "d": {
+              "version": "0.1.1"
+            },
+            "es5-ext": {
+              "version": "0.10.7",
+              "dependencies": {
+                "es6-iterator": {
+                  "version": "0.1.3"
+                },
+                "es6-symbol": {
+                  "version": "2.0.1"
+                }
+              }
+            },
+            "es6-weak-map": {
+              "version": "0.1.4",
+              "dependencies": {
+                "es6-iterator": {
+                  "version": "0.1.3"
+                },
+                "es6-symbol": {
+                  "version": "2.0.1"
+                }
+              }
+            },
+            "event-emitter": {
+              "version": "0.3.3"
+            },
+            "lru-queue": {
+              "version": "0.1.0"
+            },
+            "next-tick": {
+              "version": "0.2.2"
+            },
+            "timers-ext": {
+              "version": "0.1.0"
             }
           }
         },
-        "graceful-fs": {
-          "version": "2.0.3"
+        "mime": {
+          "version": "1.3.4"
         },
-        "connect": {
-          "version": "2.26.6",
+        "optimist": {
+          "version": "0.6.1",
           "dependencies": {
-            "basic-auth-connect": {
-              "version": "1.0.0"
+            "wordwrap": {
+              "version": "0.0.3"
             },
-            "body-parser": {
-              "version": "1.8.4",
+            "minimist": {
+              "version": "0.0.10"
+            }
+          }
+        },
+        "rimraf": {
+          "version": "2.4.0",
+          "dependencies": {
+            "glob": {
+              "version": "4.5.3",
               "dependencies": {
-                "iconv-lite": {
-                  "version": "0.4.4"
-                },
-                "on-finished": {
-                  "version": "2.1.0",
+                "inflight": {
+                  "version": "1.0.4",
                   "dependencies": {
-                    "ee-first": {
-                      "version": "1.0.5"
-                    }
-                  }
-                },
-                "raw-body": {
-                  "version": "1.3.0"
-                }
-              }
-            },
-            "bytes": {
-              "version": "1.0.0"
-            },
-            "cookie": {
-              "version": "0.1.2"
-            },
-            "cookie-parser": {
-              "version": "1.3.4",
-              "dependencies": {
-                "cookie-signature": {
-                  "version": "1.0.6"
-                }
-              }
-            },
-            "cookie-signature": {
-              "version": "1.0.5"
-            },
-            "compression": {
-              "version": "1.1.2",
-              "dependencies": {
-                "accepts": {
-                  "version": "1.1.4",
-                  "dependencies": {
-                    "mime-types": {
-                      "version": "2.0.11",
-                      "dependencies": {
-                        "mime-db": {
-                          "version": "1.9.1"
-                        }
-                      }
-                    },
-                    "negotiator": {
-                      "version": "0.4.9"
-                    }
-                  }
-                },
-                "compressible": {
-                  "version": "2.0.2",
-                  "dependencies": {
-                    "mime-db": {
-                      "version": "1.9.1"
-                    }
-                  }
-                },
-                "vary": {
-                  "version": "1.0.0"
-                }
-              }
-            },
-            "connect-timeout": {
-              "version": "1.3.0",
-              "dependencies": {
-                "ms": {
-                  "version": "0.6.2"
-                }
-              }
-            },
-            "csurf": {
-              "version": "1.6.6",
-              "dependencies": {
-                "csrf": {
-                  "version": "2.0.7",
-                  "dependencies": {
-                    "base64-url": {
-                      "version": "1.2.1"
-                    },
-                    "rndm": {
-                      "version": "1.1.0"
-                    },
-                    "scmp": {
-                      "version": "1.0.0"
-                    },
-                    "uid-safe": {
-                      "version": "1.1.0",
-                      "dependencies": {
-                        "native-or-bluebird": {
-                          "version": "1.1.2"
-                        }
-                      }
-                    }
-                  }
-                },
-                "http-errors": {
-                  "version": "1.2.8",
-                  "dependencies": {
-                    "inherits": {
-                      "version": "2.0.1"
-                    },
-                    "statuses": {
-                      "version": "1.2.1"
-                    }
-                  }
-                }
-              }
-            },
-            "debug": {
-              "version": "2.0.0",
-              "dependencies": {
-                "ms": {
-                  "version": "0.6.2"
-                }
-              }
-            },
-            "depd": {
-              "version": "0.4.5"
-            },
-            "errorhandler": {
-              "version": "1.2.4",
-              "dependencies": {
-                "accepts": {
-                  "version": "1.1.4",
-                  "dependencies": {
-                    "mime-types": {
-                      "version": "2.0.11",
-                      "dependencies": {
-                        "mime-db": {
-                          "version": "1.9.1"
-                        }
-                      }
-                    },
-                    "negotiator": {
-                      "version": "0.4.9"
-                    }
-                  }
-                },
-                "escape-html": {
-                  "version": "1.0.1"
-                }
-              }
-            },
-            "express-session": {
-              "version": "1.8.2",
-              "dependencies": {
-                "crc": {
-                  "version": "3.0.0"
-                },
-                "uid-safe": {
-                  "version": "1.0.1",
-                  "dependencies": {
-                    "mz": {
-                      "version": "1.3.0",
-                      "dependencies": {
-                        "native-or-bluebird": {
-                          "version": "1.2.0"
-                        },
-                        "thenify": {
-                          "version": "3.1.0"
-                        },
-                        "thenify-all": {
-                          "version": "1.6.0"
-                        }
-                      }
-                    },
-                    "base64-url": {
-                      "version": "1.2.1"
-                    }
-                  }
-                },
-                "utils-merge": {
-                  "version": "1.0.0"
-                }
-              }
-            },
-            "finalhandler": {
-              "version": "0.2.0",
-              "dependencies": {
-                "escape-html": {
-                  "version": "1.0.1"
-                }
-              }
-            },
-            "fresh": {
-              "version": "0.2.4"
-            },
-            "media-typer": {
-              "version": "0.3.0"
-            },
-            "method-override": {
-              "version": "2.2.0",
-              "dependencies": {
-                "methods": {
-                  "version": "1.1.0"
-                },
-                "vary": {
-                  "version": "1.0.0"
-                }
-              }
-            },
-            "morgan": {
-              "version": "1.3.2",
-              "dependencies": {
-                "basic-auth": {
-                  "version": "1.0.0"
-                },
-                "on-finished": {
-                  "version": "2.1.0",
-                  "dependencies": {
-                    "ee-first": {
-                      "version": "1.0.5"
-                    }
-                  }
-                }
-              }
-            },
-            "multiparty": {
-              "version": "3.3.2",
-              "dependencies": {
-                "readable-stream": {
-                  "version": "1.1.13",
-                  "dependencies": {
-                    "core-util-is": {
+                    "wrappy": {
                       "version": "1.0.1"
-                    },
-                    "isarray": {
-                      "version": "0.0.1"
-                    },
-                    "string_decoder": {
-                      "version": "0.10.31"
-                    },
-                    "inherits": {
-                      "version": "2.0.1"
                     }
                   }
                 },
-                "stream-counter": {
-                  "version": "0.2.0"
-                }
-              }
-            },
-            "on-headers": {
-              "version": "1.0.0"
-            },
-            "parseurl": {
-              "version": "1.3.0"
-            },
-            "qs": {
-              "version": "2.2.4"
-            },
-            "response-time": {
-              "version": "2.0.1"
-            },
-            "serve-favicon": {
-              "version": "2.1.7",
-              "dependencies": {
-                "etag": {
-                  "version": "1.5.1",
+                "inherits": {
+                  "version": "2.0.1"
+                },
+                "once": {
+                  "version": "1.3.2",
                   "dependencies": {
-                    "crc": {
-                      "version": "3.2.1"
+                    "wrappy": {
+                      "version": "1.0.1"
                     }
                   }
-                },
-                "ms": {
-                  "version": "0.6.2"
                 }
               }
-            },
-            "serve-index": {
-              "version": "1.2.1",
+            }
+          }
+        },
+        "socket.io": {
+          "version": "1.3.5",
+          "dependencies": {
+            "engine.io": {
+              "version": "1.5.1",
               "dependencies": {
-                "accepts": {
-                  "version": "1.1.4",
+                "debug": {
+                  "version": "1.0.3",
                   "dependencies": {
-                    "mime-types": {
-                      "version": "2.0.11",
-                      "dependencies": {
-                        "mime-db": {
-                          "version": "1.9.1"
-                        }
-                      }
-                    },
-                    "negotiator": {
-                      "version": "0.4.9"
-                    }
-                  }
-                },
-                "batch": {
-                  "version": "0.5.1"
-                }
-              }
-            },
-            "serve-static": {
-              "version": "1.6.5",
-              "dependencies": {
-                "escape-html": {
-                  "version": "1.0.1"
-                },
-                "send": {
-                  "version": "0.9.3",
-                  "dependencies": {
-                    "destroy": {
-                      "version": "1.0.3"
-                    },
-                    "etag": {
-                      "version": "1.4.0",
-                      "dependencies": {
-                        "crc": {
-                          "version": "3.0.0"
-                        }
-                      }
-                    },
                     "ms": {
                       "version": "0.6.2"
+                    }
+                  }
+                },
+                "ws": {
+                  "version": "0.5.0",
+                  "dependencies": {
+                    "nan": {
+                      "version": "1.4.3"
                     },
-                    "on-finished": {
-                      "version": "2.1.0",
-                      "dependencies": {
-                        "ee-first": {
-                          "version": "1.0.5"
-                        }
-                      }
+                    "options": {
+                      "version": "0.0.6"
                     },
-                    "range-parser": {
+                    "ultron": {
                       "version": "1.0.2"
                     }
                   }
                 },
-                "utils-merge": {
+                "engine.io-parser": {
+                  "version": "1.2.1",
+                  "dependencies": {
+                    "after": {
+                      "version": "0.8.1"
+                    },
+                    "arraybuffer.slice": {
+                      "version": "0.0.6"
+                    },
+                    "base64-arraybuffer": {
+                      "version": "0.1.2"
+                    },
+                    "blob": {
+                      "version": "0.0.2"
+                    },
+                    "has-binary": {
+                      "version": "0.1.5",
+                      "dependencies": {
+                        "isarray": {
+                          "version": "0.0.1"
+                        }
+                      }
+                    },
+                    "utf8": {
+                      "version": "2.0.0"
+                    }
+                  }
+                },
+                "base64id": {
+                  "version": "0.1.0"
+                }
+              }
+            },
+            "socket.io-parser": {
+              "version": "2.2.4",
+              "dependencies": {
+                "debug": {
+                  "version": "0.7.4"
+                },
+                "json3": {
+                  "version": "3.2.6"
+                },
+                "component-emitter": {
+                  "version": "1.1.2"
+                },
+                "isarray": {
+                  "version": "0.0.1"
+                },
+                "benchmark": {
                   "version": "1.0.0"
                 }
               }
             },
-            "type-is": {
-              "version": "1.5.7",
+            "socket.io-client": {
+              "version": "1.3.5",
               "dependencies": {
-                "mime-types": {
-                  "version": "2.0.11",
+                "debug": {
+                  "version": "0.7.4"
+                },
+                "engine.io-client": {
+                  "version": "1.5.1",
                   "dependencies": {
-                    "mime-db": {
-                      "version": "1.9.1"
+                    "has-cors": {
+                      "version": "1.0.3",
+                      "dependencies": {
+                        "global": {
+                          "version": "2.0.1"
+                        }
+                      }
+                    },
+                    "ws": {
+                      "version": "0.4.31",
+                      "dependencies": {
+                        "commander": {
+                          "version": "0.6.1"
+                        },
+                        "nan": {
+                          "version": "0.3.2"
+                        },
+                        "tinycolor": {
+                          "version": "0.0.1"
+                        },
+                        "options": {
+                          "version": "0.0.6"
+                        }
+                      }
+                    },
+                    "xmlhttprequest": {
+                      "version": "1.5.0"
+                    },
+                    "engine.io-parser": {
+                      "version": "1.2.1",
+                      "dependencies": {
+                        "after": {
+                          "version": "0.8.1"
+                        },
+                        "arraybuffer.slice": {
+                          "version": "0.0.6"
+                        },
+                        "base64-arraybuffer": {
+                          "version": "0.1.2"
+                        },
+                        "blob": {
+                          "version": "0.0.2"
+                        },
+                        "has-binary": {
+                          "version": "0.1.5",
+                          "dependencies": {
+                            "isarray": {
+                              "version": "0.0.1"
+                            }
+                          }
+                        },
+                        "utf8": {
+                          "version": "2.0.0"
+                        }
+                      }
+                    },
+                    "debug": {
+                      "version": "1.0.4",
+                      "dependencies": {
+                        "ms": {
+                          "version": "0.6.2"
+                        }
+                      }
+                    },
+                    "parseuri": {
+                      "version": "0.0.4",
+                      "dependencies": {
+                        "better-assert": {
+                          "version": "1.0.2",
+                          "dependencies": {
+                            "callsite": {
+                              "version": "1.0.0"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "parsejson": {
+                      "version": "0.0.1",
+                      "dependencies": {
+                        "better-assert": {
+                          "version": "1.0.2",
+                          "dependencies": {
+                            "callsite": {
+                              "version": "1.0.0"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "parseqs": {
+                      "version": "0.0.2",
+                      "dependencies": {
+                        "better-assert": {
+                          "version": "1.0.2",
+                          "dependencies": {
+                            "callsite": {
+                              "version": "1.0.0"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "component-inherit": {
+                      "version": "0.0.3"
                     }
                   }
+                },
+                "component-bind": {
+                  "version": "1.0.0"
+                },
+                "component-emitter": {
+                  "version": "1.1.2"
+                },
+                "object-component": {
+                  "version": "0.0.3"
+                },
+                "has-binary": {
+                  "version": "0.1.6",
+                  "dependencies": {
+                    "isarray": {
+                      "version": "0.0.1"
+                    }
+                  }
+                },
+                "indexof": {
+                  "version": "0.0.1"
+                },
+                "parseuri": {
+                  "version": "0.0.2",
+                  "dependencies": {
+                    "better-assert": {
+                      "version": "1.0.2",
+                      "dependencies": {
+                        "callsite": {
+                          "version": "1.0.0"
+                        }
+                      }
+                    }
+                  }
+                },
+                "to-array": {
+                  "version": "0.1.3"
+                },
+                "backo2": {
+                  "version": "1.0.2"
                 }
               }
             },
-            "vhost": {
-              "version": "3.0.0"
+            "socket.io-adapter": {
+              "version": "0.3.1",
+              "dependencies": {
+                "debug": {
+                  "version": "1.0.2",
+                  "dependencies": {
+                    "ms": {
+                      "version": "0.6.2"
+                    }
+                  }
+                },
+                "socket.io-parser": {
+                  "version": "2.2.2",
+                  "dependencies": {
+                    "debug": {
+                      "version": "0.7.4"
+                    },
+                    "json3": {
+                      "version": "3.2.6"
+                    },
+                    "component-emitter": {
+                      "version": "1.1.2"
+                    },
+                    "isarray": {
+                      "version": "0.0.1"
+                    },
+                    "benchmark": {
+                      "version": "1.0.0"
+                    }
+                  }
+                },
+                "object-keys": {
+                  "version": "1.0.1"
+                }
+              }
             },
-            "pause": {
-              "version": "0.0.1"
+            "has-binary-data": {
+              "version": "0.1.3",
+              "dependencies": {
+                "isarray": {
+                  "version": "0.0.1"
+                }
+              }
+            },
+            "debug": {
+              "version": "2.1.0",
+              "dependencies": {
+                "ms": {
+                  "version": "0.6.2"
+                }
+              }
             }
           }
         },
         "source-map": {
-          "version": "0.1.43",
+          "version": "0.4.2",
           "dependencies": {
             "amdefine": {
-              "version": "0.1.0"
+              "version": "0.1.1"
+            }
+          }
+        },
+        "useragent": {
+          "version": "2.1.7",
+          "dependencies": {
+            "lru-cache": {
+              "version": "2.2.4"
             }
           }
         }
       }
     },
     "karma-chrome-launcher": {
-      "version": "0.1.8"
+      "version": "0.2.0",
+      "dependencies": {
+        "fs-access": {
+          "version": "1.0.0",
+          "dependencies": {
+            "null-check": {
+              "version": "1.0.0"
+            }
+          }
+        }
+      }
     },
     "karma-cli": {
       "version": "0.0.4",
@@ -8812,7 +8907,7 @@
       }
     },
     "karma-dart": {
-      "version": "0.2.8",
+      "version": "0.3.0-rc.0",
       "dependencies": {
         "dart2jsaas": {
           "version": "0.0.16",
@@ -8853,10 +8948,10 @@
       }
     },
     "karma-jasmine": {
-      "version": "0.3.5"
+      "version": "0.3.6"
     },
     "karma-sauce-launcher": {
-      "version": "0.2.11",
+      "version": "0.2.14",
       "dependencies": {
         "wd": {
           "version": "0.3.12",
@@ -9008,10 +9103,10 @@
                   "version": "5.0.1"
                 },
                 "mime-types": {
-                  "version": "2.0.13",
+                  "version": "2.0.14",
                   "dependencies": {
                     "mime-db": {
-                      "version": "1.11.0"
+                      "version": "1.12.0"
                     }
                   }
                 },
@@ -9022,7 +9117,7 @@
                   "version": "0.4.0"
                 },
                 "tough-cookie": {
-                  "version": "1.2.0"
+                  "version": "2.0.0"
                 },
                 "http-signature": {
                   "version": "0.10.1",
@@ -9048,7 +9143,7 @@
                       "version": "2.14.0"
                     },
                     "boom": {
-                      "version": "2.7.2"
+                      "version": "2.8.0"
                     },
                     "cryptiles": {
                       "version": "2.0.4"
@@ -9076,10 +9171,10 @@
                   "version": "0.1.2"
                 },
                 "har-validator": {
-                  "version": "1.7.1",
+                  "version": "1.8.0",
                   "dependencies": {
                     "bluebird": {
-                      "version": "2.9.27"
+                      "version": "2.9.30"
                     },
                     "chalk": {
                       "version": "1.0.0",
