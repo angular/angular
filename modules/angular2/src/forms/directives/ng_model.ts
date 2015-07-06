@@ -63,7 +63,7 @@ export class NgModel extends NgControl {
     }
   }
 
-  get control() { return this._control; }
+  get control(): Control { return this._control; }
 
   get path(): List<string> { return []; }
 

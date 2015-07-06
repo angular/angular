@@ -43,7 +43,7 @@ declare module "{$ module.id $}" {
     {$ member.name $}
     {%- if member.optional %}?{% endif -%}
     {%- if member.parameters %}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
-    {%- if member.returnType %}: {$ member.returnType $}{%- else -%}: any{% endif -%}
+    {%- if member.returnType %}: {$ member.returnType $}{%- else -%}: void{% endif -%}
     ;
   {%- endfor %}
   }
