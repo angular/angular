@@ -1,4 +1,4 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {List, ListWrapper, Map} from 'angular2/src/facade/collection';
 import {RecordType, ProtoRecord} from './proto_record';
 
@@ -45,9 +45,20 @@ function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): P
 
 function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
   return ListWrapper.find(rs, (rr) => rr.mode !== RecordType.DIRECTIVE_LIFECYCLE &&
-                                      rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
+                                      _sameDirIndex(rr, r) && rr.mode === r.mode &&
+                                      rr.funcOrValue === r.funcOrValue &&
                                       rr.contextIndex === r.contextIndex && rr.name === r.name &&
                                       ListWrapper.equals(rr.args, r.args));
+}
+
+function _sameDirIndex(a: ProtoRecord, b: ProtoRecord): boolean {
+  var di1 = isBlank(a.directiveIndex) ? null : a.directiveIndex.directiveIndex;
+  var ei1 = isBlank(a.directiveIndex) ? null : a.directiveIndex.elementIndex;
+
+  var di2 = isBlank(b.directiveIndex) ? null : b.directiveIndex.directiveIndex;
+  var ei2 = isBlank(b.directiveIndex) ? null : b.directiveIndex.elementIndex;
+
+  return di1 === di2 && ei1 === ei2;
 }
 
 function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, any>) {
