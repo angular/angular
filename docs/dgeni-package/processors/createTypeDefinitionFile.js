@@ -66,12 +66,13 @@ module.exports = function createTypeDefinitionFile(log) {
         _.forEach(doc.moduleDocs, function(modDoc, alias) {
           if (!modDoc.doc) {
             log.error('createTypeDefinitionFile processor: no such module "' + alias + '" (Did you forget to add it to the modules to load?)');
+            doc = null;
           }
         });
+        if (doc) {
+          docs.push(doc);
+        }
       });
-
-      // Add all the type definition docs to the docs collection so that dgeni can process them
-      return docs.concat(typeDefDocs);
     }
   };
 };
