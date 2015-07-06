@@ -403,6 +403,13 @@ export class BindingWithVisibility {
 }
 
 /**
+ * Used to provide dependencies that cannot be easily expressed as bindings.
+ */
+export interface DependencyProvider {
+  getDependency(injector: Injector, binding: ResolvedBinding, dependency: Dependency): any;
+}
+
+/**
  * A dependency injection container used for resolving dependencies.
  *
  * An `Injector` is a replacement for a `new` operator, which can automatically resolve the
@@ -476,10 +483,12 @@ export class Injector {
    * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a
    *recursive list of more
    * bindings.
+   * @param `depProvider`
    */
-  static resolveAndCreate(bindings: List<Type | Binding | List<any>>): Injector {
+  static resolveAndCreate(bindings: List<Type | Binding | List<any>>,
+                          depProvider: DependencyProvider = null): Injector {
     var resolvedBindings = Injector.resolve(bindings);
-    return Injector.fromResolvedBindings(resolvedBindings);
+    return Injector.fromResolvedBindings(resolvedBindings, depProvider);
   }
 
   /**
@@ -488,11 +497,13 @@ export class Injector {
    *
    * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the
    * {@link Injector}.
+   * @param `depProvider`
    */
-  static fromResolvedBindings(bindings: List<ResolvedBinding>): Injector {
+  static fromResolvedBindings(bindings: List<ResolvedBinding>,
+                              depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
     var proto = new ProtoInjector(bd, 0);
-    var inj = new Injector(proto);
+    var inj = new Injector(proto, null, depProvider);
     return inj;
   }
 
@@ -500,10 +511,8 @@ export class Injector {
   _isBoundary: boolean = false;
   _constructionCounter: number = 0;
 
-  // TODO vsavkin remove it after DI and EI are merged
-  ei: any;
-
-  constructor(public _proto: ProtoInjector, public _parent: Injector = null) {
+  constructor(public _proto: ProtoInjector, public _parent: Injector = null,
+              private _depProvider: DependencyProvider = null) {
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
 
@@ -555,11 +564,12 @@ export class Injector {
   *
   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a
   * recursive list of more bindings.
-  *
+  * @param `depProvider`
   */
-  resolveAndCreateChild(bindings: List<Type | Binding | List<any>>): Injector {
+  resolveAndCreateChild(bindings: List<Type | Binding | List<any>>,
+                        depProvider: DependencyProvider = null): Injector {
     var resovledBindings = Injector.resolve(bindings);
-    return this.createChildFromResolved(resovledBindings);
+    return this.createChildFromResolved(resovledBindings, depProvider);
   }
 
   /**
@@ -567,12 +577,14 @@ export class Injector {
    *
    * @param `bindings`: A sparse list of {@link ResolvedBinding}s.
    * See `resolve` for the {@link Injector}.
+   * @param `depProvider`
    * @returns a new child {@link Injector}.
    */
-  createChildFromResolved(bindings: List<ResolvedBinding>): Injector {
+  createChildFromResolved(bindings: List<ResolvedBinding>,
+                          depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
     var proto = new ProtoInjector(bd, 1);
-    var inj = new Injector(proto);
+    var inj = new Injector(proto, null, depProvider);
     inj._parent = this;
     return inj;
   }
@@ -588,26 +600,26 @@ export class Injector {
 
     var d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18, d19;
     try {
-      d0 = length > 0 ? this._getByDependency(deps[0], visibility) : null;
-      d1 = length > 1 ? this._getByDependency(deps[1], visibility) : null;
-      d2 = length > 2 ? this._getByDependency(deps[2], visibility) : null;
-      d3 = length > 3 ? this._getByDependency(deps[3], visibility) : null;
-      d4 = length > 4 ? this._getByDependency(deps[4], visibility) : null;
-      d5 = length > 5 ? this._getByDependency(deps[5], visibility) : null;
-      d6 = length > 6 ? this._getByDependency(deps[6], visibility) : null;
-      d7 = length > 7 ? this._getByDependency(deps[7], visibility) : null;
-      d8 = length > 8 ? this._getByDependency(deps[8], visibility) : null;
-      d9 = length > 9 ? this._getByDependency(deps[9], visibility) : null;
-      d10 = length > 10 ? this._getByDependency(deps[10], visibility) : null;
-      d11 = length > 11 ? this._getByDependency(deps[11], visibility) : null;
-      d12 = length > 12 ? this._getByDependency(deps[12], visibility) : null;
-      d13 = length > 13 ? this._getByDependency(deps[13], visibility) : null;
-      d14 = length > 14 ? this._getByDependency(deps[14], visibility) : null;
-      d15 = length > 15 ? this._getByDependency(deps[15], visibility) : null;
-      d16 = length > 16 ? this._getByDependency(deps[16], visibility) : null;
-      d17 = length > 17 ? this._getByDependency(deps[17], visibility) : null;
-      d18 = length > 18 ? this._getByDependency(deps[18], visibility) : null;
-      d19 = length > 19 ? this._getByDependency(deps[19], visibility) : null;
+      d0 = length > 0 ? this._getByDependency(binding, deps[0], visibility) : null;
+      d1 = length > 1 ? this._getByDependency(binding, deps[1], visibility) : null;
+      d2 = length > 2 ? this._getByDependency(binding, deps[2], visibility) : null;
+      d3 = length > 3 ? this._getByDependency(binding, deps[3], visibility) : null;
+      d4 = length > 4 ? this._getByDependency(binding, deps[4], visibility) : null;
+      d5 = length > 5 ? this._getByDependency(binding, deps[5], visibility) : null;
+      d6 = length > 6 ? this._getByDependency(binding, deps[6], visibility) : null;
+      d7 = length > 7 ? this._getByDependency(binding, deps[7], visibility) : null;
+      d8 = length > 8 ? this._getByDependency(binding, deps[8], visibility) : null;
+      d9 = length > 9 ? this._getByDependency(binding, deps[9], visibility) : null;
+      d10 = length > 10 ? this._getByDependency(binding, deps[10], visibility) : null;
+      d11 = length > 11 ? this._getByDependency(binding, deps[11], visibility) : null;
+      d12 = length > 12 ? this._getByDependency(binding, deps[12], visibility) : null;
+      d13 = length > 13 ? this._getByDependency(binding, deps[13], visibility) : null;
+      d14 = length > 14 ? this._getByDependency(binding, deps[14], visibility) : null;
+      d15 = length > 15 ? this._getByDependency(binding, deps[15], visibility) : null;
+      d16 = length > 16 ? this._getByDependency(binding, deps[16], visibility) : null;
+      d17 = length > 17 ? this._getByDependency(binding, deps[17], visibility) : null;
+      d18 = length > 18 ? this._getByDependency(binding, deps[18], visibility) : null;
+      d19 = length > 19 ? this._getByDependency(binding, deps[19], visibility) : null;
     } catch (e) {
       if (e instanceof AbstractBindingError) e.addKey(binding.key);
       throw e;
@@ -689,8 +701,11 @@ export class Injector {
     return obj;
   }
 
-  private _getByDependency(dep: Dependency, bindingVisibility: number): any {
-    var special = isPresent(this.ei) ? this.ei.getDependency(dep) : undefinedValue;
+  private _getByDependency(binding: ResolvedBinding, dep: Dependency,
+                           bindingVisibility: number): any {
+    var special = isPresent(this._depProvider) ?
+                      this._depProvider.getDependency(this, binding, dep) :
+                      undefinedValue;
     if (special !== undefinedValue) {
       return special;
     } else {

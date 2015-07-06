@@ -1,5 +1,13 @@
 import {isBlank, BaseException, stringify} from 'angular2/src/facade/lang';
-import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
+import {
+  describe,
+  ddescribe,
+  it,
+  iit,
+  expect,
+  beforeEach,
+  SpyDependencyProvider
+} from 'angular2/test_lib';
 import {
   Injector,
   bind,
@@ -107,8 +115,8 @@ export function main() {
      strategyClass: InjectorDynamicStrategy
    }].forEach((context) => {
 
-    function createInjector(bindings: any[]) {
-      return Injector.resolveAndCreate(bindings.concat(context['bindings']));
+    function createInjector(bindings: any[], dependencyProvider = null) {
+      return Injector.resolveAndCreate(bindings.concat(context['bindings']), dependencyProvider);
     }
 
     describe(`injector ${context['strategy']}`, () => {
@@ -314,6 +322,20 @@ export function main() {
       it('should support null values', () => {
         var injector = createInjector([bind('null').toValue(null)]);
         expect(injector.get('null')).toBe(null);
+      });
+
+      it('should use custom dependency provider', () => {
+        var e = new Engine();
+
+        var depProvider = <any>new SpyDependencyProvider();
+        depProvider.spy("getDependency").andReturn(e);
+
+        var bindings = Injector.resolve([Car]);
+        var injector = Injector.fromResolvedBindings(bindings, depProvider);
+
+        expect(injector.get(Car).engine).toEqual(e);
+        expect(depProvider.spy("getDependency"))
+            .toHaveBeenCalledWith(injector, bindings[0], bindings[0].dependencies[0]);
       });
     });
 

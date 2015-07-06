@@ -56,7 +56,8 @@ export {
   Self,
   Parent,
   Ancestor,
-  Unbounded
+  Unbounded,
+  DependencyProvider
 } from './di';
 
 export * from './core';

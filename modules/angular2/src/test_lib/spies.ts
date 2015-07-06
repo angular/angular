@@ -3,6 +3,9 @@ import {
   ProtoChangeDetector,
   DynamicChangeDetector
 } from 'angular2/change_detection';
+
+import {DependencyProvider} from 'angular2/di';
+
 import {BasePipe} from 'angular2/src/change_detection/pipes/pipe';
 import {SpyObject, proxy} from './test_lib';
 
@@ -19,3 +22,5 @@ export class SpyPipe extends SpyObject {
 }
 
 export class SpyPipeFactory extends SpyObject {}
+
+export class SpyDependencyProvider extends SpyObject {}

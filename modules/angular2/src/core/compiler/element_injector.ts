@@ -28,6 +28,7 @@ import {
   resolveBindings,
   Visibility,
   VisibilityAnnotation,
+  DependencyProvider,
   self
 } from 'angular2/di';
 import {
@@ -429,7 +430,7 @@ export class ProtoElementInjector {
 }
 
 
-export class ElementInjector extends TreeNode<ElementInjector> {
+export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
   private _host: ElementInjector;
   private _preBuiltObjects = null;
 
@@ -447,9 +448,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   constructor(public _proto: ProtoElementInjector, parent: ElementInjector) {
     super(parent);
 
-    this._injector = new Injector(this._proto.protoInjector);
-    this._injector.ei = this;  // TODO savkin remove after mergin DI and EI
-
+    this._injector = new Injector(this._proto.protoInjector, null, this);
     // we couple ourselves to the injector strategy to avoid polymoprhic calls
     var injectorStrategy = <any>this._injector.internalStrategy;
     this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
@@ -588,7 +587,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
   isComponentKey(key: Key): boolean { return this._strategy.isComponentKey(key); }
 
-  getDependency(dep: any): any {
+  getDependency(injector: Injector, binding: ResolvedBinding, dep: Dependency): any {
     var key: Key = dep.key;
 
     if (!(dep instanceof DirectiveDependency)) return undefinedValue;

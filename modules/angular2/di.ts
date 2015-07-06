@@ -33,6 +33,7 @@ export {
   resolveBindings,
   Injector,
   ProtoInjector,
+  DependencyProvider,
   PUBLIC_AND_PRIVATE,
   PUBLIC,
   PRIVATE,
