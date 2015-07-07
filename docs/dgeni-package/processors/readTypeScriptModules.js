@@ -147,14 +147,14 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
         decl.heritageClauses.forEach(function(heritage) {
 
           if (heritage.token == ts.SyntaxKind.ExtendsKeyword) {
-            heritageString += " extends ";
+            heritageString += " extends";
             heritage.types.forEach(function(typ, idx) {
-              heritageString += (idx > 0 ? ', ' : '') + typ.getFullText();
+              heritageString += (idx > 0 ? ',' : '') + typ.getFullText();
             });
           }
 
           if (heritage.token == ts.SyntaxKind.ImplementsKeyword) {
-            heritageString += " implements ";
+            heritageString += " implements";
             heritage.types.forEach(function(typ, idx) {
               heritageString += (idx > 0 ? ', ' : '') + typ.getFullText();
             });
