@@ -15,6 +15,7 @@ import {Pipeline} from './pipeline';
 import {Instruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
+import {getCanActivateHook} from './route_lifecycle_reflector';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
@@ -39,7 +40,6 @@ let _resolveToFalse = PromiseWrapper.resolve(false);
 export class Router {
   navigating: boolean = false;
   lastNavigationAttempt: string;
-  previousUrl: string = null;
 
   private _currentInstruction: Instruction = null;
   private _currentNavigation: Promise<any> = _resolveToTrue;
@@ -67,7 +67,7 @@ export class Router {
     // TODO: sibling routes
     this._outlet = outlet;
     if (isPresent(this._currentInstruction)) {
-      return outlet.activate(this._currentInstruction);
+      return outlet.commit(this._currentInstruction);
     }
     return _resolveToTrue;
   }
@@ -109,34 +109,93 @@ export class Router {
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
    */
   navigate(url: string): Promise<any> {
-    if (this.navigating) {
-      return this._currentNavigation;
-    }
-    this.lastNavigationAttempt = url;
-    return this._currentNavigation = this.recognize(url).then((matchedInstruction) => {
-      if (isBlank(matchedInstruction)) {
-        return _resolveToFalse;
-      }
-
-      if (isPresent(this._currentInstruction)) {
-        matchedInstruction.reuseComponentsFrom(this._currentInstruction);
-      }
-
+    return this._currentNavigation = this._currentNavigation.then((_) => {
+      this.lastNavigationAttempt = url;
       this._startNavigating();
-
-      var result =
-          this.commit(matchedInstruction)
-              .then((_) => {
-                this._finishNavigating();
-                ObservableWrapper.callNext(this._subject, matchedInstruction.accumulatedUrl);
-              });
-
-      return PromiseWrapper.catchError(result, (err) => {
-        this._finishNavigating();
-        throw err;
-      });
+      return this._afterPromiseFinishNavigating(this.recognize(url).then((matchedInstruction) => {
+        if (isBlank(matchedInstruction)) {
+          return false;
+        }
+        return this._reuse(matchedInstruction)
+            .then((_) => this._canActivate(matchedInstruction))
+            .then((result) => {
+              if (!result) {
+                return false;
+              }
+              return this._canDeactivate(matchedInstruction)
+                  .then((result) => {
+                    if (result) {
+                      return this.commit(matchedInstruction)
+                          .then((_) => {
+                            this._emitNavigationFinish(matchedInstruction.accumulatedUrl);
+                            return true;
+                          });
+                    }
+                  });
+            });
+      }));
     });
   }
+
+  private _emitNavigationFinish(url): void { ObservableWrapper.callNext(this._subject, url); }
+
+  private _afterPromiseFinishNavigating(promise: Promise<any>): Promise<any> {
+    return PromiseWrapper.catchError(promise.then((_) => this._finishNavigating()), (err) => {
+      this._finishNavigating();
+      throw err;
+    });
+  }
+
+  _reuse(instruction): Promise<any> {
+    if (isBlank(this._outlet)) {
+      return _resolveToFalse;
+    }
+    return this._outlet.canReuse(instruction)
+        .then((result) => {
+          instruction.reuse = result;
+          if (isPresent(this._outlet.childRouter) && isPresent(instruction.child)) {
+            return this._outlet.childRouter._reuse(instruction.child);
+          }
+        });
+  }
+
+  private _canActivate(instruction: Instruction): Promise<boolean> {
+    return canActivateOne(instruction, this._currentInstruction);
+  }
+
+  private _canDeactivate(instruction: Instruction): Promise<boolean> {
+    if (isBlank(this._outlet)) {
+      return _resolveToTrue;
+    }
+    var next: Promise<boolean>;
+    if (isPresent(instruction) && instruction.reuse) {
+      next = _resolveToTrue;
+    } else {
+      next = this._outlet.canDeactivate(instruction);
+    }
+    return next.then((result) => {
+      if (result == false) {
+        return false;
+      }
+      if (isPresent(this._outlet.childRouter)) {
+        return this._outlet.childRouter._canDeactivate(isPresent(instruction) ? instruction.child :
+                                                                                null);
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Updates this router and all descendant routers according to the given instruction
+   */
+  commit(instruction: Instruction): Promise<any> {
+    this._currentInstruction = instruction;
+    if (isPresent(this._outlet)) {
+      return this._outlet.commit(instruction);
+    }
+    return _resolveToTrue;
+  }
+
 
   _startNavigating(): void { this.navigating = true; }
 
@@ -150,23 +209,11 @@ export class Router {
 
 
   /**
-   * Updates this router and all descendant routers according to the given instruction
-   */
-  commit(instruction: Instruction): Promise<any> {
-    this._currentInstruction = instruction;
-    if (isPresent(this._outlet)) {
-      return this._outlet.activate(instruction);
-    }
-    return _resolveToTrue;
-  }
-
-
-  /**
    * Removes the contents of this router's outlet and all descendant outlets
    */
-  deactivate(): Promise<any> {
+  deactivate(instruction: Instruction): Promise<any> {
     if (isPresent(this._outlet)) {
-      return this._outlet.deactivate();
+      return this._outlet.deactivate(instruction);
     }
     return _resolveToTrue;
   }
@@ -185,11 +232,10 @@ export class Router {
    * router has yet to successfully navigate.
    */
   renavigate(): Promise<any> {
-    var destination = isBlank(this.previousUrl) ? this.lastNavigationAttempt : this.previousUrl;
-    if (isBlank(destination)) {
+    if (isBlank(this.lastNavigationAttempt)) {
       return this._currentNavigation;
     }
-    return this.navigate(destination);
+    return this.navigate(this.lastNavigationAttempt);
   }
 
 
@@ -287,4 +333,25 @@ function splitAndFlattenLinkParams(linkParams: List<any>): List<any> {
     accumulation.push(item);
     return accumulation;
   }, []);
+}
+
+function canActivateOne(nextInstruction, currentInstruction): Promise<boolean> {
+  var next = _resolveToTrue;
+  if (isPresent(nextInstruction.child)) {
+    next = canActivateOne(nextInstruction.child,
+                          isPresent(currentInstruction) ? currentInstruction.child : null);
+  }
+  return next.then((res) => {
+    if (res == false) {
+      return false;
+    }
+    if (nextInstruction.reuse) {
+      return true;
+    }
+    var hook = getCanActivateHook(nextInstruction.component);
+    if (isPresent(hook)) {
+      return hook(nextInstruction, currentInstruction);
+    }
+    return true;
+  });
 }

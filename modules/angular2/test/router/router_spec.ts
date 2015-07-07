@@ -55,7 +55,7 @@ export function main() {
          router.config({'path': '/', 'component': DummyComponent})
              .then((_) => router.registerOutlet(outlet))
              .then((_) => {
-               expect(outlet.spy('activate')).toHaveBeenCalled();
+               expect(outlet.spy('commit')).toHaveBeenCalled();
                expect(location.urlChanges).toEqual([]);
                async.done();
              });
@@ -70,7 +70,7 @@ export function main() {
              .then((_) => router.config({'path': '/a', 'component': DummyComponent}))
              .then((_) => router.navigate('/a'))
              .then((_) => {
-               expect(outlet.spy('activate')).toHaveBeenCalled();
+               expect(outlet.spy('commit')).toHaveBeenCalled();
                expect(location.urlChanges).toEqual(['/a']);
                async.done();
              });
@@ -83,11 +83,11 @@ export function main() {
          router.registerOutlet(outlet)
              .then((_) => router.navigate('/a'))
              .then((_) => {
-               expect(outlet.spy('activate')).not.toHaveBeenCalled();
+               expect(outlet.spy('commit')).not.toHaveBeenCalled();
                return router.config({'path': '/a', 'component': DummyComponent});
              })
              .then((_) => {
-               expect(outlet.spy('activate')).toHaveBeenCalled();
+               expect(outlet.spy('commit')).toHaveBeenCalled();
                async.done();
              });
        }));
@@ -132,10 +132,10 @@ class DummyParentComp {
 
 function makeDummyOutlet() {
   var ref = new DummyOutlet();
-  ref.spy('activate').andCallFake((_) => PromiseWrapper.resolve(true));
   ref.spy('canActivate').andCallFake((_) => PromiseWrapper.resolve(true));
+  ref.spy('canReuse').andCallFake((_) => PromiseWrapper.resolve(false));
   ref.spy('canDeactivate').andCallFake((_) => PromiseWrapper.resolve(true));
-  ref.spy('deactivate').andCallFake((_) => PromiseWrapper.resolve(true));
+  ref.spy('commit').andCallFake((_) => PromiseWrapper.resolve(true));
   return ref;
 }
 

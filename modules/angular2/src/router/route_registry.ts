@@ -126,7 +126,11 @@ export class RouteRegistry {
       this.configFromComponent(componentType);
 
       if (partialMatch.unmatchedUrl.length == 0) {
-        return new Instruction(componentType, partialMatch.matchedUrl, recognizer);
+        if (recognizer.terminal) {
+          return new Instruction(componentType, partialMatch.matchedUrl, recognizer);
+        } else {
+          return null;
+        }
       }
 
       return this.recognize(partialMatch.unmatchedUrl, componentType)

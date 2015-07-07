@@ -24,7 +24,6 @@ export class Instruction {
   // "capturedUrl" is the part of the URL captured by this instruction
   // "accumulatedUrl" is the part of the URL captured by this instruction and all children
   accumulatedUrl: string;
-
   reuse: boolean = false;
   specificity: number;
 
@@ -50,23 +49,4 @@ export class Instruction {
     }
     return this._params;
   }
-
-  hasChild(): boolean { return isPresent(this.child); }
-
-  /**
-   * Takes a currently active instruction and sets a reuse flag on each of this instruction's
-   * children
-   */
-  reuseComponentsFrom(oldInstruction: Instruction): void {
-    var nextInstruction = this;
-    while (nextInstruction.reuse = shouldReuseComponent(nextInstruction, oldInstruction) &&
-                                   isPresent(oldInstruction = oldInstruction.child) &&
-                                   isPresent(nextInstruction = nextInstruction.child))
-      ;
-  }
-}
-
-function shouldReuseComponent(instr1: Instruction, instr2: Instruction): boolean {
-  return instr1.component == instr2.component &&
-         StringMapWrapper.equals(instr1.params(), instr2.params());
 }
