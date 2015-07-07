@@ -28,7 +28,7 @@ assert(value).is(...)
 
 // Custom type assert:
 // - i have a custom type
-// - adding an assert methos
+// - adding an assert methods
 assert.define(MyUser, function(value) {
   assert(value).is(Type, Type2); // or
   assert(value, 'name').is(assert.string);
