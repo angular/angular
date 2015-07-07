@@ -35,39 +35,29 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  */
 @CONST()
 export class View {
-  templateUrl: string;
-  template: string;
-  styleUrls: List<string>;
-  styles: List<string>;
-  // TODO(tbosch): use Type | Binding | List<any> when Dart supports union types,
-  // as otherwise we would need to import Binding type and Dart would warn
-  // for an unused import.
-  directives: List<Type | any | List<any>>;
-  renderer: string;
-
-  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: ViewArgs = {}) {
-    this.templateUrl = templateUrl;
-    this.template = template;
-    this.styleUrls = styleUrls;
-    this.styles = styles;
-    this.directives = directives;
-    this.renderer = renderer;
-  }
-}
-export interface ViewArgs {
-  /**
-   * Specifies a template URL for an angular component.
-   *
-   * NOTE: either `templateUrl` or `template` should be used, but not both.
-   */
-  templateUrl?: string;
-
   /**
    * Specifies an inline template for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
-  template?: string;
+  templateUrl: string;
+
+  /**
+   * Specifies a template URL for an angular component.
+   *
+   * NOTE: either `templateUrl` or `template` should be used, but not both.
+   */
+  template: string;
+
+  /**
+   * Specifies stylesheet URLs for an angular component.
+   */
+  styleUrls: List<string>;
+
+  /**
+   * Specifies an inline stylesheet for an angular component.
+   */
+  styles: List<string>;
 
   /**
    * Specifies a list of directives that can be used within a template.
@@ -91,22 +81,31 @@ export interface ViewArgs {
    * }
    * ```
    */
-  directives?: List<Type | any | List<any>>;
+  // TODO(tbosch): use Type | Binding | List<any> when Dart supports union types,
+  // as otherwise we would need to import Binding type and Dart would warn
+  // for an unused import.
+  directives: List<Type | any | List<any>>;
 
   /**
    * Specify a custom renderer for this View.
    * If this is set, neither `template`, `templateUrl`, `styles`, `styleUrls` nor `directives` are
    * used.
    */
-  renderer?: string;
+  renderer: string;
 
-  /**
-   * Specifies an inline stylesheet for an angular component.
-   */
-  styles?: List<string>;
-
-  /**
-   * Specifies stylesheet URLs for an angular component.
-   */
-  styleUrls?: List<string>;
+  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string,
+    styles?: List<string>,
+    styleUrls?: List<string>,
+  } = {}) {
+    this.templateUrl = templateUrl;
+    this.template = template;
+    this.styleUrls = styleUrls;
+    this.styles = styles;
+    this.directives = directives;
+    this.renderer = renderer;
+  }
 }

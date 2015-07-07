@@ -408,33 +408,6 @@ import {DEFAULT} from 'angular2/change_detection';
  */
 @CONST()
 export class Directive extends Injectable {
-  selector: string;
-  properties: List<string>;
-  events: List<string>;
-  host: StringMap<string, string>;
-  lifecycle: List<LifecycleEvent>;
-  // TODO(vsavkin): This would better fall under the Macro directive concept.
-  compileChildren: boolean;
-  hostInjector: List<any>;
-  exportAs: string;
-
-  constructor({
-                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
-                  compileChildren = true,
-              }: DirectiveArgs = {}) {
-    super(self);
-    this.selector = selector;
-    this.properties = properties;
-    this.events = events;
-    this.host = host;
-    this.exportAs = exportAs;
-    this.lifecycle = lifecycle;
-    this.compileChildren = compileChildren;
-    this.hostInjector = hostInjector;
-  }
-}
-
-export interface DirectiveArgs {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -467,7 +440,7 @@ export interface DirectiveArgs {
    * The directive would only be instantiated on the `<input type="text">` element.
    *
    */
-  selector?: string;
+  selector: string;
 
   /**
    * Enumerates the set of properties that accept data binding for a directive.
@@ -562,7 +535,7 @@ export interface DirectiveArgs {
    * keyValDiff`.
    *
    */
-  properties?: List<string>;
+  properties: List<string>;
 
   /**
    * Enumerates the set of emitted events.
@@ -607,7 +580,7 @@ export interface DirectiveArgs {
    * ```
    *
    */
-  events?: List<string>;
+  events: List<string>;
 
   /**
    * Specifiy the events, actions, properties and attributes related to the host element.
@@ -734,15 +707,20 @@ export interface DirectiveArgs {
    *
    * In this example calling focus on InputDirective will result in calling focus on the input.
    */
-  host?: StringMap<string, string>;
+  host: StringMap<string, string>;
 
   /**
    * Specifies which lifecycle should be notified to the directive.
    *
-   * See {@link onChange}, {@link onDestroy}, {@link onCheck},
-   * {@link onInit}, {@link onAllChangesDone} for details.
+   * See {@link LifecycleEvent} for details.
    */
-  lifecycle?: List<LifecycleEvent>;
+  lifecycle: List<LifecycleEvent>;
+
+  /**
+   * If set to false the compiler does not compile the children of this directive.
+   */
+  // TODO(vsavkin): This would better fall under the Macro directive concept.
+  compileChildren: boolean;
 
   /**
    * Defines the set of injectable objects that are visible to a Directive and its light dom
@@ -774,7 +752,7 @@ export interface DirectiveArgs {
    * }
    * ```
    */
-  hostInjector?: List<any>;
+  hostInjector: List<any>;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -801,12 +779,31 @@ export interface DirectiveArgs {
    *
    * ```
    */
-  exportAs?: string;
+  exportAs: string;
 
-  /**
-   * If set to false the compiler does not compile the children of this directive.
-   */
-  compileChildren?: boolean;
+  constructor({
+                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
+                  compileChildren = true,
+              }: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+  } = {}) {
+    super(self);
+    this.selector = selector;
+    this.properties = properties;
+    this.events = events;
+    this.host = host;
+    this.exportAs = exportAs;
+    this.lifecycle = lifecycle;
+    this.compileChildren = compileChildren;
+    this.hostInjector = hostInjector;
+  }
 }
 
 /**
@@ -849,28 +846,19 @@ export interface DirectiveArgs {
  */
 @CONST()
 export class Component extends Directive {
+  /**
+   * Defines the used change detection strategy.
+   *
+   * When a component is instantiated, Angular creates a change detector, which is responsible for
+   * propagating
+   * the component's bindings.
+   *
+   * The `changeDetection` property defines, whether the change detection will be checked every time
+   * or only when the component
+   * tells it to do so.
+   */
   changeDetection: string;
-  viewInjector: List<any>;
 
-  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
-               changeDetection = DEFAULT, compileChildren = true}: ComponentArgs = {}) {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      host: host,
-      exportAs: exportAs,
-      hostInjector: hostInjector,
-      lifecycle: lifecycle,
-      compileChildren: compileChildren
-    });
-
-    this.changeDetection = changeDetection;
-    this.viewInjector = viewInjector;
-  }
-}
-
-export interface ComponentArgs extends DirectiveArgs {
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
    *
@@ -911,20 +899,35 @@ export interface ComponentArgs extends DirectiveArgs {
    *
    * ```
    */
-  viewInjector?: List<any>;
+  viewInjector: List<any>;
 
-  /**
-   * Defines the used change detection strategy.
-   *
-   * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating
-   * the component's bindings.
-   *
-   * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component
-   * tells it to do so.
-   */
-  changeDetection?: string;
+  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
+               changeDetection = DEFAULT, compileChildren = true}: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+    viewInjector?: List<any>,
+    changeDetection?: string,
+  } = {}) {
+    super({
+      selector: selector,
+      properties: properties,
+      events: events,
+      host: host,
+      exportAs: exportAs,
+      hostInjector: hostInjector,
+      lifecycle: lifecycle,
+      compileChildren: compileChildren
+    });
+
+    this.changeDetection = changeDetection;
+    this.viewInjector = viewInjector;
+  }
 }
 
 /**
@@ -937,132 +940,135 @@ export interface ComponentArgs extends DirectiveArgs {
 @CONST()
 export class LifecycleEvent {
   constructor(public name: string) {}
+
+  toString(): string { return this.name; }
+
+  /**
+   * Notify a directive whenever a {@link View} that contains it is destroyed.
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   ...,
+   *   lifecycle: [LifecycleEvent.onDestroy]
+   * })
+   * class ClassSet {
+   *   onDestroy() {
+   *     // invoked to notify directive of the containing view destruction.
+   *   }
+   * }
+   * ```
+   * @exportedAs angular2/annotations
+   */
+  @CONST() static onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestroy"));
+
+
+  /**
+   * Notify a directive when any of its bindings have changed.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked only if at least one of the directive's bindings has changed.
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   properties: [
+   *     'propA',
+   *     'propB'
+   *   ],
+   *   lifecycle: [LifecycleEvent.onChange]
+   * })
+   * class ClassSet {
+   *   propA;
+   *   propB;
+   *   onChange(changes:{[idx: string, PropertyUpdate]}) {
+   *     // This will get called after any of the properties have been updated.
+   *     if (changes['propA']) {
+   *       // if propA was updated
+   *     }
+   *     if (changes['propA']) {
+   *       // if propB was updated
+   *     }
+   *   }
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  @CONST() static onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"));
+
+  /**
+   * Notify a directive when it has been checked.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked every time even when none of the directive's bindings has changed.
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.onCheck]
+   * })
+   * class ClassSet {
+   *   onCheck() {
+   *   }
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  @CONST() static onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"));
+
+  /**
+   * Notify a directive when it has been checked the first itme.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked only once.
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.onInit]
+   * })
+   * class ClassSet {
+   *   onInit() {
+   *   }
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  @CONST() static onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
+
+  /**
+   * Notify a directive when the bindings of all its children have been checked (whether they have
+   * changed or not).
+   *
+   * ## Example:
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.onAllChangesDone]
+   * })
+   * class ClassSet {
+   *
+   *   onAllChangesDone() {
+   *   }
+   *
+   * }
+   *  ```
+   * @exportedAs angular2/annotations
+   */
+  @CONST()
+  static onAllChangesDone: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));
 }
-
-/**
- * Notify a directive whenever a {@link View} that contains it is destroyed.
- *
- * ## Example
- *
- * ```
- * @Directive({
- *   ...,
- *   lifecycle: [onDestroy]
- * })
- * class ClassSet {
- *   onDestroy() {
- *     // invoked to notify directive of the containing view destruction.
- *   }
- * }
- * ```
- * @exportedAs angular2/annotations
- */
-export const onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestroy"));
-
-
-/**
- * Notify a directive when any of its bindings have changed.
- *
- * This method is called right after the directive's bindings have been checked,
- * and before any of its children's bindings have been checked.
- *
- * It is invoked only if at least one of the directive's bindings has changed.
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   properties: [
- *     'propA',
- *     'propB'
- *   ],
- *   lifecycle: [onChange]
- * })
- * class ClassSet {
- *   propA;
- *   propB;
- *   onChange(changes:{[idx: string, PropertyUpdate]}) {
- *     // This will get called after any of the properties have been updated.
- *     if (changes['propA']) {
- *       // if propA was updated
- *     }
- *     if (changes['propA']) {
- *       // if propB was updated
- *     }
- *   }
- * }
- *  ```
- * @exportedAs angular2/annotations
- */
-export const onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"));
-
-/**
- * Notify a directive when it has been checked.
- *
- * This method is called right after the directive's bindings have been checked,
- * and before any of its children's bindings have been checked.
- *
- * It is invoked every time even when none of the directive's bindings has changed.
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   lifecycle: [onCheck]
- * })
- * class ClassSet {
- *   onCheck() {
- *   }
- * }
- *  ```
- * @exportedAs angular2/annotations
- */
-export const onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"));
-
-/**
- * Notify a directive when it has been checked the first itme.
- *
- * This method is called right after the directive's bindings have been checked,
- * and before any of its children's bindings have been checked.
- *
- * It is invoked only once.
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   lifecycle: [onInit]
- * })
- * class ClassSet {
- *   onInit() {
- *   }
- * }
- *  ```
- * @exportedAs angular2/annotations
- */
-export const onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
-
-/**
- * Notify a directive when the bindings of all its children have been checked (whether they have
- * changed or not).
- *
- * ## Example:
- *
- * ```
- * @Directive({
- *   selector: '[class-set]',
- *   lifecycle: [onAllChangesDone]
- * })
- * class ClassSet {
- *
- *   onAllChangesDone() {
- *   }
- *
- * }
- *  ```
- * @exportedAs angular2/annotations
- */
-export const onAllChangesDone: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));

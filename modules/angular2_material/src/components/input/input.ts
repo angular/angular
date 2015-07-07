@@ -1,4 +1,4 @@
-import {Directive, onAllChangesDone, Attribute, Parent} from 'angular2/angular2';
+import {Directive, LifecycleEvent, Attribute, Parent} from 'angular2/angular2';
 
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
@@ -9,7 +9,7 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
 @Directive({
   selector: 'md-input-container',
-  lifecycle: [onAllChangesDone],
+  lifecycle: [LifecycleEvent.onAllChangesDone],
   host:
       {'[class.md-input-has-value]': 'inputHasValue', '[class.md-input-focused]': 'inputHasFocus'}
 })

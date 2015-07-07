@@ -4,7 +4,7 @@ import {
   ViewRef,
   ProtoViewRef,
   PipeRegistry,
-  onCheck,
+  LifecycleEvent,
   Pipe
 } from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
@@ -41,7 +41,8 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/directives
  */
-@Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [onCheck]})
+@Directive(
+    {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.onCheck]})
 export class NgFor {
   _ngForOf: any;
   _pipe: Pipe;

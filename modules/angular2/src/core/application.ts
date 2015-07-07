@@ -60,7 +60,7 @@ import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer'
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
-import {appComponentRefToken, appComponentTypeToken} from './application_tokens';
+import {appComponentRefPromiseToken, appComponentTypeToken} from './application_tokens';
 
 var _rootInjector: Injector;
 
@@ -78,7 +78,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     bind(DOCUMENT_TOKEN)
         .toValue(DOM.defaultDoc()),
     bind(appComponentTypeToken).toValue(appComponentType),
-    bind(appComponentRefToken)
+    bind(appComponentRefPromiseToken)
         .toFactory(
             (dynamicComponentLoader, injector, testability, registry) => {
               // TODO(rado): investigate whether to support bindings on root component.
@@ -91,7 +91,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
             [DynamicComponentLoader, Injector, Testability, TestabilityRegistry]),
 
     bind(appComponentType)
-        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [appComponentRefToken]),
+        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [appComponentRefPromiseToken]),
     bind(LifeCycle)
         .toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),
                    [ExceptionHandler]),
@@ -274,7 +274,7 @@ function _createNgZone(givenReporter: Function): NgZone {
  * - `errorReporter`: `function(exception:any, stackTrace:string)` a default error reporter for
  * unhandled exceptions.
  *
- * Returns a `Promise` with the application`s private {@link Injector}.
+ * Returns a `Promise` of {@link ApplicationRef}.
  *
  * @exportedAs angular2/core
  */
@@ -291,7 +291,7 @@ export function bootstrap(appComponentType: Type,
 
     var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
     var compRefToken: Promise<any> =
-        PromiseWrapper.wrap(() => appInjector.get(appComponentRefToken));
+        PromiseWrapper.wrap(() => appInjector.get(appComponentRefPromiseToken));
     var tick = (componentRef) => {
       var appChangeDetector = internalView(componentRef.hostView).changeDetector;
       // retrieve life cycle: may have already been created if injected in root component
@@ -308,26 +308,49 @@ export function bootstrap(appComponentType: Type,
   return bootstrapProcess.promise;
 }
 
+/**
+ * Represents a Angular's representation of an Application.
+ *
+ * `ApplicationRef` represents a running application instance. Use it to retrieve the host
+ * component, injector,
+ * or dispose of an application.
+ */
 export class ApplicationRef {
   _hostComponent: ComponentRef;
   _injector: Injector;
   _hostComponentType: Type;
+
+  /**
+   * @private
+   */
   constructor(hostComponent: ComponentRef, hostComponentType: Type, injector: Injector) {
     this._hostComponent = hostComponent;
     this._injector = injector;
     this._hostComponentType = hostComponentType;
   }
 
-  get hostComponentType() { return this._hostComponentType; }
+  /**
+   * Returns the current {@link Component} type.
+   */
+  get hostComponentType(): Type { return this._hostComponentType; }
 
-  get hostComponent() { return this._hostComponent.instance; }
+  /**
+   * Returns the current {@link Component} instance.
+   */
+  get hostComponent(): any { return this._hostComponent.instance; }
 
-  dispose() {
+  /**
+   * Dispose (un-load) the application.
+   */
+  dispose(): void {
     // TODO: We also need to clean up the Zone, ... here!
     this._hostComponent.dispose();
   }
 
-  get injector() { return this._injector; }
+  /**
+   * Returns the root application {@link Injector}.
+   */
+  get injector(): Injector { return this._injector; }
 }
 
 function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,

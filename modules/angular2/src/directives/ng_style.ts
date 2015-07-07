@@ -1,4 +1,4 @@
-import {Directive, onCheck} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
 import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipe_registry';
@@ -6,7 +6,11 @@ import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_chan
 import {isPresent, print} from 'angular2/src/facade/lang';
 import {Renderer} from 'angular2/src/render/api';
 
-@Directive({selector: '[ng-style]', lifecycle: [onCheck], properties: ['rawStyle: ng-style']})
+@Directive({
+  selector: '[ng-style]',
+  lifecycle: [LifecycleEvent.onCheck],
+  properties: ['rawStyle: ng-style']
+})
 export class NgStyle {
   _pipe: Pipe;
   _rawStyle;

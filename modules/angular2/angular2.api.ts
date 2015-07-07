@@ -11,13 +11,9 @@ export * from './angular2';
 // 1) if the symbol is intended to be part of the public API, then re-export somewhere else
 // 2) if the symbol should be omitted from the public API, then the class exposing it should
 //    not be exported, or should avoid exposing the symbol.
-export {ProtoRecord, RecordType} from './src/change_detection/proto_record';
 export * from './src/core/compiler/element_injector';
 export {DependencyAnnotation} from './src/di/annotations_impl';
-// FIXME: this is a workaround for https://github.com/angular/angular/issues/2356
-// We export the Directive *annotation* instead of the *decorator*.
-// But it breaks the build.
-export {Directive, LifecycleEvent} from './src/core/annotations_impl/annotations';
+export {LifecycleEvent} from './src/core/annotations_impl/annotations';
 export {Form} from './src/forms/directives/form_interface';
 export {TypeDecorator, ClassDefinition} from './src/util/decorators';
 export {Query} from './src/core/annotations_impl/di';
@@ -26,4 +22,3 @@ export {Injectable, Visibility} from './src/di/annotations_impl';
 export {BaseQueryList} from './src/core/compiler/base_query_list';
 export {AppProtoView, AppView, AppViewContainer} from './src/core/compiler/view';
 export * from './src/change_detection/parser/ast';
-export {AppViewManager} from './src/core/compiler/view_manager';

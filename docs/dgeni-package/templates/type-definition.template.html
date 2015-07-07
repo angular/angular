@@ -1,3 +1,4 @@
+
 {%- macro commentBlock(doc, level) -%}
 {%- if doc.content | trim %}
 
@@ -5,6 +6,23 @@
 {$ doc.content | trim | replace(r/^/gm, "* ") | indent(level, true) | replace(r/\n$/, "") $}
 {$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
 {%- endmacro -%}
+
+
+{%- macro memberInfo(member, level) -%}
+{$ commentBlock(member, level) $}
+{% if member.name == '__new' -%}
+  new
+{%- elif member.name == '__call' -%}
+{%- else -%}
+  {$ member.name $}
+{%- endif -%}{% if member.optional %}?{% endif -%}
+{% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
+{%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
+{%- if member.returnType == 'Directive' %}: DirectiveAnnotation{%- elif member.returnType -%}: {$ member.returnType $}{%- else -%}: any{%- endif -%}
+;
+{%- endmacro -%}
+
+
 // Type definitions for Angular v{$ versionInfo.currentVersion.full | replace(r/\+/, "_") $}
 // Project: http://angular.io/
 // Definitions by: angular team <https://github.com/angular/>
@@ -18,33 +36,22 @@
 {% block staticDeclarations %}{% endblock %}
 {% for alias, module in doc.moduleDocs %}
 {$ commentBlock(module.doc, 1) $}
-declare module "{$ module.id $}" {
+declare module ng {
 
   {%- for export in module.doc.exports -%}
   {%- if export.content -%}
     {$ commentBlock(export, 3) $}
   {%- endif %}
-  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{$ export.heritage $}
+  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{%- if export.heritage == ' extends  Directive' %} extends DirectiveAnnotation{% else %}{$ export.heritage $}{% endif %}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
-  {%- if export.newMember -%}
-    {$ commentBlock(export.newMember, 5) $}
-    new ({% for param in export.newMember.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %})
-    {%- if export.newMember.returnType %}: {$ export.newMember.returnType $}{%- else -%}: any{% endif -%}
-    ;
+  {%- if export.newMember %}
+    {$ memberInfo(export.newMember, 5) $}
   {% endif %}
-  {%- if export.callMember -%}
-    {$ commentBlock(export.callMember, 5) $}
-    ({% for param in export.callMember.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %})
-    {%- if export.callMember.returnType %}: {$ export.callMember.returnType $}{%- else -%}: any{% endif -%}
-    ;
-  {% endif %}
-  {%- for member in export.members -%}
-    {$ commentBlock(member, 5) $}
-    {$ member.name $}
-    {%- if member.optional %}?{% endif -%}
-    {%- if member.parameters %}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
-    {%- if member.returnType %}: {$ member.returnType $}{%- else -%}: void{% endif -%}
-    ;
+  {%- if export.callMember %}
+    {$ memberInfo(export.callMember, 5) $}
+  {% endif -%}
+  {%- for member in export.members %}
+    {$ memberInfo(member, 5) $}
   {%- endfor %}
   }
 
@@ -65,3 +72,6 @@ declare module "{$ module.id $}" {
 
 {% endfor %}
 
+declare module "angular2/angular2" {
+  export = ng;
+}
