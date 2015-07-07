@@ -15387,32 +15387,33 @@
     "ts2dart": {
       "version": "0.6.8",
       "from": "ts2dart@0.6.8",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.6.8.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
-          "from": "source-map@>=0.4.2 <0.5.0",
+          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.2.tgz",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.2.tgz",
           "dependencies": {
             "amdefine": {
               "version": "0.1.1",
-              "from": "amdefine@>=0.0.4",
+              "from": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz",
               "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz"
             }
           }
         },
         "source-map-support": {
           "version": "0.3.2",
-          "from": "source-map-support@>=0.3.1 <0.4.0",
+          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.2.tgz",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.2.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "source-map@0.1.32",
+              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "dependencies": {
                 "amdefine": {
                   "version": "0.1.1",
-                  "from": "amdefine@>=0.0.4",
+                  "from": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz",
                   "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-0.1.1.tgz"
                 }
               }
@@ -15421,7 +15422,7 @@
         },
         "typescript": {
           "version": "1.5.3",
-          "from": "microsoft/TypeScript#release-1.5",
+          "from": "git://github.com/microsoft/TypeScript.git#331b63df7d05c9476b6b9cae97a7a158eba303ca",
           "resolved": "git://github.com/microsoft/TypeScript.git#331b63df7d05c9476b6b9cae97a7a158eba303ca"
         }
       }
@@ -16361,9 +16362,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.1",
-      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.1.tgz",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.1.tgz"
+      "version": "0.5.2",
+      "from": "zone.js@0.5.2",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.2.tgz"
     }
   }
 }
