@@ -149,7 +149,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         return this._referenceCheck(proto, throwOnChange);
       }
     } catch (e) {
-      throw new ChangeDetectionError(proto, e);
+      this.throwError(proto, e, e.stack);
     }
   }
 

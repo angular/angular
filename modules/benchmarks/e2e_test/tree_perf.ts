@@ -24,7 +24,7 @@ describe('ng2 tree benchmark', function() {
     }).then(done, done.fail);
   });
 
-  it('should log the ng stats (update)', function(done) {
+  fit('should log the ng stats (update)', function(done) {
     runClickBenchmark({
       url: URL,
       buttons: ['#ng2CreateDom'],
