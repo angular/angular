@@ -57,6 +57,7 @@ module.exports = function createTypeDefinitionFile(log) {
       _.forEach(docs, function(doc) {
         _.forEach(typeDefDocs, function(typeDefDoc) {
           if(typeDefDoc.moduleDocs[doc.id]) {
+            // Add a copy, because we are going to modify it
             typeDefDoc.moduleDocs[doc.id].doc = doc;
           }
         });
@@ -68,6 +69,24 @@ module.exports = function createTypeDefinitionFile(log) {
             log.error('createTypeDefinitionFile processor: no such module "' + alias + '" (Did you forget to add it to the modules to load?)');
             doc = null;
           }
+          _.forEach(modDoc.doc.exports, function(exportDoc) {
+
+            // Search for classes with a constructor marked as `@private`
+            if (exportDoc.docType === 'class' && exportDoc.constructorDoc && exportDoc.constructorDoc.private) {
+
+              // Convert this class to an interface with no constructor
+              exportDoc.docType = 'interface';
+              exportDoc.constructorDoc = null;
+
+              // Add the `declare var SomeClass extends InjectableReference` construct
+              modDoc.doc.exports.push({
+                docType: 'var',
+                name: exportDoc.name,
+                id: exportDoc.id,
+                heritage: ': InjectableReference'
+              });
+            }
+          });
         });
         if (doc) {
           docs.push(doc);
