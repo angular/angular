@@ -67,13 +67,11 @@ export class NgForm extends ControlContainer implements Form {
 
   get formDirective(): Form { return this; }
 
+  get control(): ControlGroup { return this.form; }
+
   get path(): List<string> { return []; }
 
   get controls(): StringMap<string, AbstractControl> { return this.form.controls; }
-
-  get value(): any { return this.form.value; }
-
-  get errors(): any { return this.form.errors; }
 
   addControl(dir: NgControl): void {
     this._later(_ => {
@@ -114,6 +112,10 @@ export class NgForm extends ControlContainer implements Form {
         container.updateValidity();
       }
     });
+  }
+
+  getControlGroup(dir: NgControlGroup): ControlGroup {
+    return <ControlGroup>this.form.find(dir.path);
   }
 
   updateModel(dir: NgControl, value: any): void {

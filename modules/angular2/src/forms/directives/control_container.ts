@@ -1,4 +1,5 @@
 import {Form} from './form_interface';
+import {AbstractControlDirective} from './abstract_control_directive';
 import {List} from 'angular2/src/facade/collection';
 
 /**
@@ -6,7 +7,7 @@ import {List} from 'angular2/src/facade/collection';
  *
  * Only used by the forms module.
  */
-export class ControlContainer {
+export class ControlContainer extends AbstractControlDirective {
   name: string;
   get formDirective(): Form { return null; }
   get path(): List<string> { return null; }

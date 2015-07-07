@@ -56,6 +56,17 @@ export function main() {
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
+      it("should reexport control properties", () => {
+        expect(form.control).toBe(formModel);
+        expect(form.value).toBe(formModel.value);
+        expect(form.valid).toBe(formModel.valid);
+        expect(form.errors).toBe(formModel.errors);
+        expect(form.pristine).toBe(formModel.pristine);
+        expect(form.dirty).toBe(formModel.dirty);
+        expect(form.touched).toBe(formModel.touched);
+        expect(form.untouched).toBe(formModel.untouched);
+      });
+
       describe("addControl", () => {
         it("should throw when no control found", () => {
           var dir = new NgControlName(form, null);
@@ -137,6 +148,17 @@ export function main() {
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
+      it("should reexport control properties", () => {
+        expect(form.control).toBe(formModel);
+        expect(form.value).toBe(formModel.value);
+        expect(form.valid).toBe(formModel.valid);
+        expect(form.errors).toBe(formModel.errors);
+        expect(form.pristine).toBe(formModel.pristine);
+        expect(form.dirty).toBe(formModel.dirty);
+        expect(form.touched).toBe(formModel.touched);
+        expect(form.untouched).toBe(formModel.untouched);
+      });
+
       describe("addControl & addControlGroup", () => {
         it("should create a control with the given name", fakeAsync(() => {
              form.addControlGroup(personControlGroupDir);
@@ -168,6 +190,31 @@ export function main() {
       });
     });
 
+    describe("NgControlGroup", () => {
+      var formModel;
+      var controlGroupDir;
+
+      beforeEach(() => {
+        formModel = new ControlGroup({"login": new Control(null)});
+
+        var parent = new NgFormModel();
+        parent.form = new ControlGroup({"group": formModel});
+        controlGroupDir = new NgControlGroup(parent);
+        controlGroupDir.name = "group";
+      });
+
+      it("should reexport control properties", () => {
+        expect(controlGroupDir.control).toBe(formModel);
+        expect(controlGroupDir.value).toBe(formModel.value);
+        expect(controlGroupDir.valid).toBe(formModel.valid);
+        expect(controlGroupDir.errors).toBe(formModel.errors);
+        expect(controlGroupDir.pristine).toBe(formModel.pristine);
+        expect(controlGroupDir.dirty).toBe(formModel.dirty);
+        expect(controlGroupDir.touched).toBe(formModel.touched);
+        expect(controlGroupDir.untouched).toBe(formModel.untouched);
+      });
+    });
+
     describe("NgFormControl", () => {
       var controlDir;
       var control;
@@ -178,6 +225,17 @@ export function main() {
 
         control = new Control(null);
         controlDir.form = control;
+      });
+
+      it("should reexport control properties", () => {
+        expect(controlDir.control).toBe(control);
+        expect(controlDir.value).toBe(control.value);
+        expect(controlDir.valid).toBe(control.valid);
+        expect(controlDir.errors).toBe(control.errors);
+        expect(controlDir.pristine).toBe(control.pristine);
+        expect(controlDir.dirty).toBe(control.dirty);
+        expect(controlDir.touched).toBe(control.touched);
+        expect(controlDir.untouched).toBe(control.untouched);
       });
 
       it("should set up validator", () => {
@@ -200,6 +258,18 @@ export function main() {
         ngModel.valueAccessor = new DummyControlValueAccessor();
       });
 
+      it("should reexport control properties", () => {
+        var control = ngModel.control;
+        expect(ngModel.control).toBe(control);
+        expect(ngModel.value).toBe(control.value);
+        expect(ngModel.valid).toBe(control.valid);
+        expect(ngModel.errors).toBe(control.errors);
+        expect(ngModel.pristine).toBe(control.pristine);
+        expect(ngModel.dirty).toBe(control.dirty);
+        expect(ngModel.touched).toBe(control.touched);
+        expect(ngModel.untouched).toBe(control.untouched);
+      });
+
       it("should set up validator", () => {
         ngModel.ngValidators.reset([new NgRequiredValidator()]);
 
@@ -209,6 +279,31 @@ export function main() {
         ngModel.onChange({});
 
         expect(ngModel.control.valid).toBe(false);
+      });
+    });
+
+    describe("NgControlName", () => {
+      var formModel;
+      var controlNameDir;
+
+      beforeEach(() => {
+        formModel = new Control("name");
+
+        var parent = new NgFormModel();
+        parent.form = new ControlGroup({"name": formModel});
+        controlNameDir = new NgControlName(parent, new QueryList<any>());
+        controlNameDir.name = "name";
+      });
+
+      it("should reexport control properties", () => {
+        expect(controlNameDir.control).toBe(formModel);
+        expect(controlNameDir.value).toBe(formModel.value);
+        expect(controlNameDir.valid).toBe(formModel.valid);
+        expect(controlNameDir.errors).toBe(formModel.errors);
+        expect(controlNameDir.pristine).toBe(formModel.pristine);
+        expect(controlNameDir.dirty).toBe(formModel.dirty);
+        expect(controlNameDir.touched).toBe(formModel.touched);
+        expect(controlNameDir.untouched).toBe(formModel.untouched);
       });
     });
   });

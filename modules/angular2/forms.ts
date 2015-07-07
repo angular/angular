@@ -15,6 +15,7 @@
 
 export {AbstractControl, Control, ControlGroup, ControlArray} from './src/forms/model';
 
+export {AbstractControlDirective} from './src/forms/directives/abstract_control_directive';
 export {NgControlName} from './src/forms/directives/ng_control_name';
 export {NgFormControl} from './src/forms/directives/ng_form_control';
 export {NgModel} from './src/forms/directives/ng_model';

@@ -102,6 +102,8 @@ export class NgFormModel extends ControlContainer implements Form {
 
   get formDirective(): Form { return this; }
 
+  get control(): ControlGroup { return this.form; }
+
   get path(): List<string> { return []; }
 
   addControl(dir: NgControl): void {
@@ -118,6 +120,10 @@ export class NgFormModel extends ControlContainer implements Form {
   addControlGroup(dir: NgControlGroup) {}
 
   removeControlGroup(dir: NgControlGroup) {}
+
+  getControlGroup(dir: NgControlGroup): ControlGroup {
+    return <ControlGroup>this.form.find(dir.path);
+  }
 
   updateModel(dir: NgControl, value: any): void {
     var c  = <Control>this.form.find(dir.path);

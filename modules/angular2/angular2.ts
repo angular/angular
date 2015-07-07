@@ -71,6 +71,7 @@ export * from './directives';
 
 export {
   AbstractControl,
+  AbstractControlDirective,
   Control,
   ControlGroup,
   ControlArray,

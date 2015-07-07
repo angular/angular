@@ -1,5 +1,5 @@
 import {ControlValueAccessor} from './control_value_accessor';
-import {Control} from '../model';
+import {AbstractControlDirective} from './abstract_control_directive';
 
 /**
  * An abstract class that all control directive extend.
@@ -8,13 +8,12 @@ import {Control} from '../model';
  *
  * @exportedAs angular2/forms
  */
-export class NgControl {
+export class NgControl extends AbstractControlDirective {
   name: string = null;
   valueAccessor: ControlValueAccessor = null;
 
   get validator(): Function { return null; }
   get path(): List<string> { return null; }
-  get control(): Control { return null; }
 
   viewToModelUpdate(newValue: any): void {}
 }

@@ -5,6 +5,8 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
 import {controlPath} from './shared';
+import {ControlGroup} from '../model';
+import {Form} from './form_interface';
 
 const controlGroupBinding =
     CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgControlGroup)}));
@@ -66,7 +68,9 @@ export class NgControlGroup extends ControlContainer {
 
   onDestroy() { this.formDirective.removeControlGroup(this); }
 
+  get control(): ControlGroup { return this.formDirective.getControlGroup(this); }
+
   get path(): List<string> { return controlPath(this.name, this._parent); }
 
-  get formDirective(): any { return this._parent.formDirective; }
+  get formDirective(): Form { return this._parent.formDirective; }
 }
