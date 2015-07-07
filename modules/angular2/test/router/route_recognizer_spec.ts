@@ -107,6 +107,13 @@ export function main() {
          expect(solutions[0].matchedUrl).toBe('/matias');
        });
 
+    it('should strip a the hash character if it is the first character in the provided url',
+       () => {
+         recognizer.addConfig('/matsko', handler);
+         var solutions = recognizer.recognize('#/matsko');
+         expect(solutions[0].matchedUrl).toBe('/matsko');
+       });
+
     it('should generate URLs with params', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
       expect(recognizer.generate('user', {'name': 'misko'})['url']).toEqual('app/user/misko');
