@@ -112,6 +112,10 @@ export function main() {
       expect(recognizer.generate('user', {'name': 'misko'})['url']).toEqual('app/user/misko');
     });
 
+    it('should generate URLs with numeric params', () => {
+      recognizer.addConfig('/app/page/:number', handler, 'page');
+      expect(recognizer.generate('page', {'number': 42})['url']).toEqual('app/page/42');
+    });
 
     it('should throw in the absence of required params URLs', () => {
       recognizer.addConfig('app/user/:name', handler, 'user');

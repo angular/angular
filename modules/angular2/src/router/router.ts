@@ -1,6 +1,14 @@
 import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent, Type, isArray} from 'angular2/src/facade/lang';
+import {
+  isBlank,
+  isString,
+  StringWrapper,
+  isPresent,
+  Type,
+  isArray,
+  BaseException
+} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
@@ -42,7 +50,7 @@ export class Router {
 
   // todo(jeffbcross): rename _registry to registry since it is accessed from subclasses
   // todo(jeffbcross): rename _pipeline to pipeline since it is accessed from subclasses
-  constructor(public _registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
+  constructor(public registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
               public hostComponent: any) {}
 
 
@@ -88,9 +96,9 @@ export class Router {
   config(config: StringMap<string, any>| List<StringMap<string, any>>): Promise<any> {
     if (isArray(config)) {
       (<List<any>>config)
-          .forEach((configObject) => { this._registry.config(this.hostComponent, configObject); });
+          .forEach((configObject) => { this.registry.config(this.hostComponent, configObject); });
     } else {
-      this._registry.config(this.hostComponent, config);
+      this.registry.config(this.hostComponent, config);
     }
     return this.renavigate();
   }
@@ -170,7 +178,7 @@ export class Router {
    * Given a URL, returns an instruction representing the component graph
    */
   recognize(url: string): Promise<Instruction> {
-    return this._registry.recognize(url, this.hostComponent);
+    return this.registry.recognize(url, this.hostComponent);
   }
 
 
@@ -192,7 +200,48 @@ export class Router {
    * app's base href.
    */
   generate(linkParams: List<any>): string {
-    return this._registry.generate(linkParams, this.hostComponent);
+    let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
+
+    var first = ListWrapper.first(normalizedLinkParams);
+    var rest = ListWrapper.slice(normalizedLinkParams, 1);
+
+    var router = this;
+
+    // The first segment should be either '.' (generate from parent) or '' (generate from root).
+    // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
+    if (first == '') {
+      while (isPresent(router.parent)) {
+        router = router.parent;
+      }
+    } else if (first == '..') {
+      router = router.parent;
+      while (ListWrapper.first(rest) == '..') {
+        rest = ListWrapper.slice(rest, 1);
+        router = router.parent;
+        if (isBlank(router)) {
+          throw new BaseException(
+              `Link "${ListWrapper.toJSON(linkParams)}" has too many "../" segments.`);
+        }
+      }
+    } else if (first != '.') {
+      throw new BaseException(
+          `Link "${ListWrapper.toJSON(linkParams)}" must start with "/", "./", or "../"`);
+    }
+
+    if (rest[rest.length - 1] == '') {
+      ListWrapper.removeLast(rest);
+    }
+
+    if (rest.length < 1) {
+      let msg = `Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`;
+      throw new BaseException(msg);
+    }
+
+    let url = '';
+    if (isPresent(router.parent) && isPresent(router.parent._currentInstruction)) {
+      url = router.parent._currentInstruction.capturedUrl;
+    }
+    return url + '/' + this.registry.generate(rest, router.hostComponent);
   }
 }
 
@@ -204,7 +253,7 @@ export class RootRouter extends Router {
     super(registry, pipeline, null, hostComponent);
     this._location = location;
     this._location.subscribe((change) => this.navigate(change['url']));
-    this._registry.configFromComponent(hostComponent);
+    this.registry.configFromComponent(hostComponent);
     this.navigate(location.path());
   }
 
@@ -216,7 +265,7 @@ export class RootRouter extends Router {
 
 class ChildRouter extends Router {
   constructor(parent: Router, hostComponent) {
-    super(parent._registry, parent._pipeline, parent, hostComponent);
+    super(parent.registry, parent._pipeline, parent, hostComponent);
     this.parent = parent;
   }
 
@@ -225,4 +274,19 @@ class ChildRouter extends Router {
     // Delegate navigation to the root router
     return this.parent.navigate(url);
   }
+}
+
+/*
+ * Given: ['/a/b', {c: 2}]
+ * Returns: ['', 'a', 'b', {c: 2}]
+ */
+var SLASH = new RegExp('/');
+function splitAndFlattenLinkParams(linkParams: List<any>): List<any> {
+  return ListWrapper.reduce(linkParams, (accumulation, item) => {
+    if (isString(item)) {
+      return ListWrapper.concat(accumulation, StringWrapper.split(item, SLASH));
+    }
+    accumulation.push(item);
+    return accumulation;
+  }, []);
 }
