@@ -13,6 +13,8 @@ import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 
+main() => allTests();
+
 void allTests() {
   Html5LibDomAdapter.makeCurrent();
   AssetReader reader = new TestAssetReader();
@@ -90,6 +92,16 @@ void allTests() {
           'template_compiler/with_prefix_files/expected/goodbye.ng_deps.dart');
 
       output = await process(new AssetId('a', inputPath));
+      _formatThenExpectEquals(output, expected);
+    });
+
+    it('should parse angular directives with a prefix', () async {
+      var inputPath =
+          'template_compiler/with_prefix_files/ng2_prefix.ng_deps.dart';
+      var expected = readFile(
+          'template_compiler/with_prefix_files/expected/ng2_prefix.ng_deps.dart');
+
+      var output = await process(new AssetId('a', inputPath));
       _formatThenExpectEquals(output, expected);
     });
 

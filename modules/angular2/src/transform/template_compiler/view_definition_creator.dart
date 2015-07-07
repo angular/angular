@@ -36,8 +36,13 @@ class ViewDefinitionEntry {
 String _getComponentId(AssetId assetId, String className) => '$className';
 
 // TODO(kegluenq): Improve this test.
-bool _isViewAnnotation(InstanceCreationExpression node) =>
-    '${node.constructorName.type}' == 'View';
+bool _isViewAnnotation(InstanceCreationExpression node) {
+  var constructorName = node.constructorName.type.name;
+  if (constructorName is PrefixedIdentifier) {
+    constructorName = constructorName.identifier;
+  }
+  return constructorName.name == 'View';
+}
 
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
 /// `entryPoint`.

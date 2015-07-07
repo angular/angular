@@ -1,0 +1,12 @@
+{
+  "MyApp":{
+    "id":"MyApp",
+    "selector":"my-app",
+    "compileChildren":true,
+    "host":{},
+    "properties":[],
+    "readAttributes":[],
+    "type":1,
+    "version":1
+  }
+}
