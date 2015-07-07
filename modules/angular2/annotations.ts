@@ -10,5 +10,50 @@
  * used by Angular to resolve dependencies.
  *
  */
-export * from './src/core/annotations/annotations';
-export * from './src/core/annotations/decorators';
+
+export {
+  ComponentAnnotation,
+  ComponentArgs,
+  DirectiveAnnotation,
+  LifecycleEvent,
+  onDestroy,
+  onChange,
+  onCheck,
+  onInit,
+  onAllChangesDone
+} from './src/core/annotations/annotations';
+
+export {ViewAnnotation, ViewArgs} from 'angular2/src/core/annotations/view';
+export {QueryAnnotation, AttributeAnnotation} from 'angular2/src/core/annotations/di';
+
+export {
+  OnAllChangesDone,
+  OnChange,
+  OnDestroy,
+  OnInit,
+  OnCheck
+} from 'angular2/src/core/compiler/interfaces';
+
+
+export {
+  Class,
+  ClassDefinition,
+  ParameterDecorator,
+  TypeDecorator
+} from 'angular2/src/util/decorators';
+
+export {
+  Attribute,
+  AttributeFactory,
+  Component,
+  ComponentDecorator,
+  ComponentFactory,
+  Directive,
+  DirectiveDecorator,
+  DirectiveFactory,
+  View,
+  ViewDecorator,
+  ViewFactory,
+  Query,
+  QueryFactory
+} from 'angular2/src/core/annotations/decorators';

@@ -30,7 +30,7 @@ export class AppViewContainer {
 }
 
 /**
- * Const of making objects: http://jsperf.com/instantiate-size-of-object
+ * Cost of making objects: http://jsperf.com/instantiate-size-of-object
  *
  */
 export class AppView implements ChangeDispatcher, EventDispatcher {

@@ -155,6 +155,9 @@ class BindingRecordsCreator {
 
 @Injectable()
 export class ProtoViewFactory {
+  /**
+   * @private
+   */
   constructor(public _changeDetection: ChangeDetection) {}
 
   createAppProtoViews(hostComponentBinding: DirectiveBinding,

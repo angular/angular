@@ -739,8 +739,7 @@ export interface DirectiveArgs {
   /**
    * Specifies which lifecycle should be notified to the directive.
    *
-   * See {@link onChange}, {@link onDestroy}, {@link onCheck},
-   * {@link onInit}, {@link onAllChangesDone} for details.
+   * See {@link LifecycleEvent} for details.
    */
   lifecycle?: List<LifecycleEvent>;
 
@@ -808,6 +807,7 @@ export interface DirectiveArgs {
    */
   compileChildren?: boolean;
 }
+
 
 /**
  * Declare reusable UI building blocks for an application.

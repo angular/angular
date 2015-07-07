@@ -16,27 +16,48 @@ import {AppViewListener} from './view_listener';
  */
 @Injectable()
 export class AppViewManager {
+  /**
+   * @private
+   */
   constructor(public _viewPool: AppViewPool, public _viewListener: AppViewListener,
               public _utils: AppViewManagerUtils, public _renderer: Renderer) {}
 
+  /**
+   * Returns associated Component {@link ViewRef} from {@link ElementRef}.
+   *
+   * If an {@link ElementRef} is from an element which has a component, this method returns
+   * the component's {@link ViewRef}.
+   */
   getComponentView(hostLocation: ElementRef): ViewRef {
-    var hostView = internalView(hostLocation.parentView);
+    var hostView: viewModule.AppView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
     return hostView.componentChildViews[boundElementIndex].ref;
   }
 
+  /**
+   * Returns a {@link ViewContainerRef} at the {@link ElementRef} location.
+   */
   getViewContainer(location: ElementRef): ViewContainerRef {
     var hostView = internalView(location.parentView);
     return hostView.elementInjectors[location.boundElementIndex].getViewContainerRef();
   }
 
+  /**
+   * Return the first child element of the host element view.
+   */
+  // TODO(misko): remove https://github.com/angular/angular/issues/2891
   getHostElement(hostViewRef: ViewRef): ElementRef {
     return internalView(hostViewRef).elementRefs[0];
   }
 
   /**
    * Returns an ElementRef for the element with the given variable name
-   * in the component view of the component at the provided ElementRef.
+   * in the current view.
+   *
+   * - `hostLocation`: {@link ElementRef} of any element in the View which defines the scope of
+   *   search.
+   * - `variableName`: Name of the variable to locate.
+   * - Returns {@link ElementRef} of the found element or null. (Throws if not found.)
    */
   getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef {
     var hostView = internalView(hostLocation.parentView);
@@ -52,15 +73,75 @@ export class AppViewManager {
     return componentView.elementRefs[elementIndex];
   }
 
+  /**
+   * Returns the component instance for a given element.
+   *
+   * The component is the execution context as seen by an expression at that {@link ElementRef}
+   * location.
+   */
   getComponent(hostLocation: ElementRef): any {
     var hostView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
     return this._utils.getComponentInstance(hostView, boundElementIndex);
   }
 
+  /**
+   * Load component view into existing element.
+   *
+   * Use this if a host element is already in the DOM and it is necessary to upgrade
+   * the element into Angular component by attaching a view but reusing the existing element.
+   *
+   * - `hostProtoViewRef`: {@link ProtoViewRef} Proto view to use in creating a view for this
+   *   component.
+   * - `overrideSelector`: (optional) selector to use in locating the existing element to load
+   *   the view into. If not specified use the selector in the component definition of the
+   *   `hostProtoView`.
+   * - injector: {@link Injector} to use as parent injector for the view.
+   *
+   * See {@link AppViewManager#destroyRootHostView}.
+   *
+   * ## Example
+   *
+   * ```
+   * @ng.Component({
+   *   selector: 'child-component'
+   * })
+   * @ng.View({
+   *   template: 'Child'
+   * })
+   * class ChildComponent {
+   *
+   * }
+   *
+   * @ng.Component({
+   *   selector: 'my-app'
+   * })
+   * @ng.View({
+   *   template: `
+   *     Parent (<some-component></some-component>)
+   *   `
+   * })
+   * class MyApp {
+   *   viewRef: ng.ViewRef;
+   *
+   *   constructor(public appViewManager: ng.AppViewManager, compiler: ng.Compiler) {
+   *     compiler.compileInHost(ChildComponent).then((protoView: ng.ProtoViewRef) => {
+   *       this.viewRef = appViewManager.createRootHostView(protoView, 'some-component', null);
+   *     })
+   *   }
+   *
+   *   onDestroy() {
+   *     this.appViewManager.destroyRootHostView(this.viewRef);
+   *     this.viewRef = null;
+   *   }
+   * }
+   *
+   * ng.bootstrap(MyApp);
+   * ```
+   */
   createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
                      injector: Injector): ViewRef {
-    var hostProtoView = internalProtoView(hostProtoViewRef);
+    var hostProtoView: viewModule.AppProtoView = internalProtoView(hostProtoViewRef);
     var hostElementSelector = overrideSelector;
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
@@ -77,6 +158,9 @@ export class AppViewManager {
     return hostView.ref;
   }
 
+  /**
+   * Remove the View created with {@link AppViewManager#createRootHostView}.
+   */
   destroyRootHostView(hostViewRef: ViewRef) {
     // Note: Don't detach the hostView as we want to leave the
     // root element in place. Also don't put the hostView into the view pool
@@ -88,6 +172,10 @@ export class AppViewManager {
     this._viewListener.viewDestroyed(hostView);
   }
 
+  /**
+   *
+   * See {@link AppViewManager#destroyViewInContainer}.
+   */
   createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         protoViewRef: ProtoViewRef, context: ElementRef = null,
                         bindings: ResolvedBinding[] = null): ViewRef {
@@ -112,12 +200,20 @@ export class AppViewManager {
     return view.ref;
   }
 
+  /**
+   *
+   * See {@link AppViewManager#createViewInContainer}.
+   */
   destroyViewInContainer(viewContainerLocation: ElementRef, atIndex: number) {
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
     this._destroyViewInContainer(parentView, boundElementIndex, atIndex);
   }
 
+  /**
+   *
+   * See {@link AppViewManager#detachViewInContainer}.
+   */
   attachViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                         viewRef: ViewRef): ViewRef {
     var view = internalView(viewRef);
@@ -134,6 +230,10 @@ export class AppViewManager {
     return viewRef;
   }
 
+  /**
+   *
+   * See {@link AppViewManager#attachViewInContainer}.
+   */
   detachViewInContainer(viewContainerLocation: ElementRef, atIndex: number): ViewRef {
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
