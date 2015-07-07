@@ -78,7 +78,7 @@ export class ObservableWrapper {
 
   static callThrow(emitter: EventEmitter, error: any) { emitter.throw(error); }
 
-  static callReturn(emitter: EventEmitter) { emitter.return (null); }
+  static callReturn(emitter: EventEmitter) { emitter.return(null); }
 }
 
 // TODO: vsavkin change to interface
@@ -113,7 +113,7 @@ export class EventEmitter extends Observable {
     return this._subject.observeOn(this._immediateScheduler)
         .subscribe((value) => { setTimeout(() => generator.next(value)); },
                    (error) => generator.throw ? generator.throw(error) : null,
-                   () => generator.return ? generator.return () : null);
+                   () => generator.return ? generator.return() : null);
   }
 
   toRx(): Rx.Observable<any> { return this._subject; }
@@ -122,5 +122,5 @@ export class EventEmitter extends Observable {
 
   throw(error) { this._subject.onError(error); }
 
-  return (value?) { this._subject.onCompleted(); }
+  return(value?) { this._subject.onCompleted(); }
 }
