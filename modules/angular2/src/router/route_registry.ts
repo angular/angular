@@ -32,8 +32,6 @@ import {Injectable} from 'angular2/di';
 export class RouteRegistry {
   private _rules: Map<any, RouteRecognizer> = new Map();
 
-  constructor(private _rootHostComponent: any) {}
-
   /**
    * Given a component and a configuration object, add the route to this registry
    */
@@ -144,41 +142,22 @@ export class RouteRegistry {
   }
 
   /**
-   * Given a list with component names and params like: `['./user', {id: 3 }]`
+   * Given a normalized list with component names and params like: `['user', {id: 3 }]`
    * generates a url with a leading slash relative to the provided `parentComponent`.
    */
   generate(linkParams: List<any>, parentComponent): string {
-    let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
-    let url = '/';
-
+    let url = '';
     let componentCursor = parentComponent;
-
-    // The first segment should be either '.' (generate from parent) or '' (generate from root).
-    // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
-    if (normalizedLinkParams[0] == '') {
-      componentCursor = this._rootHostComponent;
-    } else if (normalizedLinkParams[0] != '.') {
-      throw new BaseException(
-          `Link "${ListWrapper.toJSON(linkParams)}" must start with "/" or "./"`);
-    }
-
-    if (normalizedLinkParams[normalizedLinkParams.length - 1] == '') {
-      ListWrapper.removeLast(normalizedLinkParams);
-    }
-
-    if (normalizedLinkParams.length < 2) {
-      let msg = `Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`;
-      throw new BaseException(msg);
-    }
-
-    for (let i = 1; i < normalizedLinkParams.length; i += 1) {
-      let segment = normalizedLinkParams[i];
+    for (let i = 0; i < linkParams.length; i += 1) {
+      let segment = linkParams[i];
       if (!isString(segment)) {
         throw new BaseException(`Unexpected segment "${segment}" in link DSL. Expected a string.`);
+      } else if (segment == '' || segment == '.' || segment == '..') {
+        throw new BaseException(`"${segment}/" is only allowed at the beginning of a link DSL.`);
       }
       let params = null;
-      if (i + 1 < normalizedLinkParams.length) {
-        let nextSegment = normalizedLinkParams[i + 1];
+      if (i + 1 < linkParams.length) {
+        let nextSegment = linkParams[i + 1];
         if (isStringMap(nextSegment)) {
           params = nextSegment;
           i += 1;
@@ -273,19 +252,4 @@ function assertTerminalComponent(component, path) {
       }
     }
   }
-}
-
-/*
- * Given: ['/a/b', {c: 2}]
- * Returns: ['', 'a', 'b', {c: 2}]
- */
-var SLASH = new RegExp('/');
-function splitAndFlattenLinkParams(linkParams: List<any>): List<any> {
-  return ListWrapper.reduce(linkParams, (accumulation, item) => {
-    if (isString(item)) {
-      return ListWrapper.concat(accumulation, StringWrapper.split(item, SLASH));
-    }
-    accumulation.push(item);
-    return accumulation;
-  }, []);
 }

@@ -27,10 +27,11 @@ import {Location} from './location';
  * means that we want to generate a link for the `team` route with params `{teamId: 1}`,
  * and with a child route `user` with params `{userId: 2}`.
  *
- * The first route name should be prepended with either `./` or `/`.
+ * The first route name should be prepended with `/`, `./`, or `../`.
  * If the route begins with `/`, the router will look up the route from the root of the app.
  * If the route begins with `./`, the router will instead look in the current component's
- * children for the route.
+ * children for the route. And if the route begins with `../`, the router will look at the
+ * current component's parent.
  *
  * @exportedAs angular2/router
  */
