@@ -26,8 +26,9 @@ export class DynamicComponentLoader {
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) {}
 
   /**
-   * Loads a root component that is placed at the first element that matches the
-   * component's selector.
+   * Loads a root component that is placed at the first element that matches the component's
+   * selector.
+   *
    * The loaded component receives injection normally as a hosted view.
    */
   loadAsRoot(typeOrBinding: Type | Binding, overrideSelector: string,
