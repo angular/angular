@@ -1,10 +1,5 @@
-import {
-  ComponentAnnotation,
-  DirectiveAnnotation,
-  ComponentArgs,
-  DirectiveArgs
-} from './annotations';
-import {ViewAnnotation, ViewArgs} from './view';
+import {ComponentAnnotation, DirectiveAnnotation, LifecycleEvent} from './annotations';
+import {ViewAnnotation} from './view';
 import {AttributeAnnotation, QueryAnnotation} from './di';
 import {
   makeDecorator,
@@ -31,7 +26,14 @@ export interface ComponentDecorator extends TypeDecorator {
   /**
    * Chain {@link View} annotation.
    */
-  View(obj: ViewArgs): ViewDecorator;
+  View(obj: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string,
+    styles?: List<string>,
+    styleUrls?: List<string>,
+  }): ViewDecorator;
 }
 
 /**
@@ -43,7 +45,14 @@ export interface ViewDecorator extends TypeDecorator {
   /**
    * Chain {@link View} annotation.
    */
-  View(obj: ViewArgs): ViewDecorator
+  View(obj: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string,
+    styles?: List<string>,
+    styleUrls?: List<string>,
+  }): ViewDecorator
 }
 
 /**
@@ -87,8 +96,16 @@ export interface ViewDecorator extends TypeDecorator {
  * ```
  */
 export interface DirectiveFactory {
-  (obj: DirectiveArgs): DirectiveDecorator;
-  new (obj: DirectiveAnnotation): DirectiveAnnotation;
+  (obj: {
+    selector?: string, properties?: List<string>, events?: List<string>,
+        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>,
+        hostInjector?: List<any>, exportAs?: string, compileChildren?: boolean;
+  }): DirectiveDecorator;
+  new (obj: {
+    selector?: string, properties?: List<string>, events?: List<string>,
+        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>,
+        hostInjector?: List<any>, exportAs?: string, compileChildren?: boolean;
+  }): DirectiveAnnotation;
 }
 
 /**
@@ -135,8 +152,30 @@ export interface DirectiveFactory {
  * ```
  */
 export interface ComponentFactory {
-  (obj: ComponentArgs): ComponentDecorator;
-  new (obj: ComponentAnnotation): ComponentAnnotation;
+  (obj: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+    viewInjector?: List<any>,
+    changeDetection?: string,
+  }): ComponentDecorator;
+  new (obj: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+    viewInjector?: List<any>,
+    changeDetection?: string,
+  }): ComponentAnnotation;
 }
 
 /**
@@ -183,8 +222,22 @@ export interface ComponentFactory {
  * ```
  */
 export interface ViewFactory {
-  (obj: ViewArgs): ViewDecorator;
-  new (obj: ViewArgs): ViewAnnotation;
+  (obj: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string,
+    styles?: List<string>,
+    styleUrls?: List<string>,
+  }): ViewDecorator;
+  new (obj: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string,
+    styles?: List<string>,
+    styleUrls?: List<string>,
+  }): ViewAnnotation;
 }
 
 /**

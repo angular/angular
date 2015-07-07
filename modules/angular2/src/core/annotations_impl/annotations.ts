@@ -408,33 +408,6 @@ import {DEFAULT} from 'angular2/change_detection';
  */
 @CONST()
 export class Directive extends Injectable {
-  selector: string;
-  properties: List<string>;
-  events: List<string>;
-  host: StringMap<string, string>;
-  lifecycle: List<LifecycleEvent>;
-  // TODO(vsavkin): This would better fall under the Macro directive concept.
-  compileChildren: boolean;
-  hostInjector: List<any>;
-  exportAs: string;
-
-  constructor({
-                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
-                  compileChildren = true,
-              }: DirectiveArgs = {}) {
-    super(self);
-    this.selector = selector;
-    this.properties = properties;
-    this.events = events;
-    this.host = host;
-    this.exportAs = exportAs;
-    this.lifecycle = lifecycle;
-    this.compileChildren = compileChildren;
-    this.hostInjector = hostInjector;
-  }
-}
-
-export interface DirectiveArgs {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -467,7 +440,7 @@ export interface DirectiveArgs {
    * The directive would only be instantiated on the `<input type="text">` element.
    *
    */
-  selector?: string;
+  selector: string;
 
   /**
    * Enumerates the set of properties that accept data binding for a directive.
@@ -562,7 +535,7 @@ export interface DirectiveArgs {
    * keyValDiff`.
    *
    */
-  properties?: List<string>;
+  properties: List<string>;
 
   /**
    * Enumerates the set of emitted events.
@@ -607,7 +580,7 @@ export interface DirectiveArgs {
    * ```
    *
    */
-  events?: List<string>;
+  events: List<string>;
 
   /**
    * Specifiy the events, actions, properties and attributes related to the host element.
@@ -734,14 +707,20 @@ export interface DirectiveArgs {
    *
    * In this example calling focus on InputDirective will result in calling focus on the input.
    */
-  host?: StringMap<string, string>;
+  host: StringMap<string, string>;
 
   /**
    * Specifies which lifecycle should be notified to the directive.
    *
    * See {@link LifecycleEvent} for details.
    */
-  lifecycle?: List<LifecycleEvent>;
+  lifecycle: List<LifecycleEvent>;
+
+  /**
+   * If set to false the compiler does not compile the children of this directive.
+   */
+  // TODO(vsavkin): This would better fall under the Macro directive concept.
+  compileChildren: boolean;
 
   /**
    * Defines the set of injectable objects that are visible to a Directive and its light dom
@@ -773,7 +752,7 @@ export interface DirectiveArgs {
    * }
    * ```
    */
-  hostInjector?: List<any>;
+  hostInjector: List<any>;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -800,14 +779,32 @@ export interface DirectiveArgs {
    *
    * ```
    */
-  exportAs?: string;
+  exportAs: string;
 
-  /**
-   * If set to false the compiler does not compile the children of this directive.
-   */
-  compileChildren?: boolean;
+  constructor({
+                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
+                  compileChildren = true,
+              }: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+  } = {}) {
+    super(self);
+    this.selector = selector;
+    this.properties = properties;
+    this.events = events;
+    this.host = host;
+    this.exportAs = exportAs;
+    this.lifecycle = lifecycle;
+    this.compileChildren = compileChildren;
+    this.hostInjector = hostInjector;
+  }
 }
-
 
 /**
  * Declare reusable UI building blocks for an application.
@@ -849,28 +846,19 @@ export interface DirectiveArgs {
  */
 @CONST()
 export class Component extends Directive {
+  /**
+   * Defines the used change detection strategy.
+   *
+   * When a component is instantiated, Angular creates a change detector, which is responsible for
+   * propagating
+   * the component's bindings.
+   *
+   * The `changeDetection` property defines, whether the change detection will be checked every time
+   * or only when the component
+   * tells it to do so.
+   */
   changeDetection: string;
-  viewInjector: List<any>;
 
-  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
-               changeDetection = DEFAULT, compileChildren = true}: ComponentArgs = {}) {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      host: host,
-      exportAs: exportAs,
-      hostInjector: hostInjector,
-      lifecycle: lifecycle,
-      compileChildren: compileChildren
-    });
-
-    this.changeDetection = changeDetection;
-    this.viewInjector = viewInjector;
-  }
-}
-
-export interface ComponentArgs extends DirectiveArgs {
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
    *
@@ -911,20 +899,35 @@ export interface ComponentArgs extends DirectiveArgs {
    *
    * ```
    */
-  viewInjector?: List<any>;
+  viewInjector: List<any>;
 
-  /**
-   * Defines the used change detection strategy.
-   *
-   * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating
-   * the component's bindings.
-   *
-   * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component
-   * tells it to do so.
-   */
-  changeDetection?: string;
+  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
+               changeDetection = DEFAULT, compileChildren = true}: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+    viewInjector?: List<any>,
+    changeDetection?: string,
+  } = {}) {
+    super({
+      selector: selector,
+      properties: properties,
+      events: events,
+      host: host,
+      exportAs: exportAs,
+      hostInjector: hostInjector,
+      lifecycle: lifecycle,
+      compileChildren: compileChildren
+    });
+
+    this.changeDetection = changeDetection;
+    this.viewInjector = viewInjector;
+  }
 }
 
 /**

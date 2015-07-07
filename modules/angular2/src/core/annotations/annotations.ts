@@ -6,7 +6,5 @@
 export {
   Component as ComponentAnnotation,
   Directive as DirectiveAnnotation,
-  ComponentArgs,
-  DirectiveArgs,
   LifecycleEvent
 } from '../annotations_impl/annotations';

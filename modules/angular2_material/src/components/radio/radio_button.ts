@@ -1,4 +1,12 @@
-import {Component, View, LifecycleEvent, Parent, Ancestor, Attribute, Optional} from 'angular2/angular2';
+import {
+  Component,
+  View,
+  LifecycleEvent,
+  Parent,
+  Ancestor,
+  Attribute,
+  Optional
+} from 'angular2/angular2';
 
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
