@@ -4,7 +4,7 @@ Benchpress is a framework for e2e performance tests.
 
 # Why?
 
-There are so called "micro benchmarks" that esentially use a stop watch in the browser to measure time
+There are so called "micro benchmarks" that essentially use a stop watch in the browser to measure time
 (e.g. via `performance.now()`). This approach is limited to time, and in some cases memory
 (Chrome with special flags), as metric. It does not allow to measure:
 
@@ -80,7 +80,7 @@ index.html:
   var container = document.getElementById('container');
   var complexHtmlString = '...'; // TODO
 
-  function reset() { cotainer.innerHTML = ''; }
+  function reset() { container.innerHTML = ''; }
 
   function fill() {
     container.innerHTML = complexHtmlString;

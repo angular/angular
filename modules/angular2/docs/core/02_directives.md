@@ -52,7 +52,7 @@ CSS Selectors can be combined:
 
 ## Directives
 
-The simplest kind of directive is a decorator. Directives are usefull for encapsulating behavior.
+The simplest kind of directive is a decorator. Directives are useful for encapsulating behavior.
 
 * Multiple decorators can be placed on a single element.
 * Directives do not introduce new evaluation context.
@@ -260,7 +260,7 @@ Injecting other directives into directives follows a similar mechanism as inject
 
 There are five kinds of visibilities:
 
-* (no annotation): Inject dependant directives only if they are on the current element.
+* (no annotation): Inject dependent directives only if they are on the current element.
 * `@ancestor`: Inject a directive if it is at any element above the current element.
 * `@parent`: Inject a directive which is a direct parent of the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)
@@ -325,7 +325,7 @@ Assume the following DOM structure for `my_app.html`:
 
 #### Shadow DOM effects on Directive DI
 
-Shadow DOM provides an encapsulation for components, so as a general rule it does not allow directive injections to cross the shadow DOM boundaries. To remedy this, declaritively specify the required component as an injectable.
+Shadow DOM provides an encapsulation for components, so as a general rule it does not allow directive injections to cross the shadow DOM boundaries. To remedy this, declaratively specify the required component as an injectable.
 
 ```
 @Component({
