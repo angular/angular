@@ -35,6 +35,8 @@ export const routerDirectives: List<any> = CONST_EXPR([RouterOutlet, RouterLink]
 
 export var routerInjectables: List<any> = [
   bind(RouteRegistry)
+      // TODO(misko): this does not lok right. It looks like RouteRegistry wants instance, but we
+      // inject type.
       .toFactory((appRoot) => new RouteRegistry(appRoot), [appComponentTypeToken]),
   Pipeline,
   bind(LocationStrategy).toClass(HTML5LocationStrategy),

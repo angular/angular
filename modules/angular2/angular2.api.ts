@@ -22,4 +22,3 @@ export {Injectable, Visibility} from './src/di/annotations_impl';
 export {BaseQueryList} from './src/core/compiler/base_query_list';
 export {AppProtoView, AppView, AppViewContainer} from './src/core/compiler/view';
 export * from './src/change_detection/parser/ast';
-export {AppViewManager} from './src/core/compiler/view_manager';
