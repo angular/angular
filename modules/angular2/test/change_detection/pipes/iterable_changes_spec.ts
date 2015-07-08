@@ -207,7 +207,7 @@ export function main() {
         let l = [NumberWrapper.NaN, NumberWrapper.NaN];
         changes.check(l);
 
-        ListWrapper.insert(l, 0, 'foo');
+        ListWrapper.insert<any>(l, 0, 'foo');
         changes.check(l);
         expect(changes.toString())
             .toEqual(iterableChangesAsString({

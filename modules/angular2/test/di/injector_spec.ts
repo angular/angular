@@ -206,7 +206,7 @@ export function main() {
         var injector = createInjector([
           bind('originalEngine')
               .toClass(forwardRef(() => Engine)),
-          bind('aliasedEngine').toAlias(forwardRef(() => 'originalEngine'))
+          bind('aliasedEngine').toAlias(<any>forwardRef(() => 'originalEngine'))
         ]);
         expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
       });

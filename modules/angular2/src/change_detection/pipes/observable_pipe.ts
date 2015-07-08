@@ -36,7 +36,7 @@ export class ObservablePipe implements Pipe {
 
   constructor(public _ref: ChangeDetectorRef) {}
 
-  supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
+  supports(obs: any): boolean { return ObservableWrapper.isObservable(obs); }
 
   onDestroy(): void {
     if (isPresent(this._subscription)) {
@@ -88,7 +88,7 @@ export class ObservablePipe implements Pipe {
  */
 @CONST()
 export class ObservablePipeFactory implements PipeFactory {
-  supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
+  supports(obs: any): boolean { return ObservableWrapper.isObservable(obs); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return new ObservablePipe(cdRef); }
 }

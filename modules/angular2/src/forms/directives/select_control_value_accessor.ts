@@ -49,7 +49,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._updateValueWhenListOfOptionsChanges(query);
   }
 
-  writeValue(value) {
+  writeValue(value: any) {
     this.value = value;
     setProperty(this.renderer, this.elementRef, "value", value);
   }
@@ -69,8 +69,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     return isPresent(this.cd.control) ? !this.cd.control.valid : false;
   }
 
-  registerOnChange(fn): void { this.onChange = fn; }
-  registerOnTouched(fn): void { this.onTouched = fn; }
+  registerOnChange(fn: () => any): void { this.onChange = fn; }
+  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {
     query.onChange(() => this.writeValue(this.value));

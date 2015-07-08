@@ -145,7 +145,7 @@ export class ShadowCss {
   * Shim a style element with the given selector. Returns cssText that can
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
   */
-  shimStyle(style, selector: string, hostSelector: string = ''): string {
+  shimStyle(style: string, selector: string, hostSelector: string = ''): string {
     var cssText = DOM.getText(style);
     return this.shimCssText(cssText, selector, hostSelector);
   }

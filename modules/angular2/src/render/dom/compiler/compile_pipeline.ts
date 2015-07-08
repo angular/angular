@@ -17,7 +17,7 @@ export class CompilePipeline {
     this._control = new CompileControl(steps);
   }
 
-  process(rootElement, protoViewType: ViewType = null,
+  process(rootElement: HTMLElement, protoViewType: ViewType = null,
           compilationCtxtDescription: string = ''): List<CompileElement> {
     if (isBlank(protoViewType)) {
       protoViewType = ViewType.COMPONENT;

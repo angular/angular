@@ -37,7 +37,7 @@ export class RouteRegistry {
   /**
    * Given a component and a configuration object, add the route to this registry
    */
-  config(parentComponent, config: RouteDefinition): void {
+  config(parentComponent: any, config: RouteDefinition): void {
     config = normalizeRouteConfig(config);
 
     var recognizer: RouteRecognizer = this._rules.get(parentComponent);
@@ -61,7 +61,7 @@ export class RouteRegistry {
   /**
    * Reads the annotations of a component and configures the registry based on them
    */
-  configFromComponent(component): void {
+  configFromComponent(component: any): void {
     if (!isType(component)) {
       return;
     }
@@ -88,7 +88,7 @@ export class RouteRegistry {
    * Given a URL and a parent component, return the most specific instruction for navigating
    * the application into the state specified by the url
    */
-  recognize(url: string, parentComponent): Promise<Instruction> {
+  recognize(url: string, parentComponent: any): Promise<Instruction> {
     var componentRecognizer = this._rules.get(parentComponent);
     if (isBlank(componentRecognizer)) {
       return PromiseWrapper.resolve(null);
@@ -142,7 +142,7 @@ export class RouteRegistry {
    * Given a normalized list with component names and params like: `['user', {id: 3 }]`
    * generates a url with a leading slash relative to the provided `parentComponent`.
    */
-  generate(linkParams: List<any>, parentComponent): string {
+  generate(linkParams: List<any>, parentComponent: any): string {
     let url = '';
     let componentCursor = parentComponent;
     for (let i = 0; i < linkParams.length; i += 1) {

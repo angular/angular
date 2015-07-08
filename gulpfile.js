@@ -275,17 +275,19 @@ gulp.task('enforce-format', function() {
 });
 
 gulp.task('lint', ['build.tools'], function() {
+  // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
     "rules": {
       "semicolon": true,
-      "requireReturnType": true
+      "requireReturnType": true,
+      "requireParameterType": true
     }
   };
 
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
       .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
-      .pipe(tslint.report('prose'));
+      .pipe(tslint.report('prose', {emitError: true}));
 });
 
 // ------------

@@ -12,7 +12,7 @@ export class EventManager {
     }
   }
 
-  addEventListener(element, eventName: string, handler: Function) {
+  addEventListener(element: HTMLElement, eventName: string, handler: Function) {
     var withoutBubbleSymbol = this._removeBubbleSymbol(eventName);
     var plugin = this._findPluginFor(withoutBubbleSymbol);
     plugin.addEventListener(element, withoutBubbleSymbol, handler,
@@ -53,11 +53,12 @@ export class EventManagerPlugin {
   // addEventListener methods.
   supports(eventName: string): boolean { return false; }
 
-  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
+  addEventListener(element: HTMLElement, eventName: string, handler: Function,
+                   shouldSupportBubble: boolean) {
     throw "not implemented";
   }
 
-  addGlobalEventListener(element, eventName: string, handler: Function,
+  addGlobalEventListener(element: string, eventName: string, handler: Function,
                          shouldSupportBubble: boolean): Function {
     throw "not implemented";
   }
@@ -70,7 +71,8 @@ export class DomEventsPlugin extends EventManagerPlugin {
   // events.
   supports(eventName: string): boolean { return true; }
 
-  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
+  addEventListener(element: HTMLElement, eventName: string, handler: Function,
+                   shouldSupportBubble: boolean) {
     var outsideHandler =
         this._getOutsideHandler(shouldSupportBubble, element, handler, this.manager._zone);
     this.manager._zone.runOutsideAngular(() => { DOM.on(element, eventName, outsideHandler); });
@@ -85,12 +87,14 @@ export class DomEventsPlugin extends EventManagerPlugin {
         () => { return DOM.onAndCancel(element, eventName, outsideHandler); });
   }
 
-  _getOutsideHandler(shouldSupportBubble: boolean, element, handler: Function, zone: NgZone) {
+  _getOutsideHandler(shouldSupportBubble: boolean, element: HTMLElement, handler: Function,
+                     zone: NgZone) {
     return shouldSupportBubble ? DomEventsPlugin.bubbleCallback(element, handler, zone) :
                                  DomEventsPlugin.sameElementCallback(element, handler, zone);
   }
 
-  static sameElementCallback(element, handler, zone): (event: Event) => void {
+  static sameElementCallback(element: HTMLElement, handler: Function, zone: NgZone):
+      (event: Event) => void {
     return (event) => {
       if (event.target === element) {
         zone.run(() => handler(event));
@@ -98,7 +102,8 @@ export class DomEventsPlugin extends EventManagerPlugin {
     };
   }
 
-  static bubbleCallback(element, handler, zone): (event: Event) => void {
+  static bubbleCallback(element: HTMLElement, handler: Function, zone: NgZone):
+      (event: Event) => void {
     return (event) => zone.run(() => handler(event));
   }
 }

@@ -28,7 +28,7 @@ export class Pipes {
   config: StringMap<string, PipeFactory[]>;
   constructor(config: StringMap<string, PipeFactory[]>) { this.config = config; }
 
-  get(type: string, obj, cdRef?: ChangeDetectorRef, existingPipe?: Pipe): Pipe {
+  get(type: string, obj: any, cdRef?: ChangeDetectorRef, existingPipe?: Pipe): Pipe {
     if (isPresent(existingPipe) && existingPipe.supports(obj)) return existingPipe;
 
     if (isPresent(existingPipe)) existingPipe.onDestroy();
@@ -67,7 +67,7 @@ export class Pipes {
    * })
    * ```
    */
-  static extend(config): Binding {
+  static extend(config: StringMap<string, PipeFactory[]>): Binding {
     return new Binding(Pipes, {
       toFactory: (pipes: Pipes) => {
         if (isBlank(pipes)) {
@@ -82,7 +82,7 @@ export class Pipes {
     });
   }
 
-  static create(config, pipes: Pipes = null): Pipes {
+  static create(config: StringMap<string, PipeFactory[]>, pipes: Pipes = null): Pipes {
     if (isPresent(pipes)) {
       StringMapWrapper.forEach(pipes.config, (v: PipeFactory[], k: string) => {
         if (StringMapWrapper.contains(config, k)) {

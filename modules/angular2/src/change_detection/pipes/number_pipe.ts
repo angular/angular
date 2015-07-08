@@ -46,7 +46,7 @@ export class NumberPipe extends BasePipe implements PipeFactory {
     });
   }
 
-  supports(obj): boolean { return isNumber(obj); }
+  supports(obj: any): boolean { return isNumber(obj); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }
@@ -78,7 +78,7 @@ export class NumberPipe extends BasePipe implements PipeFactory {
  */
 @CONST()
 export class DecimalPipe extends NumberPipe {
-  transform(value, args: any[]): string {
+  transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
     return NumberPipe._format(value, NumberFormatStyle.DECIMAL, digits);
   }
@@ -95,7 +95,7 @@ export class DecimalPipe extends NumberPipe {
  */
 @CONST()
 export class PercentPipe extends NumberPipe {
-  transform(value, args: any[]): string {
+  transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
     return NumberPipe._format(value, NumberFormatStyle.PERCENT, digits);
   }
@@ -116,7 +116,7 @@ export class PercentPipe extends NumberPipe {
  */
 @CONST()
 export class CurrencyPipe extends NumberPipe {
-  transform(value, args: any[]): string {
+  transform(value: any, args: any[]): string {
     var currencyCode: string = isPresent(args) && args.length > 0 ? args[0] : 'USD';
     var symbolDisplay: boolean = isPresent(args) && args.length > 1 ? args[1] : false;
     var digits: string = isPresent(args) && args.length > 2 ? args[2] : null;

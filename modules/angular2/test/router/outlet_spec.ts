@@ -257,7 +257,7 @@ export function main() {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('parent activate')) {
                    completer.resolve(true);
                  }
@@ -292,7 +292,7 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigate('/parent-deactivate/child-deactivate'))
              .then((_) => {
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('deactivate')) {
                    completer.resolve(true);
                    rootTC.detectChanges();
@@ -356,7 +356,7 @@ export function main() {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('canActivate')) {
                    completer.resolve(true);
                  }
@@ -376,7 +376,7 @@ export function main() {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('canActivate')) {
                    completer.resolve(false);
                  }
@@ -401,7 +401,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual('');
 
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('canDeactivate')) {
                    completer.resolve(true);
                  }
@@ -426,7 +426,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual('');
 
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('canDeactivate')) {
                    completer.resolve(false);
                  }
@@ -473,7 +473,7 @@ export function main() {
                expect(log).toEqual('canActivate: null -> /reuse-hooks/1;' +
                                    'onActivate: null -> /reuse-hooks/1;');
 
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('canReuse')) {
                    completer.resolve(true);
                  }
@@ -497,7 +497,7 @@ export function main() {
                expect(log).toEqual('canActivate: null -> /reuse-hooks/1;' +
                                    'onActivate: null -> /reuse-hooks/1;');
 
-               ObservableWrapper.subscribe(eventBus, (ev) => {
+               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('canReuse')) {
                    completer.resolve(false);
                  }

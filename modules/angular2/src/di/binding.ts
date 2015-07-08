@@ -309,13 +309,13 @@ export class BindingBuilder {
    * expect(injector.get(String)).toEqual('Hello');
    * ```
    */
-  toValue(value): Binding { return new Binding(this.token, {toValue: value}); }
+  toValue(value: any): Binding { return new Binding(this.token, {toValue: value}); }
 
   /**
    * Binds a key to the alias for an existing key.
    *
    * An alias means that we will return the same instance as if the alias token was used. (This is
-   * in contrast to `toClass` where a separet instance of `toClass` will be returned.)
+   * in contrast to `toClass` where a separate instance of `toClass` will be returned.)
    *
    * ## Example
    *
@@ -344,7 +344,7 @@ export class BindingBuilder {
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toAlias(aliasToken): Binding {
+  toAlias(aliasToken: /*Type*/ any): Binding {
     if (isBlank(aliasToken)) {
       throw new BaseException(`Can not alias ${stringify(this.token)} to a blank value!`);
     }

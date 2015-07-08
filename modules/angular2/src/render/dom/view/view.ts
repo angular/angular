@@ -67,7 +67,7 @@ export class DomView {
 
   setText(textIndex: number, value: string) { DOM.setText(this.boundTextNodes[textIndex], value); }
 
-  dispatchEvent(elementIndex, eventName, event): boolean {
+  dispatchEvent(elementIndex: number, eventName: string, event: Event): boolean {
     var allowDefaultBehavior = true;
     if (isPresent(this.eventDispatcher)) {
       var evalLocals = new Map();

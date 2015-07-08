@@ -11,7 +11,7 @@ export class MockLocationStrategy extends LocationStrategy {
   _subject: EventEmitter = new EventEmitter();
   constructor() { super(); }
 
-  simulatePopState(url): void {
+  simulatePopState(url: string): void {
     this.internalPath = url;
     ObservableWrapper.callNext(this._subject, null);
   }
@@ -28,7 +28,7 @@ export class MockLocationStrategy extends LocationStrategy {
     this.urlChanges.push(url);
   }
 
-  onPopState(fn): void { ObservableWrapper.subscribe(this._subject, fn); }
+  onPopState(fn: (value: any) => void): void { ObservableWrapper.subscribe(this._subject, fn); }
 
   getBaseHref(): string { return this.internalBaseHref; }
 }

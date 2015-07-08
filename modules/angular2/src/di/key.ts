@@ -30,7 +30,7 @@ export class Key {
   /**
    * Retrieves a `Key` for a token.
    */
-  static get(token): Key { return _globalKeyRegistry.get(resolveForwardRef(token)); }
+  static get(token: Object): Key { return _globalKeyRegistry.get(resolveForwardRef(token)); }
 
   /**
    * @returns the number of keys registered in the system.

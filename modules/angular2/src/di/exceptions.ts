@@ -42,7 +42,7 @@ export class AbstractBindingError extends BaseException {
   }
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  addKey(key): void {
+  addKey(key: any): void {
     this.keys.push(key);
     this.message = this.constructResolvingMessage(this.keys);
   }

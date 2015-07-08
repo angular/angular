@@ -480,7 +480,7 @@ export class Injector {
    *binding).
    * @returns an instance represented by the token. Throws if not found.
    */
-  get(token): any {
+  get(token: any): any {
     return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, false, PUBLIC_AND_PRIVATE);
   }
 
@@ -490,7 +490,7 @@ export class Injector {
    * @param `token`: usually a `Type`. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Returns `null` if not found.
    */
-  getOptional(token): any {
+  getOptional(token: any): any {
     return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, true, PUBLIC_AND_PRIVATE);
   }
 

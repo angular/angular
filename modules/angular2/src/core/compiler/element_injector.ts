@@ -286,7 +286,7 @@ export class EventEmitterAccessor {
 
   subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
-    return ObservableWrapper.subscribe(
+    return ObservableWrapper.subscribe<Event>(
         eventEmitter,
         eventObj => view.triggerEventHandlers(this.eventName, eventObj, boundElementIndex));
   }
@@ -297,7 +297,7 @@ export class HostActionAccessor {
 
   subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
-    return ObservableWrapper.subscribe(
+    return ObservableWrapper.subscribe<List<any>>(
         eventEmitter,
         actionArgs => view.invokeElementMethod(boundElementIndex, this.methodName, actionArgs));
   }
@@ -542,7 +542,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return isPresent(index) ? this.getDirectiveAtIndex(<number>index) : this.getElementRef();
   }
 
-  get(token): any { return this._injector.get(token); }
+  get(token: any): any { return this._injector.get(token); }
 
   hasDirective(type: Type): boolean { return isPresent(this._injector.getOptional(type)); }
 

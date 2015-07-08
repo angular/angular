@@ -5,7 +5,7 @@ import {WrappedValue, BasePipe, Pipe, PipeFactory} from './pipe';
 
 @CONST()
 export class KeyValueChangesFactory implements PipeFactory {
-  supports(obj): boolean { return KeyValueChanges.supportsObj(obj); }
+  supports(obj: any): boolean { return KeyValueChanges.supportsObj(obj); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return new KeyValueChanges(); }
 }
@@ -21,11 +21,11 @@ export class KeyValueChanges extends BasePipe {
   private _removalsHead: KVChangeRecord = null;
   private _removalsTail: KVChangeRecord = null;
 
-  static supportsObj(obj): boolean { return obj instanceof Map || isJsObject(obj); }
+  static supportsObj(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
-  supports(obj): boolean { return KeyValueChanges.supportsObj(obj); }
+  supports(obj: any): boolean { return KeyValueChanges.supportsObj(obj); }
 
-  transform(map, args: List<any> = null): any {
+  transform(map: Map<any, any>, args: List<any> = null): any {
     if (this.check(map)) {
       return WrappedValue.wrap(this);
     } else {
@@ -73,7 +73,7 @@ export class KeyValueChanges extends BasePipe {
     }
   }
 
-  check(map): boolean {
+  check(map: Map<any, any>): boolean {
     this._reset();
     var records = this._records;
     var oldSeqRecord: KVChangeRecord = this._mapHead;

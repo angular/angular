@@ -153,5 +153,5 @@ class MockMetric extends Metric {
 
 class MockSampler extends Sampler {
   constructor() { super(); }
-  sample(): Promise<SampleState> { return PromiseWrapper.resolve(23); }
+  sample(): Promise<SampleState> { return PromiseWrapper.resolve(new SampleState([], [])); }
 }

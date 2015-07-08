@@ -48,6 +48,7 @@ var _chromeNumKeyPadMap = {
   '\x90': 'NumLock'
 };
 
+/* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
   hasProperty(element, name: string): boolean { return name in element; }

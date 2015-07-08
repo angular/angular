@@ -12,6 +12,7 @@ function _abstract() {
   return new BaseException('This method is abstract');
 }
 
+/* tslint:disable:requireParameterType */
 /**
  * Provides DOM operations in an environment-agnostic way.
  */

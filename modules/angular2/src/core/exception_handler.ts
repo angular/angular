@@ -33,9 +33,9 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
  */
 @Injectable()
 export class ExceptionHandler {
-  call(error, stackTrace = null, reason = null) {
+  call(error: Object, stackTrace: string | List<string> = null, reason: string = null) {
     var longStackTrace =
-        isListLikeIterable(stackTrace) ? ListWrapper.join(stackTrace, "\n\n") : stackTrace;
+        isListLikeIterable(stackTrace) ? ListWrapper.join(<any>stackTrace, "\n\n") : stackTrace;
     var reasonStr = isPresent(reason) ? `\n${reason}` : '';
     DOM.logError(`${error}${reasonStr}\nSTACKTRACE:\n${longStackTrace}`);
   }
