@@ -29,10 +29,3 @@ export {
 
 export {NgZone} from 'angular2/src/core/zone/ng_zone';
 export {Observable, EventEmitter} from 'angular2/src/facade/async';
-
-
-// TODO(misko): remove exporting of these.
-// This should not be exported once we have: https://github.com/angular/angular/issues/2883
-export {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-export {RenderCompiler} from 'angular2/src/render/api';
-export {CompilerCache} from 'angular2/src/core/compiler/compiler';
