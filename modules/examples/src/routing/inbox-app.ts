@@ -1,5 +1,12 @@
 import {NgIf, NgFor, EventEmitter, Component, View, Inject, Injectable} from 'angular2/angular2';
-import {RouterLink, RouteConfig, Router, RouterOutlet, Location, RouteParams} from 'angular2/router';
+import {
+  RouterLink,
+  RouteConfig,
+  Router,
+  RouterOutlet,
+  Location,
+  RouteParams
+} from 'angular2/router';
 import {Http} from 'angular2/http';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -9,22 +16,19 @@ class DbService {
 
   getData() {
     return new Promise((resolve, reject) => {
-      ObservableWrapper.subscribe(this.http.get('./db.json', { cache: true }), (resp) => {
-        resolve(resp.json());
-      });
+      ObservableWrapper.subscribe(this.http.get('./db.json', {cache: true}),
+                                  (resp) => { resolve(resp.json()); });
     });
   }
 
   drafts() {
-    return PromiseWrapper.then(this.getData(), (data) => {
-      return data.filter(record => record.draft);
-    });
+    return PromiseWrapper.then(this.getData(),
+                               (data) => { return data.filter(record => record.draft); });
   }
 
   emails() {
-    return PromiseWrapper.then(this.getData(), (data) => {
-      return data.filter(record => !record.draft);
-    });
+    return PromiseWrapper.then(this.getData(),
+                               (data) => { return data.filter(record => !record.draft); });
   }
 
   email(id) {
@@ -39,13 +43,8 @@ class DbService {
   }
 }
 
-@Component({
-  selector: 'inbox-detail'
-})
-@View({
-  templateUrl: "inbox-detail.html",
-  directives: [NgFor, RouterLink]
-})
+@Component({selector: 'inbox-detail'})
+@View({templateUrl: "inbox-detail.html", directives: [NgFor, RouterLink]})
 class InboxDetailCmp {
   id: string;
   subject: string;
@@ -56,38 +55,29 @@ class InboxDetailCmp {
 
   constructor(db: DbService, params: RouteParams) {
     var id = params.get('id');
-    PromiseWrapper.then(db.email(id)).then((data) => {
-      this.setEmailRecord(data);
-    });
+    PromiseWrapper.then(db.email(id)).then((data) => { this.setEmailRecord(data); });
   }
 
-  get fullName() {
-    return this.firstName + ' ' + this.lastName;
-  }
+  get fullName() { return this.firstName + ' ' + this.lastName; }
 
   setEmailRecord(record) {
-    this.id        = record['id'];
-    this.subject   = record['subject'];
-    this.content   = record['content'];
-    this.email     = record['email'];
+    this.id = record['id'];
+    this.subject = record['subject'];
+    this.content = record['content'];
+    this.email = record['email'];
     this.firstName = record['first-name'];
-    this.lastName  = record['last-name'];
-    this.date      = record['date'];
+    this.lastName = record['last-name'];
+    this.date = record['date'];
   }
 }
 
 @Component({selector: 'inbox'})
-@View({
-  templateUrl: "inbox.html",
-  directives: [NgFor, RouterLink]
-})
+@View({templateUrl: "inbox.html", directives: [NgFor, RouterLink]})
 class InboxCmp {
   q: string;
   items: List = [];
   constructor(public router: Router, db: DbService) {
-    PromiseWrapper.then(db.emails(), (emails) => {
-      this.items = emails;
-    });
+    PromiseWrapper.then(db.emails(), (emails) => { this.items = emails; });
   }
 }
 
@@ -97,21 +87,13 @@ class InboxCmp {
 class DraftsCmp {
   items: List = [];
   constructor(public router: Router, db: DbService) {
-    PromiseWrapper.then(db.drafts(), (drafts) => {
-      this.items = drafts;
-    });
+    PromiseWrapper.then(db.drafts(), (drafts) => { this.items = drafts; });
   }
 }
 
 
-@Component({
-  selector: 'inbox-app',
-  viewInjector: [DbService]
-})
-@View({
-  templateUrl: "inbox-app.html",
-  directives: [RouterOutlet, RouterLink]
-})
+@Component({selector: 'inbox-app', viewInjector: [DbService]})
+@View({templateUrl: "inbox-app.html", directives: [RouterOutlet, RouterLink]})
 @RouteConfig([
   {path: '/', component: InboxCmp, as: 'inbox'},
   {path: '/drafts', component: DraftsCmp, as: 'drafts'},
@@ -124,10 +106,6 @@ export class InboxApp {
     this.router = router;
     this.location = location;
   }
-  inboxPageActive() {
-    return this.location.path() == '';
-  }
-  draftsPageActive() {
-    return this.location.path() == '/drafts';
-  }
+  inboxPageActive() { return this.location.path() == ''; }
+  draftsPageActive() { return this.location.path() == '/drafts'; }
 }

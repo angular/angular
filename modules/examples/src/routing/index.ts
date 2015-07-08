@@ -4,9 +4,7 @@ import {routerInjectables, HashLocationStrategy, LocationStrategy} from 'angular
 import {httpInjectables} from 'angular2/http';
 
 export function main() {
-  bootstrap(InboxApp, [
-    routerInjectables,
-    httpInjectables,
-    bind(LocationStrategy).toClass(HashLocationStrategy)
-  ]);
+  bootstrap(
+      InboxApp,
+      [routerInjectables, httpInjectables, bind(LocationStrategy).toClass(HashLocationStrategy)]);
 }
