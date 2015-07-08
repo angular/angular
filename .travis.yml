@@ -65,3 +65,17 @@ notifications:
     on_start: false     # default: false
   slack:
     secure: EP4MzZ8JMyNQJ4S3cd5LEPWSMjC7ZRdzt3veelDiOeorJ6GwZfCDHncR+4BahDzQAuqyE/yNpZqaLbwRWloDi15qIUsm09vgl/1IyNky1Sqc6lEknhzIXpWSalo4/T9ZP8w870EoDvM/UO+LCV99R3wS8Nm9o99eLoWVb2HIUu0=
+
+deploy:
+  provider: gcs
+  access_key_id: GOOGIOQTDBEOPBUAWFZQ
+  secret_access_key:
+    secure: "iu/WI9WLc+FhvqTQsF8MKhLLsZ1kIz7fsA9+AyysxH5jMFTR6nPDgAjjPj9bnwrIHBJnqti7Qlm2HCZPi21C/ejjSvsPB4rLFCA3tIi93lo7jXcDFbi1HzpQIZUO1lBUbvcOHzu0hALTAfxC3odhYa/3hcyEX8xPxYH3gQlczME="
+  bucket: angular2-releases
+  skip_cleanup: true
+  local-dir: dist/dart/angular2
+  upload-dir: dart/$TRAVIS_COMMIT
+  on:
+    repo: alexeagle/angular
+    condition: $MODE=dart
+    condition: $DART_CHANNEL=stable
