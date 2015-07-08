@@ -48,10 +48,11 @@ class DbService {
 class InboxDetailCmp {
   id: string;
   subject: string;
-  email: string;
   content: string;
+  email: string;
   firstName: string;
   lastName: string;
+  date: string;
 
   constructor(db: DbService, params: RouteParams) {
     var id = params.get('id');
