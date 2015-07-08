@@ -70,12 +70,12 @@ deploy:
   provider: gcs
   access_key_id: GOOGIOQTDBEOPBUAWFZQ
   secret_access_key:
-    secure: "rsx0rvLAGWV47rmgJC2CJUmtFtj9TbbvGUGj8b8ykLuhu3LlMMgTpgxj7YNJ0j6HM3UZ9tubNuK0jqNW3eWul9AzNAz4zMvHpUmn852gIIOFKdYhCaB5PGL58QbqeP48B2VyDYqDWaQGH8ClfZYPrTb6XnhVTrZVHba5x9DqHwc="
+    secure: "iu/WI9WLc+FhvqTQsF8MKhLLsZ1kIz7fsA9+AyysxH5jMFTR6nPDgAjjPj9bnwrIHBJnqti7Qlm2HCZPi21C/ejjSvsPB4rLFCA3tIi93lo7jXcDFbi1HzpQIZUO1lBUbvcOHzu0hALTAfxC3odhYa/3hcyEX8xPxYH3gQlczME="
   bucket: angular2-releases
   skip_cleanup: true
   local-dir: dist/dart/angular2
   upload-dir: dart/$TRAVIS_COMMIT
   on:
-    repo: angular/angular
+    repo: alexeagle/angular
     condition: $MODE=dart
     condition: $DART_CHANNEL=stable
