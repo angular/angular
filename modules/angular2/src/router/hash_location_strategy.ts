@@ -23,7 +23,7 @@ export class HashLocationStrategy extends LocationStrategy {
   path(): string {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
-    return this._location.hash.substr(1);
+    return this._location.hash.substring(1);
   }
 
   pushState(state: any, title: string, url: string) {
