@@ -10,6 +10,8 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 
+import {Map, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+
 import {RouteRecognizer, RouteMatch} from 'angular2/src/router/route_recognizer';
 
 export function main() {
@@ -121,6 +123,79 @@ export function main() {
       recognizer.addConfig('app/user/:name', handler, 'user');
       expect(() => recognizer.generate('user', {})['url'])
           .toThrowError('Route generator for \'name\' was not included in parameters passed.');
+    });
+
+    describe('matrix params', () => {
+      it('should recognize matrix parameters within the URL path', () => {
+        var recognizer = new RouteRecognizer();
+        recognizer.addConfig('profile/:name', handler, 'user');
+
+        var solution = recognizer.recognize('/profile/matsko;comments=all')[0];
+        var params = solution.params();
+        expect(params['name']).toEqual('matsko');
+        expect(params['comments']).toEqual('all');
+      });
+
+      it('should recognize multiple matrix params and set parameters that contain no value to true',
+         () => {
+           var recognizer = new RouteRecognizer();
+           recognizer.addConfig('/profile/hello', handler, 'user');
+
+           var solution =
+               recognizer.recognize('/profile/hello;modal;showAll=true;hideAll=false')[0];
+           var params = solution.params();
+
+           expect(params['modal']).toEqual(true);
+           expect(params['showAll']).toEqual('true');
+           expect(params['hideAll']).toEqual('false');
+         });
+
+      it('should only consider the matrix parameters at the end of the path handler', () => {
+        var recognizer = new RouteRecognizer();
+        recognizer.addConfig('/profile/hi/:name', handler, 'user');
+
+        var solution = recognizer.recognize('/profile;a=1/hi;b=2;c=3/william;d=4')[0];
+        var params = solution.params();
+
+        expect(params).toEqual({'name': 'william', 'd': '4'});
+      });
+
+      it('should generate and populate the given static-based route with matrix params', () => {
+        var recognizer = new RouteRecognizer();
+        recognizer.addConfig('forum/featured', handler, 'forum-page');
+
+        var params = StringMapWrapper.create();
+        params['start'] = 10;
+        params['end'] = 100;
+
+        var result = recognizer.generate('forum-page', params);
+        expect(result['url']).toEqual('forum/featured;start=10;end=100');
+      });
+
+      it('should generate and populate the given dynamic-based route with matrix params', () => {
+        var recognizer = new RouteRecognizer();
+        recognizer.addConfig('forum/:topic', handler, 'forum-page');
+
+        var params = StringMapWrapper.create();
+        params['topic'] = 'crazy';
+        params['total-posts'] = 100;
+        params['moreDetail'] = null;
+
+        var result = recognizer.generate('forum-page', params);
+        expect(result['url']).toEqual('forum/crazy;total-posts=100;moreDetail');
+      });
+
+      it('should not apply any matrix params if a dynamic route segment takes up the slot when a path is generated',
+         () => {
+           var recognizer = new RouteRecognizer();
+           recognizer.addConfig('hello/:name', handler, 'profile-page');
+
+           var params = StringMapWrapper.create();
+           params['name'] = 'matsko';
+
+           var result = recognizer.generate('profile-page', params);
+           expect(result['url']).toEqual('hello/matsko');
+         });
     });
   });
 }

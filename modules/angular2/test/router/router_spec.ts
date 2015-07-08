@@ -115,6 +115,26 @@ export function main() {
       expect(router.generate(['/firstCmp', 'secondCmp'])).toEqual('/first/second');
       expect(router.generate(['/firstCmp/secondCmp'])).toEqual('/first/second');
     });
+
+    describe('matrix params', () => {
+      it('should apply inline matrix params for each router path within the generated URL', () => {
+        router.config({'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+
+        var path =
+            router.generate(['/firstCmp', {'key': 'value'}, 'secondCmp', {'project': 'angular'}]);
+        expect(path).toEqual('/first;key=value/second;project=angular');
+      });
+
+      it('should apply inline matrix params for each router path within the generated URL and also include named params',
+         () => {
+           router.config(
+               {'path': '/first/:token/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+
+           var path =
+               router.generate(['/firstCmp', {'token': 'min'}, 'secondCmp', {'author': 'max'}]);
+           expect(path).toEqual('/first/min/second;author=max');
+         });
+    });
   });
 }
 
