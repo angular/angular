@@ -20,7 +20,11 @@ export class HashLocationStrategy extends LocationStrategy {
 
   getBaseHref(): string { return ''; }
 
-  path(): string { return this._location.hash; }
+  path(): string {
+    // the hash value is always prefixed with a `#`
+    // and if it is empty then it will stay empty
+    return this._location.hash.substr(1);
+  }
 
   pushState(state: any, title: string, url: string) {
     this._history.pushState(state, title, '#' + url);
