@@ -18,10 +18,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   prevContexts: List<any>;
   directives: any = null;
   alreadyChecked: boolean = false;
+  private pipeRegistry: PipeRegistry = null;
 
   constructor(id: string, private changeControlStrategy: string, private dispatcher: any,
-              private pipeRegistry: PipeRegistry, private protos: List<ProtoRecord>,
-              private directiveRecords: List<any>) {
+              private protos: List<ProtoRecord>, private directiveRecords: List<any>) {
     super(id);
     this.values = ListWrapper.createFixedSize(protos.length + 1);
     this.pipes = ListWrapper.createFixedSize(protos.length + 1);
@@ -35,12 +35,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.changes, false);
   }
 
-  hydrate(context: any, locals: Locals, directives: any) {
+  hydrate(context: any, locals: Locals, directives: any, pipeRegistry: PipeRegistry): void {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.changeControlStrategy);
     this.values[0] = context;
     this.locals = locals;
     this.directives = directives;
     this.alreadyChecked = false;
+    this.pipeRegistry = pipeRegistry;
   }
 
   dehydrate() {
@@ -51,6 +52,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
     this.locals = null;
+    this.pipeRegistry = null;
   }
 
   _destroyPipes() {

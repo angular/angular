@@ -242,7 +242,7 @@ class TestNode extends TreeNode<TestNode> {
 
 export function main() {
   var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>new DummyView(1), null);
-  
+
   // An injector with more than 10 bindings will switch to the dynamic strategy
   var dynamicBindings = [];
 
@@ -562,7 +562,7 @@ export function main() {
 
       var extraBindings = context['bindings'];
       describe(`${context['strategy']} strategy`, () => {
-        
+
         describe("hydrate", () => {
           it("should instantiate directives that have no dependencies", () => {
             var bindings = ListWrapper.concat([SimpleDirective], extraBindings);
@@ -610,15 +610,15 @@ export function main() {
                             (val) => `${val}-injectable2`,
                             ['injectable1'])
                   ];
-            
+
             var inj = injector(ListWrapper.concat(
-                [DirectiveBinding.createFromType(SimpleDirective, 
+                [DirectiveBinding.createFromType(SimpleDirective,
                   new dirAnn.Directive({hostInjector: hostInjector}))],
                 extraBindings));
-                
+
             expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
           });
-          
+
           it("should instantiate viewInjector injectables that have dependencies", () => {
             var viewInjector = [
                     bind('injectable1')
@@ -628,15 +628,15 @@ export function main() {
                             (val) => `${val}-injectable2`,
                             ['injectable1'])
                   ];
-            
-            
+
+
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                  viewInjector: viewInjector}))], extraBindings), 
+                  viewInjector: viewInjector}))], extraBindings),
                 null, true);
             expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
           });
-          
+
           it("should instantiate components that depend on viewInjector bindings", () => {
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(NeedsService, new dirAnn.Component({
@@ -658,7 +658,7 @@ export function main() {
                      .toThrowError(containsRegexp(
                          `No provider for service! (${stringify(NeedsService) } -> service)`));
                });
-               
+
           it("should instantiate directives that depend on hostInjector bindings of other directives", () => {
             var shadowInj = hostShadowInjectors(
                 ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
@@ -668,7 +668,7 @@ export function main() {
             );
             expect(shadowInj.get(NeedsService).service).toEqual('hostService');
           });
-          
+
           it("should instantiate directives that depend on imperativley created injector bindings", () => {
             var imperativelyCreatedInjector = Injector.resolveAndCreate([
               bind("service").toValue('appService')
@@ -899,7 +899,7 @@ export function main() {
           });
 
           it('should inject ChangeDetectorRef', () => {
-            var cd = new DynamicChangeDetector(null, null, null, null, [], []);
+            var cd = new DynamicChangeDetector(null, null, null, [], []);
             var view = <any>new DummyView();
             var childView = new DummyView();
             childView.changeDetector = cd;

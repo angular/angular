@@ -141,12 +141,11 @@ export class AppViewManagerUtils {
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
 
     var injector = isPresent(bindings) ? Injector.fromResolvedBindings(bindings) : null;
-
     this._hydrateView(view, injector, elementInjector.getHost(), contextView.context,
                       contextView.locals);
   }
 
-  _hydrateView(view: viewModule.AppView, injector: Injector,
+  _hydrateView(view: viewModule.AppView, imperativelyCreatedInjector: Injector,
                hostElementInjector: eli.ElementInjector, context: Object, parentLocals: Locals) {
     view.context = context;
     view.locals.parent = parentLocals;
@@ -156,13 +155,24 @@ export class AppViewManagerUtils {
       var elementInjector = view.elementInjectors[i];
 
       if (isPresent(elementInjector)) {
-        elementInjector.hydrate(injector, hostElementInjector, view.preBuiltObjects[i]);
+        elementInjector.hydrate(imperativelyCreatedInjector, hostElementInjector,
+                                view.preBuiltObjects[i]);
         this._populateViewLocals(view, elementInjector);
         this._setUpEventEmitters(view, elementInjector, i);
         this._setUpHostActions(view, elementInjector, i);
       }
     }
-    view.changeDetector.hydrate(view.context, view.locals, view);
+    var pipeRegistry = this._getPipeRegistry(imperativelyCreatedInjector, hostElementInjector);
+    view.changeDetector.hydrate(view.context, view.locals, view, pipeRegistry);
+  }
+
+  _getPipeRegistry(imperativelyCreatedInjector: Injector,
+                   hostElementInjector: eli.ElementInjector) {
+    var pipeRegistryKey = eli.StaticKeys.instance().pipeRegistryKey;
+    if (isPresent(imperativelyCreatedInjector))
+      return imperativelyCreatedInjector.getOptional(pipeRegistryKey);
+    if (isPresent(hostElementInjector)) return hostElementInjector.getPipeRegistry();
+    return null;
   }
 
   _populateViewLocals(view: viewModule.AppView, elementInjector: eli.ElementInjector): void {

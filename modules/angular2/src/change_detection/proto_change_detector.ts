@@ -28,7 +28,6 @@ import {
 import {ChangeDetector, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
-import {PipeRegistry} from './pipes/pipe_registry';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
 
@@ -39,14 +38,13 @@ import {ProtoRecord, RecordType} from './proto_record';
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
   _records: List<ProtoRecord>;
 
-  constructor(private _pipeRegistry: PipeRegistry, private definition: ChangeDetectorDefinition) {
+  constructor(private definition: ChangeDetectorDefinition) {
     this._records = this._createRecords(definition);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
     return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
-                                     this._pipeRegistry, this._records,
-                                     this.definition.directiveRecords);
+                                     this._records, this.definition.directiveRecords);
   }
 
   _createRecords(definition: ChangeDetectorDefinition) {

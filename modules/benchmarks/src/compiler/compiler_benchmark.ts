@@ -39,9 +39,9 @@ export function main() {
   var shadowDomStrategy = new NativeShadowDomStrategy();
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
                                                  new ViewLoader(null, null, null));
-  var compiler = new Compiler(
-      reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver, renderCompiler,
-      new ProtoViewFactory(new DynamicChangeDetection(null)), new FakeAppRootUrl());
+  var compiler = new Compiler(reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver,
+                              renderCompiler, new ProtoViewFactory(new DynamicChangeDetection()),
+                              new FakeAppRootUrl());
 
   function measureWrapper(func, desc) {
     return function() {

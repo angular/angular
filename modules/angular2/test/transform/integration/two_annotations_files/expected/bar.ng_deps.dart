@@ -27,7 +27,7 @@ void initReflector(reflector) {
 }
 class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
-  final _gen.PipeRegistry _pipeRegistry;
+  _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
@@ -37,8 +37,8 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   dynamic _myNum0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
 
-  _MyComponent_ChangeDetector0(this._dispatcher, this._pipeRegistry,
-      this._protos, this._directiveRecords)
+  _MyComponent_ChangeDetector0(
+      this._dispatcher, this._protos, this._directiveRecords)
       : super("MyComponent_comp_0");
 
   void detectChangesInRecords(throwOnChange) {
@@ -100,12 +100,13 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _dispatcher.notifyOnAllChangesDone();
   }
 
-  void hydrate(MyComponent context, locals, directives) {
+  void hydrate(MyComponent context, locals, directives, pipeRegistry) {
     mode = 'ALWAYS_CHECK';
     _context = context;
     _locals = locals;
 
     _alreadyChecked = false;
+    _pipeRegistry = pipeRegistry;
   }
 
   void dehydrate() {
@@ -113,14 +114,14 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _myNum0 = _gen.ChangeDetectionUtil.uninitialized();
     _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
     _locals = null;
+    _pipeRegistry = null;
   }
 
   hydrated() => _context != null;
 
   static _gen.ProtoChangeDetector newProtoChangeDetector(
-      _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
+      _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new _MyComponent_ChangeDetector0(a, b, c, d), registry,
-        def);
+        (a, b, c) => new _MyComponent_ChangeDetector0(a, b, c), def);
   }
 }

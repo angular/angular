@@ -125,7 +125,7 @@ class _CodegenState {
     buf.write('''
       class $_changeDetectorTypeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
-        final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
+        $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
             $_DIRECTIVES_ACCESSOR;
@@ -141,7 +141,6 @@ class _CodegenState {
 
         $_changeDetectorTypeName(
             this.$_DISPATCHER_ACCESSOR,
-            this.$_PIPE_REGISTRY_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
             this.$_DIRECTIVES_ACCESSOR) : super(${JSON.encode(_changeDetectorDefId)});
 
@@ -155,7 +154,7 @@ class _CodegenState {
             this.throwError($_CURRENT_PROTO, e, s);
           }
         }
-  
+
         void __detectChangesInRecords(throwOnChange) {
           ${_genLocalDefinitions()}
           ${_genChangeDefinitons()}
@@ -168,18 +167,19 @@ class _CodegenState {
 
           $_ALREADY_CHECKED_ACCESSOR = true;
         }
-        
+
         void callOnAllChangesDone() {
           ${_getCallOnAllChangesDoneBody()}
         }
 
-        void hydrate($_contextTypeName context, locals, directives) {
+        void hydrate($_contextTypeName context, locals, directives, pipeRegistry) {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
           $_CONTEXT_ACCESSOR = context;
           $_LOCALS_ACCESSOR = locals;
           ${_genHydrateDirectives()}
           ${_genHydrateDetectors()}
           $_ALREADY_CHECKED_ACCESSOR = false;
+          $_PIPE_REGISTRY_ACCESSOR = pipeRegistry;
         }
 
         void dehydrate() {
@@ -190,17 +190,17 @@ class _CodegenState {
               : '$f = $_UTIL.uninitialized();';
           }).join('')}
           $_LOCALS_ACCESSOR = null;
+          $_PIPE_REGISTRY_ACCESSOR = null;
         }
 
         hydrated() => $_CONTEXT_ACCESSOR != null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
-            $_GEN_PREFIX.PipeRegistry registry,
             $_GEN_PREFIX.ChangeDetectorDefinition def) {
           return new $_GEN_PREFIX.PregenProtoChangeDetector(
-              (a, b, c, d) => new $_changeDetectorTypeName(a, b, c, d),
-              registry, def);
+              (a, b, c) => new $_changeDetectorTypeName(a, b, c),
+              def);
         }
       }
     ''');

@@ -3,7 +3,6 @@ library angular2.src.change_detection.pregen_proto_change_detector;
 import 'package:angular2/src/change_detection/coalesce.dart';
 import 'package:angular2/src/change_detection/directive_record.dart';
 import 'package:angular2/src/change_detection/interfaces.dart';
-import 'package:angular2/src/change_detection/pipes/pipe_registry.dart';
 import 'package:angular2/src/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/change_detection/proto_record.dart';
 
@@ -25,10 +24,10 @@ export 'package:angular2/src/change_detection/change_detection_util.dart'
 export 'package:angular2/src/facade/lang.dart' show looseIdentical;
 
 typedef ProtoChangeDetector PregenProtoChangeDetectorFactory(
-    PipeRegistry registry, ChangeDetectorDefinition definition);
+    ChangeDetectorDefinition definition);
 
 typedef ChangeDetector InstantiateMethod(dynamic dispatcher,
-    PipeRegistry registry, List<ProtoRecord> protoRecords,
+    List<ProtoRecord> protoRecords,
     List<DirectiveRecord> directiveRecords);
 
 /// Implementation of [ProtoChangeDetector] for use by pre-generated change
@@ -44,29 +43,28 @@ class PregenProtoChangeDetector extends ProtoChangeDetector {
   final InstantiateMethod _instantiateMethod;
 
   // [ChangeDetector] dependencies.
-  final PipeRegistry _pipeRegistry;
   final List<ProtoRecord> _protoRecords;
   final List<DirectiveRecord> _directiveRecords;
 
   /// Internal ctor.
   PregenProtoChangeDetector._(this.id, this._instantiateMethod,
-      this._pipeRegistry, this._protoRecords, this._directiveRecords);
+      this._protoRecords, this._directiveRecords);
 
   static bool isSupported() => true;
 
   factory PregenProtoChangeDetector(InstantiateMethod instantiateMethod,
-      PipeRegistry registry, ChangeDetectorDefinition def) {
+      ChangeDetectorDefinition def) {
     // TODO(kegluneq): Pre-generate these (#2067).
     var recordBuilder = new ProtoRecordBuilder();
     def.bindingRecords.forEach((b) {
       recordBuilder.add(b, def.variableNames);
     });
     var protoRecords = coalesce(recordBuilder.records);
-    return new PregenProtoChangeDetector._(def.id, instantiateMethod, registry,
+    return new PregenProtoChangeDetector._(def.id, instantiateMethod,
         protoRecords, def.directiveRecords);
   }
 
   @override
   instantiate(dynamic dispatcher) => _instantiateMethod(
-      dispatcher, _pipeRegistry, _protoRecords, _directiveRecords);
+      dispatcher, _protoRecords, _directiveRecords);
 }

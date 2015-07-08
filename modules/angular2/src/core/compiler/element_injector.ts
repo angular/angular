@@ -54,27 +54,29 @@ import {
   onAllChangesDone
 } from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
+import {ChangeDetector, ChangeDetectorRef, PipeRegistry} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DirectiveMetadata} from 'angular2/src/render/api';
 
 var _staticKeys;
 
-class StaticKeys {
+export class StaticKeys {
   viewManagerId: number;
   protoViewId: number;
   viewContainerId: number;
   changeDetectorRefId: number;
   elementRefId: number;
+  pipeRegistryKey: Key;
 
   constructor() {
-    // TODO: vsavkin Key.annotate(Key.get(AppView), 'static')
     this.viewManagerId = Key.get(avmModule.AppViewManager).id;
     this.protoViewId = Key.get(ProtoViewRef).id;
     this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
+    // not an id because the public API of injector works only with keys and tokens
+    this.pipeRegistryKey = Key.get(PipeRegistry);
   }
 
   static instance(): StaticKeys {
@@ -529,14 +531,15 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       //   |boundary
       //   |
       // this._injector
-      var parent = this._getParentInjector(imperativelyCreatedInjector, host);
+      var parent = this._closestBoundaryInjector(imperativelyCreatedInjector, host);
       this._reattachInjector(this._injector, parent, true);
     }
   }
 
-  private _getParentInjector(injector: Injector, host: ElementInjector): Injector {
-    if (isPresent(injector)) {
-      return injector;
+  private _closestBoundaryInjector(imperativelyCreatedInjector: Injector,
+                                   host: ElementInjector): Injector {
+    if (isPresent(imperativelyCreatedInjector)) {
+      return imperativelyCreatedInjector;
     } else if (isPresent(host)) {
       return host._injector;
     } else {
@@ -547,6 +550,11 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   private _reattachInjector(injector: Injector, parentInjector: Injector, isBoundary: boolean) {
     injector.internalStrategy.attach(parentInjector, isBoundary);
     injector.internalStrategy.hydrate();
+  }
+
+  getPipeRegistry(): PipeRegistry {
+    var pipeRegistryKey = StaticKeys.instance().pipeRegistryKey;
+    return this._injector.getOptional(pipeRegistryKey);
   }
 
   hasVariableBinding(name: string): boolean {

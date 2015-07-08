@@ -219,24 +219,15 @@ export function main() {
          }));
 
       describe('pipes', () => {
-        beforeEachBindings(() => {
-          return [
-            bind(ChangeDetection)
-                .toFactory(() => new DynamicChangeDetection(
-                               new PipeRegistry({"double": [new DoublePipeFactory()]})),
-                           [])
-          ];
-        });
-
         it("should support pipes in bindings",
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyComp, new viewAnn.View({
+                    tcb.overrideView(MyCompWithPipes, new viewAnn.View({
                          template: '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>',
                          directives: [MyDir]
                        }))
 
-                        .createAsync(MyComp)
+                        .createAsync(MyCompWithPipes)
                         .then((rootTC) => {
                           rootTC.componentInstance.ctxProp = 'a';
                           rootTC.detectChanges();
@@ -1410,6 +1401,21 @@ class PushCmpWithRef {
   propagate() { this.ref.requestCheck(); }
 }
 
+@Injectable()
+class PipeRegistryWithDouble extends PipeRegistry {
+  constructor() { super({"double": [new DoublePipeFactory()]}); }
+}
+
+@Component({
+  selector: 'my-comp-with-pipes',
+  viewInjector: [new Binding(PipeRegistry, {toClass: PipeRegistryWithDouble})]
+})
+@View({directives: []})
+@Injectable()
+class MyCompWithPipes {
+  ctxProp: string = "initial value";
+}
+
 @Component({selector: 'my-comp'})
 @View({directives: []})
 @Injectable()
@@ -1422,13 +1428,6 @@ class MyComp {
     this.ctxNumProp = 0;
     this.ctxBoolProp = false;
   }
-}
-
-@Component({selector: 'component-with-pipes', properties: ["prop"]})
-@View({template: ''})
-@Injectable()
-class ComponentWithPipes {
-  prop: string;
 }
 
 @Component({selector: 'child-cmp', properties: ['dirProp'], viewInjector: [MyService]})

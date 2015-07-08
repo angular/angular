@@ -66,20 +66,19 @@ const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
  */
 export function main() {
   ListWrapper.forEach(['dynamic', 'JIT', 'Pregen'], (cdType) => {
-
     if (cdType == "JIT" && IS_DARTIUM) return;
     if (cdType == "Pregen" && !IS_DARTIUM) return;
 
     describe(`${cdType} Change Detector`, () => {
 
-      function _getProtoChangeDetector(def: ChangeDetectorDefinition, registry = null) {
+      function _getProtoChangeDetector(def: ChangeDetectorDefinition) {
         switch (cdType) {
           case 'dynamic':
-            return new DynamicProtoChangeDetector(registry, def);
+            return new DynamicProtoChangeDetector(def);
           case 'JIT':
-            return new JitProtoChangeDetector(registry, def);
+            return new JitProtoChangeDetector(def);
           case 'Pregen':
-            return getFactoryById(def.id)(registry, def);
+            return getFactoryById(def.id)(def);
           default:
             return null;
         }
@@ -87,9 +86,7 @@ export function main() {
 
       function _createWithoutHydrate(expression: string) {
         var dispatcher = new TestDispatcher();
-        var registry = null;
-        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef, registry)
-                     .instantiate(dispatcher);
+        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef).instantiate(dispatcher);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }
 
@@ -98,9 +95,9 @@ export function main() {
                                      registry = null) {
         var dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
-        var protoCd = _getProtoChangeDetector(testDef.cdDef, registry);
+        var protoCd = _getProtoChangeDetector(testDef.cdDef);
         var cd = protoCd.instantiate(dispatcher);
-        cd.hydrate(context, testDef.locals, null);
+        cd.hydrate(context, testDef.locals, null, registry);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }
 
@@ -298,7 +295,7 @@ export function main() {
 
       it('should support interpolation', () => {
         var val = _createChangeDetector('interpolation', new TestData('value'));
-        val.changeDetector.hydrate(new TestData('value'), null, null);
+        val.changeDetector.hydrate(new TestData('value'), null, null, null);
 
         val.changeDetector.detectChanges();
 
@@ -361,8 +358,8 @@ export function main() {
 
           it('should happen directly, without invoking the dispatcher', () => {
             var val = _createWithoutHydrate('directNoDispatcher');
-            val.changeDetector.hydrate(_DEFAULT_CONTEXT, null,
-                                       new FakeDirectives([directive1], []));
+            val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []),
+                                       null);
             val.changeDetector.detectChanges();
             expect(val.dispatcher.loggedValues).toEqual([]);
             expect(directive1.a).toEqual(42);
@@ -371,7 +368,8 @@ export function main() {
           describe('onChange', () => {
             it('should notify the directive when a group of records changes', () => {
               var cd = _createWithoutHydrate('groupChanges').changeDetector;
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
+                         null);
               cd.detectChanges();
               expect(directive1.changes).toEqual({'a': 1, 'b': 2});
               expect(directive2.changes).toEqual({'a': 3});
@@ -382,7 +380,7 @@ export function main() {
             it('should notify the directive when it is checked', () => {
               var cd = _createWithoutHydrate('directiveOnCheck').changeDetector;
 
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
               cd.detectChanges();
 
               expect(directive1.onCheckCalled).toBe(true);
@@ -395,7 +393,7 @@ export function main() {
             it('should not call onCheck in detectNoChanges', () => {
               var cd = _createWithoutHydrate('directiveOnCheck').changeDetector;
 
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
               cd.checkNoChanges();
 
@@ -407,7 +405,7 @@ export function main() {
             it('should notify the directive after it has been checked the first time', () => {
               var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
 
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
               cd.detectChanges();
 
@@ -423,7 +421,7 @@ export function main() {
             it('should not call onInit in detectNoChanges', () => {
               var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
 
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
               cd.checkNoChanges();
 
@@ -434,7 +432,8 @@ export function main() {
           describe('onAllChangesDone', () => {
             it('should be called after processing all the children', () => {
               var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
+                         null);
 
               cd.detectChanges();
 
@@ -462,7 +461,7 @@ export function main() {
             it('should not be called when onAllChangesDone is false', () => {
               var cd = _createWithoutHydrate('noCallbacks').changeDetector;
 
-              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []));
+              cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
               cd.detectChanges();
 
@@ -478,7 +477,7 @@ export function main() {
                  td1 = new TestDirective(() => onChangesDoneCalls.push(td1));
                  var td2;
                  td2 = new TestDirective(() => onChangesDoneCalls.push(td2));
-                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([td1, td2], []));
+                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([td1, td2], []), null);
 
                  cd.detectChanges();
 
@@ -499,8 +498,10 @@ export function main() {
               parentDirective =
                   new TestDirective(() => { orderOfOperations.push(parentDirective); });
 
-              parent.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([parentDirective], []));
-              child.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directiveInShadowDom], []));
+              parent.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([parentDirective], []),
+                             null);
+              child.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directiveInShadowDom], []),
+                            null);
 
               parent.detectChanges();
               expect(orderOfOperations).toEqual([parentDirective, directiveInShadowDom]);
@@ -515,7 +516,8 @@ export function main() {
           directive.a = 'aaa';
 
           var val = _createWithoutHydrate('readingDirectives');
-          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive], []));
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive], []),
+                                     null);
 
           val.changeDetector.detectChanges();
 
@@ -625,13 +627,13 @@ export function main() {
           var cd = _createWithoutHydrate('emptyUsingDefaultStrategy').changeDetector;
           expect(cd.mode).toEqual(null);
 
-          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
           expect(cd.mode).toEqual(CHECK_ALWAYS);
         });
 
         it('should set the mode to CHECK_ONCE when the push change detection is used', () => {
           var cd = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
-          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
 
           expect(cd.mode).toEqual(CHECK_ONCE);
         });
@@ -639,7 +641,7 @@ export function main() {
         it('should not check a detached change detector', () => {
           var val = _createChangeDetector('a', new TestData('value'));
 
-          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null);
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null, null);
           val.changeDetector.mode = DETACHED;
           val.changeDetector.detectChanges();
 
@@ -649,7 +651,7 @@ export function main() {
         it('should not check a checked change detector', () => {
           var val = _createChangeDetector('a', new TestData('value'));
 
-          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null);
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null, null);
           val.changeDetector.mode = CHECKED;
           val.changeDetector.detectChanges();
 
@@ -658,7 +660,7 @@ export function main() {
 
         it('should change CHECK_ONCE to CHECKED', () => {
           var cd = _createChangeDetector('10').changeDetector;
-          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
           cd.mode = CHECK_ONCE;
 
           cd.detectChanges();
@@ -668,7 +670,7 @@ export function main() {
 
         it('should not change the CHECK_ALWAYS', () => {
           var cd = _createChangeDetector('10').changeDetector;
-          cd.hydrate(_DEFAULT_CONTEXT, null, null);
+          cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
           cd.mode = CHECK_ALWAYS;
 
           cd.detectChanges();
@@ -682,7 +684,7 @@ export function main() {
 
           beforeEach(() => {
             checkedDetector = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
-            checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null);
+            checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null, null);
             checkedDetector.mode = CHECKED;
 
             var targetDirective = new TestData(null);
@@ -691,7 +693,7 @@ export function main() {
 
           it('should set the mode to CHECK_ONCE when a binding is updated', () => {
             var cd = _createWithoutHydrate('onPushRecordsUsingDefaultStrategy').changeDetector;
-            cd.hydrate(_DEFAULT_CONTEXT, null, directives);
+            cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
 
             expect(checkedDetector.mode).toEqual(CHECKED);
 
@@ -735,13 +737,13 @@ export function main() {
         it('should be able to rehydrate a change detector', () => {
           var cd = _createChangeDetector('name').changeDetector;
 
-          cd.hydrate('some context', null, null);
+          cd.hydrate('some context', null, null, null);
           expect(cd.hydrated()).toBe(true);
 
           cd.dehydrate();
           expect(cd.hydrated()).toBe(false);
 
-          cd.hydrate('other context', null, null);
+          cd.hydrate('other context', null, null, null);
           expect(cd.hydrated()).toBe(true);
         });
 

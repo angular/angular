@@ -52,7 +52,7 @@ export class AbstractChangeDetector implements ChangeDetector {
 
   detectChangesInRecords(throwOnChange: boolean): void {}
 
-  hydrate(context: any, locals: Locals, directives: any): void {}
+  hydrate(context: any, locals: Locals, directives: any, pipes: any): void {}
 
   dehydrate(): void {}
 
