@@ -40,8 +40,7 @@ import {
   Directive,
   onDestroy
 } from 'angular2/annotations';
-import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self} from 'angular2/di';
-import * as diAnn from 'angular2/src/di/annotations_impl';
+import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self, InjectMetadata, ParentMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -595,7 +594,7 @@ export function main() {
                        bind('injectable2')
                            .toFactory(
                                (val) => `${val}-injectable2`,
-                               [[new diAnn.Inject('injectable1'), new diAnn.Parent()]])
+                               [[new InjectMetadata('injectable1'), new ParentMetadata()]])
                      ]
                    }))]);
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');

@@ -4,15 +4,16 @@
 export * from 'angular2/annotations';
 export * from 'angular2/core';
 
-// TO BE CLEANED UP.
 export {
   DehydratedException,
   ExpressionChangedAfterItHasBeenChecked,
   ChangeDetectionError,
-  ChangeDetection,
+
   ON_PUSH,
   DEFAULT,
+
   ChangeDetectorRef,
+
   PipeRegistry,
   WrappedValue,
   Pipe,
@@ -20,52 +21,14 @@ export {
   NullPipe,
   NullPipeFactory,
   defaultPipes,
-  DynamicChangeDetection,
-  JitChangeDetection,
-  PreGeneratedChangeDetection,
-  preGeneratedProtoDetectors,
   defaultPipeRegistry,
-  DirectiveIndex,
-  BindingRecord,
-  ProtoChangeDetector,
-  ChangeDispatcher,
-  ChangeDetector,
-  Locals,
-  ChangeDetectorDefinition,
   BasePipe,
-  DirectiveRecord
+
+  Locals
 } from './change_detection';
 
-export {
-  Inject,
-  Optional,
-  Injectable,
-  forwardRef,
-  resolveForwardRef,
-  ForwardRefFn,
-  Injector,
-  ProtoInjector,
-  Binding,
-  bind,
-  Key,
-  NoBindingError,
-  AbstractBindingError,
-  AsyncBindingError,
-  CyclicDependencyError,
-  InstantiationError,
-  InvalidBindingError,
-  NoAnnotationError,
-  OpaqueToken,
-  ResolvedBinding,
-  BindingBuilder,
-  Dependency,
-  Visibility,
-  Self,
-  Parent,
-  Ancestor,
-  Unbounded,
-  DependencyProvider
-} from './di';
+export * from './di';
+export * from './forms';
 
 export * from './directives';
 
@@ -95,5 +58,11 @@ export {
 } from './forms';
 
 export * from './http';
-export * from 'angular2/src/render/api';
+export {
+  EventDispatcher,
+  Renderer,
+  RenderElementRef,
+  RenderViewRef,
+  RenderProtoViewRef
+} from 'angular2/src/render/api';
 export {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';

@@ -12,13 +12,13 @@ import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
 import {
-  Inject,
-  Injectable,
-  Visibility,
-  Optional,
+  InjectMetadata,
+  InjectableMetadata,
+  VisibilityMetadata,
+  OptionalMetadata,
   unbounded,
-  DependencyAnnotation
-} from './annotations_impl';
+  DependencyMetadata
+} from './metadata';
 import {NoAnnotationError} from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
@@ -26,7 +26,7 @@ import {resolveForwardRef} from './forward_ref';
  * @private
  */
 export class Dependency {
-  constructor(public key: Key, public optional: boolean, public visibility: Visibility,
+  constructor(public key: Key, public optional: boolean, public visibility: VisibilityMetadata,
               public properties: List<any>) {}
 
   static fromKey(key: Key): Dependency {
@@ -421,16 +421,16 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
       token = paramAnnotation;
       defaultVisibility = _defaulVisiblity(token);
 
-    } else if (paramAnnotation instanceof Inject) {
+    } else if (paramAnnotation instanceof InjectMetadata) {
       token = paramAnnotation.token;
 
-    } else if (paramAnnotation instanceof Optional) {
+    } else if (paramAnnotation instanceof OptionalMetadata) {
       optional = true;
 
-    } else if (paramAnnotation instanceof Visibility) {
+    } else if (paramAnnotation instanceof VisibilityMetadata) {
       visibility = paramAnnotation;
 
-    } else if (paramAnnotation instanceof DependencyAnnotation) {
+    } else if (paramAnnotation instanceof DependencyMetadata) {
       if (isPresent(paramAnnotation.token)) {
         token = paramAnnotation.token;
       }
@@ -454,7 +454,8 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
 function _defaulVisiblity(typeOrFunc) {
   try {
     if (!(typeOrFunc instanceof Type)) return unbounded;
-    var f = ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof Injectable);
+    var f =
+        ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof InjectableMetadata);
     return f.length === 0 ? unbounded : f[0].visibility;
   } catch (e) {
     return unbounded;

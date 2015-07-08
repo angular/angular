@@ -1,6 +1,6 @@
 import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-import {Injectable, self} from 'angular2/src/di/annotations_impl';
+import {InjectableMetadata, self} from 'angular2/src/di/metadata';
 import {DEFAULT} from 'angular2/change_detection';
 
 /**
@@ -407,7 +407,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * @exportedAs angular2/annotations
  */
 @CONST()
-export class Directive extends Injectable {
+export class Directive extends InjectableMetadata {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
