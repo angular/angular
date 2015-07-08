@@ -15,8 +15,8 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
 /**
  * A reference to an Angular View.
  *
- * A View is a fundemental building block of Application UI. A View is the smallest set of
- * elements which are created and destroyed together. A View can chane properties on the elements
+ * A View is a fundamental building block of Application UI. A View is the smallest set of
+ * elements which are created and destroyed together. A View can change properties on the elements
  * within the view, but it can not change the structure of those elements.
  *
  * To change structure of the elements, the Views can contain zero or more {@link ViewContainerRef}s
@@ -48,9 +48,9 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
  *   <li>{{item}}</li>
  * ```
  *
- * Notice that the original template is broken down into two separet {@link ProtoViewRef}s.
+ * Notice that the original template is broken down into two separate {@link ProtoViewRef}s.
  *
- * The outter/inner {@link ProtoViewRef}s are then assambled into views like so:
+ * The outter/inner {@link ProtoViewRef}s are then assembled into views like so:
  *
  * ```
  * <!-- ViewRef: outter-0 -->
@@ -82,7 +82,7 @@ export class ViewRef {
 }
 
 /**
- * A reference to an an Angular ProtoView.
+ * A reference to an Angular ProtoView.
  *
  * A ProtoView is a reference to a template for easy creation of views.
  * (See {@link AppViewManager#createViewInContainer} and {@link AppViewManager#createRootHostView}).
@@ -115,7 +115,7 @@ export class ViewRef {
  *   <li>{{item}}</li>
  * ```
  *
- * Notice that the original template is broken down into two separet {@link ProtoViewRef}s.
+ * Notice that the original template is broken down into two separate {@link ProtoViewRef}s.
  *
  * @exportedAs angular2/view
  */
