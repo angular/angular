@@ -226,6 +226,27 @@ export function main() {
                  async.done();
                });
          }));
+
+
+      it('should remove active classes when switching from string to null',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = `<div [class]="strExpr"></div>`;
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.componentViewChildren[0].nativeElement.className)
+                     .toEqual('ng-binding foo');
+
+                 rootTC.componentInstance.strExpr = null;
+                 rootTC.detectChanges();
+                 expect(rootTC.componentViewChildren[0].nativeElement.className)
+                     .toEqual('ng-binding');
+
+                 async.done();
+               });
+         }));
     });
 
     it('should remove active classes when expression evaluates to null',
