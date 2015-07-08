@@ -43,7 +43,8 @@ import {
   Inject,
   Parent,
   Ancestor,
-  Unbounded
+  Unbounded,
+  UnboundedMetadata
 } from 'angular2/di';
 import {
   PipeFactory,
@@ -58,7 +59,6 @@ import {
 
 import {Directive, Component, View, Attribute, Query} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
-import * as visAnn from 'angular2/src/di/annotations_impl';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
@@ -1779,7 +1779,7 @@ function createParentBus(peb) {
   selector: 'parent-providing-event-bus',
   hostInjector: [
     new Binding(EventBus,
-                {toFactory: createParentBus, deps: [[EventBus, new visAnn.Unbounded()]]})
+                {toFactory: createParentBus, deps: [[EventBus, new UnboundedMetadata()]]})
   ]
 })
 @View({

@@ -14,7 +14,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {Visibility, unbounded} from './annotations_impl';
+import {VisibilityMetadata, unbounded} from './metadata';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -713,7 +713,7 @@ export class Injector {
     }
   }
 
-  private _getByKey(key: Key, depVisibility: Visibility, optional: boolean,
+  private _getByKey(key: Key, depVisibility: VisibilityMetadata, optional: boolean,
                     bindingVisibility: number): any {
     if (key.token === Injector) {
       return this;

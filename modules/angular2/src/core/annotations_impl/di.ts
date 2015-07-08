@@ -1,5 +1,5 @@
 import {CONST, Type, stringify, isPresent, StringWrapper, isString} from 'angular2/src/facade/lang';
-import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
+import {DependencyMetadata} from 'angular2/src/di/metadata';
 import {resolveForwardRef} from 'angular2/di';
 
 /**
@@ -31,7 +31,7 @@ import {resolveForwardRef} from 'angular2/di';
  * @exportedAs angular2/annotations
  */
 @CONST()
-export class Attribute extends DependencyAnnotation {
+export class Attribute extends DependencyMetadata {
   constructor(public attributeName: string) { super(); }
 
   get token() {
@@ -53,7 +53,7 @@ export class Attribute extends DependencyAnnotation {
  * @exportedAs angular2/annotations
  */
 @CONST()
-export class Query extends DependencyAnnotation {
+export class Query extends DependencyMetadata {
   descendants: boolean;
   constructor(private _selector: Type | string,
               {descendants = false}: {descendants?: boolean} = {}) {

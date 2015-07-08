@@ -43,8 +43,8 @@ void allTests() {
     'angular2|lib/src/reflection/reflection_capabilities.dart':
         '../common/reflection_capabilities.dart',
     'angular2|lib/di.dart': '../../../lib/di.dart',
-    'angular2|lib/src/di/annotations_impl.dart':
-        '../../../lib/src/di/annotations_impl.dart',
+    'angular2|lib/src/di/decorators.dart':
+        '../../../lib/src/di/decorators.dart',
   };
 
   var tests = [

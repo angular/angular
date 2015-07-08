@@ -19,8 +19,8 @@ export class AppViewManager {
   /**
    * @private
    */
-  constructor(public _viewPool: AppViewPool, public _viewListener: AppViewListener,
-              public _utils: AppViewManagerUtils, public _renderer: Renderer) {}
+  constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
+              private _utils: AppViewManagerUtils, private _renderer: Renderer) {}
 
   /**
    * Returns associated Component {@link ViewRef} from {@link ElementRef}.

@@ -17,9 +17,7 @@ module.exports = function createTypeDefinitionFile(log) {
       {
         id: 'angular2/angular2',
         modules: {
-          // The shape of the public API is determined by what is reexported into
-          // angular2/angular2, with hacks layered into angular2.api.ts
-          'angular2/angular2': 'angular2/angular2.api',
+          'angular2/angular2': 'angular2/angular2',
         }
       },
       {

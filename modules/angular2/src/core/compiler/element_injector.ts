@@ -26,8 +26,7 @@ import {
   CyclicDependencyError,
   resolveForwardRef,
   resolveBindings,
-  Visibility,
-  VisibilityAnnotation,
+  VisibilityMetadata,
   DependencyProvider,
   self
 } from 'angular2/di';
