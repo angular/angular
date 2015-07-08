@@ -5,7 +5,7 @@ import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/render/api
 /**
  * Reference to the element.
  *
- * Represents an opeque refference to the underlying element. The element is a DOM ELement in
+ * Represents an opaque reference to the underlying element. The element is a DOM ELement in
  * a Browser, but may represent other types on other rendering platforms. In the browser the
  * `ElementRef` can be sent to the web-worker. Web Workers can not have references to the
  * DOM Elements.
