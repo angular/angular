@@ -16,6 +16,7 @@ import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
 import {bind, Injector} from 'angular2/di';
 import {Request} from 'angular2/src/http/static_request';
+import {Response} from 'angular2/src/http/static_response';
 import {Headers} from 'angular2/src/http/headers';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
@@ -28,6 +29,7 @@ var openSpy;
 var setRequestHeaderSpy;
 var addEventListenerSpy;
 var existingXHRs = [];
+var unused: Response;
 
 class MockBrowserXHR extends BrowserXhr {
   abort: any;
@@ -86,7 +88,7 @@ export function main() {
          inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({type: ResponseTypes.Error}));
-           ObservableWrapper.subscribe(connection.response, res => {
+           ObservableWrapper.subscribe<Response>(connection.response, res => {
              expect(res.type).toBe(ResponseTypes.Error);
              async.done();
            });

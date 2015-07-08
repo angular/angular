@@ -22,14 +22,15 @@ export class TextInterpolationParser implements CompileStep {
     for (var i = 0; i < childNodes.length; i++) {
       var node = childNodes[i];
       if (DOM.isTextNode(node)) {
-        var text = DOM.nodeValue(node);
+        var textNode = <Text>node;
+        var text = DOM.nodeValue(textNode);
         var expr = this._parser.parseInterpolation(text, current.elementDescription);
         if (isPresent(expr)) {
-          DOM.setText(node, ' ');
+          DOM.setText(textNode, ' ');
           if (current.element === current.inheritedProtoView.rootElement) {
-            current.inheritedProtoView.bindRootText(node, expr);
+            current.inheritedProtoView.bindRootText(textNode, expr);
           } else {
-            current.bindElement().bindText(node, expr);
+            current.bindElement().bindText(textNode, expr);
           }
         }
       }

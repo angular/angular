@@ -479,7 +479,7 @@ class _ParseAST {
     return new LiteralMap(keys, values);
   }
 
-  parseAccessMemberOrMethodCall(receiver, isSafe: boolean = false): AST {
+  parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     let id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter($LPAREN)) {

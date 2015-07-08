@@ -232,25 +232,27 @@ var someDirectiveWithProps = DirectiveMetadata.create({
 
 var someDirectiveWithHostProperties = DirectiveMetadata.create({
   selector: '[some-decor-with-host-props]',
-  host: MapWrapper.createFromStringMap({'[hostProp]': 'dirProp'})
+  host: MapWrapper.createFromStringMap<string>({'[hostProp]': 'dirProp'})
 });
 
 var someDirectiveWithInvalidHostProperties = DirectiveMetadata.create({
   selector: '[some-decor-with-invalid-host-props]',
-  host: MapWrapper.createFromStringMap({'[hostProp]': 'dirProp + dirProp2'})
+  host: MapWrapper.createFromStringMap<string>({'[hostProp]': 'dirProp + dirProp2'})
 });
 
 var someDirectiveWithHostAttributes = DirectiveMetadata.create({
   selector: '[some-decor-with-host-attrs]',
-  host: MapWrapper.createFromStringMap({'attr_name': 'attr_val', 'class': 'foo bar'})
+  host: MapWrapper.createFromStringMap<string>({'attr_name': 'attr_val', 'class': 'foo bar'})
 });
 
-var someDirectiveWithEvents = DirectiveMetadata.create(
-    {selector: '[some-decor-events]', host: MapWrapper.createFromStringMap({'(click)': 'doIt()'})});
+var someDirectiveWithEvents = DirectiveMetadata.create({
+  selector: '[some-decor-events]',
+  host: MapWrapper.createFromStringMap<string>({'(click)': 'doIt()'})
+});
 
 var someDirectiveWithGlobalEvents = DirectiveMetadata.create({
   selector: '[some-decor-globalevents]',
-  host: MapWrapper.createFromStringMap({'(window:resize)': 'doItGlobal()'})
+  host: MapWrapper.createFromStringMap<string>({'(window:resize)': 'doItGlobal()'})
 });
 
 var componentWithNonElementSelector = DirectiveMetadata.create({

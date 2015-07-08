@@ -109,10 +109,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return result;
   }
 
-  parameters(typeOfFunc): List<List<any>> {
+  parameters(typeOfFunc: Type): List<List<any>> {
     // Prefer the direct API.
-    if (isPresent(typeOfFunc.parameters)) {
-      return typeOfFunc.parameters;
+    if (isPresent((<any>typeOfFunc).parameters)) {
+      return (<any>typeOfFunc).parameters;
     }
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
       var paramAnnotations = this._reflect.getMetadata('parameters', typeOfFunc);
@@ -121,13 +121,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
       }
     }
-    return ListWrapper.createFixedSize(typeOfFunc.length);
+    return ListWrapper.createFixedSize((<any>typeOfFunc).length);
   }
 
-  annotations(typeOfFunc): List<any> {
+  annotations(typeOfFunc: Type): List<any> {
     // Prefer the direct API.
-    if (isPresent(typeOfFunc.annotations)) {
-      var annotations = typeOfFunc.annotations;
+    if (isPresent((<any>typeOfFunc).annotations)) {
+      var annotations = (<any>typeOfFunc).annotations;
       if (isFunction(annotations) && annotations.annotations) {
         annotations = annotations.annotations;
       }
@@ -140,7 +140,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return [];
   }
 
-  interfaces(type): List<any> { throw new BaseException("JavaScript does not support interfaces"); }
+  interfaces(type: Type): List<any> {
+    throw new BaseException("JavaScript does not support interfaces");
+  }
 
   getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
 

@@ -38,7 +38,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     cd.valueAccessor = this;
   }
 
-  writeValue(value) {
+  writeValue(value: any) {
     // both this.value and setProperty are required at the moment
     // remove when a proper imperative API is provided
     var normalizedValue = isBlank(value) ? '' : value;
@@ -60,7 +60,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     return isPresent(this.cd.control) ? !this.cd.control.valid : false;
   }
 
-  registerOnChange(fn): void { this.onChange = fn; }
+  registerOnChange(fn: (_) => void): void { this.onChange = fn; }
 
-  registerOnTouched(fn): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

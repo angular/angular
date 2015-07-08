@@ -83,7 +83,7 @@ export class DatePipe extends BasePipe implements PipeFactory {
   };
 
 
-  transform(value, args: List<any>): string {
+  transform(value: any, args: List<any>): string {
     var pattern: string = isPresent(args) && args.length > 0 ? args[0] : 'mediumDate';
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
@@ -94,7 +94,7 @@ export class DatePipe extends BasePipe implements PipeFactory {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }

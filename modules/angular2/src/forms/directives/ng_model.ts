@@ -49,7 +49,7 @@ export class NgModel extends NgControl {
     this.ngValidators = ngValidators;
   }
 
-  onChange(c) {
+  onChange(c: StringMap<string, any>) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValidity();

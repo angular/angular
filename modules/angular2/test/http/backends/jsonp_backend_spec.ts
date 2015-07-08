@@ -18,6 +18,7 @@ import {bind, Injector} from 'angular2/di';
 import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {Request} from 'angular2/src/http/static_request';
+import {Response} from 'angular2/src/http/static_response';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
@@ -25,6 +26,7 @@ import {ResponseTypes, ReadyStates, RequestMethods} from 'angular2/src/http/enum
 
 var addEventListenerSpy;
 var existingScripts = [];
+var unused: Response;
 
 class MockBrowserJsonp extends BrowserJsonp {
   src: string;
@@ -87,7 +89,7 @@ export function main() {
          inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp(),
                                                 new ResponseOptions({type: ResponseTypes.Error}));
-           ObservableWrapper.subscribe(connection.response, res => {
+           ObservableWrapper.subscribe<Response>(connection.response, res => {
              expect(res.type).toBe(ResponseTypes.Error);
              async.done();
            });
@@ -164,7 +166,7 @@ export function main() {
       it('should respond with data passed to callback', inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
-           ObservableWrapper.subscribe(connection.response, res => {
+           ObservableWrapper.subscribe<Response>(connection.response, res => {
              expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));
              async.done();
            });

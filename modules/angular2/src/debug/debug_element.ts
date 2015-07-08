@@ -65,7 +65,7 @@ export class DebugElement {
     return this._getChildElements(shadowView, null);
   }
 
-  triggerEventHandler(eventName, eventObj): void {
+  triggerEventHandler(eventName: string, eventObj: Event): void {
     this._parentView.triggerEventHandlers(eventName, eventObj, this._boundElementIndex);
   }
 
@@ -94,7 +94,7 @@ export class DebugElement {
    *
    * @return {DebugElement}
    */
-  query(predicate: Predicate<DebugElement>, scope = Scope.all): DebugElement {
+  query(predicate: Predicate<DebugElement>, scope: Function = Scope.all): DebugElement {
     var results = this.queryAll(predicate, scope);
     return results.length > 0 ? results[0] : null;
   }
@@ -108,7 +108,7 @@ export class DebugElement {
    *
    * @return {List<DebugElement>}
    */
-  queryAll(predicate: Predicate<DebugElement>, scope = Scope.all): List<DebugElement> {
+  queryAll(predicate: Predicate<DebugElement>, scope: Function = Scope.all): List<DebugElement> {
     var elementsInScope = scope(this);
 
     return ListWrapper.filter(elementsInScope, predicate);
@@ -146,7 +146,7 @@ export function asNativeElements(arr: List<DebugElement>): List<any> {
 }
 
 export class Scope {
-  static all(debugElement): List<DebugElement> {
+  static all(debugElement: DebugElement): List<DebugElement> {
     var scope = [];
     scope.push(debugElement);
 
@@ -158,7 +158,7 @@ export class Scope {
 
     return scope;
   }
-  static light(debugElement): List<DebugElement> {
+  static light(debugElement: DebugElement): List<DebugElement> {
     var scope = [];
     ListWrapper.forEach(debugElement.children, (child) => {
       scope.push(child);
@@ -167,7 +167,7 @@ export class Scope {
     return scope;
   }
 
-  static view(debugElement): List<DebugElement> {
+  static view(debugElement: DebugElement): List<DebugElement> {
     var scope = [];
 
     ListWrapper.forEach(debugElement.componentViewChildren, (child) => {

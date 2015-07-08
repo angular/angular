@@ -42,7 +42,7 @@ export class Serializer {
   }
 
   // TODO: template this to return the type that is passed if possible
-  static deserialize(map, type: Type, data?): any {
+  static deserialize(map: List<any>, type: Type, data?: any): any {
     if (!isPresent(map)) {
       return null;
     }
@@ -69,7 +69,7 @@ export class Serializer {
     }
   }
 
-  static mapToObject(map, type?: Type): Object {
+  static mapToObject(map: Map<any, any>, type?: Type): Object {
     var object = {};
     var serialize = isPresent(type);
 
@@ -88,7 +88,7 @@ export class Serializer {
    * If the values need to be deserialized pass in their type
    * and they will be deserialized before being placed in the map
    */
-  static objectToMap(obj, type?: Type, data?): Map<string, any> {
+  static objectToMap(obj: Object, type?: Type, data?: any): Map<string, any> {
     if (isPresent(type)) {
       var map: Map<string, any> = new Map();
       StringMapWrapper.forEach(
@@ -142,7 +142,7 @@ class ViewDefinitionSerializer {
       'styles': view.styles
     };
   }
-  static deserialize(obj): ViewDefinition {
+  static deserialize(obj: any): ViewDefinition {
     return new ViewDefinition({
       componentId: obj.componentId,
       templateAbsUrl: obj.templateAbsUrl, template: obj.template,
@@ -164,7 +164,7 @@ class DirectiveBinderSerializer {
     };
   }
 
-  static deserialize(obj): DirectiveBinder {
+  static deserialize(obj: any): DirectiveBinder {
     return new DirectiveBinder({
       directiveIndex: obj.directiveIndex,
       propertyBindings: Serializer.objectToMap(obj.propertyBindings, ASTWithSource, "binding"),
@@ -189,7 +189,7 @@ class ElementBinderSerializer {
     };
   }
 
-  static deserialize(obj): ElementBinder {
+  static deserialize(obj: any): ElementBinder {
     return new ElementBinder({
       index: obj.index,
       parentIndex: obj.parentIndex,
@@ -216,7 +216,7 @@ class ProtoViewDtoSerializer {
     };
   }
 
-  static deserialize(obj): ProtoViewDto {
+  static deserialize(obj: any): ProtoViewDto {
     return new ProtoViewDto({
       render: null,  // TODO: fix render refs and write a serializer for them
       elementBinders: Serializer.deserialize(obj.elementBinders, ElementBinder),
@@ -250,7 +250,7 @@ class DirectiveMetadataSerializer {
     };
     return obj;
   }
-  static deserialize(obj): DirectiveMetadata {
+  static deserialize(obj: any): DirectiveMetadata {
     return new DirectiveMetadata({
       id: obj.id,
       selector: obj.selector,

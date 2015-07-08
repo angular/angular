@@ -27,7 +27,7 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  */
 @CONST()
 export class JsonPipe extends BasePipe implements PipeFactory {
-  transform(value, args: List<any> = null): string { return Json.stringify(value); }
+  transform(value: any, args: List<any> = null): string { return Json.stringify(value); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }

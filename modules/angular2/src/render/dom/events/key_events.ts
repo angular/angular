@@ -9,6 +9,7 @@ import {
 } from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {EventManagerPlugin} from './event_manager';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 var modifierKeyGetters: StringMap<string, Function> = {
@@ -25,7 +26,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return isPresent(KeyEventsPlugin.parseEventName(eventName));
   }
 
-  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
+  addEventListener(element: HTMLElement, eventName: string, handler: (Event: any) => any,
+                   shouldSupportBubble: boolean) {
     var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
 
     var outsideHandler = KeyEventsPlugin.eventCallback(element, shouldSupportBubble,
@@ -68,7 +70,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return result;
   }
 
-  static getEventFullKey(event): string {
+  static getEventFullKey(event: Event): string {
     var fullKey = '';
     var key = DOM.getEventKey(event);
     key = key.toLowerCase();
@@ -89,8 +91,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element, shouldSupportBubble, fullKey, handler, zone):
-      (event: Event) => void {
+  static eventCallback(element: HTMLElement, shouldSupportBubble: boolean, fullKey: any,
+                       handler: (Event) => any, zone: NgZone): (event: Event) => void {
     return (event) => {
       var correctElement = shouldSupportBubble || event.target === element;
       if (correctElement && StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {

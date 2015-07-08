@@ -17,7 +17,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
 
   hasNativeContentElement(): boolean { return false; }
 
-  processStyleElement(hostComponentId: string, templateUrl: string, styleEl): void {
+  processStyleElement(hostComponentId: string, templateUrl: string, styleEl: Element): void {
     var cssText = DOM.getText(styleEl);
     insertSharedStyleText(cssText, this.styleHost, styleEl);
   }

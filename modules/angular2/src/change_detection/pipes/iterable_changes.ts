@@ -20,7 +20,7 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 
 @CONST()
 export class IterableChangesFactory implements PipeFactory {
-  supports(obj): boolean { return IterableChanges.supportsObj(obj); }
+  supports(obj: any): boolean { return IterableChanges.supportsObj(obj); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return new IterableChanges(); }
 }
@@ -44,9 +44,9 @@ export class IterableChanges extends BasePipe {
 
   constructor() { super(); }
 
-  static supportsObj(obj): boolean { return isListLikeIterable(obj); }
+  static supportsObj(obj: Object): boolean { return isListLikeIterable(obj); }
 
-  supports(obj): boolean { return IterableChanges.supportsObj(obj); }
+  supports(obj: Object): boolean { return IterableChanges.supportsObj(obj); }
 
   get collection() { return this._collection; }
 
@@ -87,7 +87,7 @@ export class IterableChanges extends BasePipe {
     }
   }
 
-  transform(collection, args: List<any> = null): any {
+  transform(collection: any, args: List<any> = null): any {
     if (this.check(collection)) {
       return WrappedValue.wrap(this);
     } else {
@@ -96,7 +96,7 @@ export class IterableChanges extends BasePipe {
   }
 
   // todo(vicb): optim for UnmodifiableListView (frozen arrays)
-  check(collection): boolean {
+  check(collection: any): boolean {
     this._reset();
 
     var record: CollectionChangeRecord = this._itHead;
@@ -524,7 +524,7 @@ class _DuplicateItemRecordList {
 
   // Returns a CollectionChangeRecord having CollectionChangeRecord.item == item and
   // CollectionChangeRecord.currentIndex >= afterIndex
-  get(item, afterIndex: int): CollectionChangeRecord {
+  get(item: any, afterIndex: int): CollectionChangeRecord {
     var record: CollectionChangeRecord;
     for (record = this._head; record !== null; record = record._nextDup) {
       if ((afterIndex === null || afterIndex < record.currentIndex) &&
@@ -588,7 +588,7 @@ class _DuplicateMap {
    * Use case: `[a, b, c, a, a]` if we are at index `3` which is the second `a` then asking if we
    * have any more `a`s needs to return the last `a` not the first or second.
    */
-  get(value, afterIndex = null): CollectionChangeRecord {
+  get(value: any, afterIndex: int = null): CollectionChangeRecord {
     var key = getMapKey(value);
 
     var recordList = this.map.get(key);

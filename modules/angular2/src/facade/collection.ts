@@ -55,7 +55,7 @@ var _clearValues: {(m: Map<any, any>)} = (function() {
 
 export class MapWrapper {
   static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
-  static createFromStringMap(stringMap): Map<string, any> {
+  static createFromStringMap<T>(stringMap: StringMap<string, T>): Map<string, T> {
     var result = new Map();
     for (var prop in stringMap) {
       result.set(prop, stringMap[prop]);
@@ -146,13 +146,13 @@ export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean
 export class ListWrapper {
   // JS has no way to express a staticly fixed size list, but dart does so we
   // keep both methods.
-  static createFixedSize(size): List<any> { return new List(size); }
-  static createGrowableSize(size): List<any> { return new List(size); }
-  static get(m, k): any { return m[k]; }
-  static set(m, k, v) { m[k] = v; }
+  static createFixedSize(size: number): List<any> { return new List(size); }
+  static createGrowableSize(size: number): List<any> { return new List(size); }
+  static get<T>(m: List<T>, k: number): T { return m[k]; }
+  static set<T>(m: List<T>, k: number, v: T) { m[k] = v; }
   static clone<T>(array: List<T>): T[] { return array.slice(0); }
-  static map(array, fn): any { return array.map(fn); }
-  static forEach(array: List<any>, fn: Function) {
+  static map<T, V>(array: List<T>, fn: (T) => V): List<V> { return array.map(fn); }
+  static forEach<T>(array: List<T>, fn: (T) => void) {
     for (var i = 0; i < array.length; i++) {
       fn(array[i]);
     }
@@ -171,7 +171,7 @@ export class ListWrapper {
     }
     return null;
   }
-  static indexOf(array: List<any>, value, startIndex = 0): number {
+  static indexOf<T>(array: List<T>, value: T, startIndex: number = 0): number {
     return array.indexOf(value, startIndex);
   }
   static reduce<T, E>(list: List<T>,
@@ -186,26 +186,26 @@ export class ListWrapper {
     }
     return false;
   }
-  static contains(list: List<any>, el): boolean { return list.indexOf(el) !== -1; }
+  static contains<T>(list: List<T>, el: T): boolean { return list.indexOf(el) !== -1; }
   static reversed<T>(array: List<T>): T[] {
     var a = ListWrapper.clone(array);
     return a.reverse();
   }
-  static concat(a, b): List<any> { return a.concat(b); }
-  static insert(list, index: int, value) { list.splice(index, 0, value); }
-  static removeAt<T>(list: List<T>, index: int): T {
+  static concat(a: List<any>, b: List<any>): List<any> { return a.concat(b); }
+  static insert<T>(list: List<T>, index: number, value: T) { list.splice(index, 0, value); }
+  static removeAt<T>(list: List<T>, index: number): T {
     var res = list[index];
     list.splice(index, 1);
     return res;
   }
-  static removeAll(list, items) {
+  static removeAll<T>(list: List<T>, items: List<T>) {
     for (var i = 0; i < items.length; ++i) {
       var index = list.indexOf(items[i]);
       list.splice(index, 1);
     }
   }
   static removeLast<T>(list: List<T>): T { return list.pop(); }
-  static remove(list, el): boolean {
+  static remove<T>(list: List<T>, el: T): boolean {
     var index = list.indexOf(el);
     if (index > -1) {
       list.splice(index, 1);
@@ -213,10 +213,10 @@ export class ListWrapper {
     }
     return false;
   }
-  static clear(list) { list.splice(0, list.length); }
-  static join(list, s: string): string { return list.join(s); }
-  static isEmpty(list): boolean { return list.length == 0; }
-  static fill(list: List<any>, value, start: int = 0, end: int = null) {
+  static clear(list: List<any>) { list.splice(0, list.length); }
+  static join(list: List<any>, s: string): string { return list.join(s); }
+  static isEmpty(list: List<any>): boolean { return list.length == 0; }
+  static fill(list: List<any>, value: any, start: number = 0, end: number = null) {
     list.fill(value, start, end === null ? undefined : end);
   }
   static equals(a: List<any>, b: List<any>): boolean {
@@ -226,10 +226,12 @@ export class ListWrapper {
     }
     return true;
   }
-  static slice<T>(l: List<T>, from: int = 0, to: int = null): List<T> {
+  static slice<T>(l: List<T>, from: number = 0, to: number = null): List<T> {
     return l.slice(from, to === null ? undefined : to);
   }
-  static splice<T>(l: List<T>, from: int, length: int): List<T> { return l.splice(from, length); }
+  static splice<T>(l: List<T>, from: number, length: number): List<T> {
+    return l.splice(from, length);
+  }
   static sort<T>(l: List<T>, compareFn?: (a: T, b: T) => number) {
     if (isPresent(compareFn)) {
       l.sort(compareFn);
@@ -241,14 +243,14 @@ export class ListWrapper {
   static toJSON<T>(l: List<T>): string { return JSON.stringify(l); }
 }
 
-export function isListLikeIterable(obj): boolean {
+export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
   return isArray(obj) ||
          (!(obj instanceof Map) &&  // JS Map are iterables but return entries as [k, v]
           Symbol.iterator in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
-export function iterateListLike(obj, fn: Function) {
+export function iterateListLike(obj: any, fn: Function) {
   if (isArray(obj)) {
     for (var i = 0; i < obj.length; i++) {
       fn(obj[i]);

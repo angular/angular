@@ -13,7 +13,7 @@ import {
 } from 'angular2/test_lib';
 import {Http} from 'angular2/src/http/http';
 import {Injector, bind} from 'angular2/di';
-import {MockBackend} from 'angular2/src/http/backends/mock_backend';
+import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
 import {Response} from 'angular2/src/http/static_response';
 import {RequestMethods} from 'angular2/src/http/enums';
 import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
@@ -66,7 +66,7 @@ export function main() {
 
         it('should accept a fully-qualified request as its only parameter',
            inject([AsyncTestCompleter], (async) => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.url).toBe('https://google.com');
                c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
                async.done();
@@ -79,8 +79,9 @@ export function main() {
 
         it('should perform a get request for given url if only passed a string',
            inject([AsyncTestCompleter], (async) => {
-             ObservableWrapper.subscribe(backend.connections, c => c.mockRespond(baseResponse));
-             ObservableWrapper.subscribe(http.request('http://basic.connection'), res => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections,
+                                                         c => c.mockRespond(baseResponse));
+             ObservableWrapper.subscribe<Response>(http.request('http://basic.connection'), res => {
                expect(res.text()).toBe('base response');
                async.done();
              });
@@ -102,7 +103,7 @@ export function main() {
 
       describe('.get()', () => {
         it('should perform a get request for given url', inject([AsyncTestCompleter], async => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.method).toBe(RequestMethods.GET);
                backend.resolveAllConnections();
                async.done();
@@ -114,7 +115,7 @@ export function main() {
 
       describe('.post()', () => {
         it('should perform a post request for given url', inject([AsyncTestCompleter], async => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.method).toBe(RequestMethods.POST);
                backend.resolveAllConnections();
                async.done();
@@ -125,7 +126,7 @@ export function main() {
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
              var body = 'this is my post body';
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.text()).toBe(body);
                backend.resolveAllConnections();
                async.done();
@@ -137,7 +138,7 @@ export function main() {
 
       describe('.put()', () => {
         it('should perform a put request for given url', inject([AsyncTestCompleter], async => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.method).toBe(RequestMethods.PUT);
                backend.resolveAllConnections();
                async.done();
@@ -147,7 +148,7 @@ export function main() {
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
              var body = 'this is my put body';
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.text()).toBe(body);
                backend.resolveAllConnections();
                async.done();
@@ -159,7 +160,7 @@ export function main() {
 
       describe('.delete()', () => {
         it('should perform a delete request for given url', inject([AsyncTestCompleter], async => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.method).toBe(RequestMethods.DELETE);
                backend.resolveAllConnections();
                async.done();
@@ -171,7 +172,7 @@ export function main() {
 
       describe('.patch()', () => {
         it('should perform a patch request for given url', inject([AsyncTestCompleter], async => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.method).toBe(RequestMethods.PATCH);
                backend.resolveAllConnections();
                async.done();
@@ -181,7 +182,7 @@ export function main() {
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
              var body = 'this is my patch body';
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.text()).toBe(body);
                backend.resolveAllConnections();
                async.done();
@@ -193,7 +194,7 @@ export function main() {
 
       describe('.head()', () => {
         it('should perform a head request for given url', inject([AsyncTestCompleter], async => {
-             ObservableWrapper.subscribe(backend.connections, c => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
                expect(c.request.method).toBe(RequestMethods.HEAD);
                backend.resolveAllConnections();
                async.done();

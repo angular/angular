@@ -31,7 +31,7 @@ export class Headers {
     if (headers instanceof Headers) {
       this._headersMap = (<Headers>headers)._headersMap;
     } else if (headers instanceof StringMap) {
-      this._headersMap = MapWrapper.createFromStringMap(headers);
+      this._headersMap = MapWrapper.createFromStringMap<List<string>>(headers);
       MapWrapper.forEach(this._headersMap, (v, k) => {
         if (!isListLikeIterable(v)) {
           var list = [];

@@ -20,8 +20,8 @@ export function dispatchEvent(element, eventType) {
   DOM.dispatchEvent(element, DOM.createEvent(eventType));
 }
 
-export function el(html: string) {
-  return DOM.firstChild(DOM.content(DOM.createTemplate(html)));
+export function el(html: string): HTMLElement {
+  return <HTMLElement>DOM.firstChild(DOM.content(DOM.createTemplate(html)));
 }
 
 var _RE_SPECIAL_CHARS =

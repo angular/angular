@@ -25,6 +25,7 @@ function _notImplemented(methodName) {
   return new BaseException('This method is not implemented in Parse5DomAdapter: ' + methodName);
 }
 
+/* tslint:disable:requireParameterType */
 export class Parse5DomAdapter extends DomAdapter {
   static makeCurrent() { setRootDomAdapter(new Parse5DomAdapter()); }
 
@@ -112,7 +113,7 @@ export class Parse5DomAdapter extends DomAdapter {
   onAndCancel(el, evt, listener): Function {
     this.on(el, evt, listener);
     return () => {
-      ListWrapper.remove(StringMapWrapper.get(el._eventListenersMap, evt), listener);
+      ListWrapper.remove(StringMapWrapper.get<List<any>>(el._eventListenersMap, evt), listener);
     };
   }
   dispatchEvent(el, evt) {

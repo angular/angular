@@ -47,7 +47,7 @@ export class Testability {
 
   getPendingCount(): number { return this._pendingCount; }
 
-  findBindings(using, binding: string, exactMatch: boolean): List<any> {
+  findBindings(using: any, binding: string, exactMatch: boolean): List<any> {
     // TODO(juliemr): implement.
     return [];
   }
@@ -63,11 +63,11 @@ export class TestabilityRegistry {
     getTestabilityModule.GetTestability.addToWindow(this);
   }
 
-  registerApplication(token, testability: Testability) {
+  registerApplication(token: any, testability: Testability) {
     this._applications.set(token, testability);
   }
 
-  findTestabilityInTree(elem): Testability {
+  findTestabilityInTree(elem: Node): Testability {
     if (elem == null) {
       return null;
     }

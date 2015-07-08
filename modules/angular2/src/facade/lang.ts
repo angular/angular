@@ -65,35 +65,35 @@ export function IMPLEMENTS(_):<T>(target: T) => T {
   return (t) => t;
 }
 
-export function isPresent(obj): boolean {
+export function isPresent(obj: any): boolean {
   return obj !== undefined && obj !== null;
 }
 
-export function isBlank(obj): boolean {
+export function isBlank(obj: any): boolean {
   return obj === undefined || obj === null;
 }
 
-export function isString(obj): boolean {
+export function isString(obj: any): boolean {
   return typeof obj === "string";
 }
 
-export function isFunction(obj): boolean {
+export function isFunction(obj: any): boolean {
   return typeof obj === "function";
 }
 
-export function isType(obj): boolean {
+export function isType(obj: any): boolean {
   return isFunction(obj);
 }
 
-export function isStringMap(obj): boolean {
+export function isStringMap(obj: any): boolean {
   return typeof obj === 'object' && obj !== null;
 }
 
-export function isPromise(obj): boolean {
+export function isPromise(obj: any): boolean {
   return obj instanceof (<any>_global).Promise;
 }
 
-export function isArray(obj): boolean {
+export function isArray(obj: any): boolean {
   return Array.isArray(obj);
 }
 
@@ -126,7 +126,7 @@ export class StringWrapper {
 
   static charCodeAt(s: string, index: int): number { return s.charCodeAt(index); }
 
-  static split(s: string, regExp): List<string> { return s.split(regExp); }
+  static split(s: string, regExp: RegExp): List<string> { return s.split(regExp); }
 
   static equals(s: string, s2: string): boolean { return s === s2; }
 
@@ -190,7 +190,7 @@ export class NumberParseError extends BaseException {
 export class NumberWrapper {
   static toFixed(n: number, fractionDigits: int): string { return n.toFixed(fractionDigits); }
 
-  static equal(a, b): boolean { return a === b; }
+  static equal(a: number, b: number): boolean { return a === b; }
 
   static parseIntAutoRadix(text: string): int {
     var result: int = parseInt(text);
@@ -224,15 +224,15 @@ export class NumberWrapper {
 
   static get NaN(): number { return NaN; }
 
-  static isNaN(value): boolean { return isNaN(value); }
+  static isNaN(value: any): boolean { return isNaN(value); }
 
-  static isInteger(value): boolean { return Number.isInteger(value); }
+  static isInteger(value: any): boolean { return Number.isInteger(value); }
 }
 
 export var RegExp = _global.RegExp;
 
 export class RegExpWrapper {
-  static create(regExpStr, flags: string = ''): RegExp {
+  static create(regExpStr: string, flags: string = ''): RegExp {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
@@ -242,7 +242,7 @@ export class RegExpWrapper {
     return regExp.exec(input);
   }
   static test(regExp: RegExp, input: string): boolean { return regExp.test(input); }
-  static matcher(regExp, input): {
+  static matcher(regExp: RegExp, input: string): {
     re: RegExp;
     input: string
   }
@@ -256,11 +256,16 @@ export class RegExpWrapper {
 }
 
 export class RegExpMatcherWrapper {
-  static next(matcher): string { return matcher.re.exec(matcher.input); }
+  static next(matcher: {
+    re: RegExp;
+    input: string
+  }): string[] {
+    return matcher.re.exec(matcher.input);
+  }
 }
 
 export class FunctionWrapper {
-  static apply(fn: Function, posArgs): any { return fn.apply(null, posArgs); }
+  static apply(fn: Function, posArgs: any): any { return fn.apply(null, posArgs); }
 }
 
 // JS has NaN !== NaN
@@ -270,11 +275,11 @@ export function looseIdentical(a, b): boolean {
 
 // JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
 // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-export function getMapKey(value): any {
+export function getMapKey<T>(value: T): T {
   return value;
 }
 
-export function normalizeBlank(obj): any {
+export function normalizeBlank(obj: Object): any {
   return isBlank(obj) ? null : obj;
 }
 
@@ -282,12 +287,12 @@ export function normalizeBool(obj: boolean): boolean {
   return isBlank(obj) ? false : obj;
 }
 
-export function isJsObject(o): boolean {
+export function isJsObject(o: any): boolean {
   return o !== null && (typeof o === "function" || typeof o === "object");
 }
 
-export function print(obj) {
-  if (obj instanceof Error) {
+export function print(obj: Error | Object) {
+  if (obj instanceof BaseException) {
     console.log(obj.stack);
   } else {
     console.log(obj);
@@ -297,7 +302,7 @@ export function print(obj) {
 // Can't be all uppercase as our transpiler would think it is a special directive...
 export class Json {
   static parse(s: string): Object { return _global.JSON.parse(s); }
-  static stringify(data): string {
+  static stringify(data: Object): string {
     // Dart doesn't take 3 arguments
     return _global.JSON.stringify(data, null, 2);
   }

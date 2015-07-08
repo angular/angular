@@ -135,7 +135,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     this.viewContainers = viewContainers;
   }
 
-  setLocal(contextName: string, value): void {
+  setLocal(contextName: string, value: any): void {
     if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
     if (!this.proto.variableBindings.has(contextName)) {
       return;
@@ -155,7 +155,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
    * @param {*} eventObj
    * @param {int} boundElementIndex
    */
-  triggerEventHandlers(eventName: string, eventObj, boundElementIndex: int): void {
+  triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: int): void {
     var locals = new Map();
     locals.set('$event', eventObj);
     this.dispatchEvent(boundElementIndex, eventName, locals);

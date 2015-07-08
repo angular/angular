@@ -28,7 +28,7 @@ export class Locals {
     throw new BaseException(`Cannot find '${name}'`);
   }
 
-  set(name: string, value): void {
+  set(name: string, value: any): void {
     // TODO(rado): consider removing this check if we can guarantee this is not
     // exposed to the public API.
     // TODO: vsavkin maybe it should check only the local map

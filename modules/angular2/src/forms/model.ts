@@ -22,7 +22,7 @@ function _find(c: AbstractControl, path: List<string | number>| string) {
   if (!(path instanceof List)) {
     path = StringWrapper.split(<string>path, new RegExp("/"));
   }
-  if (ListWrapper.isEmpty(path)) return null;
+  if (path instanceof List && ListWrapper.isEmpty(path)) return null;
 
   return ListWrapper.reduce(<List<string | number>>path, (v, name) => {
     if (v instanceof ControlGroup) {
@@ -85,7 +85,7 @@ export class AbstractControl {
     }
   }
 
-  setParent(parent) { this._parent = parent; }
+  setParent(parent: ControlGroup | ControlArray) { this._parent = parent; }
 
   updateValidity({onlySelf}: {onlySelf?: boolean} = {}): void {
     onlySelf = isPresent(onlySelf) ? onlySelf : false;

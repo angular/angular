@@ -33,7 +33,7 @@ export class ProtoViewBuilder {
   constructor(public rootElement, public type: api.ViewType,
               public useNativeShadowDom: boolean = false) {}
 
-  bindElement(element, description = null): ElementBinderBuilder {
+  bindElement(element: HTMLElement, description: string = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
     this.elements.push(builder);
     DOM.addClass(element, NG_BINDING_CLASS);
@@ -41,7 +41,7 @@ export class ProtoViewBuilder {
     return builder;
   }
 
-  bindVariable(name, value) {
+  bindVariable(name: string, value: string) {
     // Store the variable map from value to variable, reflecting how it will be used later by
     // DomView. When a local is set to the view, a lookup for the variable name will take place
     // keyed
@@ -53,7 +53,9 @@ export class ProtoViewBuilder {
 
   // Note: We don't store the node index until the compilation is complete,
   // as the compiler might change the order of elements.
-  bindRootText(textNode, expression) { this.rootTextBindings.set(textNode, expression); }
+  bindRootText(textNode: Text, expression: ASTWithSource) {
+    this.rootTextBindings.set(textNode, expression);
+  }
 
   build(): api.ProtoViewDto {
     var domElementBinders = [];
@@ -140,7 +142,7 @@ export class ElementBinderBuilder {
 
   constructor(public index: number, public element, description: string) {}
 
-  setParent(parent: ElementBinderBuilder, distanceToParent): ElementBinderBuilder {
+  setParent(parent: ElementBinderBuilder, distanceToParent: number): ElementBinderBuilder {
     this.parent = parent;
     if (isPresent(parent)) {
       this.distanceToParent = distanceToParent;
@@ -160,7 +162,7 @@ export class ElementBinderBuilder {
     return directive;
   }
 
-  bindNestedProtoView(rootElement): ProtoViewBuilder {
+  bindNestedProtoView(rootElement: HTMLElement): ProtoViewBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
@@ -178,7 +180,7 @@ export class ElementBinderBuilder {
     this.propertyBindingsToDirectives.add(name);
   }
 
-  bindVariable(name, value) {
+  bindVariable(name: string, value: string) {
     // When current is a view root, the variable bindings are set to the *nested* proto view.
     // The root view conceptually signifies a new "block scope" (the nested view), to which
     // the variables are bound.
@@ -196,13 +198,15 @@ export class ElementBinderBuilder {
     }
   }
 
-  bindEvent(name, expression, target = null) {
+  bindEvent(name: string, expression: ASTWithSource, target: string = null) {
     this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 
   // Note: We don't store the node index until the compilation is complete,
   // as the compiler might change the order of elements.
-  bindText(textNode, expression) { this.textBindings.set(textNode, expression); }
+  bindText(textNode: Text, expression: ASTWithSource) {
+    this.textBindings.set(textNode, expression);
+  }
 
   setComponentId(componentId: string) { this.componentId = componentId; }
 }
@@ -231,7 +235,7 @@ export class DirectiveBuilder {
     this.hostPropertyBindings.set(name, expression);
   }
 
-  bindEvent(name, expression, target = null) {
+  bindEvent(name: string, expression: ASTWithSource, target: string = null) {
     this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 }

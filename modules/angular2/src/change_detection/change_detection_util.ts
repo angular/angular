@@ -45,6 +45,7 @@ function _simpleChange(previousValue, currentValue): SimpleChange {
   return s;
 }
 
+/* tslint:disable:requireParameterType */
 export class ChangeDetectionUtil {
   static uninitialized(): Object { return uninitialized; }
 

@@ -57,7 +57,7 @@ export class Reflector {
     }
   }
 
-  parameters(typeOrFunc): List<any> {
+  parameters(typeOrFunc: /*Type*/ any): List<any> {
     if (this._injectableInfo.has(typeOrFunc)) {
       return this._getTypeInfoField(typeOrFunc, "parameters", []);
     } else {
@@ -65,7 +65,7 @@ export class Reflector {
     }
   }
 
-  annotations(typeOrFunc): List<any> {
+  annotations(typeOrFunc: /*Type*/ any): List<any> {
     if (this._injectableInfo.has(typeOrFunc)) {
       return this._getTypeInfoField(typeOrFunc, "annotations", []);
     } else {
@@ -73,7 +73,7 @@ export class Reflector {
     }
   }
 
-  interfaces(type): List<any> {
+  interfaces(type: Type): List<any> {
     if (this._injectableInfo.has(type)) {
       return this._getTypeInfoField(type, "interfaces", []);
     } else {

@@ -25,7 +25,7 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 export class LowerCasePipe implements Pipe {
   _latestValue: string = null;
 
-  supports(str): boolean { return isString(str); }
+  supports(str: any): boolean { return isString(str); }
 
   onDestroy(): void { this._latestValue = null; }
 
@@ -41,7 +41,7 @@ export class LowerCasePipe implements Pipe {
 
 @CONST()
 export class LowerCaseFactory implements PipeFactory {
-  supports(str): boolean { return isString(str); }
+  supports(str: any): boolean { return isString(str); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return new LowerCasePipe(); }
 }

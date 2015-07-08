@@ -196,7 +196,9 @@ export class Router {
   /**
    * Subscribe to URL updates from the router
    */
-  subscribe(onNext): void { ObservableWrapper.subscribe(this._subject, onNext); }
+  subscribe(onNext: (value: any) => void): void {
+    ObservableWrapper.subscribe(this._subject, onNext);
+  }
 
 
   /**
@@ -292,7 +294,7 @@ export class RootRouter extends Router {
     this.navigate(location.path());
   }
 
-  commit(instruction): Promise<any> {
+  commit(instruction: Instruction): Promise<any> {
     return super.commit(instruction)
         .then((_) => { this._location.go(instruction.accumulatedUrl); });
   }
