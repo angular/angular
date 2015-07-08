@@ -1,3 +1,37 @@
+<a name"2.0.0-alpha.30"></a>
+### 2.0.0-alpha.30 (2015-07-07)
+
+
+#### Bug Fixes
+
+* handle errors w/o file information. ([e69af1a3](https://github.com/angular/angular/commit/e69af1a3))
+* **.d.ts:** correct ComponentAnnotation inheritance ([12a427e1](https://github.com/angular/angular/commit/12a427e1), closes [#2356](https://github.com/angular/angular/issues/2356))
+* **Http:** add support for headers ([883b5064](https://github.com/angular/angular/commit/883b5064))
+* **angular2.d.ts:** show typing for Component, etc ([b10d7a2e](https://github.com/angular/angular/commit/b10d7a2e))
+* **change_detection:**
+  * throw ChangeDetectionError in JIT mode ([c2efa23e](https://github.com/angular/angular/commit/c2efa23e))
+  * do not coalesce records with different directive indices ([d2774421](https://github.com/angular/angular/commit/d2774421))
+* **compiler:** detect and strip data- prefix from bindings ([cd65fc2a](https://github.com/angular/angular/commit/cd65fc2a), closes [#2687](https://github.com/angular/angular/issues/2687), [#2719](https://github.com/angular/angular/issues/2719))
+* **di:** injecting null causes a cyclic dependency ([d1393b05](https://github.com/angular/angular/commit/d1393b05))
+* **forms:** Remove cyclic dependency ([e5405e4b](https://github.com/angular/angular/commit/e5405e4b), closes [#2856](https://github.com/angular/angular/issues/2856))
+* **router:**
+  * allow generating links with numeric params ([d828664d](https://github.com/angular/angular/commit/d828664d))
+  * child routers should delegate navigation to the root router ([1c94c32f](https://github.com/angular/angular/commit/1c94c32f))
+* **transformer:**
+  * Support prefixed annotations in the transformer. ([9e1158de](https://github.com/angular/angular/commit/9e1158de))
+  * Put paramater data in the same order as the reflected version. ([2b45bd2a](https://github.com/angular/angular/commit/2b45bd2a))
+  * Fix string interpolation for bindings. ([311b4772](https://github.com/angular/angular/commit/311b4772))
+
+
+#### Features
+
+* upgrade t2dart to 0.6.8. ([d381c5fc](https://github.com/angular/angular/commit/d381c5fc))
+* **NgStyle:** Export NgStyle in angular2/directives ([edf5053b](https://github.com/angular/angular/commit/edf5053b), closes [#2878](https://github.com/angular/angular/issues/2878))
+* **router:** support deep-linking to siblings ([286a249a](https://github.com/angular/angular/commit/286a249a), closes [#2807](https://github.com/angular/angular/issues/2807))
+* **transformer:** Support @Injectable() on static functions ([7986e7ce](https://github.com/angular/angular/commit/7986e7ce))
+* **typings:** mark void methods in angular2.d.ts ([a56d33d7](https://github.com/angular/angular/commit/a56d33d7))
+
+
 <a name"2.0.0-alpha.29"></a>
 ### 2.0.0-alpha.29 (2015-07-01)
 
