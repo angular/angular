@@ -1,6 +1,6 @@
 import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Map} from 'angular2/src/facade/collection';
-import {ComponentUrlMapper} from 'component_url_mapper';
+import {ComponentUrlMapper} from './component_url_mapper';
 
 export class RuntimeComponentUrlMapper extends ComponentUrlMapper {
   _componentUrls: Map<Type, string>;

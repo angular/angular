@@ -6,7 +6,6 @@ import 'package:angular2/src/core/compiler/component_url_mapper.dart';
 main() {
   describe("ComponentUrlMapper", () {
     it("should return the URL of the component's library", () {
-      var url = 'http://path/to/component';
       var mapper = new ComponentUrlMapper();
       expect(mapper.getUrl(SomeComponent).endsWith(
           "core/compiler/component_url_mapper_spec.dart")).toBeTrue();
