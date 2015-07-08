@@ -12,6 +12,6 @@ void initReflector(reflector) {
       'factory': () => new ChangingSoupComponent(),
       'parameters': const [],
       'annotations': const [const Component(selector: '[soup]')],
-      'interfaces': const [OnChange]
+      'interfaces': const [OnChange, AnotherInterface]
     });
 }
