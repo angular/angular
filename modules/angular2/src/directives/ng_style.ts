@@ -6,6 +6,29 @@ import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_chan
 import {isPresent, print} from 'angular2/src/facade/lang';
 import {Renderer} from 'angular2/src/render/api';
 
+/**
+ * Adds or removes styles based on an {expression}.
+ *
+ * When the expression assigned to `ng-style` evaluates to an object, the corresponding element
+ * styles are updated. Style names to update are taken from the object keys and values - from the
+ * corresponding object values.
+ *
+ * # Example:
+ *
+ * ```
+ * <div ng-style="{'text-align': alignEpr}"></div>
+ * ```
+ *
+ * In the above example the `text-align` style will be updated based on the `alignEpr` value
+ * changes.
+ *
+ * # Syntax
+ *
+ * - `<div ng-style="{'text-align': alignEpr}"></div>`
+ * - `<div ng-style="styleExp"></div>`
+ *
+ * @exportedAs angular2/directives
+ */
 @Directive({selector: '[ng-style]', lifecycle: [onCheck], properties: ['rawStyle: ng-style']})
 export class NgStyle {
   _pipe: Pipe;
