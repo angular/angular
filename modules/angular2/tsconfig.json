@@ -7,7 +7,7 @@
         "rootDir": ".",
         "sourceMap": true,
         "sourceRoot": ".",
-        "target": "ES5",
+        "target": "es5",
         "outDir": "../../dist/js/cjs"
     }
 }
