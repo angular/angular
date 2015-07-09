@@ -100,6 +100,7 @@ class ListWrapper {
   static List createFixedSize(int size) => new List(size);
   static List createGrowableSize(int size) =>
       new List.generate(size, (_) => null, growable: true);
+  static List from(iterable) => new List.from(iterable);
   static get(List m, int k) => m[k];
   static void set(List m, int k, v) {
     m[k] = v;
@@ -114,6 +115,7 @@ class ListWrapper {
   static find(List list, bool fn(item)) =>
       list.firstWhere(fn, orElse: () => null);
   static bool any(List list, bool fn(item)) => list.any(fn);
+  static bool every(List list, bool fn(item)) => list.every(fn);
   static void forEach(Iterable list, fn(item)) {
     list.forEach(fn);
   }
