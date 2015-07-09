@@ -40,6 +40,8 @@ const kServedPaths = [
   'examples/src/benchpress',
   'examples/src/model_driven_forms',
   'examples/src/template_driven_forms',
+  'examples/src/person_management',
+  'examples/src/order_management',
   'examples/src/gestures',
   'examples/src/hello_world',
   'examples/src/http',

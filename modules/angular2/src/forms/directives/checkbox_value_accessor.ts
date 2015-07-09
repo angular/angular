@@ -1,4 +1,7 @@
-import {Directive, Renderer, ElementRef} from 'angular2/angular2';
+import {Renderer} from 'angular2/render';
+import {Directive} from 'angular2/annotations';
+import {ElementRef} from 'angular2/core';
+
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
 import {isPresent} from 'angular2/src/facade/lang';

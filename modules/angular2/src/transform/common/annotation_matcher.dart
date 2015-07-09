@@ -127,17 +127,37 @@ class AnnotationMatcher {
   // Checks if an [Annotation] matches an [AnnotationDescriptor].
   static bool _matchAnnotation(
       Annotation annotation, AnnotationDescriptor descriptor, AssetId assetId) {
-    if (annotation.name.name != descriptor.name) return false;
+    String name;
+    Identifier prefix;
+    if (annotation.name is PrefixedIdentifier) {
+      // TODO(jakemac): Shouldn't really need a cast here, remove once
+      // https://github.com/dart-lang/sdk/issues/23798 is fixed.
+      var prefixedName = annotation.name as PrefixedIdentifier;
+      name = prefixedName.identifier.name;
+      prefix = prefixedName.prefix;
+    } else {
+      name = annotation.name.name;
+    }
+    if (name != descriptor.name) return false;
     return (annotation.root as CompilationUnit).directives
         .where((d) => d is ImportDirective)
         .any((ImportDirective i) {
+      var importMatch = false;
       var uriString = i.uri.stringValue;
-      if (uriString == descriptor.import) return true;
-      if (uriString.startsWith('package:') || uriString.startsWith('dart:')) {
+      if (uriString == descriptor.import) {
+        importMatch = true;
+      } else if (uriString.startsWith('package:') ||
+          uriString.startsWith('dart:')) {
         return false;
+      } else {
+        importMatch = descriptor.assetId ==
+            uriToAssetId(assetId, uriString, logger, null);
       }
-      return descriptor.assetId ==
-          uriToAssetId(assetId, uriString, logger, null);
+
+      if (!importMatch) return false;
+      if (prefix == null) return i.prefix == null;
+      if (i.prefix == null) return false;
+      return prefix.name == i.prefix.name;
     });
   }
 }

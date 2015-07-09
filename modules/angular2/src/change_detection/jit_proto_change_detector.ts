@@ -9,15 +9,13 @@ import {ProtoRecordBuilder} from './proto_change_detector';
 export class JitProtoChangeDetector implements ProtoChangeDetector {
   _factory: Function;
 
-  constructor(private _pipeRegistry, private definition: ChangeDetectorDefinition) {
+  constructor(private definition: ChangeDetectorDefinition) {
     this._factory = this._createFactory(definition);
   }
 
   static isSupported(): boolean { return true; }
 
-  instantiate(dispatcher: any): ChangeDetector {
-    return this._factory(dispatcher, this._pipeRegistry);
-  }
+  instantiate(dispatcher: any): ChangeDetector { return this._factory(dispatcher); }
 
   _createFactory(definition: ChangeDetectorDefinition) {
     var recordBuilder = new ProtoRecordBuilder();

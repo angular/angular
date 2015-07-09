@@ -1,6 +1,8 @@
 {
     "version": "1.5.0",
     "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "target": "es5",
         "module": "commonjs",
         "declaration": false,
@@ -9,8 +11,8 @@
         "noLib": false,
         "outDir": "dist/js/cjs"
     },
-    "filesGlob": [
-        "./src/**/*.ts",
+    "fileGlobs": [
+        "./modules/**/*.ts",
         "./tools/**/*.ts",
         "!./node_modules/**",
         "!./modules_dart/**",

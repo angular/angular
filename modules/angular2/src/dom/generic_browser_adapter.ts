@@ -6,7 +6,7 @@ import {DomAdapter} from './dom_adapter';
  * Provides DOM operations in any browser environment.
  */
 export class GenericBrowserDomAdapter extends DomAdapter {
-  getDistributedNodes(el): List</*(#2770) Node*/ any> { return el.getDistributedNodes(); }
+  getDistributedNodes(el): List<Node> { return el.getDistributedNodes(); }
   resolveAndSetHref(el, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;
   }

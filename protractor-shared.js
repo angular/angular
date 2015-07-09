@@ -1,6 +1,3 @@
-// benchpress will also load traceur runtime as our tests are written in es6
-var benchpress = require('./dist/build/benchpress_bundle');
-global.benchpress = benchpress;
 var fs = require('fs-extra');
 
 var argv = require('yargs')
@@ -201,6 +198,10 @@ function patchProtractorWait(browser) {
 }
 
 exports.createBenchpressRunner = function(options) {
+  // benchpress will also load traceur runtime as our tests are written in es6
+  var benchpress = require('./dist/build/benchpress_bundle');
+  global.benchpress = benchpress;
+
   var nodeUuid = require('node-uuid');
 
   // TODO(tbosch): add cloud reporter again (only when !options.test)

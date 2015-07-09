@@ -36,14 +36,14 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
 @CONST()
 export class View {
   /**
-   * Specifies a template URL for an angular component.
+   * Specifies an inline template for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
   templateUrl: string;
 
   /**
-   * Specifies an inline template for an angular component.
+   * Specifies a template URL for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
@@ -93,7 +93,14 @@ export class View {
    */
   renderer: string;
 
-  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: ViewArgs = {}) {
+  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string,
+    styles?: List<string>,
+    styleUrls?: List<string>,
+  } = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
     this.styleUrls = styleUrls;
@@ -101,12 +108,4 @@ export class View {
     this.directives = directives;
     this.renderer = renderer;
   }
-}
-export interface ViewArgs {
-  templateUrl?: string;
-  template?: string;
-  directives?: List<Type | any | List<any>>;
-  renderer?: string;
-  styles?: List<string>;
-  styleUrls?: List<string>;
 }

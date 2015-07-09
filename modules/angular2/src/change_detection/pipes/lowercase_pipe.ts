@@ -1,5 +1,6 @@
 import {isString, StringWrapper, CONST} from 'angular2/src/facade/lang';
-import {Pipe} from './pipe';
+import {Pipe, PipeFactory} from './pipe';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * Implements lowercase transforms to text.
@@ -30,7 +31,7 @@ export class LowerCasePipe implements Pipe {
 
   onDestroy(): void { this._latestValue = null; }
 
-  transform(value: string): string {
+  transform(value: string, args: List<any> = null): string {
     if (this._latestValue !== value) {
       this._latestValue = value;
       return StringWrapper.toLowerCase(value);
@@ -44,8 +45,8 @@ export class LowerCasePipe implements Pipe {
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class LowerCaseFactory {
+export class LowerCaseFactory implements PipeFactory {
   supports(str): boolean { return isString(str); }
 
-  create(): Pipe { return new LowerCasePipe(); }
+  create(cdRef: ChangeDetectorRef): Pipe { return new LowerCasePipe(); }
 }

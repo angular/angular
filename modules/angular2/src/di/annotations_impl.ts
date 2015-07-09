@@ -97,16 +97,14 @@ export class Injectable {
  * @exportedAs angular2/di_annotations
  */
 @CONST()
-export class Visibility extends DependencyAnnotation {
-  constructor(public depth: number, public crossComponentBoundaries: boolean,
-              public _includeSelf: boolean) {
-    super();
+export class Visibility {
+  constructor(public depth: number, public crossBoundaries: boolean, public _includeSelf: boolean) {
   }
 
   get includeSelf(): boolean { return isBlank(this._includeSelf) ? false : this._includeSelf; }
 
   toString(): string {
-    return `@Visibility(depth: ${this.depth}, crossComponentBoundaries: ${this.crossComponentBoundaries}, includeSelf: ${this.includeSelf}})`;
+    return `@Visibility(depth: ${this.depth}, crossBoundaries: ${this.crossBoundaries}, includeSelf: ${this.includeSelf}})`;
   }
 }
 

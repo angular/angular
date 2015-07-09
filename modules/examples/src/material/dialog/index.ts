@@ -6,13 +6,13 @@ import {
 } from 'angular2_material/src/components/dialog/dialog';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
-import {bind, Injector} from 'angular2/di';
+import {bind} from 'angular2/di';
 import {isPresent} from 'angular2/src/facade/lang';
 
 
 @Component({
   selector: 'demo-app',
-  appInjector: [MdDialog],
+  viewInjector: [MdDialog],
 })
 @View({
   templateUrl: './demo_app.html',
@@ -23,14 +23,12 @@ class DemoApp {
   elementRef: ElementRef;
   dialogRef: MdDialogRef;
   dialogConfig: MdDialogConfig;
-  injector: Injector;
   lastResult: string;
 
-  constructor(mdDialog: MdDialog, elementRef: ElementRef, injector: Injector) {
+  constructor(mdDialog: MdDialog, elementRef: ElementRef) {
     this.dialog = mdDialog;
     this.elementRef = elementRef;
     this.dialogConfig = new MdDialogConfig();
-    this.injector = injector;
 
     this.dialogConfig.width = '60%';
     this.dialogConfig.height = '60%';
@@ -42,7 +40,7 @@ class DemoApp {
       return;
     }
 
-    this.dialog.open(SimpleDialogComponent, this.elementRef, this.injector, this.dialogConfig)
+    this.dialog.open(SimpleDialogComponent, this.elementRef, this.dialogConfig)
         .then(ref => {
           this.dialogRef = ref;
           ref.instance.numCoconuts = 777;

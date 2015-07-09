@@ -300,6 +300,7 @@ var _availableDefinitions = [
   '{z: 1}',
   '{z: a}',
   'name | pipe',
+  "name | pipe:'one':address.city",
   'value',
   'a',
   'address.city',
@@ -308,5 +309,6 @@ var _availableDefinitions = [
   'sayHi("Jim")',
   'a()(99)',
   'a.sayHi("Jim")',
-  'passThrough([12])'
+  'passThrough([12])',
+  'invalidFn(1)'
 ];

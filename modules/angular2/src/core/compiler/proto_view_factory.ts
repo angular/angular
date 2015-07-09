@@ -155,6 +155,9 @@ class BindingRecordsCreator {
 
 @Injectable()
 export class ProtoViewFactory {
+  /**
+   * @private
+   */
   constructor(public _changeDetection: ChangeDetection) {}
 
   createAppProtoViews(hostComponentBinding: DirectiveBinding,
@@ -348,7 +351,7 @@ function _findParentProtoElementInjectorWithDistance(
       }
     }
   } while (binderIndex !== -1);
-  return new ParentProtoElementInjectorWithDistance(null, -1);
+  return new ParentProtoElementInjectorWithDistance(null, 0);
 }
 
 function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderElementBinder,

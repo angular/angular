@@ -1,10 +1,4 @@
-import {
-  CONST_EXPR,
-  isPresent,
-  NumberWrapper,
-  StringWrapper,
-  RegExpWrapper
-} from 'angular2/src/facade/lang';
+import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
 import {MapWrapper, Map, ListWrapper, List} from 'angular2/src/facade/collection';
 import {Injectable, bind, Binding} from 'angular2/di';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
@@ -16,7 +10,6 @@ import {DebugElement} from './debug_element';
 const NG_ID_PROPERTY = 'ngid';
 const INSPECT_GLOBAL_NAME = 'ngProbe';
 
-var NG_ID_SEPARATOR_RE = RegExpWrapper.create('#');
 var NG_ID_SEPARATOR = '#';
 
 // Need to keep the views in a global Map so that multiple angular apps are supported
@@ -34,7 +27,7 @@ function _setElementId(element, indices: List<number>) {
 function _getElementId(element): List<number> {
   var elId = DOM.getData(element, NG_ID_PROPERTY);
   if (isPresent(elId)) {
-    return ListWrapper.map(StringWrapper.split(elId, NG_ID_SEPARATOR_RE),
+    return ListWrapper.map(elId.split(NG_ID_SEPARATOR),
                            (partStr) => NumberWrapper.parseInt(partStr, 10));
   } else {
     return null;

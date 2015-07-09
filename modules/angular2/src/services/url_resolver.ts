@@ -8,6 +8,13 @@ import {
 } from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
+/**
+ * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
+ *
+ * This interface can be overridden by the application developer to create custom behavior.
+ *
+ * See {@link Compiler}
+ */
 @Injectable()
 export class UrlResolver {
   /**

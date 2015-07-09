@@ -125,12 +125,13 @@ class _CodegenState {
     buf.write('''
       class $_changeDetectorTypeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
-        final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
+        $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
             $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
         dynamic $_ALREADY_CHECKED_ACCESSOR = false;
+        dynamic $_CURRENT_PROTO = null;
         ${_allFields().map((f) {
           if (f == _CONTEXT_ACCESSOR) {
             return '$_contextTypeName $f = null;';
@@ -140,7 +141,6 @@ class _CodegenState {
 
         $_changeDetectorTypeName(
             this.$_DISPATCHER_ACCESSOR,
-            this.$_PIPE_REGISTRY_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
             this.$_DIRECTIVES_ACCESSOR) : super(${JSON.encode(_changeDetectorDefId)});
 
@@ -148,10 +148,18 @@ class _CodegenState {
           if (!hydrated()) {
             $_UTIL.throwDehydrated();
           }
+          try {
+            this.__detectChangesInRecords(throwOnChange);
+          } catch (e, s) {
+            this.throwError($_CURRENT_PROTO, e, s);
+          }
+        }
+
+        void __detectChangesInRecords(throwOnChange) {
           ${_genLocalDefinitions()}
           ${_genChangeDefinitons()}
           var $_IS_CHANGED_LOCAL = false;
-          var $_CURRENT_PROTO;
+          $_CURRENT_PROTO = null;
           var $_CHANGES_LOCAL = null;
 
           context = $_CONTEXT_ACCESSOR;
@@ -164,13 +172,14 @@ class _CodegenState {
           ${_getCallOnAllChangesDoneBody()}
         }
 
-        void hydrate($_contextTypeName context, locals, directives) {
+        void hydrate($_contextTypeName context, locals, directives, pipeRegistry) {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
           $_CONTEXT_ACCESSOR = context;
           $_LOCALS_ACCESSOR = locals;
           ${_genHydrateDirectives()}
           ${_genHydrateDetectors()}
           $_ALREADY_CHECKED_ACCESSOR = false;
+          $_PIPE_REGISTRY_ACCESSOR = pipeRegistry;
         }
 
         void dehydrate() {
@@ -181,17 +190,17 @@ class _CodegenState {
               : '$f = $_UTIL.uninitialized();';
           }).join('')}
           $_LOCALS_ACCESSOR = null;
+          $_PIPE_REGISTRY_ACCESSOR = null;
         }
 
         hydrated() => $_CONTEXT_ACCESSOR != null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
-            $_GEN_PREFIX.PipeRegistry registry,
             $_GEN_PREFIX.ChangeDetectorDefinition def) {
           return new $_GEN_PREFIX.PregenProtoChangeDetector(
-              (a, b, c, d) => new $_changeDetectorTypeName(a, b, c, d),
-              registry, def);
+              (a, b, c) => new $_changeDetectorTypeName(a, b, c),
+              def);
         }
       }
     ''');
@@ -304,6 +313,8 @@ class _CodegenState {
 
   String _genPipeCheck(ProtoRecord r) {
     var context = _localNames[r.contextIndex];
+    var argString = r.args.map((arg) => this._localNames[arg]).join(", ");
+
     var oldValue = _fieldNames[r.selfIndex];
     var newValue = _localNames[r.selfIndex];
     var change = _changeNames[r.selfIndex];
@@ -322,7 +333,7 @@ class _CodegenState {
         $pipe = $_PIPE_REGISTRY_ACCESSOR.get('$pipeType', $context, $cdRef);
       }
 
-      $newValue = $pipe.transform($context);
+      $newValue = $pipe.transform($context, [$argString]);
       if (!$_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
         $newValue = $_UTIL.unwrapValue($newValue);
         $change = true;
@@ -422,7 +433,9 @@ class _CodegenState {
   String _genInterpolation(ProtoRecord r) {
     var res = new StringBuffer();
     for (var i = 0; i < r.args.length; ++i) {
-      res.write('${JSON.encode(r.fixedArgs[i])} + ${_localNames[r.args[i]]} +');
+      var name = _localNames[r.args[i]];
+      res.write(
+          '${JSON.encode(r.fixedArgs[i])} "\$\{$name == null ? "" : $name\}" ');
     }
     res.write(JSON.encode(r.fixedArgs[r.args.length]));
     return '$res';

@@ -280,10 +280,10 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
       new ChangeDetectorDefinition("proto", null, [], bindings, [directiveRecord]));
 
   var targetObj = new Obj();
-  parentCd.hydrate(object, null, new FakeDirectives(targetObj));
+  parentCd.hydrate(object, null, new FakeDirectives(targetObj), null);
   for (var i = 0; i < iterations; ++i) {
     var cd = proto.instantiate(dispatcher);
-    cd.hydrate(object, null, new FakeDirectives(targetObj));
+    cd.hydrate(object, null, new FakeDirectives(targetObj), null);
     parentCd.addChild(cd);
   }
   return parentCd;
@@ -332,7 +332,7 @@ export function main() {
 
   // -- DYNAMIC
   var ng2DynamicChangeDetector =
-      setUpChangeDetection(new DynamicChangeDetection(null), numberOfDetectors, object);
+      setUpChangeDetection(new DynamicChangeDetection(), numberOfDetectors, object);
 
   runChangeDetectionReads(ng2DynamicChangeDetector, 1);  // warmup
 
@@ -352,7 +352,7 @@ export function main() {
   // Reenable when we have transformers for Dart
   if (isJsObject({})) {
     var ng2JitChangeDetector =
-        setUpChangeDetection(new JitChangeDetection(null), numberOfDetectors, object);
+        setUpChangeDetection(new JitChangeDetection(), numberOfDetectors, object);
 
     runChangeDetectionReads(ng2JitChangeDetector, 1);  // warmup
 

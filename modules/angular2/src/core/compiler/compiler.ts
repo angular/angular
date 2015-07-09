@@ -60,6 +60,26 @@ export class CompilerCache {
 }
 
 /**
+ *
+ * ## URL Resolution
+ *
+ * ```
+ * var appRootUrl: AppRootUrl = ...;
+ * var componentUrlMapper: ComponentUrlMapper = ...;
+ * var urlResolver: UrlResolver = ...;
+ *
+ * var componentType: Type = ...;
+ * var componentAnnotation: ComponentAnnotation = ...;
+ * var viewAnnotation: ViewAnnotation = ...;
+ *
+ * // Resolving a URL
+ *
+ * var url = viewAnnotation.templateUrl;
+ * var componentUrl = componentUrlMapper.getUrl(componentType);
+ * var componentResolvedUrl = urlResolver.resolve(appRootUrl.value, componentUrl);
+ * var templateResolvedUrl = urlResolver.resolve(componetResolvedUrl, url);
+ * ```
+ *
  * @exportedAs angular2/view
  */
 @Injectable()
@@ -74,6 +94,9 @@ export class Compiler {
   private _render: renderApi.RenderCompiler;
   private _protoViewFactory: ProtoViewFactory;
 
+  /**
+   * @private
+   */
   constructor(reader: DirectiveResolver, cache: CompilerCache, viewResolver: ViewResolver,
               componentUrlMapper: ComponentUrlMapper, urlResolver: UrlResolver,
               render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory,
@@ -112,7 +135,7 @@ export class Compiler {
     if (isPresent(hostAppProtoView)) {
       hostPvPromise = PromiseWrapper.resolve(hostAppProtoView);
     } else {
-      var componentBinding = this._bindDirective(componentTypeOrBinding);
+      var componentBinding: DirectiveBinding = this._bindDirective(componentTypeOrBinding);
       Compiler._assertTypeIsComponent(componentBinding);
 
       var directiveMetadata = componentBinding.metadata;
@@ -153,8 +176,8 @@ export class Compiler {
       }
     }
 
-    var boundDirectives =
-        ListWrapper.map(directives, (directive) => this._bindDirective(directive));
+    var boundDirectives = this._removeDuplicatedDirectives(
+        ListWrapper.map(directives, (directive) => this._bindDirective(directive)));
 
     var renderTemplate = this._buildRenderTemplate(component, view, boundDirectives);
     pvPromise =
@@ -165,6 +188,12 @@ export class Compiler {
 
     this._compiling.set(component, pvPromise);
     return pvPromise;
+  }
+
+  private _removeDuplicatedDirectives(directives: List<DirectiveBinding>): List<DirectiveBinding> {
+    var directivesMap: Map<number, DirectiveBinding> = new Map();
+    directives.forEach((dirBinding) => { directivesMap.set(dirBinding.key.id, dirBinding); });
+    return MapWrapper.values(directivesMap);
   }
 
   private _compileNestedProtoViews(componentBinding, renderPv, directives): Promise<AppProtoView>|

@@ -5,8 +5,7 @@ import {
   StringWrapper,
   isPresent,
   isBlank,
-  BaseException,
-  normalizeBlank
+  BaseException
 } from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {
@@ -27,6 +26,14 @@ import {RouteHandler} from './route_handler';
 export class Segment {
   name: string;
   regex: string;
+}
+
+function normalizeString(obj: any): string {
+  if (isBlank(obj)) {
+    return null;
+  } else {
+    return obj.toString();
+  }
 }
 
 class ContinuationSegment extends Segment {
@@ -56,7 +63,7 @@ class DynamicSegment {
       throw new BaseException(
           `Route generator for '${this.name}' was not included in parameters passed.`);
     }
-    return normalizeBlank(StringMapWrapper.get(params, this.name));
+    return normalizeString(StringMapWrapper.get(params, this.name));
   }
 }
 
@@ -66,13 +73,13 @@ class StarSegment {
   constructor(public name: string) {}
 
   generate(params: StringMap<string, string>): string {
-    return normalizeBlank(StringMapWrapper.get(params, this.name));
+    return normalizeString(StringMapWrapper.get(params, this.name));
   }
 }
 
 
-var paramMatcher = RegExpWrapper.create("^:([^\/]+)$");
-var wildcardMatcher = RegExpWrapper.create("^\\*([^\/]+)$");
+var paramMatcher = /^:([^\/]+)$/g;
+var wildcardMatcher = /^\*([^\/]+)$/g;
 
 function parsePathString(route: string): StringMap<string, any> {
   // normalize route as not starting with a "/". Recognition will

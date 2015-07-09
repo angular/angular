@@ -9953,7 +9953,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.6.4",
+      "version": "0.6.8",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
@@ -9964,7 +9964,7 @@
           }
         },
         "source-map-support": {
-          "version": "0.3.1",
+          "version": "0.3.2",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
@@ -9975,6 +9975,10 @@
               }
             }
           }
+        },
+        "typescript": {
+          "version": "1.5.3",
+          "resolved": "git://github.com/microsoft/TypeScript.git#331b63df7d05c9476b6b9cae97a7a158eba303ca"
         }
       }
     },
@@ -10578,9 +10582,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.1"
+      "version": "0.5.2"
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.28"
+  "version": "2.0.0-alpha.30"
 }

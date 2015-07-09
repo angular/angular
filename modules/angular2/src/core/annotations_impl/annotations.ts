@@ -3,8 +3,6 @@ import {List} from 'angular2/src/facade/collection';
 import {Injectable, self} from 'angular2/src/di/annotations_impl';
 import {DEFAULT} from 'angular2/change_detection';
 
-// type StringMap = {[idx: string]: string};
-
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
@@ -714,8 +712,7 @@ export class Directive extends Injectable {
   /**
    * Specifies which lifecycle should be notified to the directive.
    *
-   * See {@link onChange}, {@link onDestroy}, {@link onCheck},
-   * {@link onInit}, {@link onAllChangesDone} for details.
+   * See {@link LifecycleEvent} for details.
    */
   lifecycle: List<LifecycleEvent>;
 
@@ -787,7 +784,16 @@ export class Directive extends Injectable {
   constructor({
                   selector, properties, events, host, lifecycle, hostInjector, exportAs,
                   compileChildren = true,
-              }: DirectiveArgs = {}) {
+              }: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+  } = {}) {
     super(self);
     this.selector = selector;
     this.properties = properties;
@@ -798,17 +804,6 @@ export class Directive extends Injectable {
     this.compileChildren = compileChildren;
     this.hostInjector = hostInjector;
   }
-}
-
-export interface DirectiveArgs {
-  selector?: string;
-  properties?: List<string>;
-  events?: List<string>;
-  host?: StringMap<string, string>;
-  lifecycle?: List<LifecycleEvent>;
-  hostInjector?: List<any>;
-  exportAs?: string;
-  compileChildren?: boolean;
 }
 
 /**
@@ -822,8 +817,7 @@ export interface DirectiveArgs {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child {@link Injector} which is configured with the `appInjector` for the
- * {@link Component}.
+ * - creates all the injectable objects configured with `hostInjector` and `viewInjector`.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
@@ -864,59 +858,6 @@ export class Component extends Directive {
    * tells it to do so.
    */
   changeDetection: string;
-
-  /**
-   * Defines the set of injectable objects that are visible to a Component and its children.
-   *
-   * The `appInjector` defined in the Component annotation allow you to configure a set of bindings
-   * for the component's
-   * injector.
-   *
-   * When a component is instantiated, Angular creates a new child Injector, which is configured
-   * with the bindings in
-   * the Component `appInjector` annotation. The injectable objects then become available for
-   * injection to the component
-   * itself and any of the directives in the component's template, i.e. they are not available to
-   * the directives which
-   * are children in the component's light DOM.
-   *
-   *
-   * The syntax for configuring the `appInjector` injectable is identical to {@link Injector}
-   * injectable configuration.
-   * See {@link Injector} for additional detail.
-   *
-   *
-   * ## Simple Example
-   *
-   * Here is an example of a class that can be injected:
-   *
-   * ```
-   * class Greeter {
-   *    greet(name:string) {
-   *      return 'Hello ' + name + '!';
-   *    }
-   * }
-   *
-   * @Component({
-   *   selector: 'greet',
-   *   appInjector: [
-   *     Greeter
-   *   ]
-   * })
-   * @View({
-   *   template: `{{greeter.greet('world')}}!`,
-   *   directives: [Child]
-   * })
-   * class HelloWorld {
-   *   greeter:Greeter;
-   *
-   *   constructor(greeter:Greeter) {
-   *     this.greeter = greeter;
-   *   }
-   * }
-   * ```
-   */
-  appInjector: List<any>;
 
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
@@ -960,9 +901,19 @@ export class Component extends Directive {
    */
   viewInjector: List<any>;
 
-  constructor({selector, properties, events, host, exportAs, appInjector, lifecycle, hostInjector,
-               viewInjector, changeDetection = DEFAULT,
-               compileChildren = true}: ComponentArgs = {}) {
+  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
+               changeDetection = DEFAULT, compileChildren = true}: {
+    selector?: string,
+    properties?: List<string>,
+    events?: List<string>,
+    host?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    exportAs?: string,
+    compileChildren?: boolean,
+    viewInjector?: List<any>,
+    changeDetection?: string,
+  } = {}) {
     super({
       selector: selector,
       properties: properties,
@@ -975,15 +926,8 @@ export class Component extends Directive {
     });
 
     this.changeDetection = changeDetection;
-    this.appInjector = appInjector;
     this.viewInjector = viewInjector;
   }
-}
-
-export interface ComponentArgs extends DirectiveArgs {
-  appInjector?: List<any>;
-  viewInjector?: List<any>;
-  changeDetection?: string;
 }
 
 /**
@@ -1016,7 +960,7 @@ export class LifecycleEvent {
  * ```
  * @exportedAs angular2/annotations
  */
-export const onDestroy = CONST_EXPR(new LifecycleEvent("onDestroy"));
+export const onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestroy"));
 
 
 /**
@@ -1054,7 +998,7 @@ export const onDestroy = CONST_EXPR(new LifecycleEvent("onDestroy"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onChange = CONST_EXPR(new LifecycleEvent("onChange"));
+export const onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"));
 
 /**
  * Notify a directive when it has been checked.
@@ -1078,7 +1022,7 @@ export const onChange = CONST_EXPR(new LifecycleEvent("onChange"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onCheck = CONST_EXPR(new LifecycleEvent("onCheck"));
+export const onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"));
 
 /**
  * Notify a directive when it has been checked the first itme.
@@ -1102,7 +1046,7 @@ export const onCheck = CONST_EXPR(new LifecycleEvent("onCheck"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onInit = CONST_EXPR(new LifecycleEvent("onInit"));
+export const onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
 
 /**
  * Notify a directive when the bindings of all its children have been checked (whether they have
@@ -1124,4 +1068,4 @@ export const onInit = CONST_EXPR(new LifecycleEvent("onInit"));
  *  ```
  * @exportedAs angular2/annotations
  */
-export const onAllChangesDone = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));
+export const onAllChangesDone: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));

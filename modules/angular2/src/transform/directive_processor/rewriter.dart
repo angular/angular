@@ -23,12 +23,12 @@ import 'visitors.dart';
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
 Future<String> createNgDeps(AssetReader reader, AssetId assetId,
-    AnnotationMatcher annotationMatcher) async {
+    AnnotationMatcher annotationMatcher, bool inlineViews) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new AsyncStringWriter();
-  var visitor = new CreateNgDepsVisitor(
-      writer, assetId, new XhrImpl(reader, assetId), annotationMatcher);
+  var visitor = new CreateNgDepsVisitor(writer, assetId,
+      new XhrImpl(reader, assetId), annotationMatcher, inlineViews);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
 
@@ -60,13 +60,14 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(
-      AsyncStringWriter writer, this.assetId, XHR xhr, this._annotationMatcher)
+  CreateNgDepsVisitor(AsyncStringWriter writer, this.assetId, XHR xhr,
+      this._annotationMatcher, inlineViews)
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
-        _metaVisitor = new AnnotationsTransformVisitor(writer, xhr);
+        _metaVisitor = new AnnotationsTransformVisitor(
+            writer, xhr, inlineViews);
 
   void _visitNodeListWithSeparator(NodeList<AstNode> list, String separator) {
     if (list == null) return;
@@ -171,11 +172,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
     var ctor = _getCtor(node);
 
-    if (!_foundNgInjectable) {
-      // The receiver for cascaded calls.
-      writer.print(REFLECTOR_VAR_NAME);
-      _foundNgInjectable = true;
-    }
+    _maybeWriteReflector();
     writer.print('..registerType(');
     node.name.accept(this);
     writer.print(''', {'factory': ''');
@@ -196,9 +193,9 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
         node.implementsClause.interfaces != null &&
         node.implementsClause.interfaces.isNotEmpty) {
       writer.print(''', 'interfaces': const [''');
-      node.implementsClause.interfaces.forEach((interface) {
-        writer.print('${interface.name}');
-      });
+      writer.print(node.implementsClause.interfaces
+          .map((interface) => interface.name)
+          .join(', '));
       writer.print(']');
     }
     writer.print('})');
@@ -235,4 +232,30 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitSimpleIdentifier(SimpleIdentifier node) => _nodeToSource(node);
+
+  @override
+  bool visitFunctionDeclaration(FunctionDeclaration node) {
+    if (!node.metadata.any((a) => _annotationMatcher.hasMatch(a, assetId))) {
+      return null;
+    }
+
+    _maybeWriteReflector();
+    writer.print('..registerFunction(');
+    node.name.accept(this);
+    writer.print(''', {'parameters': const [''');
+    node.functionExpression.parameters.accept(_paramsVisitor);
+    writer.print('''], 'annotations': ''');
+    node.metadata.accept(_metaVisitor);
+    writer.print('})');
+    return null;
+  }
+
+  /// Writes out the reflector variable the first time it is called.
+  void _maybeWriteReflector() {
+    if (_foundNgInjectable) return;
+    _foundNgInjectable = true;
+
+    // The receiver for cascaded calls.
+    writer.print(REFLECTOR_VAR_NAME);
+  }
 }

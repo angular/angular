@@ -11,7 +11,7 @@ void initReflector(reflector) {
     ..registerType(SoupComponent, {
       'factory':
           (String description, salt) => new SoupComponent(description, salt),
-      'parameters': const [const [Tasty, String], const [const Inject(Salt)]],
+      'parameters': const [const [String, Tasty], const [const Inject(Salt)]],
       'annotations': const [const Component(selector: '[soup]')]
     });
 }

@@ -16,6 +16,7 @@ import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
 import {bind, Injector} from 'angular2/di';
 import {Request} from 'angular2/src/http/static_request';
+import {Headers} from 'angular2/src/http/headers';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
@@ -24,6 +25,7 @@ import {ResponseTypes} from 'angular2/src/http/enums';
 var abortSpy;
 var sendSpy;
 var openSpy;
+var setRequestHeaderSpy;
 var addEventListenerSpy;
 var existingXHRs = [];
 
@@ -33,6 +35,7 @@ class MockBrowserXHR extends BrowserXhr {
   open: any;
   response: any;
   responseText: string;
+  setRequestHeader: any;
   callbacks: Map<string, Function>;
   constructor() {
     super();
@@ -40,6 +43,7 @@ class MockBrowserXHR extends BrowserXhr {
     this.abort = abortSpy = spy.spy('abort');
     this.send = sendSpy = spy.spy('send');
     this.open = openSpy = spy.spy('open');
+    this.setRequestHeader = setRequestHeaderSpy = spy.spy('setRequestHeader');
     this.callbacks = new Map();
   }
 
@@ -108,6 +112,16 @@ export function main() {
         new XHRConnection(new Request(base.merge(new RequestOptions({body: body}))),
                           new MockBrowserXHR());
         expect(sendSpy).toHaveBeenCalledWith(body);
+      });
+
+      it('should attach headers to the request', () => {
+        var headers = new Headers({'Content-Type': 'text/xml', 'Breaking-Bad': '<3'});
+
+        var base = new BaseRequestOptions();
+        new XHRConnection(new Request(base.merge(new RequestOptions({headers: headers}))),
+                          new MockBrowserXHR());
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', ['text/xml']);
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', ['<3']);
       });
     });
   });

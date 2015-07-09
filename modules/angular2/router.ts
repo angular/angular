@@ -34,8 +34,7 @@ import {List} from './src/facade/collection';
 export const routerDirectives: List<any> = CONST_EXPR([RouterOutlet, RouterLink]);
 
 export var routerInjectables: List<any> = [
-  bind(RouteRegistry)
-      .toFactory((appRoot) => new RouteRegistry(appRoot), [appComponentTypeToken]),
+  RouteRegistry,
   Pipeline,
   bind(LocationStrategy).toClass(HTML5LocationStrategy),
   Location,

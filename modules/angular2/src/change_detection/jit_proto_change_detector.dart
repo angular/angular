@@ -3,7 +3,7 @@ library change_detection.jit_proto_change_detector;
 import 'interfaces.dart' show ChangeDetector, ProtoChangeDetector;
 
 class JitProtoChangeDetector implements ProtoChangeDetector {
-  JitProtoChangeDetector(registry, definition) : super();
+  JitProtoChangeDetector(definition) : super();
 
   static bool isSupported() => false;
 

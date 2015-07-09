@@ -2,7 +2,8 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Directive, onChange, Query, QueryList} from 'angular2/angular2';
+import {Directive, Query, onChange} from 'angular2/annotations';
+import {QueryList} from 'angular2/core';
 import {forwardRef, Ancestor, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';

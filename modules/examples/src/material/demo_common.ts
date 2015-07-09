@@ -72,7 +72,7 @@ export class DemoUrlResolver extends UrlResolver {
   }
 }
 
-var _schemeRe = RegExpWrapper.create('^([^:/?#]+:)?');
+var _schemeRe = /^([^:/?#]+:)?/g;
 
 // TODO: remove this hack when http://dartbug.com/23128 is fixed
 function _isInPubServe(): boolean {

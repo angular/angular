@@ -38,7 +38,7 @@ void functionThatThrowsNonError() {
 
 main() {
   describe('TypeLiteral', () {
-    it('should publish via appInjector', inject([
+    it('should publish via viewInjector', inject([
       TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
@@ -143,7 +143,7 @@ class Dummy {}
 
 @Component(
     selector: 'type-literal-component',
-    appInjector: const [
+    viewInjector: const [
   const Binding(const TypeLiteral<List<String>>(),
       toValue: const <String>['Hello', 'World'])
 ])

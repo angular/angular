@@ -219,24 +219,15 @@ export function main() {
          }));
 
       describe('pipes', () => {
-        beforeEachBindings(() => {
-          return [
-            bind(ChangeDetection)
-                .toFactory(() => new DynamicChangeDetection(
-                               new PipeRegistry({"double": [new DoublePipeFactory()]})),
-                           [])
-          ];
-        });
-
         it("should support pipes in bindings",
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyComp, new viewAnn.View({
+                    tcb.overrideView(MyCompWithPipes, new viewAnn.View({
                          template: '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>',
                          directives: [MyDir]
                        }))
 
-                        .createAsync(MyComp)
+                        .createAsync(MyCompWithPipes)
                         .then((rootTC) => {
                           rootTC.componentInstance.ctxProp = 'a';
                           rootTC.detectChanges();
@@ -297,6 +288,40 @@ export function main() {
 
                .createAsync(MyComp)
                .then((rootTC) => { async.done(); });
+         }));
+
+      it('should execute a given directive once, even if specified multiple times',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: '<p no-duplicate></p>',
+                directives: [
+                  DuplicateDir,
+                  DuplicateDir,
+                  [DuplicateDir, [DuplicateDir, bind(DuplicateDir).toClass(DuplicateDir)]]
+                ]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 expect(rootTC.nativeElement).toHaveText('noduplicate');
+                 async.done();
+               });
+         }));
+
+      it('should use the last directive binding per directive',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: '<p no-duplicate></p>',
+                directives: [
+                  bind(DuplicateDir)
+                      .toClass(DuplicateDir),
+                  bind(DuplicateDir).toClass(OtherDuplicateDir)
+                ]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 expect(rootTC.nativeElement).toHaveText('othernoduplicate');
+                 async.done();
+               });
          }));
 
       it('should support directives where a selector matches property binding',
@@ -1319,18 +1344,17 @@ class SimpleImperativeViewComponent {
   }
 }
 
-
 @Directive({selector: 'dynamic-vp'})
 @Injectable()
 class DynamicViewport {
   done;
-  constructor(vc: ViewContainerRef, inj: Injector, compiler: Compiler) {
+  constructor(vc: ViewContainerRef, compiler: Compiler) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
+
+    var bindings = Injector.resolve([bind(MyService).toValue(myService)]);
     this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.create(hostPv, 0, null,
-                                                 inj.createChildFromResolved(Injector.resolve(
-                                                     [bind(MyService).toValue(myService)])))});
+                    .then((hostPv) => {vc.create(hostPv, 0, null, bindings)});
   }
 }
 
@@ -1377,6 +1401,21 @@ class PushCmpWithRef {
   propagate() { this.ref.requestCheck(); }
 }
 
+@Injectable()
+class PipeRegistryWithDouble extends PipeRegistry {
+  constructor() { super({"double": [new DoublePipeFactory()]}); }
+}
+
+@Component({
+  selector: 'my-comp-with-pipes',
+  viewInjector: [new Binding(PipeRegistry, {toClass: PipeRegistryWithDouble})]
+})
+@View({directives: []})
+@Injectable()
+class MyCompWithPipes {
+  ctxProp: string = "initial value";
+}
+
 @Component({selector: 'my-comp'})
 @View({directives: []})
 @Injectable()
@@ -1391,14 +1430,7 @@ class MyComp {
   }
 }
 
-@Component({selector: 'component-with-pipes', properties: ["prop"]})
-@View({template: ''})
-@Injectable()
-class ComponentWithPipes {
-  prop: string;
-}
-
-@Component({selector: 'child-cmp', properties: ['dirProp'], appInjector: [MyService]})
+@Component({selector: 'child-cmp', properties: ['dirProp'], viewInjector: [MyService]})
 @View({directives: [MyDir], template: '{{ctxProp}}'})
 @Injectable()
 class ChildComp {
@@ -1448,7 +1480,7 @@ class CompWithAncestor {
   constructor(@Ancestor() someComp: SomeDirective) { this.myAncestor = someComp; }
 }
 
-@Component({selector: '[child-cmp2]', appInjector: [MyService]})
+@Component({selector: '[child-cmp2]', viewInjector: [MyService]})
 @Injectable()
 class ChildComp2 {
   ctxProp: string;
@@ -1474,7 +1506,7 @@ class DoublePipe implements Pipe {
 
   supports(obj) { return true; }
 
-  transform(value) { return `${value}${value}`; }
+  transform(value, args = null) { return `${value}${value}`; }
 }
 
 @Injectable()
@@ -1805,4 +1837,18 @@ class ExportDir {
 
 @Component({selector: 'comp'})
 class ComponentWithoutView {
+}
+
+@Directive({selector: '[no-duplicate]'})
+class DuplicateDir {
+  constructor(renderer: DomRenderer, private elRef: ElementRef) {
+    DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'noduplicate');
+  }
+}
+
+@Directive({selector: '[no-duplicate]'})
+class OtherDuplicateDir {
+  constructor(renderer: DomRenderer, private elRef: ElementRef) {
+    DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'othernoduplicate');
+  }
 }

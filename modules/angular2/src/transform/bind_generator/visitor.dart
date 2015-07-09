@@ -6,8 +6,8 @@ import 'package:angular2/src/transform/common/logging.dart';
 /// Visitor responsible for crawling the "annotations" value in a
 /// `registerType` call and pulling out the properties of any "bind"
 /// values found.
-class ExtractNamedExpressionVisitor extends Object with
-    RecursiveAstVisitor<Object> {
+class ExtractNamedExpressionVisitor extends Object
+    with RecursiveAstVisitor<Object> {
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
   final List<String> bindConfig = [];
   final String nameToExtract;

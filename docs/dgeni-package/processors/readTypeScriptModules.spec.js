@@ -45,6 +45,40 @@ describe('readTypeScriptModules', function() {
   });
 
 
+  describe('interfaces', function() {
+
+    it('should mark optional properties', function() {
+      processor.sourceFiles = [ 'interfaces.ts'];
+      var docs = [];
+      processor.$process(docs);
+
+      var moduleDoc = docs[0];
+      var exportedInterface = moduleDoc.exports[0];
+      var member = exportedInterface.members[0];
+      expect(member.name).toEqual('optionalProperty');
+      expect(member.optional).toEqual(true);
+    });
+
+
+    it('should handle "call" type interfaces', function() {
+      processor.sourceFiles = [ 'interfaces.ts'];
+      var docs = [];
+      processor.$process(docs);
+
+      var moduleDoc = docs[0];
+      var exportedInterface = moduleDoc.exports[0];
+
+      expect(exportedInterface.callMember).toBeDefined();
+      expect(exportedInterface.callMember.parameters).toEqual(['param: T']);
+      expect(exportedInterface.callMember.returnType).toEqual('U');
+      expect(exportedInterface.callMember.typeParameters).toEqual(['T', 'U extends Findable<T>']);
+      expect(exportedInterface.newMember).toBeDefined();
+      expect(exportedInterface.newMember.parameters).toEqual(['param: number']);
+      expect(exportedInterface.newMember.returnType).toEqual('MyInterface');
+    });
+  });
+
+
   describe('ordering of members', function() {
     it('should order class members in order of appearance (by default)', function() {
       processor.sourceFiles = ['orderingOfMembers.ts'];

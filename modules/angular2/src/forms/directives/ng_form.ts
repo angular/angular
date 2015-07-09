@@ -1,7 +1,7 @@
 import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
-import {Directive} from 'angular2/src/core/annotations/decorators';
+import {Directive} from 'angular2/annotations';
 import {forwardRef, Binding} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
@@ -67,13 +67,11 @@ export class NgForm extends ControlContainer implements Form {
 
   get formDirective(): Form { return this; }
 
+  get control(): ControlGroup { return this.form; }
+
   get path(): List<string> { return []; }
 
   get controls(): StringMap<string, AbstractControl> { return this.form.controls; }
-
-  get value(): any { return this.form.value; }
-
-  get errors(): any { return this.form.errors; }
 
   addControl(dir: NgControl): void {
     this._later(_ => {
@@ -114,6 +112,10 @@ export class NgForm extends ControlContainer implements Form {
         container.updateValidity();
       }
     });
+  }
+
+  getControlGroup(dir: NgControlGroup): ControlGroup {
+    return <ControlGroup>this.form.find(dir.path);
   }
 
   updateModel(dir: NgControl, value: any): void {

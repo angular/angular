@@ -23,7 +23,9 @@ defined in {$ githubViewLink(doc) $}
 
 {%- for member in doc.members %}{% if not member.private %}
   <section class="member">
-    <h1 id="{$ member.name $}" class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
+    <h1 id="{$ member.name $}" class="name">
+      {$ member.name $}{% if member.optional %}?{% endif %}{$ paramList(member.params) $}
+    </h1>
     {% marked %}
       {$ member.description $}
     {% endmarked %}

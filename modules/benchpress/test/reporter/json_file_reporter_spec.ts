@@ -47,7 +47,7 @@ export function main() {
          })
              .reportSample([mv(0, 0, {'a': 3, 'b': 6})],
                            [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
-         var regExp = RegExpWrapper.create('somePath/someId_\\d+\\.json');
+         var regExp = /somePath\/someId_\d+\.json/g;
          expect(isPresent(RegExpWrapper.firstMatch(regExp, loggedFile['filename']))).toBe(true);
          var parsedContent = Json.parse(loggedFile['content']);
          expect(parsedContent)

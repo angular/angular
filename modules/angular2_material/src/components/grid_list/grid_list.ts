@@ -1,13 +1,7 @@
 import {Component, View, Parent, onDestroy, onChange, onAllChangesDone} from 'angular2/angular2';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {
-  StringWrapper,
-  isPresent,
-  isString,
-  NumberWrapper,
-  RegExpWrapper
-} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent, isString, NumberWrapper} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 
 // TODO(jelbourn): Set appropriate aria attributes for grid list elements.
@@ -63,7 +57,7 @@ export class MdGridList {
     if (value === 'fit') {
       this.rowHeightMode = 'fit';
     } else if (StringWrapper.contains(value, ':')) {
-      var ratioParts = StringWrapper.split(value, RegExpWrapper.create(':'));
+      var ratioParts = value.split(':');
       if (ratioParts.length !== 2) {
         throw `md-grid-list: invalid ratio given for row-height: "${value}"`;
       }

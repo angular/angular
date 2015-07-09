@@ -3,8 +3,18 @@ import {Type, isPresent, BaseException, stringify} from 'angular2/src/facade/lan
 import {Directive} from '../annotations_impl/annotations';
 import {reflector} from 'angular2/src/reflection/reflection';
 
+/**
+ * Resolve a {@link Type} for {@link Directive}.
+ *
+ * This interface can be overridden by the application developer to create custom behavior.
+ *
+ * See {@link Compiler}
+ */
 @Injectable()
 export class DirectiveResolver {
+  /**
+   * Return {@link Directive} for a given {@link Type}.
+   */
   resolve(type: Type): Directive {
     var annotations = reflector.annotations(resolveForwardRef(type));
     if (isPresent(annotations)) {

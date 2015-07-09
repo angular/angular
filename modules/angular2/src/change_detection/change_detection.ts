@@ -10,6 +10,7 @@ import {PromisePipeFactory} from './pipes/promise_pipe';
 import {UpperCaseFactory} from './pipes/uppercase_pipe';
 import {LowerCaseFactory} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
+import {LimitToPipeFactory} from './pipes/limit_to_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Inject, Injectable, OpaqueToken, Optional} from 'angular2/di';
@@ -64,8 +65,16 @@ export const lowercase: List<PipeFactory> =
  *
  * @exportedAs angular2/pipes
  */
-export const json: List<PipeFactory | Pipe> =
+export const json: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new JsonPipe()), CONST_EXPR(new NullPipeFactory())]);
+
+/**
+ * LimitTo text transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const limitTo: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new LimitToPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 export const defaultPipes = CONST_EXPR({
   "iterableDiff": iterableDiff,
@@ -73,7 +82,8 @@ export const defaultPipes = CONST_EXPR({
   "async": async,
   "uppercase": uppercase,
   "lowercase": lowercase,
-  "json": json
+  "json": json,
+  "limitTo": limitTo
 });
 
 /**
@@ -97,11 +107,10 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
   _dynamicChangeDetection: ChangeDetection;
   _protoChangeDetectorFactories: StringMap<string, Function>;
 
-  constructor(private registry: PipeRegistry,
-              @Inject(PROTO_CHANGE_DETECTOR_KEY) @Optional()
+  constructor(@Inject(PROTO_CHANGE_DETECTOR_KEY) @Optional()
               protoChangeDetectorsForTest?: StringMap<string, Function>) {
     super();
-    this._dynamicChangeDetection = new DynamicChangeDetection(registry);
+    this._dynamicChangeDetection = new DynamicChangeDetection();
     this._protoChangeDetectorFactories = isPresent(protoChangeDetectorsForTest) ?
                                              protoChangeDetectorsForTest :
                                              preGeneratedProtoDetectors;
@@ -112,8 +121,7 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
   createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     var id = definition.id;
     if (StringMapWrapper.contains(this._protoChangeDetectorFactories, id)) {
-      return StringMapWrapper.get(this._protoChangeDetectorFactories, id)(this.registry,
-                                                                          definition);
+      return StringMapWrapper.get(this._protoChangeDetectorFactories, id)(definition);
     }
     return this._dynamicChangeDetection.createProtoChangeDetector(definition);
   }
@@ -129,10 +137,8 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
  */
 @Injectable()
 export class DynamicChangeDetection extends ChangeDetection {
-  constructor(private registry: PipeRegistry) { super(); }
-
   createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
-    return new DynamicProtoChangeDetector(this.registry, definition);
+    return new DynamicProtoChangeDetector(definition);
   }
 }
 
@@ -147,12 +153,10 @@ export class DynamicChangeDetection extends ChangeDetection {
 @Injectable()
 @CONST()
 export class JitChangeDetection extends ChangeDetection {
-  constructor(public registry: PipeRegistry) { super(); }
-
   static isSupported(): boolean { return JitProtoChangeDetector.isSupported(); }
 
   createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
-    return new JitProtoChangeDetector(this.registry, definition);
+    return new JitProtoChangeDetector(definition);
   }
 }
 

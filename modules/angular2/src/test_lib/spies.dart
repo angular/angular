@@ -1,6 +1,7 @@
 library test_lib.spies;
 
 import 'package:angular2/change_detection.dart';
+import 'package:angular2/di.dart';
 import './test_lib.dart';
 
 @proxy
@@ -20,5 +21,10 @@ class SpyPipe extends SpyObject implements Pipe {
 
 @proxy
 class SpyPipeFactory extends SpyObject implements PipeFactory {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyDependencyProvider extends SpyObject implements DependencyProvider {
   noSuchMethod(m) => super.noSuchMethod(m);
 }

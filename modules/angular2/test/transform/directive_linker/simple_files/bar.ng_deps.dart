@@ -14,7 +14,7 @@ void initReflector(reflector) {
       'parameters': const [],
       'annotations': const [
         const Component(
-            selector: '[soup]', appInjector: const [dep.DependencyComponent])
+            selector: '[soup]', viewInjector: const [dep.DependencyComponent])
       ]
     });
 }

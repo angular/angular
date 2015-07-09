@@ -69,7 +69,6 @@ export function main() {
 
     function createElementInjector(parent = null) {
       var host = new SpyElementInjector();
-      var appInjector = new SpyInjector();
       var elementInjector =
           isPresent(parent) ? new SpyElementInjectorWithParent(parent) : new SpyElementInjector();
       return SpyObject.stub(elementInjector,
@@ -79,8 +78,7 @@ export function main() {
                               'getEventEmitterAccessors': [],
                               'getHostActionAccessors': [],
                               'getComponent': null,
-                              'getHost': host,
-                              'getShadowDomAppInjector': appInjector
+                              'getHost': host
                             },
                             {});
     }
@@ -245,17 +243,6 @@ export function main() {
                .toHaveBeenCalledWith(null, contextView.elementInjectors[0].getHost(),
                                      childView.preBuiltObjects[0]);
          });
-
-      it('should use the shadowDomAppInjector of the context elementInjector if there is no host',
-         () => {
-           createViews();
-           parentView.elementInjectors[0].spy('getHost').andReturn(null);
-           utils.hydrateViewInContainer(parentView, 0, parentView, 0, 0, null);
-           expect(childView.rootElementInjectors[0].spy('hydrate'))
-               .toHaveBeenCalledWith(parentView.elementInjectors[0].getShadowDomAppInjector(), null,
-                                     childView.preBuiltObjects[0]);
-         });
-
     });
 
     describe('hydrateRootHostView', () => {

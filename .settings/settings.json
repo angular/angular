@@ -1,12 +1,12 @@
-// Place your settings in this file to overwrite default and user settings.
 {
-	"search.excludeFolders": [
-		".git",
-		"node_modules",
-		"bower_components",
-		"packages",
-		"build",
-		"dist",
-		"tmp"
-	]
+	"search.exclude": {
+		".git" : true,
+		".idea": true,
+		"node_modules" : true,
+		"bower_components" : true,
+		"packages" : true,
+		"build" : true,
+		"dist" : true,
+		"tmp" : true
+	}
 }

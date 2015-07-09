@@ -31,7 +31,7 @@ p.location-badge.
 
 {%- for member in doc.members %}{% if not member.private %}
   .l-sub-section
-    h3 {$ member.name $}
+    h3 {$ member.name $}{% if member.optional %}?{% endif %}
 
     {% if member.parameters %}
     pre.prettyprint

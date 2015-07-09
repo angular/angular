@@ -3,7 +3,7 @@ import {Store, Todo, TodoFactory} from './services/TodoStore';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
-@Component({selector: 'todo-app', appInjector: [Store, TodoFactory]})
+@Component({selector: 'todo-app', viewInjector: [Store, TodoFactory]})
 @View({templateUrl: 'todo.html', directives: [NgFor]})
 class TodoApp {
   todoEdit: Todo = null;

@@ -58,6 +58,17 @@ void allTests() {
       'should inline multiple `styleUrls` values expressed as absolute urls.',
       'multiple_style_urls_files/hello.dart');
 
+  absoluteReader.addAsset(new AssetId('a', 'lib/template.html'),
+      readFile('directive_processor/multiple_style_urls_files/template.html'));
+  absoluteReader.addAsset(new AssetId('a', 'lib/template.css'),
+      readFile('directive_processor/multiple_style_urls_files/template.css'));
+  absoluteReader.addAsset(new AssetId('a', 'lib/template_other.css'), readFile(
+      'directive_processor/multiple_style_urls_files/template_other.css'));
+  _testNgDeps(
+      'shouldn\'t inline multiple `styleUrls` values expressed as absolute '
+      'urls.', 'multiple_style_urls_not_inlined_files/hello.dart',
+      inlineViews: false, reader: absoluteReader);
+
   _testNgDeps('should inline `templateUrl`s expressed as adjacent strings.',
       'split_url_expression_files/hello.dart');
 
@@ -82,11 +93,14 @@ void allTests() {
     'ERROR: Could not read asset at uri bad_relative_url.css from angular2|'
         'test/transform/directive_processor/invalid_url_files/hello.dart'
   ]);
+
+  _testNgDeps('should find and register static functions.',
+      'static_function_files/hello.dart');
 }
 
 void _testNgDeps(String name, String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [], AssetId assetId,
-    AssetReader reader, List<String> expectedLogs}) {
+    AssetReader reader, List<String> expectedLogs, bool inlineViews: true}) {
   it(name, () async {
     if (expectedLogs != null) {
       log.setLogger(new RecordingLogger());
@@ -105,12 +119,13 @@ void _testNgDeps(String name, String inputPath,
     var expectedId = _assetIdForPath(expectedPath);
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    var output = await createNgDeps(reader, inputId, annotationMatcher);
+    var output =
+        await createNgDeps(reader, inputId, annotationMatcher, inlineViews);
     if (output == null) {
       expect(await reader.hasInput(expectedId)).toBeFalse();
     } else {
-      expect(formatter.format(output))
-          .toEqual((await reader.readAsString(expectedId)).replaceAll('\r\n', '\n'));
+      expect(formatter.format(output)).toEqual(
+          (await reader.readAsString(expectedId)).replaceAll('\r\n', '\n'));
     }
 
     if (expectedLogs != null) {

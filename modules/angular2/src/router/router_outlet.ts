@@ -3,7 +3,7 @@ import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {Directive, Attribute} from 'angular2/src/core/annotations/decorators';
 import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
-import {Injector, bind} from 'angular2/di';
+import {Injector, bind, Dependency, undefinedValue} from 'angular2/di';
 
 import * as routerMod from './router';
 import {Instruction, RouteParams} from './instruction'
@@ -24,20 +24,14 @@ import {Instruction, RouteParams} from './instruction'
 export class RouterOutlet {
   private _childRouter: routerMod.Router = null;
   private _componentRef: ComponentRef = null;
-  private _elementRef: ElementRef;
   private _currentInstruction: Instruction = null;
-  private _injector: Injector;
 
-  constructor(elementRef: ElementRef, private _loader: DynamicComponentLoader,
-              private _parentRouter: routerMod.Router, _injector: Injector,
-              @Attribute('name') nameAttr: string) {
+  constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
+              private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
     // TODO: reintroduce with new // sibling routes
     // if (isBlank(nameAttr)) {
     //  nameAttr = 'default';
     //}
-
-    this._injector = _injector.getAppInjector();
-    this._elementRef = elementRef;
     this._parentRouter.registerOutlet(this);
   }
 
@@ -55,15 +49,13 @@ export class RouterOutlet {
 
     this._currentInstruction = instruction;
     this._childRouter = this._parentRouter.childRouter(instruction.component);
-    var outletInjector = this._injector.resolveAndCreateChild([
-      bind(RouteParams)
-          .toValue(new RouteParams(instruction.params())),
-      bind(routerMod.Router).toValue(this._childRouter)
-    ]);
+    var params = new RouteParams(instruction.params());
+    var bindings = Injector.resolve(
+        [bind(RouteParams).toValue(params), bind(routerMod.Router).toValue(this._childRouter)]);
 
     return this.deactivate()
         .then((_) => this._loader.loadNextToLocation(instruction.component, this._elementRef,
-                                                     outletInjector))
+                                                     bindings))
         .then((componentRef) => {
           this._componentRef = componentRef;
           return this._childRouter.commit(instruction.child);

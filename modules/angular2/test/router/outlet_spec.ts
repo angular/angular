@@ -18,7 +18,7 @@ import {
 import {Injector, bind} from 'angular2/di';
 import {Component, View} from 'angular2/src/core/annotations/decorators';
 import * as annotations from 'angular2/src/core/annotations_impl/view';
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST, NumberWrapper} from 'angular2/src/facade/lang';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
@@ -42,7 +42,7 @@ export function main() {
 
     beforeEachBindings(() => [
       Pipeline,
-      bind(RouteRegistry).toFactory(() => new RouteRegistry(MyComp)),
+      RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)
@@ -185,6 +185,49 @@ export function main() {
              });
        }));
 
+
+    it('should generate link hrefs from a child to its sibling',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config(
+                       {'path': '/page/:number', 'component': SiblingPageCmp, 'as': 'page'}))
+             .then((_) => rtr.navigate('/page/1'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(rootTC.componentViewChildren[1]
+                                           .componentViewChildren[0]
+                                           .children[0]
+                                           .nativeElement,
+                                       'href'))
+                   .toEqual('/page/2');
+               async.done();
+             });
+       }));
+
+    it('should generate relative links preserving the existing parent route',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) =>
+                       rtr.config({'path': '/book/:title/...', 'component': BookCmp, 'as': 'book'}))
+             .then((_) => rtr.navigate('/book/1984/page/1'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(
+                          rootTC.componentViewChildren[1].componentViewChildren[0].nativeElement,
+                          'href'))
+                   .toEqual('/book/1984/page/100');
+
+               expect(DOM.getAttribute(rootTC.componentViewChildren[1]
+                                           .componentViewChildren[2]
+                                           .componentViewChildren[0]
+                                           .children[0]
+                                           .nativeElement,
+                                       'href'))
+                   .toEqual('/book/1984/page/2');
+               async.done();
+             });
+       }));
+
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
@@ -263,6 +306,34 @@ class B {
 class UserCmp {
   user: string;
   constructor(params: RouteParams) { this.user = params.get('name'); }
+}
+
+
+@Component({selector: 'page-cmp'})
+@View({
+  template:
+      `page #{{pageNumber}} | <a href="hello" [router-link]="[\'../page\', {number: nextPage}]">next</a>`,
+  directives: [RouterLink]
+})
+class SiblingPageCmp {
+  pageNumber: number;
+  nextPage: number;
+  constructor(params: RouteParams) {
+    this.pageNumber = NumberWrapper.parseInt(params.get('number'), 10);
+    this.nextPage = this.pageNumber + 1;
+  }
+}
+
+@Component({selector: 'book-cmp'})
+@View({
+  template: `<a href="hello" [router-link]="[\'./page\', {number: 100}]">{{title}}</a> |
+    <router-outlet></router-outlet>`,
+  directives: [RouterLink, RouterOutlet]
+})
+@RouteConfig([{path: '/page/:number', component: SiblingPageCmp, 'as': 'page'}])
+class BookCmp {
+  title: string;
+  constructor(params: RouteParams) { this.title = params.get('title'); }
 }
 
 

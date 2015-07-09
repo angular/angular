@@ -1,5 +1,5 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {Injector} from 'angular2/di';
+import {ResolvedBinding} from 'angular2/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import * as avmModule from './view_manager';
@@ -31,10 +31,10 @@ export class ViewContainerRef {
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
   create(protoViewRef: ProtoViewRef = null, atIndex: number = -1, context: ElementRef = null,
-         injector: Injector = null): ViewRef {
+         bindings: ResolvedBinding[] = null): ViewRef {
     if (atIndex == -1) atIndex = this.length;
     return this.viewManager.createViewInContainer(this.element, atIndex, protoViewRef, context,
-                                                  injector);
+                                                  bindings);
   }
 
   insert(viewRef: ViewRef, atIndex: number = -1): ViewRef {

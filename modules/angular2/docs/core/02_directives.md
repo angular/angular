@@ -52,7 +52,7 @@ CSS Selectors can be combined:
 
 ## Directives
 
-The simplest kind of directive is a decorator. Directives are usefull for encapsulating behavior.
+The simplest kind of directive is a decorator. Directives are useful for encapsulating behavior.
 
 * Multiple decorators can be placed on a single element.
 * Directives do not introduce new evaluation context.
@@ -216,7 +216,7 @@ To better understand the kinds of injections which are supported in Angular we h
 
 ### Injecting Services
 
-Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `appInjector` and then letting the directive ask for the configured service.
+Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `viewInjector` or `hostInjector` and then letting the directive ask for the configured service.
 
 This example illustrates how to inject `MyService` into `House` directive.
 
@@ -227,7 +227,7 @@ class MyService {}                   | Assume a service which needs to be inject
                                      |
 @Component({                         | Assume a top level application component which
   selector: 'my-app',                | configures the services to be injected.
-  appInjector: [MyService]           |
+  viewInjector: [MyService]           |
 })                                   |
 @View({                              | Assume we have a template that needs to be
   templateUrl: 'my_app.html',        | configured with directives to be injected.
@@ -260,7 +260,7 @@ Injecting other directives into directives follows a similar mechanism as inject
 
 There are five kinds of visibilities:
 
-* (no annotation): Inject dependant directives only if they are on the current element.
+* (no annotation): Inject dependent directives only if they are on the current element.
 * `@ancestor`: Inject a directive if it is at any element above the current element.
 * `@parent`: Inject a directive which is a direct parent of the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)
@@ -325,12 +325,11 @@ Assume the following DOM structure for `my_app.html`:
 
 #### Shadow DOM effects on Directive DI
 
-Shadow DOM provides an encapsulation for components, so as a general rule it does not allow directive injections to cross the shadow DOM boundaries. To remedy this, declaritively specify the required component as an injectable.
+Shadow DOM provides an encapsulation for components, so as a general rule it does not allow directive injections to cross the shadow DOM boundaries. To remedy this, declaratively specify the required component as an injectable.
 
 ```
 @Component({
-  selector: '[kid]',
-  appInjector: []
+  selector: '[kid]'
 })
 @View({
   templateUrl: 'kid.html',
@@ -348,8 +347,7 @@ class Kid {
 }
 
 @Component({
-  selector: '[dad]',
-  appInjector: [Grandpa]
+  selector: '[dad]'
 })
 @View({
   templateUrl: 'dad.html',
@@ -364,7 +362,7 @@ class Dad {
 
 @Component({
   selector: '[grandpa]',
-  appInjector: []
+  viewInjector: []
 })
 @View({
   templateUrl: 'grandpa.html',

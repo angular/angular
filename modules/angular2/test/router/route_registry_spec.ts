@@ -20,7 +20,7 @@ export function main() {
   describe('RouteRegistry', () => {
     var registry, rootHostComponent = new Object();
 
-    beforeEach(() => { registry = new RouteRegistry(rootHostComponent); });
+    beforeEach(() => { registry = new RouteRegistry(); });
 
     it('should match the full URL', inject([AsyncTestCompleter], (async) => {
          registry.config(rootHostComponent, {'path': '/', 'component': DummyCompA});
@@ -37,9 +37,9 @@ export function main() {
       registry.config(rootHostComponent,
                       {'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
 
-      expect(registry.generate(['./firstCmp/secondCmp'], rootHostComponent))
-          .toEqual('/first/second');
-      expect(registry.generate(['./secondCmp'], DummyParentComp)).toEqual('/second');
+      expect(registry.generate(['firstCmp', 'secondCmp'], rootHostComponent))
+          .toEqual('first/second');
+      expect(registry.generate(['secondCmp'], DummyParentComp)).toEqual('second');
     });
 
     it('should generate URLs with params', () => {
@@ -47,20 +47,9 @@ export function main() {
           rootHostComponent,
           {'path': '/first/:param/...', 'component': DummyParentParamComp, 'as': 'firstCmp'});
 
-      var url = registry.generate(['./firstCmp', {param: 'one'}, 'secondCmp', {param: 'two'}],
+      var url = registry.generate(['firstCmp', {param: 'one'}, 'secondCmp', {param: 'two'}],
                                   rootHostComponent);
-      expect(url).toEqual('/first/one/second/two');
-    });
-
-    it('should generate URLs from the root component when the path starts with /', () => {
-      registry.config(rootHostComponent,
-                      {'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
-
-      expect(registry.generate(['/firstCmp', 'secondCmp'], rootHostComponent))
-          .toEqual('/first/second');
-      expect(registry.generate(['/firstCmp', 'secondCmp'], DummyParentComp))
-          .toEqual('/first/second');
-      expect(registry.generate(['/firstCmp/secondCmp'], DummyParentComp)).toEqual('/first/second');
+      expect(url).toEqual('first/one/second/two');
     });
 
     it('should generate URLs of loaded components after they are loaded',
@@ -71,29 +60,16 @@ export function main() {
            'as': 'firstCmp'
          });
 
-         expect(() => registry.generate(['/firstCmp/secondCmp'], rootHostComponent))
+         expect(() => registry.generate(['firstCmp', 'secondCmp'], rootHostComponent))
              .toThrowError('Could not find route config for "secondCmp".');
 
          registry.recognize('/first/second', rootHostComponent)
              .then((_) => {
-               expect(registry.generate(['/firstCmp/secondCmp'], rootHostComponent))
-                   .toEqual('/first/second');
+               expect(registry.generate(['firstCmp', 'secondCmp'], rootHostComponent))
+                   .toEqual('first/second');
                async.done();
              });
        }));
-
-    it('should throw when linkParams does not start with a "/" or "./"', () => {
-      expect(() => registry.generate(['firstCmp', 'secondCmp'], rootHostComponent))
-          .toThrowError(
-              `Link "${ListWrapper.toJSON(['firstCmp', 'secondCmp'])}" must start with "/" or "./"`);
-    });
-
-    it('should throw when linkParams does not include a route name', () => {
-      expect(() => registry.generate(['./'], rootHostComponent))
-          .toThrowError(`Link "${ListWrapper.toJSON(['./'])}" must include a route name.`);
-      expect(() => registry.generate(['/'], rootHostComponent))
-          .toThrowError(`Link "${ListWrapper.toJSON(['/'])}" must include a route name.`);
-    });
 
     it('should prefer static segments to dynamic', inject([AsyncTestCompleter], (async) => {
          registry.config(rootHostComponent, {'path': '/:site', 'component': DummyCompB});

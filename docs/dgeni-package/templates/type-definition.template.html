@@ -1,3 +1,4 @@
+
 {%- macro commentBlock(doc, level) -%}
 {%- if doc.content | trim %}
 
@@ -5,6 +6,17 @@
 {$ doc.content | trim | replace(r/^/gm, "* ") | indent(level, true) | replace(r/\n$/, "") $}
 {$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
 {%- endmacro -%}
+
+
+{%- macro memberInfo(member) -%}
+{$ commentBlock(member, 5) $}
+     {$ member.name $}{% if member.optional %}?{% endif -%}
+{% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
+{%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
+{%- if member.returnType == 'Directive' %}: DirectiveAnnotation{%- elif member.returnType -%}: {$ member.returnType $}{%- else -%}: void
+{%- endif -%};
+{%- endmacro -%}
+
 
 // Type definitions for Angular v{$ versionInfo.currentVersion.full | replace(r/\+/, "_") $}
 // Project: http://angular.io/
@@ -16,45 +28,25 @@
 // Please do not create manual edits or send pull requests
 // modifying this file.
 // ***********************************************************
+{% block staticDeclarations %}{% endblock %}
+{% for alias, module in doc.moduleDocs %}
+{$ commentBlock(module.doc, 1) $}
+declare module ng {
 
-// Angular depends transitively on these libraries.
-// If you don't have them installed you can run
-// $ tsd query es6-promise rx rx-lite --action install --save
-///<reference path="../es6-promise/es6-promise.d.ts"/>
-///<reference path="../rx/rx.d.ts"/>
-
-interface List<T> extends Array<T> {}
-interface Map<K,V> {}
-interface StringMap<K,V> extends Map<K,V> {}
-interface Type {}
-
-declare module "angular2/angular2" {
-  type SetterFn = typeof Function;
-  type int = number;
-
-  // See https://github.com/Microsoft/TypeScript/issues/1168
-  class BaseException /* extends Error */ {
-    message: string;
-    stack: string;
-    toString(): string;
-  }
-}
-{% for module in doc.modules %}
-{$ commentBlock(module, 1) $}
-declare module "{$ module.id $}" {
-
-  {%- for export in module.exports -%}
+  {%- for export in module.doc.exports -%}
   {%- if export.content -%}
     {$ commentBlock(export, 3) $}
   {%- endif %}
-  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{$ export.heritage $}
+  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{%- if export.heritage == ' extends Directive' %} extends DirectiveAnnotation{% else %}{$ export.heritage $}{% endif %}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
-  {%- for member in export.members -%}
-    {$ commentBlock(member, 5) $}
-    {$ member.name $}
-    {%- if member.parameters %}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
-    {%- if member.returnType %}: {$ member.returnType $}{%- else -%}: any{% endif -%}
-    ;
+  {%- if export.newMember %}
+    {$ memberInfo(export.newMember) $}
+  {% endif %}
+  {%- if export.callMember %}
+    {$ memberInfo(export.callMember) $}
+  {% endif -%}
+  {%- for member in export.members %}
+    {$ memberInfo(member) $}
   {%- endfor %}
   }
 
@@ -75,3 +67,6 @@ declare module "{$ module.id $}" {
 
 {% endfor %}
 
+declare module "angular2/angular2" {
+  export = ng;
+}

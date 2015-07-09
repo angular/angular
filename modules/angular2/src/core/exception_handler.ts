@@ -15,7 +15,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
  * ```javascript
  * @Component({
  *   selector: 'my-app',
- *   appInjector: [
+ *   viewInjector: [
  *     bind(ExceptionHandler).toClass(MyExceptionHandler)
  *   ]
  * })

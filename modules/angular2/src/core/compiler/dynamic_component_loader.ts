@@ -26,12 +26,13 @@ export class DynamicComponentLoader {
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) {}
 
   /**
-   * Loads a root component that is placed at the first element that matches the
-   * component's selector.
+   * Loads a root component that is placed at the first element that matches the component's
+   * selector.
+   *
    * The loaded component receives injection normally as a hosted view.
    */
-  loadAsRoot(typeOrBinding: Type | Binding, overrideSelector: string = null,
-             injector: Injector = null): Promise<ComponentRef> {
+  loadAsRoot(typeOrBinding: Type | Binding, overrideSelector: string,
+             injector: Injector): Promise<ComponentRef> {
     return this._compiler.compileInHost(typeOrBinding)
         .then(hostProtoViewRef => {
           var hostViewRef =
@@ -51,10 +52,10 @@ export class DynamicComponentLoader {
    * injection normally as a hosted view.
    */
   loadIntoLocation(typeOrBinding: Type | Binding, hostLocation: ElementRef, anchorName: string,
-                   injector: Injector = null): Promise<ComponentRef> {
+                   bindings: ResolvedBinding[] = null): Promise<ComponentRef> {
     return this.loadNextToLocation(
         typeOrBinding, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName),
-        injector);
+        bindings);
   }
 
   /**
@@ -62,12 +63,12 @@ export class DynamicComponentLoader {
    * injection normally as a hosted view.
    */
   loadNextToLocation(typeOrBinding: Type | Binding, location: ElementRef,
-                     injector: Injector = null): Promise<ComponentRef> {
+                     bindings: ResolvedBinding[] = null): Promise<ComponentRef> {
     return this._compiler.compileInHost(typeOrBinding)
         .then(hostProtoViewRef => {
           var viewContainer = this._viewManager.getViewContainer(location);
           var hostViewRef =
-              viewContainer.create(hostProtoViewRef, viewContainer.length, null, injector);
+              viewContainer.create(hostProtoViewRef, viewContainer.length, null, bindings);
           var newLocation = this._viewManager.getHostElement(hostViewRef);
           var component = this._viewManager.getComponent(newLocation);
 

@@ -4,27 +4,17 @@ import * as ng from './angular2';
 // is not support by system builder.
 import * as router from './router';
 
-var angular: AngularOne = <any>ng;
-(<AngularWindow>window).angular = angular;
+var _prevNg = (<any>window).ng;
 
-var _prevAngular = (<AngularWindow>window).angular;
+(<any>window).ng = ng;
 
 
-angular.router = router;
+(<any>ng).router = router;
 /**
  * Calling noConflict will restore window.angular to its pre-angular loading state
  * and return the angular module object.
  */
-angular.noConflict = function() {
-  (<AngularWindow>window).angular = _prevAngular;
-  return angular;
+(<any>ng).noConflict = function() {
+  (<any>window).ng = _prevNg;
+  return ng;
 };
-
-interface AngularOne {
-  router: any;
-  noConflict(): any;
-}
-
-interface AngularWindow extends Window {
-  angular: any;
-}
