@@ -4,7 +4,7 @@ import {Locals} from 'angular2/src/change_detection/parser/locals';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {BindingRecord} from './binding_record';
-import {PipeRegistry} from './pipes/pipes';
+import {Pipes} from './pipes/pipes';
 import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
 
 
@@ -14,34 +14,34 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   locals: Locals = null;
   values: List<any>;
   changes: List<any>;
-  pipes: List<any>;
+  localPipes: List<any>;
   prevContexts: List<any>;
   directives: any = null;
   alreadyChecked: boolean = false;
-  private pipeRegistry: PipeRegistry = null;
+  private pipes: Pipes = null;
 
   constructor(id: string, private changeControlStrategy: string, private dispatcher: any,
               private protos: List<ProtoRecord>, private directiveRecords: List<any>) {
     super(id);
     this.values = ListWrapper.createFixedSize(protos.length + 1);
-    this.pipes = ListWrapper.createFixedSize(protos.length + 1);
+    this.localPipes = ListWrapper.createFixedSize(protos.length + 1);
     this.prevContexts = ListWrapper.createFixedSize(protos.length + 1);
     this.changes = ListWrapper.createFixedSize(protos.length + 1);
 
     this.values[0] = null;
     ListWrapper.fill(this.values, uninitialized, 1);
-    ListWrapper.fill(this.pipes, null);
+    ListWrapper.fill(this.localPipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
     ListWrapper.fill(this.changes, false);
   }
 
-  hydrate(context: any, locals: Locals, directives: any, pipeRegistry: PipeRegistry): void {
+  hydrate(context: any, locals: Locals, directives: any, pipes: Pipes): void {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.changeControlStrategy);
     this.values[0] = context;
     this.locals = locals;
     this.directives = directives;
     this.alreadyChecked = false;
-    this.pipeRegistry = pipeRegistry;
+    this.pipes = pipes;
   }
 
   dehydrate() {
@@ -49,16 +49,16 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.values[0] = null;
     ListWrapper.fill(this.values, uninitialized, 1);
     ListWrapper.fill(this.changes, false);
-    ListWrapper.fill(this.pipes, null);
+    ListWrapper.fill(this.localPipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
     this.locals = null;
-    this.pipeRegistry = null;
+    this.pipes = null;
   }
 
   _destroyPipes() {
-    for (var i = 0; i < this.pipes.length; ++i) {
-      if (isPresent(this.pipes[i])) {
-        this.pipes[i].onDestroy();
+    for (var i = 0; i < this.localPipes.length; ++i) {
+      if (isPresent(this.localPipes[i])) {
+        this.localPipes[i].onDestroy();
       }
     }
   }
@@ -270,7 +270,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isPresent(storedPipe)) {
       storedPipe.onDestroy();
     }
-    var pipe = this.pipeRegistry.get(proto.name, context, this.ref);
+    var pipe = this.pipes.get(proto.name, context, this.ref);
     this._writePipe(proto, pipe);
     return pipe;
   }
@@ -289,9 +289,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _writeSelf(proto: ProtoRecord, value) { this.values[proto.selfIndex] = value; }
 
-  _readPipe(proto: ProtoRecord) { return this.pipes[proto.selfIndex]; }
+  _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
 
-  _writePipe(proto: ProtoRecord, value) { this.pipes[proto.selfIndex] = value; }
+  _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
 
   _setChanged(proto: ProtoRecord, value: boolean) { this.changes[proto.selfIndex] = value; }
 

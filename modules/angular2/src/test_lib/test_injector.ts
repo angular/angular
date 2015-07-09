@@ -7,8 +7,8 @@ import {
   Lexer,
   ChangeDetection,
   DynamicChangeDetection,
-  PipeRegistry,
-  defaultPipeRegistry
+  Pipes,
+  defaultPipes
 } from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
@@ -101,7 +101,7 @@ function _getAppBindings() {
     Compiler,
     CompilerCache,
     bind(ViewResolver).toClass(MockViewResolver),
-    bind(PipeRegistry).toValue(defaultPipeRegistry),
+    bind(Pipes).toValue(defaultPipes),
     bind(ChangeDetection).toClass(DynamicChangeDetection),
     ViewLoader,
     DynamicComponentLoader,

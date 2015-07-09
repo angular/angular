@@ -2,7 +2,7 @@ import {JitProtoChangeDetector} from './jit_proto_change_detector';
 import {PregenProtoChangeDetector} from './pregen_proto_change_detector';
 import {DynamicProtoChangeDetector} from './proto_change_detector';
 import {PipeFactory, Pipe} from './pipes/pipe';
-import {PipeRegistry} from './pipes/pipes';
+import {Pipes} from './pipes/pipes';
 import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {ObservablePipeFactory} from './pipes/observable_pipe';
@@ -111,7 +111,7 @@ export const date: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new DatePipe()), CONST_EXPR(new NullPipeFactory())]);
 
 
-export const defaultPipes = CONST_EXPR({
+export const defaultPipes: Pipes = CONST_EXPR(new Pipes({
   "iterableDiff": iterableDiff,
   "keyValDiff": keyValDiff,
   "async": async,
@@ -123,11 +123,11 @@ export const defaultPipes = CONST_EXPR({
   "percent": percent,
   "currency": currency,
   "date": date
-});
+}));
 
 /**
  * Map from {@link ChangeDetectorDefinition#id} to a factory method which takes a
- * {@link PipeRegistry} and a {@link ChangeDetectorDefinition} and generates a
+ * {@link Pipes} and a {@link ChangeDetectorDefinition} and generates a
  * {@link ProtoChangeDetector} associated with the definition.
  */
 // TODO(kegluneq): Use PregenProtoChangeDetectorFactory rather than Function once possible in
@@ -198,5 +198,3 @@ export class JitChangeDetection extends ChangeDetection {
     return new JitProtoChangeDetector(definition);
   }
 }
-
-export const defaultPipeRegistry: PipeRegistry = CONST_EXPR(new PipeRegistry(defaultPipes));

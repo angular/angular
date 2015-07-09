@@ -6,7 +6,7 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 
 @Injectable()
 @CONST()
-export class PipeRegistry {
+export class Pipes {
   constructor(public config) {}
 
   get(type: string, obj, cdRef?: ChangeDetectorRef, existingPipe?: Pipe): Pipe {

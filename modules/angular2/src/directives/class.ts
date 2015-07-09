@@ -1,6 +1,6 @@
 import {Directive, onCheck} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
-import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipes';
+import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
 import {Renderer} from 'angular2/src/render/api';
 import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
@@ -35,8 +35,7 @@ export class CSSClass {
   _pipe: Pipe;
   _rawClass;
 
-  constructor(private _pipeRegistry: PipeRegistry, private _ngEl: ElementRef,
-              private _renderer: Renderer) {}
+  constructor(private _pipes: Pipes, private _ngEl: ElementRef, private _renderer: Renderer) {}
 
   set rawClass(v) {
     this._cleanupClasses(this._rawClass);
@@ -46,7 +45,7 @@ export class CSSClass {
     }
 
     this._rawClass = v;
-    this._pipe = this._pipeRegistry.get(isListLikeIterable(v) ? 'iterableDiff' : 'keyValDiff', v);
+    this._pipe = this._pipes.get(isListLikeIterable(v) ? 'iterableDiff' : 'keyValDiff', v);
   }
 
   onCheck(): void {

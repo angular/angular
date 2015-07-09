@@ -1,12 +1,5 @@
 import {Directive} from 'angular2/annotations';
-import {
-  ViewContainerRef,
-  ViewRef,
-  ProtoViewRef,
-  PipeRegistry,
-  onCheck,
-  Pipe
-} from 'angular2/angular2';
+import {ViewContainerRef, ViewRef, ProtoViewRef, Pipes, onCheck, Pipe} from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -47,7 +40,7 @@ export class NgFor {
   _pipe: Pipe;
 
   constructor(private viewContainer: ViewContainerRef, private protoViewRef: ProtoViewRef,
-              private pipes: PipeRegistry) {}
+              private pipes: Pipes) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;
