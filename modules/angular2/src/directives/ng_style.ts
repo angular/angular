@@ -1,7 +1,7 @@
 import {Directive, onCheck} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
-import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipe_registry';
+import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipes';
 import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
 import {isPresent, print} from 'angular2/src/facade/lang';
 import {Renderer} from 'angular2/src/render/api';
