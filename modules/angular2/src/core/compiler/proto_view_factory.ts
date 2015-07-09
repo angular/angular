@@ -364,7 +364,6 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
   if (directiveBindings.length > 0 || hasVariables) {
     var directiveVariableBindings =
         createDirectiveVariableBindings(renderElementBinder, directiveBindings);
-
     protoElementInjector =
         ProtoElementInjector.create(parentPeiWithDistance.protoElementInjector, binderIndex,
                                     directiveBindings, isPresent(componentDirectiveBinding),

@@ -25,7 +25,6 @@ import {
   AbstractBindingError,
   CyclicDependencyError,
   resolveForwardRef,
-  resolveBindings,
   VisibilityMetadata,
   DependencyProvider,
   self
@@ -240,9 +239,9 @@ export class DirectiveBinding extends ResolvedBinding {
     var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
     var resolvedHostInjectables =
-        isPresent(ann.hostInjector) ? resolveBindings(ann.hostInjector) : [];
+        isPresent(ann.hostInjector) ? Injector.resolve(ann.hostInjector) : [];
     var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ?
-                                                     resolveBindings(ann.viewInjector) :
+                                                     Injector.resolve(ann.viewInjector) :
                                                      [];
     var metadata = DirectiveMetadata.create({
       id: stringify(rb.key.token),

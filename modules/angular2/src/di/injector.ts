@@ -467,7 +467,7 @@ export class Injector {
    * `fromResolvedBindings` and `createChildFromResolved`.
    */
   static resolve(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
-    var resolvedBindings = resolveBindings(bindings);
+    var resolvedBindings = _resolveBindings(bindings);
     var flatten = _flattenBindings(resolvedBindings, new Map());
     return _createListOfBindings(flatten);
   }
@@ -765,7 +765,7 @@ export class Injector {
 }
 
 
-export function resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
+function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
   var resolvedList = ListWrapper.createFixedSize(bindings.length);
   for (var i = 0; i < bindings.length; i++) {
     var unresolved = resolveForwardRef(bindings[i]);
@@ -777,7 +777,7 @@ export function resolveBindings(bindings: List<Type | Binding | List<any>>): Lis
     } else if (unresolved instanceof Binding) {
       resolved = unresolved.resolve();
     } else if (unresolved instanceof List) {
-      resolved = resolveBindings(unresolved);
+      resolved = _resolveBindings(unresolved);
     } else if (unresolved instanceof BindingBuilder) {
       throw new InvalidBindingError(unresolved.token);
     } else {

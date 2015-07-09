@@ -24,7 +24,6 @@ export * from './src/di/decorators';
 
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './src/di/forward_ref';
 export {
-  resolveBindings,
   Injector,
   ProtoInjector,
   DependencyProvider,

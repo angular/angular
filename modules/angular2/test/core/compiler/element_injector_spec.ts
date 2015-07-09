@@ -40,7 +40,7 @@ import {
   Directive,
   onDestroy
 } from 'angular2/annotations';
-import {bind, Injector, Binding, resolveBindings, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self, InjectMetadata, ParentMetadata} from 'angular2/di';
+import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self, InjectMetadata, ParentMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -484,6 +484,21 @@ export function main() {
 
         expect(pei.getBindingAtIndex(0).key.token).toBe(SimpleDirective);
         expect(pei.getBindingAtIndex(1).key.token).toEqual("injectable1");
+      });
+
+      it("should collect view and host injectables from nested arrays", () => {
+        var pei = createPei(null, 0, [
+          DirectiveBinding.createFromType(
+              SimpleDirective,
+              new dirAnn.Component({
+                viewInjector: [[[bind('view').toValue('view')]]],
+                hostInjector: [[[bind('host').toValue('host')]]]
+              }))
+        ], 0, true);
+
+        expect(pei.getBindingAtIndex(0).key.token).toBe(SimpleDirective);
+        expect(pei.getBindingAtIndex(1).key.token).toEqual("view");
+        expect(pei.getBindingAtIndex(2).key.token).toEqual("host");
       });
 
       it('should support an arbitrary number of bindings', () => {

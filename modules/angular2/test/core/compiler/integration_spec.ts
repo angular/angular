@@ -1007,7 +1007,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template: `
-            <directive-providing-injectable>
+            <directive-providing-injectable >
               <directive-consuming-injectable #consuming>
               </directive-consuming-injectable>
             </directive-providing-injectable>
@@ -1697,12 +1697,12 @@ class DirectiveWithTwoWayBinding {
 class InjectableService {
 }
 
-@Directive({selector: 'directive-providing-injectable', hostInjector: [InjectableService]})
+@Directive({selector: 'directive-providing-injectable', hostInjector: [[InjectableService]]})
 @Injectable()
 class DirectiveProvidingInjectable {
 }
 
-@Component({selector: 'directive-providing-injectable', viewInjector: [InjectableService]})
+@Component({selector: 'directive-providing-injectable', viewInjector: [[InjectableService]]})
 @View({template: ''})
 @Injectable()
 class DirectiveProvidingInjectableInView {
