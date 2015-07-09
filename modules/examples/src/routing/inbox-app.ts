@@ -16,8 +16,7 @@ class DbService {
 
   getData() {
     var p = PromiseWrapper.completer();
-    ObservableWrapper.subscribe(this.http.get('./db.json'),
-      (resp) => { p.resolve(resp.json()); });
+    ObservableWrapper.subscribe(this.http.get('./db.json'), (resp) => { p.resolve(resp.json()); });
     return p.promise;
   }
 
