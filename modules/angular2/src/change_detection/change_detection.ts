@@ -11,6 +11,7 @@ import {UpperCaseFactory} from './pipes/uppercase_pipe';
 import {LowerCaseFactory} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
 import {LimitToPipeFactory} from './pipes/limit_to_pipe';
+import {FilterPipe} from './pipes/filter_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Inject, Injectable, OpaqueToken, Optional} from 'angular2/di';
@@ -76,6 +77,14 @@ export const json: List<PipeFactory> =
 export const limitTo: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new LimitToPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
+/**
+ * Filters an iterable.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const filter: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new FilterPipe()), CONST_EXPR(new NullPipeFactory())]);
+
 export const defaultPipes = CONST_EXPR({
   "iterableDiff": iterableDiff,
   "keyValDiff": keyValDiff,
@@ -83,7 +92,8 @@ export const defaultPipes = CONST_EXPR({
   "uppercase": uppercase,
   "lowercase": lowercase,
   "json": json,
-  "limitTo": limitTo
+  "limitTo": limitTo,
+  "filter": filter
 });
 
 /**

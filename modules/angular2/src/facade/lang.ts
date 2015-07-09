@@ -89,6 +89,14 @@ export function isArray(obj): boolean {
   return Array.isArray(obj);
 }
 
+export function isBoolean(obj): boolean {
+  return typeof obj === 'boolean';
+}
+
+export function isNumber(obj): boolean {
+  return typeof obj === 'number';
+}
+
 export function stringify(token): string {
   if (typeof token === 'string') {
     return token;

@@ -148,6 +148,10 @@ export class ListWrapper {
   // keep both methods.
   static createFixedSize(size): List<any> { return new List(size); }
   static createGrowableSize(size): List<any> { return new List(size); }
+  static from(iterable): List<any> {
+    // Array.from(iterable) is not properly supported.
+    return [...iterable];
+  }
   static get(m, k): any { return m[k]; }
   static set(m, k, v) { m[k] = v; }
   static clone<T>(array: List<T>): T[] { return array.slice(0); }
@@ -185,6 +189,12 @@ export class ListWrapper {
       if (pred(list[i])) return true;
     }
     return false;
+  }
+  static every(list: List<any>, pred: Function): boolean {
+    for (var i = 0; i < list.length; ++i) {
+      if (!pred(list[i])) return false;
+    }
+    return true;
   }
   static contains(list: List<any>, el): boolean { return list.indexOf(el) !== -1; }
   static reversed<T>(array: List<T>): T[] {
