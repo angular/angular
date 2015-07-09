@@ -66,16 +66,3 @@ notifications:
   slack:
     secure: EP4MzZ8JMyNQJ4S3cd5LEPWSMjC7ZRdzt3veelDiOeorJ6GwZfCDHncR+4BahDzQAuqyE/yNpZqaLbwRWloDi15qIUsm09vgl/1IyNky1Sqc6lEknhzIXpWSalo4/T9ZP8w870EoDvM/UO+LCV99R3wS8Nm9o99eLoWVb2HIUu0=
 
-deploy:
-  - provider: gcs
-    access_key_id: GOOGIOQTDBEOPBUAWFZQ
-    secret_access_key:
-      secure: "rsx0rvLAGWV47rmgJC2CJUmtFtj9TbbvGUGj8b8ykLuhu3LlMMgTpgxj7YNJ0j6HM3UZ9tubNuK0jqNW3eWul9AzNAz4zMvHpUmn852gIIOFKdYhCaB5PGL58QbqeP48B2VyDYqDWaQGH8ClfZYPrTb6XnhVTrZVHba5x9DqHwc="
-    bucket: angular2-snapshots
-    skip_cleanup: true
-    local-dir: dist/dart
-    upload-dir: $TRAVIS_COMMIT/dart_stable
-    on:
-      repo: angular/angular
-      condition: $MODE=dart
-      condition: $DART_CHANNEL=stable
