@@ -15,10 +15,10 @@ class DbService {
   constructor(public http: Http) {}
 
   getData() {
-    return new Promise((resolve, reject) => {
-      ObservableWrapper.subscribe(this.http.get('./db.json', {cache: true}),
-                                  (resp) => { resolve(resp.json()); });
-    });
+    var p = PromiseWrapper.completer();
+    ObservableWrapper.subscribe(this.http.get('./db.json'),
+      (resp) => { p.resolve(resp.json()); });
+    return p.promise;
   }
 
   drafts() {
@@ -56,7 +56,7 @@ class InboxDetailCmp {
 
   constructor(db: DbService, params: RouteParams) {
     var id = params.get('id');
-    PromiseWrapper.then(db.email(id)).then((data) => { this.setEmailRecord(data); });
+    PromiseWrapper.then(db.email(id), (data) => { this.setEmailRecord(data); });
   }
 
   get fullName() { return this.firstName + ' ' + this.lastName; }
