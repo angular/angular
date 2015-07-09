@@ -190,6 +190,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
 
   es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree]);
+  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree]);
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
 

@@ -146,7 +146,10 @@ function getDocsTree() {
   // Copy all assets, ignore .js. and .dart. (handled above).
   var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
                            ['**/*.js.md', '**/*.dart.md']);
-  return mergeTrees([licenses, mdTree, docs]);
+
+  var assets = modulesFunnel(['examples/**/*.json']);
+
+  return mergeTrees([licenses, mdTree, docs, assets]);
 }
 
 module.exports = function makeDartTree(options: AngularBuilderOptions) {
