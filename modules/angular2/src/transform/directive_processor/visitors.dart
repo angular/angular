@@ -269,6 +269,11 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
           writer.print("template: r'''");
           writer.asyncPrint(_readOrEmptyString(url));
           writer.print("'''");
+
+          // We keep the templateUrl in case the body of the template includes
+          // relative urls that might be inlined later on (e.g. @import
+          // directives or url() css values in style tags).
+          writer.print(", templateUrl: r'$url'");
           return null;
         } else {
           logger.warning('template url is not a String $url');

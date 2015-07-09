@@ -122,7 +122,7 @@ class _CodegenState {
       localNames.map((name) => '_${name}_pipe').toList();
 
   void _writeToBuf(StringBuffer buf) {
-    buf.write('''
+    buf.write('''\n
       class $_changeDetectorTypeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
         $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;

@@ -123,7 +123,8 @@ void allTests() {
       });
     });
     testPhases(config.name, [[transform]], config.assetPathToInputPath,
-        config.assetPathToExpectedOutputPath, []);
+        config.assetPathToExpectedOutputPath, [],
+        StringFormatter.noNewlinesOrSurroundingWhitespace);
   }
 }
 
