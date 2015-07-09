@@ -1,4 +1,4 @@
-library test.transform.directive_processor.url_expression_files.hello;
+library test.transform.directive_processor.invalid_url_files.hello;
 
 import 'package:angular2/angular2.dart'
     show bootstrap, Component, Directive, View, NgElement;
