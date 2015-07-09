@@ -62,6 +62,11 @@ export class RouteRecognizer {
    */
   recognize(url: string): List<RouteMatch> {
     var solutions = [];
+
+    if (url[0] == '#') {
+      url = url.substring(1);
+    }
+
     if (url.length > 0 && url[url.length - 1] == '/') {
       url = url.substring(0, url.length - 1);
     }
