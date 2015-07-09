@@ -46,7 +46,6 @@ const kServedPaths = [
   'examples/src/hello_world',
   'examples/src/http',
   'examples/src/key_events',
-  'examples/src/routing',
   'examples/src/sourcemap',
   'examples/src/todo',
   'examples/src/zippy_component',
