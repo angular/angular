@@ -11,7 +11,7 @@ import {
   SpyPipeFactory
 } from 'angular2/test_lib';
 
-import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipes';
+import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
 
 export function main() {
   describe("pipe registry", () => {
@@ -30,7 +30,7 @@ export function main() {
     });
 
     it("should return an existing pipe if it can support the passed in object", () => {
-      var r = new PipeRegistry({"type": []});
+      var r = new Pipes({"type": []});
 
       firstPipe.spy("supports").andReturn(true);
 
@@ -43,7 +43,7 @@ export function main() {
          firstPipeFactory.spy("supports").andReturn(true);
          firstPipeFactory.spy("create").andReturn(secondPipe);
 
-         var r = new PipeRegistry({"type": [firstPipeFactory]});
+         var r = new Pipes({"type": [firstPipeFactory]});
 
          expect(r.get("type", "some object", null, firstPipe)).toEqual(secondPipe);
          expect(firstPipe.spy("onDestroy")).toHaveBeenCalled();
@@ -56,19 +56,19 @@ export function main() {
       secondPipeFactory.spy("supports").andReturn(true);
       secondPipeFactory.spy("create").andReturn(secondPipe);
 
-      var r = new PipeRegistry({"type": [firstPipeFactory, secondPipeFactory]});
+      var r = new Pipes({"type": [firstPipeFactory, secondPipeFactory]});
 
       expect(r.get("type", "some object")).toBe(secondPipe);
     });
 
     it("should throw when no matching type", () => {
-      var r = new PipeRegistry({});
+      var r = new Pipes({});
       expect(() => r.get("unknown", "some object"))
           .toThrowError(`Cannot find 'unknown' pipe supporting object 'some object'`);
     });
 
     it("should throw when no matching pipe", () => {
-      var r = new PipeRegistry({"type": []});
+      var r = new Pipes({"type": []});
 
       expect(() => r.get("type", "some object"))
           .toThrowError(`Cannot find 'type' pipe supporting object 'some object'`);

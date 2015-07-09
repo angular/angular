@@ -125,7 +125,7 @@ class _CodegenState {
     buf.write('''\n
       class $_changeDetectorTypeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
-        $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
+        $_GEN_PREFIX.Pipes $_PIPES_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
             $_DIRECTIVES_ACCESSOR;
@@ -172,14 +172,14 @@ class _CodegenState {
           ${_getCallOnAllChangesDoneBody()}
         }
 
-        void hydrate($_contextTypeName context, locals, directives, pipeRegistry) {
+        void hydrate($_contextTypeName context, locals, directives, pipes) {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
           $_CONTEXT_ACCESSOR = context;
           $_LOCALS_ACCESSOR = locals;
           ${_genHydrateDirectives()}
           ${_genHydrateDetectors()}
           $_ALREADY_CHECKED_ACCESSOR = false;
-          $_PIPE_REGISTRY_ACCESSOR = pipeRegistry;
+          $_PIPES_ACCESSOR = pipes;
         }
 
         void dehydrate() {
@@ -190,7 +190,7 @@ class _CodegenState {
               : '$f = $_UTIL.uninitialized();';
           }).join('')}
           $_LOCALS_ACCESSOR = null;
-          $_PIPE_REGISTRY_ACCESSOR = null;
+          $_PIPES_ACCESSOR = null;
         }
 
         hydrated() => $_CONTEXT_ACCESSOR != null;
@@ -327,10 +327,10 @@ class _CodegenState {
     return '''
       $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized())) {
-        $pipe = $_PIPE_REGISTRY_ACCESSOR.get('$pipeType', $context, $cdRef);
+        $pipe = $_PIPES_ACCESSOR.get('$pipeType', $context, $cdRef);
       } else if (!$pipe.supports($context)) {
         $pipe.onDestroy();
-        $pipe = $_PIPE_REGISTRY_ACCESSOR.get('$pipeType', $context, $cdRef);
+        $pipe = $_PIPES_ACCESSOR.get('$pipeType', $context, $cdRef);
       }
 
       $newValue = $pipe.transform($context, [$argString]);
@@ -542,6 +542,6 @@ const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
 const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
     'package:angular2/src/change_detection/pregen_proto_change_detector.dart';
-const _PIPE_REGISTRY_ACCESSOR = '_pipeRegistry';
+const _PIPES_ACCESSOR = '_pipes';
 const _PROTOS_ACCESSOR = '_protos';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';

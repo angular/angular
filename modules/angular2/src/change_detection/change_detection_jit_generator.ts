@@ -20,7 +20,7 @@ import {ProtoRecord, RecordType} from './proto_record';
 var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 var UTIL = "ChangeDetectionUtil";
 var DISPATCHER_ACCESSOR = "this.dispatcher";
-var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
+var PIPES_ACCESSOR = "this.pipes";
 var PROTOS_ACCESSOR = "this.protos";
 var DIRECTIVES_ACCESSOR = "this.directiveRecords";
 var CONTEXT_ACCESSOR = "this.context";
@@ -74,7 +74,7 @@ export class ChangeDetectorJITGenerator {
         ${DIRECTIVES_ACCESSOR} = directiveRecords;
         ${LOCALS_ACCESSOR} = null;
         ${CURRENT_PROTO} = null;
-        ${PIPE_REGISTRY_ACCESSOR} = null;
+        ${PIPES_ACCESSOR} = null;
         ${ALREADY_CHECKED_ACCESSOR} = false;
         ${this._genFieldDefinitions()}
       }
@@ -111,13 +111,13 @@ export class ChangeDetectorJITGenerator {
         ${this._genCallOnAllChangesDoneBody()}
       }
 
-      ${typeName}.prototype.hydrate = function(context, locals, directives, pipeRegistry) {
+      ${typeName}.prototype.hydrate = function(context, locals, directives, pipes) {
         ${MODE_ACCESSOR} = "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
         ${CONTEXT_ACCESSOR} = context;
         ${LOCALS_ACCESSOR} = locals;
         ${this._genHydrateDirectives()}
         ${this._genHydrateDetectors()}
-        ${PIPE_REGISTRY_ACCESSOR} = pipeRegistry;
+        ${PIPES_ACCESSOR} = pipes;
         ${ALREADY_CHECKED_ACCESSOR} = false;
       }
 
@@ -125,7 +125,7 @@ export class ChangeDetectorJITGenerator {
         ${this._genPipeOnDestroy()}
         ${this._genFieldDefinitions()}
         ${LOCALS_ACCESSOR} = null;
-        ${PIPE_REGISTRY_ACCESSOR} = null;
+        ${PIPES_ACCESSOR} = null;
       }
 
       ${typeName}.prototype.hydrated = function() {
@@ -267,10 +267,10 @@ export class ChangeDetectorJITGenerator {
     return `
       ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
       if (${pipe} === ${UTIL}.uninitialized()) {
-        ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
+        ${pipe} = ${PIPES_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
       } else if (!${pipe}.supports(${context})) {
         ${pipe}.onDestroy();
-        ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
+        ${pipe} = ${PIPES_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
       }
 
       ${newValue} = ${pipe}.transform(${context}, [${argString}]);

@@ -1,7 +1,7 @@
 import {Directive, onCheck} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
-import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipes';
+import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
 import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
 import {isPresent, print} from 'angular2/src/facade/lang';
 import {Renderer} from 'angular2/src/render/api';
@@ -34,12 +34,11 @@ export class NgStyle {
   _pipe: Pipe;
   _rawStyle;
 
-  constructor(private _pipeRegistry: PipeRegistry, private _ngEl: ElementRef,
-              private _renderer: Renderer) {}
+  constructor(private _pipes: Pipes, private _ngEl: ElementRef, private _renderer: Renderer) {}
 
   set rawStyle(v) {
     this._rawStyle = v;
-    this._pipe = this._pipeRegistry.get('keyValDiff', this._rawStyle);
+    this._pipe = this._pipes.get('keyValDiff', this._rawStyle);
   }
 
   onCheck() {

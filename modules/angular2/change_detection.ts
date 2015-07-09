@@ -43,7 +43,7 @@ export {BindingRecord} from './src/change_detection/binding_record';
 export {DirectiveIndex, DirectiveRecord} from './src/change_detection/directive_record';
 export {DynamicChangeDetector} from './src/change_detection/dynamic_change_detector';
 export {ChangeDetectorRef} from './src/change_detection/change_detector_ref';
-export {PipeRegistry} from './src/change_detection/pipes/pipes';
+export {Pipes} from './src/change_detection/pipes/pipes';
 export {uninitialized} from './src/change_detection/change_detection_util';
 export {WrappedValue, Pipe, PipeFactory, BasePipe} from './src/change_detection/pipes/pipe';
 export {NullPipe, NullPipeFactory} from './src/change_detection/pipes/null_pipe';
@@ -52,6 +52,5 @@ export {
   DynamicChangeDetection,
   JitChangeDetection,
   PreGeneratedChangeDetection,
-  preGeneratedProtoDetectors,
-  defaultPipeRegistry
+  preGeneratedProtoDetectors
 } from './src/change_detection/change_detection';

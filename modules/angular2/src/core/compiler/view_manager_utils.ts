@@ -162,16 +162,15 @@ export class AppViewManagerUtils {
         this._setUpHostActions(view, elementInjector, i);
       }
     }
-    var pipeRegistry = this._getPipeRegistry(imperativelyCreatedInjector, hostElementInjector);
-    view.changeDetector.hydrate(view.context, view.locals, view, pipeRegistry);
+    var pipes = this._getPipes(imperativelyCreatedInjector, hostElementInjector);
+    view.changeDetector.hydrate(view.context, view.locals, view, pipes);
   }
 
-  _getPipeRegistry(imperativelyCreatedInjector: Injector,
-                   hostElementInjector: eli.ElementInjector) {
-    var pipeRegistryKey = eli.StaticKeys.instance().pipeRegistryKey;
+  _getPipes(imperativelyCreatedInjector: Injector, hostElementInjector: eli.ElementInjector) {
+    var pipesKey = eli.StaticKeys.instance().pipesKey;
     if (isPresent(imperativelyCreatedInjector))
-      return imperativelyCreatedInjector.getOptional(pipeRegistryKey);
-    if (isPresent(hostElementInjector)) return hostElementInjector.getPipeRegistry();
+      return imperativelyCreatedInjector.getOptional(pipesKey);
+    if (isPresent(hostElementInjector)) return hostElementInjector.getPipes();
     return null;
   }
 
