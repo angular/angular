@@ -16,6 +16,9 @@ dependency_overrides:
     path: ../angular2_material
 transformers:
 - angular2:
+    # The build currently fails on material files because there is not yet
+    # support for transforming cross-package urls.
+    $exclude: 'web/src/material/**'
     entry_points:
         - web/src/hello_world/index_common.dart
         - web/src/todo/index.dart

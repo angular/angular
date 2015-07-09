@@ -124,8 +124,8 @@ void _testNgDeps(String name, String inputPath,
     if (output == null) {
       expect(await reader.hasInput(expectedId)).toBeFalse();
     } else {
-      expect(formatter.format(output)).toEqual(
-          (await reader.readAsString(expectedId)).replaceAll('\r\n', '\n'));
+      var input = await reader.readAsString(expectedId);
+      expect(formatter.format(output)).toEqual(formatter.format(input));
     }
 
     if (expectedLogs != null) {

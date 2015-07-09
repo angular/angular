@@ -1,4 +1,4 @@
-library test.transform.directive_processor.url_expression_files.hello.ng_deps.dart;
+library test.transform.directive_processor.invalid_url_files.hello.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
@@ -14,7 +14,10 @@ void initReflector(reflector) {
       'parameters': const [],
       'annotations': const [
         const Component(selector: 'hello-app'),
-        const View(template: r'''''', styles: const [r'''''', r'''''',])
+        const View(
+            template: r'''''',
+            templateUrl: r'/bad/absolute/url.html',
+            styles: const [r'''''', r'''''',])
       ]
     });
 }
