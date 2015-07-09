@@ -1,0 +1,10 @@
+<div ng-if="ready">
+  <h2 class="page-title">Inbox</h2>
+
+  <ol class="inbox-list">
+    <li *ng-for="#item of items" class="inbox-item-record">
+      <a id="item-{{ item.id }}"
+         [router-link]="['/detailPage', {'id':item.id}]">{{ item.subject }}</a>
+    </li>
+  </ol>
+</div>
