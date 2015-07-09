@@ -4,7 +4,7 @@ import {Locals} from 'angular2/src/change_detection/parser/locals';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {BindingRecord} from './binding_record';
-import {PipeRegistry} from './pipes/pipe_registry';
+import {PipeRegistry} from './pipes/pipes';
 import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
 
 

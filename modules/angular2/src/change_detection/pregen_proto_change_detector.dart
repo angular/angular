@@ -15,7 +15,7 @@ export 'package:angular2/src/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
 export 'package:angular2/src/change_detection/interfaces.dart'
     show ChangeDetector, ChangeDetectorDefinition, ProtoChangeDetector;
-export 'package:angular2/src/change_detection/pipes/pipe_registry.dart'
+export 'package:angular2/src/change_detection/pipes/pipes.dart'
     show PipeRegistry;
 export 'package:angular2/src/change_detection/proto_record.dart'
     show ProtoRecord;

@@ -2,7 +2,7 @@ import {JitProtoChangeDetector} from './jit_proto_change_detector';
 import {PregenProtoChangeDetector} from './pregen_proto_change_detector';
 import {DynamicProtoChangeDetector} from './proto_change_detector';
 import {PipeFactory, Pipe} from './pipes/pipe';
-import {PipeRegistry} from './pipes/pipe_registry';
+import {PipeRegistry} from './pipes/pipes';
 import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {ObservablePipeFactory} from './pipes/observable_pipe';

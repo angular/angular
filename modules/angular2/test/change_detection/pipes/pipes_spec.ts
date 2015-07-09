@@ -11,7 +11,7 @@ import {
   SpyPipeFactory
 } from 'angular2/test_lib';
 
-import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipe_registry';
+import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipes';
 
 export function main() {
   describe("pipe registry", () => {

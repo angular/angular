@@ -1,6 +1,6 @@
 import {Directive, onCheck} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
-import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipe_registry';
+import {PipeRegistry} from 'angular2/src/change_detection/pipes/pipes';
 import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
 import {Renderer} from 'angular2/src/render/api';
 import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
