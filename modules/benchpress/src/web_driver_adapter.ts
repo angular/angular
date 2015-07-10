@@ -1,4 +1,4 @@
-import {bind} from 'angular2/di';
+import {bind, Binding} from 'angular2/di';
 import {Promise} from 'angular2/src/facade/async';
 import {BaseException, ABSTRACT} from 'angular2/src/facade/lang';
 import {List, Map} from 'angular2/src/facade/collection';
@@ -10,7 +10,7 @@ import {List, Map} from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class WebDriverAdapter {
-  static bindTo(delegateToken) {
+  static bindTo(delegateToken): Binding[] {
     return [bind(WebDriverAdapter).toFactory((delegate) => delegate, [delegateToken])];
   }
 

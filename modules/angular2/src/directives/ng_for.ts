@@ -123,7 +123,7 @@ export class NgFor {
   }
 }
 
-class RecordViewTuple {
+export class RecordViewTuple {
   view: ViewRef;
   record: any;
   constructor(record, view) {

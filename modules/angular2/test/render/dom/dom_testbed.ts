@@ -33,7 +33,7 @@ export function elRef(renderView: RenderViewRef, boundElementIndex: number) {
   return new TestRenderElementRef(renderView, boundElementIndex);
 }
 
-class TestRenderElementRef implements RenderElementRef {
+export class TestRenderElementRef implements RenderElementRef {
   constructor(public renderView: RenderViewRef, public boundElementIndex: number) {}
 }
 
