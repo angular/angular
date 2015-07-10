@@ -24,8 +24,7 @@ export class XHRConnection implements Connection {
    */
   response: EventEmitter;  // TODO: Make generic of <Response>;
   readyState: ReadyStates;
-  private _xhr;  // TODO: make type XMLHttpRequest, pending resolution of
-                 // https://github.com/angular/ts2dart/issues/230
+  private _xhr: XMLHttpRequest;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     // TODO: get rid of this when enum lookups are available in ts2dart
     // https://github.com/angular/ts2dart/issues/221
