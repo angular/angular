@@ -1248,11 +1248,12 @@ export function main() {
     if (!IS_DARTIUM) {
       describe('Missing property bindings', () => {
         it('should throw on bindings to unknown properties',
-           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                               async) => {
              tcb =
                  tcb.overrideView(MyComp,
                                   new viewAnn.View({template: '<div unknown="{{ctxProp}}"></div>'}))
-  
+
                      PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                        expect(e.message).toEqual(
                            `Can't bind to 'unknown' since it isn't a know property of the 'div' element and there are no matching directives with a corresponding property`);
@@ -1260,9 +1261,10 @@ export function main() {
                        return null;
                      });
            }));
-  
+
         it('should not throw for property binding to a non-existing property when there is a matching directive property',
-           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                               async) => {
              tcb.overrideView(
                     MyComp,
                     new viewAnn.View(
@@ -1270,7 +1272,7 @@ export function main() {
                  .createAsync(MyComp)
                  .then((val) => { async.done(); });
            }));
-      });      
+      });
     }
 
     // Disabled until a solution is found, refs:
