@@ -338,14 +338,14 @@ export class SelectorMatcher {
 }
 
 
-class SelectorListContext {
+export class SelectorListContext {
   alreadyMatched: boolean = false;
 
   constructor(public selectors: CssSelector[]) {}
 }
 
 // Store context to pass back selector and context when a selector is matched
-class SelectorContext {
+export class SelectorContext {
   notSelectors: CssSelector[];
 
   constructor(public selector: CssSelector, public cbContext: any,
