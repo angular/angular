@@ -39,9 +39,9 @@ class BindingRecordsCreator {
     return bindings;
   }
 
-  getDirectiveRecords(
-      elementBinders: List<renderApi.ElementBinder>,
-      allDirectiveMetadatas: List<renderApi.DirectiveMetadata>): List<DirectiveRecord> {
+  getDirectiveRecords(elementBinders: List<renderApi.ElementBinder>,
+                      allDirectiveMetadatas:
+                          List<renderApi.DirectiveMetadata>): List<DirectiveRecord> {
     var directiveRecords = [];
 
     for (var elementIndex = 0; elementIndex < elementBinders.length; ++elementIndex) {
@@ -277,8 +277,8 @@ function _createVariableBindings(renderProtoView): Map<string, string> {
   return variableBindings;
 }
 
-function _collectNestedProtoViewsVariableNames(
-    nestedPvsWithIndex: List<RenderProtoViewWithIndex>): List<List<string>> {
+function _collectNestedProtoViewsVariableNames(nestedPvsWithIndex: List<RenderProtoViewWithIndex>):
+    List<List<string>> {
   var nestedPvVariableNames = ListWrapper.createFixedSize(nestedPvsWithIndex.length);
   ListWrapper.forEach(nestedPvsWithIndex, (pvWithIndex) => {
     var parentVariableNames =
@@ -301,8 +301,8 @@ function _createVariableNames(parentVariableNames: List<string>, renderProtoView
   return res;
 }
 
-export function createVariableLocations(
-    elementBinders: List<renderApi.ElementBinder>): Map<string, number> {
+export function createVariableLocations(elementBinders: List<renderApi.ElementBinder>):
+    Map<string, number> {
   var variableLocations = new Map();
   for (var i = 0; i < elementBinders.length; i++) {
     var binder = elementBinders[i];
@@ -374,8 +374,8 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
 }
 
 function _createElementBinder(protoView: AppProtoView, boundElementIndex, renderElementBinder,
-                              protoElementInjector, componentDirectiveBinding,
-                              directiveBindings): ElementBinder {
+                              protoElementInjector, componentDirectiveBinding, directiveBindings):
+    ElementBinder {
   var parent = null;
   if (renderElementBinder.parentIndex !== -1) {
     parent = protoView.elementBinders[renderElementBinder.parentIndex];
@@ -393,9 +393,9 @@ function _createElementBinder(protoView: AppProtoView, boundElementIndex, render
   return elBinder;
 }
 
-export function createDirectiveVariableBindings(
-    renderElementBinder: renderApi.ElementBinder,
-    directiveBindings: List<DirectiveBinding>): Map<string, number> {
+export function createDirectiveVariableBindings(renderElementBinder: renderApi.ElementBinder,
+                                                directiveBindings: List<DirectiveBinding>):
+    Map<string, number> {
   var directiveVariableBindings = new Map();
   MapWrapper.forEach(renderElementBinder.variableBindings, (templateName, exportAs) => {
     var dirIndex = _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, exportAs);

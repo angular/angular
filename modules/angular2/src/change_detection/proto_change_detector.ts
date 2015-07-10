@@ -108,8 +108,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   visitAccessMember(ast: AccessMember): number {
     var receiver = ast.receiver.visit(this);
     if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name) &&
-            ast.receiver instanceof
-            ImplicitReceiver) {
+        ast.receiver instanceof ImplicitReceiver) {
       return this._addRecord(RecordType.LOCAL, ast.name, ast.name, [], null, receiver);
     } else {
       return this._addRecord(RecordType.PROPERTY, ast.name, ast.getter, [], null, receiver);

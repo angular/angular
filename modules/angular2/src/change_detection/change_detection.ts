@@ -122,8 +122,8 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
   _dynamicChangeDetection: ChangeDetection;
   _protoChangeDetectorFactories: StringMap<string, Function>;
 
-  constructor(@Inject(PROTO_CHANGE_DETECTOR_KEY) @Optional()
-              protoChangeDetectorsForTest?: StringMap<string, Function>) {
+  constructor(@Inject(PROTO_CHANGE_DETECTOR_KEY) @Optional() protoChangeDetectorsForTest?:
+                  StringMap<string, Function>) {
     super();
     this._dynamicChangeDetection = new DynamicChangeDetection();
     this._protoChangeDetectorFactories = isPresent(protoChangeDetectorsForTest) ?

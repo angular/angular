@@ -343,10 +343,10 @@ const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 
-function buildElementPropertyBindings(
-    protoElement: /*element*/ any, isNgComponent: boolean,
-    bindingsInTemplate: Map<string, ASTWithSource>,
-    directiveTempaltePropertyNames: Set<string>): List<api.ElementPropertyBinding> {
+function buildElementPropertyBindings(protoElement: /*element*/ any, isNgComponent: boolean,
+                                      bindingsInTemplate: Map<string, ASTWithSource>,
+                                      directiveTempaltePropertyNames: Set<string>):
+    List<api.ElementPropertyBinding> {
   var propertyBindings = [];
   MapWrapper.forEach(bindingsInTemplate, (ast, propertyNameInTemplate) => {
     var propertyBinding = createElementPropertyBinding(ast, propertyNameInTemplate);
@@ -376,8 +376,8 @@ function isValidElementPropertyBinding(protoElement: /*element*/ any, isNgCompon
   return true;
 }
 
-function createElementPropertyBinding(ast: ASTWithSource,
-                                      propertyNameInTemplate: string): api.ElementPropertyBinding {
+function createElementPropertyBinding(ast: ASTWithSource, propertyNameInTemplate: string):
+    api.ElementPropertyBinding {
   var parts = StringWrapper.split(propertyNameInTemplate, PROPERTY_PARTS_SEPARATOR);
   if (parts.length === 1) {
     var propName = parts[0];

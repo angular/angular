@@ -213,45 +213,48 @@ class _DirectiveUpdating {
    * Map from test id to _DirectiveUpdating.
    * Definitions in this map define definitions which allow testing directive updating.
    */
-  static availableDefinitions: StringMap<string, _DirectiveUpdating> = {
-    'directNoDispatcher': new _DirectiveUpdating(
-        [_DirectiveUpdating.updateA('42', _DirectiveUpdating.basicRecords[0])],
-        [_DirectiveUpdating.basicRecords[0]]),
-    'groupChanges': new _DirectiveUpdating(
-        [
-          _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
-          _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
-          BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
-          _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
-          BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
-        ],
-        [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
-    'directiveOnCheck': new _DirectiveUpdating(
-        [BindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
-        [_DirectiveUpdating.basicRecords[0]]),
-    'directiveOnInit': new _DirectiveUpdating(
-        [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
-        [_DirectiveUpdating.basicRecords[0]]),
-    'emptyWithDirectiveRecords': new _DirectiveUpdating(
-        [], [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
-    'noCallbacks': new _DirectiveUpdating(
-        [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
-        [_DirectiveUpdating.recordNoCallbacks]),
-    'readingDirectives':
-        new _DirectiveUpdating(
-            [
-              BindingRecord.createForHostProperty(
-                  new DirectiveIndex(0, 0), _getParser().parseBinding('a', 'location'), PROP_NAME)
-            ],
+  static availableDefinitions:
+      StringMap<string, _DirectiveUpdating> = {
+        'directNoDispatcher': new _DirectiveUpdating(
+            [_DirectiveUpdating.updateA('42', _DirectiveUpdating.basicRecords[0])],
             [_DirectiveUpdating.basicRecords[0]]),
-    'interpolation':
-        new _DirectiveUpdating(
-            [
-              BindingRecord.createForElementProperty(
-                  _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
-            ],
-            [])
-  };
+        'groupChanges':
+            new _DirectiveUpdating(
+                [
+                  _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
+                  _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
+                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
+                  _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
+                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
+                ],
+                [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+        'directiveOnCheck': new _DirectiveUpdating(
+            [BindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
+            [_DirectiveUpdating.basicRecords[0]]),
+        'directiveOnInit': new _DirectiveUpdating(
+            [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
+            [_DirectiveUpdating.basicRecords[0]]),
+        'emptyWithDirectiveRecords': new _DirectiveUpdating(
+            [], [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+        'noCallbacks': new _DirectiveUpdating(
+            [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
+            [_DirectiveUpdating.recordNoCallbacks]),
+        'readingDirectives':
+            new _DirectiveUpdating(
+                [
+                  BindingRecord.createForHostProperty(new DirectiveIndex(0, 0),
+                                                      _getParser().parseBinding('a', 'location'),
+                                                      PROP_NAME)
+                ],
+                [_DirectiveUpdating.basicRecords[0]]),
+        'interpolation':
+            new _DirectiveUpdating(
+                [
+                  BindingRecord.createForElementProperty(
+                      _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
+                ],
+                [])
+      };
 }
 
 /**

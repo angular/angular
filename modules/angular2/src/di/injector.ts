@@ -786,8 +786,8 @@ function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<Reso
   return resolvedList;
 }
 
-function _createListOfBindings(
-    flattenedBindings: Map<number, ResolvedBinding>): List<ResolvedBinding> {
+function _createListOfBindings(flattenedBindings: Map<number, ResolvedBinding>):
+    List<ResolvedBinding> {
   return MapWrapper.values(flattenedBindings);
 }
 

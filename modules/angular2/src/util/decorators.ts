@@ -242,9 +242,8 @@ export function makeDecorator(annotationCls, chainFn: (fn: Function) => void = n
     if (this instanceof annotationCls) {
       return annotationInstance;
     } else {
-      var chainAnnotation = isFunction(this) && this.annotations instanceof Array ?
-                                                                                this.annotations :
-                                                                                [];
+      var chainAnnotation =
+          isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
       var TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls) {
         var annotations = Reflect.getMetadata('annotations', cls);

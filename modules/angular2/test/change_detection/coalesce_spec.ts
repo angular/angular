@@ -6,10 +6,9 @@ import {RecordType, ProtoRecord} from 'angular2/src/change_detection/proto_recor
 import {DirectiveIndex} from 'angular2/src/change_detection/directive_record';
 
 export function main() {
-  function r(
-      funcOrValue, args, contextIndex, selfIndex,
-      {lastInBinding, mode, name,
-       directiveIndex}: {lastInBinding?: any, mode?: any, name?: any, directiveIndex?: any} = {}) {
+  function r(funcOrValue, args, contextIndex, selfIndex,
+             {lastInBinding, mode, name, directiveIndex}:
+                 {lastInBinding?: any, mode?: any, name?: any, directiveIndex?: any} = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
     if (isBlank(mode)) mode = RecordType.PROPERTY;
     if (isBlank(name)) name = "name";

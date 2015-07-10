@@ -38,7 +38,7 @@ export function fakeAsync(fn: Function): Function {
     _inFakeAsyncZone: true
   });
 
-  return function(... args) {
+  return function(...args) {
     // TODO(tbosch): This class should already be part of the jasmine typings but it is not...
     _scheduler = new (<any>jasmine).DelayedFunctionScheduler();
     ListWrapper.clear(_microtasks);
@@ -46,7 +46,7 @@ export function fakeAsync(fn: Function): Function {
     ListWrapper.clear(_pendingTimers);
 
     let res = fakeAsyncZone.run(() => {
-      let res = fn(... args);
+      let res = fn(...args);
       flushMicrotasks();
       return res;
     });
@@ -92,7 +92,7 @@ export function flushMicrotasks(): void {
   }
 }
 
-function _setTimeout(fn: Function, delay: number, ... args): number {
+function _setTimeout(fn: Function, delay: number, ...args): number {
   var cb = _fnAndFlush(fn);
   var id = _scheduler.scheduleFunction(cb, delay, args);
   _pendingTimers.push(id);
@@ -105,7 +105,7 @@ function _clearTimeout(id: number) {
   return _scheduler.removeFunctionWithId(id);
 }
 
-function _setInterval(fn: Function, interval: number, ... args) {
+function _setInterval(fn: Function, interval: number, ...args) {
   var cb = _fnAndFlush(fn);
   var id = _scheduler.scheduleFunction(cb, interval, args, true);
   _pendingPeriodicTimers.push(id);
@@ -118,9 +118,10 @@ function _clearInterval(id: number) {
 }
 
 function _fnAndFlush(fn: Function): Function {
-  return (... args) => { fn.apply(global, args);
-  flushMicrotasks();
-}
+  return (...args) => {
+    fn.apply(global, args);
+    flushMicrotasks();
+  }
 }
 
 function _scheduleMicrotask(microtask: Function): void {

@@ -188,8 +188,8 @@ export class DomRenderer extends Renderer {
     view.setElementProperty(location.boundElementIndex, propertyName, propertyValue);
   }
 
-  setElementAttribute(location: RenderElementRef, attributeName: string,
-                      attributeValue: string): void {
+  setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string):
+      void {
     var view = resolveInternalDomView(location.renderView);
     view.setElementAttribute(location.boundElementIndex, attributeName, attributeValue);
   }

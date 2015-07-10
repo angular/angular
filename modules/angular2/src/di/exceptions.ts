@@ -135,8 +135,7 @@ export class InstantiationError extends AbstractBindingError {
     super(key, function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
-             ` ORIGINAL ERROR: ${originalException}` +
-             `\n\n ORIGINAL STACK: ${originalStack}`;
+             ` ORIGINAL ERROR: ${originalException}` + `\n\n ORIGINAL STACK: ${originalStack}`;
     }, originalException, originalStack);
 
     this.causeKey = key;

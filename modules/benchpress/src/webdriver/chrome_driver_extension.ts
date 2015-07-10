@@ -141,8 +141,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 }
 
-function normalizeEvent(chromeEvent: StringMap<string, any>,
-                        data: StringMap<string, any>): StringMap<string, any> {
+function normalizeEvent(chromeEvent: StringMap<string, any>, data: StringMap<string, any>):
+    StringMap<string, any> {
   var ph = chromeEvent['ph'];
   if (StringWrapper.equals(ph, 'S')) {
     ph = 'b';

@@ -177,13 +177,10 @@ export class Binding {
    */
   dependencies: List<any>;
 
-  constructor(token, {toClass, toValue, toAlias, toFactory, deps}: {
-    toClass?: Type,
-    toValue?: any,
-    toAlias?: any,
-    toFactory?: Function,
-    deps?: List<any>
-  }) {
+  constructor(
+      token,
+      {toClass, toValue, toAlias, toFactory, deps}:
+          {toClass?: Type, toValue?: any, toAlias?: any, toFactory?: Function, deps?: List<any>}) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;
@@ -374,8 +371,8 @@ export class BindingBuilder {
   }
 }
 
-function _constructDependencies(factoryFunction: Function,
-                                dependencies: List<any>): List<Dependency> {
+function _constructDependencies(factoryFunction: Function, dependencies: List<any>):
+    List<Dependency> {
   if (isBlank(dependencies)) {
     return _dependenciesFor(factoryFunction);
   } else {
@@ -393,8 +390,8 @@ function _dependenciesFor(typeOrFunc): List<Dependency> {
   return ListWrapper.map(params, (p: List<any>) => _extractToken(typeOrFunc, p, params));
 }
 
-function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
-                       params: List<List<any>>): Dependency {
+function _extractToken(typeOrFunc, annotations /*List<any> | any*/, params: List<List<any>>):
+    Dependency {
   var depProps = [];
   var token = null;
   var optional = false;

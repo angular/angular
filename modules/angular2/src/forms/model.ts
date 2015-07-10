@@ -98,8 +98,8 @@ export class AbstractControl {
     }
   }
 
-  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean,
-                                                 emitEvent?: boolean} = {}): void {
+  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     onlySelf = isPresent(onlySelf) ? onlySelf : false;
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
@@ -151,8 +151,8 @@ export class Control extends AbstractControl {
     this._valueChanges = new EventEmitter();
   }
 
-  updateValue(value: any,
-              {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  updateValue(value: any, {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._value = value;
     if (isPresent(this._onChange)) this._onChange(this._value);
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});

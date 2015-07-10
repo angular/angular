@@ -241,12 +241,12 @@ export class DirectiveBinding extends ResolvedBinding {
     var resolvedHostInjectables =
         isPresent(ann.hostInjector) ? Injector.resolve(ann.hostInjector) : [];
     var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ?
-                                                     Injector.resolve(ann.viewInjector) :
-                                                     [];
+                                      Injector.resolve(ann.viewInjector) :
+                                      [];
     var metadata = DirectiveMetadata.create({
       id: stringify(rb.key.token),
-      type: ann instanceof
-          Component ? DirectiveMetadata.COMPONENT_TYPE : DirectiveMetadata.DIRECTIVE_TYPE,
+      type: ann instanceof Component ? DirectiveMetadata.COMPONENT_TYPE :
+                                       DirectiveMetadata.DIRECTIVE_TYPE,
       selector: ann.selector,
       compileChildren: ann.compileChildren,
       events: ann.events,
@@ -260,8 +260,7 @@ export class DirectiveBinding extends ResolvedBinding {
       callOnInit: hasLifecycleHook(onInit, rb.key.token, ann),
       callOnAllChangesDone: hasLifecycleHook(onAllChangesDone, rb.key.token, ann),
 
-      changeDetection: ann instanceof
-          Component ? ann.changeDetection : null,
+      changeDetection: ann instanceof Component ? ann.changeDetection : null,
 
       exportAs: ann.exportAs
     });
@@ -452,10 +451,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     // we couple ourselves to the injector strategy to avoid polymoprhic calls
     var injectorStrategy = <any>this._injector.internalStrategy;
     this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
-                                                     new ElementInjectorInlineStrategy(
-                                                         injectorStrategy, this) :
-                                                     new ElementInjectorDynamicStrategy(
-                                                         injectorStrategy, this);
+                         new ElementInjectorInlineStrategy(injectorStrategy, this) :
+                         new ElementInjectorDynamicStrategy(injectorStrategy, this);
 
     this.hydrated = false;
 
@@ -961,7 +958,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
     for (var i = 0; i < p.bindings.length; i++) {
       if (p.bindings[i] instanceof DirectiveBinding &&
-                                       (<DirectiveBinding>p.bindings[i]).callOnDestroy) {
+          (<DirectiveBinding>p.bindings[i]).callOnDestroy) {
         ist.objs[i].onDestroy();
       }
     }
