@@ -8,7 +8,7 @@ import {StringMap} from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class Metric {
-  static bindTo(delegateToken):Binding[] {
+  static bindTo(delegateToken): Binding[] {
     return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
   }
 
