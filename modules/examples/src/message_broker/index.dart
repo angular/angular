@@ -19,7 +19,7 @@ main() {
             .appendHtml("<span class='response'>${data['value']}</span>");
       } else if (identical(data['type'], "test")) {
         bus.sink.send(
-            {'type': "result", 'value': {'id': data['id'], 'value': VALUE}});
+            {'type': "result", 'id': data['id'], 'value': VALUE});
       } else if (identical(data['type'], "result")) {
         querySelector("#ui_result")
             .appendHtml("<span class='result'>${data['value']}</span>");

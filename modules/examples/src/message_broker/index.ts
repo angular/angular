@@ -19,7 +19,7 @@ bus.source.addListener((message) => {
     document.getElementById("echo_result").innerHTML =
         `<span class='response'>${message.data.value}</span>`;
   } else if (message.data.type === "test") {
-    bus.sink.send({type: "result", value: {id: message.data.id, value: VALUE}});
+    bus.sink.send({type: "result", id: message.data.id, value: VALUE});
   } else if (message.data.type == "result") {
     document.getElementById("ui_result").innerHTML =
         `<span class='result'>${message.data.value}</span>`;

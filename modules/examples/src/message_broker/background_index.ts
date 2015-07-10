@@ -14,7 +14,7 @@ export function main() {
     }
   });
 
-  var broker = new MessageBroker(bus, new Serializer(null));
+  var broker = new MessageBroker(bus, new Serializer(null, null, null), null);
   var args = new UiArguments("test", "tester");
   broker.runOnUiThread(args, String)
       .then((data: string) => { bus.sink.send({type: "result", value: data}); });
