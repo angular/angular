@@ -1,6 +1,6 @@
 import {ComponentAnnotation, DirectiveAnnotation, LifecycleEvent} from './annotations';
 import {ViewAnnotation} from './view';
-import {AttributeAnnotation, QueryAnnotation} from './di';
+import {AttributeAnnotation, QueryAnnotation, ViewQueryAnnotation} from './di';
 import {
   makeDecorator,
   makeParamDecorator,
@@ -368,3 +368,9 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeAnnotation)
  * {@link Query} factory function.
  */
 export var Query: QueryFactory = makeParamDecorator(QueryAnnotation);
+
+
+/**
+ * {@link ViewQuery} factory function.
+ */
+export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryAnnotation);

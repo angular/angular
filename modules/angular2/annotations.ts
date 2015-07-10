@@ -53,5 +53,6 @@ export {
   ViewDecorator,
   ViewFactory,
   Query,
-  QueryFactory
+  QueryFactory,
+  ViewQuery
 } from 'angular2/src/core/annotations/decorators';

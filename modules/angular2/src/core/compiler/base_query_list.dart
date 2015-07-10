@@ -45,4 +45,9 @@ class BaseQueryList<T> extends Object with IterableMixin<T> {
   get length => _results.length;
   get first => _results.first;
   get last => _results.last;
+
+  List map(fn(T)) {
+    // Note: we need to return a list instead of iterable to match JS.
+    return this._results.map(fn).toList();
+  }
 }
