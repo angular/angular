@@ -7,6 +7,9 @@ import {Injectable} from 'angular2/di';
 import {BrowserXhr} from './browser_xhr';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {isPresent, ENUM_INDEX} from 'angular2/src/facade/lang';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+
+const HEADER_DIVIDER = "; ";
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -35,6 +38,14 @@ export class XHRConnection implements Connection {
     this._xhr = browserXHR.build();
     // TODO(jeffbcross): implement error listening/propagation
     this._xhr.open(requestMethodsMap.getMethod(ENUM_INDEX(req.method)), req.url);
+
+    if (isPresent(req.headers)) {
+      req.headers.forEach((values, key) => {
+        var value = ListWrapper.join(values, HEADER_DIVIDER);
+        this._xhr.setRequestHeader(key, value);
+      });
+    }
+
     this._xhr.addEventListener('load', (_) => {
       var responseOptions = new ResponseOptions(
           {body: isPresent(this._xhr.response) ? this._xhr.response : this._xhr.responseText});

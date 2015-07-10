@@ -20,6 +20,7 @@ import {Headers} from 'angular2/src/http/headers';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
+import {Headers} from 'angular2/src/http/headers';
 import {ResponseTypes} from 'angular2/src/http/enums';
 
 var abortSpy;
@@ -27,6 +28,7 @@ var sendSpy;
 var openSpy;
 var setRequestHeaderSpy;
 var addEventListenerSpy;
+var setRequestHeaderSpy;
 var existingXHRs = [];
 
 class MockBrowserXHR extends BrowserXhr {
@@ -34,6 +36,7 @@ class MockBrowserXHR extends BrowserXhr {
   send: any;
   open: any;
   response: any;
+  setRequestHeader: any;
   responseText: string;
   setRequestHeader: any;
   callbacks: Map<string, Function>;
@@ -61,6 +64,7 @@ class MockBrowserXHR extends BrowserXhr {
 export function main() {
   describe('XHRBackend', () => {
     var backend;
+    var sampleBaseOptions;
     var sampleRequest;
 
     beforeEach(() => {
@@ -71,8 +75,9 @@ export function main() {
         XHRBackend
       ]);
       backend = injector.get(XHRBackend);
-      var base = new BaseRequestOptions();
-      sampleRequest = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));
+      sampleBaseOptions = new BaseRequestOptions();
+      sampleRequest =
+          new Request(sampleBaseOptions.merge(new RequestOptions({url: 'https://google.com'})));
     });
 
     afterEach(() => { existingXHRs = []; });
@@ -103,6 +108,24 @@ export function main() {
       it('should automatically call open with method and url', () => {
         new XHRConnection(sampleRequest, new MockBrowserXHR());
         expect(openSpy).toHaveBeenCalledWith('GET', sampleRequest.url);
+      });
+
+      it('should attach correct headers with two List values', () => {
+        var headerValue = ['application/json', 'charset=utf-8'];
+        var headers = {'Content-Type': headerValue};
+        var sampleRequestWithHeaders = new Request(sampleBaseOptions.merge(
+            new RequestOptions({url: 'https://google.com', headers: new Headers(headers)})));
+        new XHRConnection(sampleRequestWithHeaders, new MockBrowserXHR());
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', headerValue.join('; '));
+      });
+
+      it('should attach correct headers with one value', () => {
+        var headerValue = 'application/json';
+        var headers = {'Content-Type': headerValue};
+        var sampleRequestWithHeaders = new Request(sampleBaseOptions.merge(
+            new RequestOptions({url: 'https://google.com', headers: new Headers(headers)})));
+        new XHRConnection(sampleRequestWithHeaders, new MockBrowserXHR());
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', headerValue);
       });
 
 
