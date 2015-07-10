@@ -146,7 +146,7 @@ function _createNgZone(givenReporter: Function): NgZone {
   var reporter = isPresent(givenReporter) ? givenReporter : defaultErrorReporter;
 
   var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
-  zone.initCallbacks({onErrorHandler: reporter});
+  zone.overrideOnErrorHandler(reporter);
   return zone;
 }
 

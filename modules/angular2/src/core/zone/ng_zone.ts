@@ -23,6 +23,7 @@ export class NgZone {
 
   _onTurnStart: () => void;
   _onTurnDone: () => void;
+  _onEventDone: () => void;
   _onErrorHandler: (error, stack) => void;
 
   // Number of microtasks pending from _innerZone (& descendants)
@@ -53,6 +54,7 @@ export class NgZone {
   constructor({enableLongStackTrace}) {
     this._onTurnStart = null;
     this._onTurnDone = null;
+    this._onEventDone = null;
     this._onErrorHandler = null;
 
     this._pendingMicrotasks = 0;
@@ -70,22 +72,40 @@ export class NgZone {
   }
 
   /**
-   * Initializes the zone hooks.
-   *
-   * @param {() => void} onTurnStart called before code executes in the inner zone for each VM turn
-   * @param {() => void} onTurnDone called at the end of a VM turn if code has executed in the inner
-   * zone
-   * @param {(error, stack) => void} onErrorHandler called when an exception is thrown by a macro or
-   * micro task
+   * Sets the zone hook that is called just before Angular event turn starts.
+   * It is called once per browser event.
    */
-  initCallbacks({onTurnStart, onTurnDone, onErrorHandler}: {
-    onTurnStart?: /*() => void*/ Function,
-    onTurnDone?: /*() => void*/ Function,
-    onErrorHandler?: /*(error, stack) => void*/ Function
-  } = {}) {
-    this._onTurnStart = normalizeBlank(onTurnStart);
-    this._onTurnDone = normalizeBlank(onTurnDone);
-    this._onErrorHandler = normalizeBlank(onErrorHandler);
+  overrideOnTurnStart(onTurnStartFn: Function): void {
+    this._onTurnStart = normalizeBlank(onTurnStartFn);
+  }
+
+  /**
+   * Sets the zone hook that is called immediately after Angular processes
+   * all pending microtasks.
+   */
+  overrideOnTurnDone(onTurnDoneFn: Function): void {
+    this._onTurnDone = normalizeBlank(onTurnDoneFn);
+  }
+
+  /**
+   * Sets the zone hook that is called immediately after the last turn in the
+   * current event completes. At this point Angular will no longer attempt to
+   * sync the UI. Any changes to the data model will not be reflected in the
+   * DOM. {@link onEventDoneFn} is executed outside Angular zone.
+   *
+   * This hook is useful for validating application state (e.g. in a test).
+   */
+  overrideOnEventDone(onEventDoneFn: Function): void {
+    this._onEventDone = normalizeBlank(onEventDoneFn);
+  }
+
+  /**
+   * Sets the zone hook that is called when an error is uncaught in the
+   * Angular zone. The first argument is the error. The second argument is
+   * the stack trace.
+   */
+  overrideOnErrorHandler(errorHandlingFn: Function): void {
+    this._onErrorHandler = normalizeBlank(errorHandlingFn);
   }
 
   /**
@@ -172,6 +192,9 @@ export class NgZone {
                     try {
                       this._inVmTurnDone = true;
                       parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
+                      if (ngZone._pendingMicrotasks === 0 && isPresent(ngZone._onEventDone)) {
+                        ngZone.runOutsideAngular(ngZone._onEventDone);
+                      }
                     } finally {
                       this._inVmTurnDone = false;
                       ngZone._hasExecutedCodeInInnerZone = false;

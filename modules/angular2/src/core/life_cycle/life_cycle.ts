@@ -57,7 +57,8 @@ export class LifeCycle {
       this._changeDetector = changeDetector;
     }
 
-    zone.initCallbacks({onErrorHandler: this._errorHandler, onTurnDone: () => this.tick()});
+    zone.overrideOnErrorHandler(this._errorHandler);
+    zone.overrideOnTurnDone(() => this.tick());
   }
 
   /**
