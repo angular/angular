@@ -276,5 +276,5 @@ export function main() {
   });
 }
 
-var someComponent = DirectiveMetadata.create(
+export var someComponent = DirectiveMetadata.create(
     {id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'some-comp'});

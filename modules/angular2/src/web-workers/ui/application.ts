@@ -5,6 +5,7 @@ import {
   SourceListener
 } from "angular2/src/web-workers/shared/message_bus";
 import {BaseException} from "angular2/src/facade/lang";
+import {bootstrapUICommon} from "angular2/src/web-workers/ui/impl";
 
 /**
  * Bootstrapping a WebWorker
@@ -15,7 +16,8 @@ import {BaseException} from "angular2/src/facade/lang";
  * bootstrapping process
  */
 export function bootstrap(uri: string): void {
-  throw new BaseException("Not Implemented");
+  var messageBus = spawnWorker(uri);
+  bootstrapUICommon(messageBus);
 }
 
 export function spawnWorker(uri: string): MessageBus {
@@ -34,7 +36,19 @@ export class UIMessageBusSink implements MessageBusSink {
 }
 
 export class UIMessageBusSource implements MessageBusSource {
+  private _listenerStore: Map<int, SourceListener> = new Map<int, SourceListener>();
+  private _numListeners: int = 0;
+
   constructor(private _worker: Worker) {}
 
-  listen(fn: SourceListener): void { this._worker.addEventListener("message", fn); }
+  public addListener(fn: SourceListener): int {
+    this._worker.addEventListener("message", fn);
+    this._listenerStore[++this._numListeners] = fn;
+    return this._numListeners;
+  }
+
+  public removeListener(index: int): void {
+    removeEventListener("message", this._listenerStore[index]);
+    this._listenerStore.delete(index);
+  }
 }

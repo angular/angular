@@ -10,16 +10,16 @@ import "dart:isolate";
 main(List<String> args, SendPort replyTo) {
   ReceivePort rPort = new ReceivePort();
   WorkerMessageBus bus = new WorkerMessageBus.fromPorts(replyTo, rPort);
-  bus.source.listen((message) {
+  bus.source.addListener((message) {
     if (identical(message['data']['type'], "echo")) {
       bus.sink
           .send({"type": "echo_response", "value": message['data']['value']});
     }
   });
 
-  MessageBroker broker = new MessageBroker(bus);
+  MessageBroker broker = new MessageBroker(bus, null);
   var args = new UiArguments("test", "tester");
-  broker.runOnUiThread(args).then((data) {
-    bus.sink.send({"type": "result", "value": data.value});
+  broker.runOnUiThread(args, String).then((data) {
+    bus.sink.send({"type": "result", "value": data});
   });
 }

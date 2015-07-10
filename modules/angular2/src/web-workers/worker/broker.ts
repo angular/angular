@@ -4,12 +4,15 @@ import {print, isPresent, DateWrapper, stringify} from "../../facade/lang";
 import {Promise, PromiseCompleter, PromiseWrapper} from "angular2/src/facade/async";
 import {ListWrapper, StringMapWrapper, MapWrapper} from "../../facade/collection";
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
+import {Injectable} from "angular2/di";
+import {Type} from "angular2/src/facade/lang";
 
+@Injectable()
 export class MessageBroker {
   private _pending: Map<string, Function> = new Map<string, Function>();
 
-  constructor(private _messageBus: MessageBus) {
-    this._messageBus.source.listen((data) => this._handleMessage(data['data']));
+  constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {
+    this._messageBus.source.addListener((data) => this._handleMessage(data['data']));
   }
 
   private _generateMessageId(name: string): string {
@@ -23,26 +26,48 @@ export class MessageBroker {
     return id;
   }
 
-  runOnUiThread(args: UiArguments): Promise<any> {
-    var completer = PromiseWrapper.completer();
-    var id: string = this._generateMessageId(args.type + args.method);
-    this._pending.set(id, completer.resolve);
-    PromiseWrapper.catchError(completer.promise, (err, stack?) => {
-      print(err);
-      completer.reject(err, stack);
-    });
-
+  runOnUiThread(args: UiArguments, returnType: Type): Promise<any> {
     var fnArgs = [];
     if (isPresent(args.args)) {
       ListWrapper.forEach(args.args, (argument) => {
-        fnArgs.push(Serializer.serialize(argument.value, argument.type));
+        if (argument.type != null) {
+          fnArgs.push(this._serializer.serialize(argument.value, argument.type));
+        } else {
+          fnArgs.push(argument.value);
+        }
       });
     }
 
+    var promise: Promise<any>;
+    var id: string = null;
+    if (returnType != null) {
+      var completer = PromiseWrapper.completer();
+      id = this._generateMessageId(args.type + args.method);
+      this._pending.set(id, completer.resolve);
+      PromiseWrapper.catchError(completer.promise, (err, stack?) => {
+        print(err);
+        completer.reject(err, stack);
+      });
+
+      promise = PromiseWrapper.then(completer.promise, (data: MessageResult) => {
+        if (this._serializer == null) {
+          return data.value;
+        } else {
+          return this._serializer.deserialize(data.value, returnType);
+        }
+      });
+    } else {
+      promise = null;
+    }
+
     // TODO(jteplitz602): Create a class for these messages so we don't keep using StringMap
-    var message = {'type': args.type, 'method': args.method, 'args': fnArgs, 'id': id};
+    var message = {'type': args.type, 'method': args.method, 'args': fnArgs};
+    if (id != null) {
+      message['id'] = id;
+    }
     this._messageBus.sink.send(message);
-    return completer.promise;
+
+    return promise;
   }
 
   private _handleMessage(message: StringMap<string, any>): void {

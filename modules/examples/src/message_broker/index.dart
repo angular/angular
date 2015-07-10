@@ -12,7 +12,7 @@ main() {
       var val = (querySelector("#echo_input") as InputElement).value;
       bus.sink.send({'type': 'echo', 'value': val});
     });
-    bus.source.listen((message) {
+    bus.source.addListener((message) {
       var data = message['data'];
       if (identical(data['type'], "echo_response")) {
         querySelector("#echo_result")

@@ -130,6 +130,17 @@ export function stringify(token): string {
   return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
 }
 
+// serialize / deserialize enum exist only for consistency with dart API
+// enums in typescript don't need to be serialized
+
+export function serializeEnum(val): int {
+  return val;
+}
+
+export function deserializeEnum(val, values: Map<int, any>): any {
+  return val;
+}
+
 export class StringWrapper {
   static fromCharCode(code: int): string { return String.fromCharCode(code); }
 

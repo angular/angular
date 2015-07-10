@@ -1,4 +1,4 @@
-import {Type, isArray, isPresent} from "angular2/src/facade/lang";
+import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
 import {List, ListWrapper, Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
 import {
   ProtoViewDto,
@@ -7,75 +7,122 @@ import {
   DirectiveBinder,
   ElementPropertyBinding,
   EventBinding,
-  ViewDefinition
+  ViewDefinition,
+  RenderProtoViewRef,
+  RenderProtoViewMergeMapping,
+  RenderViewRef,
+  RenderFragmentRef,
+  RenderElementRef,
+  ViewType
 } from "angular2/src/render/api";
+import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AST, ASTWithSource} from "angular2/change_detection";
 import {Parser} from "angular2/src/change_detection/parser/parser";
+import {Injectable} from "angular2/di";
+import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_proto_view_ref_store';
+import {
+  RenderViewWithFragmentsStore
+} from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
 
+@Injectable()
 export class Serializer {
-  static parser: Parser = null;
+  private _enumRegistry: Map<any, Map<int, any>>;
+  constructor(private _parser: Parser, private _protoViewStore: RenderProtoViewRefStore,
+              private _renderViewStore: RenderViewWithFragmentsStore) {
+    this._enumRegistry = new Map<any, Map<int, any>>();
+    var viewTypeMap = new Map<int, any>();
+    viewTypeMap[0] = ViewType.HOST;
+    viewTypeMap[1] = ViewType.COMPONENT;
+    viewTypeMap[2] = ViewType.EMBEDDED;
+    this._enumRegistry.set(ViewType, viewTypeMap);
+  }
 
-  static serialize(obj: any, type: Type): Object {
+  serialize(obj: any, type: Type): Object {
     if (!isPresent(obj)) {
       return null;
     }
     if (isArray(obj)) {
       var serializedObj = [];
-      ListWrapper.forEach(obj, (val) => { serializedObj.push(Serializer.serialize(val, type)); });
+      ListWrapper.forEach(obj, (val) => { serializedObj.push(this.serialize(val, type)); });
       return serializedObj;
     }
+    if (type == String) {
+      return obj;
+    }
     if (type == ViewDefinition) {
-      return ViewDefinitionSerializer.serialize(obj);
+      return this._serializeViewDefinition(obj);
     } else if (type == DirectiveBinder) {
-      return DirectiveBinderSerializer.serialize(obj);
+      return this._serializeDirectiveBinder(obj);
     } else if (type == ProtoViewDto) {
-      return ProtoViewDtoSerializer.serialize(obj);
+      return this._serializeProtoViewDto(obj);
     } else if (type == ElementBinder) {
-      return ElementBinderSerializer.serialize(obj);
+      return this._serializeElementBinder(obj);
     } else if (type == DirectiveMetadata) {
-      return DirectiveMetadataSerializer.serialize(obj);
+      return this._serializeDirectiveMetadata(obj);
     } else if (type == ASTWithSource) {
-      return ASTWithSourceSerializer.serialize(obj);
+      return this._serializeASTWithSource(obj);
+    } else if (type == RenderProtoViewRef) {
+      return this._protoViewStore.serialize(obj);
+    } else if (type == RenderProtoViewMergeMapping) {
+      return this._serializeRenderProtoViewMergeMapping(obj);
+    } else if (type == RenderViewRef) {
+      return this._renderViewStore.serializeRenderViewRef(obj);
+    } else if (type == RenderFragmentRef) {
+      return this._renderViewStore.serializeRenderFragmentRef(obj);
+    } else if (type == WorkerElementRef) {
+      return this._serializeWorkerElementRef(obj);
     } else {
       throw "No serializer for " + type.toString();
     }
   }
 
-  // TODO: template this to return the type that is passed if possible
-  static deserialize(map: List<any>, type: Type, data?: any): any {
+  deserialize(map: any, type: Type, data?: any): any {
     if (!isPresent(map)) {
       return null;
     }
     if (isArray(map)) {
       var obj: List<any> = new List<any>();
-      ListWrapper.forEach(map, (val) => { obj.push(Serializer.deserialize(val, type, data)); });
+      ListWrapper.forEach(map, (val) => { obj.push(this.deserialize(val, type, data)); });
       return obj;
+    }
+    if (type == String) {
+      return map;
     }
 
     if (type == ViewDefinition) {
-      return ViewDefinitionSerializer.deserialize(map);
+      return this._deserializeViewDefinition(map);
     } else if (type == DirectiveBinder) {
-      return DirectiveBinderSerializer.deserialize(map);
+      return this._deserializeDirectiveBinder(map);
     } else if (type == ProtoViewDto) {
-      return ProtoViewDtoSerializer.deserialize(map);
+      return this._deserializeProtoViewDto(map);
     } else if (type == DirectiveMetadata) {
-      return DirectiveMetadataSerializer.deserialize(map);
+      return this._deserializeDirectiveMetadata(map);
     } else if (type == ElementBinder) {
-      return ElementBinderSerializer.deserialize(map);
+      return this._deserializeElementBinder(map);
     } else if (type == ASTWithSource) {
-      return ASTWithSourceSerializer.deserialize(map, data);
+      return this._deserializeASTWithSource(map, data);
+    } else if (type == RenderProtoViewRef) {
+      return this._protoViewStore.deserialize(map);
+    } else if (type == RenderProtoViewMergeMapping) {
+      return this._deserializeRenderProtoViewMergeMapping(map);
+    } else if (type == RenderViewRef) {
+      return this._renderViewStore.deserializeRenderViewRef(map);
+    } else if (type == RenderFragmentRef) {
+      return this._renderViewStore.deserializeRenderFragmentRef(map);
+    } else if (type == WorkerElementRef) {
+      return this._deserializeWorkerElementRef(map);
     } else {
       throw "No deserializer for " + type.toString();
     }
   }
 
-  static mapToObject(map: Map<any, any>, type?: Type): Object {
+  mapToObject(map: Map<string, any>, type?: Type): Object {
     var object = {};
     var serialize = isPresent(type);
 
     MapWrapper.forEach(map, (value, key) => {
       if (serialize) {
-        object[key] = Serializer.serialize(value, type);
+        object[key] = this.serialize(value, type);
       } else {
         object[key] = value;
       }
@@ -84,191 +131,213 @@ export class Serializer {
   }
 
   /*
-   * Transforms a Javascript object into a Map<string, V>
+   * Transforms a Javascript object (StringMap) into a Map<string, V>
    * If the values need to be deserialized pass in their type
    * and they will be deserialized before being placed in the map
    */
-  static objectToMap(obj: Object, type?: Type, data?: any): Map<string, any> {
+  objectToMap(obj: StringMap<string, any>, type?: Type, data?: any): Map<string, any> {
     if (isPresent(type)) {
       var map: Map<string, any> = new Map();
-      StringMapWrapper.forEach(
-          obj, (key, val) => { map.set(key, Serializer.deserialize(val, type, data)); });
+      StringMapWrapper.forEach(obj,
+                               (key, val) => { map.set(key, this.deserialize(val, type, data)); });
       return map;
     } else {
       return MapWrapper.createFromStringMap(obj);
     }
   }
-}
 
-class ASTWithSourceSerializer {
-  static serialize(tree: ASTWithSource): Object {
+  allocateRenderViews(fragmentCount: number) { this._renderViewStore.allocate(fragmentCount); }
+
+  private _serializeWorkerElementRef(elementRef: RenderElementRef): StringMap<string, any> {
+    return {
+      'renderView': this.serialize(elementRef.renderView, RenderViewRef),
+      'renderBoundElementIndex': elementRef.renderBoundElementIndex
+    };
+  }
+
+  private _deserializeWorkerElementRef(map: StringMap<string, any>): RenderElementRef {
+    return new WorkerElementRef(this.deserialize(map['renderView'], RenderViewRef),
+                                map['renderBoundElementIndex']);
+  }
+
+  private _serializeRenderProtoViewMergeMapping(mapping: RenderProtoViewMergeMapping): Object {
+    return {
+      'mergedProtoViewRef': this._protoViewStore.serialize(mapping.mergedProtoViewRef),
+      'fragmentCount': mapping.fragmentCount,
+      'mappedElementIndices': mapping.mappedElementIndices,
+      'mappedElementCount': mapping.mappedElementCount,
+      'mappedTextIndices': mapping.mappedTextIndices,
+      'hostElementIndicesByViewIndex': mapping.hostElementIndicesByViewIndex,
+      'nestedViewCountByViewIndex': mapping.nestedViewCountByViewIndex
+    };
+  }
+
+  private _deserializeRenderProtoViewMergeMapping(obj: StringMap<string, any>):
+      RenderProtoViewMergeMapping {
+    return new RenderProtoViewMergeMapping(
+        this._protoViewStore.deserialize(obj['mergedProtoViewRef']), obj['fragmentCount'],
+        obj['mappedElementIndices'], obj['mappedElementCount'], obj['mappedTextIndices'],
+        obj['hostElementIndicesByViewIndex'], obj['nestedViewCountByViewIndex']);
+  }
+
+  private _serializeASTWithSource(tree: ASTWithSource): Object {
     return {'input': tree.source, 'location': tree.location};
   }
 
-  static deserialize(obj: any, data: string): AST {
+  private _deserializeASTWithSource(obj: StringMap<string, any>, data: string): AST {
     // TODO: make ASTs serializable
     var ast: AST;
     switch (data) {
       case "interpolation":
-        ast = Serializer.parser.parseInterpolation(obj.input, obj.location);
+        ast = this._parser.parseInterpolation(obj['input'], obj['location']);
         break;
       case "binding":
-        ast = Serializer.parser.parseBinding(obj.input, obj.location);
+        ast = this._parser.parseBinding(obj['input'], obj['location']);
         break;
       case "simpleBinding":
-        ast = Serializer.parser.parseSimpleBinding(obj.input, obj.location);
+        ast = this._parser.parseSimpleBinding(obj['input'], obj['location']);
         break;
-      /*case "templateBindings":
-        ast = Serializer.parser.parseTemplateBindings(obj.input, obj.location);
-        break;*/
       case "interpolation":
-        ast = Serializer.parser.parseInterpolation(obj.input, obj.location);
+        ast = this._parser.parseInterpolation(obj['input'], obj['location']);
         break;
       default:
         throw "No AST deserializer for " + data;
     }
     return ast;
   }
-}
 
-class ViewDefinitionSerializer {
-  static serialize(view: ViewDefinition): Object {
+  private _serializeViewDefinition(view: ViewDefinition): Object {
     return {
       'componentId': view.componentId,
       'templateAbsUrl': view.templateAbsUrl,
       'template': view.template,
-      'directives': Serializer.serialize(view.directives, DirectiveMetadata),
+      'directives': this.serialize(view.directives, DirectiveMetadata),
       'styleAbsUrls': view.styleAbsUrls,
       'styles': view.styles
     };
   }
-  static deserialize(obj: any): ViewDefinition {
+
+  private _deserializeViewDefinition(obj: StringMap<string, any>): ViewDefinition {
     return new ViewDefinition({
-      componentId: obj.componentId,
-      templateAbsUrl: obj.templateAbsUrl, template: obj.template,
-      directives: Serializer.deserialize(obj.directives, DirectiveMetadata),
-      styleAbsUrls: obj.styleAbsUrls,
-      styles: obj.styles
+      componentId: obj['componentId'],
+      templateAbsUrl: obj['templateAbsUrl'], template: obj['template'],
+      directives: this.deserialize(obj['directives'], DirectiveMetadata),
+      styleAbsUrls: obj['styleAbsUrls'],
+      styles: obj['styles']
     });
   }
-}
 
-class DirectiveBinderSerializer {
-  static serialize(binder: DirectiveBinder): Object {
+  private _serializeDirectiveBinder(binder: DirectiveBinder): Object {
     return {
       'directiveIndex': binder.directiveIndex,
-      'propertyBindings': Serializer.mapToObject(binder.propertyBindings, ASTWithSource),
-      'eventBindings': Serializer.serialize(binder.eventBindings, EventBinding),
-      'hostPropertyBindings':
-          Serializer.serialize(binder.hostPropertyBindings, ElementPropertyBinding)
+      'propertyBindings': this.mapToObject(binder.propertyBindings, ASTWithSource),
+      'eventBindings': this.serialize(binder.eventBindings, EventBinding),
+      'hostPropertyBindings': this.serialize(binder.hostPropertyBindings, ElementPropertyBinding)
     };
   }
 
-  static deserialize(obj: any): DirectiveBinder {
+  private _deserializeDirectiveBinder(obj: StringMap<string, any>): DirectiveBinder {
     return new DirectiveBinder({
-      directiveIndex: obj.directiveIndex,
-      propertyBindings: Serializer.objectToMap(obj.propertyBindings, ASTWithSource, "binding"),
-      eventBindings: Serializer.deserialize(obj.eventBindings, EventBinding),
-      hostPropertyBindings: Serializer.deserialize(obj.hostPropertyBindings, ElementPropertyBinding)
+      directiveIndex: obj['directiveIndex'],
+      propertyBindings: this.objectToMap(obj['propertyBindings'], ASTWithSource, "binding"),
+      eventBindings: this.deserialize(obj['eventBindings'], EventBinding),
+      hostPropertyBindings: this.deserialize(obj['hostPropertyBindings'], ElementPropertyBinding)
     });
   }
-}
 
-class ElementBinderSerializer {
-  static serialize(binder: ElementBinder): Object {
+  private _serializeElementBinder(binder: ElementBinder): Object {
     return {
       'index': binder.index,
       'parentIndex': binder.parentIndex,
       'distanceToParent': binder.distanceToParent,
-      'directives': Serializer.serialize(binder.directives, DirectiveBinder),
-      'nestedProtoView': Serializer.serialize(binder.nestedProtoView, ProtoViewDto),
-      'propertyBindings': Serializer.serialize(binder.propertyBindings, ElementPropertyBinding),
-      'variableBindings': Serializer.mapToObject(binder.variableBindings),
-      'eventBindings': Serializer.serialize(binder.eventBindings, EventBinding),
-      'readAttributes': Serializer.mapToObject(binder.readAttributes)
+      'directives': this.serialize(binder.directives, DirectiveBinder),
+      'nestedProtoView': this.serialize(binder.nestedProtoView, ProtoViewDto),
+      'propertyBindings': this.serialize(binder.propertyBindings, ElementPropertyBinding),
+      'variableBindings': this.mapToObject(binder.variableBindings),
+      'eventBindings': this.serialize(binder.eventBindings, EventBinding),
+      'readAttributes': this.mapToObject(binder.readAttributes)
     };
   }
 
-  static deserialize(obj: any): ElementBinder {
+  private _deserializeElementBinder(obj: StringMap<string, any>): ElementBinder {
     return new ElementBinder({
-      index: obj.index,
-      parentIndex: obj.parentIndex,
-      distanceToParent: obj.distanceToParent,
-      directives: Serializer.deserialize(obj.directives, DirectiveBinder),
-      nestedProtoView: Serializer.deserialize(obj.nestedProtoView, ProtoViewDto),
-      propertyBindings: Serializer.deserialize(obj.propertyBindings, ElementPropertyBinding),
-      variableBindings: Serializer.objectToMap(obj.variableBindings),
-      eventBindings: Serializer.deserialize(obj.eventBindings, EventBinding),
-      readAttributes: Serializer.objectToMap(obj.readAttributes)
+      index: obj['index'],
+      parentIndex: obj['parentIndex'],
+      distanceToParent: obj['distanceToParent'],
+      directives: this.deserialize(obj['directives'], DirectiveBinder),
+      nestedProtoView: this.deserialize(obj['nestedProtoView'], ProtoViewDto),
+      propertyBindings: this.deserialize(obj['propertyBindings'], ElementPropertyBinding),
+      variableBindings: this.objectToMap(obj['variableBindings']),
+      eventBindings: this.deserialize(obj['eventBindings'], EventBinding),
+      readAttributes: this.objectToMap(obj['readAttributes'])
     });
   }
-}
 
-class ProtoViewDtoSerializer {
-  static serialize(view: ProtoViewDto): Object {
-    // TODO: fix render refs and write a serializer for them
+  private _serializeProtoViewDto(view: ProtoViewDto): Object {
     return {
-      'render': null,
-      'elementBinders': Serializer.serialize(view.elementBinders, ElementBinder),
-      'variableBindings': Serializer.mapToObject(view.variableBindings),
-      'textBindings': Serializer.serialize(view.textBindings, ASTWithSource),
-      'type': view.type
+      'render': this._protoViewStore.serialize(view.render),
+      'elementBinders': this.serialize(view.elementBinders, ElementBinder),
+      'variableBindings': this.mapToObject(view.variableBindings),
+      'type': serializeEnum(view.type),
+      'textBindings': this.serialize(view.textBindings, ASTWithSource),
+      'transitiveNgContentCount': view.transitiveNgContentCount
     };
   }
 
-  static deserialize(obj: any): ProtoViewDto {
+  private _deserializeProtoViewDto(obj: StringMap<string, any>): ProtoViewDto {
     return new ProtoViewDto({
-      render: null,  // TODO: fix render refs and write a serializer for them
-      elementBinders: Serializer.deserialize(obj.elementBinders, ElementBinder),
-      variableBindings: Serializer.objectToMap(obj.variableBindings),
-      textBindings: Serializer.deserialize(obj.textBindings, ASTWithSource, "interpolation"),
-      type: obj.type
+      render: this._protoViewStore.deserialize(obj["render"]),
+      elementBinders: this.deserialize(obj['elementBinders'], ElementBinder),
+      variableBindings: this.objectToMap(obj['variableBindings']),
+      textBindings: this.deserialize(obj['textBindings'], ASTWithSource, "interpolation"),
+      type: deserializeEnum(obj['type'], this._enumRegistry.get(ViewType)),
+      transitiveNgContentCount: obj['transitivengContentCount']
     });
   }
-}
 
-class DirectiveMetadataSerializer {
-  static serialize(meta: DirectiveMetadata): Object {
+  private _serializeDirectiveMetadata(meta: DirectiveMetadata): Object {
     var obj = {
       'id': meta.id,
       'selector': meta.selector,
       'compileChildren': meta.compileChildren,
-      'hostProperties': Serializer.mapToObject(meta.hostProperties),
-      'hostListeners': Serializer.mapToObject(meta.hostListeners),
-      'hostActions': Serializer.mapToObject(meta.hostActions),
-      'hostAttributes': Serializer.mapToObject(meta.hostAttributes),
+      'events': meta.events,
       'properties': meta.properties,
       'readAttributes': meta.readAttributes,
       'type': meta.type,
-      'exportAs': meta.exportAs,
       'callOnDestroy': meta.callOnDestroy,
+      'callOnChange': meta.callOnChange,
       'callOnCheck': meta.callOnCheck,
       'callOnInit': meta.callOnInit,
       'callOnAllChangesDone': meta.callOnAllChangesDone,
       'changeDetection': meta.changeDetection,
-      'events': meta.events
+      'exportAs': meta.exportAs,
+      'hostProperties': this.mapToObject(meta.hostProperties),
+      'hostListeners': this.mapToObject(meta.hostListeners),
+      'hostActions': this.mapToObject(meta.hostActions),
+      'hostAttributes': this.mapToObject(meta.hostAttributes)
     };
     return obj;
   }
-  static deserialize(obj: any): DirectiveMetadata {
+  private _deserializeDirectiveMetadata(obj: StringMap<string, any>): DirectiveMetadata {
     return new DirectiveMetadata({
-      id: obj.id,
-      selector: obj.selector,
-      compileChildren: obj.compileChildren,
-      hostProperties: Serializer.objectToMap(obj.hostProperties),
-      hostListeners: Serializer.objectToMap(obj.hostListeners),
-      hostActions: Serializer.objectToMap(obj.hostActions),
-      hostAttributes: Serializer.objectToMap(obj.hostAttributes),
-      properties: obj.properties,
-      readAttributes: obj.readAttributes,
-      type: obj.type,
-      exportAs: obj.exportAs,
-      callOnDestroy: obj.callOnDestroy,
-      callOnCheck: obj.callOnCheck,
-      callOnInit: obj.callOnInit,
-      callOnAllChangesDone: obj.callOnAllChangesDone,
-      changeDetection: obj.changeDetection,
-      events: obj.events
+      id: obj['id'],
+      selector: obj['selector'],
+      compileChildren: obj['compileChildren'],
+      hostProperties: this.objectToMap(obj['hostProperties']),
+      hostListeners: this.objectToMap(obj['hostListeners']),
+      hostActions: this.objectToMap(obj['hostActions']),
+      hostAttributes: this.objectToMap(obj['hostAttributes']),
+      properties: obj['properties'],
+      readAttributes: obj['readAttributes'],
+      type: obj['type'],
+      exportAs: obj['exportAs'],
+      callOnDestroy: obj['callOnDestroy'],
+      callOnChange: obj['callOnChange'],
+      callOnCheck: obj['callOnCheck'],
+      callOnInit: obj['callOnInit'],
+      callOnAllChangesDone: obj['callOnAllChangesDone'],
+      changeDetection: obj['changeDetection'],
+      events: obj['events']
     });
   }
 }

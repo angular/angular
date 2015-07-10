@@ -4,17 +4,18 @@ import {
   WorkerMessageBusSink
 } from "angular2/src/web-workers/worker/application";
 import {MessageBroker, UiArguments} from "angular2/src/web-workers/worker/broker";
+import {Serializer} from "angular2/src/web-workers/shared/serializer";
 
 export function main() {
   var bus = new WorkerMessageBus(new WorkerMessageBusSink(), new WorkerMessageBusSource());
-  bus.source.listen((message) => {
+  bus.source.addListener((message) => {
     if (message.data.type === "echo") {
       bus.sink.send({type: "echo_response", 'value': message.data.value});
     }
   });
 
-  var broker = new MessageBroker(bus);
+  var broker = new MessageBroker(bus, new Serializer(null));
   var args = new UiArguments("test", "tester");
-  broker.runOnUiThread(args)
-      .then((data) => { bus.sink.send({type: "result", value: data.value}); });
+  broker.runOnUiThread(args, String)
+      .then((data: string) => { bus.sink.send({type: "result", value: data}); });
 }

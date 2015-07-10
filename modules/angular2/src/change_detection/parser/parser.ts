@@ -106,7 +106,7 @@ export class Parser {
   }
 }
 
-class _ParseAST {
+export class _ParseAST {
   index: int = 0;
   constructor(public input: string, public location: any, public tokens: List<any>,
               public reflector: Reflector, public parseAction: boolean) {}

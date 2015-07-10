@@ -68,7 +68,7 @@ export class DomTestbed {
               @Inject(DOCUMENT_TOKEN) document) {
     this.renderer = renderer;
     this.compiler = compiler;
-    this.rootEl = el('<div id="root"></div>');
+    this.rootEl = el('<div id="root" class="rootElem"></div>');
     var oldRoots = DOM.querySelectorAll(document, '#root');
     for (var i = 0; i < oldRoots.length; i++) {
       DOM.remove(oldRoots[i]);

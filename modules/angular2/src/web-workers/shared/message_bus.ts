@@ -13,6 +13,14 @@ export interface SourceListener {
   (data: any): void;  // TODO: Replace this any type with the type of a real messaging protocol
 }
 
-export interface MessageBusSource { listen(fn: SourceListener): void; }
+export interface MessageBusSource {
+  /**
+   * Attaches the SourceListener to this source.
+   * The SourceListener will get called whenever the bus receives a message
+   * Returns a listener id that can be passed to {@link removeListener}
+   */
+  addListener(fn: SourceListener): number;
+  removeListener(index: number);
+}
 
 export interface MessageBusSink { send(message: Object): void; }

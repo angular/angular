@@ -39,6 +39,19 @@ bool isDate(obj) => obj is DateTime;
 
 String stringify(obj) => obj.toString();
 
+int serializeEnum(val) {
+  return val.index;
+}
+
+/**
+ * Deserializes an enum
+ * val should be the indexed value of the enum (sa returned from @Link{serializeEnum})
+ * values should be a map from indexes to values for the enum that you want to deserialize.
+ */
+dynamic deserializeEnum(int val, Map<int, dynamic> values) {
+  return values[val];
+}
+
 class StringWrapper {
   static String fromCharCode(int code) {
     return new String.fromCharCode(code);

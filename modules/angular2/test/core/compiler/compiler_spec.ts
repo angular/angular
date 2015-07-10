@@ -58,7 +58,8 @@ export function main() {
 
       protoViewFactory = new FakeProtoViewFactory(protoViewFactoryResults);
       return new Compiler(directiveResolver, new CompilerCache(), tplResolver, cmpUrlMapper,
-                          urlResolver, renderCompiler, protoViewFactory, new FakeAppRootUrl());
+                          urlResolver, renderCompiler, protoViewFactory,
+                          new AppRootUrl("http://www.app.com"));
     }
 
     beforeEach(() => {
@@ -398,8 +399,9 @@ export function main() {
          var reader: any = new SpyDirectiveResolver();
 
          // create the compiler
-         var compiler = new Compiler(reader, cache, tplResolver, cmpUrlMapper, new UrlResolver(),
-                                     renderCompiler, protoViewFactory, new FakeAppRootUrl());
+         var compiler =
+             new Compiler(reader, cache, tplResolver, cmpUrlMapper, new UrlResolver(),
+                          renderCompiler, protoViewFactory, new AppRootUrl("http://www.app.com"));
          compiler.compileInHost(MainComponent)
              .then((protoViewRef) => {
                // the test should have failed if the resolver was called, so we're good
@@ -667,10 +669,6 @@ class SpyRenderCompiler extends SpyObject {
 class SpyDirectiveResolver extends SpyObject {
   constructor() { super(DirectiveResolver); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-class FakeAppRootUrl extends AppRootUrl {
-  get value() { return 'http://www.app.com'; }
 }
 
 class FakeViewResolver extends ViewResolver {

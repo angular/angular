@@ -41,7 +41,7 @@ export function main() {
                                                  new ViewLoader(null, null, null));
   var compiler = new Compiler(reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver,
                               renderCompiler, new ProtoViewFactory(new DynamicChangeDetection()),
-                              new FakeAppRootUrl());
+                              new AppRootUrl(""));
 
   function measureWrapper(func, desc) {
     return function() {
@@ -160,8 +160,4 @@ class BenchmarkComponentNoBindings {
 </div>`
 })
 class BenchmarkComponentWithBindings {
-}
-
-class FakeAppRootUrl extends AppRootUrl {
-  get value() { return ''; }
 }

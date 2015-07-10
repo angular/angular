@@ -13,7 +13,8 @@ document.getElementById("send_echo")
       var val = (<HTMLInputElement>document.getElementById("echo_input")).value;
       bus.sink.send({type: "echo", value: val});
     });
-bus.source.listen((message) => {
+
+bus.source.addListener((message) => {
   if (message.data.type === "echo_response") {
     document.getElementById("echo_result").innerHTML =
         `<span class='response'>${message.data.value}</span>`;

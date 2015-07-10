@@ -45,6 +45,7 @@ import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestur
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -136,14 +137,14 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     StyleInliner,
     DynamicComponentLoader,
     Testability,
-    AppRootUrl
+    AnchorBasedAppRootUrl,
+    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl)
   ];
 }
 
-function _createNgZone(): NgZone {
+export function createNgZone(handler: ExceptionHandler): NgZone {
   // bootstrapErrorReporter is needed because we cannot use custom exception handler
   // configured via DI until the root Injector has been created.
-  var handler = new ExceptionHandler();
   var bootstrapErrorReporter = (exception, stackTrace) => handler.call(exception, stackTrace);
   var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
   zone.overrideOnErrorHandler(bootstrapErrorReporter);
@@ -282,7 +283,7 @@ export function commonBootstrap(
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
-  var zone = _createNgZone();
+  var zone = createNgZone(new ExceptionHandler());
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.

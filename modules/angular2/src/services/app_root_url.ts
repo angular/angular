@@ -1,6 +1,5 @@
 import {Injectable} from 'angular2/di';
 import {isBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 
 /**
  * Specifies app root url for the application.
@@ -15,16 +14,12 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 export class AppRootUrl {
   private _value: string;
 
+  constructor(value: string) { this._value = value; }
+
   /**
    * Returns the base URL of the currently running application.
    */
-  get value() {
-    if (isBlank(this._value)) {
-      var a = DOM.createElement('a');
-      DOM.resolveAndSetHref(a, './', null);
-      this._value = DOM.getHref(a);
-    }
+  get value() { return this._value; }
 
-    return this._value;
-  }
+  set value(value: string) { this._value = value; }
 }

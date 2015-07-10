@@ -23,6 +23,7 @@ import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -56,6 +57,7 @@ import {
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
 } from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+import {Serializer} from "angular2/src/web-workers/shared/serializer";
 import {Log} from './utils';
 
 /**
@@ -88,6 +90,7 @@ function _getAppBindings() {
   } catch (e) {
     appDoc = null;
   }
+
   return [
     bind(DOCUMENT_TOKEN)
         .toValue(appDoc),
@@ -102,6 +105,7 @@ function _getAppBindings() {
     AppViewPool,
     AppViewManager,
     AppViewManagerUtils,
+    Serializer,
     ELEMENT_PROBE_CONFIG,
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
@@ -120,7 +124,8 @@ function _getAppBindings() {
     bind(XHR).toClass(MockXHR),
     ComponentUrlMapper,
     UrlResolver,
-    AppRootUrl,
+    AnchorBasedAppRootUrl,
+    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
     StyleUrlResolver,
     StyleInliner,
     TestComponentBuilder,

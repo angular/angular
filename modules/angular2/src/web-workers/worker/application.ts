@@ -7,7 +7,9 @@ import {
 import {Type, BaseException} from "angular2/src/facade/lang";
 import {Binding} from "angular2/di";
 
+import {bootstrapWebworkerCommon} from "angular2/src/web-workers/worker/application_common";
 import {ApplicationRef} from "angular2/src/core/application";
+import {Injectable} from "angular2/di";
 
 /**
  * Bootstrapping a Webworker Application
@@ -19,11 +21,15 @@ import {ApplicationRef} from "angular2/src/core/application";
  * See the bootstrap() docs for more details.
  */
 export function bootstrapWebworker(
-    appComponentType: Type, componentInjectableBindings: List<Type | Binding | List<any>> = null,
-    errorReporter: Function = null): Promise<ApplicationRef> {
-  throw new BaseException("Not Implemented");
+    appComponentType: Type, componentInjectableBindings: List<Type | Binding | List<any>> = null):
+    Promise<ApplicationRef> {
+  var bus: WorkerMessageBus =
+      new WorkerMessageBus(new WorkerMessageBusSink(), new WorkerMessageBusSource());
+
+  return bootstrapWebworkerCommon(appComponentType, bus, componentInjectableBindings);
 }
 
+@Injectable()
 export class WorkerMessageBus implements MessageBus {
   sink: WorkerMessageBusSink;
   source: WorkerMessageBusSource;
@@ -39,5 +45,22 @@ export class WorkerMessageBusSink implements MessageBusSink {
 }
 
 export class WorkerMessageBusSource implements MessageBusSource {
-  public listen(fn: SourceListener) { addEventListener("message", fn); }
+  private listenerStore: Map<int, SourceListener>;
+  private numListeners: int;
+
+  constructor() {
+    this.numListeners = 0;
+    this.listenerStore = new Map<int, SourceListener>();
+  }
+
+  public addListener(fn: SourceListener): int {
+    addEventListener("message", fn);
+    this.listenerStore[++this.numListeners] = fn;
+    return this.numListeners;
+  }
+
+  public removeListener(index: int): void {
+    removeEventListener("message", this.listenerStore[index]);
+    this.listenerStore.delete(index);
+  }
 }
