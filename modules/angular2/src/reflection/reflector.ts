@@ -27,6 +27,8 @@ export class Reflector {
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
+  isReflectionEnabled(): boolean { return this.reflectionCapabilities.isReflectionEnabled(); }
+
   registerFunction(func: Function, funcInfo: StringMap<string, any>): void {
     this._injectableInfo.set(func, funcInfo);
   }

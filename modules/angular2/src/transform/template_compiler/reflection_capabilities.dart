@@ -10,6 +10,8 @@ class NullReflectionCapabilities implements ReflectionCapabilities {
 
   _notImplemented(String name) => throw 'Not implemented: $name';
 
+  bool isReflectionEnabled() { return false; }
+
   Function factory(Type type) => _notImplemented('factory');
 
   List<List> parameters(typeOrFunc) => _notImplemented('parameters');

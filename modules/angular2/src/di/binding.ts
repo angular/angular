@@ -450,16 +450,15 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
     throw new NoAnnotationError(typeOrFunc, params);
   }
 }
-
 function _defaulVisiblity(typeOrFunc) {
-  try {
-    if (!(typeOrFunc instanceof Type)) return unbounded;
-    var f =
-        ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof InjectableMetadata);
-    return f.length === 0 ? unbounded : f[0].visibility;
-  } catch (e) {
-    return unbounded;
-  }
+  if (!(typeOrFunc instanceof Type)) return unbounded;
+
+  // TODO: vsavkin revisit this after clarifying lookup rules
+  if (!reflector.isReflectionEnabled()) return unbounded;
+
+  var f =
+      ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof InjectableMetadata);
+  return f.length === 0 ? unbounded : f[0].visibility;
 }
 
 function _createDependency(token, optional, visibility, depProps): Dependency {

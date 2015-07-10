@@ -3,6 +3,7 @@ import {GetterFn, SetterFn, MethodFn} from './types';
 import {List} from 'angular2/src/facade/collection';
 
 export interface PlatformReflectionCapabilities {
+  isReflectionEnabled(): boolean;
   factory(type: Type): Function;
   interfaces(type: Type): List<any>;
   parameters(type: Type): List<List<any>>;
