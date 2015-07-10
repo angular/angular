@@ -274,10 +274,9 @@ export function main() {
           parentView = createView(createProtoView([createEmptyElBinder()]));
           childProtoView = createProtoView();
         });
-        
-        it('should return null if ViewContainerRef does not yet exist', () => {
-          expect(manager.getComponentView(elementRef(parentView, 0))).toBe(null);
-        });
+
+        it('should return null if ViewContainerRef does not yet exist',
+           () => { expect(manager.getComponentView(elementRef(parentView, 0))).toBe(null); });
 
         it('should create a ViewContainerRef if not yet existing', () => {
           manager.createViewInContainer(elementRef(parentView, 0), 0, wrapPv(childProtoView), null);
