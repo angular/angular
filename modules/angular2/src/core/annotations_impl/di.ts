@@ -57,6 +57,8 @@ export class Query extends DependencyMetadata {
     this.descendants = descendants;
   }
 
+  get isViewQuery() { return false; }
+
   get selector() { return resolveForwardRef(this._selector); }
 
   get isVarBindingQuery(): boolean { return isString(this.selector); }
@@ -64,4 +66,21 @@ export class Query extends DependencyMetadata {
   get varBindings(): List<string> { return StringWrapper.split(this.selector, new RegExp(",")); }
 
   toString(): string { return `@Query(${stringify(this.selector)})`; }
+}
+
+/**
+ * Specifies that a {@link QueryList} should be injected.
+ *
+ * See {@link QueryList} for usage and example.
+ *
+ * @exportedAs angular2/annotations
+ */
+@CONST()
+export class ViewQuery extends Query {
+  constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
+    super(_selector, {descendants: descendants});
+  }
+
+  get isViewQuery() { return true; }
+  toString(): string { return `@ViewQuery(${stringify(this.selector)})`; }
 }

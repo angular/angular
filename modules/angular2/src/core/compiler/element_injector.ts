@@ -434,7 +434,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   private _preBuiltObjects = null;
 
   // Queries are added during construction or linking with a new parent.
-  // They are never removed.
+  // They are removed only through unlinking.
   private _query0: QueryRef;
   private _query1: QueryRef;
   private _query2: QueryRef;
@@ -486,6 +486,10 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._preBuiltObjects = preBuiltObjects;
 
     this._hydrateInjector(imperativelyCreatedInjector, host);
+
+    if (isPresent(host)) {
+      this._addViewQueries(host);
+    }
 
     this._addDirectivesToQueries();
     this._addVarBindingsToQueries();
@@ -650,6 +654,22 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     }
   }
 
+  private _addViewQueries(host: ElementInjector): void {
+    if (isPresent(host._query0) && host._query0.originator == host)
+      this._addViewQuery(host._query0);
+    if (isPresent(host._query1) && host._query1.originator == host)
+      this._addViewQuery(host._query1);
+    if (isPresent(host._query2) && host._query2.originator == host)
+      this._addViewQuery(host._query2);
+  }
+
+  private _addViewQuery(queryRef: QueryRef): void {
+    // TODO(rado): Replace this.parent check with distanceToParent = 1 when
+    // https://github.com/angular/angular/issues/2707 is fixed.
+    if (!queryRef.query.descendants && isPresent(this.parent)) return;
+    this._assignQueryRef(queryRef);
+  }
+
   private _addVarBindingsToQueries(): void {
     this._addVarBindingsToQuery(this._query0);
     this._addVarBindingsToQuery(this._query1);
@@ -733,15 +753,15 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   private _addParentQueries(): void {
     if (isBlank(this.parent)) return;
-    if (isPresent(this.parent._query0)) {
+    if (isPresent(this.parent._query0) && !this.parent._query0.query.isViewQuery) {
       this._addQueryToTree(this.parent._query0);
       if (this.hydrated) this.parent._query0.update();
     }
-    if (isPresent(this.parent._query1)) {
+    if (isPresent(this.parent._query1) && !this.parent._query1.query.isViewQuery) {
       this._addQueryToTree(this.parent._query1);
       if (this.hydrated) this.parent._query1.update();
     }
-    if (isPresent(this.parent._query2)) {
+    if (isPresent(this.parent._query2) && !this.parent._query2.query.isViewQuery) {
       this._addQueryToTree(this.parent._query2);
       if (this.hydrated) this.parent._query2.update();
     }

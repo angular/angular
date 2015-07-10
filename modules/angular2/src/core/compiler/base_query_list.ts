@@ -38,4 +38,6 @@ export class BaseQueryList<T> {
   get length() { return this._results.length; }
   get first() { return ListWrapper.first(this._results); }
   get last() { return ListWrapper.last(this._results); }
+
+  map<U>(fn: (T) => U): U[] { return this._results.map(fn); }
 }
