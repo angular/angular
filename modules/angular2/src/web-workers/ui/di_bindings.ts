@@ -1,5 +1,5 @@
-// TODO: This whole file is nearly identical to core/application.ts.
-// There should be a way to refactor application so that this file is unnecessary
+// TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
+// There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/di";
 import {Type, isBlank, isPresent} from "angular2/src/facade/lang";
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
@@ -21,6 +21,7 @@ import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {
   DomRenderer,
   DOCUMENT_TOKEN,
@@ -28,6 +29,8 @@ import {
   DefaultDomCompiler,
   APP_ID_RANDOM_BINDING
 } from 'angular2/src/render/render';
+import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
+import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
@@ -73,11 +76,6 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
   } else if (JitChangeDetection.isSupported()) {
     bestChangeDetection = JitChangeDetection;
   }
-  // compute the root url to pass to AppRootUrl
-  /*var rootUrl: string;
-  var a = DOM.createElement('a');
-  DOM.resolveAndSetHref(a, './', null);
-  rootUrl = DOM.getHref(a);*/
 
   return [
     bind(DOCUMENT_TOKEN)
@@ -100,6 +98,7 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
     Serializer,
     bind(ON_WEBWORKER).toValue(false),
+    bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
     ProtoViewFactory,
@@ -117,7 +116,7 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     DirectiveResolver,
     Parser,
     Lexer,
-    ExceptionHandler,
+    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
@@ -126,6 +125,7 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     DynamicComponentLoader,
     Testability,
     AnchorBasedAppRootUrl,
+    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
     WebWorkerMain
   ];
 }

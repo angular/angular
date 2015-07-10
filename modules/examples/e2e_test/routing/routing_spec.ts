@@ -1,9 +1,16 @@
 import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
+import {Promise} from 'angular2/src/facade/async';
 
 function waitForElement(selector) {
   var EC = (<any>protractor).ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
   browser.wait(EC.presenceOf($(selector)), 10000);
+}
+
+// returns a promise that resolves in the given number of milliseconds
+function wait(time) {
+  var promise = new Promise((resolve, reject) => { setTimeout(resolve, time); });
+  return promise;
 }
 
 describe('routing inbox-app', function() {
@@ -62,6 +69,7 @@ describe('routing inbox-app', function() {
       waitForElement('#item-10');
       element(by.css('#item-10')).click();
       waitForElement('#record-id');
+      browser.wait(wait(500), 600);
       expect(element(by.css('#record-id')).getText()).toEqual('ID: 10');
     });
 
