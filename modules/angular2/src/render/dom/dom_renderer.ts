@@ -352,7 +352,7 @@ export class DomRenderer extends Renderer {
     return vc;
   }
 
-  _directParentLightDom(view: DomView, boundElementIndex: number) {
+  _directParentLightDom(view: DomView, boundElementIndex: number): LightDom {
     var directParentEl = view.getDirectParentElement(boundElementIndex);
     return isPresent(directParentEl) ? directParentEl.lightDom : null;
   }
