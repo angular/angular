@@ -2175,7 +2175,7 @@
       }
     },
     "clang-format": {
-      "version": "1.0.25",
+      "version": "1.0.28",
       "dependencies": {
         "resolve": {
           "version": "1.1.6"

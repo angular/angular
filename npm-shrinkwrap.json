@@ -3354,13 +3354,12 @@
       }
     },
     "clang-format": {
-      "version": "1.0.25",
-      "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.25.tgz",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.25.tgz",
+      "version": "1.0.28",
+      "from": "clang-format@1.0.28",
       "dependencies": {
         "resolve": {
           "version": "1.1.6",
-          "from": "https://registry.npmjs.org/resolve/-/resolve-1.1.6.tgz",
+          "from": "resolve@>=1.1.6 <2.0.0",
           "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.1.6.tgz"
         }
       }
