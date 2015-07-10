@@ -8,7 +8,7 @@ import {
   isPresent
 } from "angular2/src/facade/lang";
 
-enum TokenType {
+export enum TokenType {
   CHARACTER,
   IDENTIFIER,
   KEYWORD,

@@ -1,4 +1,4 @@
-import {bind} from 'angular2/di';
+import {bind, Binding} from 'angular2/di';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {ABSTRACT, BaseException} from 'angular2/src/facade/lang';
 import {MeasureValues} from './measure_values';
@@ -9,7 +9,7 @@ import {List} from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class Reporter {
-  static bindTo(delegateToken) {
+  static bindTo(delegateToken): Binding[] {
     return [bind(Reporter).toFactory((delegate) => delegate, [delegateToken])];
   }
 
