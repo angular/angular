@@ -52,7 +52,7 @@ import {
   onAllChangesDone
 } from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {ChangeDetector, ChangeDetectorRef, PipeRegistry} from 'angular2/change_detection';
+import {ChangeDetector, ChangeDetectorRef, Pipes} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DirectiveMetadata} from 'angular2/src/render/api';
@@ -65,7 +65,7 @@ export class StaticKeys {
   viewContainerId: number;
   changeDetectorRefId: number;
   elementRefId: number;
-  pipeRegistryKey: Key;
+  pipesKey: Key;
 
   constructor() {
     this.viewManagerId = Key.get(avmModule.AppViewManager).id;
@@ -74,7 +74,7 @@ export class StaticKeys {
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
     // not an id because the public API of injector works only with keys and tokens
-    this.pipeRegistryKey = Key.get(PipeRegistry);
+    this.pipesKey = Key.get(Pipes);
   }
 
   static instance(): StaticKeys {
@@ -550,9 +550,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     injector.internalStrategy.hydrate();
   }
 
-  getPipeRegistry(): PipeRegistry {
-    var pipeRegistryKey = StaticKeys.instance().pipeRegistryKey;
-    return this._injector.getOptional(pipeRegistryKey);
+  getPipes(): Pipes {
+    var pipesKey = StaticKeys.instance().pipesKey;
+    return this._injector.getOptional(pipesKey);
   }
 
   hasVariableBinding(name: string): boolean {

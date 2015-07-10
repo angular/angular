@@ -48,8 +48,8 @@ import {
 } from 'angular2/di';
 import {
   PipeFactory,
-  PipeRegistry,
-  defaultPipeRegistry,
+  Pipes,
+  defaultPipes,
   ChangeDetection,
   DynamicChangeDetection,
   Pipe,
@@ -1402,13 +1402,13 @@ class PushCmpWithRef {
 }
 
 @Injectable()
-class PipeRegistryWithDouble extends PipeRegistry {
+class PipesWithDouble extends Pipes {
   constructor() { super({"double": [new DoublePipeFactory()]}); }
 }
 
 @Component({
   selector: 'my-comp-with-pipes',
-  viewInjector: [new Binding(PipeRegistry, {toClass: PipeRegistryWithDouble})]
+  viewInjector: [new Binding(Pipes, {toClass: PipesWithDouble})]
 })
 @View({directives: []})
 @Injectable()

@@ -51,7 +51,7 @@ export interface ChangeDetector {
   removeChild(cd: ChangeDetector): void;
   removeShadowDomChild(cd: ChangeDetector): void;
   remove(): void;
-  hydrate(context: any, locals: Locals, directives: any, pipeRegistry: any): void;
+  hydrate(context: any, locals: Locals, directives: any, pipes: any): void;
   dehydrate(): void;
   markPathToRootAsCheckOnce(): void;
 

@@ -27,7 +27,7 @@ void initReflector(reflector) {
 }
 class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
-  _gen.PipeRegistry _pipeRegistry;
+  _gen.Pipes _pipes;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
@@ -100,13 +100,13 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _dispatcher.notifyOnAllChangesDone();
   }
 
-  void hydrate(MyComponent context, locals, directives, pipeRegistry) {
+  void hydrate(MyComponent context, locals, directives, pipes) {
     mode = 'ALWAYS_CHECK';
     _context = context;
     _locals = locals;
 
     _alreadyChecked = false;
-    _pipeRegistry = pipeRegistry;
+    _pipes = pipes;
   }
 
   void dehydrate() {
@@ -114,7 +114,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _myNum0 = _gen.ChangeDetectionUtil.uninitialized();
     _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
     _locals = null;
-    _pipeRegistry = null;
+    _pipes = null;
   }
 
   hydrated() => _context != null;

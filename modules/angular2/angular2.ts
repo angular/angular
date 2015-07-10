@@ -14,14 +14,13 @@ export {
 
   ChangeDetectorRef,
 
-  PipeRegistry,
+  Pipes,
   WrappedValue,
   Pipe,
   PipeFactory,
   NullPipe,
   NullPipeFactory,
   defaultPipes,
-  defaultPipeRegistry,
   BasePipe,
 
   Locals
