@@ -27,12 +27,6 @@ import {
   RenderFragmentRef
 } from "angular2/src/render/api";
 import {
-  MessageBus,
-  MessageBusSource,
-  MessageBusSink,
-  SourceListener
-} from "angular2/src/web-workers/shared/message_bus";
-import {
   RenderProtoViewRefStore,
   WebworkerRenderProtoViewRef
 } from "angular2/src/web-workers/shared/render_proto_view_ref_store";
@@ -44,6 +38,7 @@ import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_vi
 import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
 import {WebWorkerMain} from 'angular2/src/web-workers/ui/impl';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
+import {MockMessageBus, MockMessageBusSink, MockMessageBusSource} from './worker_test_util';
 
 export function main() {
   function createBroker(workerSerializer: Serializer, uiSerializer: Serializer, tb: DomTestbed,
@@ -56,7 +51,7 @@ export function main() {
     workerMessageBus.attachToBus(uiMessageBus);
 
     // set up the worker side
-    var broker = new MessageBroker(workerMessageBus, workerSerializer);
+    var broker = new MessageBroker(workerMessageBus, workerSerializer, null);
 
     // set up the ui side
     var webWorkerMain = new WebWorkerMain(tb.compiler, tb.renderer, uiRenderViewStore, uiSerializer,
@@ -118,7 +113,6 @@ export function main() {
   });
 
   describe("Web Worker Renderer", () => {
-    beforeEachBindings(() => [DomTestbed]);
     var renderer: WorkerRenderer;
     var workerSerializer: Serializer;
     var workerRenderViewStore: RenderViewWithFragmentsStore;
@@ -144,7 +138,6 @@ export function main() {
       renderer = createWorkerRenderer(workerSerializer, uiSerializer, tb, uiRenderViewStore,
                                       workerRenderViewStore);
     });
-
 
     it('should create and destroy root host views while using the given elements in place',
        inject([AsyncTestCompleter], (async) => {
@@ -312,33 +305,4 @@ function createSerializer(protoViewRefStore: RenderProtoViewRefStore,
     bind(RenderViewWithFragmentsStore).toValue(renderViewStore)
   ]);
   return injector.get(Serializer);
-}
-
-class MockMessageBusSource implements MessageBusSource {
-  private _listenerStore: Map<int, SourceListener> = new Map<int, SourceListener>();
-  private _numListeners: number = 0;
-
-  addListener(fn: SourceListener): int {
-    this._listenerStore.set(++this._numListeners, fn);
-    return this._numListeners;
-  }
-
-  removeListener(index: int): void { MapWrapper.delete(this._listenerStore, index); }
-
-  receive(message: Object): void {
-    MapWrapper.forEach(this._listenerStore, (fn: SourceListener, key: int) => { fn(message); });
-  }
-}
-
-class MockMessageBusSink implements MessageBusSink {
-  private _sendTo: MockMessageBusSource;
-
-  send(message: Object): void { this._sendTo.receive({'data': message}); }
-
-  attachToSource(source: MockMessageBusSource) { this._sendTo = source; }
-}
-
-class MockMessageBus implements MessageBus {
-  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) {}
-  attachToBus(bus: MockMessageBus) { this.sink.attachToSource(bus.source); }
 }

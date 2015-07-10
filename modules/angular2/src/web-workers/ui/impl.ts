@@ -3,7 +3,6 @@
  * It takes care of spawning the worker and sending it the initial init message
  * It also acts and the messenger between the worker thread and the renderer running on the UI
  * thread
- * TODO: This class might need to be refactored to match application.ts...
 */
 
 import {createInjector} from "./di_bindings";
@@ -16,12 +15,14 @@ import {
   RenderProtoViewRef,
   RenderProtoViewMergeMapping,
   RenderViewRef,
+  RenderEventDispatcher,
   RenderFragmentRef
 } from "angular2/src/render/api";
-import {Type, print, BaseException} from "angular2/src/facade/lang";
+import {Type, print, BaseException, isFunction} from "angular2/src/facade/lang";
 import {Promise, PromiseWrapper} from "angular2/src/facade/async";
+import {StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
-import {MessageBus} from "angular2/src/web-workers/shared/message_bus";
+import {MessageBus, MessageBusSink} from "angular2/src/web-workers/shared/message_bus";
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
@@ -32,6 +33,10 @@ import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Injectable} from 'angular2/di';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {
+  serializeMouseEvent,
+  serializeKeyboardEvent
+} from 'angular2/src/web-workers/ui/event_serializer';
 
 /**
  * Creates a zone, sets up the DI bindings
@@ -74,11 +79,11 @@ export class WebWorkerMain {
    * Sends an error back to the worker thread in response to an opeartion on the UI thread
    */
   private _sendWorkerError(id: string, error: any) {
-    this._sendWorkerMessage("error", {"id": id, "error": error});
+    this._sendWorkerMessage("error", {"error": error}, id);
   }
 
-  private _sendWorkerMessage(type: string, data: StringMap<string, any>) {
-    this._bus.sink.send({'type': type, 'value': data});
+  private _sendWorkerMessage(type: string, value: StringMap<string, any>, id?: string) {
+    this._bus.sink.send({'type': type, 'id': id, 'value': value});
   }
 
   // TODO: Transfer the types with the serialized data so this can be automated?
@@ -190,12 +195,17 @@ export class WebWorkerMain {
         var methodArgs = args[2];
         this._renderer.invokeElementMethod(elementRef, methodName, methodArgs);
         break;
+      case "setEventDispatcher":
+        var viewRef = this._serializer.deserialize(args[0], RenderViewRef);
+        var dispatcher = new EventDispatcher(viewRef, this._bus.sink, this._serializer);
+        this._renderer.setEventDispatcher(viewRef, dispatcher);
+        break;
       default:
         throw new BaseException("Not Implemented");
     }
   }
 
-  // TODO: Create message type
+  // TODO(jteplitz602): Create message type enum #3044
   private _handleWorkerMessage(message: StringMap<string, any>) {
     var data: ReceivedMessage = new ReceivedMessage(message['data']);
     switch (data.type) {
@@ -211,12 +221,55 @@ export class WebWorkerMain {
   private _wrapWorkerPromise(id: string, promise: Promise<any>, type: Type): void {
     PromiseWrapper.then(promise, (result: any) => {
       try {
-        this._sendWorkerMessage("result",
-                                {"id": id, "value": this._serializer.serialize(result, type)});
+        this._sendWorkerMessage("result", this._serializer.serialize(result, type), id);
       } catch (e) {
         print(e);
       }
     }, (error: any) => { this._sendWorkerError(id, error); });
+  }
+}
+
+class EventDispatcher implements RenderEventDispatcher {
+  constructor(private _viewRef: RenderViewRef, private _sink: MessageBusSink,
+              private _serializer: Serializer) {}
+
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
+    var e = locals.get('$event');
+    var serializedEvent;
+    switch (eventName) {
+      case "click":
+      case "mouseup":
+      case "mousedown":
+      case "dblclick":
+      case "contextmenu":
+      case "mouseenter":
+      case "mouseleave":
+      case "mousemove":
+      case "mouseout":
+      case "mouseover":
+      case "show":
+        serializedEvent = serializeMouseEvent(e);
+        break;
+      case "keydown":
+      case "keypress":
+      case "keyup":
+        serializedEvent = serializeKeyboardEvent(e);
+        break;
+      default:
+        throw new BaseException(eventName + " not supported on WebWorkers");
+    }
+    var serializedLocals = StringMapWrapper.create();
+    StringMapWrapper.set(serializedLocals, '$event', serializedEvent);
+
+    this._sink.send({
+      "type": "event",
+      "value": {
+        "viewRef": this._serializer.serialize(this._viewRef, RenderViewRef),
+        "elementIndex": elementIndex,
+        "eventName": eventName,
+        "locals": serializedLocals
+      }
+    });
   }
 }
 

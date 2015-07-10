@@ -255,6 +255,9 @@ export class WorkerRenderer implements Renderer {
    * Sets the dispatcher for all events of the given view
    */
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: RenderEventDispatcher) {
-    // TODO(jteplitz602) support dom events in web worker. See #3046
+    var fnArgs = [new FnArg(viewRef, RenderViewRef)];
+    var args = new UiArguments("renderer", "setEventDispatcher", fnArgs);
+    this._messageBroker.registerEventDispatcher(viewRef, dispatcher);
+    this._messageBroker.runOnUiThread(args, null);
   }
 }

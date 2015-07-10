@@ -1,5 +1,19 @@
-import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
-import {List, ListWrapper, Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
+import {
+  Type,
+  isArray,
+  isPresent,
+  serializeEnum,
+  deserializeEnum,
+  BaseException
+} from "angular2/src/facade/lang";
+import {
+  List,
+  ListWrapper,
+  Map,
+  StringMap,
+  StringMapWrapper,
+  MapWrapper
+} from "angular2/src/facade/collection";
 import {
   ProtoViewDto,
   DirectiveMetadata,
@@ -13,7 +27,8 @@ import {
   RenderViewRef,
   RenderFragmentRef,
   RenderElementRef,
-  ViewType
+  ViewType,
+  ViewEncapsulation
 } from "angular2/src/render/api";
 import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AST, ASTWithSource} from 'angular2/src/change_detection/change_detection';
@@ -30,11 +45,18 @@ export class Serializer {
   constructor(private _parser: Parser, private _protoViewStore: RenderProtoViewRefStore,
               private _renderViewStore: RenderViewWithFragmentsStore) {
     this._enumRegistry = new Map<any, Map<int, any>>();
+
     var viewTypeMap = new Map<int, any>();
     viewTypeMap[0] = ViewType.HOST;
     viewTypeMap[1] = ViewType.COMPONENT;
     viewTypeMap[2] = ViewType.EMBEDDED;
     this._enumRegistry.set(ViewType, viewTypeMap);
+
+    var viewEncapsulationMap = new Map<int, any>();
+    viewEncapsulationMap[0] = ViewEncapsulation.EMULATED;
+    viewEncapsulationMap[1] = ViewEncapsulation.NATIVE;
+    viewEncapsulationMap[2] = ViewEncapsulation.NONE;
+    this._enumRegistry.set(ViewEncapsulation, viewEncapsulationMap);
   }
 
   serialize(obj: any, type: Type): Object {
@@ -71,8 +93,10 @@ export class Serializer {
       return this._renderViewStore.serializeRenderFragmentRef(obj);
     } else if (type == WorkerElementRef) {
       return this._serializeWorkerElementRef(obj);
+    } else if (type == EventBinding) {
+      return this._serializeEventBinding(obj);
     } else {
-      throw "No serializer for " + type.toString();
+      throw new BaseException("No serializer for " + type.toString());
     }
   }
 
@@ -111,8 +135,10 @@ export class Serializer {
       return this._renderViewStore.deserializeRenderFragmentRef(map);
     } else if (type == WorkerElementRef) {
       return this._deserializeWorkerElementRef(map);
+    } else if (type == EventBinding) {
+      return this._deserializeEventBinding(map);
     } else {
-      throw "No deserializer for " + type.toString();
+      throw new BaseException("No deserializer for " + type.toString());
     }
   }
 
@@ -147,6 +173,15 @@ export class Serializer {
   }
 
   allocateRenderViews(fragmentCount: number) { this._renderViewStore.allocate(fragmentCount); }
+
+  private _serializeEventBinding(binding: EventBinding): StringMap<string, any> {
+    return {'fullName': binding.fullName, 'source': this.serialize(binding.source, ASTWithSource)};
+  }
+
+  private _deserializeEventBinding(map: StringMap<string, any>): EventBinding {
+    return new EventBinding(map['fullName'],
+                            this.deserialize(map['source'], ASTWithSource, "binding"));
+  }
 
   private _serializeWorkerElementRef(elementRef: RenderElementRef): StringMap<string, any> {
     return {
@@ -214,7 +249,7 @@ export class Serializer {
       'directives': this.serialize(view.directives, DirectiveMetadata),
       'styleAbsUrls': view.styleAbsUrls,
       'styles': view.styles,
-      'encapsulation': view.encapsulation
+      'encapsulation': serializeEnum(view.encapsulation)
     };
   }
 
@@ -225,7 +260,8 @@ export class Serializer {
       directives: this.deserialize(obj['directives'], DirectiveMetadata),
       styleAbsUrls: obj['styleAbsUrls'],
       styles: obj['styles'],
-      encapsulation: obj['encapsulation']
+      encapsulation:
+          deserializeEnum(obj['encapsulation'], this._enumRegistry.get(ViewEncapsulation))
     });
   }
 
@@ -293,7 +329,7 @@ export class Serializer {
       variableBindings: this.objectToMap(obj['variableBindings']),
       textBindings: this.deserialize(obj['textBindings'], ASTWithSource, "interpolation"),
       type: deserializeEnum(obj['type'], this._enumRegistry.get(ViewType)),
-      transitiveNgContentCount: obj['transitivengContentCount']
+      transitiveNgContentCount: obj['transitiveNgContentCount']
     });
   }
 

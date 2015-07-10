@@ -12,20 +12,22 @@ export class RenderViewWithFragmentsStore {
 
   constructor(@Inject(ON_WEBWORKER) onWebWorker) {
     this._onWebWorker = onWebWorker;
-    if (!onWebWorker) {
-      this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
-      this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
-    }
+    this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
+    this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
   }
 
   allocate(fragmentCount: number): RenderViewWithFragments {
+    var initialIndex = this._nextIndex;
+
     var viewRef = new WorkerRenderViewRef(this._nextIndex++);
     var fragmentRefs = ListWrapper.createGrowableSize(fragmentCount);
 
     for (var i = 0; i < fragmentCount; i++) {
       fragmentRefs[i] = new WorkerRenderFragmentRef(this._nextIndex++);
     }
-    return new RenderViewWithFragments(viewRef, fragmentRefs);
+    var renderViewWithFragments = new RenderViewWithFragments(viewRef, fragmentRefs);
+    this.store(renderViewWithFragments, initialIndex);
+    return renderViewWithFragments;
   }
 
   store(view: RenderViewWithFragments, startIndex: number) {
@@ -60,11 +62,7 @@ export class RenderViewWithFragmentsStore {
       return null;
     }
 
-    if (this._onWebWorker) {
-      return WorkerRenderViewRef.deserialize(ref);
-    } else {
-      return this.retreive(ref);
-    }
+    return this.retreive(ref);
   }
 
   deserializeRenderFragmentRef(ref: number): RenderFragmentRef {
@@ -72,11 +70,7 @@ export class RenderViewWithFragmentsStore {
       return null;
     }
 
-    if (this._onWebWorker) {
-      return WorkerRenderFragmentRef.deserialize(ref);
-    } else {
-      return this.retreive(ref);
-    }
+    return this.retreive(ref);
   }
 
   private _serializeRenderFragmentOrViewRef(ref: RenderViewRef | RenderFragmentRef): number {
@@ -114,20 +108,11 @@ export class RenderViewWithFragmentsStore {
       return null;
     }
 
-    var viewRef: RenderViewRef | RenderFragmentRef;
-    var fragments: List<RenderViewRef | RenderFragmentRef>;
-    if (this._onWebWorker) {
-      viewRef = WorkerRenderViewRef.deserialize(obj['viewRef']);
-      fragments =
-          ListWrapper.map(obj['fragmentRefs'], (val) => WorkerRenderFragmentRef.deserialize(val));
+    var viewRef = this.deserializeRenderViewRef(obj['viewRef']);
+    var fragments =
+        ListWrapper.map(obj['fragmentRefs'], (val) => this.deserializeRenderFragmentRef(val));
 
-      return new RenderViewWithFragments(viewRef, fragments);
-    } else {
-      viewRef = this.retreive(obj['viewRef']);
-      fragments = ListWrapper.map(obj['fragmentRefs'], (val) => this.retreive(val));
-
-      return new RenderViewWithFragments(viewRef, fragments);
-    }
+    return new RenderViewWithFragments(viewRef, fragments);
   }
 }
 

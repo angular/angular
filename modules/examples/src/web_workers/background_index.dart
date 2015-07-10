@@ -9,5 +9,5 @@ import "package:angular2/src/reflection/reflection.dart";
 
 main(List<String> args, SendPort replyTo) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  bootstrapWebworker(replyTo, HelloCmp);
+  bootstrapWebworker(replyTo, HelloCmp).catchError((error) => throw error);
 }
