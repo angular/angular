@@ -1,4 +1,4 @@
-var mockPackage = require('../mocks/mockPackage');
+var mockPackage = require('../../mocks/mockPackage');
 var Dgeni = require('dgeni');
 var path = require('canonical-path');
 
@@ -12,7 +12,7 @@ describe('tsParser', function() {
   });
 
   it("should parse a TS file", function() {
-    var parseInfo = parser.parse(['testSrc.ts'], path.resolve(__dirname, '../mocks/'));
+    var parseInfo = parser.parse(['testSrc.ts'], path.resolve(__dirname, '../../mocks/tsParser'));
     var tsModules = parseInfo.moduleSymbols;
     expect(tsModules.length).toEqual(1);
     expect(tsModules[0].exportArray.length).toEqual(3);

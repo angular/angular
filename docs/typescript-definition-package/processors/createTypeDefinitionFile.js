@@ -61,11 +61,12 @@ module.exports = function createTypeDefinitionFile(log) {
         });
       });
 
-      _.forEach(typeDefDocs, function(doc) {
+      return _.filter(typeDefDocs, function(doc) {
         _.forEach(doc.moduleDocs, function(modDoc, alias) {
-          if (!modDoc.doc) {
+          if (!doc || !modDoc.doc) {
             log.error('createTypeDefinitionFile processor: no such module "' + alias + '" (Did you forget to add it to the modules to load?)');
             doc = null;
+            return;
           }
           _.forEach(modDoc.doc.exports, function(exportDoc) {
 
@@ -86,9 +87,7 @@ module.exports = function createTypeDefinitionFile(log) {
             }
           });
         });
-        if (doc) {
-          docs.push(doc);
-        }
+        return !!doc;
       });
     }
   };

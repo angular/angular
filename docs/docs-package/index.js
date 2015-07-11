@@ -3,45 +3,21 @@ require('../../tools/transpiler/index.js').init();
 var Package = require('dgeni').Package;
 var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
+var typescriptPackage = require('../typescript-package');
 var linksPackage = require('../links-package');
 var gitPackage = require('dgeni-packages/git');
 var path = require('canonical-path');
 
-var PARTIAL_PATH = 'partials';
-var MODULES_DOCS_PATH = PARTIAL_PATH + '/modules';
-var GUIDES_PATH = PARTIAL_PATH + '/guides';
-
 // Define the dgeni package for generating the docs
-module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPackage, gitPackage])
+module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, gitPackage])
 
 // Register the services and file readers
-.factory(require('./services/modules'))
-.factory(require('./services/tsParser'))
-.factory(require('./services/tsParser/createCompilerHost'))
-.factory(require('./services/tsParser/getFileInfo'))
-.factory(require('./services/tsParser/getExportDocType'))
-.factory(require('./services/tsParser/getContent'))
 .factory(require('./readers/ngdoc'))
 
-.factory('EXPORT_DOC_TYPES', function() {
-  return [
-    'class',
-    'interface',
-    'function',
-    'var',
-    'const',
-    'enum',
-    'type-alias'
-  ];
-})
-
-
 // Register the processors
-.processor(require('./processors/readTypeScriptModules'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
-.processor(require('./processors/createTypeDefinitionFile'))
 
 
 // Configure the log service
@@ -67,7 +43,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
     '*/*.@(js|es6|ts)',
     '*/src/**/*.@(js|es6|ts)'
   ];
-  readTypeScriptModules.basePath = 'modules';
+  readTypeScriptModules.basePath = path.resolve(readFilesProcessor.basePath, 'modules');
 })
 
 
@@ -122,13 +98,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 
 // Configure ids and paths
-.config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
-
-  computeIdsProcessor.idTemplates.push({
-    docTypes: ['member'],
-    idTemplate: '${classDoc.id}.${name}',
-    getAliases: function(doc) { return [doc.id]; }
-  });
+.config(function(computeIdsProcessor, computePathsProcessor) {
 
   computeIdsProcessor.idTemplates.push({
     docTypes: ['guide'],
@@ -144,29 +114,9 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
     getAliases: function(doc) { return [doc.id]; }
   });
 
-
-  computePathsProcessor.pathTemplates.push({
-    docTypes: ['module'],
-    pathTemplate: '/${id}',
-    outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.html'
-  });
-
-  computePathsProcessor.pathTemplates.push({
-    docTypes: EXPORT_DOC_TYPES,
-    pathTemplate: '${moduleDoc.path}/${name}',
-    outputPathTemplate: MODULES_DOCS_PATH + '/${path}/index.html'
-  });
-
-  computePathsProcessor.pathTemplates.push({
-    docTypes: ['member'],
-    pathTemplate: '${classDoc.path}/${name}',
-    getOutputPath: function() {} // These docs are not written to their own file, instead they are part of their class doc
-  });
-
-
   computePathsProcessor.pathTemplates.push({
     docTypes: ['guide'],
     pathTemplate: '/${id}',
-    outputPathTemplate: GUIDES_PATH + '/${id}.html'
+    outputPathTemplate: 'partials/guides/${id}.html'
   });
 });

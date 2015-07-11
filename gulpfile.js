@@ -380,10 +380,10 @@ gulp.task('docs/bower', function() {
 });
 
 
-function createDocsTasks(publicBuild) {
-  var dgeniPackage = publicBuild ? './docs/public-docs-package' : './docs/dgeni-package';
-  var distDocsPath = publicBuild ? 'dist/public_docs' : 'dist/docs';
-  var taskPrefix = publicBuild ? 'public_docs' : 'docs';
+function createDocsTasks(options) {
+  var dgeniPackage = options.package;
+  var distDocsPath = options.path;
+  var taskPrefix = options.prefix;
 
   gulp.task(taskPrefix + '/dgeni', function() {
     try {
@@ -423,12 +423,24 @@ function createDocsTasks(publicBuild) {
   });
 }
 
-createDocsTasks(true);
-createDocsTasks(false);
+
+createDocsTasks({ package: './docs/docs-package', path: 'dist/docs', prefix: 'docs'});
+createDocsTasks({ package: './docs/public-docs-package', path: 'dist/public_docs', prefix: 'public_docs'});
 
 gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
   try {
     var dgeni = new Dgeni([require('./docs/angular.io-package')]);
+    return dgeni.generate();
+  } catch(x) {
+    console.log(x);
+    console.log(x.stack);
+    throw x;
+  }
+});
+
+gulp.task('docs/typings', [], function() {
+  try {
+    var dgeni = new Dgeni([require('./docs/typescript-definition-package')]);
     return dgeni.generate();
   } catch(x) {
     console.log(x);
@@ -642,7 +654,7 @@ gulp.task('post-test-checks', function(done) {
 });
 
 
-gulp.task('!pre.test.typings', [], function() {
+gulp.task('!pre.test.typings', ['docs/typings'], function() {
   return gulp
     .src([
       'modules/angular2/typings/**/*'], {

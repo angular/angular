@@ -12,7 +12,7 @@ describe('createCompilerHost', function() {
     var createCompilerHost = injector.get('createCompilerHost');
 
     options = { charset: 'utf8' };
-    baseDir = path.resolve(__dirname, '../../mocks/');
+    baseDir = path.resolve(__dirname, '../../mocks/tsParser');
     extensions = ['.ts', '.js'];
 
     host = createCompilerHost(options, baseDir, extensions);
@@ -30,8 +30,8 @@ describe('createCompilerHost', function() {
       var sourceFile = host.getSourceFile('testSrc.js');
       expect(sourceFile.fileName).toEqual('testSrc.ts');
 
-      sourceFile = host.getSourceFile('mockPackage.ts');
-      expect(sourceFile.fileName).toEqual('mockPackage.js');
+      sourceFile = host.getSourceFile('../mockPackage.ts');
+      expect(sourceFile.fileName).toEqual('../mockPackage.js');
     });
   });
 
