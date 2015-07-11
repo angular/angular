@@ -1,5 +1,5 @@
 import {reflector} from 'angular2/src/reflection/reflection';
-import {isPresent, isJsObject} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
@@ -350,7 +350,7 @@ export function main() {
 
   // -- JIT
   // Reenable when we have transformers for Dart
-  if (isJsObject({})) {
+  if (JitChangeDetection.isSupported()) {
     var ng2JitChangeDetector =
         setUpChangeDetection(new JitChangeDetection(), numberOfDetectors, object);
 
