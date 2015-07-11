@@ -2432,7 +2432,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.15",
+      "version": "0.10.18",
       "dependencies": {
         "catharsis": {
           "version": "0.8.7",
@@ -2565,7 +2565,7 @@
           "version": "0.3.0",
           "dependencies": {
             "lru-cache": {
-              "version": "2.6.4"
+              "version": "2.6.5"
             },
             "sigmund": {
               "version": "1.0.1"
@@ -2599,7 +2599,7 @@
                       "version": "0.2.14",
                       "dependencies": {
                         "lru-cache": {
-                          "version": "2.6.4"
+                          "version": "2.6.5"
                         },
                         "sigmund": {
                           "version": "1.0.1"
