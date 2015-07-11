@@ -16,6 +16,7 @@ var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
+var licenseWrap = require('./tools/build/licensewrap');
 
 var watch = require('./tools/build/watch');
 
@@ -939,13 +940,24 @@ gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
 });
 
 var JS_DEV_DEPS = [
+    licenseWrap('node_modules/zone.js/LICENSE', true),
     'node_modules/zone.js/dist/zone-microtask.js',
     'node_modules/zone.js/dist/long-stack-trace-zone.js',
-    'node_modules/reflect-metadata/Reflect.js'
+    licenseWrap('node_modules/reflect-metadata/LICENSE', true),
+    'node_modules/reflect-metadata/Reflect.js',
+    // traceur-runtime is always first in the bundle
+    licenseWrap('node_modules/traceur/LICENSE', true)
 ];
 
 gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']), 'angular2.dev.js')
+      .pipe(insert.transform(function(source) {
+        // splice in RX license (rx is already part of the bundle)
+        var rxLicense = licenseWrap('node_modules/rx/license.txt');
+        var n = source.indexOf('System.register("rx"');
+        if (n) {
+          return source.slice(0, n) + rxLicense + source.slice(n);
+        }}))
       .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
       .pipe(gulp.dest('dist/bundle'));
 });
@@ -953,6 +965,13 @@ gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
 gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
                         'angular2.sfx.dev.js')
+      .pipe(insert.transform(function(source) {
+        // splice in RX license (rx is already part of the bundle)
+        var rxLicense = licenseWrap('node_modules/rx/license.txt');
+        var n = source.indexOf('System.register("rx"');
+        if (n) {
+          return source.slice(0, n) + rxLicense + source.slice(n);
+        }}))
       .pipe(gulp.dest('dist/bundle'));
 });
 
