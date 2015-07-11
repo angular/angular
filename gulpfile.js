@@ -949,15 +949,20 @@ var JS_DEV_DEPS = [
     licenseWrap('node_modules/traceur/LICENSE', true)
 ];
 
+function insertRXLicense(source) {
+  // splice in RX license (rx is already part of the bundle)
+  var rxLicense = licenseWrap('node_modules/rx/license.txt');
+  var n = source.indexOf('System.register("rx"');
+  if (n >= 0) {
+    return source.slice(0, n) + rxLicense + source.slice(n);
+  } else {
+    return source;
+  }
+}
+
 gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']), 'angular2.dev.js')
-      .pipe(insert.transform(function(source) {
-        // splice in RX license (rx is already part of the bundle)
-        var rxLicense = licenseWrap('node_modules/rx/license.txt');
-        var n = source.indexOf('System.register("rx"');
-        if (n) {
-          return source.slice(0, n) + rxLicense + source.slice(n);
-        }}))
+      .pipe(insert.transform(insertRXLicense))
       .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
       .pipe(gulp.dest('dist/bundle'));
 });
@@ -965,13 +970,7 @@ gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
 gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
                         'angular2.sfx.dev.js')
-      .pipe(insert.transform(function(source) {
-        // splice in RX license (rx is already part of the bundle)
-        var rxLicense = licenseWrap('node_modules/rx/license.txt');
-        var n = source.indexOf('System.register("rx"');
-        if (n) {
-          return source.slice(0, n) + rxLicense + source.slice(n);
-        }}))
+      .pipe(insert.transform(insertRXLicense))
       .pipe(gulp.dest('dist/bundle'));
 });
 
