@@ -354,7 +354,7 @@ export class RenderViewWithFragments {
 }
 
 /**
- * Abstract reference to the element which can be marshaled across web-worker boundry.
+ * Abstract reference to the element which can be marshaled across web-worker boundary.
  *
  * This interface is used by the Renderer API.
  */

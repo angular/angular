@@ -12,6 +12,8 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
   return isPresent(protoViewRef) ? protoViewRef._protoView : null;
 }
 
+export interface HostViewRef {}
+
 /**
  * A reference to an Angular View.
  *
@@ -53,17 +55,20 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
  * The outter/inner {@link ProtoViewRef}s are then assembled into views like so:
  *
  * ```
- * <!-- ViewRef: outter-0 -->
+ * <!-- ViewRef: outer-0 -->
  * Count: 2
  * <ul>
  *   <template view-container-ref></template>
  *   <!-- ViewRef: inner-1 --><li>first</li><!-- /ViewRef: inner-1 -->
  *   <!-- ViewRef: inner-2 --><li>second</li><!-- /ViewRef: inner-2 -->
  * </ul>
- * <!-- /ViewRef: outter-0 -->
+ * <!-- /ViewRef: outer-0 -->
  * ```
  */
-export class ViewRef {
+export class ViewRef implements HostViewRef {
+  /**
+   * @private
+   */
   constructor(public _view: viewModule.AppView) {}
 
   /**
@@ -77,9 +82,10 @@ export class ViewRef {
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
   /**
-   * Set local variable for a view.
+   * Set local variable in a view.
    *
-   *
+   * - `contextName` - Name of the local variable in a view.
+   * - `value` - Value for the local variable in a view.
    */
   setLocal(contextName: string, value: any): void { this._view.setLocal(contextName, value); }
 }
