@@ -949,11 +949,11 @@ var JS_DEV_DEPS = [
     licenseWrap('node_modules/traceur/LICENSE', true)
 ];
 
+// Splice in RX license if rx is in the bundle.
 function insertRXLicense(source) {
-  // splice in RX license (rx is already part of the bundle)
-  var rxLicense = licenseWrap('node_modules/rx/license.txt');
   var n = source.indexOf('System.register("rx"');
   if (n >= 0) {
+    var rxLicense = licenseWrap('node_modules/rx/license.txt');
     return source.slice(0, n) + rxLicense + source.slice(n);
   } else {
     return source;
