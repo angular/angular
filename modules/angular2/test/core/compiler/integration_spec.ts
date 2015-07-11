@@ -53,7 +53,7 @@ import {
   Pipe,
   ChangeDetectorRef,
   ON_PUSH
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 
 import {Directive, Component, View, Attribute, Query} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';

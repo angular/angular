@@ -15,7 +15,7 @@ import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline
 import {ProtoViewDto, ViewType} from 'angular2/src/render/api';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {Lexer, Parser} from 'angular2/change_detection';
+import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 
 export function main() {
   describe('ViewSplitter', () => {

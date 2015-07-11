@@ -1,7 +1,7 @@
 import {isPresent, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-import {Parser} from 'angular2/change_detection';
+import {Parser} from 'angular2/src/change_detection/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

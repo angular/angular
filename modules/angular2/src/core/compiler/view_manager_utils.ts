@@ -8,7 +8,7 @@ import * as avmModule from './view_manager';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
 import {Renderer, RenderViewWithFragments} from 'angular2/src/render/api';
-import {Locals} from 'angular2/change_detection';
+import {Locals} from 'angular2/src/change_detection/change_detection';
 import {RenderViewRef, RenderFragmentRef, ViewType} from 'angular2/src/render/api';
 
 @Injectable()

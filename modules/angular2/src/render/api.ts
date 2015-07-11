@@ -1,7 +1,7 @@
 import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
 import {List, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-import {ASTWithSource} from 'angular2/change_detection';
+import {ASTWithSource} from 'angular2/src/change_detection/change_detection';
 
 /**
  * General notes:
@@ -354,7 +354,7 @@ export class RenderViewWithFragments {
 }
 
 /**
- * Abstract reference to the element which can be marshaled across web-worker boundry.
+ * Abstract reference to the element which can be marshaled across web-worker boundary.
  *
  * This interface is used by the Renderer API.
  */

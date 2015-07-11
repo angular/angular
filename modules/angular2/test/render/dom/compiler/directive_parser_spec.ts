@@ -8,7 +8,7 @@ import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
-import {Lexer, Parser} from 'angular2/change_detection';
+import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 
 export function main() {

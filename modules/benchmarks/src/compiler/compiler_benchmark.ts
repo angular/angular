@@ -6,7 +6,11 @@ import {
   NativeShadowDomStrategy
 } from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
-import {Parser, Lexer, DynamicChangeDetection} from 'angular2/change_detection';
+import {
+  Parser,
+  Lexer,
+  DynamicChangeDetection
+} from 'angular2/src/change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';

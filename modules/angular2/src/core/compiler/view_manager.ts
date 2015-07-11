@@ -2,7 +2,7 @@ import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as viewModule from './view';
 import {ElementRef} from './element_ref';
-import {ProtoViewRef, ViewRef, internalView, internalProtoView} from './view_ref';
+import {ProtoViewRef, ViewRef, HostViewRef, internalView, internalProtoView} from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
 import {TemplateRef} from './template_ref';
 import {
@@ -40,8 +40,8 @@ export class AppViewManager {
   /**
    * Return the first child element of the host element view.
    */
-  getHostElement(hostViewRef: ViewRef): ElementRef {
-    var hostView = internalView(hostViewRef);
+  getHostElement(hostViewRef: HostViewRef): ElementRef {
+    var hostView = internalView(<ViewRef>hostViewRef);
     if (hostView.proto.type !== ViewType.HOST) {
       throw new BaseException('This operation is only allowed on host views');
     }
@@ -138,7 +138,7 @@ export class AppViewManager {
    * ```
    */
   createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
-                     injector: Injector): ViewRef {
+                     injector: Injector): HostViewRef {
     var hostProtoView: viewModule.AppProtoView = internalProtoView(hostProtoViewRef);
     var hostElementSelector = overrideSelector;
     if (isBlank(hostElementSelector)) {
@@ -158,10 +158,10 @@ export class AppViewManager {
   /**
    * Remove the View created with {@link AppViewManager#createRootHostView}.
    */
-  destroyRootHostView(hostViewRef: ViewRef) {
+  destroyRootHostView(hostViewRef: HostViewRef) {
     // Note: Don't put the hostView into the view pool
     // as it is depending on the element for which it was created.
-    var hostView = internalView(hostViewRef);
+    var hostView = internalView(<ViewRef>hostViewRef);
     this._renderer.detachFragment(hostView.renderFragment);
     this._renderer.dehydrateView(hostView.render);
     this._viewDehydrateRecurse(hostView);
@@ -189,7 +189,7 @@ export class AppViewManager {
    */
   createHostViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
                             protoViewRef: ProtoViewRef,
-                            imperativelyCreatedInjector: ResolvedBinding[]): ViewRef {
+                            imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef {
     var protoView = internalProtoView(protoViewRef);
     if (protoView.type !== ViewType.HOST) {
       throw new BaseException('This method can only be called with host ProtoViews!');

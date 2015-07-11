@@ -1,5 +1,5 @@
 import {List} from 'angular2/src/facade/collection';
-import {Parser} from 'angular2/change_detection';
+import {Parser} from 'angular2/src/change_detection/change_detection';
 import {ViewDefinition} from '../../api';
 import {CompileStep} from './compile_step';
 import {PropertyBindingParser} from './property_binding_parser';

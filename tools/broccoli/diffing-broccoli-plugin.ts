@@ -124,7 +124,7 @@ class DiffingPluginWrapper implements BroccoliTree {
 
 
   cleanup() {
-    if (this.wrappedPlugin.cleanup) {
+    if (this.wrappedPlugin && this.wrappedPlugin.cleanup) {
       this.wrappedPlugin.cleanup();
     }
   }

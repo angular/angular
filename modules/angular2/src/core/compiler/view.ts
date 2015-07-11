@@ -16,7 +16,7 @@ import {
   DirectiveRecord,
   DirectiveIndex,
   ChangeDetectorRef
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 
 import {
   ProtoElementInjector,

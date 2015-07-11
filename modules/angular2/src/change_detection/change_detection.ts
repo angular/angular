@@ -19,6 +19,43 @@ import {Inject, Injectable, OpaqueToken, Optional} from 'angular2/di';
 import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 import {CONST, CONST_EXPR, isPresent, BaseException} from 'angular2/src/facade/lang';
 
+export {
+  ASTWithSource,
+  AST,
+  AstTransformer,
+  AccessMember,
+  LiteralArray,
+  ImplicitReceiver
+} from './parser/ast';
+
+export {Lexer} from './parser/lexer';
+export {Parser} from './parser/parser';
+export {Locals} from './parser/locals';
+
+export {
+  DehydratedException,
+  ExpressionChangedAfterItHasBeenCheckedException,
+  ChangeDetectionError
+} from './exceptions';
+export {
+  ProtoChangeDetector,
+  ChangeDetector,
+  ChangeDispatcher,
+  ChangeDetection,
+  ChangeDetectorDefinition
+} from './interfaces';
+export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './constants';
+export {DynamicProtoChangeDetector} from './proto_change_detector';
+export {BindingRecord} from './binding_record';
+export {DirectiveIndex, DirectiveRecord} from './directive_record';
+export {DynamicChangeDetector} from './dynamic_change_detector';
+export {ChangeDetectorRef} from './change_detector_ref';
+export {Pipes} from './pipes/pipes';
+export {uninitialized} from './change_detection_util';
+export {WrappedValue, Pipe, PipeFactory, BasePipe} from './pipes/pipe';
+export {NullPipe, NullPipeFactory} from './pipes/null_pipe';
+
+
 /**
  * Structural diffing for `Object`s and `Map`s.
  */

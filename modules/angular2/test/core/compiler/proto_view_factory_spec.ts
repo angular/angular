@@ -17,7 +17,10 @@ import {
 import {isBlank, IMPLEMENTS, stringify} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-import {ChangeDetection, ChangeDetectorDefinition} from 'angular2/change_detection';
+import {
+  ChangeDetection,
+  ChangeDetectorDefinition
+} from 'angular2/src/change_detection/change_detection';
 import {
   ProtoViewFactory,
   getChangeDetectorDefinitions,

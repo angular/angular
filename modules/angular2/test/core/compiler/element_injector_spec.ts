@@ -45,7 +45,7 @@ import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
+import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/change_detection/change_detection';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 @proxy

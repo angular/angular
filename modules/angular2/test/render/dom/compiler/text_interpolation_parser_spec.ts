@@ -2,7 +2,7 @@ import {describe, beforeEach, expect, it, iit, ddescribe, el} from 'angular2/tes
 import {TextInterpolationParser} from 'angular2/src/render/dom/compiler/text_interpolation_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Lexer, Parser, ASTWithSource} from 'angular2/change_detection';
+import {Lexer, Parser, ASTWithSource} from 'angular2/src/change_detection/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';
 import {
   ProtoViewBuilder,

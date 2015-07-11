@@ -16,7 +16,7 @@ import {
   AccessMember,
   LiteralArray,
   ImplicitReceiver
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder, Event, HostAction} from './element_binder';

@@ -1,7 +1,7 @@
 import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
-import {DehydratedException, ExpressionChangedAfterItHasBeenChecked} from './exceptions';
+import {DehydratedException, ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 import {WrappedValue} from './pipes/pipe';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
@@ -129,7 +129,7 @@ export class ChangeDetectionUtil {
   }
 
   static throwOnChange(proto: ProtoRecord, change) {
-    throw new ExpressionChangedAfterItHasBeenChecked(proto, change, null);
+    throw new ExpressionChangedAfterItHasBeenCheckedException(proto, change, null);
   }
 
   static throwDehydrated() { throw new DehydratedException(); }

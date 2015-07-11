@@ -16,7 +16,7 @@ import {
 import {CompilePipeline} from './compile_pipeline';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
-import {Parser} from 'angular2/change_detection';
+import {Parser} from 'angular2/src/change_detection/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 import * as pvm from '../view/proto_view_merger';
 

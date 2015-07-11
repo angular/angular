@@ -6,7 +6,7 @@ import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
-import {Lexer, Parser} from 'angular2/change_detection';
+import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 
 var EMPTY_MAP = new Map();

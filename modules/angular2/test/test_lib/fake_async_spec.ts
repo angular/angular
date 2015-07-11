@@ -16,7 +16,7 @@ import {
 } from 'angular2/test_lib';
 import {TimerWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException, global} from 'angular2/src/facade/lang';
-import {Parser} from 'angular2/change_detection';
+import {Parser} from 'angular2/src/change_detection/change_detection';
 
 export function main() {
   describe('fake async', () => {

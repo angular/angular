@@ -8,7 +8,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
-import {internalView} from 'angular2/src/core/compiler/view_ref';
+import {internalView, ViewRef} from 'angular2/src/core/compiler/view_ref';
 import {
   DynamicComponentLoader,
   ComponentRef
@@ -26,9 +26,9 @@ export class RootTestComponent extends DebugElement {
   _componentParentView: AppView;
 
   constructor(componentRef: ComponentRef) {
-    super(internalView(componentRef.hostView), 0);
+    super(internalView(<ViewRef>componentRef.hostView), 0);
 
-    this._componentParentView = internalView(componentRef.hostView);
+    this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;
   }
 

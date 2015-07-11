@@ -1,7 +1,7 @@
 import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/facade/lang';
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Parser} from 'angular2/change_detection';
+import {Parser} from 'angular2/src/change_detection/change_detection';
 
 import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
 

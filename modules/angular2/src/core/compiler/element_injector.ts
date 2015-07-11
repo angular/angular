@@ -43,7 +43,11 @@ import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
 import {Directive, Component, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {ChangeDetector, ChangeDetectorRef, Pipes} from 'angular2/change_detection';
+import {
+  ChangeDetector,
+  ChangeDetectorRef,
+  Pipes
+} from 'angular2/src/change_detection/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DirectiveMetadata} from 'angular2/src/render/api';

@@ -7,31 +7,9 @@ export {commonBootstrap as bootstrap} from 'angular2/src/core/application_common
 // angular2_exports.ts. Re-exporting from angular2_exports.ts causes systemjs
 // to resolve imports very very very slowly. See also a similar notice in
 // bootstrap.ts
-export * from 'angular2/annotations';
-export * from 'angular2/core';
-
-export {
-  DehydratedException,
-  ExpressionChangedAfterItHasBeenChecked,
-  ChangeDetectionError,
-
-  ON_PUSH,
-  DEFAULT,
-
-  ChangeDetectorRef,
-
-  Pipes,
-  WrappedValue,
-  Pipe,
-  PipeFactory,
-  NullPipe,
-  NullPipeFactory,
-  defaultPipes,
-  BasePipe,
-
-  Locals
-} from './change_detection';
-
+export * from './annotations';
+export * from './core';
+export * from './change_detection';
 export * from './di';
 export * from './forms';
 export * from './directives';

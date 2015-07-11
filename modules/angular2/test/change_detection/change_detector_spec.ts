@@ -44,7 +44,7 @@ import {
   Parser,
   Locals,
   ProtoChangeDetector
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 import {JitProtoChangeDetector} from 'angular2/src/change_detection/jit_proto_change_detector';
 
 import {getDefinition} from './change_detector_config';

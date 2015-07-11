@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/di';
-import {ChangeDetector} from 'angular2/change_detection';
+import {ChangeDetector} from 'angular2/src/change_detection/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 

@@ -13,7 +13,7 @@ import {
   DEFAULT,
   ChangeDetectorDefinition,
   ASTWithSource
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 
 import * as renderApi from 'angular2/src/render/api';
 import {AppProtoView} from './view';

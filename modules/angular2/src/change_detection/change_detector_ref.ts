@@ -5,10 +5,12 @@ import {CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './constants';
  * Controls change detection.
  *
  * {@link ChangeDetectorRef} allows requesting checks for detectors that rely on observables. It
- *also allows detaching and
- * attaching change detector subtrees.
+ * also allows detaching and attaching change detector subtrees.
  */
 export class ChangeDetectorRef {
+  /**
+   * @private
+   */
   constructor(private _cd: ChangeDetector) {}
 
   /**

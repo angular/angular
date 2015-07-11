@@ -3,7 +3,7 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * Indicates that the result of a {@link Pipe} transformation has changed even though the reference
- *has not changed.
+ * has not changed.
  *
  * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.
  */
@@ -28,9 +28,7 @@ var _wrappedValues = [
 var _wrappedIndex = 0;
 
 /**
- * An interface for extending the list of pipes known to Angular.
- *
- * If you are writing a custom {@link Pipe}, you must extend this interface.
+ * An interface which all pipes must implement.
  *
  * #Example
  *
@@ -49,18 +47,23 @@ var _wrappedIndex = 0;
  * ```
  */
 export interface Pipe {
+  /**
+   * Query if a pipe supports a particular object instance.
+   */
   supports(obj): boolean;
+
   onDestroy(): void;
+
   transform(value: any, args: List<any>): any;
 }
 
 /**
- * Provides default implementation of supports and onDestroy.
+ * Provides default implementation of `supports` and `onDestroy` method.
  *
  * #Example
  *
  * ```
- * class DoublePipe extends BasePipe {*
+ * class DoublePipe extends BasePipe {
  *  transform(value) {
  *    return `${value}${value}`;
  *  }
@@ -74,6 +77,9 @@ export class BasePipe implements Pipe {
   transform(value: any, args: List<any>): any { return _abstract(); }
 }
 
+/**
+ *
+ */
 export interface PipeFactory {
   supports(obs): boolean;
   create(cdRef: ChangeDetectorRef): Pipe;

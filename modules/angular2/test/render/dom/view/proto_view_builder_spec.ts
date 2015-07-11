@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
-import {ASTWithSource, AST} from 'angular2/change_detection';
+import {ASTWithSource, AST} from 'angular2/src/change_detection/change_detection';
 import {PropertyBindingType, ViewType} from 'angular2/src/render/api';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 

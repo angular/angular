@@ -10,7 +10,7 @@ import {
   Lexer,
   Locals,
   Parser
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 

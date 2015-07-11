@@ -26,6 +26,8 @@ export class Pipes {
    * ```
    */
   config: StringMap<string, PipeFactory[]>;
+
+
   constructor(config: StringMap<string, PipeFactory[]>) { this.config = config; }
 
   get(type: string, obj: any, cdRef?: ChangeDetectorRef, existingPipe?: Pipe): Pipe {

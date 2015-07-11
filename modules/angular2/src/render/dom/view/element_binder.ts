@@ -1,4 +1,4 @@
-import {AST} from 'angular2/change_detection';
+import {AST} from 'angular2/src/change_detection/change_detection';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
 
