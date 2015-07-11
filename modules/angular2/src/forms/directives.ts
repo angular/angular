@@ -31,8 +31,6 @@ export {NgValidator, NgRequiredValidator} from './directives/validators';
  * A list of all the form directives used as part of a `@View` annotation.
  *
  *  This is a shorthand for importing them each individually.
- *
- * @exportedAs angular2/forms
  */
 export const formDirectives: List<Type> = CONST_EXPR([
   NgControlName,

@@ -30,8 +30,6 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  *   }
  * }
  * ```
- *
- * @exportedAs angular2/annotations
  */
 @CONST()
 export class View {

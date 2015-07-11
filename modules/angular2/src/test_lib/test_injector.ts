@@ -163,7 +163,6 @@ export function createTestInjector(bindings: List<Type | Binding | List<any>>): 
  * @param {Array} tokens
  * @param {Function} fn
  * @return {FunctionWithParamTokens}
- * @exportedAs angular2/test
  */
 export function inject(tokens: List<any>, fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn);

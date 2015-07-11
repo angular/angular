@@ -28,8 +28,6 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
  *  searchQuery: string;
  * }
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: '[ng-model]:not([ng-control]):not([ng-form-control])',

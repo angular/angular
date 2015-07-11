@@ -6,9 +6,6 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {ElementRef} from './element_ref';
 import {ViewRef} from './view_ref';
 
-/**
- * @exportedAs angular2/view
- */
 export class ComponentRef {
   constructor(public location: ElementRef, public instance: any, public dispose: Function) {}
 
@@ -18,8 +15,6 @@ export class ComponentRef {
 /**
  * Service for dynamically loading a Component into an arbitrary position in the internal Angular
  * application tree.
- *
- * @exportedAs angular2/view
  */
 @Injectable()
 export class DynamicComponentLoader {

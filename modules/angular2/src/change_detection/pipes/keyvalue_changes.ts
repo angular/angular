@@ -3,9 +3,6 @@ import {stringify, looseIdentical, isJsObject, CONST} from 'angular2/src/facade/
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {WrappedValue, BasePipe, Pipe, PipeFactory} from './pipe';
 
-/**
- * @exportedAs angular2/pipes
- */
 @CONST()
 export class KeyValueChangesFactory implements PipeFactory {
   supports(obj): boolean { return KeyValueChanges.supportsObj(obj); }
@@ -13,9 +10,6 @@ export class KeyValueChangesFactory implements PipeFactory {
   create(cdRef: ChangeDetectorRef): Pipe { return new KeyValueChanges(); }
 }
 
-/**
- * @exportedAs angular2/pipes
- */
 export class KeyValueChanges extends BasePipe {
   private _records: Map<any, any> = new Map();
   private _mapHead: KVChangeRecord = null;
@@ -327,10 +321,6 @@ export class KeyValueChanges extends BasePipe {
 }
 
 
-
-/**
- * @exportedAs angular2/pipes
- */
 export class KVChangeRecord {
   previousValue: any = null;
   currentValue: any = null;

@@ -11,7 +11,5 @@ forwardRef(ForwardRefFn forwardRefFn) => forwardRefFn();
  * Lazily retrieve the reference value.
  *
  * See: {@link forwardRef}
- *
- * @exportedAs angular2/di
  */
 resolveForwardRef(type) => type;

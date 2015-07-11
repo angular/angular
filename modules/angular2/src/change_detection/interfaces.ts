@@ -28,7 +28,6 @@ import {DirectiveRecord} from './directive_record';
  * ```javascript
  * bootstrap(MyApp, [bind(ChangeDetection).toClass(DynamicChangeDetection)]);
  * ```
- * @exportedAs angular2/change_detection
  */
 @CONST()
 export class ChangeDetection {

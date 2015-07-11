@@ -8,8 +8,6 @@ import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/fac
  *   constructor(@Inject(MyService) aService:MyService) {}
  * }
  * ```
- *
- * @exportedAs angular2/di_metadata
  */
 
 @CONST()
@@ -29,8 +27,6 @@ export class InjectMetadata {
  *   }
  * }
  * ```
- *
- * @exportedAs angular2/di_metadata
  */
 @CONST()
 export class OptionalMetadata {
@@ -62,8 +58,6 @@ export class OptionalMetadata {
  *
  * The framework can use `new Parent()` to handle the `aService` dependency
  * in a specific way.
- *
- * @exportedAs angular2/di_metadata
  */
 @CONST()
 export class DependencyMetadata {
@@ -82,7 +76,6 @@ export class DependencyMetadata {
  * @Injectable
  * class UsefulService {}
  * ```
- * @exportedAs angular2/di_metadata
  */
 @CONST()
 export class InjectableMetadata {
@@ -93,8 +86,6 @@ export class InjectableMetadata {
  * Specifies how injector should resolve a dependency.
  *
  * See {@link Self}, {@link Parent}, {@link Ancestor}, {@link Unbounded}.
- *
- * @exportedAs angular2/di_metadata
  */
 @CONST()
 export class VisibilityMetadata {
@@ -125,8 +116,6 @@ export class VisibilityMetadata {
  * var nd = inj.get(NeedsDependency);
  * expect(nd.dependency).toBeAnInstanceOf(Dependency);
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
 export class SelfMetadata extends VisibilityMetadata {
@@ -165,8 +154,6 @@ export const self = CONST_EXPR(new SelfMetadata());
  *   constructor(public @Parent({self:true}) dependency:Dependency) {}
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
 export class ParentMetadata extends VisibilityMetadata {
@@ -204,8 +191,6 @@ export class ParentMetadata extends VisibilityMetadata {
  *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
 export class AncestorMetadata extends VisibilityMetadata {
@@ -243,8 +228,6 @@ export class AncestorMetadata extends VisibilityMetadata {
  *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
 export class UnboundedMetadata extends VisibilityMetadata {

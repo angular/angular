@@ -25,8 +25,6 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * }
  *
  * ```
- *
- * @exportedAs angular2/pipes
  */
 export class PromisePipe implements Pipe {
   _latestValue: Object = null;
@@ -77,8 +75,6 @@ export class PromisePipe implements Pipe {
 
 /**
  * Provides a factory for [PromisePipe].
- *
- * @exportedAs angular2/pipes
  */
 @CONST()
 export class PromisePipeFactory implements PipeFactory {

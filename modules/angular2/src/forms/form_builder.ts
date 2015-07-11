@@ -66,7 +66,6 @@ import * as modelModule from './model';
  *  });
  *
  *  ```
- * @exportedAs angular2/forms
  */
 export class FormBuilder {
   group(controlsConfig: StringMap<string, any>,

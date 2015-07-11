@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  * Change detection enables data binding in Angular.
  */

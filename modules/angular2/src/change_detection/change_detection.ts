@@ -21,24 +21,18 @@ import {CONST, CONST_EXPR, isPresent, BaseException} from 'angular2/src/facade/l
 
 /**
  * Structural diffing for `Object`s and `Map`s.
- *
- * @exportedAs angular2/pipes
  */
 export const keyValDiff: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new KeyValueChangesFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
- *
- * @exportedAs angular2/pipes
  */
 export const iterableDiff: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new IterableChangesFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Async binding to such types as Observable.
- *
- * @exportedAs angular2/pipes
  */
 export const async: List<PipeFactory> = CONST_EXPR([
   CONST_EXPR(new ObservablePipeFactory()),
@@ -48,64 +42,48 @@ export const async: List<PipeFactory> = CONST_EXPR([
 
 /**
  * Uppercase text transform.
- *
- * @exportedAs angular2/pipes
  */
 export const uppercase: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new UpperCaseFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Lowercase text transform.
- *
- * @exportedAs angular2/pipes
  */
 export const lowercase: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new LowerCaseFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Json stringify transform.
- *
- * @exportedAs angular2/pipes
  */
 export const json: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new JsonPipe()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * LimitTo text transform.
- *
- * @exportedAs angular2/pipes
  */
 export const limitTo: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new LimitToPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Number number transform.
- *
- * @exportedAs angular2/pipes
  */
 export const decimal: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new DecimalPipe()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Percent number transform.
- *
- * @exportedAs angular2/pipes
  */
 export const percent: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new PercentPipe()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Currency number transform.
- *
- * @exportedAs angular2/pipes
  */
 export const currency: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new CurrencyPipe()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Date/time formatter.
- *
- * @exportedAs angular2/pipes
  */
 export const date: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new DatePipe()), CONST_EXPR(new NullPipeFactory())]);
@@ -138,8 +116,6 @@ export const PROTO_CHANGE_DETECTOR_KEY = CONST_EXPR(new OpaqueToken('ProtoChange
 
 /**
  * Implements change detection using a map of pregenerated proto detectors.
- *
- * @exportedAs angular2/change_detection
  */
 @Injectable()
 export class PreGeneratedChangeDetection extends ChangeDetection {
@@ -171,8 +147,6 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
  * Implements change detection that does not require `eval()`.
  *
  * This is slower than {@link JitChangeDetection}.
- *
- * @exportedAs angular2/change_detection
  */
 @Injectable()
 export class DynamicChangeDetection extends ChangeDetection {
@@ -186,8 +160,6 @@ export class DynamicChangeDetection extends ChangeDetection {
  *
  * This requires `eval()`. For change detection that does not require `eval()`, see
  * {@link DynamicChangeDetection} and {@link PreGeneratedChangeDetection}.
- *
- * @exportedAs angular2/change_detection
  */
 @Injectable()
 @CONST()

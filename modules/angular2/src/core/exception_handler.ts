@@ -30,8 +30,6 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
  * }
  *
  * ```
- *
- * @exportedAs angular2/core
  */
 @Injectable()
 export class ExceptionHandler {

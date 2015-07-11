@@ -21,8 +21,6 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * }
  *
  * ```
- *
- * @exportedAs angular2/pipes
  */
 export class UpperCasePipe implements Pipe {
   _latestValue: string = null;
@@ -41,9 +39,6 @@ export class UpperCasePipe implements Pipe {
   }
 }
 
-/**
- * @exportedAs angular2/pipes
- */
 @CONST()
 export class UpperCaseFactory implements PipeFactory {
   supports(str): boolean { return isString(str); }

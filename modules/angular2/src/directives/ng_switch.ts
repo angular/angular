@@ -42,8 +42,6 @@ export class SwitchView {
  *   <template ng-switch-default>...</template>
  * </ANY>
  * ```
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[ng-switch]', properties: ['ngSwitch']})
 export class NgSwitch {
@@ -151,8 +149,6 @@ export class NgSwitch {
  * // match against a constant string
  * <template ng-switch-when="stringValue">...</template>
  * ```
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[ng-switch-when]', properties: ['ngSwitchWhen']})
 export class NgSwitchWhen {
@@ -187,8 +183,6 @@ export class NgSwitchWhen {
  * ```
  * <template ng-switch-default>...</template>
  * ```
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[ng-switch-default]'})
 export class NgSwitchDefault {

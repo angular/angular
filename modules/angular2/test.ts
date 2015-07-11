@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  * This module is used for writing tests for applications written in Angular.
  *

@@ -75,8 +75,6 @@ export class NumberPipe extends BasePipe implements PipeFactory {
  *     {{ 123 | number }}              // output is 123
  *     {{ 123.1 | number: '.2-3' }}    // output is 123.10
  *     {{ 1 | number: '2.2' }}         // output is 01.00
- *
- * @exportedAs angular2/pipes
  */
 @CONST()
 export class DecimalPipe extends NumberPipe {
@@ -94,8 +92,6 @@ export class DecimalPipe extends NumberPipe {
  *     expression | percent[:digitInfo]
  *
  * For more information about `digitInfo` see {@link DecimalPipe}
- *
- * @exportedAs angular2/pipes
  */
 @CONST()
 export class PercentPipe extends NumberPipe {
@@ -117,8 +113,6 @@ export class PercentPipe extends NumberPipe {
  * symbol (e.g. $) or the currency code (e.g. USD) in the output. The default for this value
  * is `false`.
  * For more information about `digitInfo` see {@link DecimalPipe}
- *
- * @exportedAs angular2/pipes
  */
 @CONST()
 export class CurrencyPipe extends NumberPipe {

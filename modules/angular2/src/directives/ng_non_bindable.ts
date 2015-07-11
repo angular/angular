@@ -12,8 +12,6 @@ import {Directive} from 'angular2/annotations';
  * <div>Normal: {{1 + 2}}</div> // output "Normal: 3"
  * <div non-bindable>Ignored: {{1 + 2}}</div> // output "Ignored: {{1 + 2}}"
  * ```
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[ng-non-bindable]', compileChildren: false})
 export class NgNonBindable {

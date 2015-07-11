@@ -29,7 +29,6 @@ import {isPresent, BaseException} from 'angular2/src/facade/lang';
  *   lifecycle.tick();
  * });
  * ```
- * @exportedAs angular2/change_detection
  */
 @Injectable()
 export class LifeCycle {

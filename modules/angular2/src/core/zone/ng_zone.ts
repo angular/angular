@@ -11,8 +11,6 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  *
  * A typical application will create a singleton `NgZone`. The outer `Zone` is a fork of the root
  * `Zone`. The default `onTurnDone` runs the Angular change detection.
- *
- * @exportedAs angular2/core
  */
 export class NgZone {
   // Code executed in _mountZone does not trigger the onTurnDone.

@@ -9,8 +9,6 @@ import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 /**
- * @exportedAs angular2/test
- *
  * A DebugElement contains information from the Angular compiler about an
  * element and provides access to the corresponding ElementInjector and
  * underlying dom Element, as well as a way to query for children.
@@ -149,9 +147,6 @@ export function asNativeElements(arr: List<DebugElement>): List<any> {
   return arr.map((debugEl) => debugEl.nativeElement);
 }
 
-/**
- * @exportedAs angular2/test
- */
 export class Scope {
   static all(debugElement): List<DebugElement> {
     var scope = [];
@@ -185,9 +180,6 @@ export class Scope {
   }
 }
 
-/**
- * @exportedAs angular2/test
- */
 export class By {
   static all(): Function { return (debugElement) => true; }
 

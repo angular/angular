@@ -14,8 +14,6 @@ export {TypeLiteral} from './type_literal';
  *
  * Keys are used internally by the {@link Injector} because their system-wide unique `id`s allow the
  * injector to index in arrays rather than looking up items in maps.
- *
- * @exportedAs angular2/di
  */
 export class Key {
   /**

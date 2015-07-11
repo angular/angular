@@ -27,8 +27,6 @@ import {resolveForwardRef} from 'angular2/di';
  *   }
  * }
  * ```
- *
- * @exportedAs angular2/annotations
  */
 @CONST()
 export class Attribute extends DependencyMetadata {
@@ -49,8 +47,6 @@ export class Attribute extends DependencyMetadata {
  * Specifies that a {@link QueryList} should be injected.
  *
  * See {@link QueryList} for usage and example.
- *
- * @exportedAs angular2/annotations
  */
 @CONST()
 export class Query extends DependencyMetadata {

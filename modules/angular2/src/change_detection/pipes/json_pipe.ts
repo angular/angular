@@ -24,8 +24,6 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * }
  *
  * ```
- *
- * @exportedAs angular2/pipes
  */
 @CONST()
 export class JsonPipe extends BasePipe implements PipeFactory {

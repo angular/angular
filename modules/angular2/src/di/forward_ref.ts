@@ -25,8 +25,6 @@ export interface ForwardRefFn { (): any; }
  * class Lock {
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
@@ -38,8 +36,6 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type {
  * Lazily retrieve the reference value.
  *
  * See: {@link forwardRef}
- *
- * @exportedAs angular2/di
  */
 export function resolveForwardRef(type: any): any {
   if (isFunction(type) && type.hasOwnProperty('__forward_ref__') &&

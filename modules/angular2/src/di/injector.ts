@@ -446,8 +446,6 @@ export interface DependencyProvider {
  * ```
  * Notice that we don't use the `new` operator because we explicitly want to have the `Injector`
  * resolve all of the object's dependencies automatically.
- *
- * @exportedAs angular2/di
  */
 export class Injector {
   /**

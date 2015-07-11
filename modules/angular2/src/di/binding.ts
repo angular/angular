@@ -50,8 +50,6 @@ const _EMPTY_LIST = CONST_EXPR([]);
  *
  * expect(injector.get(String)).toEqual('Hello');
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
 export class Binding {
@@ -228,8 +226,6 @@ export class Binding {
  * A {@link Binding} is resolved when it has a factory function. Binding to a class, alias, or
  * value, are just convenience methods, as {@link Injector} only operates on calling factory
  * functions.
- *
- * @exportedAs angular2/di
  */
 export class ResolvedBinding {
   constructor(
@@ -260,8 +256,6 @@ export class ResolvedBinding {
  * bind(MyInterface).toClass(MyClass)
  *
  * ```
- *
- * @exportedAs angular2/di
  */
 export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
@@ -269,8 +263,6 @@ export function bind(token): BindingBuilder {
 
 /**
  * Helper class for the {@link bind} function.
- *
- * @exportedAs angular2/di
  */
 export class BindingBuilder {
   constructor(public token) {}

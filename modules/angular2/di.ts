@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  * The `di` module provides dependency injection container services.
  */

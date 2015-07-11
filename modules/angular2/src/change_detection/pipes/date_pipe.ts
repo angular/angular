@@ -68,8 +68,6 @@ var defaultLocale: string = 'en-US';
  *     {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
  *     {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
  *     {{ dateObj | date:'mmss' }}        // output is '43:11'
- *
- * @exportedAs angular2/pipes
  */
 @CONST()
 export class DatePipe extends BasePipe implements PipeFactory {

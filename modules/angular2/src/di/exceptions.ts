@@ -27,8 +27,6 @@ function constructResolvingPath(keys: List<any>): string {
 
 /**
  * Base class for all errors arising from misconfigured bindings.
- *
- * @exportedAs angular2/di_errors
  */
 export class AbstractBindingError extends BaseException {
   name: string;
@@ -55,8 +53,6 @@ export class AbstractBindingError extends BaseException {
 /**
  * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the
  * {@link Injector} does not have a {@link Binding} for {@link Key}.
- *
- * @exportedAs angular2/di_errors
  */
 export class NoBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
@@ -89,8 +85,6 @@ export class NoBindingError extends AbstractBindingError {
  *
  * The above example throws because `String` depends on `Number` which is async. If any binding in
  * the dependency graph is async then the graph can only be retrieved using the `asyncGet` API.
- *
- * @exportedAs angular2/di_errors
  */
 export class AsyncBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
@@ -117,8 +111,6 @@ export class AsyncBindingError extends AbstractBindingError {
  * ```
  *
  * Retrieving `A` or `B` throws a `CyclicDependencyError` as the graph above cannot be constructed.
- *
- * @exportedAs angular2/di_errors
  */
 export class CyclicDependencyError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
@@ -134,8 +126,6 @@ export class CyclicDependencyError extends AbstractBindingError {
  *
  * The `InstantiationError` class contains the original error plus the dependency graph which caused
  * this object to be instantiated.
- *
- * @exportedAs angular2/di_errors
  */
 export class InstantiationError extends AbstractBindingError {
   causeKey;
@@ -156,8 +146,6 @@ export class InstantiationError extends AbstractBindingError {
 /**
  * Thrown when an object other then {@link Binding} (or `Type`) is passed to {@link Injector}
  * creation.
- *
- * @exportedAs angular2/di_errors
  */
 export class InvalidBindingError extends BaseException {
   message: string;
@@ -175,8 +163,6 @@ export class InvalidBindingError extends BaseException {
  *
  * Lack of annotation information prevents the {@link Injector} from determining which dependencies
  * need to be injected into the constructor.
- *
- * @exportedAs angular2/di_errors
  */
 export class NoAnnotationError extends BaseException {
   name: string;
@@ -202,8 +188,6 @@ export class NoAnnotationError extends BaseException {
 
 /**
  * Thrown when getting an object by index.
- *
- * @exportedAs angular2/di_errors
  */
 export class OutOfBoundsError extends BaseException {
   message: string;

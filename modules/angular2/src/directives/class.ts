@@ -27,8 +27,6 @@ import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/fa
  *     Please check errors.
  * </div>
  * ```
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[class]', lifecycle: [onCheck], properties: ['rawClass: class']})
 export class CSSClass {

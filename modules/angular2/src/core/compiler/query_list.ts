@@ -72,8 +72,6 @@ import {BaseQueryList} from './base_query_list';
  *   title:string;
  * }
  * ```
- *
- * @exportedAs angular2/view
  */
 export class QueryList<T> extends BaseQueryList<T> {
   /**

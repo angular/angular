@@ -35,8 +35,6 @@ let _resolveToFalse = PromiseWrapper.resolve(false);
  * When the router navigates from a URL, it must first recognizes it and serialize it into an
  * `Instruction`.
  * The router uses the `RouteRegistry` to get an `Instruction`.
- *
- * @exportedAs angular2/router
  */
 export class Router {
   navigating: boolean = false;

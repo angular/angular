@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  * Define angular core API here.
  */

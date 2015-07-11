@@ -44,8 +44,6 @@ const formDirectiveBinding =
  * }
  *
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',

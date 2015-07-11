@@ -6,8 +6,6 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *has not changed.
  *
  * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.
- *
- * @exportedAs angular2/pipes
  */
 export class WrappedValue {
   constructor(public wrapped: any) {}
@@ -49,8 +47,6 @@ var _wrappedIndex = 0;
  *  }
  * }
  * ```
- *
- * @exportedAs angular2/pipes
  */
 export interface Pipe {
   supports(obj): boolean;

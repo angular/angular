@@ -46,9 +46,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
 
 
 .config(function(parseTagsProcessor, getInjectables) {
-  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/public'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/private'));
-  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/exportedAs'));
 
   // We actually don't want to parse param docs in this package as we are getting the data out using TS
   parseTagsProcessor.tagDefinitions.forEach(function(tagDef) {

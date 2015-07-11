@@ -14,8 +14,6 @@ import {setProperty} from './shared';
  *  ```
  *  <input type="checkbox" [ng-control]="rememberLogin">
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector:

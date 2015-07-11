@@ -275,8 +275,6 @@ function _createNgZone(givenReporter: Function): NgZone {
  * unhandled exceptions.
  *
  * Returns a `Promise` of {@link ApplicationRef}.
- *
- * @exportedAs angular2/core
  */
 export function bootstrap(appComponentType: Type,
                           componentInjectableBindings: List<Type | Binding | List<any>> = null,

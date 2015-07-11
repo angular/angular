@@ -6,8 +6,6 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
  *
  * In the future this class will implement an Observable interface.
  * For now it uses a plain list of observable callbacks.
- *
- * @exportedAs angular2/view
  */
 export class BaseQueryList<T> {
   protected _results: List<T> = [];

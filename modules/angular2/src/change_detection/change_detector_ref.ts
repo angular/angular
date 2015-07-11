@@ -7,8 +7,6 @@ import {CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './constants';
  * {@link ChangeDetectorRef} allows requesting checks for detectors that rely on observables. It
  *also allows detaching and
  * attaching change detector subtrees.
- *
- * @exportedAs angular2/change_detection
  */
 export class ChangeDetectorRef {
   constructor(private _cd: ChangeDetector) {}

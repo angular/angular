@@ -70,8 +70,6 @@ const controlNameBinding =
  *  }
  * }
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: '[ng-control]',
