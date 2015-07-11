@@ -30,6 +30,7 @@ pubspec.lock
 .c9
 .idea/
 *.swo
+modules/.settings
 
 # Don't check in secret files
 *secret.js
