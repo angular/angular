@@ -13,20 +13,7 @@ module.exports = function createTypeDefinitionFile(log) {
     },
     dtsPath: 'typings',
     dtsExtension: '.d.ts',
-    typeDefinitions: [
-      {
-        id: 'angular2/angular2',
-        modules: {
-          'angular2/angular2': 'angular2/angular2',
-        }
-      },
-      {
-        id: 'angular2/router',
-        modules: {
-          'angular2/router': 'angular2/router'
-        }
-      }
-    ],
+    typeDefinitions: [],
     $process: function(docs) {
       var dtsPath = this.dtsPath;
       var dtsExtension = this.dtsExtension;

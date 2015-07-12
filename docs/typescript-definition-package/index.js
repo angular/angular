@@ -29,7 +29,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   renderDocsProcessor.extraData.versionInfo = versionInfo;
 })
 
-.config(function(readFilesProcessor, inlineTagProcessor, readTypeScriptModules) {
+.config(function(readFilesProcessor, inlineTagProcessor, readTypeScriptModules, createTypeDefinitionFile) {
 
   // Don't run unwanted processors
   readFilesProcessor.$enabled = false; // We are not using the normal file reading processor
@@ -42,6 +42,21 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
     'angular2/router.ts'
   ];
   readTypeScriptModules.basePath = path.resolve(path.resolve(__dirname, '../../modules'));
+  
+  createTypeDefinitionFile.typeDefinitions = [
+      {
+        id: 'angular2/angular2',
+        modules: {
+          'angular2/angular2': 'angular2/angular2',
+        }
+      },
+      {
+        id: 'angular2/router',
+        modules: {
+          'angular2/router': 'angular2/router'
+        }
+      }    
+  ];
 })
 
 
