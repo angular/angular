@@ -12,9 +12,9 @@ export interface ClassDefinition {
   /**
    * Required constructor function for a class.
    *
-   * The function may be optionall wrapped in an `Array`, in which case additional parameter
-   * annotations may be
-   * specified. The number of arguments and the number of paramater annotations must match.
+   * The function may be optionally wrapped in an `Array`, in which case additional parameter
+   * annotations may be specified.
+   * The number of arguments and the number of parameter annotations must match.
    *
    * See {@link Class} for example of usage.
    */
