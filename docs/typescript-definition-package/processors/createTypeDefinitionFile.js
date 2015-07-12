@@ -76,6 +76,11 @@ module.exports = function createTypeDefinitionFile(log) {
               // Convert this class to an interface with no constructor
               exportDoc.docType = 'interface';
               exportDoc.constructorDoc = null;
+              
+              if (exportDoc.heritage) {
+                // convert the heritage since interfaces use `extends` not `implements`
+                exportDoc.heritage = exportDoc.heritage.replace('implements', 'extends');
+              }
 
               // Add the `declare var SomeClass extends InjectableReference` construct
               modDoc.doc.exports.push({
