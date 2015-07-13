@@ -6,7 +6,8 @@ import {
   RegExpWrapper,
   CONST_EXPR,
   isPresent,
-  isJsObject
+  isJsObject,
+  StringWrapper
 } from 'angular2/src/facade/lang';
 
 // TODO(jeffbcross): properly implement body accessors
@@ -39,7 +40,19 @@ export class Request {
   cache: RequestCacheOpts;
   constructor(requestOptions: RequestOptions) {
     // TODO: assert that url is present
+    let url = requestOptions.url;
     this.url = requestOptions.url;
+    if (isPresent(requestOptions.search)) {
+      let search = requestOptions.search.toString();
+      if (search.length > 0) {
+        let prefix = '?';
+        if (StringWrapper.contains(this.url, '?')) {
+          prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
+        }
+        // TODO: just delete search-query-looking string in url?
+        this.url = url + prefix + search;
+      }
+    }
     this._body = requestOptions.body;
     this.method = requestOptions.method;
     // TODO(jeffbcross): implement behavior

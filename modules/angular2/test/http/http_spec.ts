@@ -21,6 +21,7 @@ import {ResponseOptions} from 'angular2/src/http/base_response_options';
 import {Request} from 'angular2/src/http/static_request';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ConnectionBackend} from 'angular2/src/http/interfaces';
+import {URLSearchParams} from 'angular2/src/http/url_search_params';
 
 class SpyObserver extends SpyObject {
   onNext: Function;
@@ -200,6 +201,47 @@ export function main() {
                async.done();
              });
              ObservableWrapper.subscribe(http.head(url), res => {});
+           }));
+      });
+
+
+      describe('searchParams', () => {
+        it('should append search params to url', inject([AsyncTestCompleter], async => {
+             var params = new URLSearchParams();
+             params.append('q', 'puppies');
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
+               expect(c.request.url).toEqual('https://www.google.com?q=puppies');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             ObservableWrapper.subscribe(
+                 http.get('https://www.google.com', new RequestOptions({search: params})),
+                 res => {});
+           }));
+
+
+        it('should append string search params to url', inject([AsyncTestCompleter], async => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
+               expect(c.request.url).toEqual('https://www.google.com?q=piggies');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             ObservableWrapper.subscribe(
+                 http.get('https://www.google.com', new RequestOptions({search: 'q=piggies'})),
+                 res => {});
+           }));
+
+
+        it('should produce valid url when url already contains a query',
+           inject([AsyncTestCompleter], async => {
+             ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
+               expect(c.request.url).toEqual('https://www.google.com?q=angular&as_eq=1.x');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             ObservableWrapper.subscribe(http.get('https://www.google.com?q=angular',
+                                                  new RequestOptions({search: 'as_eq=1.x'})),
+                                         res => {});
            }));
       });
     });
