@@ -11,7 +11,9 @@ class Html5LibDomAdapter implements DomAdapter {
   }
 
   hasProperty(element, String name) {
-    // This is needed for serverside compile to generate the right getters/setters...
+    // This is needed for serverside compile to generate the right getters/setters.
+    // TODO: change this once we have property schema support.
+    // Attention: Keep this in sync with browser_adapter.dart! 
     return true;
   }
 
