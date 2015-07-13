@@ -21,7 +21,7 @@ class Optional extends OptionalMetadata {
  * {@link InjectableMetadata}.
  */
 class Injectable extends InjectableMetadata {
-	const Injectable([VisibilityMetadata visibility = unbounded]): super(visibility);
+	const Injectable(): super();
 }
 
 /**

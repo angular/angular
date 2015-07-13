@@ -6,9 +6,10 @@ import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 export function main() {
   describe('QueryList', () => {
-    var queryList, log;
+    var queryList: QueryList<string>;
+    var log: string;
     beforeEach(() => {
-      queryList = new QueryList();
+      queryList = new QueryList<string>();
       log = '';
     });
 
@@ -34,6 +35,12 @@ export function main() {
       queryList.add('one');
       queryList.add('two');
       expect(queryList.length).toEqual(2);
+    });
+
+    it('should support map', () => {
+      queryList.add('one');
+      queryList.add('two');
+      expect(queryList.map((x) => x)).toEqual(['one', 'two']);
     });
 
     it('should support first and last', () => {

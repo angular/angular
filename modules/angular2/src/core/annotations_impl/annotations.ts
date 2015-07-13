@@ -1,6 +1,6 @@
 import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-import {InjectableMetadata, self} from 'angular2/src/di/metadata';
+import {InjectableMetadata} from 'angular2/src/di/metadata';
 import {DEFAULT} from 'angular2/change_detection';
 
 /**
@@ -792,7 +792,7 @@ export class Directive extends InjectableMetadata {
     exportAs?: string,
     compileChildren?: boolean,
   } = {}) {
-    super(self);
+    super();
     this.selector = selector;
     this.properties = properties;
     this.events = events;

@@ -14,8 +14,7 @@ export {
   AncestorMetadata,
   UnboundedMetadata,
   DependencyMetadata,
-  self,
-  unbounded
+  DEFAULT_VISIBILITY
 } from './src/di/metadata';
 
 // we have to reexport * because Dart and TS export two different sets of types

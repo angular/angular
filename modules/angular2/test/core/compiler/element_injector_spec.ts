@@ -40,7 +40,7 @@ import {
   Directive,
   onDestroy
 } from 'angular2/annotations';
-import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, self, InjectMetadata, ParentMetadata} from 'angular2/di';
+import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, InjectMetadata, ParentMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -73,16 +73,16 @@ class DummyElementRef extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
 
-@Injectable(self)
+@Injectable()
 class SimpleDirective {}
 
 class SimpleService {}
 
-@Injectable(self)
+@Injectable()
 class SomeOtherDirective {}
 
 var _constructionCount = 0;
-@Injectable(self)
+@Injectable()
 class CountingDirective {
   count;
   constructor() {
@@ -91,7 +91,7 @@ class CountingDirective {
   }
 }
 
-@Injectable(self)
+@Injectable()
 class FancyCountingDirective extends CountingDirective {
   constructor() { super(); }
 }
@@ -99,13 +99,13 @@ class FancyCountingDirective extends CountingDirective {
 @Injectable()
 class NeedsDirective {
   dependency: SimpleDirective;
-  constructor(dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Self() dependency: SimpleDirective) { this.dependency = dependency; }
 }
 
 @Injectable()
 class OptionallyNeedsDirective {
   dependency: SimpleDirective;
-  constructor(@Optional() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Self() @Optional() dependency: SimpleDirective) { this.dependency = dependency; }
 }
 
 @Injectable()
