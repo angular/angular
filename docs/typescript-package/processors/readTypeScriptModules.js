@@ -3,7 +3,7 @@ var path = require('canonical-path');
 var _ = require('lodash');
 var ts = require('typescript');
 
-module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, modules, getFileInfo,
+module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
                                                 getExportDocType, getContent, log) {
 
   return {
@@ -37,7 +37,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       var hidePrivateMembers = this.hidePrivateMembers;
       var sortClassMembers = this.sortClassMembers;
 
-      var basePath = path.resolve(readFilesProcessor.basePath, this.basePath);
+      var basePath = path.resolve(this.basePath);
       var filesPaths = expandSourceFiles(this.sourceFiles, basePath);
       var parseInfo = tsParser.parse(filesPaths, this.basePath);
       var moduleSymbols = parseInfo.moduleSymbols;

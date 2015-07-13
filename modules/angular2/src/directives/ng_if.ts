@@ -23,8 +23,6 @@ import {isBlank} from 'angular2/src/facade/lang';
  * - `<div *ng-if="condition">...</div>`
  * - `<div template="ng-if condition">...</div>`
  * - `<template [ng-if]="condition"><div>...</div></template>`
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[ng-if]', properties: ['ngIf']})
 export class NgIf {

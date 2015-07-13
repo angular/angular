@@ -15,6 +15,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   constructor(reflect?: any) { this._reflect = isPresent(reflect) ? reflect : global.Reflect; }
 
+  isReflectionEnabled(): boolean { return true; }
+
   factory(t: Type): Function {
     switch (t.length) {
       case 0:

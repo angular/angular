@@ -21,9 +21,6 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DebugElement} from 'angular2/src/debug/debug_element';
 
-/**
- * @exportedAs angular2/test
- */
 export class RootTestComponent extends DebugElement {
   _componentRef: ComponentRef;
   _componentParentView: AppView;
@@ -46,8 +43,6 @@ export class RootTestComponent extends DebugElement {
 var _nextRootElementId = 0;
 
 /**
- * @exportedAs angular2/test
- *
  * Builds a RootTestComponent for use in component level tests.
  */
 @Injectable()

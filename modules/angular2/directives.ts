@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  * Common directives shipped with Angular.
  */

@@ -8,6 +8,10 @@ import 'platform_reflection_capabilities.dart';
 class ReflectionCapabilities implements PlatformReflectionCapabilities {
   ReflectionCapabilities([metadataReader]) {}
 
+  bool isReflectionEnabled() {
+    return true;
+  }
+
   Function factory(Type type) {
     ClassMirror classMirror = reflectType(type);
     MethodMirror ctor = classMirror.declarations[classMirror.simpleName];

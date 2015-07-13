@@ -158,8 +158,7 @@ export class Unparser implements AstVisitor {
 
   visitMethodCall(ast: MethodCall) {
     this._visit(ast.receiver);
-    this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}(` :
-                                                                   `.${ast.name}(`;
+    this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}(` : `.${ast.name}(`;
     var isFirst = true;
     ast.args.forEach(arg => {
       if (!isFirst) this._expression += ', ';

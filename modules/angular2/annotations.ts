@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  *
  * Annotations provide the additional information that Angular requires in order to run your

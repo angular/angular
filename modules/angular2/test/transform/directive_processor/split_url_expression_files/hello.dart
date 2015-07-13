@@ -1,4 +1,4 @@
-library examples.src.hello_world.index_common_dart;
+library examples.src.hello_world.split_url_expression_files;
 
 import 'package:angular2/angular2.dart'
     show bootstrap, Component, Directive, View, NgElement;

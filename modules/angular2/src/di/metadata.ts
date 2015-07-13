@@ -1,25 +1,23 @@
 import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/facade/lang";
 
 /**
- * A parameter annotation that specifies a dependency.
+ * A parameter metadata that specifies a dependency.
  *
  * ```
  * class AComponent {
  *   constructor(@Inject(MyService) aService:MyService) {}
  * }
  * ```
- *
- * @exportedAs angular2/di_annotations
  */
 
 @CONST()
-export class Inject {
+export class InjectMetadata {
   constructor(public token) {}
   toString(): string { return `@Inject(${stringify(this.token)})`; }
 }
 
 /**
- * A parameter annotation that marks a dependency as optional. {@link Injector} provides `null` if
+ * A parameter metadata that marks a dependency as optional. {@link Injector} provides `null` if
  * the dependency is not found.
  *
  * ```
@@ -29,24 +27,22 @@ export class Inject {
  *   }
  * }
  * ```
- *
- * @exportedAs angular2/di_annotations
  */
 @CONST()
-export class Optional {
+export class OptionalMetadata {
   toString(): string { return `@Optional()`; }
 }
 
 /**
- * `DependencyAnnotation` is used by the framework to extend DI.
+ * `DependencyMetadata is used by the framework to extend DI.
  *
- * Only annotations implementing `DependencyAnnotation` are added to the list of dependency
+ * Only metadata implementing `DependencyMetadata` are added to the list of dependency
  * properties.
  *
  * For example:
  *
  * ```
- * class Parent extends DependencyAnnotation {}
+ * class Parent extends DependencyMetadata {}
  * class NotDependencyProperty {}
  *
  * class AComponent {
@@ -62,16 +58,14 @@ export class Optional {
  *
  * The framework can use `new Parent()` to handle the `aService` dependency
  * in a specific way.
- *
- * @exportedAs angular2/di_annotations
  */
 @CONST()
-export class DependencyAnnotation {
+export class DependencyMetadata {
   get token() { return null; }
 }
 
 /**
- * A marker annotation that marks a class as available to `Injector` for creation. Used by tooling
+ * A marker metadata that marks a class as available to `Injector` for creation. Used by tooling
  * for generating constructor stubs.
  *
  * ```
@@ -82,22 +76,19 @@ export class DependencyAnnotation {
  * @Injectable
  * class UsefulService {}
  * ```
- * @exportedAs angular2/di_annotations
  */
 @CONST()
-export class Injectable {
-  constructor(public visibility: Visibility = unbounded) {}
+export class InjectableMetadata {
+  constructor(public visibility: VisibilityMetadata = unbounded) {}
 }
 
 /**
  * Specifies how injector should resolve a dependency.
  *
  * See {@link Self}, {@link Parent}, {@link Ancestor}, {@link Unbounded}.
- *
- * @exportedAs angular2/di_annotations
  */
 @CONST()
-export class Visibility {
+export class VisibilityMetadata {
   constructor(public depth: number, public crossBoundaries: boolean, public _includeSelf: boolean) {
   }
 
@@ -125,16 +116,14 @@ export class Visibility {
  * var nd = inj.get(NeedsDependency);
  * expect(nd.dependency).toBeAnInstanceOf(Dependency);
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
-export class Self extends Visibility {
+export class SelfMetadata extends VisibilityMetadata {
   constructor() { super(0, false, true); }
   toString(): string { return `@Self()`; }
 }
 
-export const self = CONST_EXPR(new Self());
+export const self = CONST_EXPR(new SelfMetadata());
 
 /**
  * Specifies that an injector should retrieve a dependency from the direct parent.
@@ -165,11 +154,9 @@ export const self = CONST_EXPR(new Self());
  *   constructor(public @Parent({self:true}) dependency:Dependency) {}
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
-export class Parent extends Visibility {
+export class ParentMetadata extends VisibilityMetadata {
   constructor({self}: {self?: boolean} = {}) { super(1, false, self); }
   toString(): string { return `@Parent(self: ${this.includeSelf}})`; }
 }
@@ -204,11 +191,9 @@ export class Parent extends Visibility {
  *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
-export class Ancestor extends Visibility {
+export class AncestorMetadata extends VisibilityMetadata {
   constructor({self}: {self?: boolean} = {}) { super(999999, false, self); }
   toString(): string { return `@Ancestor(self: ${this.includeSelf}})`; }
 }
@@ -243,13 +228,11 @@ export class Ancestor extends Visibility {
  *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
  * }
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
-export class Unbounded extends Visibility {
+export class UnboundedMetadata extends VisibilityMetadata {
   constructor({self}: {self?: boolean} = {}) { super(999999, true, self); }
   toString(): string { return `@Unbounded(self: ${this.includeSelf}})`; }
 }
 
-export const unbounded = CONST_EXPR(new Unbounded({self: true}));
+export const unbounded = CONST_EXPR(new UnboundedMetadata({self: true}));

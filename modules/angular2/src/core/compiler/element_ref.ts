@@ -9,8 +9,6 @@ import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/render/api
  * a Browser, but may represent other types on other rendering platforms. In the browser the
  * `ElementRef` can be sent to the web-worker. Web Workers can not have references to the
  * DOM Elements.
- *
- * @exportedAs angular2/view
  */
 export class ElementRef implements RenderElementRef {
   /**

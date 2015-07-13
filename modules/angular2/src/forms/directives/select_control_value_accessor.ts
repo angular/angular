@@ -16,7 +16,6 @@ import {setProperty} from './shared';
  *   <option *ng-for="#c of cities" [value]="c"></option>
  * </select>
  * ``
- * @exportedAs angular2/forms
  */
 @Directive({selector: 'option'})
 export class NgSelectOption {
@@ -24,8 +23,6 @@ export class NgSelectOption {
 
 /**
  * The accessor for writing a value and listening to changes on a select element.
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: 'select[ng-control],select[ng-form-control],select[ng-model]',

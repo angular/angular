@@ -155,8 +155,8 @@ class DirtyCheckingDiffResult extends DiffResult {
                             .concat(this.changedPaths.map(p => `* ${p}`))
                             .concat(this.removedPaths.map(p => `- ${p}`));
     console.log(`Tree diff: ${this}` + ((verbose && prefixedPaths.length) ?
-                                             ` [\n  ${prefixedPaths.join('\n  ')}\n]` :
-                                             ''));
+                                            ` [\n  ${prefixedPaths.join('\n  ')}\n]` :
+                                            ''));
   }
 }
 

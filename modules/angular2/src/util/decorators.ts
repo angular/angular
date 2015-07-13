@@ -12,9 +12,9 @@ export interface ClassDefinition {
   /**
    * Required constructor function for a class.
    *
-   * The function may be optionall wrapped in an `Array`, in which case additional parameter
-   * annotations may be
-   * specified. The number of arguments and the number of paramater annotations must match.
+   * The function may be optionally wrapped in an `Array`, in which case additional parameter
+   * annotations may be specified.
+   * The number of arguments and the number of parameter annotations must match.
    *
    * See {@link Class} for example of usage.
    */
@@ -242,9 +242,8 @@ export function makeDecorator(annotationCls, chainFn: (fn: Function) => void = n
     if (this instanceof annotationCls) {
       return annotationInstance;
     } else {
-      var chainAnnotation = isFunction(this) && this.annotations instanceof Array ?
-                                                                                this.annotations :
-                                                                                [];
+      var chainAnnotation =
+          isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
       var TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls) {
         var annotations = Reflect.getMetadata('annotations', cls);

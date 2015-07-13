@@ -66,7 +66,6 @@ import * as modelModule from './model';
  *  });
  *
  *  ```
- * @exportedAs angular2/forms
  */
 export class FormBuilder {
   group(controlsConfig: StringMap<string, any>,
@@ -108,9 +107,9 @@ export class FormBuilder {
   }
 
   _createControl(controlConfig: any): modelModule.AbstractControl {
-    if (controlConfig instanceof modelModule.Control || controlConfig instanceof
-                                     modelModule.ControlGroup || controlConfig instanceof
-                                         modelModule.ControlArray) {
+    if (controlConfig instanceof modelModule.Control ||
+        controlConfig instanceof modelModule.ControlGroup ||
+        controlConfig instanceof modelModule.ControlArray) {
       return controlConfig;
 
     } else if (isArray(controlConfig)) {

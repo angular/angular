@@ -11,8 +11,6 @@ import * as modelModule from './model';
  * ```
  * var loginControl = new Control("", Validators.required)
  * ```
- *
- * @exportedAs angular2/forms
  */
 export class Validators {
   static required(c: modelModule.Control): StringMap<string, boolean> {

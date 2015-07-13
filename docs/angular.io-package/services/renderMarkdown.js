@@ -2,7 +2,11 @@ var marked = require('marked');
 var Encoder = require('node-html-encoder').Encoder;
 var html2jade = require('html2jade');
 var indentString = require('indent-string');
-var S = require('string');
+
+
+function stripTags(s) { //from sugar.js
+  return s.replace(RegExp('<\/?[^<>]*>', 'gi'), '');
+}
 
 // entity type encoder
 var encoder = new Encoder('entity');
@@ -35,7 +39,7 @@ module.exports = function renderMarkdown(trimIndentation) {
 
   renderer.heading = function (text, level, raw) {
     var headingText = marked.Renderer.prototype.heading.call(renderer, text, level, raw);
-    var title = 'h2 ' + S(headingText).stripTags().s;
+    var title = 'h2 ' + stripTags(headingText);
 
     if (level==2) {
       title = '.l-main-section\n' + indentString(title, ' ', 2) ;

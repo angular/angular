@@ -7,9 +7,7 @@ import * as viewModule from './view';
 
 import {ElementRef} from './element_ref';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
-/**
- * @exportedAs angular2/core
- */
+
 export class ViewContainerRef {
   constructor(public viewManager: avmModule.AppViewManager, public element: ElementRef) {}
 

@@ -47,8 +47,6 @@ const controlGroupBinding =
  * }
  *
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: '[ng-control-group]',

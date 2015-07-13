@@ -11,10 +11,6 @@ import 'logging.dart' show logger;
 /// the possible libraries which could provide them.
 const INJECTABLES = const [
   const AnnotationDescriptor(
-      'Injectable', 'package:angular2/src/di/annotations.dart', null),
-  const AnnotationDescriptor(
-      'Injectable', 'package:angular2/src/di/annotations_impl.dart', null),
-  const AnnotationDescriptor(
       'Injectable', 'package:angular2/src/di/decorators.dart', null),
   const AnnotationDescriptor('Injectable', 'package:angular2/di.dart', null),
   const AnnotationDescriptor(

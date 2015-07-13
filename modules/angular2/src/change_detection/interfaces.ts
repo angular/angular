@@ -28,7 +28,6 @@ import {DirectiveRecord} from './directive_record';
  * ```javascript
  * bootstrap(MyApp, [bind(ChangeDetection).toClass(DynamicChangeDetection)]);
  * ```
- * @exportedAs angular2/change_detection
  */
 @CONST()
 export class ChangeDetection {
@@ -51,7 +50,7 @@ export interface ChangeDetector {
   removeChild(cd: ChangeDetector): void;
   removeShadowDomChild(cd: ChangeDetector): void;
   remove(): void;
-  hydrate(context: any, locals: Locals, directives: any, pipeRegistry: any): void;
+  hydrate(context: any, locals: Locals, directives: any, pipes: any): void;
   dehydrate(): void;
   markPathToRootAsCheckOnce(): void;
 

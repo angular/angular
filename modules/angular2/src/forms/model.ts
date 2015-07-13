@@ -5,15 +5,11 @@ import {Validators} from './validators';
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
- *
- * @exportedAs angular2/forms
  */
 export const VALID = "VALID";
 
 /**
  * Indicates that a Control is invalid, i.e. that an error exists in the input value.
- *
- * @exportedAs angular2/forms
  */
 export const INVALID = "INVALID";
 
@@ -102,8 +98,8 @@ export class AbstractControl {
     }
   }
 
-  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean,
-                                                 emitEvent?: boolean} = {}): void {
+  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     onlySelf = isPresent(onlySelf) ? onlySelf : false;
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
@@ -144,8 +140,6 @@ export class AbstractControl {
  * `Control` is one of the three fundamental building blocks used to define forms in Angular, along
  * with
  * {@link ControlGroup} and {@link ControlArray}.
- *
- * @exportedAs angular2/forms
  */
 export class Control extends AbstractControl {
   _onChange: Function;
@@ -157,8 +151,8 @@ export class Control extends AbstractControl {
     this._valueChanges = new EventEmitter();
   }
 
-  updateValue(value: any,
-              {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  updateValue(value: any, {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._value = value;
     if (isPresent(this._onChange)) this._onChange(this._value);
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
@@ -181,8 +175,6 @@ export class Control extends AbstractControl {
  * {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other controls,
  * but is of variable
  * length.
- *
- * @exportedAs angular2/forms
  */
 export class ControlGroup extends AbstractControl {
   controls: StringMap<string, AbstractControl>;
@@ -263,12 +255,8 @@ export class ControlGroup extends AbstractControl {
  * changes as well.
  *
  * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular,
- * along with
- * {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain other controls,
- * but is of fixed
- * length.
- *
- * @exportedAs angular2/forms
+ * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
+ * other controls, but is of fixed length.
  */
 export class ControlArray extends AbstractControl {
   controls: List<AbstractControl>;

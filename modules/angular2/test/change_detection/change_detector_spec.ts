@@ -29,7 +29,7 @@ import {
   BindingRecord,
   DirectiveRecord,
   DirectiveIndex,
-  PipeRegistry,
+  Pipes,
   Pipe,
   CHECK_ALWAYS,
   CHECK_ONCE,
@@ -324,7 +324,7 @@ export function main() {
 
         describe('pipes', () => {
           it('should pass a change record to the dispatcher', () => {
-            var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
+            var registry = new FakePipes('pipe', () => new CountingPipe());
             var person = new Person('bob');
             var val = _createChangeDetector('name | pipe', person, registry);
             val.changeDetector.detectChanges();
@@ -332,7 +332,7 @@ export function main() {
           });
 
           it('should support arguments in pipes', () => {
-            var registry = new FakePipeRegistry('pipe', () => new MultiArgPipe());
+            var registry = new FakePipes('pipe', () => new MultiArgPipe());
             var address = new Address('two');
             var person = new Person('value', address);
             var val = _createChangeDetector("name | pipe:'one':address.city", person, registry);
@@ -749,7 +749,7 @@ export function main() {
 
         it('should destroy all active pipes during dehyration', () => {
           var pipe = new OncePipe();
-          var registry = new FakePipeRegistry('pipe', () => pipe);
+          var registry = new FakePipes('pipe', () => pipe);
           var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
 
           cd.detectChanges();
@@ -775,7 +775,7 @@ export function main() {
 
       describe('pipes', () => {
         it('should support pipes', () => {
-          var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
+          var registry = new FakePipes('pipe', () => new CountingPipe());
           var ctx = new Person('Megatron');
 
           var val = _createChangeDetector('name | pipe', ctx, registry);
@@ -791,7 +791,7 @@ export function main() {
         });
 
         it('should lookup pipes in the registry when the context is not supported', () => {
-          var registry = new FakePipeRegistry('pipe', () => new OncePipe());
+          var registry = new FakePipes('pipe', () => new OncePipe());
           var ctx = new Person('Megatron');
 
           var cd = _createChangeDetector('name | pipe', ctx, registry).changeDetector;
@@ -808,7 +808,7 @@ export function main() {
 
         it('should invoke onDestroy on a pipe before switching to another one', () => {
           var pipe = new OncePipe();
-          var registry = new FakePipeRegistry('pipe', () => pipe);
+          var registry = new FakePipes('pipe', () => pipe);
           var ctx = new Person('Megatron');
 
           var cd = _createChangeDetector('name | pipe', ctx, registry).changeDetector;
@@ -824,7 +824,7 @@ export function main() {
                'of the encompassing component into a pipe',
            () => {
 
-             var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
+             var registry = new FakePipes('pipe', () => new IdentityPipe());
              var cd =
                  _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
 
@@ -835,7 +835,7 @@ export function main() {
       });
 
       it('should do nothing when no change', () => {
-        var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
+        var registry = new FakePipes('pipe', () => new IdentityPipe());
         var ctx = new Person('Megatron');
 
         var val = _createChangeDetector('name | pipe', ctx, registry);
@@ -851,7 +851,7 @@ export function main() {
       });
 
       it('should unwrap the wrapped value', () => {
-        var registry = new FakePipeRegistry('pipe', () => new WrappedPipe());
+        var registry = new FakePipes('pipe', () => new WrappedPipe());
         var ctx = new Person('Megatron');
 
         var val = _createChangeDetector('name | pipe', ctx, registry);
@@ -915,7 +915,7 @@ class MultiArgPipe implements Pipe {
   onDestroy(): void {}
 }
 
-class FakePipeRegistry extends PipeRegistry {
+class FakePipes extends Pipes {
   numberOfLookups: number;
   pipeType: string;
   factory: Function;

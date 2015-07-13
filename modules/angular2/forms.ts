@@ -1,6 +1,5 @@
 /**
  * @module
- * @public
  * @description
  * This module is used for handling user input, by defining and building a {@link ControlGroup} that
  * consists of
@@ -16,6 +15,8 @@
 export {AbstractControl, Control, ControlGroup, ControlArray} from './src/forms/model';
 
 export {AbstractControlDirective} from './src/forms/directives/abstract_control_directive';
+export {Form} from './src/forms/directives/form_interface';
+export {ControlContainer} from './src/forms/directives/control_container';
 export {NgControlName} from './src/forms/directives/ng_control_name';
 export {NgFormControl} from './src/forms/directives/ng_form_control';
 export {NgModel} from './src/forms/directives/ng_model';

@@ -25,9 +25,6 @@ export class IterableChangesFactory implements PipeFactory {
   create(cdRef: ChangeDetectorRef): Pipe { return new IterableChanges(); }
 }
 
-/**
- * @exportedAs angular2/pipes
- */
 export class IterableChanges extends BasePipe {
   private _collection = null;
   private _length: int = null;
@@ -475,9 +472,6 @@ export class IterableChanges extends BasePipe {
   }
 }
 
-/**
- * @exportedAs angular2/pipes
- */
 export class CollectionChangeRecord {
   currentIndex: int = null;
   previousIndex: int = null;

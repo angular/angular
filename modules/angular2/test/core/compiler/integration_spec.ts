@@ -43,12 +43,13 @@ import {
   Inject,
   Parent,
   Ancestor,
-  Unbounded
+  Unbounded,
+  UnboundedMetadata
 } from 'angular2/di';
 import {
   PipeFactory,
-  PipeRegistry,
-  defaultPipeRegistry,
+  Pipes,
+  defaultPipes,
   ChangeDetection,
   DynamicChangeDetection,
   Pipe,
@@ -58,7 +59,6 @@ import {
 
 import {Directive, Component, View, Attribute, Query} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
-import * as visAnn from 'angular2/src/di/annotations_impl';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
@@ -1007,7 +1007,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template: `
-            <directive-providing-injectable>
+            <directive-providing-injectable >
               <directive-consuming-injectable #consuming>
               </directive-consuming-injectable>
             </directive-providing-injectable>
@@ -1402,13 +1402,13 @@ class PushCmpWithRef {
 }
 
 @Injectable()
-class PipeRegistryWithDouble extends PipeRegistry {
+class PipesWithDouble extends Pipes {
   constructor() { super({"double": [new DoublePipeFactory()]}); }
 }
 
 @Component({
   selector: 'my-comp-with-pipes',
-  viewInjector: [new Binding(PipeRegistry, {toClass: PipeRegistryWithDouble})]
+  viewInjector: [new Binding(Pipes, {toClass: PipesWithDouble})]
 })
 @View({directives: []})
 @Injectable()
@@ -1697,12 +1697,12 @@ class DirectiveWithTwoWayBinding {
 class InjectableService {
 }
 
-@Directive({selector: 'directive-providing-injectable', hostInjector: [InjectableService]})
+@Directive({selector: 'directive-providing-injectable', hostInjector: [[InjectableService]]})
 @Injectable()
 class DirectiveProvidingInjectable {
 }
 
-@Component({selector: 'directive-providing-injectable', viewInjector: [InjectableService]})
+@Component({selector: 'directive-providing-injectable', viewInjector: [[InjectableService]]})
 @View({template: ''})
 @Injectable()
 class DirectiveProvidingInjectableInView {
@@ -1779,7 +1779,7 @@ function createParentBus(peb) {
   selector: 'parent-providing-event-bus',
   hostInjector: [
     new Binding(EventBus,
-                {toFactory: createParentBus, deps: [[EventBus, new visAnn.Unbounded()]]})
+                {toFactory: createParentBus, deps: [[EventBus, new UnboundedMetadata()]]})
   ]
 })
 @View({

@@ -258,7 +258,7 @@ export class ShadowCss {
       var rule = m[0];
       rule = StringWrapper.replace(rule, m[2], '');
       rule = StringWrapper.replace(rule, m[1], m[3]);
-      r = rule + '\n\n';
+      r += rule + '\n\n';
     }
     return r;
   }

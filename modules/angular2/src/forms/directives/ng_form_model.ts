@@ -79,8 +79,6 @@ const formDirectiveBinding =
  *  }
  * }
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: '[ng-form-model]',

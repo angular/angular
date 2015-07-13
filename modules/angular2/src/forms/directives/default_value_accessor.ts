@@ -14,8 +14,6 @@ import {setProperty} from './shared';
  *  ```
  *  <input type="text" [(ng-model)]="searchQuery">
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector:

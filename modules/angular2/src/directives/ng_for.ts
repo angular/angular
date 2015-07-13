@@ -1,12 +1,5 @@
 import {Directive} from 'angular2/annotations';
-import {
-  ViewContainerRef,
-  ViewRef,
-  ProtoViewRef,
-  PipeRegistry,
-  onCheck,
-  Pipe
-} from 'angular2/angular2';
+import {ViewContainerRef, ViewRef, ProtoViewRef, Pipes, onCheck, Pipe} from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -38,8 +31,6 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  * - `<li *ng-for="#item of items; #i = index">...</li>`
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
- *
- * @exportedAs angular2/directives
  */
 @Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [onCheck]})
 export class NgFor {
@@ -47,7 +38,7 @@ export class NgFor {
   _pipe: Pipe;
 
   constructor(private viewContainer: ViewContainerRef, private protoViewRef: ProtoViewRef,
-              private pipes: PipeRegistry) {}
+              private pipes: Pipes) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;

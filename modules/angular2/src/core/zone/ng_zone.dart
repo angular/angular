@@ -3,6 +3,9 @@ library angular.zone;
 import 'dart:async';
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
+typedef void ZeroArgFunction();
+typedef void ErrorHandlingFn(error, stackTrace);
+
 /**
  * A `Zone` wrapper that lets you schedule tasks after its private microtask queue is exhausted but
  * before the next "VM turn", i.e. event loop iteration.
@@ -19,9 +22,10 @@ import 'package:stack_trace/stack_trace.dart' show Chain;
  * instantiated. The default `onTurnDone` runs the Angular change detection.
  */
 class NgZone {
-  Function _onTurnStart;
-  Function _onTurnDone;
-  Function _onErrorHandler;
+  ZeroArgFunction _onTurnStart;
+  ZeroArgFunction _onTurnDone;
+  ZeroArgFunction _onEventDone;
+  ErrorHandlingFn _onErrorHandler;
 
   // Code executed in _mountZone does not trigger the onTurnDone.
   Zone _mountZone;
@@ -65,21 +69,40 @@ class NgZone {
   }
 
   /**
-   * Initializes the zone hooks.
-   *
-   * The given error handler should re-throw the passed exception. Otherwise, exceptions will not
-   * propagate outside of the [NgZone] and can alter the application execution flow.
-   * Not re-throwing could be used to help testing the code or advanced use cases.
-   *
-   * @param {Function} onTurnStart called before code executes in the inner zone for each VM turn
-   * @param {Function} onTurnDone called at the end of a VM turn if code has executed in the inner zone
-   * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
+   * Sets the zone hook that is called just before Angular event turn starts.
+   * It is called once per browser event.
    */
-  void initCallbacks(
-      {Function onTurnStart, Function onTurnDone, Function onErrorHandler}) {
-    _onTurnStart = onTurnStart;
-    _onTurnDone = onTurnDone;
-    _onErrorHandler = onErrorHandler;
+  void overrideOnTurnStart(ZeroArgFunction onTurnStartFn) {
+    this._onTurnStart = onTurnStartFn;
+  }
+
+  /**
+   * Sets the zone hook that is called immediately after Angular processes
+   * all pending microtasks.
+   */
+  void overrideOnTurnDone(ZeroArgFunction onTurnDoneFn) {
+    this._onTurnDone = onTurnDoneFn;
+  }
+
+  /**
+   * Sets the zone hook that is called immediately after the last turn in the
+   * current event completes. At this point Angular will no longer attempt to
+   * sync the UI. Any changes to the data model will not be reflected in the
+   * DOM. {@link onEventDoneFn} is executed outside Angular zone.
+   *
+   * This hook is useful for validating application state (e.g. in a test).
+   */
+  void overrideOnEventDone(ZeroArgFunction onEventDoneFn) {
+    this._onEventDone = onEventDoneFn;
+  }
+
+  /**
+   * Sets the zone hook that is called when an error is uncaught in the
+   * Angular zone. The first argument is the error. The second argument is
+   * the stack trace.
+   */
+  void overrideOnErrorHandler(ErrorHandlingFn errorHandlingFn) {
+    this._onErrorHandler = errorHandlingFn;
   }
 
   /**
@@ -150,7 +173,11 @@ class NgZone {
           // Trigger onTurnDone at the end of a turn if _innerZone has executed some code
           try {
             _inVmTurnDone = true;
-            parent.run(_innerZone, _onTurnDone);
+            parent.run(_innerZone, _onTurnDone);  
+
+            if (_pendingMicrotasks == 0 && _onEventDone != null) {
+              runOutsideAngular(_onEventDone);
+            }
           } finally {
             _inVmTurnDone = false;
             _hasExecutedCodeInInnerZone = false;

@@ -71,8 +71,8 @@ export function main() {
          createExtension()
              .timeEnd('name1', 'name2')
              .then((_) => {
-               expect(log).toEqual(
-                   [['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
+               expect(log)
+                   .toEqual([['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
                async.done();
              });
        }));

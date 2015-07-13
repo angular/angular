@@ -49,8 +49,6 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *     {{ 'abcdefghij' | limitTo: 4 }}       // output is 'abcd'
  *     {{ 'abcdefghij' | limitTo: -4 }}      // output is 'ghij'
  *     {{ 'abcdefghij' | limitTo: -100 }}    // output is 'abcdefghij'
- *
- * @exportedAs angular2/pipes
  */
 export class LimitToPipe implements Pipe {
   static supportsObj(obj): boolean { return isString(obj) || isArray(obj); }
@@ -76,9 +74,6 @@ export class LimitToPipe implements Pipe {
   onDestroy(): void {}
 }
 
-/**
- * @exportedAs angular2/pipes
- */
 @CONST()
 export class LimitToPipeFactory implements PipeFactory {
   supports(obj): boolean { return LimitToPipe.supportsObj(obj); }

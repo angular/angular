@@ -5,8 +5,6 @@ import {AbstractControlDirective} from './abstract_control_directive';
  * An abstract class that all control directive extend.
  *
  * It binds a {@link Control} object to a DOM element.
- *
- * @exportedAs angular2/forms
  */
 export class NgControl extends AbstractControlDirective {
   name: string = null;

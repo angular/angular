@@ -62,8 +62,6 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
  * </ul>
  * <!-- /ViewRef: outter-0 -->
  * ```
- *
- * @exportedAs angular2/view
  */
 export class ViewRef {
   constructor(public _view: viewModule.AppView) {}
@@ -116,8 +114,6 @@ export class ViewRef {
  * ```
  *
  * Notice that the original template is broken down into two separate {@link ProtoViewRef}s.
- *
- * @exportedAs angular2/view
  */
 export class ProtoViewRef {
   /**

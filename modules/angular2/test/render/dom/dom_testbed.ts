@@ -67,8 +67,8 @@ export class DomTestbed {
     DOM.appendChild(DOM.querySelector(document, 'body'), this.rootEl);
   }
 
-  compileAll(directivesOrViewDefinitions: List<DirectiveMetadata |
-                                               ViewDefinition>): Promise<List<ProtoViewDto>> {
+  compileAll(directivesOrViewDefinitions:
+                 List<DirectiveMetadata | ViewDefinition>): Promise<List<ProtoViewDto>> {
     return PromiseWrapper.all(ListWrapper.map(directivesOrViewDefinitions, (entry) => {
       if (entry instanceof DirectiveMetadata) {
         return this.compiler.compileHost(entry);

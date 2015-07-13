@@ -10,9 +10,8 @@ export var StringMap = global.Object;
 var createMapFromPairs: {(pairs: List<any>): Map<any, any>} = (function() {
   try {
     if (new Map([1, 2]).size === 2) {
-      return function createMapFromPairs(pairs: List<any>): Map<any, any> {
-        return new Map(pairs);
-      };
+      return function createMapFromPairs(pairs: List<any>):
+          Map<any, any> { return new Map(pairs); };
     }
   } catch (e) {
   }

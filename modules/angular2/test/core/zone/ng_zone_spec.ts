@@ -46,7 +46,8 @@ export function main() {
 
     function createZone(enableLongStackTrace) {
       var zone = new NgZone({enableLongStackTrace: enableLongStackTrace});
-      zone.initCallbacks({onTurnStart: _log.fn('onTurnStart'), onTurnDone: _log.fn('onTurnDone')});
+      zone.overrideOnTurnStart(_log.fn('onTurnStart'));
+      zone.overrideOnTurnDone(_log.fn('onTurnDone'));
       return zone;
     }
 
@@ -63,7 +64,7 @@ export function main() {
 
       it('should produce long stack traces', inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
-             _zone.initCallbacks({onErrorHandler: logError});
+             _zone.overrideOnErrorHandler(logError);
              var c = PromiseWrapper.completer();
 
              _zone.run(() => {
@@ -86,7 +87,7 @@ export function main() {
       it('should produce long stack traces (when using microtasks)',
          inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
-             _zone.initCallbacks({onErrorHandler: logError});
+             _zone.overrideOnErrorHandler(logError);
              var c = PromiseWrapper.completer();
 
              _zone.run(() => {
@@ -114,7 +115,7 @@ export function main() {
 
       it('should disable long stack traces', inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
-             _zone.initCallbacks({onErrorHandler: logError});
+             _zone.overrideOnErrorHandler(logError);
              var c = PromiseWrapper.completer();
 
              _zone.run(() => {
@@ -160,6 +161,77 @@ function commonTests() {
          });
        }));
 
+    it('should call onEventDone once at the end of event', inject([AsyncTestCompleter], (async) => {
+         // The test is set up in a way that causes the zone loop to run onTurnDone twice
+         // then verified that onEventDone is only called once at the end
+         _zone.overrideOnTurnStart(null);
+         _zone.overrideOnEventDone(() => { _log.add('onEventDone'); });
+
+         var times = 0;
+         _zone.overrideOnTurnDone(() => {
+           times++;
+           _log.add(`onTurnDone ${times}`);
+           if (times < 2) {
+             // Scheduling a microtask causes a second digest
+             microTask(() => {});
+           }
+         });
+
+         macroTask(() => { _zone.run(_log.fn('run')); });
+
+         macroTask(() => {
+           expect(_log.result()).toEqual('run; onTurnDone 1; onTurnDone 2; onEventDone');
+           async.done();
+         });
+       }));
+
+    it('should not allow onEventDone to cause further digests',
+       inject([AsyncTestCompleter], (async) => {
+         _zone.overrideOnTurnStart(null);
+
+         var eventDone = false;
+         _zone.overrideOnEventDone(() => {
+           if (eventDone) throw 'Should not call this more than once';
+           _log.add('onEventDone');
+           // If not implemented correctly, this microtask will cause another digest,
+           // which is not what we want.
+           microTask(() => {});
+           eventDone = true;
+         });
+
+         _zone.overrideOnTurnDone(() => { _log.add('onTurnDone'); });
+
+         macroTask(() => { _zone.run(_log.fn('run')); });
+
+         macroTask(() => {
+           expect(_log.result()).toEqual('run; onTurnDone; onEventDone');
+           async.done();
+         });
+       }));
+
+    it('should run async tasks scheduled inside onEventDone outside Angular zone',
+       inject([AsyncTestCompleter], (async) => {
+         _zone.overrideOnTurnStart(null);
+
+         _zone.overrideOnEventDone(() => {
+           _log.add('onEventDone');
+           // If not implemented correctly, this time will cause another digest,
+           // which is not what we want.
+           TimerWrapper.setTimeout(() => { _log.add('asyncTask'); }, 5);
+         });
+
+         _zone.overrideOnTurnDone(() => { _log.add('onTurnDone'); });
+
+         macroTask(() => { _zone.run(_log.fn('run')); });
+
+         macroTask(() => {
+           TimerWrapper.setTimeout(() => {
+             expect(_log.result()).toEqual('run; onTurnDone; onEventDone; asyncTask');
+             async.done();
+           }, 10);
+         });
+       }));
+
     it('should call onTurnStart once before a turn and onTurnDone once after the turn',
        inject([AsyncTestCompleter], (async) => {
 
@@ -201,12 +273,11 @@ function commonTests() {
 
     it('should not run onTurnStart and onTurnDone for nested Zone.run invoked from onTurnDone',
        inject([AsyncTestCompleter], (async) => {
-         _zone.initCallbacks({
-           onTurnDone: () => {
-             _log.add('onTurnDone:started');
-             _zone.run(() => _log.add('nested run'));
-             _log.add('onTurnDone:finished');
-           }
+         _zone.overrideOnTurnStart(null);
+         _zone.overrideOnTurnDone(() => {
+           _log.add('onTurnDone:started');
+           _zone.run(() => _log.add('nested run'));
+           _log.add('onTurnDone:finished');
          });
 
          macroTask(() => { _zone.run(() => { _log.add('start run'); }); });
@@ -306,19 +377,17 @@ function commonTests() {
            'onTurnDone after executing the task',
        inject([AsyncTestCompleter], (async) => {
          var ran = false;
-         _zone.initCallbacks({
-           onTurnStart: _log.fn('onTurnStart'),
-           onTurnDone: () => {
-             _log.add('onTurnDone(begin)');
-             if (!ran) {
-               microTask(() => {
-                 ran = true;
-                 _log.add('executedMicrotask');
-               });
-             }
-
-             _log.add('onTurnDone(end)');
+         _zone.overrideOnTurnStart(_log.fn('onTurnStart'));
+         _zone.overrideOnTurnDone(() => {
+           _log.add('onTurnDone(begin)');
+           if (!ran) {
+             microTask(() => {
+               ran = true;
+               _log.add('executedMicrotask');
+             });
            }
+
+           _log.add('onTurnDone(end)');
          });
 
          macroTask(() => { _zone.run(_log.fn('run')); });
@@ -338,19 +407,17 @@ function commonTests() {
            'a scheduleMicrotask in run',
        inject([AsyncTestCompleter], (async) => {
          var ran = false;
-         _zone.initCallbacks({
-           onTurnStart: _log.fn('onTurnStart'),
-           onTurnDone: () => {
-             _log.add('onTurnDone(begin)');
-             if (!ran) {
-               _log.add('onTurnDone(scheduleMicrotask)');
-               microTask(() => {
-                 ran = true;
-                 _log.add('onTurnDone(executeMicrotask)');
-               });
-             }
-             _log.add('onTurnDone(end)');
+         _zone.overrideOnTurnStart(_log.fn('onTurnStart'));
+         _zone.overrideOnTurnDone(() => {
+           _log.add('onTurnDone(begin)');
+           if (!ran) {
+             _log.add('onTurnDone(scheduleMicrotask)');
+             microTask(() => {
+               ran = true;
+               _log.add('onTurnDone(executeMicrotask)');
+             });
            }
+           _log.add('onTurnDone(end)');
          });
 
          macroTask(() => {
@@ -376,25 +443,23 @@ function commonTests() {
          var donePromiseRan = false;
          var startPromiseRan = false;
 
-         _zone.initCallbacks({
-           onTurnStart: () => {
-             _log.add('onTurnStart(begin)');
-             if (!startPromiseRan) {
-               _log.add('onTurnStart(schedulePromise)');
-               microTask(_log.fn('onTurnStart(executePromise)'));
-               startPromiseRan = true;
-             }
-             _log.add('onTurnStart(end)');
-           },
-           onTurnDone: () => {
-             _log.add('onTurnDone(begin)');
-             if (!donePromiseRan) {
-               _log.add('onTurnDone(schedulePromise)');
-               microTask(_log.fn('onTurnDone(executePromise)'));
-               donePromiseRan = true;
-             }
-             _log.add('onTurnDone(end)');
+         _zone.overrideOnTurnStart(() => {
+           _log.add('onTurnStart(begin)');
+           if (!startPromiseRan) {
+             _log.add('onTurnStart(schedulePromise)');
+             microTask(_log.fn('onTurnStart(executePromise)'));
+             startPromiseRan = true;
            }
+           _log.add('onTurnStart(end)');
+         });
+         _zone.overrideOnTurnDone(() => {
+           _log.add('onTurnDone(begin)');
+           if (!donePromiseRan) {
+             _log.add('onTurnDone(schedulePromise)');
+             microTask(_log.fn('onTurnDone(executePromise)'));
+             donePromiseRan = true;
+           }
+           _log.add('onTurnDone(end)');
          });
 
          macroTask(() => {
@@ -507,7 +572,7 @@ function commonTests() {
     it('should call the on error callback when it is defined',
        inject([AsyncTestCompleter], (async) => {
          macroTask(() => {
-           _zone.initCallbacks({onErrorHandler: logError});
+           _zone.overrideOnErrorHandler(logError);
 
            var exception = new BaseException('sync');
 
@@ -520,7 +585,7 @@ function commonTests() {
        }));
 
     it('should call onError for errors from microtasks', inject([AsyncTestCompleter], (async) => {
-         _zone.initCallbacks({onErrorHandler: logError});
+         _zone.overrideOnErrorHandler(logError);
 
          var exception = new BaseException('async');
 
@@ -537,7 +602,8 @@ function commonTests() {
        inject([AsyncTestCompleter], (async) => {
          var exception = new BaseException('fromOnTurnDone');
 
-         _zone.initCallbacks({onErrorHandler: logError, onTurnDone: () => { throw exception; }});
+         _zone.overrideOnErrorHandler(logError);
+         _zone.overrideOnTurnDone(() => { throw exception; });
 
          macroTask(() => { _zone.run(() => {}); });
 
@@ -554,7 +620,8 @@ function commonTests() {
 
          var exception = new BaseException('fromOnTurnDone');
 
-         _zone.initCallbacks({onErrorHandler: logError, onTurnDone: () => { throw exception; }});
+         _zone.overrideOnErrorHandler(logError);
+         _zone.overrideOnTurnDone(() => { throw exception; });
 
          macroTask(() => { _zone.run(() => { microTask(() => { asyncRan = true; }); }); });
 

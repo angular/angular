@@ -1,4 +1,4 @@
-library examples.src.hello_world.index_common_dart.ng_deps.dart;
+library examples.src.hello_world.multiple_style_urls_files.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
@@ -16,6 +16,7 @@ void initReflector(reflector) {
         const Component(selector: 'hello-app'),
         const View(
             template: r'''{{greeting}}''',
+            templateUrl: r'template.html',
             styles: const [
           r'''.greeting { .color: blue; }''',
           r'''.hello { .color: red; }''',

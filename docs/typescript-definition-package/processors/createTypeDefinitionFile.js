@@ -13,22 +13,7 @@ module.exports = function createTypeDefinitionFile(log) {
     },
     dtsPath: 'typings',
     dtsExtension: '.d.ts',
-    typeDefinitions: [
-      {
-        id: 'angular2/angular2',
-        modules: {
-          // The shape of the public API is determined by what is reexported into
-          // angular2/angular2, with hacks layered into angular2.api.ts
-          'angular2/angular2': 'angular2/angular2.api',
-        }
-      },
-      {
-        id: 'angular2/router',
-        modules: {
-          'angular2/router': 'angular2/router'
-        }
-      }
-    ],
+    typeDefinitions: [],
     $process: function(docs) {
       var dtsPath = this.dtsPath;
       var dtsExtension = this.dtsExtension;
@@ -63,11 +48,12 @@ module.exports = function createTypeDefinitionFile(log) {
         });
       });
 
-      _.forEach(typeDefDocs, function(doc) {
+      return _.filter(typeDefDocs, function(doc) {
         _.forEach(doc.moduleDocs, function(modDoc, alias) {
-          if (!modDoc.doc) {
+          if (!doc || !modDoc.doc) {
             log.error('createTypeDefinitionFile processor: no such module "' + alias + '" (Did you forget to add it to the modules to load?)');
             doc = null;
+            return;
           }
           _.forEach(modDoc.doc.exports, function(exportDoc) {
 
@@ -77,6 +63,11 @@ module.exports = function createTypeDefinitionFile(log) {
               // Convert this class to an interface with no constructor
               exportDoc.docType = 'interface';
               exportDoc.constructorDoc = null;
+              
+              if (exportDoc.heritage) {
+                // convert the heritage since interfaces use `extends` not `implements`
+                exportDoc.heritage = exportDoc.heritage.replace('implements', 'extends');
+              }
 
               // Add the `declare var SomeClass extends InjectableReference` construct
               modDoc.doc.exports.push({
@@ -88,9 +79,7 @@ module.exports = function createTypeDefinitionFile(log) {
             }
           });
         });
-        if (doc) {
-          docs.push(doc);
-        }
+        return !!doc;
       });
     }
   };

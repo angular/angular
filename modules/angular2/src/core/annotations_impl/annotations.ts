@@ -1,6 +1,6 @@
 import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-import {Injectable, self} from 'angular2/src/di/annotations_impl';
+import {InjectableMetadata, self} from 'angular2/src/di/metadata';
 import {DEFAULT} from 'angular2/change_detection';
 
 /**
@@ -403,11 +403,9 @@ import {DEFAULT} from 'angular2/change_detection';
  * Note also that although the `<li></li>` template still exists inside the `<template></template>`,
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
- *
- * @exportedAs angular2/annotations
  */
 @CONST()
-export class Directive extends Injectable {
+export class Directive extends InjectableMetadata {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -841,8 +839,6 @@ export class Directive extends Injectable {
  * }
  * ```
  *
- *
- * @exportedAs angular2/annotations
  */
 @CONST()
 export class Component extends Directive {
@@ -958,7 +954,6 @@ export class LifecycleEvent {
  *   }
  * }
  * ```
- * @exportedAs angular2/annotations
  */
 export const onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestroy"));
 
@@ -996,7 +991,6 @@ export const onDestroy: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onDestro
  *   }
  * }
  *  ```
- * @exportedAs angular2/annotations
  */
 export const onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"));
 
@@ -1020,7 +1014,6 @@ export const onChange: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onChange"
  *   }
  * }
  *  ```
- * @exportedAs angular2/annotations
  */
 export const onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"));
 
@@ -1044,7 +1037,6 @@ export const onCheck: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onCheck"))
  *   }
  * }
  *  ```
- * @exportedAs angular2/annotations
  */
 export const onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
 
@@ -1066,6 +1058,5 @@ export const onInit: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onInit"));
  *
  * }
  *  ```
- * @exportedAs angular2/annotations
  */
 export const onAllChangesDone: LifecycleEvent = CONST_EXPR(new LifecycleEvent("onAllChangesDone"));

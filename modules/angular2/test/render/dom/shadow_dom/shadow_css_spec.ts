@@ -123,6 +123,14 @@ export function main() {
       expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
     });
 
+    it('should support multiple instances polyfill-unscoped-rule', () => {
+      var css = s("polyfill-unscoped-rule {content: 'foo';color: blue;}" +
+                      "polyfill-unscoped-rule {content: 'bar';color: blue;}",
+                  'a');
+      expect(StringWrapper.contains(css, 'foo {;color:blue;}')).toBeTruthy();
+      expect(StringWrapper.contains(css, 'bar {;color:blue;}')).toBeTruthy();
+    });
+
     it('should support polyfill-rule', () => {
       var css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'a', 'a-host');
       expect(css).toEqual('[a-host].foo .bar {color:blue;}');

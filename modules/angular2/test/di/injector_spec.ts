@@ -14,20 +14,22 @@ import {
   ResolvedBinding,
   Key,
   forwardRef,
-  DependencyAnnotation,
-  Injectable
+  DependencyMetadata,
+  Injectable,
+  InjectMetadata,
+  self,
+  unbounded
 } from 'angular2/di';
 
 import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/di/injector';
 
 import {Optional, Inject} from 'angular2/src/di/decorators';
-import * as ann from 'angular2/src/di/annotations_impl';
 
-class CustomDependencyAnnotation extends DependencyAnnotation {}
+class CustomDependencyMetadata extends DependencyMetadata {}
 
 class Engine {}
 
-@Injectable(ann.self)
+@Injectable(self)
 class EngineWithSetVisibility {
 }
 
@@ -407,12 +409,12 @@ export function main() {
         var bindings = Injector.resolve([
           bind("token")
               .toFactory((e) => "result",
-                         [[new ann.Inject("dep"), new CustomDependencyAnnotation()]])
+                         [[new InjectMetadata("dep"), new CustomDependencyMetadata()]])
         ]);
         var binding = bindings[0];
 
         expect(binding.dependencies[0].key.token).toEqual("dep");
-        expect(binding.dependencies[0].properties).toEqual([new CustomDependencyAnnotation()]);
+        expect(binding.dependencies[0].properties).toEqual([new CustomDependencyMetadata()]);
       });
     });
 
@@ -420,13 +422,13 @@ export function main() {
       it("should use the provided visibility", () => {
         var bindings = Injector.resolve([CarNeedsEngineWithSetVisibility, EngineWithSetVisibility]);
         var carBinding = bindings[0];
-        expect(carBinding.dependencies[0].visibility).toEqual(ann.self);
+        expect(carBinding.dependencies[0].visibility).toEqual(self);
       });
 
       it("should set the default visibility to unbounded", () => {
         var bindings = Injector.resolve([Car, Engine]);
         var carBinding = bindings[0];
-        expect(carBinding.dependencies[0].visibility).toEqual(ann.unbounded);
+        expect(carBinding.dependencies[0].visibility).toEqual(unbounded);
       });
     });
   });

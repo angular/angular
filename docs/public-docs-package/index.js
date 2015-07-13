@@ -1,7 +1,7 @@
 var Package = require('dgeni').Package;
-var basePackage = require('../dgeni-package');
+var basePackage = require('../docs-package');
 
-module.exports = new Package('angular-public', [basePackage])
+module.exports = new Package('angular-v2-public-docs', [basePackage])
 
 .config(function(readTypeScriptModules) {
   readTypeScriptModules.sourceFiles = [

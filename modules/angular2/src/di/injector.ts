@@ -14,7 +14,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {Visibility, unbounded} from './annotations_impl';
+import {VisibilityMetadata, unbounded} from './metadata';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -446,8 +446,6 @@ export interface DependencyProvider {
  * ```
  * Notice that we don't use the `new` operator because we explicitly want to have the `Injector`
  * resolve all of the object's dependencies automatically.
- *
- * @exportedAs angular2/di
  */
 export class Injector {
   /**
@@ -467,7 +465,7 @@ export class Injector {
    * `fromResolvedBindings` and `createChildFromResolved`.
    */
   static resolve(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
-    var resolvedBindings = resolveBindings(bindings);
+    var resolvedBindings = _resolveBindings(bindings);
     var flatten = _flattenBindings(resolvedBindings, new Map());
     return _createListOfBindings(flatten);
   }
@@ -713,7 +711,7 @@ export class Injector {
     }
   }
 
-  private _getByKey(key: Key, depVisibility: Visibility, optional: boolean,
+  private _getByKey(key: Key, depVisibility: VisibilityMetadata, optional: boolean,
                     bindingVisibility: number): any {
     if (key.token === Injector) {
       return this;
@@ -765,7 +763,7 @@ export class Injector {
 }
 
 
-export function resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
+function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
   var resolvedList = ListWrapper.createFixedSize(bindings.length);
   for (var i = 0; i < bindings.length; i++) {
     var unresolved = resolveForwardRef(bindings[i]);
@@ -777,7 +775,7 @@ export function resolveBindings(bindings: List<Type | Binding | List<any>>): Lis
     } else if (unresolved instanceof Binding) {
       resolved = unresolved.resolve();
     } else if (unresolved instanceof List) {
-      resolved = resolveBindings(unresolved);
+      resolved = _resolveBindings(unresolved);
     } else if (unresolved instanceof BindingBuilder) {
       throw new InvalidBindingError(unresolved.token);
     } else {
@@ -788,8 +786,8 @@ export function resolveBindings(bindings: List<Type | Binding | List<any>>): Lis
   return resolvedList;
 }
 
-function _createListOfBindings(
-    flattenedBindings: Map<number, ResolvedBinding>): List<ResolvedBinding> {
+function _createListOfBindings(flattenedBindings: Map<number, ResolvedBinding>):
+    List<ResolvedBinding> {
   return MapWrapper.values(flattenedBindings);
 }
 

@@ -82,7 +82,7 @@ export class AccessMember extends AST {
 
   eval(context, locals: Locals): any {
     if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
-                                     locals.contains(this.name)) {
+        locals.contains(this.name)) {
       return locals.get(this.name);
     } else {
       var evaluatedReceiver = this.receiver.eval(context, locals);
@@ -96,7 +96,7 @@ export class AccessMember extends AST {
     var evaluatedContext = this.receiver.eval(context, locals);
 
     if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
-                                     locals.contains(this.name)) {
+        locals.contains(this.name)) {
       throw new BaseException(`Cannot reassign a variable binding ${this.name}`);
     } else {
       return this.setter(evaluatedContext, value);
@@ -267,7 +267,7 @@ export class MethodCall extends AST {
   eval(context, locals: Locals): any {
     var evaluatedArgs = evalList(context, locals, this.args);
     if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
-                                     locals.contains(this.name)) {
+        locals.contains(this.name)) {
       var fn = locals.get(this.name);
       return FunctionWrapper.apply(fn, evaluatedArgs);
     } else {

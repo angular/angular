@@ -12,13 +12,13 @@ import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
 import {
-  Inject,
-  Injectable,
-  Visibility,
-  Optional,
+  InjectMetadata,
+  InjectableMetadata,
+  VisibilityMetadata,
+  OptionalMetadata,
   unbounded,
-  DependencyAnnotation
-} from './annotations_impl';
+  DependencyMetadata
+} from './metadata';
 import {NoAnnotationError} from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
@@ -26,7 +26,7 @@ import {resolveForwardRef} from './forward_ref';
  * @private
  */
 export class Dependency {
-  constructor(public key: Key, public optional: boolean, public visibility: Visibility,
+  constructor(public key: Key, public optional: boolean, public visibility: VisibilityMetadata,
               public properties: List<any>) {}
 
   static fromKey(key: Key): Dependency {
@@ -50,8 +50,6 @@ const _EMPTY_LIST = CONST_EXPR([]);
  *
  * expect(injector.get(String)).toEqual('Hello');
  * ```
- *
- * @exportedAs angular2/di
  */
 @CONST()
 export class Binding {
@@ -179,13 +177,10 @@ export class Binding {
    */
   dependencies: List<any>;
 
-  constructor(token, {toClass, toValue, toAlias, toFactory, deps}: {
-    toClass?: Type,
-    toValue?: any,
-    toAlias?: any,
-    toFactory?: Function,
-    deps?: List<any>
-  }) {
+  constructor(
+      token,
+      {toClass, toValue, toAlias, toFactory, deps}:
+          {toClass?: Type, toValue?: any, toAlias?: any, toFactory?: Function, deps?: List<any>}) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;
@@ -228,8 +223,6 @@ export class Binding {
  * A {@link Binding} is resolved when it has a factory function. Binding to a class, alias, or
  * value, are just convenience methods, as {@link Injector} only operates on calling factory
  * functions.
- *
- * @exportedAs angular2/di
  */
 export class ResolvedBinding {
   constructor(
@@ -260,8 +253,6 @@ export class ResolvedBinding {
  * bind(MyInterface).toClass(MyClass)
  *
  * ```
- *
- * @exportedAs angular2/di
  */
 export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
@@ -269,8 +260,6 @@ export function bind(token): BindingBuilder {
 
 /**
  * Helper class for the {@link bind} function.
- *
- * @exportedAs angular2/di
  */
 export class BindingBuilder {
   constructor(public token) {}
@@ -382,8 +371,8 @@ export class BindingBuilder {
   }
 }
 
-function _constructDependencies(factoryFunction: Function,
-                                dependencies: List<any>): List<Dependency> {
+function _constructDependencies(factoryFunction: Function, dependencies: List<any>):
+    List<Dependency> {
   if (isBlank(dependencies)) {
     return _dependenciesFor(factoryFunction);
   } else {
@@ -401,8 +390,8 @@ function _dependenciesFor(typeOrFunc): List<Dependency> {
   return ListWrapper.map(params, (p: List<any>) => _extractToken(typeOrFunc, p, params));
 }
 
-function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
-                       params: List<List<any>>): Dependency {
+function _extractToken(typeOrFunc, annotations /*List<any> | any*/, params: List<List<any>>):
+    Dependency {
   var depProps = [];
   var token = null;
   var optional = false;
@@ -421,16 +410,16 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
       token = paramAnnotation;
       defaultVisibility = _defaulVisiblity(token);
 
-    } else if (paramAnnotation instanceof Inject) {
+    } else if (paramAnnotation instanceof InjectMetadata) {
       token = paramAnnotation.token;
 
-    } else if (paramAnnotation instanceof Optional) {
+    } else if (paramAnnotation instanceof OptionalMetadata) {
       optional = true;
 
-    } else if (paramAnnotation instanceof Visibility) {
+    } else if (paramAnnotation instanceof VisibilityMetadata) {
       visibility = paramAnnotation;
 
-    } else if (paramAnnotation instanceof DependencyAnnotation) {
+    } else if (paramAnnotation instanceof DependencyMetadata) {
       if (isPresent(paramAnnotation.token)) {
         token = paramAnnotation.token;
       }
@@ -450,15 +439,15 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/,
     throw new NoAnnotationError(typeOrFunc, params);
   }
 }
-
 function _defaulVisiblity(typeOrFunc) {
-  try {
-    if (!(typeOrFunc instanceof Type)) return unbounded;
-    var f = ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof Injectable);
-    return f.length === 0 ? unbounded : f[0].visibility;
-  } catch (e) {
-    return unbounded;
-  }
+  if (!(typeOrFunc instanceof Type)) return unbounded;
+
+  // TODO: vsavkin revisit this after clarifying lookup rules
+  if (!reflector.isReflectionEnabled()) return unbounded;
+
+  var f =
+      ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof InjectableMetadata);
+  return f.length === 0 ? unbounded : f[0].visibility;
 }
 
 function _createDependency(token, optional, visibility, depProps): Dependency {

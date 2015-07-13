@@ -79,8 +79,6 @@ export class CompilerCache {
  * var componentResolvedUrl = urlResolver.resolve(appRootUrl.value, componentUrl);
  * var templateResolvedUrl = urlResolver.resolve(componetResolvedUrl, url);
  * ```
- *
- * @exportedAs angular2/view
  */
 @Injectable()
 export class Compiler {

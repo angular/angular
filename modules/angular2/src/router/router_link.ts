@@ -32,8 +32,6 @@ import {Location} from './location';
  * If the route begins with `./`, the router will instead look in the current component's
  * children for the route. And if the route begins with `../`, the router will look at the
  * current component's parent.
- *
- * @exportedAs angular2/router
  */
 @Directive({
   selector: '[router-link]',

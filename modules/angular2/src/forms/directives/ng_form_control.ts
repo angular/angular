@@ -58,8 +58,6 @@ const formControlBinding =
  *  }
  * }
  *  ```
- *
- * @exportedAs angular2/forms
  */
 @Directive({
   selector: '[ng-form-control]',

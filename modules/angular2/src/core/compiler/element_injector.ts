@@ -25,9 +25,7 @@ import {
   AbstractBindingError,
   CyclicDependencyError,
   resolveForwardRef,
-  resolveBindings,
-  Visibility,
-  VisibilityAnnotation,
+  VisibilityMetadata,
   DependencyProvider,
   self
 } from 'angular2/di';
@@ -54,7 +52,7 @@ import {
   onAllChangesDone
 } from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {ChangeDetector, ChangeDetectorRef, PipeRegistry} from 'angular2/change_detection';
+import {ChangeDetector, ChangeDetectorRef, Pipes} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DirectiveMetadata} from 'angular2/src/render/api';
@@ -67,7 +65,7 @@ export class StaticKeys {
   viewContainerId: number;
   changeDetectorRefId: number;
   elementRefId: number;
-  pipeRegistryKey: Key;
+  pipesKey: Key;
 
   constructor() {
     this.viewManagerId = Key.get(avmModule.AppViewManager).id;
@@ -76,7 +74,7 @@ export class StaticKeys {
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
     // not an id because the public API of injector works only with keys and tokens
-    this.pipeRegistryKey = Key.get(PipeRegistry);
+    this.pipesKey = Key.get(Pipes);
   }
 
   static instance(): StaticKeys {
@@ -241,14 +239,14 @@ export class DirectiveBinding extends ResolvedBinding {
     var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
     var resolvedHostInjectables =
-        isPresent(ann.hostInjector) ? resolveBindings(ann.hostInjector) : [];
+        isPresent(ann.hostInjector) ? Injector.resolve(ann.hostInjector) : [];
     var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ?
-                                                     resolveBindings(ann.viewInjector) :
-                                                     [];
+                                      Injector.resolve(ann.viewInjector) :
+                                      [];
     var metadata = DirectiveMetadata.create({
       id: stringify(rb.key.token),
-      type: ann instanceof
-          Component ? DirectiveMetadata.COMPONENT_TYPE : DirectiveMetadata.DIRECTIVE_TYPE,
+      type: ann instanceof Component ? DirectiveMetadata.COMPONENT_TYPE :
+                                       DirectiveMetadata.DIRECTIVE_TYPE,
       selector: ann.selector,
       compileChildren: ann.compileChildren,
       events: ann.events,
@@ -262,8 +260,7 @@ export class DirectiveBinding extends ResolvedBinding {
       callOnInit: hasLifecycleHook(onInit, rb.key.token, ann),
       callOnAllChangesDone: hasLifecycleHook(onAllChangesDone, rb.key.token, ann),
 
-      changeDetection: ann instanceof
-          Component ? ann.changeDetection : null,
+      changeDetection: ann instanceof Component ? ann.changeDetection : null,
 
       exportAs: ann.exportAs
     });
@@ -454,10 +451,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     // we couple ourselves to the injector strategy to avoid polymoprhic calls
     var injectorStrategy = <any>this._injector.internalStrategy;
     this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
-                                                     new ElementInjectorInlineStrategy(
-                                                         injectorStrategy, this) :
-                                                     new ElementInjectorDynamicStrategy(
-                                                         injectorStrategy, this);
+                         new ElementInjectorInlineStrategy(injectorStrategy, this) :
+                         new ElementInjectorDynamicStrategy(injectorStrategy, this);
 
     this.hydrated = false;
 
@@ -552,9 +547,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     injector.internalStrategy.hydrate();
   }
 
-  getPipeRegistry(): PipeRegistry {
-    var pipeRegistryKey = StaticKeys.instance().pipeRegistryKey;
-    return this._injector.getOptional(pipeRegistryKey);
+  getPipes(): Pipes {
+    var pipesKey = StaticKeys.instance().pipesKey;
+    return this._injector.getOptional(pipesKey);
   }
 
   hasVariableBinding(name: string): boolean {
@@ -963,7 +958,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
     for (var i = 0; i < p.bindings.length; i++) {
       if (p.bindings[i] instanceof DirectiveBinding &&
-                                       (<DirectiveBinding>p.bindings[i]).callOnDestroy) {
+          (<DirectiveBinding>p.bindings[i]).callOnDestroy) {
         ist.objs[i].onDestroy();
       }
     }

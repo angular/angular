@@ -7,6 +7,10 @@ import 'platform_reflection_capabilities.dart';
 import 'package:angular2/src/facade/lang.dart';
 
 class NoReflectionCapabilities implements PlatformReflectionCapabilities {
+  bool isReflectionEnabled() {
+    return false;
+  }
+
   Function factory(Type type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
