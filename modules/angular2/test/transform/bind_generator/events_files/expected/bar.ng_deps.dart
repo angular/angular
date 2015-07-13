@@ -13,8 +13,8 @@ void initReflector(reflector) {
       'parameters': const [],
       'annotations': const [
         const Directive(
-            selector: '[tool-tip]', events: ['onOpen', 'close: onClose'])
+            selector: '[tool-tip]', events: const ['onOpen', 'close: onClose'])
       ]
     })
-    ..registerGetters({'onOpen': (o) => o.onOpen, 'onClose': (o) => o.close});
+    ..registerGetters({'onOpen': (o) => o.onOpen, 'close': (o) => o.close});
 }
