@@ -16,6 +16,8 @@ export {HTML5LocationStrategy} from './src/router/html5_location_strategy';
 export {Location, appBaseHrefToken} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
+export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/router/interfaces';
+export {CanActivate} from './src/router/lifecycle_annotations';
 
 import {LocationStrategy} from './src/router/location_strategy';
 import {HTML5LocationStrategy} from './src/router/html5_location_strategy';
