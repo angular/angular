@@ -98,17 +98,19 @@ final _keyCodeToKeyMap = const {
 class BrowserDomAdapter extends GenericBrowserDomAdapter {
   js.JsFunction _setProperty;
   js.JsFunction _getProperty;
-  js.JsFunction _hasProperty;
   BrowserDomAdapter() {
-    _setProperty = js.context.callMethod('eval', ['(function(el, prop, value) { el[prop] = value; })']);
+    _setProperty = js.context.callMethod('eval', ['(function(el, prop, value) { if (prop in el) el[prop] = value; })']);
     _getProperty = js.context.callMethod('eval', ['(function(el, prop) { return el[prop]; })']);
-    _hasProperty = js.context.callMethod('eval', ['(function(el, prop) { return prop in el; })']);
   }
   static void makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
-  bool hasProperty(Element element, String name) =>
-      _hasProperty.apply([element, name]);
+  bool hasProperty(Element element, String name) {
+    // Always return true as the serverside version html_adapter.dart does so.
+    // TODO: change this once we have schema support.
+    // Note: This nees to kept in sync with html_adapter.dart!
+    return true;
+  }
 
   void setProperty(Element element, String name, Object value) =>
       _setProperty.apply([element, name, value]);
