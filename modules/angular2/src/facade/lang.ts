@@ -5,6 +5,10 @@ export {_global as global};
 export var Type = Function;
 export type Type = new (...args: any[]) => any;
 
+export function getTypeNameForDebugging(type: Type): string {
+  return type['name'];
+}
+
 export class BaseException extends Error {
   stack;
   constructor(public message?: string, public originalException?, public originalStack?) {

@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'dart:convert' as convert;
 import 'dart:async' show Future;
 
+String getTypeNameForDebugging(Type type) => type.toString();
+
 class Math {
   static final _random = new math.Random();
   static int floor(num n) => n.floor();
