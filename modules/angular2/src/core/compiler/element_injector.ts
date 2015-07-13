@@ -397,7 +397,7 @@ export class ProtoElementInjector {
               public directiveVariableBindings: Map<string, number>) {
     var length = bwv.length;
 
-    this.protoInjector = new ProtoInjector(bwv, distanceToParent);
+    this.protoInjector = new ProtoInjector(bwv);
 
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
     this.hostActionAccessors = ListWrapper.createFixedSize(length);

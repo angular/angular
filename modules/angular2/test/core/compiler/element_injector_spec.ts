@@ -40,7 +40,7 @@ import {
   Directive,
   LifecycleEvent
 } from 'angular2/annotations';
-import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, InjectMetadata, ParentMetadata} from 'angular2/di';
+import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Ancestor, Unbounded, InjectMetadata, AncestorMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
@@ -100,18 +100,6 @@ class NeedsDirective {
 class OptionallyNeedsDirective {
   dependency: SimpleDirective;
   constructor(@Self() @Optional() dependency: SimpleDirective) { this.dependency = dependency; }
-}
-
-@Injectable()
-class NeedsDirectiveFromParent {
-  dependency: SimpleDirective;
-  constructor(@Parent() dependency: SimpleDirective) { this.dependency = dependency; }
-}
-
-@Injectable()
-class NeedsDirectiveFromParentOrSelf {
-  dependency: SimpleDirective;
-  constructor(@Parent({self: true}) dependency: SimpleDirective) { this.dependency = dependency; }
 }
 
 @Injectable()
@@ -609,7 +597,7 @@ export function main() {
                        bind('injectable2')
                            .toFactory(
                                (val) => `${val}-injectable2`,
-                               [[new InjectMetadata('injectable1'), new ParentMetadata()]])
+                               [[new InjectMetadata('injectable1'), new AncestorMetadata()]])
                      ]
                    }))]);
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
@@ -775,31 +763,6 @@ export function main() {
             expect(inj.get(NeedsTemplateRef).templateRef).toEqual(templateRef);
           });
 
-          it("should get directives from parent", () => {
-            var child = parentChildInjectors(ListWrapper.concat([SimpleDirective], extraBindings),
-                                             [NeedsDirectiveFromParent]);
-
-            var d = child.get(NeedsDirectiveFromParent);
-
-            expect(d).toBeAnInstanceOf(NeedsDirectiveFromParent);
-            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
-          });
-
-          it("should not return parent's directives on self by default", () => {
-            expect(() => {
-              injector(ListWrapper.concat([SimpleDirective, NeedsDirectiveFromParent], extraBindings));
-            }).toThrowError(containsRegexp(`No provider for ${stringify(SimpleDirective) }`));
-          });
-
-          it("should return parent's directives on self when explicitly specified", () => {
-            var inj = injector(ListWrapper.concat([SimpleDirective, NeedsDirectiveFromParentOrSelf], extraBindings));
-
-            var d = inj.get(NeedsDirectiveFromParentOrSelf);
-
-            expect(d).toBeAnInstanceOf(NeedsDirectiveFromParentOrSelf);
-            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
-          });
-
           it("should get directives from ancestor", () => {
             var child = parentChildInjectors(ListWrapper.concat([SimpleDirective], extraBindings),
                                              [NeedsDirectiveFromAncestor]);
@@ -822,9 +785,9 @@ export function main() {
           });
 
           it("should throw when a dependency cannot be resolved", () => {
-            expect(() => injector(ListWrapper.concat([NeedsDirectiveFromParent], extraBindings)))
+            expect(() => injector(ListWrapper.concat([NeedsDirectiveFromAncestor], extraBindings)))
                 .toThrowError(containsRegexp(
-                    `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirectiveFromParent) } -> ${stringify(SimpleDirective) })`));
+                    `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirectiveFromAncestor) } -> ${stringify(SimpleDirective) })`));
           });
 
           it("should inject null when an optional dependency cannot be resolved", () => {
@@ -853,30 +816,30 @@ export function main() {
                 .toThrowError(`Index ${firsIndexOut} is out-of-bounds.`);
           });
 
-            it("should instantiate directives that depend on the containing component", () => {
-              var directiveBinding =
-                  DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component());
-              var shadow = hostShadowInjectors(ListWrapper.concat([directiveBinding], extraBindings),
-                                               [NeedsDirective]);
+          it("should instantiate directives that depend on the containing component", () => {
+            var directiveBinding =
+                DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component());
+            var shadow = hostShadowInjectors(ListWrapper.concat([directiveBinding], extraBindings),
+                                             [NeedsDirectiveFromAncestor]);
 
-              var d = shadow.get(NeedsDirective);
-              expect(d).toBeAnInstanceOf(NeedsDirective);
-              expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
-            });
+            var d = shadow.get(NeedsDirectiveFromAncestor);
+            expect(d).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
+            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+          });
 
-            it("should not instantiate directives that depend on other directives in the containing component's ElementInjector",
-               () => {
-                 var directiveBinding =
-                     DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Component());
-                 expect(() =>
-                        {
-                          hostShadowInjectors(
-                              ListWrapper.concat([directiveBinding, SimpleDirective], extraBindings),
-                              [NeedsDirective]);
-                        })
-                     .toThrowError(containsRegexp(
-                         `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirective) } -> ${stringify(SimpleDirective) })`));
-               });
+          it("should not instantiate directives that depend on other directives in the containing component's ElementInjector",
+             () => {
+               var directiveBinding =
+                   DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Component());
+               expect(() =>
+                      {
+                        hostShadowInjectors(
+                            ListWrapper.concat([directiveBinding, SimpleDirective], extraBindings),
+                            [NeedsDirective]);
+                      })
+                   .toThrowError(containsRegexp(
+                       `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirective) } -> ${stringify(SimpleDirective) })`));
+             });
         });
 
         describe("lifecycle", () => {

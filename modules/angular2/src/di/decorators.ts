@@ -4,7 +4,6 @@ import {
   InjectableMetadata,
   SelfMetadata,
   VisibilityMetadata,
-  ParentMetadata,
   AncestorMetadata,
   UnboundedMetadata
 } from './metadata';
@@ -43,14 +42,6 @@ export interface SelfFactory {
 }
 
 /**
- * Factory for creating {@link ParentMetadata}.
- */
-export interface ParentFactory {
-  (visibility?: {self: boolean}): any;
-  new (visibility?: {self: boolean}): ParentMetadata;
-}
-
-/**
  * Factory for creating {@link AncestorMetadata}.
  */
 export interface AncestorFactory {
@@ -85,11 +76,6 @@ export var Injectable: InjectableFactory = <InjectableFactory>makeDecorator(Inje
  * Factory for creating {@link SelfMetadata}.
  */
 export var Self: SelfFactory = makeParamDecorator(SelfMetadata);
-
-/**
- * Factory for creating {@link ParentMetadata}.
- */
-export var Parent: ParentFactory = makeParamDecorator(ParentMetadata);
 
 /**
  * Factory for creating {@link AncestorMetadata}.

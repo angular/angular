@@ -2,7 +2,7 @@ import {
   Component,
   Directive,
   View,
-  Parent,
+  Ancestor,
   ElementRef,
   DynamicComponentLoader,
   ComponentRef,
@@ -243,7 +243,7 @@ class MdDialogContainer {
  */
 @Directive({selector: 'md-dialog-content'})
 class MdDialogContent {
-  constructor(@Parent() dialogContainer: MdDialogContainer, elementRef: ElementRef) {
+  constructor(@Ancestor() dialogContainer: MdDialogContainer, elementRef: ElementRef) {
     dialogContainer.contentRef = elementRef;
   }
 }

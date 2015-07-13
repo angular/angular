@@ -14,7 +14,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {VisibilityMetadata, DEFAULT_VISIBILITY} from './metadata';
+import {VisibilityMetadata, DEFAULT_VISIBILITY, SelfMetadata, AncestorMetadata} from './metadata';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -175,7 +175,7 @@ export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
 export class ProtoInjector {
   _strategy: ProtoInjectorStrategy;
 
-  constructor(bwv: BindingWithVisibility[], public distanceToParent: number) {
+  constructor(bwv: BindingWithVisibility[]) {
     this._strategy = bwv.length > _MAX_CONSTRUCTION_COUNTER ?
                          new ProtoInjectorDynamicStrategy(this, bwv) :
                          new ProtoInjectorInlineStrategy(this, bwv);
@@ -459,7 +459,7 @@ export class Injector {
   static fromResolvedBindings(bindings: List<ResolvedBinding>,
                               depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
-    var proto = new ProtoInjector(bd, 0);
+    var proto = new ProtoInjector(bd);
     var inj = new Injector(proto, null, depProvider);
     return inj;
   }
@@ -542,7 +542,7 @@ export class Injector {
   createChildFromResolved(bindings: List<ResolvedBinding>,
                           depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
-    var proto = new ProtoInjector(bd, 1);
+    var proto = new ProtoInjector(bd);
     var inj = new Injector(proto, null, depProvider);
     inj._parent = this;
     return inj;
@@ -678,48 +678,78 @@ export class Injector {
       return this;
     }
 
-    var inj = this;
-    var lastInjector = false;
-    var depth = depVisibility.depth;
+    if (depVisibility instanceof SelfMetadata) {
+      return this._getByKeySelf(key, optional, bindingVisibility);
 
-    if (!depVisibility.includeSelf) {
-      depth -= inj._proto.distanceToParent;
+    } else if (depVisibility instanceof AncestorMetadata) {
+      return this._getByKeyAncestor(key, optional, bindingVisibility, depVisibility.includeSelf);
 
-      if (inj._isBoundary) {
-        if (depVisibility.crossBoundaries) {
-          bindingVisibility = PUBLIC_AND_PRIVATE;
-        } else {
-          bindingVisibility = PRIVATE;
-          lastInjector = true;
-        }
-      }
-      inj = inj._parent;
+    } else {
+      return this._getByKeyUnbounded(key, optional, bindingVisibility, depVisibility.includeSelf);
     }
+  }
 
-    while (inj != null && depth >= 0) {
-      var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
-      if (obj !== undefinedValue) return obj;
-
-      depth -= inj._proto.distanceToParent;
-
-      if (lastInjector) break;
-
-      if (inj._isBoundary) {
-        if (depVisibility.crossBoundaries) {
-          bindingVisibility = PUBLIC_AND_PRIVATE;
-        } else {
-          bindingVisibility = PRIVATE;
-          lastInjector = true;
-        }
-      }
-      inj = inj._parent;
-    }
-
+  _throwOrNull(key: Key, optional: boolean): any {
     if (optional) {
       return null;
     } else {
       throw new NoBindingError(key);
     }
+  }
+
+  _getByKeySelf(key: Key, optional: boolean, bindingVisibility: number): any {
+    var obj = this._strategy.getObjByKeyId(key.id, bindingVisibility);
+    return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
+  }
+
+  _getByKeyAncestor(key: Key, optional: boolean, bindingVisibility: number,
+                    includeSelf: boolean): any {
+    var inj = this;
+
+    if (!includeSelf) {
+      if (inj._isBoundary) {
+        return this._getPrivateDependency(key, optional, inj);
+      } else {
+        inj = inj._parent;
+      }
+    }
+
+    while (inj != null) {
+      var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
+      if (obj !== undefinedValue) return obj;
+
+      if (isPresent(inj._parent) && inj._isBoundary) {
+        return this._getPrivateDependency(key, optional, inj);
+      } else {
+        inj = inj._parent;
+      }
+    }
+
+    return this._throwOrNull(key, optional);
+  }
+
+  _getPrivateDependency(key: Key, optional: boolean, inj: Injector): any {
+    var obj = inj._parent._strategy.getObjByKeyId(key.id, PRIVATE);
+    return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
+  }
+
+  _getByKeyUnbounded(key: Key, optional: boolean, bindingVisibility: number,
+                     includeSelf: boolean): any {
+    var inj = this;
+    if (!includeSelf) {
+      bindingVisibility = inj._isBoundary ? PUBLIC_AND_PRIVATE : PUBLIC;
+      inj = inj._parent;
+    }
+
+    while (inj != null) {
+      var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
+      if (obj !== undefinedValue) return obj;
+
+      bindingVisibility = inj._isBoundary ? PUBLIC_AND_PRIVATE : PUBLIC;
+      inj = inj._parent;
+    }
+
+    return this._throwOrNull(key, optional);
   }
 }
 

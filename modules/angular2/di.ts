@@ -10,7 +10,6 @@ export {
   InjectableMetadata,
   VisibilityMetadata,
   SelfMetadata,
-  ParentMetadata,
   AncestorMetadata,
   UnboundedMetadata,
   DependencyMetadata,
@@ -24,12 +23,12 @@ export {forwardRef, resolveForwardRef, ForwardRefFn} from './src/di/forward_ref'
 export {
   Injector,
   ProtoInjector,
+  BindingWithVisibility,
   DependencyProvider,
   PUBLIC_AND_PRIVATE,
   PUBLIC,
   PRIVATE,
   undefinedValue
-
 } from './src/di/injector';
 export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/di/binding';
 export {Key, KeyRegistry, TypeLiteral} from './src/di/key';

@@ -42,7 +42,6 @@ import {
   forwardRef,
   OpaqueToken,
   Inject,
-  Parent,
   Ancestor,
   Unbounded,
   UnboundedMetadata
@@ -423,8 +422,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template:
-                    '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-parent></cmp-with-parent></template></toolbar></some-directive>',
-                directives: [SomeDirective, CompWithParent, ToolbarComponent, ToolbarPart]
+                    '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-ancestor></cmp-with-ancestor></template></toolbar></some-directive>',
+                directives: [SomeDirective, CompWithAncestor, ToolbarComponent, ToolbarPart]
               }))
                .createAsync(MyComp)
                .then((rootTC) => {
@@ -433,7 +432,7 @@ export function main() {
 
                  expect(rootTC.nativeElement)
                      .toHaveText(
-                         'TOOLBAR(From myComp,From toolbar,Component with an injected parent)');
+                         'TOOLBAR(From myComp,From toolbar,Component with an injected ancestor)');
 
                  async.done();
                });
@@ -662,25 +661,6 @@ export function main() {
                          async.done();
                        })}));
       });
-
-      it('should create a component that injects a @Parent',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async) => {
-                 tcb.overrideView(MyComp, new viewAnn.View({
-                      template:
-                          '<some-directive><cmp-with-parent #child></cmp-with-parent></some-directive>',
-                      directives: [SomeDirective, CompWithParent]
-                    }))
-
-                     .createAsync(MyComp)
-                     .then((rootTC) => {
-
-                       var childComponent = rootTC.componentViewChildren[0].getLocal('child');
-                       expect(childComponent.myParent).toBeAnInstanceOf(SomeDirective);
-
-                       async.done();
-                     })}));
 
       it('should create a component that injects an @Ancestor',
          inject([TestComponentBuilder, AsyncTestCompleter],
@@ -1497,14 +1477,6 @@ class SomeDirective {
 
 class SomeDirectiveMissingAnnotation {}
 
-@Component({selector: 'cmp-with-parent'})
-@View({template: '<p>Component with an injected parent</p>', directives: [SomeDirective]})
-@Injectable()
-class CompWithParent {
-  myParent: SomeDirective;
-  constructor(@Parent() someComp: SomeDirective) { this.myParent = someComp; }
-}
-
 @Component({selector: 'cmp-with-ancestor'})
 @View({template: '<p>Component with an injected ancestor</p>', directives: [SomeDirective]})
 @Injectable()
@@ -1673,7 +1645,7 @@ class PrivateImpl extends PublicApi {
 @Directive({selector: '[needs-public-api]'})
 @Injectable()
 class NeedsPublicApi {
-  constructor(@Parent() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
+  constructor(@Ancestor() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
 }
 
 @Directive({selector: '[toolbarpart]'})

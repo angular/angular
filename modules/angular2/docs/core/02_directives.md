@@ -262,7 +262,6 @@ There are five kinds of visibilities:
 
 * (no annotation): Inject dependent directives only if they are on the current element.
 * `@ancestor`: Inject a directive if it is at any element above the current element.
-* `@parent`: Inject a directive which is a direct parent of the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)
 * `@descendant`: Inject a list of any children which match a given type. (Used with `Query`)
 
@@ -301,7 +300,7 @@ class FieldSet {                     |
 class Field {                        |
   constructor(                       |
     @ancestor field:Form,            |
-    @parent field:FieldSet,          |
+    @ancestor field:FieldSet,        |
   ) { ... }                          |
 }                                    |
                                      |
@@ -337,7 +336,7 @@ Shadow DOM provides an encapsulation for components, so as a general rule it doe
 })
 class Kid {
   constructor(
-    @Parent() dad:Dad,
+    @Ancestor() dad:Dad,
     @Optional() grandpa:Grandpa
   ) {
     this.name = 'Billy';
@@ -354,7 +353,7 @@ class Kid {
   directives: [Kid]
 })
 class Dad {
-  constructor(@Parent() dad:Grandpa) {
+  constructor(@Ancestor() dad:Grandpa) {
     this.name = 'Joe Jr';
     this.dad = dad.name;
   }
