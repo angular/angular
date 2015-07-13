@@ -30,8 +30,8 @@ export interface OptionalFactory {
  * Factory for creating {@link InjectableMetadata}.
  */
 export interface InjectableFactory {
-  (visibility?: VisibilityMetadata): any;
-  new (visibility?: VisibilityMetadata): InjectableMetadata;
+  (): any;
+  new (): InjectableMetadata;
 }
 
 /**

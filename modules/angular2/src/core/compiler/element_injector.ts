@@ -26,8 +26,7 @@ import {
   CyclicDependencyError,
   resolveForwardRef,
   VisibilityMetadata,
-  DependencyProvider,
-  self
+  DependencyProvider
 } from 'angular2/di';
 import {
   InjectorInlineStrategy,

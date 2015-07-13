@@ -79,7 +79,7 @@ export class DependencyMetadata {
  */
 @CONST()
 export class InjectableMetadata {
-  constructor(public visibility: VisibilityMetadata = unbounded) {}
+  constructor() {}
 }
 
 /**
@@ -122,8 +122,6 @@ export class SelfMetadata extends VisibilityMetadata {
   constructor() { super(0, false, true); }
   toString(): string { return `@Self()`; }
 }
-
-export const self = CONST_EXPR(new SelfMetadata());
 
 /**
  * Specifies that an injector should retrieve a dependency from the direct parent.
@@ -235,4 +233,4 @@ export class UnboundedMetadata extends VisibilityMetadata {
   toString(): string { return `@Unbounded(self: ${this.includeSelf}})`; }
 }
 
-export const unbounded = CONST_EXPR(new UnboundedMetadata({self: true}));
+export const DEFAULT_VISIBILITY = CONST_EXPR(new UnboundedMetadata({self: true}));

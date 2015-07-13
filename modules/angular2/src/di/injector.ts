@@ -14,7 +14,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {VisibilityMetadata, unbounded} from './metadata';
+import {VisibilityMetadata, DEFAULT_VISIBILITY} from './metadata';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -521,7 +521,9 @@ export class Injector {
    *binding).
    * @returns an instance represented by the token. Throws if not found.
    */
-  get(token): any { return this._getByKey(Key.get(token), unbounded, false, PUBLIC_AND_PRIVATE); }
+  get(token): any {
+    return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, false, PUBLIC_AND_PRIVATE);
+  }
 
   /**
    * Retrieves an instance from the injector.
@@ -530,7 +532,7 @@ export class Injector {
    * @returns an instance represented by the token. Returns `null` if not found.
    */
   getOptional(token): any {
-    return this._getByKey(Key.get(token), unbounded, true, PUBLIC_AND_PRIVATE);
+    return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, true, PUBLIC_AND_PRIVATE);
   }
 
   /**

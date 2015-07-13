@@ -16,7 +16,7 @@ import {
   InjectableMetadata,
   VisibilityMetadata,
   OptionalMetadata,
-  unbounded,
+  DEFAULT_VISIBILITY,
   DependencyMetadata
 } from './metadata';
 import {NoAnnotationError} from './exceptions';
@@ -30,7 +30,7 @@ export class Dependency {
               public properties: List<any>) {}
 
   static fromKey(key: Key): Dependency {
-    return new Dependency(key, false, _defaulVisiblity(key.token), []);
+    return new Dependency(key, false, DEFAULT_VISIBILITY, []);
   }
 }
 
@@ -397,18 +397,16 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/, params: List
   var optional = false;
 
   if (!isArray(annotations)) {
-    return _createDependency(annotations, optional, _defaulVisiblity(annotations), depProps);
+    return _createDependency(annotations, optional, DEFAULT_VISIBILITY, depProps);
   }
 
-  var visibility = null;
-  var defaultVisibility = unbounded;
+  var visibility = DEFAULT_VISIBILITY;
 
   for (var i = 0; i < annotations.length; ++i) {
     var paramAnnotation = annotations[i];
 
     if (paramAnnotation instanceof Type) {
       token = paramAnnotation;
-      defaultVisibility = _defaulVisiblity(token);
 
     } else if (paramAnnotation instanceof InjectMetadata) {
       token = paramAnnotation.token;
@@ -427,10 +425,6 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/, params: List
     }
   }
 
-  if (isBlank(visibility)) {
-    visibility = defaultVisibility;
-  }
-
   token = resolveForwardRef(token);
 
   if (isPresent(token)) {
@@ -438,16 +432,6 @@ function _extractToken(typeOrFunc, annotations /*List<any> | any*/, params: List
   } else {
     throw new NoAnnotationError(typeOrFunc, params);
   }
-}
-function _defaulVisiblity(typeOrFunc) {
-  if (!(typeOrFunc instanceof Type)) return unbounded;
-
-  // TODO: vsavkin revisit this after clarifying lookup rules
-  if (!reflector.isReflectionEnabled()) return unbounded;
-
-  var f =
-      ListWrapper.filter(reflector.annotations(typeOrFunc), s => s instanceof InjectableMetadata);
-  return f.length === 0 ? unbounded : f[0].visibility;
 }
 
 function _createDependency(token, optional, visibility, depProps): Dependency {

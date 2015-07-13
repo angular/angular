@@ -16,9 +16,7 @@ import {
   forwardRef,
   DependencyMetadata,
   Injectable,
-  InjectMetadata,
-  self,
-  unbounded
+  InjectMetadata
 } from 'angular2/di';
 
 import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/di/injector';
@@ -28,15 +26,6 @@ import {Optional, Inject} from 'angular2/src/di/decorators';
 class CustomDependencyMetadata extends DependencyMetadata {}
 
 class Engine {}
-
-@Injectable(self)
-class EngineWithSetVisibility {
-}
-
-@Injectable()
-class CarNeedsEngineWithSetVisibility {
-  constructor(engine: EngineWithSetVisibility) {}
-}
 
 class BrokenEngine {
   constructor() { throw new BaseException("Broken Engine"); }
@@ -415,20 +404,6 @@ export function main() {
 
         expect(binding.dependencies[0].key.token).toEqual("dep");
         expect(binding.dependencies[0].properties).toEqual([new CustomDependencyMetadata()]);
-      });
-    });
-
-    describe("default visibility", () => {
-      it("should use the provided visibility", () => {
-        var bindings = Injector.resolve([CarNeedsEngineWithSetVisibility, EngineWithSetVisibility]);
-        var carBinding = bindings[0];
-        expect(carBinding.dependencies[0].visibility).toEqual(self);
-      });
-
-      it("should set the default visibility to unbounded", () => {
-        var bindings = Injector.resolve([Car, Engine]);
-        var carBinding = bindings[0];
-        expect(carBinding.dependencies[0].visibility).toEqual(unbounded);
       });
     });
   });
