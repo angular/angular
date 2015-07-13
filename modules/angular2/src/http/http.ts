@@ -17,6 +17,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
     newOptions = newOptions.merge(new RequestOptions({
       method: providedOpts.method,
       url: providedOpts.url,
+      search: providedOpts.search,
       headers: providedOpts.headers,
       body: providedOpts.body,
       mode: providedOpts.mode,

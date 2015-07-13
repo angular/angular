@@ -12,6 +12,10 @@ import {Headers} from './headers';
 import {BaseException} from 'angular2/src/facade/lang';
 import {EventEmitter} from 'angular2/src/facade/async';
 import {Request} from './static_request';
+import {URLSearchParamsUnionFixer, URLSearchParams} from './url_search_params';
+
+// Work around Dartanalyzer problem :(
+const URLSearchParams_UnionFixer = URLSearchParamsUnionFixer;
 
 /**
  * Abstract class from which real backends are derived.
@@ -41,6 +45,7 @@ export class Connection {
 export interface IRequestOptions {
   url?: string;
   method?: RequestMethods;
+  search?: string | URLSearchParams;
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
   body?: string;
