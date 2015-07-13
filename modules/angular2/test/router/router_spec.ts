@@ -22,7 +22,7 @@ import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {RouteConfig} from 'angular2/src/router/route_config_decorator';
+import {RouteConfig, Route} from 'angular2/src/router/route_config_decorator';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import {bind} from 'angular2/di';
@@ -52,7 +52,7 @@ export function main() {
     it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();
 
-         router.config({'path': '/', 'component': DummyComponent})
+         router.config([new Route({path: '/', component: DummyComponent})])
              .then((_) => router.registerOutlet(outlet))
              .then((_) => {
                expect(outlet.spy('commit')).toHaveBeenCalled();
@@ -67,7 +67,7 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerOutlet(outlet)
-             .then((_) => router.config({'path': '/a', 'component': DummyComponent}))
+             .then((_) => router.config([new Route({path: '/a', component: DummyComponent})]))
              .then((_) => router.navigate('/a'))
              .then((_) => {
                expect(outlet.spy('commit')).toHaveBeenCalled();
@@ -84,7 +84,7 @@ export function main() {
              .then((_) => router.navigate('/a'))
              .then((_) => {
                expect(outlet.spy('commit')).not.toHaveBeenCalled();
-               return router.config({'path': '/a', 'component': DummyComponent});
+               return router.config([new Route({path: '/a', component: DummyComponent})]);
              })
              .then((_) => {
                expect(outlet.spy('commit')).toHaveBeenCalled();
@@ -109,7 +109,7 @@ export function main() {
 
 
     it('should generate URLs from the root component when the path starts with /', () => {
-      router.config({'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+      router.config([new Route({path: '/first/...', component: DummyParentComp, as: 'firstCmp'})]);
 
       expect(router.generate(['/firstCmp', 'secondCmp'])).toEqual('/first/second');
       expect(router.generate(['/firstCmp', 'secondCmp'])).toEqual('/first/second');
@@ -118,7 +118,8 @@ export function main() {
 
     describe('matrix params', () => {
       it('should apply inline matrix params for each router path within the generated URL', () => {
-        router.config({'path': '/first/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+        router.config(
+            [new Route({path: '/first/...', component: DummyParentComp, as: 'firstCmp'})]);
 
         var path =
             router.generate(['/firstCmp', {'key': 'value'}, 'secondCmp', {'project': 'angular'}]);
@@ -127,8 +128,9 @@ export function main() {
 
       it('should apply inline matrix params for each router path within the generated URL and also include named params',
          () => {
-           router.config(
-               {'path': '/first/:token/...', 'component': DummyParentComp, 'as': 'firstCmp'});
+           router.config([
+             new Route({path: '/first/:token/...', component: DummyParentComp, as: 'firstCmp'})
+           ]);
 
            var path =
                router.generate(['/firstCmp', {'token': 'min'}, 'secondCmp', {'author': 'max'}]);
@@ -146,7 +148,7 @@ class DummyOutlet extends SpyObject {
 
 class DummyComponent {}
 
-@RouteConfig([{'path': '/second', 'component': DummyComponent, 'as': 'secondCmp'}])
+@RouteConfig([new Route({path: '/second', component: DummyComponent, as: 'secondCmp'})])
 class DummyParentComp {
 }
 

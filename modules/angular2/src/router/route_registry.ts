@@ -20,9 +20,10 @@ import {
   BaseException,
   getTypeNameForDebugging
 } from 'angular2/src/facade/lang';
-import {RouteConfig} from './route_config_impl';
+import {RouteConfig, AsyncRoute, Route, Redirect, RouteDefinition} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Injectable} from 'angular2/di';
+import {normalizeRouteConfig} from './route_config_nomalizer';
 
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
@@ -36,8 +37,8 @@ export class RouteRegistry {
   /**
    * Given a component and a configuration object, add the route to this registry
    */
-  config(parentComponent, config: StringMap<string, any>): void {
-    assertValidConfig(config);
+  config(parentComponent, config: RouteDefinition): void {
+    config = normalizeRouteConfig(config);
 
     var recognizer: RouteRecognizer = this._rules.get(parentComponent);
 
@@ -46,22 +47,13 @@ export class RouteRegistry {
       this._rules.set(parentComponent, recognizer);
     }
 
-    if (StringMapWrapper.contains(config, 'redirectTo')) {
-      recognizer.addRedirect(config['path'], config['redirectTo']);
-      return;
-    }
+    var terminal = recognizer.config(config);
 
-    config = StringMapWrapper.merge(
-        config, {'component': normalizeComponentDeclaration(config['component'])});
-
-    var component = config['component'];
-    var terminal = recognizer.addConfig(config['path'], config, config['as']);
-
-    if (component['type'] == 'constructor') {
+    if (config instanceof Route) {
       if (terminal) {
-        assertTerminalComponent(component['constructor'], config['path']);
+        assertTerminalComponent(config.component, config.path);
       } else {
-        this.configFromComponent(component['constructor']);
+        this.configFromComponent(config.component);
       }
     }
   }
@@ -190,50 +182,6 @@ export class RouteRegistry {
   }
 }
 
-
-/*
- * A config should have a "path" property, and exactly one of:
- * - `component`
- * - `redirectTo`
- */
-var ALLOWED_TARGETS = ['component', 'redirectTo'];
-function assertValidConfig(config: StringMap<string, any>): void {
-  if (!StringMapWrapper.contains(config, 'path')) {
-    throw new BaseException(`Route config should contain a "path" property`);
-  }
-  var targets = 0;
-  ListWrapper.forEach(ALLOWED_TARGETS, (target) => {
-    if (StringMapWrapper.contains(config, target)) {
-      targets += 1;
-    }
-  });
-  if (targets != 1) {
-    throw new BaseException(
-        `Route config should contain exactly one 'component', or 'redirectTo' property`);
-  }
-}
-
-/*
- * Returns a StringMap like: `{ 'constructor': SomeType, 'type': 'constructor' }`
- */
-var VALID_COMPONENT_TYPES = ['constructor', 'loader'];
-function normalizeComponentDeclaration(config: any): StringMap<string, any> {
-  if (isType(config)) {
-    return {'constructor': config, 'type': 'constructor'};
-  } else if (isStringMap(config)) {
-    if (isBlank(config['type'])) {
-      throw new BaseException(
-          `Component declaration when provided as a map should include a 'type' property`);
-    }
-    var componentType = config['type'];
-    if (!ListWrapper.contains(VALID_COMPONENT_TYPES, componentType)) {
-      throw new BaseException(`Invalid component type '${componentType}'`);
-    }
-    return config;
-  } else {
-    throw new BaseException(`Component declaration should be either a Map or a Type`);
-  }
-}
 
 /*
  * Given a list of instructions, returns the most specific instruction
