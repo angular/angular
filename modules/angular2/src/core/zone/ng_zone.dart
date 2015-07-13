@@ -73,7 +73,7 @@ class NgZone {
    * It is called once per browser event.
    */
   void overrideOnTurnStart(ZeroArgFunction onTurnStartFn) {
-    this._onTurnStart = onTurnStartFn;
+    _onTurnStart = onTurnStartFn;
   }
 
   /**
@@ -81,7 +81,7 @@ class NgZone {
    * all pending microtasks.
    */
   void overrideOnTurnDone(ZeroArgFunction onTurnDoneFn) {
-    this._onTurnDone = onTurnDoneFn;
+    _onTurnDone = onTurnDoneFn;
   }
 
   /**
@@ -93,7 +93,7 @@ class NgZone {
    * This hook is useful for validating application state (e.g. in a test).
    */
   void overrideOnEventDone(ZeroArgFunction onEventDoneFn) {
-    this._onEventDone = onEventDoneFn;
+    _onEventDone = onEventDoneFn;
   }
 
   /**
@@ -102,7 +102,7 @@ class NgZone {
    * the stack trace.
    */
   void overrideOnErrorHandler(ErrorHandlingFn errorHandlingFn) {
-    this._onErrorHandler = errorHandlingFn;
+    _onErrorHandler = errorHandlingFn;
   }
 
   /**
@@ -173,7 +173,7 @@ class NgZone {
           // Trigger onTurnDone at the end of a turn if _innerZone has executed some code
           try {
             _inVmTurnDone = true;
-            parent.run(_innerZone, _onTurnDone);  
+            parent.run(_innerZone, _onTurnDone);
 
             if (_pendingMicrotasks == 0 && _onEventDone != null) {
               runOutsideAngular(_onEventDone);
