@@ -17,7 +17,8 @@ import {
   isStringMap,
   isFunction,
   StringWrapper,
-  BaseException
+  BaseException,
+  getTypeNameForDebugging
 } from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -154,6 +155,9 @@ export class RouteRegistry {
     let componentCursor = parentComponent;
     for (let i = 0; i < linkParams.length; i += 1) {
       let segment = linkParams[i];
+      if (isBlank(componentCursor)) {
+        throw new BaseException(`Could not find route named "${segment}".`);
+      }
       if (!isString(segment)) {
         throw new BaseException(`Unexpected segment "${segment}" in link DSL. Expected a string.`);
       } else if (segment == '' || segment == '.' || segment == '..') {
@@ -170,9 +174,13 @@ export class RouteRegistry {
 
       var componentRecognizer = this._rules.get(componentCursor);
       if (isBlank(componentRecognizer)) {
-        throw new BaseException(`Could not find route config for "${segment}".`);
+        throw new BaseException(`Component "${getTypeNameForDebugging(componentCursor)}" has no route config.`);
       }
       var response = componentRecognizer.generate(segment, params);
+      if (isBlank(response)) {
+        throw new BaseException(
+            `Component "${getTypeNameForDebugging(componentCursor)}" has no route named "${segment}".`);
+      }
       url += response['url'];
       componentCursor = response['nextComponent'];
     }
