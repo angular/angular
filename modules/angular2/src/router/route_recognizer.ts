@@ -19,6 +19,7 @@ import {
 
 import {PathRecognizer} from './path_recognizer';
 import {RouteHandler} from './route_handler';
+import {Route, AsyncRoute, Redirect, RouteDefinition} from './route_config_impl';
 import {AsyncRouteHandler} from './async_route_handler';
 import {SyncRouteHandler} from './sync_route_handler';
 
@@ -32,25 +33,27 @@ export class RouteRecognizer {
   redirects: Map<string, string> = new Map();
   matchers: Map<RegExp, PathRecognizer> = new Map();
 
-  addRedirect(path: string, target: string): void {
-    if (path == '/') {
-      path = '';
+  config(config: RouteDefinition): boolean {
+    var handler;
+    if (config instanceof Redirect) {
+      let path = config.path == '/' ? '' : config.path;
+      this.redirects.set(path, config.redirectTo);
+      return true;
+    } else if (config instanceof Route) {
+      handler = new SyncRouteHandler(config.component);
+    } else if (config instanceof AsyncRoute) {
+      handler = new AsyncRouteHandler(config.loader);
     }
-    this.redirects.set(path, target);
-  }
-
-  addConfig(path: string, handlerObj: any, alias: string = null): boolean {
-    var handler = configObjToHandler(handlerObj['component']);
-    var recognizer = new PathRecognizer(path, handler);
+    var recognizer = new PathRecognizer(config.path, handler);
     MapWrapper.forEach(this.matchers, (matcher, _) => {
       if (recognizer.regex.toString() == matcher.regex.toString()) {
         throw new BaseException(
-            `Configuration '${path}' conflicts with existing route '${matcher.path}'`);
+            `Configuration '${config.path}' conflicts with existing route '${matcher.path}'`);
       }
     });
     this.matchers.set(recognizer.regex, recognizer);
-    if (isPresent(alias)) {
-      this.names.set(alias, recognizer);
+    if (isPresent(config.as)) {
+      this.names.set(config.as, recognizer);
     }
     return recognizer.terminal;
   }

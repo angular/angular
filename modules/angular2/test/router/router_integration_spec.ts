@@ -16,7 +16,7 @@ import {Component, Directive, View} from 'angular2/src/core/annotations/decorato
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';
 import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
-import {RouteConfig} from 'angular2/src/router/route_config_decorator';
+import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 import {routerInjectables, Router, appBaseHrefToken, routerDirectives} from 'angular2/router';
@@ -101,20 +101,20 @@ class HelloCmp {
 
 @Component({selector: 'app-cmp'})
 @View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
-@RouteConfig([{path: '/', component: HelloCmp}])
+@RouteConfig([new Route({path: '/', component: HelloCmp})])
 class AppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
 @Component({selector: 'parent-cmp'})
 @View({template: `parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
-@RouteConfig([{path: '/child', component: HelloCmp}])
+@RouteConfig([new Route({path: '/child', component: HelloCmp})])
 class ParentCmp {
 }
 
 @Component({selector: 'app-cmp'})
 @View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
-@RouteConfig([{path: '/parent/...', component: ParentCmp}])
+@RouteConfig([new Route({path: '/parent/...', component: ParentCmp})])
 class HierarchyAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
@@ -126,8 +126,8 @@ class BrokenCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
-@RouteConfig([{path: '/cause-error', component: BrokenCmp}])
+@View({template: `outer { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@RouteConfig([new Route({path: '/cause-error', component: BrokenCmp})])
 class BrokenAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
