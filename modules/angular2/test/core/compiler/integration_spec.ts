@@ -1106,6 +1106,32 @@ export function main() {
                  async.done();
                });
          }));
+
+      it("should create viewInjector injectables lazily",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: `
+              <component-providing-logging-injectable #providing>
+                <directive-consuming-injectable *ng-if="ctxBoolProp">
+                </directive-consuming-injectable>
+              </component-providing-logging-injectable>
+          `,
+                directives:
+                    [DirectiveConsumingInjectable, ComponentProvidingLoggingInjectable, NgIf]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 var providing = rootTC.componentViewChildren[0].getLocal("providing");
+                 expect(providing.created).toBe(false);
+
+                 rootTC.componentInstance.ctxBoolProp = true;
+                 rootTC.detectChanges();
+
+                 expect(providing.created).toBe(true);
+
+                 async.done();
+               });
+         }));
     });
 
     describe("error handling", () => {
@@ -1700,6 +1726,23 @@ class DirectiveWithTwoWayBinding {
 @Injectable()
 class InjectableService {
 }
+
+function createInjectableWithLogging(inj: Injector) {
+  inj.get(ComponentProvidingLoggingInjectable).created = true;
+  return new InjectableService();
+}
+
+@Component({
+  selector: 'component-providing-logging-injectable',
+  hostInjector:
+      [new Binding(InjectableService, {toFactory: createInjectableWithLogging, deps: [Injector]})]
+})
+@View({template: ''})
+@Injectable()
+class ComponentProvidingLoggingInjectable {
+  created: boolean = false;
+}
+
 
 @Directive({selector: 'directive-providing-injectable', hostInjector: [[InjectableService]]})
 @Injectable()
