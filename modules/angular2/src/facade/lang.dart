@@ -198,7 +198,9 @@ Error makeTypeError([String message = ""]) {
 
 const _NAN_KEY = const Object();
 
-// Dart can have identical(str1, str2) == false while str1 == str2
+// Dart can have identical(str1, str2) == false while str1 == str2. Moreover,
+// after compiling with dart2js identical(str1, str2) might return true.
+// (see dartbug.com/22496 for details).
 bool looseIdentical(a, b) =>
     a is String && b is String ? a == b : identical(a, b);
 
