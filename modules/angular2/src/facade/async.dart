@@ -91,6 +91,10 @@ class EventEmitter extends Stream {
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
+  void cancel() {
+    _controller.cancel();
+  }
+
   void add(value) {
     _controller.add(value);
   }
