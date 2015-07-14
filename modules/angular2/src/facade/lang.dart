@@ -202,9 +202,8 @@ dynamic getMapKey(value) {
   return value.isNaN ? _NAN_KEY : value;
 }
 
-dynamic normalizeBlank(obj) {
-  return isBlank(obj) ? null : obj;
-}
+// TODO: remove with https://github.com/angular/angular/issues/3055
+dynamic normalizeBlank(obj) => obj;
 
 bool normalizeBool(bool obj) {
   return isBlank(obj) ? false : obj;
