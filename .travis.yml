@@ -88,4 +88,16 @@ deploy:
       branch: master
       repo: angular/angular
       condition: "$MODE = dart && $DART_CHANNEL = stable"
-
+  - provider: gcs
+    access_key_id: GOOGIOQTDBEOPBUAWFZQ
+    secret_access_key:
+      secure: "MEDggllZ5fw4wI9CEUi8WR6jKsKXqdRF/DLxSNC2JpzM5RlVeBm0uqjntYT1Cf1dASvQ2/+vZCUikL/3A48NcoEYRHXGmxu8D6t/SvleQD8Xv434xFOdsa2QqP/HiCtqCLOI5jJz1JVoB5nNyKKZ33ogTUL1LV1TfcrAioyizW8="
+    bucket: angular2-snapshots
+    skip_cleanup: true
+    acl: public-read
+    local-dir: deploy
+    upload-dir: $TRAVIS_COMMIT/js
+    on:
+      branch: master
+      repo: angular/angular
+      condition: "$MODE = js"
