@@ -120,7 +120,7 @@ Closes #2564
 * **XHRImpl:** file:/// and IE9 bugs ([cd735c48](https://github.com/angular/angular/commit/cd735c48))
 * **annotations:** swap DirectiveArgs & ComponentArgs ([dcc4bc27](https://github.com/angular/angular/commit/dcc4bc27))
 * **benchmarks:** add waits for naive scrolling benchmark to ensure loading ([d8929c1d](https://github.com/angular/angular/commit/d8929c1d), closes [#1706](https://github.com/angular/angular/issues/1706))
-* **benchpress:** do not throw on unkown frame timestamp event ([ed3af5f7](https://github.com/angular/angular/commit/ed3af5f7), closes [#2622](https://github.com/angular/angular/issues/2622))
+* **benchpress:** do not throw on unknown frame timestamp event ([ed3af5f7](https://github.com/angular/angular/commit/ed3af5f7), closes [#2622](https://github.com/angular/angular/issues/2622))
 * **change detection:** preserve memoized results from pure functions ([5beaf6d7](https://github.com/angular/angular/commit/5beaf6d7))
 * **compiler:** make text interpolation more robust ([9d4111d6](https://github.com/angular/angular/commit/9d4111d6), closes [#2591](https://github.com/angular/angular/issues/2591))
 * **docs:** Fix docs for Directive.compileChildren ([9700e806](https://github.com/angular/angular/commit/9700e806))
@@ -140,7 +140,7 @@ Closes #2564
 * remove MapWrapper.create()/get()/set(). ([be7ac9fd](https://github.com/angular/angular/commit/be7ac9fd))
 * add constructors without type arguments. ([35e882e7](https://github.com/angular/angular/commit/35e882e7))
 * upgrade ts2dart to 0.6.4. ([58b38c92](https://github.com/angular/angular/commit/58b38c92))
-* **CSSClass:** add support for string and array expresions ([8c993dca](https://github.com/angular/angular/commit/8c993dca), closes [#2025](https://github.com/angular/angular/issues/2025))
+* **CSSClass:** add support for string and array expressions ([8c993dca](https://github.com/angular/angular/commit/8c993dca), closes [#2025](https://github.com/angular/angular/issues/2025))
 * **compiler:** detect dangling property bindings ([d7b9345b](https://github.com/angular/angular/commit/d7b9345b), closes [#2598](https://github.com/angular/angular/issues/2598))
 * **element_injector:** support multiple injectables with the same token ([c899b0a7](https://github.com/angular/angular/commit/c899b0a7))
 * **host:** limits host properties to renames ([92ffc465](https://github.com/angular/angular/commit/92ffc465))
@@ -161,8 +161,8 @@ Closes #2564
 Till now it was possible to have a binding to a non-existing property,
 ex.: `<div [foo]="exp">`. From now on this is compilation error - any
 property binding needs to have at least one associated property:
-eaither on an HTML element or on any directive associated with a
-given element (directives' properites need to be declared using the
+either on an HTML element or on any directive associated with a
+given element (directives' properties need to be declared using the
 `properties` field in the `@Directive` / `@Component` annotation).
 
 Closes #2598
@@ -199,7 +199,7 @@ This PR remove an ability to use pipes in the properties config. Instead, inject
 * **ShadowDom:** fix emulation integration spec to test all 3 strategies ([6e385154](https://github.com/angular/angular/commit/6e385154), closes [#2546](https://github.com/angular/angular/issues/2546))
 * **analzyer:** removed unused imports ([902759e1](https://github.com/angular/angular/commit/902759e1))
 * **benchmarks:** Do not apply the angular transformer to e2e tests ([cee26826](https://github.com/angular/angular/commit/cee26826))
-* **bootstrap:** temporary disable jit change detection because of a bug in handling pure functio ([9908def8](https://github.com/angular/angular/commit/9908def8))
+* **bootstrap:** temporary disable jit change detection because of a bug in handling pure function ([9908def8](https://github.com/angular/angular/commit/9908def8))
 * **broccoli:** ensure that inputTrees are stable ([928ec1c5](https://github.com/angular/angular/commit/928ec1c5))
 * **build:**
   * ensure that asset files are copied over to example directories ([60b97b27](https://github.com/angular/angular/commit/60b97b27))
@@ -530,7 +530,7 @@ After
 * **facade:** toUpperCase and toLowerCase ([557d54b3](https://github.com/angular/angular/commit/557d54b3))
 * **fakeAsync:** allow simulating the passage of time ([0f002a5b](https://github.com/angular/angular/commit/0f002a5b))
 * **forms:** improved error messages ([11e43851](https://github.com/angular/angular/commit/11e43851), closes [#1839](https://github.com/angular/angular/issues/1839))
-* **pipe:** reexported pipes to genereate docs ([155b1e2b](https://github.com/angular/angular/commit/155b1e2b))
+* **pipe:** reexported pipes to generate docs ([155b1e2b](https://github.com/angular/angular/commit/155b1e2b))
 
 
 #### Breaking Changes
@@ -715,7 +715,7 @@ Now, `Directive` is the former `Decorator`, and `Component` inherits from it.
 ## Other (malformed commit messages)
 
 - **other:**
-  - feat: alllow specifying directives as bindings
+  - feat: allow specifying directives as bindings
   ([4bab25b3](https://github.com/angular/angular/commit/4bab25b3666f4247434ad5cb871906fb063fef51),
    [#1498](https://github.com/angular/angular/issues/1498))
   - fix: export ShadowDom strategies
