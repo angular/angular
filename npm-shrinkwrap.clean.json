@@ -9953,13 +9953,13 @@
       }
     },
     "ts2dart": {
-      "version": "0.6.8",
+      "version": "0.6.9",
       "dependencies": {
         "source-map": {
-          "version": "0.4.2",
+          "version": "0.4.4",
           "dependencies": {
             "amdefine": {
-              "version": "0.1.1"
+              "version": "1.0.0"
             }
           }
         },
@@ -9970,7 +9970,7 @@
               "version": "0.1.32",
               "dependencies": {
                 "amdefine": {
-                  "version": "0.1.1"
+                  "version": "1.0.0"
                 }
               }
             }
