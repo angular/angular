@@ -31,6 +31,9 @@ export class AppViewManager {
   getComponentView(hostLocation: ElementRef): ViewRef {
     var hostView: viewModule.AppView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
+    if (isBlank(hostView.componentChildViews[boundElementIndex])) {
+      return null;
+    }
     return hostView.componentChildViews[boundElementIndex].ref;
   }
 

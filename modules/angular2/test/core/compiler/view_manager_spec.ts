@@ -275,6 +275,9 @@ export function main() {
           childProtoView = createProtoView();
         });
 
+        it('should return null if ViewContainerRef does not yet exist',
+           () => { expect(manager.getComponentView(elementRef(parentView, 0))).toBe(null); });
+
         it('should create a ViewContainerRef if not yet existing', () => {
           manager.createViewInContainer(elementRef(parentView, 0), 0, wrapPv(childProtoView), null);
           expect(parentView.viewContainers[0]).toBeTruthy();
