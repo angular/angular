@@ -118,6 +118,8 @@ export class EventEmitter extends Observable {
 
   toRx(): Rx.Observable<any> { return this._subject; }
 
+  dispose() { this._subject.dispose(); }
+
   next(value) { this._subject.onNext(value); }
 
   throw(error) { this._subject.onError(error); }

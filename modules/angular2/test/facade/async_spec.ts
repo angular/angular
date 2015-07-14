@@ -50,6 +50,18 @@ export function main() {
          ObservableWrapper.callReturn(emitter);
        }));
 
+    it("should dispose _subject", () => {
+      var called = false;
+      ObservableWrapper.subscribe(emitter,
+                                  (value) => { called = true; },
+                                  (value) => { called = true; },
+                                  (value) => { called = true; });
+      ObservableWrapper.dispose(emitter);
+      var next = () => ObservableWrapper.callNext(emitter, 99);
+      expect(next).toThrow();
+      expect(called).toBe(false);
+    });
+
     it("should subscribe to the wrapper asynchronously", () => {
       var called = false;
       ObservableWrapper.subscribe(emitter, (value) => { called = true; });
