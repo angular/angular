@@ -130,6 +130,7 @@ to work on next.
  * `comp: core/view` -- runtime processing of the `View`s
  * `comp: core/view/compiler` -- static analysis of the templates which generate `ProtoView`s.
  * `comp: core/testbed` -- e2e tests and support for them
+ * `comp: core/webworker` -- core web worker infrastructure
  * `comp: dart-transformer` -- Dart transforms &rarr; *kegluneq*, *jakemac* 
  * `comp: data-access` -- &rarr; *jeffbcross*
  * `comp: docs` -- API docs and doc generation &rarr; *naomiblack*, *petebacondarwin*
