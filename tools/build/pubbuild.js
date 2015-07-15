@@ -19,7 +19,7 @@ module.exports = function(gulp, plugins, config) {
       var destFolder = path.resolve(path.join(config.dest, path.basename(folder)));
       var pubMode = config.mode || 'release';
       var pubArgs = ['build', '--mode', pubMode, '-o', destFolder];
-
+console.log("\n\n\n***** ABOUT TO CALL ", config.command, pubArgs);
       return util.processToPromise(spawn(config.command, pubArgs, {
         stdio: 'inherit',
         cwd: folder

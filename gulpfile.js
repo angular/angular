@@ -150,7 +150,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
     'rx'
   ],
   dest: CONFIG.dest.benchpress_bundle
-}
+};
 
 // ------------
 // clean
@@ -244,7 +244,7 @@ gulp.task('build/analyze.dart', dartanalyzer(gulp, gulpPlugins, {
 }));
 
 // ------------
-// pubbuild
+// pubbuild (SLOWWWW)
 
 gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
   src: CONFIG.dest.dart,
@@ -323,8 +323,11 @@ function jsServeProd() {
 
 function jsServeDartJs() {
   return jsserve(gulp, gulpPlugins, {
-    path: CONFIG.dest.js.dart2js,
-    port: 8002
+    path: CONFIG.dest.dart,
+    port: 8002,
+    rewriteRules: [
+      {from:'^/(\\w+)/src/(.*)$', to:'/$1/web/src/$2'}
+    ]
   })();
 }
 
@@ -749,7 +752,7 @@ gulp.task('build.dart', function(done) {
     'build/packages.dart',
     'build/pubspec.dart',
     'build/analyze.dart',
-    'build/pubbuild.dart',
+    //'build/pubbuild.dart',
     sequenceComplete(done)
   );
 });
@@ -1038,7 +1041,7 @@ gulp.task('build.css.material', function() {
       .pipe(autoprefixer())
       .pipe(gulp.dest(CONFIG.dest.js.prod.es5))
       .pipe(gulp.dest(CONFIG.dest.js.dev.es5))
-      .pipe(gulp.dest(CONFIG.dest.js.dart2js + '/examples/packages'));
+      .pipe(gulp.dest(CONFIG.dest.dart + '/examples/packages'));
 });
 
 
