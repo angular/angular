@@ -102,7 +102,7 @@ export class Serializer {
 
 class ASTWithSourceSerializer {
   static serialize(tree: ASTWithSource): Object {
-    return { 'input': tree.source, 'location': tree.location }
+    return { 'input': tree.source, 'location': tree.location };
   }
 
   static deserialize(obj: any, data: string): AST {
@@ -186,7 +186,7 @@ class ElementBinderSerializer {
           'eventBindings': Serializer.serialize(binder.eventBindings, EventBinding),
           'textBindings': Serializer.serialize(binder.textBindings, ASTWithSource),
           'readAttributes': Serializer.mapToObject(binder.readAttributes)
-    }
+    };
   }
 
   static deserialize(obj): ElementBinder {
@@ -211,7 +211,7 @@ class ProtoViewDtoSerializer {
     return {
       'render': null, 'elementBinders': Serializer.serialize(view.elementBinders, ElementBinder),
           'variableBindings': Serializer.mapToObject(view.variableBindings), 'type': view.type
-    }
+    };
   }
 
   static deserialize(obj): ProtoViewDto {

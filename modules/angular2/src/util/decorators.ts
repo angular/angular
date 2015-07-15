@@ -70,7 +70,7 @@ export interface ParameterDecorator {
   /**
    * Invoke as ES7 decorator.
    */
-  (cls: Type, unusedKey: any, index: number): void
+  (cls: Type, unusedKey: any, index: number): void;
 }
 
 function extractAnnotation(annotation: any): any {

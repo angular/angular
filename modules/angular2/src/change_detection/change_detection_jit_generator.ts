@@ -182,7 +182,7 @@ export class ChangeDetectorJITGenerator {
     var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
     for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
       lines[i] =
-          `${directiveFieldNames[i]} = directives.getDirectiveFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`
+          `${directiveFieldNames[i]} = directives.getDirectiveFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`;
     }
     return lines.join('\n');
   }
@@ -192,7 +192,7 @@ export class ChangeDetectorJITGenerator {
     var lines = ListWrapper.createFixedSize(detectorFieldNames.length);
     for (var i = 0, iLen = detectorFieldNames.length; i < iLen; ++i) {
       lines[i] = `${detectorFieldNames[i]} =
-          directives.getDetectorFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`
+          directives.getDetectorFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`;
     }
     return lines.join('\n');
   }

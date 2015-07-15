@@ -22,7 +22,7 @@ var createMapFromPairs: {(pairs: List<any>): Map<any, any>} = (function() {
       map.set(pair[0], pair[1]);
     }
     return map;
-  }
+  };
 })();
 var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
   try {
@@ -35,7 +35,7 @@ var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
     var map = new Map();
     m.forEach((v, k) => { map.set(k, v); });
     return map;
-  }
+  };
 })();
 var _clearValues: {(m: Map<any, any>)} = (function() {
   if ((<any>(new Map()).keys()).next) {
@@ -49,7 +49,7 @@ var _clearValues: {(m: Map<any, any>)} = (function() {
   } else {
     return function _clearValuesWithForeEach(m: Map<any, any>) {
       m.forEach((v, k) => { m.set(k, null); });
-    }
+    };
   }
 })();
 

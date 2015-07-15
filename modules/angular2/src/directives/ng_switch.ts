@@ -164,7 +164,7 @@ export class NgSwitchWhen {
     this._view = new SwitchView(viewContainer, protoViewRef);
   }
 
-  onDestroy() { this._switch }
+  onDestroy() { this._switch; }
 
   set ngSwitchWhen(value) {
     this._switch._onWhenValueChanged(this._value, value, this._view);

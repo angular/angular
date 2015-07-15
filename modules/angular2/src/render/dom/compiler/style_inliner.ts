@@ -80,8 +80,7 @@ export class StyleInliner {
           if (isPromise(inlinedCss)) {
             // wait until nested @import are inlined
             return (<Promise<string>>inlinedCss)
-                .then((css) => {return prefix + this._transformImportedCss(css, mediaQuery, url) +
-                                       '\n'});
+                .then((css) => prefix + this._transformImportedCss(css, mediaQuery, url) + '\n');
           } else {
             // there are no nested @import, return the css
             return prefix + this._transformImportedCss(<string>inlinedCss, mediaQuery, url) + '\n';

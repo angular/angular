@@ -100,7 +100,7 @@ export class AppViewManagerUtils {
     if (atIndex == 0) {
       sibling = null;
     } else {
-      sibling = ListWrapper.last(viewContainer.views[atIndex - 1].rootElementInjectors)
+      sibling = ListWrapper.last(viewContainer.views[atIndex - 1].rootElementInjectors);
     }
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
     for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {

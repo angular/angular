@@ -130,7 +130,7 @@ export class IterableChanges extends BasePipe {
           record = this._verifyReinsertion(record, item, index);
         }
         record = record._next;
-        index++
+        index++;
       });
       this._length = index;
     }

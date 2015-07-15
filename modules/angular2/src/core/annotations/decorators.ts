@@ -52,7 +52,7 @@ export interface ViewDecorator extends TypeDecorator {
     renderer?: string,
     styles?: List<string>,
     styleUrls?: List<string>,
-  }): ViewDecorator
+  }): ViewDecorator;
 }
 
 /**
