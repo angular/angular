@@ -750,6 +750,7 @@ gulp.task('build.dart', function(done) {
     'build/pubspec.dart',
     'build/analyze.dart',
     'build/pubbuild.dart',
+    'build.dart.material.css',
     sequenceComplete(done)
   );
 });
@@ -1050,14 +1051,16 @@ gulp.task('build.dart2js.material', function(done) {
   runSequence('build.dart', 'build.css.material', sequenceComplete(done));
 });
 
-// TODO: this target is temporary until we find a way to use the SASS transformer
-gulp.task('build.dart.material', ['build/packages.dart'], function() {
+gulp.task('build.dart.material.css', function() {
   return gulp.src('dist/dart/angular2_material/src/**/*.scss')
       .pipe(sass())
       .pipe(autoprefixer())
       .pipe(gulp.dest('dist/dart/angular2_material/lib/src'));
 });
 
+gulp.task('build.dart.material', ['build/packages.dart'], function(done) {
+  runSequence('build/packages.dart', 'build.dart.material.css', sequenceComplete(done))
+});
 
 gulp.task('cleanup.builder', function() {
   return angularBuilder.cleanup();
