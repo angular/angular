@@ -1,14 +1,8 @@
 import {ResponseTypes} from './enums';
-import {
-  BaseException,
-  CONST_EXPR,
-  isJsObject,
-  isString,
-  isPresent,
-  Json
-} from 'angular2/src/facade/lang';
+import {BaseException, CONST_EXPR, isString, isPresent, Json} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 import {ResponseOptions} from './base_response_options';
+import {isJsObject} from './http_utils';
 
 /**
  * Creates `Response` instances from provided values.

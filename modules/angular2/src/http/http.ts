@@ -1,4 +1,4 @@
-import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isString, isPresent, isBlank, makeTypeError} from 'angular2/src/facade/lang';
 import {Injectable} from 'angular2/src/di/decorators';
 import {IRequestOptions, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
@@ -102,7 +102,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  **/
 @Injectable()
 export class Http {
-  constructor(private _backend: ConnectionBackend, private _defaultOptions: RequestOptions) {}
+  constructor(protected _backend: ConnectionBackend, protected _defaultOptions: RequestOptions) {}
 
   /**
    * Performs any type of http request. First argument is required, and can either be a url or
@@ -174,5 +174,32 @@ export class Http {
   head(url: string, options?: IRequestOptions): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.HEAD, url)));
+  }
+}
+
+@Injectable()
+export class Jsonp extends Http {
+  constructor(backend: ConnectionBackend, defaultOptions: RequestOptions) {
+    super(backend, defaultOptions);
+  }
+
+  /**
+   * Performs any type of http request. First argument is required, and can either be a url or
+   * a {@link Request} instance. If the first argument is a url, an optional {@link RequestOptions}
+   * object can be provided as the 2nd argument. The options object will be merged with the values
+   * of {@link BaseRequestOptions} before performing the request.
+   */
+  request(url: string | Request, options?: IRequestOptions): EventEmitter {
+    var responseObservable: EventEmitter;
+    if (isString(url)) {
+      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethods.GET, url));
+    }
+    if (url instanceof Request) {
+      if (url.method !== RequestMethods.GET) {
+        makeTypeError('JSONP requests must use GET request method.');
+      }
+      responseObservable = httpRequest(this._backend, url);
+    }
+    return responseObservable;
   }
 }

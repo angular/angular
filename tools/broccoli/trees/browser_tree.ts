@@ -45,6 +45,7 @@ const kServedPaths = [
   'examples/src/gestures',
   'examples/src/hello_world',
   'examples/src/http',
+  'examples/src/jsonp',
   'examples/src/key_events',
   'examples/src/sourcemap',
   'examples/src/todo',

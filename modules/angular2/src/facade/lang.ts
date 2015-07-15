@@ -15,6 +15,10 @@ export class BaseException extends Error {
   toString(): string { return this.message; }
 }
 
+export function makeTypeError(message?: string): Error {
+  return new TypeError(message);
+}
+
 export var Math = _global.Math;
 export var Date = _global.Date;
 
