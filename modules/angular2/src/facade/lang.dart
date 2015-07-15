@@ -190,6 +190,10 @@ class BaseException extends Error {
   }
 }
 
+Error makeTypeError([String message = ""]) {
+  return new BaseException(message);
+}
+
 const _NAN_KEY = const Object();
 
 // Dart can have identical(str1, str2) == false while str1 == str2
