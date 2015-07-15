@@ -209,7 +209,13 @@ class OptionallyInjectsProtoViewRef {
 }
 
 @Injectable()
-class NeedsChangeDetectorRef {
+class DirectiveNeedsChangeDetectorRef {
+  changeDetectorRef;
+  constructor(cdr: ChangeDetectorRef) { this.changeDetectorRef = cdr; }
+}
+
+@Injectable()
+class ComponentNeedsChangeDetectorRef {
   changeDetectorRef;
   constructor(cdr: ChangeDetectorRef) { this.changeDetectorRef = cdr; }
 }
@@ -944,16 +950,28 @@ export function main() {
             expect(inj.get(NeedsElementRef).elementRef).toBe(defaultPreBuiltObjects.view.elementRefs[0]);
           });
 
-          it('should inject ChangeDetectorRef', () => {
+          it("should inject ChangeDetectorRef of the component's view into the component", () => {
             var cd = new DynamicChangeDetector(null, null, null, [], []);
             var view = <any>new DummyView();
             var childView = new DummyView();
             childView.changeDetector = cd;
             view.componentChildViews = [childView];
-            var inj = injector(ListWrapper.concat([NeedsChangeDetectorRef], extraBindings), null, false,
+            var binding = DirectiveBinding.createFromType(ComponentNeedsChangeDetectorRef, new dirAnn.Component());
+            var inj = injector(ListWrapper.concat([binding], extraBindings), null, true,
                                new PreBuiltObjects(null, view, null));
 
-            expect(inj.get(NeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
+            expect(inj.get(ComponentNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
+          });
+
+          it("should inject ChangeDetectorRef of the containing component into directives", () => {
+            var cd = new DynamicChangeDetector(null, null, null, [], []);
+            var view = <any>new DummyView();
+            view.changeDetector =cd;
+            var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new dirAnn.Directive());
+            var inj = injector(ListWrapper.concat([binding], extraBindings), null, false,
+                               new PreBuiltObjects(null, view, null));
+
+            expect(inj.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
 
           it('should inject ViewContainerRef', () => {

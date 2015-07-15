@@ -589,8 +589,10 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     var key: Key = dep.key;
 
     if (!(dep instanceof DirectiveDependency)) return undefinedValue;
+    if (!(binding instanceof DirectiveBinding)) return undefinedValue;
 
     var dirDep = <DirectiveDependency>dep;
+    var dirBin = <DirectiveBinding>binding;
     var staticKeys = StaticKeys.instance();
 
 
@@ -601,8 +603,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
 
     if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
-      var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
-      return componentView.changeDetector.ref;
+      if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
+        var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
+        return componentView.changeDetector.ref;
+      } else {
+        return this._preBuiltObjects.view.changeDetector.ref;
+      }
     }
 
     if (dirDep.key.id === StaticKeys.instance().elementRefId) {
