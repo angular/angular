@@ -580,7 +580,9 @@ export class Injector {
       d18 = length > 18 ? this._getByDependency(binding, deps[18], visibility) : null;
       d19 = length > 19 ? this._getByDependency(binding, deps[19], visibility) : null;
     } catch (e) {
-      if (e instanceof AbstractBindingError) e.addKey(binding.key);
+      if (e instanceof AbstractBindingError) {
+        e = e.addKey(binding.key)
+      };
       throw e;
     }
 

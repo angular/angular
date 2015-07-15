@@ -33,18 +33,18 @@ export class AbstractBindingError extends BaseException {
   message: string;
   keys: List<any>;
   constructResolvingMessage: Function;
-  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(key, constructResolvingMessage: Function, originalException?, originalStack?) {
+
+  constructor(keys: List<any>, constructResolvingMessage: Function, originalException?,
+              originalStack?) {
     super(null, originalException, originalStack);
-    this.keys = [key];
+    this.keys = keys;
     this.constructResolvingMessage = constructResolvingMessage;
     this.message = this.constructResolvingMessage(this.keys);
   }
 
-  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  addKey(key): void {
-    this.keys.push(key);
-    this.message = this.constructResolvingMessage(this.keys);
+  addKey(key): AbstractBindingError {
+    return new AbstractBindingError(ListWrapper.concat(this.keys, [key]),
+                                    this.constructResolvingMessage);
   }
 
   toString(): string { return this.message; }
@@ -55,9 +55,8 @@ export class AbstractBindingError extends BaseException {
  * {@link Injector} does not have a {@link Binding} for {@link Key}.
  */
 export class NoBindingError extends AbstractBindingError {
-  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
-    super(key, function(keys: List<any>) {
+    super([key], function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
       return `No provider for ${first}!${constructResolvingPath(keys)}`;
     });
@@ -87,9 +86,8 @@ export class NoBindingError extends AbstractBindingError {
  * the dependency graph is async then the graph can only be retrieved using the `asyncGet` API.
  */
 export class AsyncBindingError extends AbstractBindingError {
-  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
-    super(key, function(keys: List<any>) {
+    super([key], function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Cannot instantiate ${first} synchronously. It is provided as a promise!${constructResolvingPath(keys)}`;
     });
@@ -113,9 +111,8 @@ export class AsyncBindingError extends AbstractBindingError {
  * Retrieving `A` or `B` throws a `CyclicDependencyError` as the graph above cannot be constructed.
  */
 export class CyclicDependencyError extends AbstractBindingError {
-  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
-    super(key, function(keys: List<any>) {
+    super([key], function(keys: List<any>) {
       return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
     });
   }
@@ -129,10 +126,8 @@ export class CyclicDependencyError extends AbstractBindingError {
  */
 export class InstantiationError extends AbstractBindingError {
   causeKey;
-
-  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(originalException, originalStack, key) {
-    super(key, function(keys: List<any>) {
+    super([key], function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
              ` ORIGINAL ERROR: ${originalException}` + `\n\n ORIGINAL STACK: ${originalStack}`;
