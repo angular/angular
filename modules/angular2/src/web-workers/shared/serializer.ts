@@ -102,7 +102,7 @@ export class Serializer {
 
 class ASTWithSourceSerializer {
   static serialize(tree: ASTWithSource): Object {
-    return { 'input': tree.source, 'location': tree.location };
+    return {'input': tree.source, 'location': tree.location};
   }
 
   static deserialize(obj: any, data: string): AST {
@@ -177,15 +177,16 @@ class DirectiveBinderSerializer {
 class ElementBinderSerializer {
   static serialize(binder: ElementBinder): Object {
     return {
-      'index': binder.index, 'parentIndex': binder.parentIndex,
-          'distanceToParent': binder.distanceToParent,
-          'directives': Serializer.serialize(binder.directives, DirectiveBinder),
-          'nestedProtoView': Serializer.serialize(binder.nestedProtoView, ProtoViewDto),
-          'propertyBindings': Serializer.serialize(binder.propertyBindings, ElementPropertyBinding),
-          'variableBindings': Serializer.mapToObject(binder.variableBindings),
-          'eventBindings': Serializer.serialize(binder.eventBindings, EventBinding),
-          'textBindings': Serializer.serialize(binder.textBindings, ASTWithSource),
-          'readAttributes': Serializer.mapToObject(binder.readAttributes)
+      'index': binder.index,
+      'parentIndex': binder.parentIndex,
+      'distanceToParent': binder.distanceToParent,
+      'directives': Serializer.serialize(binder.directives, DirectiveBinder),
+      'nestedProtoView': Serializer.serialize(binder.nestedProtoView, ProtoViewDto),
+      'propertyBindings': Serializer.serialize(binder.propertyBindings, ElementPropertyBinding),
+      'variableBindings': Serializer.mapToObject(binder.variableBindings),
+      'eventBindings': Serializer.serialize(binder.eventBindings, EventBinding),
+      'textBindings': Serializer.serialize(binder.textBindings, ASTWithSource),
+      'readAttributes': Serializer.mapToObject(binder.readAttributes)
     };
   }
 
@@ -209,8 +210,10 @@ class ProtoViewDtoSerializer {
   static serialize(view: ProtoViewDto): Object {
     // TODO: fix render refs and write a serializer for them
     return {
-      'render': null, 'elementBinders': Serializer.serialize(view.elementBinders, ElementBinder),
-          'variableBindings': Serializer.mapToObject(view.variableBindings), 'type': view.type
+      'render': null,
+      'elementBinders': Serializer.serialize(view.elementBinders, ElementBinder),
+      'variableBindings': Serializer.mapToObject(view.variableBindings),
+      'type': view.type
     };
   }
 
