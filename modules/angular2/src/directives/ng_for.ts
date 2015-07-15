@@ -5,7 +5,8 @@ import {
   ProtoViewRef,
   Pipes,
   LifecycleEvent,
-  Pipe
+  Pipe,
+  ChangeDetectorRef
 } from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
@@ -46,11 +47,11 @@ export class NgFor {
   _pipe: Pipe;
 
   constructor(private viewContainer: ViewContainerRef, private protoViewRef: ProtoViewRef,
-              private pipes: Pipes) {}
+              private pipes: Pipes, private cdr: ChangeDetectorRef) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;
-    this._pipe = this.pipes.get("iterableDiff", value, null, this._pipe);
+    this._pipe = this.pipes.get("iterableDiff", value, this.cdr, this._pipe);
   }
 
   onCheck() {
