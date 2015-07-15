@@ -81,6 +81,7 @@
     "gulp-uglify": "^1.2.0",
     "gulp-webserver": "^0.8.7",
     "html2jade": "^0.8.3",
+    "http-rewrite-middleware": "^0.1.6",
     "indent-string": "^1.2.1",
     "jasmine": "2.3.1",
     "jasmine-core": "2.3.4",
