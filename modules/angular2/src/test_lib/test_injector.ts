@@ -56,6 +56,7 @@ import {
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
 } from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+import {Log} from './utils';
 
 /**
  * Returns the root injector bindings.
@@ -107,6 +108,7 @@ function _getAppBindings() {
     CompilerCache,
     bind(ViewResolver).toClass(MockViewResolver),
     bind(Pipes).toValue(defaultPipes),
+    Log,
     bind(ChangeDetection).toClass(DynamicChangeDetection),
     ViewLoader,
     DynamicComponentLoader,

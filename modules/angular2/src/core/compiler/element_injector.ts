@@ -603,6 +603,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
 
     if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
+      // We provide the component's view change detector to components and
+      // the surrounding component's change detector to directives.
       if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
         var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
         return componentView.changeDetector.ref;
