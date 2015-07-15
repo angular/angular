@@ -174,7 +174,8 @@ export class RouteRegistry {
 
       var componentRecognizer = this._rules.get(componentCursor);
       if (isBlank(componentRecognizer)) {
-        throw new BaseException(`Component "${getTypeNameForDebugging(componentCursor)}" has no route config.`);
+        throw new BaseException(
+            `Component "${getTypeNameForDebugging(componentCursor)}" has no route config.`);
       }
       var response = componentRecognizer.generate(segment, params);
       if (isBlank(response)) {
