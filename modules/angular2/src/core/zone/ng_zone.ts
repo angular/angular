@@ -62,7 +62,7 @@ export class NgZone {
     if (global.zone) {
       this._disabled = false;
       this._mountZone = global.zone;
-      this._innerZone = this._createInnerZone(this._mountZone, enableLongStackTrace)
+      this._innerZone = this._createInnerZone(this._mountZone, enableLongStackTrace);
     } else {
       this._disabled = true;
       this._mountZone = null;
@@ -159,9 +159,9 @@ export class NgZone {
 
     if (enableLongStackTrace) {
       errorHandling = StringMapWrapper.merge(Zone.longStackTraceZone,
-                                             {onError: function(e) { ngZone._onError(this, e) }});
+                                             {onError: function(e) { ngZone._onError(this, e); }});
     } else {
-      errorHandling = {onError: function(e) { ngZone._onError(this, e) }};
+      errorHandling = {onError: function(e) { ngZone._onError(this, e); }};
     }
 
     return zone.fork(errorHandling)
@@ -200,7 +200,7 @@ export class NgZone {
                   }
                 }
               }
-            }
+            };
           },
           '$scheduleMicrotask': function(parentScheduleMicrotask) {
             return function(fn) {
@@ -213,7 +213,7 @@ export class NgZone {
                 }
               };
               parentScheduleMicrotask.call(this, microtask);
-            }
+            };
           },
           _innerZone: true
         });

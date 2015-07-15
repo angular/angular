@@ -65,7 +65,7 @@ export class ObservablePipe implements Pipe {
 
   _subscribe(obs: Observable): void {
     this._observable = obs;
-    this._subscription = ObservableWrapper.subscribe(obs, value => {this._updateLatestValue(value)},
+    this._subscription = ObservableWrapper.subscribe(obs, value => this._updateLatestValue(value),
                                                      e => { throw e; });
   }
 

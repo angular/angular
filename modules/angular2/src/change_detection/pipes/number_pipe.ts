@@ -48,7 +48,7 @@ export class NumberPipe extends BasePipe implements PipeFactory {
 
   supports(obj): boolean { return isNumber(obj); }
 
-  create(cdRef: ChangeDetectorRef): Pipe { return this }
+  create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }
 
 /**

@@ -95,7 +95,7 @@ export class Pipes {
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[Pipes, new UnboundedMetadata(), new OptionalMetadata()]]
-    })
+    });
   }
 
   private _getListOfFactories(type: string, obj: any): PipeFactory[] {

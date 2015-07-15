@@ -300,7 +300,7 @@ export function bootstrap(appComponentType: Type,
       bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
     };
     PromiseWrapper.then(compRefToken, tick,
-                        (err, stackTrace) => {bootstrapProcess.reject(err, stackTrace)});
+                        (err, stackTrace) => bootstrapProcess.reject(err, stackTrace));
   });
 
   return bootstrapProcess.promise;

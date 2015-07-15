@@ -96,5 +96,5 @@ export class DatePipe extends BasePipe implements PipeFactory {
 
   supports(obj): boolean { return isDate(obj) || isNumber(obj); }
 
-  create(cdRef: ChangeDetectorRef): Pipe { return this }
+  create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }

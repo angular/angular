@@ -167,7 +167,7 @@ class _ParseAST {
   expectIdentifierOrKeyword(): string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
-      this.error(`Unexpected token ${n}, expected identifier or keyword`)
+      this.error(`Unexpected token ${n}, expected identifier or keyword`);
     }
     this.advance();
     return n.toString();
@@ -176,7 +176,7 @@ class _ParseAST {
   expectIdentifierOrKeywordOrString(): string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
-      this.error(`Unexpected token ${n}, expected identifier, keyword, or string`)
+      this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
     }
     this.advance();
     return n.toString();

@@ -278,6 +278,7 @@ gulp.task('lint', ['build.tools'], function() {
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
     "rules": {
+      "semicolon": true,
       "requireReturnType": true
     }
   };
