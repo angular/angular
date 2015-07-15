@@ -18,19 +18,26 @@ import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './view
 import {DomView, DomViewRef, resolveInternalDomView} from './view/view';
 import {DomElement} from './view/element';
 import {DomViewContainer} from './view/view_container';
-import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from './util';
+import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS, camelCaseToDashCase} from './util';
 
 import {Renderer, RenderProtoViewRef, RenderViewRef, RenderElementRef} from '../api';
 
 export const DOCUMENT_TOKEN = CONST_EXPR(new OpaqueToken('DocumentToken'));
+export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES =
+    CONST_EXPR(new OpaqueToken('DomReflectPropertiesAsAttributes'));
+const REFLECT_PREFIX = 'ng-reflect-';
 
 @Injectable()
 export class DomRenderer extends Renderer {
   _document;
+  _reflectPropertiesAsAttributes: boolean;
 
   constructor(public _eventManager: EventManager, public _shadowDomStrategy: ShadowDomStrategy,
-              @Inject(DOCUMENT_TOKEN) document) {
+              @Inject(DOCUMENT_TOKEN) document,
+              @Inject(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES) reflectPropertiesAsAttributes:
+                  boolean) {
     super();
+    this._reflectPropertiesAsAttributes = reflectPropertiesAsAttributes;
     this._document = document;
   }
 
@@ -186,6 +193,11 @@ export class DomRenderer extends Renderer {
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any): void {
     var view = resolveInternalDomView(location.renderView);
     view.setElementProperty(location.boundElementIndex, propertyName, propertyValue);
+    // Reflect the property value as an attribute value with ng-reflect- prefix.
+    if (this._reflectPropertiesAsAttributes) {
+      this.setElementAttribute(location, `${REFLECT_PREFIX}${camelCaseToDashCase(propertyName)}`,
+                               propertyValue);
+    }
   }
 
   setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string):

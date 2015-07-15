@@ -56,7 +56,11 @@ import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
-import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {
+  DomRenderer,
+  DOCUMENT_TOKEN,
+  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
+} from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
@@ -77,6 +81,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
   return [
     bind(DOCUMENT_TOKEN)
         .toValue(DOM.defaultDoc()),
+    bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     bind(appComponentTypeToken).toValue(appComponentType),
     bind(appComponentRefPromiseToken)
         .toFactory(

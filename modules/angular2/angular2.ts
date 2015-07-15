@@ -64,4 +64,8 @@ export {
   RenderViewRef,
   RenderProtoViewRef
 } from 'angular2/src/render/api';
-export {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+export {
+  DomRenderer,
+  DOCUMENT_TOKEN,
+  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
+} from 'angular2/src/render/dom/dom_renderer';

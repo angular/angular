@@ -19,6 +19,8 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DomTestbed, TestView, elRef} from './dom_testbed';
 
 import {ViewDefinition, DirectiveMetadata, RenderViewRef} from 'angular2/src/render/api';
+import {DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from 'angular2/src/render/dom/dom_renderer';
+import {bind} from 'angular2/di';
 
 export function main() {
   describe('DomRenderer integration', () => {
@@ -125,6 +127,50 @@ export function main() {
                async.done();
              });
        }));
+
+
+    it('should NOT reflect property values as attributes if flag is NOT set',
+       inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+         tb.compileAll([
+             someComponent,
+             new ViewDefinition(
+                 {componentId: 'someComponent', template: '<input [title]="y">', directives: []})
+           ])
+             .then((protoViewDtos) => {
+               var rootView = tb.createRootView(protoViewDtos[0]);
+               var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
+               var el = DOM.childNodes(tb.rootEl)[0];
+               tb.renderer.setElementProperty(elRef(cmpView.viewRef, 0), 'maxLength', '20');
+               expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
+                   .toEqual(null);
+
+               async.done();
+             });
+       }));
+
+    describe('reflection', () => {
+      beforeEachBindings(() => [bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(true)]);
+      it('should reflect property values as attributes if flag is set',
+         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+           tb.compileAll([
+               someComponent,
+               new ViewDefinition({
+                 componentId: 'someComponent',
+                 template: '<input [title]="y">',
+                 directives: []
+               })
+             ])
+               .then((protoViewDtos) => {
+                 var rootView = tb.createRootView(protoViewDtos[0]);
+                 var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
+                 var el = DOM.childNodes(tb.rootEl)[0];
+                 tb.renderer.setElementProperty(elRef(cmpView.viewRef, 0), 'maxLength', '20');
+                 expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
+                     .toEqual('20');
+                 async.done();
+               });
+         }));
+    });
 
     if (DOM.supportsDOMEvents()) {
       it('should call actions on the element independent of the compilation',
