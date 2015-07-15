@@ -1283,7 +1283,7 @@ export function main() {
 
                      PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                        expect(e.message).toEqual(
-                           `Can't bind to 'unknown' since it isn't a know property of the 'div' element and there are no matching directives with a corresponding property`);
+                           `Can't bind to 'unknown' since it isn't a known property of the '<div>' element and there are no matching directives with a corresponding property`);
                        async.done();
                        return null;
                      });

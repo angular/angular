@@ -322,7 +322,7 @@ function buildElementPropertyBindings(protoElement: /*element*/ any, isNgCompone
       propertyBindings.push(propertyBinding);
     } else if (!SetWrapper.has(directiveTempaltePropertyNames, propertyNameInTemplate)) {
       throw new BaseException(
-          `Can't bind to '${propertyNameInTemplate}' since it isn't a know property of the '${DOM.tagName(protoElement).toLowerCase()}' element and there are no matching directives with a corresponding property`);
+          `Can't bind to '${propertyNameInTemplate}' since it isn't a known property of the '<${DOM.tagName(protoElement).toLowerCase()}>' element and there are no matching directives with a corresponding property`);
     }
   });
   return propertyBindings;

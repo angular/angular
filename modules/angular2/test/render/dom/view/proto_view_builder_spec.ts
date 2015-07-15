@@ -31,7 +31,7 @@ export function main() {
           builder.bindElement(el('<div/>')).bindProperty('unknownProperty', emptyExpr());
           expect(() => builder.build())
               .toThrowError(
-                  `Can't bind to 'unknownProperty' since it isn't a know property of the 'div' element and there are no matching directives with a corresponding property`);
+                  `Can't bind to 'unknownProperty' since it isn't a known property of the '<div>' element and there are no matching directives with a corresponding property`);
         });
 
         it('should allow unknown properties if a directive uses it', () => {
@@ -53,7 +53,7 @@ export function main() {
           binder.setComponentId('someComponent');
           expect(() => builder.build())
               .toThrowError(
-                  `Can't bind to 'unknownProperty' since it isn't a know property of the 'some-custom' element and there are no matching directives with a corresponding property`);
+                  `Can't bind to 'unknownProperty' since it isn't a known property of the '<some-custom>' element and there are no matching directives with a corresponding property`);
         });
 
       });
