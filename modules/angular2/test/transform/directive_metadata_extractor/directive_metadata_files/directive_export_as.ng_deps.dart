@@ -8,11 +8,7 @@ import 'package:angular2/angular2.dart'
         Directive,
         View,
         NgElement,
-        onChange,
-        onDestroy,
-        onInit,
-        onCheck,
-        onAllChangesDone;
+        LifecycleEvent;
 
 var _visited = false;
 void initReflector(reflector) {

@@ -192,8 +192,8 @@ export interface InjectorStrategy {
   getMaxNumberOfObjects(): number;
 
   attach(parent: Injector, isBoundary: boolean): void;
-  hydrate(): void;
-  dehydrate(): void;
+  resetContructionCounter(): void;
+  instantiateBinding(binding: ResolvedBinding, visibility: number): any;
 }
 
 export class InjectorInlineStrategy implements InjectorStrategy {
@@ -210,52 +210,16 @@ export class InjectorInlineStrategy implements InjectorStrategy {
 
   constructor(public injector: Injector, public protoStrategy: ProtoInjectorInlineStrategy) {}
 
-  hydrate(): void {
-    var p = this.protoStrategy;
-    var inj = this.injector;
+  resetContructionCounter(): void { this.injector._constructionCounter = 0; }
 
-    inj._constructionCounter = 0;
-
-
-    if (isPresent(p.keyId0) && this.obj0 === undefinedValue)
-      this.obj0 = inj._new(p.binding0, p.visibility0);
-    if (isPresent(p.keyId1) && this.obj1 === undefinedValue)
-      this.obj1 = inj._new(p.binding1, p.visibility1);
-    if (isPresent(p.keyId2) && this.obj2 === undefinedValue)
-      this.obj2 = inj._new(p.binding2, p.visibility2);
-    if (isPresent(p.keyId3) && this.obj3 === undefinedValue)
-      this.obj3 = inj._new(p.binding3, p.visibility3);
-    if (isPresent(p.keyId4) && this.obj4 === undefinedValue)
-      this.obj4 = inj._new(p.binding4, p.visibility4);
-    if (isPresent(p.keyId5) && this.obj5 === undefinedValue)
-      this.obj5 = inj._new(p.binding5, p.visibility5);
-    if (isPresent(p.keyId6) && this.obj6 === undefinedValue)
-      this.obj6 = inj._new(p.binding6, p.visibility6);
-    if (isPresent(p.keyId7) && this.obj7 === undefinedValue)
-      this.obj7 = inj._new(p.binding7, p.visibility7);
-    if (isPresent(p.keyId8) && this.obj8 === undefinedValue)
-      this.obj8 = inj._new(p.binding8, p.visibility8);
-    if (isPresent(p.keyId9) && this.obj9 === undefinedValue)
-      this.obj9 = inj._new(p.binding9, p.visibility9);
+  instantiateBinding(binding: ResolvedBinding, visibility: number): any {
+    return this.injector._new(binding, visibility);
   }
 
   attach(parent: Injector, isBoundary: boolean): void {
     var inj = this.injector;
     inj._parent = parent;
     inj._isBoundary = isBoundary;
-  }
-
-  dehydrate() {
-    this.obj0 = undefinedValue;
-    this.obj1 = undefinedValue;
-    this.obj2 = undefinedValue;
-    this.obj3 = undefinedValue;
-    this.obj4 = undefinedValue;
-    this.obj5 = undefinedValue;
-    this.obj6 = undefinedValue;
-    this.obj7 = undefinedValue;
-    this.obj8 = undefinedValue;
-    this.obj9 = undefinedValue;
   }
 
   getObjByKeyId(keyId: number, visibility: number): any {
@@ -352,13 +316,10 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     ListWrapper.fill(this.objs, undefinedValue);
   }
 
-  hydrate(): void {
-    var p = this.protoStrategy;
-    for (var i = 0; i < p.keyIds.length; i++) {
-      if (isPresent(p.keyIds[i]) && this.objs[i] === undefinedValue) {
-        this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
-      }
-    }
+  resetContructionCounter(): void { this.injector._constructionCounter = 0; }
+
+  instantiateBinding(binding: ResolvedBinding, visibility: number): any {
+    return this.injector._new(binding, visibility);
   }
 
   attach(parent: Injector, isBoundary: boolean): void {
@@ -366,8 +327,6 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     inj._parent = parent;
     inj._isBoundary = isBoundary;
   }
-
-  dehydrate(): void { ListWrapper.fill(this.objs, undefinedValue); }
 
   getObjByKeyId(keyId: number, visibility: number): any {
     var p = this.protoStrategy;

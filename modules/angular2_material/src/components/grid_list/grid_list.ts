@@ -1,4 +1,4 @@
-import {Component, View, Parent, onDestroy, onChange, onAllChangesDone} from 'angular2/angular2';
+import {Component, View, Parent, LifecycleEvent} from 'angular2/angular2';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {StringWrapper, isPresent, isString, NumberWrapper} from 'angular2/src/facade/lang';
@@ -14,7 +14,7 @@ import {Math} from 'angular2/src/facade/math';
 @Component({
   selector: 'md-grid-list',
   properties: ['cols', 'rowHeight', 'gutterSize'],
-  lifecycle: [onAllChangesDone]
+  lifecycle: [LifecycleEvent.onAllChangesDone]
 })
 @View({templateUrl: 'angular2_material/src/components/grid_list/grid_list.html'})
 export class MdGridList {
@@ -221,7 +221,7 @@ export class MdGridList {
     '[style.paddingTop]': 'stylePaddingTop',
     '[attr.role]': '"listitem"'
   },
-  lifecycle: [onDestroy, onChange]
+  lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange]
 })
 @View({templateUrl: 'angular2_material/src/components/grid_list/grid_tile.html'})
 export class MdGridTile {

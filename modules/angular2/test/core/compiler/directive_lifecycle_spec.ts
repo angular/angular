@@ -14,14 +14,7 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {
-  Directive,
-  onChange,
-  onDestroy,
-  onCheck,
-  onInit,
-  onAllChangesDone
-} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 
 export function main() {
@@ -37,7 +30,8 @@ export function main() {
         });
 
         it("should be true when the lifecycle includes onChange", () => {
-          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onChange]})).callOnChange)
+          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [LifecycleEvent.onChange]}))
+                     .callOnChange)
               .toBe(true);
         });
 
@@ -57,7 +51,8 @@ export function main() {
         });
 
         it("should be true when the lifecycle includes onDestroy", () => {
-          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onDestroy]})).callOnDestroy)
+          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [LifecycleEvent.onDestroy]}))
+                     .callOnDestroy)
               .toBe(true);
         });
 
@@ -72,7 +67,8 @@ export function main() {
         });
 
         it("should be true when the lifecycle includes onDestroy", () => {
-          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onInit]})).callOnInit)
+          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [LifecycleEvent.onInit]}))
+                     .callOnInit)
               .toBe(true);
         });
 
@@ -86,7 +82,8 @@ export function main() {
         });
 
         it("should be true when the lifecycle includes onCheck", () => {
-          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onCheck]})).callOnCheck)
+          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [LifecycleEvent.onCheck]}))
+                     .callOnCheck)
               .toBe(true);
         });
 
@@ -102,7 +99,8 @@ export function main() {
         });
 
         it("should be true when the lifecycle includes onAllChangesDone", () => {
-          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onAllChangesDone]}))
+          expect(metadata(DirectiveNoHooks,
+                          new Directive({lifecycle: [LifecycleEvent.onAllChangesDone]}))
                      .callOnAllChangesDone)
               .toBe(true);
         });

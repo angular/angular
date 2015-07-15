@@ -1,6 +1,5 @@
 import {Renderer} from 'angular2/render';
-import {ElementRef, QueryList} from 'angular2/core';
-import {Directive, Query, onDestroy, onChange} from 'angular2/annotations';
+import {ElementRef, QueryList, Directive, Query} from 'angular2/angular2';
 
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';

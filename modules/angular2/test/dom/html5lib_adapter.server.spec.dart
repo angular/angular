@@ -16,5 +16,19 @@ main() {
     it('should parse HTML', () {
       expect(subject.parse('<div>hi</div>'), isNotNull);
     });
+
+    it('implements hasAttribute', () {
+      var div = subject.querySelector(
+          subject.parse('<div foo="bar"></div>'), ('div'));
+      expect(subject.hasAttribute(div, 'foo')).toBeTrue();
+      expect(subject.hasAttribute(div, 'bar')).toBeFalse();
+    });
+
+    it('implements getAttribute', () {
+      var div = subject.querySelector(
+          subject.parse('<div foo="bar"></div>'), ('div'));
+      expect(subject.getAttribute(div, 'foo')).toEqual('bar');
+      expect(subject.getAttribute(div, 'bar')).toBe(null);
+    });
   });
 }

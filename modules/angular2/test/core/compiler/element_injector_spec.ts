@@ -38,7 +38,7 @@ import {
   Query,
   Component,
   Directive,
-  onDestroy
+  LifecycleEvent
 } from 'angular2/annotations';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, InjectMetadata, ParentMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
@@ -661,17 +661,49 @@ export function main() {
             expect(inj.get(NeedsService).service).toEqual('service');
           });
 
-            it("should not instantiate other directives that depend on viewInjector bindings",
-               () => {
-                 var directiveAnnotation = new dirAnn.Component({
-                   viewInjector: ListWrapper.concat([bind("service").toValue("service")], extraBindings)
-                 });
-                 var componentDirective =
-                     DirectiveBinding.createFromType(SimpleDirective, directiveAnnotation);
-                 expect(() => { injector([componentDirective, NeedsService], null); })
-                     .toThrowError(containsRegexp(
-                         `No provider for service! (${stringify(NeedsService) } -> service)`));
+          it("should instantiate hostInjector injectables lazily", () => {
+            var created = false;
+            var inj = injector(
+                ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
+                                     hostInjector: [bind('service').toFactory(() => created = true)]
+                                   }))],
+                                   extraBindings),
+                null, true);
+
+            expect(created).toBe(false);
+
+            inj.get('service');
+
+            expect(created).toBe(true);
+          });
+
+          it("should instantiate viewInjector injectables lazily", () => {
+            var created = false;
+            var inj = injector(
+                ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
+                                     viewInjector: [bind('service').toFactory(() => created = true)]
+                                   }))],
+                                   extraBindings),
+                null, true);
+
+            expect(created).toBe(false);
+
+            inj.get('service');
+
+            expect(created).toBe(true);
+          });
+
+          it("should not instantiate other directives that depend on viewInjector bindings",
+             () => {
+               var directiveAnnotation = new dirAnn.Component({
+                 viewInjector: ListWrapper.concat([bind("service").toValue("service")], extraBindings)
                });
+               var componentDirective =
+                   DirectiveBinding.createFromType(SimpleDirective, directiveAnnotation);
+               expect(() => { injector([componentDirective, NeedsService], null); })
+                   .toThrowError(containsRegexp(
+                       `No provider for service! (${stringify(NeedsService) } -> service)`));
+             });
 
           it("should instantiate directives that depend on hostInjector bindings of other directives", () => {
             var shadowInj = hostShadowInjectors(
@@ -831,7 +863,7 @@ export function main() {
           it("should call onDestroy on directives subscribed to this event", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(DirectiveWithDestroy,
-                                                 new dirAnn.Directive({lifecycle: [onDestroy]}))],
+                                                 new dirAnn.Directive({lifecycle: [LifecycleEvent.onDestroy]}))],
                 extraBindings));
             var destroy = inj.get(DirectiveWithDestroy);
             inj.dehydrate();

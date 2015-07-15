@@ -1,11 +1,11 @@
-import {Component, onChange, View, Attribute} from 'angular2/angular2';
+import {Component, LifecycleEvent, View, Attribute} from 'angular2/angular2';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 
 @Component({
   selector: 'md-progress-linear',
-  lifecycle: [onChange],
+  lifecycle: [LifecycleEvent.onChange],
   properties: ['value', 'bufferValue'],
   host: {
     '[attr.role]': '"progressbar"',

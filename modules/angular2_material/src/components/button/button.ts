@@ -1,4 +1,4 @@
-import {Component, View, onChange} from 'angular2/angular2';
+import {Component, View, LifecycleEvent} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 
 
@@ -13,7 +13,7 @@ export class MdButton {
   selector: '[md-button][href]',
   properties: ['disabled'],
   host: {'(click)': 'onClick($event)', '[tabIndex]': 'tabIndex'},
-  lifecycle: [onChange]
+  lifecycle: [LifecycleEvent.onChange]
 })
 @View({templateUrl: 'angular2_material/src/components/button/button.html'})
 export class MdAnchor {

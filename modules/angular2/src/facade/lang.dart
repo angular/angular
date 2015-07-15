@@ -190,6 +190,10 @@ class BaseException extends Error {
   }
 }
 
+Error makeTypeError([String message = ""]) {
+  return new BaseException(message);
+}
+
 const _NAN_KEY = const Object();
 
 // Dart can have identical(str1, str2) == false while str1 == str2
@@ -202,9 +206,8 @@ dynamic getMapKey(value) {
   return value.isNaN ? _NAN_KEY : value;
 }
 
-dynamic normalizeBlank(obj) {
-  return isBlank(obj) ? null : obj;
-}
+// TODO: remove with https://github.com/angular/angular/issues/3055
+dynamic normalizeBlank(obj) => obj;
 
 bool normalizeBool(bool obj) {
   return isBlank(obj) ? false : obj;

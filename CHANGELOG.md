@@ -1,3 +1,67 @@
+<a name"2.0.0-alpha.31"></a>
+### 2.0.0-alpha.31 (2015-07-14)
+
+
+#### Bug Fixes
+
+* **build:**
+  * remove the travis deploy step, which is broken. ([206c9bdd](https://github.com/angular/angular/commit/206c9bdd))
+  * reduce the deploy upload. ([4264bd3b](https://github.com/angular/angular/commit/4264bd3b))
+  * clang-format ([df877a7d](https://github.com/angular/angular/commit/df877a7d))
+* **compiler:** keep `DOM.hasProperty` in sync between browser and transformer. ([b3a763a7](https://github.com/angular/angular/commit/b3a763a7), closes [#2984](https://github.com/angular/angular/issues/2984), [#2981](https://github.com/angular/angular/issues/2981))
+* **css_shim:** fixes multiple uses of polyfill-unscoped-rule. ([749d0432](https://github.com/angular/angular/commit/749d0432))
+* **di:**
+  * removed default visibility ([04baa46e](https://github.com/angular/angular/commit/04baa46e))
+  * do not use exceptions to detect if reflection is enabled ([a6210466](https://github.com/angular/angular/commit/a6210466))
+  * hostInjector and viewInjector support nested arrays ([0ed5dd0d](https://github.com/angular/angular/commit/0ed5dd0d))
+* **example:** add missing todo ([1427d73b](https://github.com/angular/angular/commit/1427d73b))
+* **package.json:** move some deps into dev deps. ([546a8f92](https://github.com/angular/angular/commit/546a8f92), closes [#2448](https://github.com/angular/angular/issues/2448))
+* **router:**
+  * export lifecycle hooks in bundle ([97ef1c27](https://github.com/angular/angular/commit/97ef1c27))
+  * fix broken `HashLocationStrategy` string issue for dart ([d6dadc6e](https://github.com/angular/angular/commit/d6dadc6e))
+  * ensure that page refresh with hash URLs works ([c177d889](https://github.com/angular/angular/commit/c177d889), closes [#2920](https://github.com/angular/angular/issues/2920))
+* **transform:** handle multiple interfaces in directive processor ([ac50ffca](https://github.com/angular/angular/commit/ac50ffca), closes [#2941](https://github.com/angular/angular/issues/2941))
+* **transformer:**
+  * Event getters now use property name not event name ([cf103de4](https://github.com/angular/angular/commit/cf103de4))
+  * fix 'pub build' in examples ([62589293](https://github.com/angular/angular/commit/62589293))
+* **tsconfig:** target should be lower case ([0792f1a7](https://github.com/angular/angular/commit/0792f1a7), closes [#2938](https://github.com/angular/angular/issues/2938))
+
+
+#### Features
+
+* upgrade clang-format to v1.0.28. ([45994a53](https://github.com/angular/angular/commit/45994a53))
+* **build:** Allow building in windows without admin priviledges ([f1f57843](https://github.com/angular/angular/commit/f1f57843), closes [#2873](https://github.com/angular/angular/issues/2873))
+* **forms:** changed all form directives to have basic control attributes ([3f7ebde0](https://github.com/angular/angular/commit/3f7ebde0))
+* **license:** include license files in dev and dev.sfx bundles ([1eab4f5f](https://github.com/angular/angular/commit/1eab4f5f))
+* **pipes:**
+  * add static append method to Pipes ([1eebceab](https://github.com/angular/angular/commit/1eebceab), closes [#2901](https://github.com/angular/angular/issues/2901))
+  * add date pipe ([b716046b](https://github.com/angular/angular/commit/b716046b), closes [#2877](https://github.com/angular/angular/issues/2877))
+  * add number (decimal, percent, currency) pipes ([3143d188](https://github.com/angular/angular/commit/3143d188))
+* **query:** initial implementation of view query. ([7ee6963f](https://github.com/angular/angular/commit/7ee6963f), closes [#1935](https://github.com/angular/angular/issues/1935))
+* **router:**
+  * introduce matrix params ([5677bf73](https://github.com/angular/angular/commit/5677bf73), closes [#2774](https://github.com/angular/angular/issues/2774), [#2989](https://github.com/angular/angular/issues/2989))
+  * lifecycle hooks ([a9a552c1](https://github.com/angular/angular/commit/a9a552c1), closes [#2640](https://github.com/angular/angular/issues/2640))
+* **test:** add test bundle ([71c65b47](https://github.com/angular/angular/commit/71c65b47))
+* **zone:** add "on event done" zone hook ([0e28297e](https://github.com/angular/angular/commit/0e28297e))
+
+
+#### Breaking Changes
+
+*     Directives will use the Unbounded visibility by default, whereas before the change they used Self
+
+ ([04baa46e](https://github.com/angular/angular/commit/04baa46e))
+*     This change renames all instances of PipeRegistry to Pipes.
+    As part of this change, the former "defaultPipes" export is
+    now a Pipes instance, instead of a map. The map that was previously
+    called "defaultPipes" no longer exists, but may be accessed via
+    defaultPipes.config.
+
+ ([9a70f84e](https://github.com/angular/angular/commit/9a70f84e))
+
+* We export InjectMetadata instead of InjectAnnotation
+
+  ([b54e7214](https://github.com/angular/angular/commit/b54e7214)) 
+
 <a name"2.0.0-alpha.30"></a>
 ### 2.0.0-alpha.30 (2015-07-07)
 

@@ -13,7 +13,7 @@ class Html5LibDomAdapter implements DomAdapter {
   hasProperty(element, String name) {
     // This is needed for serverside compile to generate the right getters/setters.
     // TODO: change this once we have property schema support.
-    // Attention: Keep this in sync with browser_adapter.dart! 
+    // Attention: Keep this in sync with browser_adapter.dart!
     return true;
   }
 
@@ -235,10 +235,14 @@ class Html5LibDomAdapter implements DomAdapter {
     return map;
   }
   hasAttribute(element, String attribute) {
-    throw 'not implemented';
+    // `attributes` keys can be {@link AttributeName}s.
+    return element.attributes.keys.any((key) => '$key' == attribute);
   }
   getAttribute(element, String attribute) {
-    throw 'not implemented';
+    // `attributes` keys can be {@link AttributeName}s.
+    var key = element.attributes.keys.firstWhere(
+        (key) => '$key' == attribute, orElse: () {});
+    return element.attributes[key];
   }
   setAttribute(element, String name, String value) {
     element.attributes[name] = value;

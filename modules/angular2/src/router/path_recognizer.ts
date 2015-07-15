@@ -26,6 +26,33 @@ import {RouteHandler} from './route_handler';
 export class Segment {
   name: string;
   regex: string;
+  generate(params: TouchMap): string { return ''; }
+}
+
+class TouchMap {
+  map: StringMap<string, string> = StringMapWrapper.create();
+  keys: StringMap<string, boolean> = StringMapWrapper.create();
+
+  constructor(map: StringMap<string, any>) {
+    if (isPresent(map)) {
+      StringMapWrapper.forEach(map, (value, key) => {
+        this.map[key] = isPresent(value) ? value.toString() : null;
+        this.keys[key] = true;
+      });
+    }
+  }
+
+  get(key: string): string {
+    StringMapWrapper.delete(this.keys, key);
+    return this.map[key];
+  }
+
+  getUnused(): StringMap<string, any> {
+    var unused: StringMap<string, any> = StringMapWrapper.create();
+    var keys = StringMapWrapper.keys(this.keys);
+    ListWrapper.forEach(keys, (key) => { unused[key] = StringMapWrapper.get(this.map, key); });
+    return unused;
+  }
 }
 
 function normalizeString(obj: any): string {
@@ -36,9 +63,20 @@ function normalizeString(obj: any): string {
   }
 }
 
-class ContinuationSegment extends Segment {
-  generate(params): string { return ''; }
+function parseAndAssignMatrixParams(keyValueMap, matrixString) {
+  if (matrixString[0] == ';') {
+    matrixString = matrixString.substring(1);
+  }
+
+  matrixString.split(';').forEach((entry) => {
+    var tuple = entry.split('=');
+    var key = tuple[0];
+    var value = tuple.length > 1 ? tuple[1] : true;
+    keyValueMap[key] = value;
+  });
 }
+
+class ContinuationSegment extends Segment {}
 
 class StaticSegment extends Segment {
   regex: string;
@@ -47,9 +85,14 @@ class StaticSegment extends Segment {
   constructor(public string: string) {
     super();
     this.regex = escapeRegex(string);
+
+    // we add this property so that the route matcher still sees
+    // this segment as a valid path even if do not use the matrix
+    // parameters
+    this.regex += '(;[^\/]+)?';
   }
 
-  generate(params): string { return this.string; }
+  generate(params: TouchMap): string { return this.string; }
 }
 
 @IMPLEMENTS(Segment)
@@ -58,23 +101,22 @@ class DynamicSegment {
 
   constructor(public name: string) {}
 
-  generate(params: StringMap<string, string>): string {
-    if (!StringMapWrapper.contains(params, this.name)) {
+  generate(params: TouchMap): string {
+    if (!StringMapWrapper.contains(params.map, this.name)) {
       throw new BaseException(
           `Route generator for '${this.name}' was not included in parameters passed.`);
     }
-    return normalizeString(StringMapWrapper.get(params, this.name));
+    return normalizeString(params.get(this.name));
   }
 }
 
 
 class StarSegment {
   regex: string = "(.+)";
+
   constructor(public name: string) {}
 
-  generate(params: StringMap<string, string>): string {
-    return normalizeString(StringMapWrapper.get(params, this.name));
-  }
+  generate(params: TouchMap): string { return normalizeString(params.get(this.name)); }
 }
 
 
@@ -168,9 +210,27 @@ export class PathRecognizer {
   }
 
   parseParams(url: string): StringMap<string, string> {
+    // the last segment is always the star one since it's terminal
+    var segmentsLimit = this.segments.length - 1;
+    var containsStarSegment =
+        segmentsLimit >= 0 && this.segments[segmentsLimit] instanceof StarSegment;
+
+    var matrixString;
+    if (!containsStarSegment) {
+      var matches =
+          RegExpWrapper.firstMatch(RegExpWrapper.create('^(.*\/[^\/]+?)(;[^\/]+)?\/?$'), url);
+      if (isPresent(matches)) {
+        url = matches[1];
+        matrixString = matches[2];
+      }
+
+      url = StringWrapper.replaceAll(url, /(;[^\/]+)(?=(\/|\Z))/g, '');
+    }
+
     var params = StringMapWrapper.create();
     var urlPart = url;
-    for (var i = 0; i < this.segments.length; i++) {
+
+    for (var i = 0; i <= segmentsLimit; i++) {
       var segment = this.segments[i];
       if (segment instanceof ContinuationSegment) {
         continue;
@@ -179,16 +239,45 @@ export class PathRecognizer {
       var match = RegExpWrapper.firstMatch(RegExpWrapper.create('/' + segment.regex), urlPart);
       urlPart = StringWrapper.substring(urlPart, match[0].length);
       if (segment.name.length > 0) {
-        StringMapWrapper.set(params, segment.name, match[1]);
+        params[segment.name] = match[1];
       }
+    }
+
+    if (isPresent(matrixString) && matrixString.length > 0 && matrixString[0] == ';') {
+      parseAndAssignMatrixParams(params, matrixString);
     }
 
     return params;
   }
 
-  generate(params: StringMap<string, string>): string {
-    return ListWrapper.join(ListWrapper.map(this.segments, (segment) => segment.generate(params)),
-                            '/');
+  generate(params: StringMap<string, any>): string {
+    var paramTokens = new TouchMap(params);
+    var applyLeadingSlash = false;
+
+    var url = '';
+    for (var i = 0; i < this.segments.length; i++) {
+      let segment = this.segments[i];
+      let s = segment.generate(paramTokens);
+      applyLeadingSlash = applyLeadingSlash || (segment instanceof ContinuationSegment);
+
+      if (s.length > 0) {
+        url += (i > 0 ? '/' : '') + s;
+      }
+    }
+
+    var unusedParams = paramTokens.getUnused();
+    StringMapWrapper.forEach(unusedParams, (value, key) => {
+      url += ';' + key;
+      if (isPresent(value)) {
+        url += '=' + value;
+      }
+    });
+
+    if (applyLeadingSlash) {
+      url += '/';
+    }
+
+    return url;
   }
 
   resolveComponentType(): Promise<any> { return this.handler.resolveComponentType(); }
