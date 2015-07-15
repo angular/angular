@@ -35,15 +35,28 @@ export class DomCompiler extends RenderCompiler {
   }
 
   compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> {
+    var flatExceptionText = `Directive must not span element boundaries, but had '${directiveMetadata.selector}'`;
     var hostViewDef = new ViewDefinition({
-      componentId: directiveMetadata.id,
-      templateAbsUrl: null, template: null,
-      styles: null,
-      styleAbsUrls: null,
-      directives: [directiveMetadata]
-    });
-    var element = DOM.createElement(directiveMetadata.selector);
-    return this._compileTemplate(hostViewDef, element, ViewType.HOST);
+        componentId: directiveMetadata.id,
+        templateAbsUrl: null, 
+        template: null,
+        styles: null,
+        styleAbsUrls: null,
+        directives: [directiveMetadata]
+      });
+    var element;
+    try {      
+      element = DOM.createElement(directiveMetadata.selector);
+      if(directiveMetadata.selector.indexOf(' ') > -1) {
+        throw new BaseException(flatExceptionText);
+      } else {
+        return this._compileTemplate(hostViewDef, element, ViewType.HOST);
+      }
+    } catch(e) {
+      if(!element || element.name.indexOf(' ') > -1) {
+        throw new BaseException(flatExceptionText);
+      }
+    }
   }
 
   _compileTemplate(viewDef: ViewDefinition, tplElement,

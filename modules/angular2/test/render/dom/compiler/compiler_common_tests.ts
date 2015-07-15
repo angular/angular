@@ -134,6 +134,13 @@ export function runCompilerCommonTests() {
                });
          }));
 
+        it('should report selector errors', () => {
+          expect(() => { 
+            var compiler = createCompiler(EMPTY_STEP);
+            compiler.compileHost(invalidSelectorComponent);
+          })
+          .toThrowError(`Directive must not span element boundaries, but had 'some-comp invalid'`);
+        });
     });
 
   });
@@ -191,5 +198,13 @@ class FakeViewLoader extends ViewLoader {
   }
 }
 
-var someComponent = DirectiveMetadata.create(
-    {selector: 'some-comp', id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE});
+var someComponent = DirectiveMetadata.create({
+  selector: 'some-comp',
+  id: 'someComponent',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
+var invalidSelectorComponent = DirectiveMetadata.create({
+  selector: 'some-comp invalid',
+  id: 'someComponent',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
