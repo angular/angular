@@ -25,7 +25,21 @@ export class IterableChangesFactory implements PipeFactory {
   create(cdRef: ChangeDetectorRef): Pipe { return new IterableChanges(); }
 }
 
-export class IterableChanges extends BasePipe {
+/**
+ * An interface that the result of the iterableDiff pipe must implement.
+ */
+export interface IIterableChangesResult {
+  forEachAddedItem(fn: Function): void;
+  forEachMovedItem(fn: Function): void;
+  forEachRemovedItem(fn: Function): void;
+}
+
+export interface IIterableChangeRecord {
+  currentIndex: number;
+  previousIndex: number;
+}
+
+export class IterableChanges extends BasePipe implements IIterableChangesResult {
   private _collection = null;
   private _length: int = null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
@@ -472,7 +486,7 @@ export class IterableChanges extends BasePipe {
   }
 }
 
-export class CollectionChangeRecord {
+export class CollectionChangeRecord implements IIterableChangeRecord {
   currentIndex: int = null;
   previousIndex: int = null;
 
