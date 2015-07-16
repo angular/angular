@@ -434,7 +434,7 @@ gulp.task('test.js', function(done) {
 
 gulp.task('test.dart', function(done) {
   runSequence('versions.dart', 'test.transpiler.unittest', 'test.unit.dart/ci',
-              sequenceComplete(done));
+              'test.dart.angular2_testing/ci', sequenceComplete(done));
 });
 
 gulp.task('versions.dart', function() { dartSdk.logVersion(DART_SDK); });
@@ -786,6 +786,27 @@ gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {dest: 'dist
 // test builders
 gulp.task('test.transpiler.unittest',
           function(done) { runJasmineTests(['tools/transpiler/unittest/**/*.js'], done); });
+
+// At the moment, dart test requires dartium to be an executable on the path.
+// Make a temporary directory and symlink dartium from there (just for this command)
+// so that it can run.
+var dartiumTmpdir = path.join(os.tmpdir(), 'dartium' + new Date().getTime().toString());
+gulp.task('test.dart.angular2_testing/ci', ['!pubget.angular2_testing.dart'], function(done) {
+  runSequence('test.dart.angular2_testing_symlink', 'test.dart.angular2_testing',
+              sequenceComplete(done));
+});
+
+gulp.task(
+    'test.dart.angular2_testing_symlink',
+    shell.task(['mkdir ' + dartiumTmpdir, 'ln -s $DARTIUM_BIN ' + dartiumTmpdir + '/dartium']));
+
+gulp.task('test.dart.angular2_testing',
+          shell.task(['PATH=$PATH:' + dartiumTmpdir + ' pub run test -p dartium'],
+                     {'cwd': 'modules_dart/angular2_testing'}));
+
+gulp.task(
+    '!pubget.angular2_testing.dart',
+    pubget.dir(gulp, gulpPlugins, {dir: 'modules_dart/angular2_testing', command: DART_SDK.PUB}));
 
 // -----------------
 // Pre-test checks
