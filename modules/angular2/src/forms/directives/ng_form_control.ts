@@ -1,5 +1,4 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 import {Directive, LifecycleEvent, Query, QueryList} from 'angular2/angular2';
@@ -8,7 +7,7 @@ import {forwardRef, Ancestor, Binding} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {NgValidator} from './validators';
-import {setUpControl, composeNgValidator} from './shared';
+import {setUpControl, composeNgValidator, isPropertyUpdated} from './shared';
 
 const formControlBinding =
     CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
@@ -71,6 +70,7 @@ export class NgFormControl extends NgControl {
   update = new EventEmitter();
   _added = false;
   model: any;
+  viewModel: any;
   ngValidators: QueryList<NgValidator>;
 
   // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
@@ -85,7 +85,7 @@ export class NgFormControl extends NgControl {
       this.form.updateValidity();
       this._added = true;
     }
-    if (StringMapWrapper.contains(c, "model")) {
+    if (isPropertyUpdated(c, this.viewModel)) {
       this.form.updateValue(this.model);
     }
   }
@@ -96,5 +96,8 @@ export class NgFormControl extends NgControl {
 
   get validator(): Function { return composeNgValidator(this.ngValidators); }
 
-  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.update, newValue); }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    ObservableWrapper.callNext(this.update, newValue);
+  }
 }

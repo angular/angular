@@ -71,6 +71,15 @@ export function main() {
           expect(onChange).toEqual(["invoked", "newValue"]);
         });
 
+        it("should not invoke on change when explicitly specified", () => {
+          var onChange = null;
+          c.registerOnChange((v) => onChange = ["invoked", v]);
+
+          c.updateValue("newValue", {emitModelToViewChange: false});
+
+          expect(onChange).toBeNull();
+        });
+
         it("should update the parent", () => {
           c.updateValue("newValue");
           expect(g.value).toEqual({"one": "newValue"});

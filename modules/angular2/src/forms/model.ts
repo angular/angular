@@ -151,10 +151,13 @@ export class Control extends AbstractControl {
     this._valueChanges = new EventEmitter();
   }
 
-  updateValue(value: any, {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+  updateValue(value: any,
+              {onlySelf, emitEvent, emitModelToViewChange}:
+                  {onlySelf?: boolean, emitEvent?: boolean, emitModelToViewChange?: boolean} = {}):
       void {
+    emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
     this._value = value;
-    if (isPresent(this._onChange)) this._onChange(this._value);
+    if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this._value);
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
 

@@ -721,6 +721,33 @@ export function main() {
            });
          }));
     });
+
+    describe("ng-model corner cases", () => {
+      it("should not update the view when the value initially came from the view",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var form = new Control("");
+
+                  var t =
+                      `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.form = form;
+                  rootTC.detectChanges();
+
+                  var input = rootTC.query(By.css("input")).nativeElement;
+                  input.value = "aa";
+                  input.selectionStart = 1;
+                  dispatchEvent(input, "change");
+
+                  tick();
+                  rootTC.detectChanges();
+
+                  // selection start has not changed because we did not reset the value
+                  expect(input.selectionStart).toEqual(1);
+                })));
+    });
   });
 }
 

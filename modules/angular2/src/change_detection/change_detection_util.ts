@@ -9,6 +9,8 @@ export var uninitialized = new Object();
 
 export class SimpleChange {
   constructor(public previousValue: any, public currentValue: any) {}
+
+  isFirstChange(): boolean { return this.previousValue === uninitialized; }
 }
 
 var _simpleChangesIndex = 0;

@@ -29,7 +29,6 @@ export class NgSelectOption {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()',
-    '[value]': 'value',
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',
     '[class.ng-pristine]': 'ngClassPristine',
@@ -39,7 +38,7 @@ export class NgSelectOption {
   }
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
-  value = '';
+  value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
@@ -51,8 +50,6 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
 
   writeValue(value) {
-    // both this.value and setProperty are required at the moment
-    // remove when a proper imperative API is provided
     this.value = value;
     setProperty(this.renderer, this.elementRef, "value", value);
   }

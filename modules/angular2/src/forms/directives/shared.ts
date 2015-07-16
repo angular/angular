@@ -1,5 +1,5 @@
-import {ListWrapper, iterableToList} from 'angular2/src/facade/collection';
-import {isBlank, BaseException} from 'angular2/src/facade/lang';
+import {ListWrapper, iterableToList, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, BaseException, looseIdentical} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
@@ -26,7 +26,7 @@ export function setUpControl(c: Control, dir: NgControl) {
   // view -> model
   dir.valueAccessor.registerOnChange(newValue => {
     dir.viewToModelUpdate(newValue);
-    c.updateValue(newValue);
+    c.updateValue(newValue, {emitModelToViewChange: false});
     c.markAsDirty();
   });
 
@@ -51,4 +51,12 @@ function _throwError(dir: NgControl, message: string): void {
 export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
                             propValue: any) {
   renderer.setElementProperty(elementRef, propName, propValue);
+}
+
+export function isPropertyUpdated(changes: StringMap<string, any>, viewModel: any): boolean {
+  if (!StringMapWrapper.contains(changes, "model")) return false;
+  var change = changes["model"];
+
+  if (change.isFirstChange()) return true;
+  return !looseIdentical(viewModel, change.currentValue);
 }

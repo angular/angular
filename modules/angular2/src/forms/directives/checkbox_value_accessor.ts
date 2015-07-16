@@ -21,7 +21,6 @@ import {setProperty} from './shared';
   host: {
     '(change)': 'onChange($event.target.checked)',
     '(blur)': 'onTouched()',
-    '[checked]': 'checked',
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',
     '[class.ng-pristine]': 'ngClassPristine',
@@ -31,7 +30,6 @@ import {setProperty} from './shared';
   }
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
-  checked: boolean;
   onChange = (_) => {};
   onTouched = () => {};
 
@@ -39,12 +37,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
     cd.valueAccessor = this;
   }
 
-  writeValue(value) {
-    // both this.checked and setProperty are required at the moment
-    // remove when a proper imperative API is provided
-    this.checked = value;
-    setProperty(this.renderer, this.elementRef, "checked", value);
-  }
+  writeValue(value) { setProperty(this.renderer, this.elementRef, "checked", value); }
 
   get ngClassUntouched(): boolean {
     return isPresent(this.cd.control) ? this.cd.control.untouched : false;
