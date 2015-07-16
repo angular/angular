@@ -1,42 +1,100 @@
 /**
  * The `angular2` is the single place to import all of the individual types.
  */
-export * from 'angular2/annotations';
-export * from 'angular2/core';
+export {
+  Attribute,
+  AttributeAnnotation,
+  AttributeFactory,
+  Class,
+  ClassDefinition,
+  Component,
+  ComponentAnnotation,
+  ComponentDecorator,
+  ComponentFactory,
+  Directive,
+  DirectiveAnnotation,
+  DirectiveDecorator,
+  DirectiveFactory,
+  LifecycleEvent,
+  OnAllChangesDone,
+  OnChange,
+  OnCheck,
+  OnDestroy,
+  OnInit,
+  ParameterDecorator,
+  Query,
+  QueryAnnotation,
+  QueryFactory,
+  TypeDecorator,
+  View,
+  ViewAnnotation,
+  ViewDecorator,
+  ViewFactory,
+  ViewQuery
+} from 'angular2/annotations';
 
 export {
+  AppRootUrl,
+  AppViewManager,
+  ApplicationRef,
+  Compiler,
+  ComponentRef ,
+  ComponentUrlMapper,
+  DirectiveResolver,
+  DynamicComponentLoader,
+  ElementRef,
+  IQueryList,
+  NgZone,
+  ProtoViewRef,
+  QueryList,
+  RenderElementRef,
+  UrlResolver,
+  ViewContainerRef,
+  ViewRef,
+  appComponentTypeToken,
+  bootstrap
+} from 'angular2/core';
+
+export {
+  ASTWithSource,
+  BasePipe,
+  ChangeDetectionError,
+  ChangeDetectorRef,
+  DEFAULT,
   DehydratedException,
   ExpressionChangedAfterItHasBeenChecked,
-  ChangeDetectionError,
-
-  ON_PUSH,
-  DEFAULT,
-
-  ChangeDetectorRef,
-
-  Pipes,
-  WrappedValue,
-  Pipe,
-  PipeFactory,
+  Locals,
   NullPipe,
   NullPipeFactory,
-  defaultPipes,
-  BasePipe,
-
-  Locals
+  ON_PUSH,
+  Pipe,
+  PipeFactory,
+  Pipes,
+  WrappedValue,
+  defaultPipes
 } from './change_detection';
 
+// we have to reexport * because Dart and TS export two different sets of types
 export * from './di';
-export * from './forms';
 
-export * from './directives';
+export {
+  CSSClass,
+  NgFor,
+  NgIf,
+  NgNonBindable,
+  NgSwitch,
+  NgSwitchWhen,
+  NgSwitchDefault
+} from './directives';
 
 export {
   AbstractControl,
   AbstractControlDirective,
   Control,
+  ControlContainer,
   ControlGroup,
   ControlArray,
+  Form,
   NgControlName,
   NgFormControl,
   NgModel,
@@ -56,16 +114,27 @@ export {
   formInjectables
 } from './forms';
 
-export * from './http';
+export {Observable, EventEmitter} from 'angular2/src/facade/async';
 export {
-  RenderEventDispatcher,
+  DirectiveBinder,
+  DirectiveMetadata,
+  ElementBinder,
+  ElementPropertyBinding,
+  EventBinding,
+  PropertyBindingType,
+  ProtoViewDto,
+  RenderCompiler,
   Renderer,
-  RenderElementRef,
-  RenderViewRef,
-  RenderProtoViewRef,
+  RenderEventDispatcher,
   RenderFragmentRef,
-  RenderViewWithFragments
+  RenderProtoViewMergeMapping,
+  RenderProtoViewRef,
+  RenderViewRef,
+  RenderViewWithFragments,
+  ViewDefinition,
+  ViewType
 } from 'angular2/src/render/api';
+
 export {
   DomRenderer,
   DOCUMENT_TOKEN,
