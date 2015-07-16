@@ -2,7 +2,6 @@
 
 import destCopy from '../broccoli-dest-copy';
 import compileWithTypescript from '../broccoli-typescript';
-import transpileWithTraceur from '../traceur/index';
 var Funnel = require('broccoli-funnel');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
@@ -28,26 +27,24 @@ module.exports = function makeNodeTree(destinationPath) {
     ]
   });
 
-  var nodeTree = transpileWithTraceur(modulesTree, {
-    destExtension: '.js',
-    destSourceMapExtension: '.map',
-    traceurOptions: {
-      sourceMaps: true,
-      annotations: true,      // parse annotations
-      types: true,            // parse types
-      script: false,          // parse as a module
-      memberVariables: true,  // parse class fields
-      typeAssertionModule: 'rtts_assert/rtts_assert',
-      // Don't use type assertions since this is partly transpiled by typescript
-      typeAssertions: false,
-      modules: 'commonjs'
-    }
+  var typescriptTree = compileWithTypescript(modulesTree, {
+    allowNonTsExtensions: false,
+    emitDecoratorMetadata: true,
+    declaration: true,
+    mapRoot: '', /* force sourcemaps to use relative path */
+    module: 'commonjs',
+    noEmitOnError: true,
+    rootDir: '.',
+    rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
+    sourceMap: true,
+    sourceRoot: '.',
+    target: 'ES5'
   });
 
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {
     var license = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
-    nodeTree = mergeTrees([nodeTree, license]);
+    typescriptTree = mergeTrees([typescriptTree, license]);
   });
 
   // Get all docs and related assets and prepare them for js build
@@ -78,40 +75,7 @@ module.exports = function makeNodeTree(destinationPath) {
   packageJsons =
       renderLodashTemplate(packageJsons, {context: {'packageJson': COMMON_PACKAGE_JSON}});
 
-  // HACK: workaround for Traceur behavior.
-  // It expects all transpiled modules to contain this marker.
-  // TODO: remove this when we no longer use traceur
-  var traceurCompatibleTsModulesTree = replace(modulesTree, {
-    files: ['**/*.ts'],
-    patterns: [
-      {
-        match: /$/,
-        replacement: function(_, relativePath) {
-          var content = "";  // we're matching an empty line
-          if (!relativePath.endsWith('.d.ts')) {
-            content += '\r\nexport var __esModule = true;\n';
-          }
-          return content;
-        }
-      }
-    ]
-  });
-
-  var typescriptTree = compileWithTypescript(traceurCompatibleTsModulesTree, {
-    allowNonTsExtensions: false,
-    emitDecoratorMetadata: true,
-    declaration: true,
-    mapRoot: '', /* force sourcemaps to use relative path */
-    module: 'commonjs',
-    noEmitOnError: true,
-    rootDir: '.',
-    rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
-    sourceMap: true,
-    sourceRoot: '.',
-    target: 'ES5'
-  });
-
-  nodeTree = mergeTrees([nodeTree, typescriptTree, docs, packageJsons]);
+  var nodeTree = mergeTrees([typescriptTree, docs, packageJsons]);
 
   // Transform all tests to make them runnable in node
   nodeTree = replace(nodeTree, {
