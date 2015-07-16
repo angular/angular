@@ -142,7 +142,7 @@ class _CodegenState {
         $_changeDetectorTypeName(
             this.$_DISPATCHER_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
-            this.$_DIRECTIVES_ACCESSOR) : super(${JSON.encode(_changeDetectorDefId)});
+            this.$_DIRECTIVES_ACCESSOR) : super(${_encodeValue(_changeDetectorDefId)});
 
         void detectChangesInRecords(throwOnChange) {
           if (!hydrated()) {
@@ -383,7 +383,7 @@ class _CodegenState {
         break;
 
       case RecordType.CONST:
-        rhs = JSON.encode(r.funcOrValue);
+        rhs = _encodeValue(r.funcOrValue);
         break;
 
       case RecordType.PROPERTY:
@@ -435,9 +435,9 @@ class _CodegenState {
     for (var i = 0; i < r.args.length; ++i) {
       var name = _localNames[r.args[i]];
       res.write(
-          '${JSON.encode(r.fixedArgs[i])} "\$\{$name == null ? "" : $name\}" ');
+          '${_encodeValue(r.fixedArgs[i])} "\$\{$name == null ? "" : $name\}" ');
     }
-    res.write(JSON.encode(r.fixedArgs[r.args.length]));
+    res.write(_encodeValue(r.fixedArgs[r.args.length]));
     return '$res';
   }
 
@@ -523,6 +523,9 @@ class _CodegenState {
       }
     ''';
   }
+
+  String _encodeValue(funcOrValue) =>
+      JSON.encode(funcOrValue).replaceAll(r'$', r'\$');
 }
 
 const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';

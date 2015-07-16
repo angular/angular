@@ -263,6 +263,7 @@ class _DirectiveUpdating {
  * equivalent to their ids.
  */
 var _availableDefinitions = [
+  '"$"',
   '10',
   '"str"',
   '"a\n\nb"',
