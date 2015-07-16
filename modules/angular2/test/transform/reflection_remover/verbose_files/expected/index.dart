@@ -16,7 +16,7 @@ import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/reflection/debug_reflection_capabilities.dart';import 'index.ng_deps.dart' as ngStaticInit0;
 
 void main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities(verbose: true);ngStaticInit0.initReflector(reflector);
+  reflector.reflectionCapabilities = new ReflectionCapabilities(verbose: true);ngStaticInit0.initReflector();
   bootstrap(MyComponent);
 }
 """;

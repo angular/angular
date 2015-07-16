@@ -72,8 +72,7 @@ Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
       importBuf.write('''
         import '${linkedDepsMap[it.current]}' as i${i};
       ''');
-      declarationBuf
-          .write('i${i}.${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME});');
+      declarationBuf.write('i${i}.${SETUP_METHOD_NAME}();');
       ++i;
     }
   }

@@ -1,14 +1,15 @@
 library test.transform.directive_processor.invalid_url_files.hello.ng_deps.dart;
 
 import 'hello.dart';
+import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/angular2.dart'
     show bootstrap, Component, Directive, View, NgElement;
 
 var _visited = false;
-void initReflector(reflector) {
+void initReflector() {
   if (_visited) return;
   _visited = true;
-  reflector
+  _ngRef.reflector
     ..registerType(HelloCmp, {
       'factory': () => new HelloCmp(),
       'parameters': const [],
