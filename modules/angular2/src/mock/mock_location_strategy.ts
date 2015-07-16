@@ -35,8 +35,8 @@ export class MockLocationStrategy extends LocationStrategy {
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
 
-    var external = this.prepareExternalUrl(url);
-    this.urlChanges.push(external);
+    var externalUrl = this.prepareExternalUrl(url);
+    this.urlChanges.push(externalUrl);
   }
 
   onPopState(fn: (value: any) => void): void { ObservableWrapper.subscribe(this._subject, fn); }
