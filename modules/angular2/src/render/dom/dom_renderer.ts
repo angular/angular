@@ -9,6 +9,7 @@ import {
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {LightDom} from './shadow_dom/light_dom';
 
 import {Content} from './shadow_dom/content_tag';
 import {ShadowDomStrategy} from './shadow_dom/shadow_dom_strategy';
@@ -363,7 +364,7 @@ export class DomRenderer extends Renderer {
     return vc;
   }
 
-  _directParentLightDom(view: DomView, boundElementIndex: number) {
+  _directParentLightDom(view: DomView, boundElementIndex: number): LightDom {
     var directParentEl = view.getDirectParentElement(boundElementIndex);
     return isPresent(directParentEl) ? directParentEl.lightDom : null;
   }
