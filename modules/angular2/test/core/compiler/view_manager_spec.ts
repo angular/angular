@@ -300,6 +300,22 @@ export function main() {
 
         });
 
+        describe('create a host view', () => {
+
+          it('should always create a new view and not use the embedded view', () => {
+            var newHostPv = createHostPv([createNestedElBinder(createComponentPv())]);
+            var newHostView =
+                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(newHostPv), null));
+            expect(newHostView.proto).toBe(newHostPv);
+            expect(newHostView).not.toBe(hostView.views[2]);
+            expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(newHostView);
+            expect(renderer.spy('createView'))
+                .toHaveBeenCalledWith(newHostPv.mergeMapping.renderProtoViewRef,
+                                      newHostPv.mergeMapping.renderFragmentCount);
+          });
+
+        });
+
       });
     });
 

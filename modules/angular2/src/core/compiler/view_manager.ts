@@ -188,7 +188,8 @@ export class AppViewManager {
 
     var embeddedFragmentView = contextView.getNestedView(contextBoundElementIndex);
     var view;
-    if (isPresent(embeddedFragmentView) && !embeddedFragmentView.hydrated()) {
+    if (protoView.type === ViewType.EMBEDDED && isPresent(embeddedFragmentView) &&
+        !embeddedFragmentView.hydrated()) {
       // Case 1: instantiate the first view of a template that has been merged into a parent
       view = embeddedFragmentView;
       this._attachRenderView(parentView, boundElementIndex, atIndex, view);
