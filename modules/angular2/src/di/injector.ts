@@ -674,7 +674,7 @@ export class Injector {
 
   private _getByKey(key: Key, depVisibility: VisibilityMetadata, optional: boolean,
                     bindingVisibility: number): any {
-    if (key.token === Injector) {
+    if (key === INJECTOR_KEY) {
       return this;
     }
 
@@ -722,6 +722,8 @@ export class Injector {
     }
   }
 }
+
+var INJECTOR_KEY = Key.get(Injector);
 
 
 function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
