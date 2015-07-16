@@ -53,8 +53,7 @@ class Codegen {
 
     var count = 0;
     return importUris
-        .map((_) =>
-            '${prefix}${count++}.${SETUP_METHOD_NAME}(${reflectorExpression});')
+        .map((_) => '${prefix}${count++}.${SETUP_METHOD_NAME}();')
         .join('');
   }
 }

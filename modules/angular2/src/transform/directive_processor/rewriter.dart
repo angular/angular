@@ -94,6 +94,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     if (_wroteBaseLibImport) return;
     _wroteBaseLibImport = true;
     writer.print('''import '${path.basename(assetId.path)}';''');
+    writer.print("import '$_REFLECTOR_IMPORT' as $_REF_PREFIX;");
   }
 
   void _updateUsesNonLangLibs(UriBasedDirective directive) {
@@ -118,7 +119,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   void _openFunctionWrapper() {
     _maybeWriteImport();
     writer.print('var _visited = false;'
-        'void ${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME}) {'
+        'void ${SETUP_METHOD_NAME}() {'
         'if (_visited) return; _visited = true;');
   }
 
@@ -256,6 +257,9 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     _foundNgInjectable = true;
 
     // The receiver for cascaded calls.
-    writer.print(REFLECTOR_VAR_NAME);
+    writer.print('$_REF_PREFIX.$REFLECTOR_VAR_NAME');
   }
 }
+
+const _REF_PREFIX = '_ngRef';
+const _REFLECTOR_IMPORT = 'package:angular2/src/reflection/reflection.dart';

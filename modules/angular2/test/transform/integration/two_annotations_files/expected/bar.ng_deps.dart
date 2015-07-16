@@ -4,14 +4,15 @@ import 'package:angular2/src/change_detection/pregen_proto_change_detector.dart'
     as _gen;
 
 import 'bar.dart';
+import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/annotations_impl/annotations.dart';
 import 'package:angular2/src/core/annotations_impl/view.dart';
 
 var _visited = false;
-void initReflector(reflector) {
+void initReflector() {
   if (_visited) return;
   _visited = true;
-  reflector
+  _ngRef.reflector
     ..registerType(MyComponent, {
       'factory': () => new MyComponent(),
       'parameters': const [],
