@@ -83,8 +83,10 @@ export class DomRenderer extends Renderer {
   attachFragmentAfterFragment(previousFragmentRef: RenderFragmentRef,
                               fragmentRef: RenderFragmentRef) {
     var previousFragmentNodes = resolveInternalDomFragment(previousFragmentRef);
-    var sibling = previousFragmentNodes[previousFragmentNodes.length - 1];
-    moveNodesAfterSibling(sibling, resolveInternalDomFragment(fragmentRef));
+    if (previousFragmentNodes.length > 0) {
+      var sibling = previousFragmentNodes[previousFragmentNodes.length - 1];
+      moveNodesAfterSibling(sibling, resolveInternalDomFragment(fragmentRef));
+    }
   }
 
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {
@@ -253,7 +255,7 @@ export class DomRenderer extends Renderer {
 }
 
 function moveNodesAfterSibling(sibling, nodes) {
-  if (isPresent(DOM.parentElement(sibling))) {
+  if (nodes.length > 0 && isPresent(DOM.parentElement(sibling))) {
     for (var i = 0; i < nodes.length; i++) {
       DOM.insertBefore(sibling, nodes[i]);
     }
