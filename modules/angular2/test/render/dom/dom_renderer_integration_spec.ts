@@ -197,6 +197,33 @@ export function main() {
              });
        }));
 
+    it('should add and remove empty fragments',
+       inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
+         tb.compileAndMerge(someComponent,
+                            [
+                              new ViewDefinition({
+                                componentId: 'someComponent',
+                                template: '<template></template><template></template>',
+                                directives: []
+                              })
+                            ])
+             .then((protoViewMergeMappings) => {
+               var rootView = tb.createView(protoViewMergeMappings[0]);
+
+               var elr = elRef(rootView.viewRef, 1);
+               expect(rootView.hostElement).toHaveText('');
+               var fragment = rootView.fragments[1];
+               var fragment2 = rootView.fragments[2];
+               tb.renderer.attachFragmentAfterElement(elr, fragment);
+               tb.renderer.attachFragmentAfterFragment(fragment, fragment2);
+               tb.renderer.detachFragment(fragment);
+               tb.renderer.detachFragment(fragment2);
+               expect(rootView.hostElement).toHaveText('');
+
+               async.done();
+             });
+       }));
+
     it('should handle events', inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
          tb.compileAndMerge(someComponent,
                             [
