@@ -61,7 +61,8 @@ export function main() {
              });
        }));
 
-    it('should update any element property/attributes/class/style independent of the compilation',
+
+    it('should update any element property/attributes/class/style independent of the compilation on the root element and other elements',
        inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
          tb.compileAndMerge(someComponent,
                             [
@@ -72,26 +73,30 @@ export function main() {
                               })
                             ])
              .then((protoViewMergeMappings) => {
+
+               var checkSetters = (elr, el) => {
+                 tb.renderer.setElementProperty(elr, 'tabIndex', 1);
+                 expect((<HTMLInputElement>el).tabIndex).toEqual(1);
+
+                 tb.renderer.setElementClass(elr, 'a', true);
+                 expect(DOM.hasClass(el, 'a')).toBe(true);
+                 tb.renderer.setElementClass(elr, 'a', false);
+                 expect(DOM.hasClass(el, 'a')).toBe(false);
+
+                 tb.renderer.setElementStyle(elr, 'width', '10px');
+                 expect(DOM.getStyle(el, 'width')).toEqual('10px');
+                 tb.renderer.setElementStyle(elr, 'width', null);
+                 expect(DOM.getStyle(el, 'width')).toEqual('');
+
+                 tb.renderer.setElementAttribute(elr, 'someAttr', 'someValue');
+                 expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
+               };
+
                var rootView = tb.createView(protoViewMergeMappings[0]);
-
-               var elr = elRef(rootView.viewRef, 1);
-               var el = DOM.childNodes(rootView.hostElement)[0];
-               tb.renderer.setElementProperty(elr, 'value', 'hello');
-               expect((<HTMLInputElement>el).value).toEqual('hello');
-
-               tb.renderer.setElementClass(elr, 'a', true);
-               expect((<HTMLInputElement>DOM.childNodes(rootView.hostElement)[0]).value)
-                   .toEqual('hello');
-               tb.renderer.setElementClass(elr, 'a', false);
-               expect(DOM.hasClass(el, 'a')).toBe(false);
-
-               tb.renderer.setElementStyle(elr, 'width', '10px');
-               expect(DOM.getStyle(el, 'width')).toEqual('10px');
-               tb.renderer.setElementStyle(elr, 'width', null);
-               expect(DOM.getStyle(el, 'width')).toEqual('');
-
-               tb.renderer.setElementAttribute(elr, 'someAttr', 'someValue');
-               expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
+               // root element
+               checkSetters(elRef(rootView.viewRef, 0), rootView.hostElement);
+               // nested elements
+               checkSetters(elRef(rootView.viewRef, 1), DOM.firstChild(rootView.hostElement));
 
                async.done();
              });
