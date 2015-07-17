@@ -40,7 +40,7 @@ import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
-import {ProtoViewRef, ViewRef} from './view_ref';
+import {TemplateRef} from './template_ref';
 import {Directive, Component, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {ChangeDetector, ChangeDetectorRef, Pipes} from 'angular2/change_detection';
@@ -52,7 +52,7 @@ var _staticKeys;
 
 export class StaticKeys {
   viewManagerId: number;
-  protoViewId: number;
+  templateRefId: number;
   viewContainerId: number;
   changeDetectorRefId: number;
   elementRefId: number;
@@ -60,7 +60,7 @@ export class StaticKeys {
 
   constructor() {
     this.viewManagerId = Key.get(avmModule.AppViewManager).id;
-    this.protoViewId = Key.get(ProtoViewRef).id;
+    this.templateRefId = Key.get(TemplateRef).id;
     this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
@@ -278,7 +278,7 @@ export class DirectiveBinding extends ResolvedBinding {
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
   constructor(public viewManager: avmModule.AppViewManager, public view: viewModule.AppView,
-              public elementRef: ElementRef, public protoView: viewModule.AppProtoView) {}
+              public elementRef: ElementRef, public templateRef: TemplateRef) {}
 }
 
 export class EventEmitterAccessor {
@@ -622,15 +622,15 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       return this.getViewContainerRef();
     }
 
-    if (dirDep.key.id === StaticKeys.instance().protoViewId) {
-      if (isBlank(this._preBuiltObjects.protoView)) {
+    if (dirDep.key.id === StaticKeys.instance().templateRefId) {
+      if (isBlank(this._preBuiltObjects.templateRef)) {
         if (dirDep.optional) {
           return null;
         }
 
         throw new NoBindingError(dirDep.key);
       }
-      return new ProtoViewRef(this._preBuiltObjects.protoView);
+      return this._preBuiltObjects.templateRef;
     }
 
     return undefinedValue;

@@ -18,6 +18,7 @@ export {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 export {IQueryList} from 'angular2/src/core/compiler/interface_query';
 export {QueryList} from 'angular2/src/core/compiler/query_list';
 export {ElementRef} from 'angular2/src/core/compiler/element_ref';
+export {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 export {RenderElementRef} from 'angular2/src/render/api';
 export {ViewRef, ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 export {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';

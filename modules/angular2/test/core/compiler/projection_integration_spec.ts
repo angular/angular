@@ -32,8 +32,8 @@ import {
   View,
   forwardRef,
   ViewContainerRef,
-  ProtoViewRef,
   ElementRef,
+  TemplateRef,
   bind
 } from 'angular2/angular2';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/render';
@@ -275,7 +275,7 @@ export function main() {
                    main.query(By.directive(ProjectDirective)).inject(ProjectDirective);
                expect(main.nativeElement).toHaveText('START()END');
 
-               projectDirective.show(sourceDirective.protoViewRef, sourceDirective.elementRef);
+               projectDirective.show(sourceDirective.templateRef);
                expect(main.nativeElement).toHaveText('START(A)END');
                async.done();
              });
@@ -298,7 +298,7 @@ export function main() {
                    main.query(By.directive(ProjectDirective)).inject(ProjectDirective);
                expect(main.nativeElement).toHaveText('SIMPLE()START()END');
 
-               projectDirective.show(sourceDirective.protoViewRef, sourceDirective.elementRef);
+               projectDirective.show(sourceDirective.templateRef);
                expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
                async.done();
              });
@@ -325,12 +325,12 @@ export function main() {
                    main.query(By.directive(ProjectDirective)).inject(ProjectDirective);
                expect(main.nativeElement).toHaveText('(, B)START()END');
 
-               projectDirective.show(sourceDirective.protoViewRef, sourceDirective.elementRef);
+               projectDirective.show(sourceDirective.templateRef);
                expect(main.nativeElement).toHaveText('(, B)START(A)END');
 
                // Stamping ng-content multiple times should not produce the content multiple
                // times...
-               projectDirective.show(sourceDirective.protoViewRef, sourceDirective.elementRef);
+               projectDirective.show(sourceDirective.templateRef);
                expect(main.nativeElement).toHaveText('(, B)START(A)END');
                async.done();
              });
@@ -418,18 +418,15 @@ class MultipleContentTagsComponent {
 
 @Directive({selector: '[manual]'})
 class ManualViewportDirective {
-  constructor(public vc: ViewContainerRef, public protoViewRef: ProtoViewRef,
-              public elementRef: ElementRef) {}
-  show() { this.vc.create(this.protoViewRef, 0); }
+  constructor(public vc: ViewContainerRef, public templateRef: TemplateRef) {}
+  show() { this.vc.createEmbeddedView(this.templateRef, 0); }
   hide() { this.vc.clear(); }
 }
 
 @Directive({selector: '[project]'})
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
-  show(protoViewRef: ProtoViewRef, context: ElementRef) {
-    this.vc.create(protoViewRef, 0, context);
-  }
+  show(templateRef: TemplateRef) { this.vc.createEmbeddedView(templateRef, 0); }
   hide() { this.vc.clear(); }
 }
 

@@ -2,7 +2,7 @@ import {Directive} from 'angular2/annotations';
 import {
   ViewContainerRef,
   ViewRef,
-  ProtoViewRef,
+  TemplateRef,
   Pipes,
   LifecycleEvent,
   Pipe,
@@ -46,7 +46,7 @@ export class NgFor {
   _ngForOf: any;
   _pipe: Pipe;
 
-  constructor(private viewContainer: ViewContainerRef, private protoViewRef: ProtoViewRef,
+  constructor(private viewContainer: ViewContainerRef, private templateRef: TemplateRef,
               private pipes: Pipes, private cdr: ChangeDetectorRef) {}
 
   set ngForOf(value: any) {
@@ -79,7 +79,7 @@ export class NgFor {
     changes.forEachAddedItem((addedRecord) =>
                                  insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
-    NgFor.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
+    NgFor.bulkInsert(insertTuples, this.viewContainer, this.templateRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
@@ -109,14 +109,14 @@ export class NgFor {
   }
 
   static bulkInsert(tuples: List<RecordViewTuple>, viewContainer: ViewContainerRef,
-                    protoViewRef: ProtoViewRef): List<RecordViewTuple> {
+                    templateRef: TemplateRef): List<RecordViewTuple> {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
     for (var i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];
       if (isPresent(tuple.view)) {
         viewContainer.insert(tuple.view, tuple.record.currentIndex);
       } else {
-        tuple.view = viewContainer.create(protoViewRef, tuple.record.currentIndex);
+        tuple.view = viewContainer.createEmbeddedView(templateRef, tuple.record.currentIndex);
       }
     }
     return tuples;

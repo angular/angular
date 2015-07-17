@@ -6,6 +6,7 @@ import * as viewModule from './view';
 import {internalView} from './view_ref';
 import * as avmModule from './view_manager';
 import {ElementRef} from './element_ref';
+import {TemplateRef} from './template_ref';
 import {Renderer, RenderViewWithFragments} from 'angular2/src/render/api';
 import {Locals} from 'angular2/change_detection';
 import {RenderViewRef, RenderFragmentRef, ViewType} from 'angular2/src/render/api';
@@ -83,9 +84,9 @@ export class AppViewManagerUtils {
 
         // preBuiltObjects
         if (isPresent(elementInjector)) {
-          var embeddedProtoView = binder.hasEmbeddedProtoView() ? binder.nestedProtoView : null;
+          var templateRef = binder.hasEmbeddedProtoView() ? new TemplateRef(el) : null;
           preBuiltObjects[boundElementIndex] =
-              new eli.PreBuiltObjects(viewManager, currentView, el, embeddedProtoView);
+              new eli.PreBuiltObjects(viewManager, currentView, el, templateRef);
         }
       }
       currentView.init(protoView.protoChangeDetector.instantiate(currentView), elementInjectors,
@@ -155,7 +156,7 @@ export class AppViewManagerUtils {
 
   hydrateViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                          contextView: viewModule.AppView, contextBoundElementIndex: number,
-                         atIndex: number, bindings: ResolvedBinding[]) {
+                         atIndex: number, imperativelyCreatedBindings: ResolvedBinding[]) {
     if (isBlank(contextView)) {
       contextView = parentView;
       contextBoundElementIndex = boundElementIndex;
@@ -164,7 +165,9 @@ export class AppViewManagerUtils {
     var view = viewContainer.views[atIndex];
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
 
-    var injector = isPresent(bindings) ? Injector.fromResolvedBindings(bindings) : null;
+    var injector = isPresent(imperativelyCreatedBindings) ?
+                       Injector.fromResolvedBindings(imperativelyCreatedBindings) :
+                       null;
     this._hydrateView(view, injector, elementInjector.getHost(), contextView.context,
                       contextView.locals);
   }
