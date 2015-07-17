@@ -1,6 +1,7 @@
 import {LocationStrategy} from './location_strategy';
 import {StringWrapper, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {BaseException, isBlank} from 'angular2/src/facade/lang';
 import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/di';
 
 export const appBaseHrefToken: OpaqueToken = CONST_EXPR(new OpaqueToken('locationHrefToken'));
@@ -22,8 +23,14 @@ export class Location {
 
   constructor(public _platformStrategy: LocationStrategy,
               @Optional() @Inject(appBaseHrefToken) href?: string) {
-    this._baseHref = stripTrailingSlash(
-        stripIndexHtml(isPresent(href) ? href : this._platformStrategy.getBaseHref()));
+    var browserBaseHref = isPresent(href) ? href : this._platformStrategy.getBaseHref();
+
+    if (isBlank(browserBaseHref)) {
+      throw new BaseException(
+          `No base href set. Either provide a binding to "appBaseHrefToken" or add a base element.`);
+    }
+
+    this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
     this._platformStrategy.onPopState((_) => this._onPopState(_));
   }
 
