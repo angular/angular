@@ -1,14 +1,17 @@
 // Because Angular is using dart:html, we need these tests to run on an actual
 // browser. This means that it should be run with `-p dartium` or `-p chrome`.
 @TestOn("browser")
-import "package:test/test.dart"; // Instead, import angular test lib?
 import "package:angular2/angular2.dart"
     show Component, View, NgFor, Injector, Key;
-import "package:angular2/test.dart"
-    show TestComponentBuilder, inject, createTestInjector;
+
 import 'package:angular2/src/dom/browser_adapter.dart'; // for BrowserDomAdapter
 import 'package:angular2/src/reflection/reflection.dart'; // for reflector
 import 'package:angular2/src/reflection/reflection_capabilities.dart'; // For ReflectionCapabilities
+
+import 'package:angular2/src/test_lib/test_component_builder.dart';
+import 'package:angular2/src/test_lib/test_injector.dart';
+
+import "package:test/test.dart"; // Instead, import angular test lib?
 
 // This is the component we will be testing.
 @Component(selector: 'test-cmp')
