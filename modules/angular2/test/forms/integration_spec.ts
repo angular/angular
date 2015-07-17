@@ -93,6 +93,34 @@ export function main() {
              expect(rootTC.componentInstance.name).toEqual('updated');
            })));
 
+    it("should set submitted flag on submit",
+       inject(
+           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+             var t =
+                 `<div>
+                    <form #f="form">
+                      <p *ng-if="f.submitted">Submitted {{name}}</p>
+                    </form>
+                  </div>`;
+
+             var rootTC;
+
+             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
+             tick();
+             rootTC.componentInstance.form = new ControlGroup({});
+             rootTC.componentInstance.name = 'caitp';
+
+             tick();
+
+             var form = rootTC.query(By.css("form"));
+             dispatchEvent(form.nativeElement, "submit");
+             tick();
+
+             var  p = form.query(By.css("p"));
+             console.log(p.nativeElement);
+             expect(rootTC.componentInstance.name).toEqual('caitp');
+           })));
+
     it("should work with single controls",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var control = new Control("loginValue");
