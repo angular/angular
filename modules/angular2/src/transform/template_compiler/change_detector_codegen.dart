@@ -231,7 +231,7 @@ class _CodegenState {
 
   List<String> _getNonNullPipeNames() {
     return _records
-        .where((r) => r.mode == RecordType.PIPE)
+        .where((r) => r.isPipeRecord())
         .map((r) => _pipeNames[r.selfIndex])
         .toList();
   }
@@ -276,7 +276,7 @@ class _CodegenState {
             '${_genGetDirective(rec.directiveIndex)}.onAllChangesDone();')
         .join('');
     return '''
-      _dispatcher.notifyOnAllChangesDone();
+      $_DISPATCHER_ACCESSOR.notifyOnAllChangesDone();
       ${directiveNotifications}
     ''';
   }
