@@ -23,51 +23,41 @@ class TestComponent {
   }
 }
 
+const TEMPLATE =
+    "<div><copy-me template=\"ng-for #item of items\">{{item.toString()}};</copy-me></div>";
+
 void main() {
-  test("normal, synchronous test", () {
-    var string = "foo,bar,baz";
-    expect(string.split(","), equals(["foo", "bar", "baz"]));
-  });
-
-  var TEMPLATE =
-      "<div><copy-me template=\"ng-for #item of items\">{{item.toString()}};</copy-me></div>";
-
-  test("create a component using the TCB", () {
+  test("create a component using the TCB", () async {
     BrowserDomAdapter.makeCurrent();
     reflector.reflectionCapabilities = new ReflectionCapabilities();
 
     Injector testInjector = createTestInjector([]);
 
-    inject([TestComponentBuilder], (TestComponentBuilder tcb) {
-      var future = tcb
+    await inject([TestComponentBuilder], (TestComponentBuilder tcb) async {
+      var rootTC = await tcb
           .overrideTemplate(TestComponent, TEMPLATE)
-          .createAsync(TestComponent)
-          .then((rootTC) {
-        rootTC.detectChanges();
-        expect(rootTC.nativeElement.text, equals("1;2;"));
-      });
+          .createAsync(TestComponent);
 
-      expect(future, completes);
+      rootTC.detectChanges();
+      expect(rootTC.nativeElement.text, equals("1;2;"));
     }).execute(testInjector);
   });
 
-  test("should reflect added elements", () {
+  test("should reflect added elements", () async {
     BrowserDomAdapter.makeCurrent();
     reflector.reflectionCapabilities = new ReflectionCapabilities();
 
     Injector testInjector = createTestInjector([]);
 
-    inject([TestComponentBuilder], (TestComponentBuilder tcb) {
-      var future = tcb
+    await inject([TestComponentBuilder], (TestComponentBuilder tcb) async {
+      var rootTC = await tcb
           .overrideTemplate(TestComponent, TEMPLATE)
-          .createAsync(TestComponent)
-          .then((rootTC) {
-        rootTC.detectChanges();
-        ((rootTC.componentInstance.items as List<num>)).add(3);
-        rootTC.detectChanges();
-        expect(rootTC.nativeElement.text, equals("1;2;3;"));
-      });
-      expect(future, completes);
+          .createAsync(TestComponent);
+
+      rootTC.detectChanges();
+      ((rootTC.componentInstance.items as List<num>)).add(3);
+      rootTC.detectChanges();
+      expect(rootTC.nativeElement.text, equals("1;2;3;"));
     }).execute(testInjector);
   });
 }
