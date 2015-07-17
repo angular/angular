@@ -1,6 +1,7 @@
 library web_foo.ng_deps.dart;
 
 import 'index.dart';
+export 'index.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/application.dart';
 import 'package:angular2/src/reflection/reflection.dart';
