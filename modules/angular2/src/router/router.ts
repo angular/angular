@@ -12,7 +12,7 @@ import {
 
 import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
-import {Instruction} from './instruction';
+import {ComponentInstruction, Instruction, stringifyInstruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
 import {getCanActivateHook} from './route_lifecycle_reflector';
@@ -45,10 +45,9 @@ export class Router {
   private _currentInstruction: Instruction = null;
   private _currentNavigation: Promise<any> = _resolveToTrue;
   private _outlet: RouterOutlet = null;
+  private _auxOutlets: Map<string, RouterOutlet> = new Map();
   private _subject: EventEmitter = new EventEmitter();
 
-  // todo(jeffbcross): rename _registry to registry since it is accessed from subclasses
-  // todo(jeffbcross): rename _pipeline to pipeline since it is accessed from subclasses
   constructor(public registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
               public hostComponent: any) {}
 
@@ -65,8 +64,11 @@ export class Router {
    * you're writing a reusable component.
    */
   registerOutlet(outlet: RouterOutlet): Promise<boolean> {
-    // TODO: sibling routes
-    this._outlet = outlet;
+    if (isPresent(outlet.name)) {
+      this._auxOutlets.set(outlet.name, outlet);
+    } else {
+      this._outlet = outlet;
+    }
     if (isPresent(this._currentInstruction)) {
       return outlet.commit(this._currentInstruction);
     }
@@ -87,9 +89,8 @@ export class Router {
    * ```
    */
   config(definitions: List<RouteDefinition>): Promise<any> {
-    definitions.forEach((routeDefinition) => {
-      this.registry.config(this.hostComponent, routeDefinition, this instanceof RootRouter);
-    });
+    definitions.forEach(
+        (routeDefinition) => { this.registry.config(this.hostComponent, routeDefinition); });
     return this.renavigate();
   }
 
@@ -104,29 +105,49 @@ export class Router {
     return this._currentNavigation = this._currentNavigation.then((_) => {
       this.lastNavigationAttempt = url;
       this._startNavigating();
-      return this._afterPromiseFinishNavigating(this.recognize(url).then((matchedInstruction) => {
-        if (isBlank(matchedInstruction)) {
+      return this._afterPromiseFinishNavigating(this.recognize(url).then((instruction) => {
+        if (isBlank(instruction)) {
           return false;
         }
-        return this._reuse(matchedInstruction)
-            .then((_) => this._canActivate(matchedInstruction))
-            .then((result) => {
-              if (!result) {
-                return false;
-              }
-              return this._canDeactivate(matchedInstruction)
-                  .then((result) => {
-                    if (result) {
-                      return this.commit(matchedInstruction, _skipLocationChange)
-                          .then((_) => {
-                            this._emitNavigationFinish(matchedInstruction.accumulatedUrl);
-                            return true;
-                          });
-                    }
-                  });
-            });
+        return this._navigate(instruction, _skipLocationChange);
       }));
     });
+  }
+
+
+  /**
+   * Navigate via the provided instruction. Returns a promise that resolves when navigation is
+   * complete.
+   */
+  navigateInstruction(instruction: Instruction,
+                      _skipLocationChange: boolean = false): Promise<any> {
+    if (isBlank(instruction)) {
+      return _resolveToFalse;
+    }
+    return this._currentNavigation = this._currentNavigation.then((_) => {
+      this._startNavigating();
+      return this._afterPromiseFinishNavigating(this._navigate(instruction, _skipLocationChange));
+    });
+  }
+
+  _navigate(instruction: Instruction, _skipLocationChange: boolean): Promise<any> {
+    return this._reuse(instruction)
+        .then((_) => this._canActivate(instruction))
+        .then((result) => {
+          if (!result) {
+            return false;
+          }
+          return this._canDeactivate(instruction)
+              .then((result) => {
+                if (result) {
+                  return this.commit(instruction, _skipLocationChange)
+                      .then((_) => {
+                        this._emitNavigationFinish(stringifyInstruction(instruction));
+                        return true;
+                      });
+                }
+              });
+        });
   }
 
   private _emitNavigationFinish(url): void { ObservableWrapper.callNext(this._subject, url); }
@@ -138,21 +159,20 @@ export class Router {
     });
   }
 
-  _reuse(instruction): Promise<any> {
+  _reuse(instruction: Instruction): Promise<any> {
     if (isBlank(this._outlet)) {
       return _resolveToFalse;
     }
     return this._outlet.canReuse(instruction)
         .then((result) => {
-          instruction.reuse = result;
           if (isPresent(this._outlet.childRouter) && isPresent(instruction.child)) {
             return this._outlet.childRouter._reuse(instruction.child);
           }
         });
   }
 
-  private _canActivate(instruction: Instruction): Promise<boolean> {
-    return canActivateOne(instruction, this._currentInstruction);
+  private _canActivate(nextInstruction: Instruction): Promise<boolean> {
+    return canActivateOne(nextInstruction, this._currentInstruction);
   }
 
   private _canDeactivate(instruction: Instruction): Promise<boolean> {
@@ -160,11 +180,12 @@ export class Router {
       return _resolveToTrue;
     }
     var next: Promise<boolean>;
-    if (isPresent(instruction) && instruction.reuse) {
+    if (isPresent(instruction) && instruction.component.reuse) {
       next = _resolveToTrue;
     } else {
       next = this._outlet.canDeactivate(instruction);
     }
+    // TODO: aux route lifecycle hooks
     return next.then((result) => {
       if (result == false) {
         return false;
@@ -182,10 +203,14 @@ export class Router {
    */
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
     this._currentInstruction = instruction;
+    var next = _resolveToTrue;
     if (isPresent(this._outlet)) {
-      return this._outlet.commit(instruction);
+      next = this._outlet.commit(instruction);
     }
-    return _resolveToTrue;
+    var promises = [];
+    MapWrapper.forEach(this._auxOutlets,
+                       (outlet, _) => { promises.push(outlet.commit(instruction)); });
+    return next.then((_) => PromiseWrapper.all(promises));
   }
 
 
@@ -237,7 +262,7 @@ export class Router {
    * Generate a URL from a component name and optional map of parameters. The URL is relative to the
    * app's base href.
    */
-  generate(linkParams: List<any>): string {
+  generate(linkParams: List<any>): Instruction {
     let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
 
     var first = ListWrapper.first(normalizedLinkParams);
@@ -275,11 +300,22 @@ export class Router {
       throw new BaseException(msg);
     }
 
-    let url = '';
-    if (isPresent(router.parent) && isPresent(router.parent._currentInstruction)) {
-      url = router.parent._currentInstruction.capturedUrl;
+    // TODO: structural cloning and whatnot
+
+    var url = [];
+    var parent = router.parent;
+    while (isPresent(parent)) {
+      url.unshift(parent._currentInstruction);
+      parent = parent.parent;
     }
-    return url + '/' + this.registry.generate(rest, router.hostComponent);
+
+    var nextInstruction = this.registry.generate(rest, router.hostComponent);
+
+    while (url.length > 0) {
+      nextInstruction = url.pop().replaceChild(nextInstruction);
+    }
+
+    return nextInstruction;
   }
 }
 
@@ -291,14 +327,19 @@ export class RootRouter extends Router {
     super(registry, pipeline, null, hostComponent);
     this._location = location;
     this._location.subscribe((change) => this.navigate(change['url'], isPresent(change['pop'])));
-    this.registry.configFromComponent(hostComponent, true);
+
+    this.registry.configFromComponent(hostComponent);
     this.navigate(location.path());
   }
 
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
+    var emitUrl = stringifyInstruction(instruction);
+    if (emitUrl.length > 0) {
+      emitUrl = '/' + emitUrl;
+    }
     var promise = super.commit(instruction);
     if (!_skipLocationChange) {
-      promise = promise.then((_) => { this._location.go(instruction.accumulatedUrl); });
+      promise = promise.then((_) => { this._location.go(emitUrl); });
     }
     return promise;
   }
@@ -314,6 +355,12 @@ class ChildRouter extends Router {
   navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
     // Delegate navigation to the root router
     return this.parent.navigate(url, _skipLocationChange);
+  }
+
+  navigateInstruction(instruction: Instruction,
+                      _skipLocationChange: boolean = false): Promise<any> {
+    // Delegate navigation to the root router
+    return this.parent.navigateInstruction(instruction, _skipLocationChange);
   }
 }
 
@@ -332,22 +379,24 @@ function splitAndFlattenLinkParams(linkParams: List<any>): List<any> {
   }, []);
 }
 
-function canActivateOne(nextInstruction, currentInstruction): Promise<boolean> {
+function canActivateOne(nextInstruction: Instruction, prevInstruction: Instruction):
+    Promise<boolean> {
   var next = _resolveToTrue;
   if (isPresent(nextInstruction.child)) {
     next = canActivateOne(nextInstruction.child,
-                          isPresent(currentInstruction) ? currentInstruction.child : null);
+                          isPresent(prevInstruction) ? prevInstruction.child : null);
   }
-  return next.then((res) => {
-    if (res == false) {
+  return next.then((result) => {
+    if (result == false) {
       return false;
     }
-    if (nextInstruction.reuse) {
+    if (nextInstruction.component.reuse) {
       return true;
     }
-    var hook = getCanActivateHook(nextInstruction.component);
+    var hook = getCanActivateHook(nextInstruction.component.componentType);
     if (isPresent(hook)) {
-      return hook(nextInstruction, currentInstruction);
+      return hook(nextInstruction.component,
+                  isPresent(prevInstruction) ? prevInstruction.component : null);
     }
     return true;
   });

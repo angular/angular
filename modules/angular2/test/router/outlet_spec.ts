@@ -30,7 +30,13 @@ import {
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
 import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
-import {RouteConfig, Route, AsyncRoute, Redirect} from 'angular2/src/router/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  AuxRoute,
+  AsyncRoute,
+  Redirect
+} from 'angular2/src/router/route_config_decorator';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -45,10 +51,12 @@ import {
   CanReuse
 } from 'angular2/src/router/interfaces';
 import {CanActivate} from 'angular2/src/router/lifecycle_annotations';
-import {Instruction} from 'angular2/src/router/instruction';
+import {ComponentInstruction} from 'angular2/src/router/instruction';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
-var cmpInstanceCount, log, eventBus;
+var cmpInstanceCount;
+var log: List<string>;
+var eventBus: EventEmitter;
 var completer: PromiseCompleter<any>;
 
 export function main() {
@@ -73,7 +81,7 @@ export function main() {
       rtr = router;
       location = loc;
       cmpInstanceCount = 0;
-      log = '';
+      log = [];
       eventBus = new EventEmitter();
     }));
 
@@ -207,7 +215,6 @@ export function main() {
              });
        }));
 
-
     it('should generate link hrefs from a child to its sibling',
        inject([AsyncTestCompleter], (async) => {
          compile()
@@ -247,281 +254,299 @@ export function main() {
              });
        }));
 
-    it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/on-activate'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('activate cmp');
-               expect(log).toEqual('activate: null -> /on-activate;');
-               async.done();
-             });
-       }));
 
-    it('should wait for a parent component\'s onActivate hook to resolve before calling its child\'s',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('parent activate')) {
-                   completer.resolve(true);
-                 }
+    describe('lifecycle hooks', () => {
+      it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/on-activate'))
+               .then((_) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('activate cmp');
+                 expect(log).toEqual(['activate: null -> /on-activate']);
+                 async.done();
                });
-               rtr.navigate('/parent-activate/child-activate')
-                   .then((_) => {
+         }));
+
+      it('should wait for a parent component\'s onActivate hook to resolve before calling its child\'s',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => {
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('parent activate')) {
+                     completer.resolve(true);
+                   }
+                 });
+                 rtr.navigate('/parent-activate/child-activate')
+                     .then((_) => {
+                       rootTC.detectChanges();
+                       expect(rootTC.nativeElement).toHaveText('parent {activate cmp}');
+                       expect(log).toEqual([
+                         'parent activate: null -> /parent-activate',
+                         'activate: null -> /child-activate'
+                       ]);
+                       async.done();
+                     });
+               });
+         }));
+
+      it('should call the onDeactivate hook', inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/on-deactivate'))
+               .then((_) => rtr.navigate('/a'))
+               .then((_) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('A');
+                 expect(log).toEqual(['deactivate: /on-deactivate -> /a']);
+                 async.done();
+               });
+         }));
+
+      it('should wait for a child component\'s onDeactivate hook to resolve before calling its parent\'s',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/parent-deactivate/child-deactivate'))
+               .then((_) => {
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('deactivate')) {
+                     completer.resolve(true);
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('parent {activate cmp}');
-                     expect(log).toEqual(
-                         'parent activate: null -> /parent-activate/child-activate;activate: null -> /child-activate;');
-                     async.done();
-                   });
-             });
-       }));
-
-    it('should call the onDeactivate hook', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/on-deactivate'))
-             .then((_) => rtr.navigate('/a'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('A');
-               expect(log).toEqual('deactivate: /on-deactivate -> /a;');
-               async.done();
-             });
-       }));
-
-    it('should wait for a child component\'s onDeactivate hook to resolve before calling its parent\'s',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/parent-deactivate/child-deactivate'))
-             .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('deactivate')) {
-                   completer.resolve(true);
+                     expect(rootTC.nativeElement).toHaveText('parent {deactivate cmp}');
+                   }
+                 });
+                 rtr.navigate('/a').then((_) => {
                    rootTC.detectChanges();
-                   expect(rootTC.nativeElement).toHaveText('parent {deactivate cmp}');
-                 }
+                   expect(rootTC.nativeElement).toHaveText('A');
+                   expect(log).toEqual([
+                     'deactivate: /child-deactivate -> null',
+                     'parent deactivate: /parent-deactivate -> /a'
+                   ]);
+                   async.done();
+                 });
                });
-               rtr.navigate('/a').then((_) => {
+         }));
+
+      it('should reuse a component when the canReuse hook returns true',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/on-reuse/1/a'))
+               .then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('A');
-                 expect(log).toEqual(
-                     'deactivate: /child-deactivate -> null;parent deactivate: /parent-deactivate/child-deactivate -> /a;');
+                 expect(log).toEqual([]);
+                 expect(rootTC.nativeElement).toHaveText('reuse {A}');
+                 expect(cmpInstanceCount).toBe(1);
+               })
+               .then((_) => rtr.navigate('/on-reuse/2/b'))
+               .then((_) => {
+                 rootTC.detectChanges();
+                 expect(log).toEqual(['reuse: /on-reuse/1 -> /on-reuse/2']);
+                 expect(rootTC.nativeElement).toHaveText('reuse {B}');
+                 expect(cmpInstanceCount).toBe(1);
                  async.done();
                });
-             });
-       }));
-
-    it('should reuse a component when the canReuse hook returns false',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/on-reuse/1/a'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(log).toEqual('');
-               expect(rootTC.nativeElement).toHaveText('reuse {A}');
-               expect(cmpInstanceCount).toBe(1);
-             })
-             .then((_) => rtr.navigate('/on-reuse/2/b'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(log).toEqual('reuse: /on-reuse/1/a -> /on-reuse/2/b;');
-               expect(rootTC.nativeElement).toHaveText('reuse {B}');
-               expect(cmpInstanceCount).toBe(1);
-               async.done();
-             });
-       }));
+         }));
 
 
-    it('should not reuse a component when the canReuse hook returns false',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/never-reuse/1/a'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(log).toEqual('');
-               expect(rootTC.nativeElement).toHaveText('reuse {A}');
-               expect(cmpInstanceCount).toBe(1);
-             })
-             .then((_) => rtr.navigate('/never-reuse/2/b'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(log).toEqual('');
-               expect(rootTC.nativeElement).toHaveText('reuse {B}');
-               expect(cmpInstanceCount).toBe(2);
-               async.done();
-             });
-       }));
-
-    it('should navigate when canActivate returns true', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('canActivate')) {
-                   completer.resolve(true);
-                 }
-               });
-               rtr.navigate('/can-activate/a')
-                   .then((_) => {
-                     rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('canActivate {A}');
-                     expect(log).toEqual('canActivate: null -> /can-activate/a;');
-                     async.done();
-                   });
-             });
-       }));
-
-    it('should not navigate when canActivate returns false',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('canActivate')) {
-                   completer.resolve(false);
-                 }
-               });
-               rtr.navigate('/can-activate/a')
-                   .then((_) => {
-                     rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('');
-                     expect(log).toEqual('canActivate: null -> /can-activate/a;');
-                     async.done();
-                   });
-             });
-       }));
-
-    it('should navigate away when canDeactivate returns true',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/can-deactivate/a'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
-               expect(log).toEqual('');
-
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('canDeactivate')) {
-                   completer.resolve(true);
-                 }
-               });
-
-               rtr.navigate('/a').then((_) => {
+      it('should not reuse a component when the canReuse hook returns false',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/never-reuse/1/a'))
+               .then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('A');
-                 expect(log).toEqual('canDeactivate: /can-deactivate/a -> /a;');
+                 expect(log).toEqual([]);
+                 expect(rootTC.nativeElement).toHaveText('reuse {A}');
+                 expect(cmpInstanceCount).toBe(1);
+               })
+               .then((_) => rtr.navigate('/never-reuse/2/b'))
+               .then((_) => {
+                 rootTC.detectChanges();
+                 expect(log).toEqual([]);
+                 expect(rootTC.nativeElement).toHaveText('reuse {B}');
+                 expect(cmpInstanceCount).toBe(2);
                  async.done();
                });
-             });
-       }));
+         }));
 
-    it('should not navigate away when canDeactivate returns false',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/can-deactivate/a'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
-               expect(log).toEqual('');
 
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('canDeactivate')) {
-                   completer.resolve(false);
-                 }
+      it('should navigate when canActivate returns true', inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => {
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('canActivate')) {
+                     completer.resolve(true);
+                   }
+                 });
+                 rtr.navigate('/can-activate/a')
+                     .then((_) => {
+                       rootTC.detectChanges();
+                       expect(rootTC.nativeElement).toHaveText('canActivate {A}');
+                       expect(log).toEqual(['canActivate: null -> /can-activate']);
+                       async.done();
+                     });
                });
+         }));
 
-               rtr.navigate('/a').then((_) => {
+      it('should not navigate when canActivate returns false',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => {
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('canActivate')) {
+                     completer.resolve(false);
+                   }
+                 });
+                 rtr.navigate('/can-activate/a')
+                     .then((_) => {
+                       rootTC.detectChanges();
+                       expect(rootTC.nativeElement).toHaveText('');
+                       expect(log).toEqual(['canActivate: null -> /can-activate']);
+                       async.done();
+                     });
+               });
+         }));
+
+      it('should navigate away when canDeactivate returns true',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/can-deactivate/a'))
+               .then((_) => {
                  rootTC.detectChanges();
                  expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
-                 expect(log).toEqual('canDeactivate: /can-deactivate/a -> /a;');
+                 expect(log).toEqual([]);
+
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('canDeactivate')) {
+                     completer.resolve(true);
+                   }
+                 });
+
+                 rtr.navigate('/a').then((_) => {
+                   rootTC.detectChanges();
+                   expect(rootTC.nativeElement).toHaveText('A');
+                   expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
+                   async.done();
+                 });
+               });
+         }));
+
+      it('should not navigate away when canDeactivate returns false',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/can-deactivate/a'))
+               .then((_) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+                 expect(log).toEqual([]);
+
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('canDeactivate')) {
+                     completer.resolve(false);
+                   }
+                 });
+
+                 rtr.navigate('/a').then((_) => {
+                   rootTC.detectChanges();
+                   expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+                   expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
+                   async.done();
+                 });
+               });
+         }));
+
+
+      it('should run activation and deactivation hooks in the correct order',
+         inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/activation-hooks/child'))
+               .then((_) => {
+                 expect(log).toEqual([
+                   'canActivate child: null -> /child',
+                   'canActivate parent: null -> /activation-hooks',
+                   'onActivate parent: null -> /activation-hooks',
+                   'onActivate child: null -> /child'
+                 ]);
+
+                 log = [];
+                 return rtr.navigate('/a');
+               })
+               .then((_) => {
+                 expect(log).toEqual([
+                   'canDeactivate parent: /activation-hooks -> /a',
+                   'canDeactivate child: /child -> null',
+                   'onDeactivate child: /child -> null',
+                   'onDeactivate parent: /activation-hooks -> /a'
+                 ]);
                  async.done();
                });
-             });
-       }));
+         }));
+
+      it('should only run reuse hooks when reusing', inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/reuse-hooks/1'))
+               .then((_) => {
+                 expect(log).toEqual(
+                     ['canActivate: null -> /reuse-hooks/1', 'onActivate: null -> /reuse-hooks/1']);
+
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('canReuse')) {
+                     completer.resolve(true);
+                   }
+                 });
 
 
-    it('should run activation and deactivation hooks in the correct order',
-       inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/activation-hooks/child'))
-             .then((_) => {
-               expect(log).toEqual('canActivate child: null -> /child;' +
-                                   'canActivate parent: null -> /activation-hooks/child;' +
-                                   'onActivate parent: null -> /activation-hooks/child;' +
-                                   'onActivate child: null -> /child;');
-
-               log = '';
-               return rtr.navigate('/a');
-             })
-             .then((_) => {
-               expect(log).toEqual('canDeactivate parent: /activation-hooks/child -> /a;' +
-                                   'canDeactivate child: /child -> null;' +
-                                   'onDeactivate child: /child -> null;' +
-                                   'onDeactivate parent: /activation-hooks/child -> /a;');
-               async.done();
-             });
-       }));
-
-    it('should only run reuse hooks when reusing', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/reuse-hooks/1'))
-             .then((_) => {
-               expect(log).toEqual('canActivate: null -> /reuse-hooks/1;' +
-                                   'onActivate: null -> /reuse-hooks/1;');
-
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('canReuse')) {
-                   completer.resolve(true);
-                 }
+                 log = [];
+                 return rtr.navigate('/reuse-hooks/2');
+               })
+               .then((_) => {
+                 expect(log).toEqual([
+                   'canReuse: /reuse-hooks/1 -> /reuse-hooks/2',
+                   'onReuse: /reuse-hooks/1 -> /reuse-hooks/2'
+                 ]);
+                 async.done();
                });
+         }));
 
-               log = '';
-               return rtr.navigate('/reuse-hooks/2');
-             })
-             .then((_) => {
-               expect(log).toEqual('canReuse: /reuse-hooks/1 -> /reuse-hooks/2;' +
-                                   'onReuse: /reuse-hooks/1 -> /reuse-hooks/2;');
-               async.done();
-             });
-       }));
+      it('should not run reuse hooks when not reusing', inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
+               .then((_) => rtr.navigate('/reuse-hooks/1'))
+               .then((_) => {
+                 expect(log).toEqual(
+                     ['canActivate: null -> /reuse-hooks/1', 'onActivate: null -> /reuse-hooks/1']);
 
-    it('should not run reuse hooks when not reusing', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/reuse-hooks/1'))
-             .then((_) => {
-               expect(log).toEqual('canActivate: null -> /reuse-hooks/1;' +
-                                   'onActivate: null -> /reuse-hooks/1;');
+                 ObservableWrapper.subscribe<string>(eventBus, (ev) => {
+                   if (ev.startsWith('canReuse')) {
+                     completer.resolve(false);
+                   }
+                 });
 
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('canReuse')) {
-                   completer.resolve(false);
-                 }
+                 log = [];
+                 return rtr.navigate('/reuse-hooks/2');
+               })
+               .then((_) => {
+                 expect(log).toEqual([
+                   'canReuse: /reuse-hooks/1 -> /reuse-hooks/2',
+                   'canActivate: /reuse-hooks/1 -> /reuse-hooks/2',
+                   'canDeactivate: /reuse-hooks/1 -> /reuse-hooks/2',
+                   'onDeactivate: /reuse-hooks/1 -> /reuse-hooks/2',
+                   'onActivate: /reuse-hooks/1 -> /reuse-hooks/2'
+                 ]);
+                 async.done();
                });
+         }));
 
-               log = '';
-               return rtr.navigate('/reuse-hooks/2');
-             })
-             .then((_) => {
-               expect(log).toEqual('canReuse: /reuse-hooks/1 -> /reuse-hooks/2;' +
-                                   'canActivate: /reuse-hooks/1 -> /reuse-hooks/2;' +
-                                   'canDeactivate: /reuse-hooks/1 -> /reuse-hooks/2;' +
-                                   'onDeactivate: /reuse-hooks/1 -> /reuse-hooks/2;' +
-                                   'onActivate: /reuse-hooks/1 -> /reuse-hooks/2;');
-               async.done();
-             });
-       }));
+    });
 
     describe('when clicked', () => {
 
@@ -569,6 +594,19 @@ export function main() {
                    expect(location.urlChanges).toEqual(['/base/user']);
                    async.done();
                  });
+               });
+         }));
+    });
+
+    describe('auxillary routes', () => {
+      it('should recognize a simple case', inject([AsyncTestCompleter], (async) => {
+           compile()
+               .then((_) => rtr.config([new Route({path: '/...', component: AuxCmp})]))
+               .then((_) => rtr.navigate('/hello(modal)'))
+               .then((_) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('main {hello} | aux {modal}');
+                 async.done();
                });
          }));
     });
@@ -657,24 +695,26 @@ class MyComp {
   name;
 }
 
-function logHook(name: string, next: Instruction, prev: Instruction) {
-  var message = name + ': ' + (isPresent(prev) ? prev.accumulatedUrl : 'null') + ' -> ' +
-                (isPresent(next) ? next.accumulatedUrl : 'null') + ';';
-  log += message;
+function logHook(name: string, next: ComponentInstruction, prev: ComponentInstruction) {
+  var message = name + ': ' + (isPresent(prev) ? ('/' + prev.urlPath) : 'null') + ' -> ' +
+                (isPresent(next) ? ('/' + next.urlPath) : 'null');
+  log.push(message);
   ObservableWrapper.callNext(eventBus, message);
 }
 
 @Component({selector: 'activate-cmp'})
 @View({template: 'activate cmp'})
 class ActivateCmp implements OnActivate {
-  onActivate(next: Instruction, prev: Instruction) { logHook('activate', next, prev); }
+  onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('activate', next, prev);
+  }
 }
 
 @Component({selector: 'parent-activate-cmp'})
 @View({template: `parent {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/child-activate', component: ActivateCmp})])
 class ParentActivateCmp implements OnActivate {
-  onActivate(next: Instruction, prev: Instruction): Promise<any> {
+  onActivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
     completer = PromiseWrapper.completer();
     logHook('parent activate', next, prev);
     return completer.promise;
@@ -684,13 +724,15 @@ class ParentActivateCmp implements OnActivate {
 @Component({selector: 'deactivate-cmp'})
 @View({template: 'deactivate cmp'})
 class DeactivateCmp implements OnDeactivate {
-  onDeactivate(next: Instruction, prev: Instruction) { logHook('deactivate', next, prev); }
+  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('deactivate', next, prev);
+  }
 }
 
 @Component({selector: 'deactivate-cmp'})
 @View({template: 'deactivate cmp'})
 class WaitDeactivateCmp implements OnDeactivate {
-  onDeactivate(next: Instruction, prev: Instruction): Promise<any> {
+  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
     completer = PromiseWrapper.completer();
     logHook('deactivate', next, prev);
     return completer.promise;
@@ -701,7 +743,9 @@ class WaitDeactivateCmp implements OnDeactivate {
 @View({template: `parent {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/child-deactivate', component: WaitDeactivateCmp})])
 class ParentDeactivateCmp implements OnDeactivate {
-  onDeactivate(next: Instruction, prev: Instruction) { logHook('parent deactivate', next, prev); }
+  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('parent deactivate', next, prev);
+  }
 }
 
 @Component({selector: 'reuse-cmp'})
@@ -709,8 +753,8 @@ class ParentDeactivateCmp implements OnDeactivate {
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class ReuseCmp implements OnReuse, CanReuse {
   constructor() { cmpInstanceCount += 1; }
-  canReuse(next: Instruction, prev: Instruction) { return true; }
-  onReuse(next: Instruction, prev: Instruction) { logHook('reuse', next, prev); }
+  canReuse(next: ComponentInstruction, prev: ComponentInstruction) { return true; }
+  onReuse(next: ComponentInstruction, prev: ComponentInstruction) { logHook('reuse', next, prev); }
 }
 
 @Component({selector: 'never-reuse-cmp'})
@@ -718,8 +762,8 @@ class ReuseCmp implements OnReuse, CanReuse {
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class NeverReuseCmp implements OnReuse, CanReuse {
   constructor() { cmpInstanceCount += 1; }
-  canReuse(next: Instruction, prev: Instruction) { return false; }
-  onReuse(next: Instruction, prev: Instruction) { logHook('reuse', next, prev); }
+  canReuse(next: ComponentInstruction, prev: ComponentInstruction) { return false; }
+  onReuse(next: ComponentInstruction, prev: ComponentInstruction) { logHook('reuse', next, prev); }
 }
 
 @Component({selector: 'can-activate-cmp'})
@@ -727,7 +771,7 @@ class NeverReuseCmp implements OnReuse, CanReuse {
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 @CanActivate(CanActivateCmp.canActivate)
 class CanActivateCmp {
-  static canActivate(next: Instruction, prev: Instruction) {
+  static canActivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<boolean> {
     completer = PromiseWrapper.completer();
     logHook('canActivate', next, prev);
     return completer.promise;
@@ -738,7 +782,7 @@ class CanActivateCmp {
 @View({template: `canDeactivate {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class CanDeactivateCmp implements CanDeactivate {
-  canDeactivate(next: Instruction, prev: Instruction) {
+  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<boolean> {
     completer = PromiseWrapper.completer();
     logHook('canDeactivate', next, prev);
     return completer.promise;
@@ -749,19 +793,23 @@ class CanDeactivateCmp implements CanDeactivate {
 @View({template: `child`})
 @CanActivate(AllHooksChildCmp.canActivate)
 class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
-  canDeactivate(next: Instruction, prev: Instruction) {
+  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('canDeactivate child', next, prev);
     return true;
   }
 
-  onDeactivate(next: Instruction, prev: Instruction) { logHook('onDeactivate child', next, prev); }
+  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onDeactivate child', next, prev);
+  }
 
-  static canActivate(next: Instruction, prev: Instruction) {
+  static canActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('canActivate child', next, prev);
     return true;
   }
 
-  onActivate(next: Instruction, prev: Instruction) { logHook('onActivate child', next, prev); }
+  onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onActivate child', next, prev);
+  }
 }
 
 @Component({selector: 'all-hooks-parent-cmp'})
@@ -769,46 +817,56 @@ class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
 @RouteConfig([new Route({path: '/child', component: AllHooksChildCmp})])
 @CanActivate(AllHooksParentCmp.canActivate)
 class AllHooksParentCmp implements CanDeactivate, OnDeactivate, OnActivate {
-  canDeactivate(next: Instruction, prev: Instruction) {
+  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('canDeactivate parent', next, prev);
     return true;
   }
 
-  onDeactivate(next: Instruction, prev: Instruction) { logHook('onDeactivate parent', next, prev); }
+  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onDeactivate parent', next, prev);
+  }
 
-  static canActivate(next: Instruction, prev: Instruction) {
+  static canActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('canActivate parent', next, prev);
     return true;
   }
 
-  onActivate(next: Instruction, prev: Instruction) { logHook('onActivate parent', next, prev); }
+  onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onActivate parent', next, prev);
+  }
 }
 
 @Component({selector: 'reuse-hooks-cmp'})
 @View({template: 'reuse hooks cmp'})
 @CanActivate(ReuseHooksCmp.canActivate)
 class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanDeactivate {
-  canReuse(next: Instruction, prev: Instruction): Promise<any> {
+  canReuse(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
     completer = PromiseWrapper.completer();
     logHook('canReuse', next, prev);
     return completer.promise;
   }
 
-  onReuse(next: Instruction, prev: Instruction) { logHook('onReuse', next, prev); }
+  onReuse(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onReuse', next, prev);
+  }
 
-  canDeactivate(next: Instruction, prev: Instruction) {
+  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('canDeactivate', next, prev);
     return true;
   }
 
-  onDeactivate(next: Instruction, prev: Instruction) { logHook('onDeactivate', next, prev); }
+  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onDeactivate', next, prev);
+  }
 
-  static canActivate(next: Instruction, prev: Instruction) {
+  static canActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('canActivate', next, prev);
     return true;
   }
 
-  onActivate(next: Instruction, prev: Instruction) { logHook('onActivate', next, prev); }
+  onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    logHook('onActivate', next, prev);
+  }
 }
 
 @Component({selector: 'lifecycle-cmp'})
@@ -827,4 +885,22 @@ class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanD
   new Route({path: '/reuse-hooks/:number', component: ReuseHooksCmp})
 ])
 class LifecycleCmp {
+}
+
+@Component({selector: 'modal-cmp'})
+@View({template: "modal"})
+class ModalCmp {
+}
+
+@Component({selector: 'aux-cmp'})
+@View({
+  template:
+      `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`,
+  directives: [RouterOutlet]
+})
+@RouteConfig([
+  new Route({path: '/hello', component: HelloCmp}),
+  new AuxRoute({path: '/modal', component: ModalCmp})
+])
+class AuxCmp {
 }

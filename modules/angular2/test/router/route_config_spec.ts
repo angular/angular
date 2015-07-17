@@ -98,7 +98,31 @@ export function main() {
              });
        }));
 
-    // TODO: test apps with wrong configs
+    it('should throw if a config is missing a target',
+       inject(
+           [AsyncTestCompleter],
+           (async) => {
+               bootstrap(WrongConfigCmp, testBindings)
+                   .catch((e) => {
+                     expect(e.originalException)
+                         .toContainError(
+                             'Route config should contain exactly one "component", "loader", or "redirectTo" property.');
+                     async.done();
+                     return null;
+                   })}));
+
+    it('should throw if a config has an invalid component type',
+       inject(
+           [AsyncTestCompleter],
+           (async) => {
+               bootstrap(WrongComponentTypeCmp, testBindings)
+                   .catch((e) => {
+                     expect(e.originalException)
+                         .toContainError(
+                             'Invalid component type "intentionallyWrongComponentType". Valid types are "constructor" and "loader".');
+                     async.done();
+                     return null;
+                   })}));
   });
 }
 
@@ -148,4 +172,18 @@ class ParentCmp {
 @RouteConfig([{path: '/parent/...', component: ParentCmp}])
 class HierarchyAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@RouteConfig([{path: '/hello'}])
+class WrongConfigCmp {
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@RouteConfig([
+  {path: '/hello', component: {type: 'intentionallyWrongComponentType', constructor: HelloCmp}},
+])
+class WrongComponentTypeCmp {
 }

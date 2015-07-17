@@ -3,6 +3,7 @@ import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection'
 
 import {Router} from './router';
 import {Location} from './location';
+import {Instruction, stringifyInstruction} from './instruction';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -43,19 +44,23 @@ export class RouterLink {
 
   // the url displayed on the anchor element.
   visibleHref: string;
-  // the url passed to the router navigation.
-  _navigationHref: string;
+
+  // the instruction passed to the router to navigate
+  private _navigationInstruction: Instruction;
 
   constructor(private _router: Router, private _location: Location) {}
 
   set routeParams(changes: List<any>) {
     this._routeParams = changes;
-    this._navigationHref = this._router.generate(this._routeParams);
-    this.visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
+    this._navigationInstruction = this._router.generate(this._routeParams);
+
+    // TODO: is this the right spot for this?
+    var navigationHref = '/' + stringifyInstruction(this._navigationInstruction);
+    this.visibleHref = this._location.normalizeAbsolutely(navigationHref);
   }
 
   onClick(): boolean {
-    this._router.navigate(this._navigationHref);
+    this._router.navigateInstruction(this._navigationInstruction);
     return false;
   }
 }

@@ -1,4 +1,4 @@
-import {Instruction} from './instruction';
+import {ComponentInstruction} from './instruction';
 import {global} from 'angular2/src/facade/lang';
 
 // This is here only so that after TS transpilation the file is not empty.
@@ -11,33 +11,33 @@ var __ignore_me = global;
  * Defines route lifecycle method [onActivate]
  */
 export interface OnActivate {
-  onActivate(nextInstruction: Instruction, prevInstruction: Instruction): any;
+  onActivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
 }
 
 /**
  * Defines route lifecycle method [onReuse]
  */
 export interface OnReuse {
-  onReuse(nextInstruction: Instruction, prevInstruction: Instruction): any;
+  onReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
 }
 
 /**
  * Defines route lifecycle method [onDeactivate]
  */
 export interface OnDeactivate {
-  onDeactivate(nextInstruction: Instruction, prevInstruction: Instruction): any;
+  onDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
 }
 
 /**
  * Defines route lifecycle method [canReuse]
  */
 export interface CanReuse {
-  canReuse(nextInstruction: Instruction, prevInstruction: Instruction): any;
+  canReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
 }
 
 /**
  * Defines route lifecycle method [canDeactivate]
  */
 export interface CanDeactivate {
-  canDeactivate(nextInstruction: Instruction, prevInstruction: Instruction): any;
+  canDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
 }

@@ -23,14 +23,13 @@ import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {bind, Component, View} from 'angular2/angular2';
 
 import {Location, Router, RouterLink} from 'angular2/router';
+import {Instruction, ComponentInstruction} from 'angular2/src/router/instruction';
 
-import {
-  DOM
-} from 'angular2/src/dom/dom_adapter'
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
+var dummyInstruction = new Instruction(new ComponentInstruction('detail', [], null), null, {});
 
-    export function
-    main() {
+export function main() {
   describe('router-link directive', function() {
 
     beforeEachBindings(
@@ -59,7 +58,7 @@ import {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
                testComponent.query(By.css('a')).triggerEventHandler('^click', {});
-               expect(router.spy("navigate")).toHaveBeenCalledWith('/detail');
+               expect(router.spy('navigateInstruction')).toHaveBeenCalledWith(dummyInstruction);
                async.done();
              });
        }));
@@ -100,7 +99,7 @@ class DummyRouter extends SpyObject {
 
 function makeDummyRouter() {
   var dr = new DummyRouter();
-  dr.spy('generate').andCallFake((routeParams) => routeParams.join('='));
-  dr.spy('navigate');
+  dr.spy('generate').andCallFake((routeParams) => dummyInstruction);
+  dr.spy('navigateInstruction');
   return dr;
 }

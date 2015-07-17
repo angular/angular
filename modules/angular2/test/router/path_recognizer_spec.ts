@@ -11,6 +11,7 @@ import {
 } from 'angular2/test_lib';
 
 import {PathRecognizer} from 'angular2/src/router/path_recognizer';
+import {parser, Url, RootUrl} from 'angular2/src/router/url_parser';
 import {SyncRouteHandler} from 'angular2/src/router/sync_route_handler';
 
 class DummyClass {
@@ -41,65 +42,60 @@ export function main() {
 
     describe('querystring params', () => {
       it('should parse querystring params so long as the recognizer is a root', () => {
-        var rec = new PathRecognizer('/hello/there', mockRouteHandler, true);
-        var params = rec.parseParams('/hello/there?name=igor');
-        expect(params).toEqual({'name': 'igor'});
+        var rec = new PathRecognizer('/hello/there', mockRouteHandler);
+        var url = parser.parse('/hello/there?name=igor');
+        var match = rec.recognize(url);
+        expect(match.instruction.params).toEqual({'name': 'igor'});
       });
 
       it('should return a combined map of parameters with the param expected in the URL path',
          () => {
-           var rec = new PathRecognizer('/hello/:name', mockRouteHandler, true);
-           var params = rec.parseParams('/hello/paul?topic=success');
-           expect(params).toEqual({'name': 'paul', 'topic': 'success'});
+           var rec = new PathRecognizer('/hello/:name', mockRouteHandler);
+           var url = parser.parse('/hello/paul?topic=success');
+           var match = rec.recognize(url);
+           expect(match.instruction.params).toEqual({'name': 'paul', 'topic': 'success'});
          });
     });
 
     describe('matrix params', () => {
-      it('should recognize a trailing matrix value on a path value and assign it to the params return value',
-         () => {
-           var rec = new PathRecognizer('/hello/:id', mockRouteHandler);
-           var params = rec.parseParams('/hello/matias;key=value');
-
-           expect(params['id']).toEqual('matias');
-           expect(params['key']).toEqual('value');
-         });
-
-      it('should recognize and parse multiple matrix params separated by a colon value', () => {
-        var rec = new PathRecognizer('/jello/:sid', mockRouteHandler);
-        var params = rec.parseParams('/jello/man;color=red;height=20');
-
-        expect(params['sid']).toEqual('man');
-        expect(params['color']).toEqual('red');
-        expect(params['height']).toEqual('20');
+      it('should be parsed along with dynamic paths', () => {
+        var rec = new PathRecognizer('/hello/:id', mockRouteHandler);
+        var url = new Url('hello', new Url('matias', null, null, {'key': 'value'}));
+        var match = rec.recognize(url);
+        expect(match.instruction.params).toEqual({'id': 'matias', 'key': 'value'});
       });
 
-      it('should recognize a matrix param value on a static path value', () => {
-        var rec = new PathRecognizer('/static/man', mockRouteHandler);
-        var params = rec.parseParams('/static/man;name=dave');
-        expect(params['name']).toEqual('dave');
+      it('should be parsed on a static path', () => {
+        var rec = new PathRecognizer('/person', mockRouteHandler);
+        var url = new Url('person', null, null, {'name': 'dave'});
+        var match = rec.recognize(url);
+        expect(match.instruction.params).toEqual({'name': 'dave'});
       });
 
-      it('should not parse matrix params when a wildcard segment is used', () => {
+      it('should be ignored on a wildcard segment', () => {
         var rec = new PathRecognizer('/wild/*everything', mockRouteHandler);
-        var params = rec.parseParams('/wild/super;variable=value');
-        expect(params['everything']).toEqual('super;variable=value');
+        var url = parser.parse('/wild/super;variable=value');
+        var match = rec.recognize(url);
+        expect(match.instruction.params).toEqual({'everything': 'super;variable=value'});
       });
 
-      it('should set matrix param values to true when no value is present within the path string',
-         () => {
-           var rec = new PathRecognizer('/path', mockRouteHandler);
-           var params = rec.parseParams('/path;one;two;three=3');
-           expect(params['one']).toEqual(true);
-           expect(params['two']).toEqual(true);
-           expect(params['three']).toEqual('3');
-         });
+      it('should set matrix param values to true when no value is present', () => {
+        var rec = new PathRecognizer('/path', mockRouteHandler);
+        var url = new Url('path', null, null, {'one': true, 'two': true, 'three': '3'});
+        var match = rec.recognize(url);
+        expect(match.instruction.params).toEqual({'one': true, 'two': true, 'three': '3'});
+      });
 
-      it('should ignore earlier instances of matrix params and only consider the ones at the end of the path',
-         () => {
-           var rec = new PathRecognizer('/one/two/three', mockRouteHandler);
-           var params = rec.parseParams('/one;a=1/two;b=2/three;c=3');
-           expect(params).toEqual({'c': '3'});
-         });
+      it('should be parsed on the final segment of the path', () => {
+        var rec = new PathRecognizer('/one/two/three', mockRouteHandler);
+
+        var three = new Url('three', null, null, {'c': '3'});
+        var two = new Url('two', three, null, {'b': '2'});
+        var one = new Url('one', two, null, {'a': '1'});
+
+        var match = rec.recognize(one);
+        expect(match.instruction.params).toEqual({'c': '3'});
+      });
     });
   });
 }
