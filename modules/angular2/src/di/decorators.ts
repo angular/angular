@@ -46,24 +46,24 @@ export interface SelfFactory {
  * Factory for creating {@link ParentMetadata}.
  */
 export interface ParentFactory {
-  ({self: boolean}?): any;
-  new ({self: boolean}?): ParentMetadata;
+  (visibility?: {self: boolean}): any;
+  new (visibility?: {self: boolean}): ParentMetadata;
 }
 
 /**
  * Factory for creating {@link AncestorMetadata}.
  */
 export interface AncestorFactory {
-  ({self: boolean}?): any;
-  new ({self: boolean}?): AncestorMetadata;
+  (visibility?: {self: boolean}): any;
+  new (visibility?: {self: boolean}): AncestorMetadata;
 }
 
 /**
  * Factory for creating {@link UnboundedMetadata}.
  */
 export interface UnboundedFactory {
-  ({self: boolean}?): any;
-  new ({self: boolean}?): UnboundedMetadata;
+  (visibility?: {self: boolean}): any;
+  new (visibility?: {self: boolean}): UnboundedMetadata;
 }
 
 /**
