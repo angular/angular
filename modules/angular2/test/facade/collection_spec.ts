@@ -5,8 +5,19 @@ import {
   ListWrapper,
   StringMap,
   StringMapWrapper,
-  MapWrapper
+  MapWrapper,
+  iterableToList
 } from 'angular2/src/facade/collection';
+
+class IterableClass {
+  list: List<any>;
+  constructor(list) {
+    this.list = list;
+  }
+  [Symbol.iterator]() {
+    return this.list[Symbol.iterator]();
+  }
+}
 
 export function main() {
   describe('ListWrapper', () => {
@@ -76,6 +87,20 @@ export function main() {
       it('should respect the startIndex parameter',
          () => { expect(ListWrapper.indexOf(l, 1, 1)).toEqual(-1); });
     });
+  });
+
+  describe('iterableToList', () => {
+
+    it('should return a List from iterable', () => {
+      var list = [1, 2, 3, 4, 5, 6];
+      expect(iterableToList(list)).toEqual([1, 2, 3, 4, 5, 6]);
+    });
+
+    it('should return a List from custom iterable class', () => {
+      var list = new IterableClass([1, 2, 3, 4, 5, 6]);
+      expect(iterableToList(list)).toEqual([1, 2, 3, 4, 5, 6]);
+    });
+
   });
 
   describe('StringMapWrapper', () => {
