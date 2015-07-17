@@ -44,7 +44,7 @@ class Rewriter {
       return _code;
     }
 
-    var compare = (AstNode a, AstNode b) => b.offset - a.offset;
+    var compare = (AstNode a, AstNode b) => a.offset - b.offset;
     visitor.reflectionCapabilityImports.sort(compare);
     visitor.reflectionCapabilityAssignments.sort(compare);
 
