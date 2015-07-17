@@ -93,7 +93,7 @@ main() {
       expect(pipe.transform(c2, [])).toBe(diff2);
     });
 
-    describe("transforming ObservableList changes to Angular changes", () {
+    ddescribe("transforming ObservableList changes to Angular changes", () {
       var pipe;
 
       beforeEach(() {
@@ -101,21 +101,45 @@ main() {
       });
 
       it("should handle setting a list", fakeAsync(() {
-        final list = new ObservableList.from([10,20]);
+        final list = new ObservableList.from([1,2]);
         final diff = pipe.transform(list);
 
         expect(diff.toString()).toEqual(iterableChangesAsString(
-          additions: ['10[null->0], 20[null->1]']
+          additions: ['1[null->0], 2[null->1]']
         ));
       }));
 
-      it("should handle swapping a list", fakeAsync(() {
-        pipe.transform(new ObservableList.from([10,20]));
-        final diff = pipe.transform(new ObservableList.from([10,30]));
+      it("should support changing the reference", fakeAsync(() {
+        pipe.transform(new ObservableList.from([0]));
 
+        var diff = pipe.transform(new ObservableList.from([1,0]));
         expect(diff.toString()).toEqual(iterableChangesAsString(
-          additions: ['30[null->1]'],
-          removals: ['20[1->null]']
+          additions: ['1[null->0]']
+        ));
+
+        diff = pipe.transform(new ObservableList.from([2,1,0]));
+        expect(diff.toString()).toEqual(iterableChangesAsString(
+            additions: ['2[null->0]']
+        ));
+      }));
+
+      iit("should support swapping an element", fakeAsync(() {
+        final list = new ObservableList.from([1,2]);
+        pipe.transform(list);
+
+        print(list);
+        list.clear();
+        list.add(2);
+        list.add(1);
+
+
+        // [#<ListChangeRecord index: 0, removed: [], addedCount: 1>, #<ListChangeRecord index: 2, removed: [2], addedCount: 0>] Broken
+        flushMicrotasks();
+
+        var diff = pipe.transform(list);
+        expect(diff.toString()).toEqual(iterableChangesAsString(
+          additions: ['2[null->0]','1[null->1]'],
+          removals: ['1[0->null]','2[1->null]']
         ));
       }));
 
@@ -137,20 +161,21 @@ main() {
         final list = new ObservableList.from([10,20,30]);
         pipe.transform(list);
 
-        list.removeAt(1);
+        list.removeAt(2);
+        list.removeAt(0);
         flushMicrotasks();
 
         final diff = pipe.transform(list);
         expect(diff.toString()).toEqual(iterableChangesAsString(
-          removals: ['20[1->null]']
+          removals: ['10[0->null]','30[2->null]']
         ));
       }));
 
-      it("should support adding and removing from a list", fakeAsync(() {
+      xit("should support adding and removing from a list", fakeAsync(() {
         final list = new ObservableList.from([10,20,30]);
         pipe.transform(list);
 
-        list.removeAt(1);
+        list.removeAt(0);
         list.add(40);
         flushMicrotasks();
 

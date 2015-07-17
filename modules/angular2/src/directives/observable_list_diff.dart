@@ -1,34 +1,34 @@
 library angular2.directives.observable_list_iterable_diff;
 
-import 'package:observe/observe.dart' show ObservableList;
+import 'package:observe/observe.dart' show ObservableList, ListChangeRecord;
 import 'package:angular2/change_detection.dart';
 import 'package:angular2/src/change_detection/pipes/iterable_changes.dart';
 import 'dart:async';
 import 'package:angular2/src/facade/lang.dart';
 
 class ChangeRecord implements IIterableChangeRecord {
-  int currentIndex;
-  int previousIndex;
-  dynamic item;
+  final int currentIndex;
+  final int previousIndex;
+  final dynamic item;
 
   ChangeRecord(this.item, this.previousIndex, this.currentIndex);
 
   String toString() {
-    return this.previousIndex == this.currentIndex ?
-    stringify(this.item) :
-    stringify(this.item) + '[' + stringify(this.previousIndex) + '->' +
-    stringify(this.currentIndex) + ']';
+    return previousIndex == currentIndex ?
+      item.toString() :
+      "${item}[${previousIndex}->${currentIndex}]";
   }
 }
 
 class ObservableListDiffResult implements IIterableChangesResult {
-  ObservableList _collection;
-  List _records = [];
+  final ObservableList _collection;
+  final List<ListChangeRecord> _listChanges;
 
-  ObservableListDiffResult(this._collection, this._records);
+  ObservableListDiffResult(this._collection, this._listChanges);
 
   void forEachAddedItem(Function fn) {
-    _records.forEach((r) {
+    print(_listChanges);
+    _listChanges.forEach((r) {
       if (r.addedCount > 0) {
         for (var i = 0; i < r.addedCount; ++i) {
           final currentIndex = r.index + i;
@@ -40,16 +40,28 @@ class ObservableListDiffResult implements IIterableChangesResult {
   }
 
   void forEachMovedItem(Function fn) {
-    // do not support moves
+//    _listChanges.forEach((r) {
+//      if (r.addedCount > 0 || r.removed.isNotEmpty) {
+//        var delta = r.addedCount - r.removed.length;
+//
+//        for (var i = 0; i < r.addedCount; ++i) {
+//          final currentIndex = r.index + i;
+//          final item = _collection[currentIndex];
+//          fn(new ChangeRecord(item, null, currentIndex));
+//        }
+//      }
+//    });
   }
 
   void forEachRemovedItem(Function fn) {
-    _records.forEach((r) {
+    int shift = 0;
+    _listChanges.forEach((r) {
       if (! r.removed.isEmpty) {
         for (var i = 0; i < r.removed.length; ++i) {
           final currentIndex = r.index + i;
-          fn(new ChangeRecord(r.removed[i], currentIndex, null));
+          fn(new ChangeRecord(r.removed[i], currentIndex + shift, null));
         }
+        shift += r.removed.length;
       }
     });
   }
@@ -70,16 +82,16 @@ class ObservableListDiffResult implements IIterableChangesResult {
 
 class ObservableListDiff implements Pipe {
   // a set of changes between two change detection runs
-  ObservableListDiffResult diff;
+  ObservableListDiffResult _diff;
 
   // a set of changes we are collecting between two change detection runs
-  List _listChanges = [];
+  List<ListChangeRecord> _listChanges = [];
 
   ObservableList _collection;
 
   StreamSubscription _subscription;
 
-  ChangeDetectorRef _ref;
+  final ChangeDetectorRef _ref;
 
   ObservableListDiff(this._ref) {
     _collection = new ObservableList();
@@ -115,17 +127,15 @@ class ObservableListDiff implements Pipe {
       _collection = collection;
       _flushChanges();
 
-    // Changes have been registered since the last change detection check.
-    // - We flush the changes.
-    } else if (_listChanges.isNotEmpty){
+    } else {
       _flushChanges();
     }
 
-    return diff;
+    return _diff;
   }
 
   void _flushChanges() {
-    diff = new ObservableListDiffResult(_collection, _listChanges);
+    _diff = new ObservableListDiffResult(_collection, _listChanges);
     _listChanges = [];
   }
 }
