@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "version": "2.0.0-alpha.30",
+  "version": "2.0.0-alpha.31",
   "dependencies": {
     "angular": {
       "version": "1.3.5",
@@ -3356,6 +3356,7 @@
     "clang-format": {
       "version": "1.0.28",
       "from": "clang-format@1.0.28",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.28.tgz",
       "dependencies": {
         "resolve": {
           "version": "1.1.6",
@@ -3750,7 +3751,7 @@
     },
     "dgeni-packages": {
       "version": "0.10.18",
-      "from": "dgeni-packages@0.10.18",
+      "from": "https://registry.npmjs.org/dgeni-packages/-/dgeni-packages-0.10.18.tgz",
       "resolved": "https://registry.npmjs.org/dgeni-packages/-/dgeni-packages-0.10.18.tgz",
       "dependencies": {
         "catharsis": {
@@ -15384,8 +15385,8 @@
       }
     },
     "ts2dart": {
-      "version": "0.6.9",
-      "from": "ts2dart@0.6.9",
+      "version": "0.7.0",
+      "from": "ts2dart@0.7.0",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -15421,7 +15422,7 @@
         "typescript": {
           "version": "1.5.3",
           "from": "microsoft/TypeScript#release-1.5",
-          "resolved": "git://github.com/microsoft/TypeScript.git#331b63df7d05c9476b6b9cae97a7a158eba303ca"
+          "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
     },
