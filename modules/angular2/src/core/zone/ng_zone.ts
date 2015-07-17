@@ -40,6 +40,8 @@ export class NgZone {
 
   _inVmTurnDone: boolean = false;
 
+  _pendingTimeouts: List<number> = [];
+
   /**
    * Associates with this
    *
@@ -93,8 +95,17 @@ export class NgZone {
    *
    * This hook is useful for validating application state (e.g. in a test).
    */
-  overrideOnEventDone(onEventDoneFn: Function): void {
-    this._onEventDone = normalizeBlank(onEventDoneFn);
+  overrideOnEventDone(onEventDoneFn: Function, opt_waitForAsync: boolean): void {
+    var normalizedOnEventDone = normalizeBlank(onEventDoneFn);
+    if (opt_waitForAsync) {
+      this._onEventDone = () => {
+        if (!this._pendingTimeouts.length) {
+          normalizedOnEventDone();
+        }
+      };
+    } else {
+      this._onEventDone = normalizedOnEventDone;
+    }
   }
 
   /**
@@ -213,6 +224,24 @@ export class NgZone {
                 }
               };
               parentScheduleMicrotask.call(this, microtask);
+            };
+          },
+          '$setTimeout': function(parentSetTimeout) {
+            return function(fn: Function, delay: number, ...args) {
+              var id;
+              var cb = function() {
+                fn();
+                ListWrapper.remove(ngZone._pendingTimeouts, id);
+              };
+              id = parentSetTimeout(cb, delay, args);
+              ngZone._pendingTimeouts.push(id);
+              return id;
+            };
+          },
+          '$clearTimeout': function(parentClearTimeout) {
+            return function(id: number) {
+              parentClearTimeout(id);
+              ListWrapper.remove(ngZone._pendingTimeouts, id);
             };
           },
           _innerZone: true
