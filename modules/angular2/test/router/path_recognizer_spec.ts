@@ -21,6 +21,24 @@ var mockRouteHandler = new SyncRouteHandler(DummyClass);
 
 export function main() {
   describe('PathRecognizer', () => {
+
+    it('should throw when given an invalid path', () => {
+      expect(() => new PathRecognizer('/hi#', mockRouteHandler))
+          .toThrowError(`Path "/hi#" should not include "#". Use "HashLocationStrategy" instead.`);
+      expect(() => new PathRecognizer('hi?', mockRouteHandler))
+          .toThrowError(`Path "hi?" contains "?" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi;', mockRouteHandler))
+          .toThrowError(`Path "hi;" contains ";" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi=', mockRouteHandler))
+          .toThrowError(`Path "hi=" contains "=" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi(', mockRouteHandler))
+          .toThrowError(`Path "hi(" contains "(" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi)', mockRouteHandler))
+          .toThrowError(`Path "hi)" contains ")" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi//there', mockRouteHandler))
+          .toThrowError(`Path "hi//there" contains "//" which is not allowed in a route config.`);
+    });
+
     describe('matrix params', () => {
       it('should recognize a trailing matrix value on a path value and assign it to the params return value',
          () => {
