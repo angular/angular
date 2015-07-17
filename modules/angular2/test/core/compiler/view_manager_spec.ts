@@ -26,6 +26,7 @@ import {
 } from 'angular2/src/core/compiler/view';
 import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 import {
   Renderer,
   RenderViewRef,
@@ -187,25 +188,27 @@ export function main() {
         var hostView: AppView;
         var childProtoView: AppProtoView;
         var vcRef: ElementRef;
+        var templateRef: TemplateRef;
         beforeEach(() => {
           childProtoView = createEmbeddedPv();
           var hostProtoView = createHostPv(
               [createNestedElBinder(createComponentPv([createNestedElBinder(childProtoView)]))]);
           hostView = internalView(manager.createRootHostView(wrapPv(hostProtoView), null, null));
           vcRef = hostView.elementRefs[1];
+          templateRef = new TemplateRef(hostView.elementRefs[1]);
           resetSpies();
         });
 
         describe('create the first view', () => {
 
           it('should create an AppViewContainer if not yet existing', () => {
-            manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null);
+            manager.createEmbeddedViewInContainer(vcRef, 0, templateRef);
             expect(hostView.viewContainers[1]).toBeTruthy();
           });
 
           it('should use an existing nested view', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             expect(childView.proto).toBe(childProtoView);
             expect(childView).toBe(hostView.views[2]);
             expect(viewListener.spy('viewCreated')).not.toHaveBeenCalled();
@@ -214,7 +217,7 @@ export function main() {
 
           it('should attach the fragment', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             expect(childView.proto).toBe(childProtoView);
             expect(hostView.viewContainers[1].views.length).toBe(1);
             expect(hostView.viewContainers[1].views[0]).toBe(childView);
@@ -224,13 +227,13 @@ export function main() {
 
           it('should hydrate the view but not the render view', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             expect(childView.hydrated()).toBe(true);
             expect(renderer.spy('hydrateView')).not.toHaveBeenCalled();
           });
 
           it('should not set the EventDispatcher', () => {
-            internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+            internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             expect(renderer.spy('setEventDispatcher')).not.toHaveBeenCalled();
           });
 
@@ -240,13 +243,13 @@ export function main() {
           var firstChildView;
           beforeEach(() => {
             firstChildView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             resetSpies();
           });
 
           it('should create a new view', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 1, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 1, templateRef));
             expect(childView.proto).toBe(childProtoView);
             expect(childView).not.toBe(firstChildView);
             expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(childView);
@@ -259,7 +262,7 @@ export function main() {
 
           it('should attach the fragment', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 1, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 1, templateRef));
             expect(childView.proto).toBe(childProtoView);
             expect(hostView.viewContainers[1].views[1]).toBe(childView);
             expect(renderer.spy('attachFragmentAfterFragment'))
@@ -268,14 +271,14 @@ export function main() {
 
           it('should hydrate the view', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 1, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 1, templateRef));
             expect(childView.hydrated()).toBe(true);
             expect(renderer.spy('hydrateView')).toHaveBeenCalledWith(childView.render);
           });
 
           it('should set the EventDispatcher', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 1, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 1, templateRef));
             expect(renderer.spy('setEventDispatcher'))
                 .toHaveBeenCalledWith(childView.render, childView);
           });
@@ -284,14 +287,14 @@ export function main() {
 
         describe('create another view when the first view has been returned', () => {
           beforeEach(() => {
-            internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+            internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             manager.destroyViewInContainer(vcRef, 0);
             resetSpies();
           });
 
           it('should use an existing nested view', () => {
             var childView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             expect(childView.proto).toBe(childProtoView);
             expect(childView).toBe(hostView.views[2]);
             expect(viewListener.spy('viewCreated')).not.toHaveBeenCalled();
@@ -305,7 +308,7 @@ export function main() {
           it('should always create a new view and not use the embedded view', () => {
             var newHostPv = createHostPv([createNestedElBinder(createComponentPv())]);
             var newHostView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(newHostPv), null));
+                internalView(manager.createHostViewInContainer(vcRef, 0, wrapPv(newHostPv), null));
             expect(newHostView.proto).toBe(newHostPv);
             expect(newHostView).not.toBe(hostView.views[2]);
             expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(newHostView);
@@ -325,6 +328,7 @@ export function main() {
         var hostView: AppView;
         var childProtoView: AppProtoView;
         var vcRef: ElementRef;
+        var templateRef: TemplateRef;
         var firstChildView: AppView;
         beforeEach(() => {
           childProtoView = createEmbeddedPv();
@@ -332,8 +336,9 @@ export function main() {
               [createNestedElBinder(createComponentPv([createNestedElBinder(childProtoView)]))]);
           hostView = internalView(manager.createRootHostView(wrapPv(hostProtoView), null, null));
           vcRef = hostView.elementRefs[1];
+          templateRef = new TemplateRef(hostView.elementRefs[1]);
           firstChildView =
-              internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+              internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
           resetSpies();
         });
 
@@ -362,7 +367,7 @@ export function main() {
           var secondChildView;
           beforeEach(() => {
             secondChildView =
-                internalView(manager.createViewInContainer(vcRef, 1, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 1, templateRef));
             resetSpies();
           });
 
@@ -393,6 +398,7 @@ export function main() {
           var hostView: AppView;
           var childProtoView: AppProtoView;
           var vcRef: ElementRef;
+          var templateRef: TemplateRef;
           var firstChildView: AppView;
           var secondChildView: AppView;
           beforeEach(() => {
@@ -401,10 +407,11 @@ export function main() {
                 [createNestedElBinder(createComponentPv([createNestedElBinder(childProtoView)]))]);
             hostView = internalView(manager.createRootHostView(wrapPv(hostProtoView), null, null));
             vcRef = hostView.elementRefs[1];
+            templateRef = new TemplateRef(hostView.elementRefs[1]);
             firstChildView =
-                internalView(manager.createViewInContainer(vcRef, 0, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             secondChildView =
-                internalView(manager.createViewInContainer(vcRef, 1, wrapPv(childProtoView), null));
+                internalView(manager.createEmbeddedViewInContainer(vcRef, 1, templateRef));
             resetSpies();
           });
 
@@ -438,6 +445,7 @@ export function main() {
           var childProtoView: AppProtoView;
           var nestedChildProtoView: AppProtoView;
           var vcRef: ElementRef;
+          var templateRef: TemplateRef;
           var nestedVcRefs: ElementRef[];
           var childViews: AppView[];
           var nestedChildViews: AppView[];
@@ -451,18 +459,18 @@ export function main() {
                 [createNestedElBinder(createComponentPv([createNestedElBinder(childProtoView)]))]);
             hostView = internalView(manager.createRootHostView(wrapPv(hostProtoView), null, null));
             vcRef = hostView.elementRefs[1];
+            templateRef = new TemplateRef(hostView.elementRefs[1]);
             nestedChildViews = [];
             childViews = [];
             nestedVcRefs = [];
             for (var i = 0; i < 2; i++) {
-              var view = internalView(
-                  manager.createViewInContainer(vcRef, i, wrapPv(childProtoView), null));
+              var view = internalView(manager.createEmbeddedViewInContainer(vcRef, i, templateRef));
               childViews.push(view);
               var nestedVcRef = view.elementRefs[view.elementOffset];
               nestedVcRefs.push(nestedVcRef);
               for (var j = 0; j < 2; j++) {
                 var nestedView = internalView(
-                    manager.createViewInContainer(nestedVcRef, j, wrapPv(childProtoView), null));
+                    manager.createEmbeddedViewInContainer(nestedVcRef, j, templateRef));
                 nestedChildViews.push(nestedView);
               }
             }

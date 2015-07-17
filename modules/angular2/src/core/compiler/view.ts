@@ -21,7 +21,7 @@ import {ElementBinder} from './element_binder';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
 import {RenderEventDispatcher} from 'angular2/src/render/api';
-import {ViewRef, internalView} from './view_ref';
+import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
 
 export class AppProtoViewMergeMapping {
@@ -256,10 +256,12 @@ export class AppProtoView {
   elementBinders: List<ElementBinder> = [];
   protoLocals: Map<string, any> = new Map();
   mergeMapping: AppProtoViewMergeMapping;
+  ref: ProtoViewRef;
 
   constructor(public type: renderApi.ViewType, public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>,
               public variableLocations: Map<string, number>, public textBindingCount: number) {
+    this.ref = new ProtoViewRef(this);
     if (isPresent(variableBindings)) {
       MapWrapper.forEach(variableBindings,
                          (templateName, _) => { this.protoLocals.set(templateName, null); });

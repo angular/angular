@@ -1,19 +1,19 @@
 import {Directive} from 'angular2/annotations';
 import {Parent} from 'angular2/di';
-import {ViewContainerRef, ProtoViewRef} from 'angular2/core';
+import {ViewContainerRef, TemplateRef} from 'angular2/core';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
 
 export class SwitchView {
   _viewContainerRef: ViewContainerRef;
-  _protoViewRef: ProtoViewRef;
+  _templateRef: TemplateRef;
 
-  constructor(viewContainerRef: ViewContainerRef, protoViewRef: ProtoViewRef) {
-    this._protoViewRef = protoViewRef;
+  constructor(viewContainerRef: ViewContainerRef, templateRef: TemplateRef) {
+    this._templateRef = templateRef;
     this._viewContainerRef = viewContainerRef;
   }
 
-  create() { this._viewContainerRef.create(this._protoViewRef); }
+  create() { this._viewContainerRef.createEmbeddedView(this._templateRef); }
 
   destroy() { this._viewContainerRef.clear(); }
 }
@@ -156,12 +156,12 @@ export class NgSwitchWhen {
   _switch: NgSwitch;
   _view: SwitchView;
 
-  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef,
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
               @Parent() sswitch: NgSwitch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;
-    this._view = new SwitchView(viewContainer, protoViewRef);
+    this._view = new SwitchView(viewContainer, templateRef);
   }
 
   onDestroy() { this._switch; }
@@ -186,9 +186,9 @@ export class NgSwitchWhen {
  */
 @Directive({selector: '[ng-switch-default]'})
 export class NgSwitchDefault {
-  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef,
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
               @Parent() sswitch: NgSwitch) {
-    sswitch._registerView(_whenDefault, new SwitchView(viewContainer, protoViewRef));
+    sswitch._registerView(_whenDefault, new SwitchView(viewContainer, templateRef));
   }
 }
 

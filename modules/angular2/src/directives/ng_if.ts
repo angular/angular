@@ -1,5 +1,5 @@
 import {Directive} from 'angular2/annotations';
-import {ViewContainerRef, ProtoViewRef} from 'angular2/core';
+import {ViewContainerRef, TemplateRef} from 'angular2/core';
 import {isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -27,19 +27,19 @@ import {isBlank} from 'angular2/src/facade/lang';
 @Directive({selector: '[ng-if]', properties: ['ngIf']})
 export class NgIf {
   viewContainer: ViewContainerRef;
-  protoViewRef: ProtoViewRef;
+  templateRef: TemplateRef;
   prevCondition: boolean;
 
-  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef) {
     this.viewContainer = viewContainer;
     this.prevCondition = null;
-    this.protoViewRef = protoViewRef;
+    this.templateRef = templateRef;
   }
 
   set ngIf(newCondition /* boolean */) {
     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
       this.prevCondition = true;
-      this.viewContainer.create(this.protoViewRef);
+      this.viewContainer.createEmbeddedView(this.templateRef);
     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
       this.prevCondition = false;
       this.viewContainer.clear();

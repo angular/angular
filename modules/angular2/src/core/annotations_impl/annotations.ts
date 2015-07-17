@@ -360,12 +360,12 @@ import {DEFAULT} from 'angular2/change_detection';
  * })
  * export class Unless {
  *   viewContainer: ViewContainerRef;
- *   protoViewRef: ProtoViewRef;
+ *   templateRef: TemplateRef;
  *   prevCondition: boolean;
  *
- *   constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
+ *   constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef) {
  *     this.viewContainer = viewContainer;
- *     this.protoViewRef = protoViewRef;
+ *     this.templateRef = templateRef;
  *     this.prevCondition = null;
  *   }
  *
@@ -375,7 +375,7 @@ import {DEFAULT} from 'angular2/change_detection';
  *       this.viewContainer.clear();
  *     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
  *       this.prevCondition = false;
- *       this.viewContainer.create(this.protoViewRef);
+ *       this.viewContainer.create(this.templateRef);
  *     }
  *   }
  * }

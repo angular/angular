@@ -43,7 +43,7 @@ import {
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Parent, Ancestor, Unbounded, InjectMetadata, ParentMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
+import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
@@ -191,15 +191,15 @@ class NeedsViewContainer {
 }
 
 @Injectable()
-class NeedsProtoViewRef {
-  protoViewRef;
-  constructor(ref: ProtoViewRef) { this.protoViewRef = ref; }
+class NeedsTemplateRef {
+  templateRef;
+  constructor(ref: TemplateRef) { this.templateRef = ref; }
 }
 
 @Injectable()
-class OptionallyInjectsProtoViewRef {
-  protoViewRef;
-  constructor(@Optional() ref: ProtoViewRef) { this.protoViewRef = ref; }
+class OptionallyInjectsTemplateRef {
+  templateRef;
+  constructor(@Optional() ref: TemplateRef) { this.templateRef = ref; }
 }
 
 @Injectable()
@@ -748,11 +748,11 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var protoView = new AppProtoView(null, null, null, null, null);
-            var bindings = ListWrapper.concat([NeedsProtoViewRef], extraBindings);
-            var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, null, protoView));
+            var templateRef = new TemplateRef(<any>new DummyElementRef());
+            var bindings = ListWrapper.concat([NeedsTemplateRef], extraBindings);
+            var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, null, templateRef));
 
-            expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
+            expect(inj.get(NeedsTemplateRef).templateRef).toEqual(templateRef);
           });
 
           it("should get directives from parent", () => {
@@ -973,24 +973,24 @@ export function main() {
             expect(inj.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainerRef);
           });
 
-          it("should inject ProtoViewRef", () => {
-            var protoView = new AppProtoView(null, null, null, null, null);
-            var inj = injector(ListWrapper.concat([NeedsProtoViewRef], extraBindings), null, false,
-                               new PreBuiltObjects(null, null, null, protoView));
+          it("should inject TemplateRef", () => {
+            var templateRef = new TemplateRef(<any>new DummyElementRef());
+            var inj = injector(ListWrapper.concat([NeedsTemplateRef], extraBindings), null, false,
+                               new PreBuiltObjects(null, null, null, templateRef));
 
-            expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
+            expect(inj.get(NeedsTemplateRef).templateRef).toEqual(templateRef);
           });
 
-          it("should throw if there is no ProtoViewRef", () => {
-            expect(() => injector(ListWrapper.concat([NeedsProtoViewRef], extraBindings)))
+          it("should throw if there is no TemplateRef", () => {
+            expect(() => injector(ListWrapper.concat([NeedsTemplateRef], extraBindings)))
                 .toThrowError(
-                    `No provider for ProtoViewRef! (${stringify(NeedsProtoViewRef) } -> ProtoViewRef)`);
+                    `No provider for TemplateRef! (${stringify(NeedsTemplateRef) } -> TemplateRef)`);
           });
 
-          it('should inject null if there is no ProtoViewRef when the dependency is optional', () => {
-            var inj = injector(ListWrapper.concat([OptionallyInjectsProtoViewRef], extraBindings));
-            var instance = inj.get(OptionallyInjectsProtoViewRef);
-            expect(instance.protoViewRef).toBeNull();
+          it('should inject null if there is no TemplateRef when the dependency is optional', () => {
+            var inj = injector(ListWrapper.concat([OptionallyInjectsTemplateRef], extraBindings));
+            var instance = inj.get(OptionallyInjectsTemplateRef);
+            expect(instance.templateRef).toBeNull();
           });
         });
 

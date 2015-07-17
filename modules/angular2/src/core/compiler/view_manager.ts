@@ -4,6 +4,7 @@ import * as viewModule from './view';
 import {ElementRef} from './element_ref';
 import {ProtoViewRef, ViewRef, internalView, internalProtoView} from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
+import {TemplateRef} from './template_ref';
 import {
   Renderer,
   RenderViewRef,
@@ -39,9 +40,11 @@ export class AppViewManager {
   /**
    * Return the first child element of the host element view.
    */
-  // TODO(misko): remove https://github.com/angular/angular/issues/2891
   getHostElement(hostViewRef: ViewRef): ElementRef {
     var hostView = internalView(hostViewRef);
+    if (hostView.proto.type !== ViewType.HOST) {
+      throw new BaseException('This operation is only allowed on host views');
+    }
     return hostView.elementRefs[hostView.elementOffset];
   }
 
@@ -170,22 +173,42 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#destroyViewInContainer}.
    */
-  createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
-                        protoViewRef: ProtoViewRef, context: ElementRef = null,
-                        bindings: ResolvedBinding[] = null): ViewRef {
+  createEmbeddedViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+                                templateRef: TemplateRef): ViewRef {
+    var protoView = internalProtoView(templateRef.protoViewRef);
+    if (protoView.type !== ViewType.EMBEDDED) {
+      throw new BaseException('This method can only be called with embedded ProtoViews!');
+    }
+    return this._createViewInContainer(viewContainerLocation, atIndex, protoView,
+                                       templateRef.elementRef, null);
+  }
+
+  /**
+   *
+   * See {@link AppViewManager#destroyViewInContainer}.
+   */
+  createHostViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+                            protoViewRef: ProtoViewRef,
+                            imperativelyCreatedInjector: ResolvedBinding[]): ViewRef {
     var protoView = internalProtoView(protoViewRef);
+    if (protoView.type !== ViewType.HOST) {
+      throw new BaseException('This method can only be called with host ProtoViews!');
+    }
+    return this._createViewInContainer(viewContainerLocation, atIndex, protoView,
+                                       viewContainerLocation, imperativelyCreatedInjector);
+  }
+
+  /**
+   *
+   * See {@link AppViewManager#destroyViewInContainer}.
+   */
+  _createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+                         protoView: viewModule.AppProtoView, context: ElementRef,
+                         imperativelyCreatedInjector: ResolvedBinding[]): ViewRef {
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
-    var contextView = null;
-    var contextBoundElementIndex = null;
-    if (isPresent(context)) {
-      contextView = internalView(context.parentView);
-      contextBoundElementIndex = context.boundElementIndex;
-    } else {
-      contextView = parentView;
-      contextBoundElementIndex = boundElementIndex;
-    }
-
+    var contextView = internalView(context.parentView);
+    var contextBoundElementIndex = context.boundElementIndex;
     var embeddedFragmentView = contextView.getNestedView(contextBoundElementIndex);
     var view;
     if (protoView.type === ViewType.EMBEDDED && isPresent(embeddedFragmentView) &&
@@ -194,7 +217,8 @@ export class AppViewManager {
       view = embeddedFragmentView;
       this._attachRenderView(parentView, boundElementIndex, atIndex, view);
     } else {
-      // Case 2: instantiate another copy of the template. This is a separate case
+      // Case 2: instantiate another copy of the template or a host ProtoView.
+      // This is a separate case
       // as we only inline one copy of the template into the parent view.
       view = this._createPooledView(protoView);
       this._attachRenderView(parentView, boundElementIndex, atIndex, view);
@@ -203,7 +227,8 @@ export class AppViewManager {
     this._utils.attachViewInContainer(parentView, boundElementIndex, contextView,
                                       contextBoundElementIndex, atIndex, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView,
-                                       contextBoundElementIndex, atIndex, bindings);
+                                       contextBoundElementIndex, atIndex,
+                                       imperativelyCreatedInjector);
     return view.ref;
   }
 

@@ -67,9 +67,11 @@ import {NgIf} from 'angular2/src/directives/ng_if';
 import {NgFor} from 'angular2/src/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ProtoViewRef, ViewRef} from 'angular2/src/core/compiler/view_ref';
+import {ViewRef} from 'angular2/src/core/compiler/view_ref';
+
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
@@ -1385,7 +1387,7 @@ class DynamicViewport {
 
     var bindings = Injector.resolve([bind(MyService).toValue(myService)]);
     this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.create(hostPv, 0, null, bindings)});
+                    .then((hostPv) => {vc.createHostView(hostPv, 0, bindings)});
   }
 }
 
@@ -1525,9 +1527,9 @@ class ChildComp2 {
 @Directive({selector: '[some-viewport]'})
 @Injectable()
 class SomeViewport {
-  constructor(container: ViewContainerRef, protoView: ProtoViewRef) {
-    container.create(protoView).setLocal('some-tmpl', 'hello');
-    container.create(protoView).setLocal('some-tmpl', 'again');
+  constructor(container: ViewContainerRef, templateRef: TemplateRef) {
+    container.createEmbeddedView(templateRef).setLocal('some-tmpl', 'hello');
+    container.createEmbeddedView(templateRef).setLocal('some-tmpl', 'again');
   }
 }
 
@@ -1677,12 +1679,8 @@ class NeedsPublicApi {
 @Directive({selector: '[toolbarpart]'})
 @Injectable()
 class ToolbarPart {
-  protoViewRef: ProtoViewRef;
-  elementRef: ElementRef;
-  constructor(protoViewRef: ProtoViewRef, elementRef: ElementRef) {
-    this.elementRef = elementRef;
-    this.protoViewRef = protoViewRef;
-  }
+  templateRef: TemplateRef;
+  constructor(templateRef: TemplateRef) { this.templateRef = templateRef; }
 }
 
 @Directive({selector: '[toolbar-vc]', properties: ['toolbarVc']})
@@ -1692,7 +1690,7 @@ class ToolbarViewContainer {
   constructor(vc: ViewContainerRef) { this.vc = vc; }
 
   set toolbarVc(part: ToolbarPart) {
-    var view = this.vc.create(part.protoViewRef, 0, part.elementRef);
+    var view = this.vc.createEmbeddedView(part.templateRef, 0);
     view.setLocal('toolbarProp', 'From toolbar');
   }
 }
@@ -1858,7 +1856,7 @@ class ChildConsumingEventBus {
 class SomeImperativeViewport {
   view: ViewRef;
   anchor;
-  constructor(public vc: ViewContainerRef, public protoView: ProtoViewRef,
+  constructor(public vc: ViewContainerRef, public templateRef: TemplateRef,
               public renderer: DomRenderer, @Inject(ANCHOR_ELEMENT) anchor) {
     this.view = null;
     this.anchor = anchor;
@@ -1870,7 +1868,7 @@ class SomeImperativeViewport {
       this.view = null;
     }
     if (value) {
-      this.view = this.vc.create(this.protoView);
+      this.view = this.vc.createEmbeddedView(this.templateRef);
       var nodes = this.renderer.getRootNodes(this.view.renderFragment);
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);

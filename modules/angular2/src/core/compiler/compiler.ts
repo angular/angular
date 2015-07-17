@@ -146,8 +146,8 @@ export class Compiler {
                 return this._compileNestedProtoViews(hostRenderPv, protoView, componentType);
               });
     }
-    return hostPvPromise.then(hostAppProtoView => this._mergeCyclicEmbeddedProtoViews().then(
-                                  _ => new ProtoViewRef(hostAppProtoView)));
+    return hostPvPromise.then(
+        hostAppProtoView => this._mergeCyclicEmbeddedProtoViews().then(_ => hostAppProtoView.ref));
   }
 
   private _compile(componentBinding: DirectiveBinding): Promise<AppProtoView>| AppProtoView {
