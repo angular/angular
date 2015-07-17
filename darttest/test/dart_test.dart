@@ -1,16 +1,15 @@
 // Because Angular is using dart:html, we need these tests to run on an actual
 // browser. This means that it should be run with `-p dartium` or `-p chrome`.
 @TestOn("browser")
-
 import "package:test/test.dart"; // Instead, import angular test lib?
-import "package:angular2/angular2.dart" show Component, View, NgFor, Injector, Key;
+import "package:angular2/angular2.dart"
+    show Component, View, NgFor, Injector, Key;
 import "package:angular2/test.dart"
     show TestComponentBuilder, inject, createTestInjector;
 import 'package:angular2/src/dom/browser_adapter.dart'; // for BrowserDomAdapter
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart'; // for reflector
 import 'package:angular2/src/reflection/reflection_capabilities.dart'; // For ReflectionCapabilities
-
 
 // This is the component we will be testing.
 @Component(selector: 'test-cmp')
@@ -38,13 +37,13 @@ void main() {
     Injector testInjector = createTestInjector([]);
 
     inject([TestComponentBuilder], (TestComponentBuilder tcb) {
-
-      var future = tcb.overrideTemplate(TestComponent, TEMPLATE)
+      var future = tcb
+          .overrideTemplate(TestComponent, TEMPLATE)
           .createAsync(TestComponent)
           .then((rootTC) {
-            rootTC.detectChanges();
-            expect(rootTC.nativeElement.text, equals("1;2;"));
-          });
+        rootTC.detectChanges();
+        expect(rootTC.nativeElement.text, equals("1;2;"));
+      });
 
       expect(future, completes);
     }).execute(testInjector);
@@ -57,16 +56,16 @@ void main() {
     Injector testInjector = createTestInjector([]);
 
     inject([TestComponentBuilder], (TestComponentBuilder tcb) {
-      var future = tcb.overrideTemplate(TestComponent, TEMPLATE)
+      var future = tcb
+          .overrideTemplate(TestComponent, TEMPLATE)
           .createAsync(TestComponent)
           .then((rootTC) {
-            rootTC.detectChanges();
-            ((rootTC.componentInstance.items as List<num>)).add(3);
-            rootTC.detectChanges();
-            expect(rootTC.nativeElement.text, equals("1;2;3;"));
-          });
+        rootTC.detectChanges();
+        ((rootTC.componentInstance.items as List<num>)).add(3);
+        rootTC.detectChanges();
+        expect(rootTC.nativeElement.text, equals("1;2;3;"));
+      });
       expect(future, completes);
     }).execute(testInjector);
   });
-
 }
