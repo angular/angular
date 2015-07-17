@@ -3,7 +3,6 @@ library angular2.transform.directive_metadata_extractor.transformer;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:angular2/src/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
@@ -29,14 +28,10 @@ class DirectiveMetadataExtractor extends Transformer {
       var reader = new AssetReader.fromTransform(transform);
       var fromAssetId = transform.primaryInput.id;
 
-      var metadataMap = await extractDirectiveMetadata(reader, fromAssetId);
-      if (metadataMap != null) {
-        var jsonMap = <String, Map>{};
-        metadataMap.forEach((k, v) {
-          jsonMap[k] = directiveMetadataToMap(v);
-        });
+      var ngMeta = await extractDirectiveMetadata(reader, fromAssetId);
+      if (ngMeta != null && !ngMeta.isEmpty) {
         transform.addOutput(new Asset.fromString(
-            _outputAssetId(fromAssetId), _encoder.convert(jsonMap)));
+            _outputAssetId(fromAssetId), _encoder.convert(ngMeta.toJson())));
       }
     }, errorMessage: 'Extracting ng metadata failed.');
   }

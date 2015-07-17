@@ -12,6 +12,8 @@ import {
   Binding
 } from 'angular2/bootstrap';
 
+import {Injectable} from 'angular2/di';
+
 import {formDirectives} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
@@ -50,6 +52,7 @@ class Person {
 
 // ---- services
 
+@Injectable()
 class DataService {
   currentPerson: Person;
   persons: Person[];

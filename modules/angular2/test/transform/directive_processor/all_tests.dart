@@ -1,10 +1,13 @@
 library angular2.test.transform.directive_processor.all_tests;
 
+import 'dart:convert';
+
 import 'package:barback/barback.dart';
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
+import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
@@ -18,45 +21,50 @@ main() {
 }
 
 void allTests() {
-  _testNgDeps('should preserve parameter annotations as const instances.',
+  _testProcessor('should preserve parameter annotations as const instances.',
       'parameter_metadata/soup.dart');
 
-  _testNgDeps('should recognize custom annotations with package: imports',
+  _testProcessor('should recognize custom annotations with package: imports',
       'custom_metadata/package_soup.dart',
       customDescriptors: [
     const ClassDescriptor('Soup', 'package:soup/soup.dart',
         superClass: 'Component'),
   ]);
 
-  _testNgDeps('should recognize custom annotations with relative imports',
+  _testProcessor('should recognize custom annotations with relative imports',
       'custom_metadata/relative_soup.dart',
       assetId: new AssetId('soup', 'lib/relative_soup.dart'),
       customDescriptors: [
-    const ClassDescriptor('Soup', 'package:soup/annotations/soup.dart',
-        superClass: 'Component'),
-  ]);
+        const ClassDescriptor('Soup', 'package:soup/annotations/soup.dart',
+            superClass: 'Component'),
+      ]);
 
-  _testNgDeps('Requires the specified import.', 'custom_metadata/bad_soup.dart',
+  _testProcessor(
+      'Requires the specified import.', 'custom_metadata/bad_soup.dart',
       customDescriptors: [
     const ClassDescriptor('Soup', 'package:soup/soup.dart',
         superClass: 'Component'),
   ]);
 
-  _testNgDeps(
+  _testProcessor(
       'should inline `templateUrl` values.', 'url_expression_files/hello.dart');
 
   var absoluteReader = new TestAssetReader();
-  absoluteReader.addAsset(new AssetId('other_package', 'lib/template.html'),
+  absoluteReader.addAsset(
+      new AssetId('other_package', 'lib/template.html'),
       readFile(
           'directive_processor/absolute_url_expression_files/template.html'));
-  absoluteReader.addAsset(new AssetId('other_package', 'lib/template.css'),
+  absoluteReader.addAsset(
+      new AssetId('other_package', 'lib/template.css'),
       readFile(
           'directive_processor/absolute_url_expression_files/template.css'));
-  _testNgDeps('should inline `templateUrl` and `styleUrls` values expressed as'
-      ' absolute urls.', 'absolute_url_expression_files/hello.dart',
+  _testProcessor(
+      'should inline `templateUrl` and `styleUrls` values expressed'
+      ' as absolute urls.',
+      'absolute_url_expression_files/hello.dart',
       reader: absoluteReader);
 
-  _testNgDeps(
+  _testProcessor(
       'should inline multiple `styleUrls` values expressed as absolute urls.',
       'multiple_style_urls_files/hello.dart');
 
@@ -64,40 +72,44 @@ void allTests() {
       readFile('directive_processor/multiple_style_urls_files/template.html'));
   absoluteReader.addAsset(new AssetId('a', 'lib/template.css'),
       readFile('directive_processor/multiple_style_urls_files/template.css'));
-  absoluteReader.addAsset(new AssetId('a', 'lib/template_other.css'), readFile(
-      'directive_processor/multiple_style_urls_files/template_other.css'));
-  _testNgDeps(
+  absoluteReader.addAsset(
+      new AssetId('a', 'lib/template_other.css'),
+      readFile(
+          'directive_processor/multiple_style_urls_files/template_other.css'));
+  _testProcessor(
       'shouldn\'t inline multiple `styleUrls` values expressed as absolute '
-      'urls.', 'multiple_style_urls_not_inlined_files/hello.dart',
-      inlineViews: false, reader: absoluteReader);
+      'urls.',
+      'multiple_style_urls_not_inlined_files/hello.dart',
+      inlineViews: false,
+      reader: absoluteReader);
 
-  _testNgDeps('should inline `templateUrl`s expressed as adjacent strings.',
+  _testProcessor('should inline `templateUrl`s expressed as adjacent strings.',
       'split_url_expression_files/hello.dart');
 
-  _testNgDeps('should report implemented types as `interfaces`.',
+  _testProcessor('should report implemented types as `interfaces`.',
       'interfaces_files/soup.dart');
 
-  _testNgDeps('should not include transitively implemented types.',
+  _testProcessor('should not include transitively implemented types.',
       'interface_chain_files/soup.dart');
 
-  _testNgDeps('should not include superclasses in `interfaces`.',
+  _testProcessor('should not include superclasses in `interfaces`.',
       'superclass_files/soup.dart');
 
-  _testNgDeps(
+  _testProcessor(
       'should populate `lifecycle` when lifecycle interfaces are present.',
       'interface_lifecycle_files/soup.dart');
 
-  _testNgDeps('should populate multiple `lifecycle` values when necessary.',
+  _testProcessor('should populate multiple `lifecycle` values when necessary.',
       'multiple_interface_lifecycle_files/soup.dart');
 
-  _testNgDeps(
+  _testProcessor(
       'should populate `lifecycle` when lifecycle superclass is present.',
       'superclass_lifecycle_files/soup.dart');
 
-  _testNgDeps('should populate `lifecycle` with prefix when necessary.',
+  _testProcessor('should populate `lifecycle` with prefix when necessary.',
       'prefixed_interface_lifecycle_files/soup.dart');
 
-  _testNgDeps(
+  _testProcessor(
       'should not throw/hang on invalid urls', 'invalid_url_files/hello.dart',
       expectedLogs: [
     'ERROR: Uri /bad/absolute/url.html not supported from angular2|test/'
@@ -110,13 +122,20 @@ void allTests() {
         'test/transform/directive_processor/invalid_url_files/hello.dart'
   ]);
 
-  _testNgDeps('should find and register static functions.',
+  _testProcessor('should find and register static functions.',
       'static_function_files/hello.dart');
+
+  _testProcessor('should find direcive aliases patterns.',
+      'directive_aliases_files/hello.dart',
+      reader: absoluteReader);
 }
 
-void _testNgDeps(String name, String inputPath,
-    {List<AnnotationDescriptor> customDescriptors: const [], AssetId assetId,
-    AssetReader reader, List<String> expectedLogs, bool inlineViews: true,
+void _testProcessor(String name, String inputPath,
+    {List<AnnotationDescriptor> customDescriptors: const [],
+    AssetId assetId,
+    AssetReader reader,
+    List<String> expectedLogs,
+    bool inlineViews: true,
     bool isolate: false}) {
   var testFn = isolate ? iit : it;
   testFn(name, () async {
@@ -130,19 +149,32 @@ void _testNgDeps(String name, String inputPath,
         reader.addAsset(assetId, await reader.readAsString(inputId));
         inputId = assetId;
       }
-      var expectedPath = path.join(path.dirname(inputPath), 'expected',
+      var expectedNgDepsPath = path.join(path.dirname(inputPath), 'expected',
           path.basename(inputPath).replaceFirst('.dart', '.ng_deps.dart'));
-      var expectedId = _assetIdForPath(expectedPath);
+      var expectedNgDepsId = _assetIdForPath(expectedNgDepsPath);
+
+      var expectedAliasesPath = path.join(path.dirname(inputPath), 'expected',
+          path.basename(inputPath).replaceFirst('.dart', '.aliases.json'));
+      var expectedAliasesId = _assetIdForPath(expectedAliasesPath);
 
       var annotationMatcher = new AnnotationMatcher()
         ..addAll(customDescriptors);
-      var output = await createNgDeps(reader, inputId, annotationMatcher,
+      var ngMeta = new NgMeta.empty();
+      var output = await createNgDeps(
+          reader, inputId, annotationMatcher, ngMeta,
           inlineViews: inlineViews);
       if (output == null) {
-        expect(await reader.hasInput(expectedId)).toBeFalse();
+        expect(await reader.hasInput(expectedNgDepsId)).toBeFalse();
       } else {
-        var input = await reader.readAsString(expectedId);
+        var input = await reader.readAsString(expectedNgDepsId);
         expect(formatter.format(output)).toEqual(formatter.format(input));
+      }
+      if (ngMeta.isEmpty) {
+        expect(await reader.hasInput(expectedAliasesId)).toBeFalse();
+      } else {
+        var expectedJson = await reader.readAsString(expectedAliasesId);
+        expect(new JsonEncoder.withIndent('  ').convert(ngMeta.toJson()))
+            .toEqual(expectedJson.trim());
       }
     });
 

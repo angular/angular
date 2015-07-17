@@ -25,5 +25,11 @@
       "type":1,
       "version":1
     }
+  },
+  "aliases1":{
+    "kind": "alias",
+    "value": [
+      "GoodbyeCmp"
+    ]
   }
 }

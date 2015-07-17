@@ -5,11 +5,11 @@ import 'dart:convert';
 
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
+import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
@@ -60,18 +60,20 @@ class _ViewDefinitionCreator {
     var ngDeps = await ngDepsFuture;
 
     var retVal = <RegisteredType, ViewDefinitionEntry>{};
-    var visitor = new _TemplateExtractVisitor(await _createMetadataMap());
+    var visitor = new _TemplateExtractVisitor(await _extractNgMeta());
     ngDeps.registeredTypes.forEach((rType) {
       visitor.reset();
       rType.annotations.accept(visitor);
       if (visitor.viewDef != null) {
+        // Note: we use '' because the current file maps to the default prefix.
+        var ngMeta = visitor._metadataMap[''];
         var typeName = '${rType.typeName}';
         var hostMetadata = null;
-        if (visitor._metadataMap.containsKey(typeName)) {
-          hostMetadata = visitor._metadataMap[typeName];
+        if (ngMeta.types.containsKey(typeName)) {
+          hostMetadata = ngMeta.types[typeName];
           visitor.viewDef.componentId = hostMetadata.id;
         } else {
-          logger.error('Missing component "$typeName" in metadata map',
+          logger.warning('Missing component "$typeName" in metadata map',
               asset: entryPoint);
           visitor.viewDef.componentId = _getComponentId(entryPoint, typeName);
         }
@@ -91,7 +93,7 @@ class _ViewDefinitionCreator {
     var ngDeps = await ngDepsFuture;
 
     var importAssetToPrefix = <AssetId, String>{};
-    // Include the `.ng_meta.dart` file associated with `entryPoint`.
+    // Include the `.ng_meta.json` file associated with `entryPoint`.
     importAssetToPrefix[new AssetId(
         entryPoint.package, toMetaExtension(entryPoint.path))] = null;
 
@@ -137,24 +139,24 @@ class _ViewDefinitionCreator {
   ///   ...<any other entries>...
   /// }
   /// ```
-  Future<Map<String, DirectiveMetadata>> _createMetadataMap() async {
+  Future<Map<String, NgMeta>> _extractNgMeta() async {
     var importAssetToPrefix = await _createImportAssetToPrefixMap();
 
-    var retVal = <String, DirectiveMetadata>{};
+    var retVal = <String, NgMeta>{};
     for (var importAssetId in importAssetToPrefix.keys) {
+      var prefix = importAssetToPrefix[importAssetId];
+      if (prefix == null) prefix = '';
+      var ngMeta = retVal.putIfAbsent(prefix, () => new NgMeta.empty());
       var metaAssetId = new AssetId(
           importAssetId.package, toMetaExtension(importAssetId.path));
       if (await reader.hasInput(metaAssetId)) {
         try {
-          var json = await reader.readAsString(metaAssetId);
-          var jsonMap = JSON.decode(json);
-          jsonMap.forEach((className, metaDataMap) {
-            var prefixStr = importAssetToPrefix[importAssetId];
-            var key = prefixStr != null ? '$prefixStr.$className' : className;
-            var value = directiveMetadataFromMap(metaDataMap)
-              ..id = _getComponentId(importAssetId, className);
-            retVal[key] = value;
+          var json = JSON.decode(await reader.readAsString(metaAssetId));
+          var newMetadata = new NgMeta.fromJson(json);
+          newMetadata.types.forEach((className, metadata) {
+            metadata.id = _getComponentId(importAssetId, className);
           });
+          ngMeta.addAll(newMetadata);
         } catch (ex, stackTrace) {
           logger.warning('Failed to decode: $ex, $stackTrace',
               asset: metaAssetId);
@@ -169,7 +171,7 @@ class _ViewDefinitionCreator {
 /// [RegisterType] object and pulling out [ViewDefinition] information.
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   ViewDefinition viewDef = null;
-  final Map<String, DirectiveMetadata> _metadataMap;
+  final Map<String, NgMeta> _metadataMap;
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   _TemplateExtractVisitor(this._metadataMap);
@@ -237,28 +239,35 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
     if (viewDef == null) return;
 
     if (node is! ListLiteral) {
-      logger.error(
-          'Angular 2 currently only supports list literals as values for'
-          ' "directives". Source: $node');
+      logger.error('Angular 2 currently only supports list literals as values '
+          'for "directives". Source: $node');
       return;
     }
     var directiveList = (node as ListLiteral);
     for (var node in directiveList.elements) {
-      if (node is! SimpleIdentifier && node is! PrefixedIdentifier) {
+      var ngMeta;
+      var name;
+      if (node is SimpleIdentifier) {
+        ngMeta = _metadataMap[''];
+        name = node.name;
+      } else if (node is PrefixedIdentifier) {
+        ngMeta = _metadataMap[node.prefix.name];
+        name = node.name;
+      } else {
         logger.error(
             'Angular 2 currently only supports simple and prefixed identifiers '
             'as values for "directives". Source: $node');
         return;
       }
-      var name = '$node';
-      if (_metadataMap.containsKey(name)) {
-        viewDef.directives.add(_metadataMap[name]);
+      if (ngMeta.types.containsKey(name)) {
+        viewDef.directives.add(ngMeta.types[name]);
+      } else if (ngMeta.aliases.containsKey(name)) {
+        viewDef.directives.addAll(ngMeta.flatten(name));
       } else {
-        logger.warning('Could not find Directive entry for $name. '
-            'Please be aware that reusable, pre-defined lists of Directives '
-            '(aka "directive aliases") are not yet supported and will cause '
-            'your application to misbehave. '
-            'See https://github.com/angular/angular/issues/1747 for details.');
+        logger.warning('Could not find Directive entry for $node. '
+            'Please be aware that Dart transformers have limited support for '
+            'reusable, pre-defined lists of Directives (aka '
+            '"directive aliases"). See https://goo.gl/d8XPt0 for details.');
       }
     }
   }

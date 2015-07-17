@@ -1,0 +1,8 @@
+{
+  "alias1": {
+    "kind": "alias",
+    "value": [
+      "BarComponent"
+    ]
+  }
+}

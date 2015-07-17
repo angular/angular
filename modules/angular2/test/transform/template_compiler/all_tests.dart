@@ -36,6 +36,21 @@ void changeDetectorTests() {
     var output = await (process(new AssetId('a', inputPath)));
     expect(output).toContain('notifyOnBinding');
   });
+
+  it('should include directives mentioned in directive aliases.', () async {
+    // Input 2 is the same as input1, but contains the directive aliases
+    // inlined.
+    var input1Path =
+        'template_compiler/directive_aliases_files/hello1.ng_deps.dart';
+    var input2Path =
+        'template_compiler/directive_aliases_files/hello2.ng_deps.dart';
+    // Except for the directive argument in the View annotation, the generated
+    // change detectors are identical.
+    var output1 = (await process(new AssetId('a', input1Path))).replaceFirst(
+        'directives: const [alias1]', 'directives: const [GoodbyeCmp]');
+    var output2 = await process(new AssetId('a', input2Path));
+    _formatThenExpectEquals(output1, output2);
+  });
 }
 
 void noChangeDetectorTests() {

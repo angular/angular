@@ -13,6 +13,8 @@ import {
   EventEmitter
 } from 'angular2/bootstrap';
 
+import {Injectable} from 'angular2/di';
+
 import {formDirectives} from 'angular2/forms';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -44,6 +46,7 @@ class Order {
 // ---- services
 
 var _nextId = 1000;
+@Injectable()
 class DataService {
   orderItems: OrderItem[];
   orders: Order[];

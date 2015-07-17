@@ -5,6 +5,7 @@ import 'package:unittest/unittest.dart' hide expect;
 import 'package:unittest/vm_config.dart';
 
 import 'common/async_string_writer_tests.dart' as asyncStringWriter;
+import 'common/ng_meta_test.dart' as ngMetaTest;
 import 'bind_generator/all_tests.dart' as bindGenerator;
 import 'deferred_rewriter/all_tests.dart' as deferredRewriter;
 import 'directive_linker/all_tests.dart' as directiveLinker;
@@ -17,6 +18,7 @@ import 'template_compiler/all_tests.dart' as templateCompiler;
 main() {
   useVMConfiguration();
   describe('AsyncStringWriter', asyncStringWriter.allTests);
+  describe('NgMeta', ngMetaTest.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
   describe('Directive Metadata Extractor', directiveMeta.allTests);

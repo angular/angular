@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {isPresent, isArray} from 'angular2/src/facade/lang';
 import * as modelModule from './model';
@@ -67,6 +68,7 @@ import * as modelModule from './model';
  *
  *  ```
  */
+@Injectable()
 export class FormBuilder {
   group(controlsConfig: StringMap<string, any>,
         extra: StringMap<string, any> = null): modelModule.ControlGroup {

@@ -1,11 +1,13 @@
 library angular2.transform.directive_processor.transformer;
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
+import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 
 import 'rewriter.dart';
@@ -32,8 +34,9 @@ class DirectiveProcessor extends Transformer {
     await log.initZoned(transform, () async {
       var asset = transform.primaryInput;
       var reader = new AssetReader.fromTransform(transform);
+      var ngMeta = new NgMeta.empty();
       var ngDepsSrc = await createNgDeps(
-          reader, asset.id, options.annotationMatcher,
+          reader, asset.id, options.annotationMatcher, ngMeta,
           inlineViews: options.inlineViews);
       if (ngDepsSrc != null && ngDepsSrc.isNotEmpty) {
         var ngDepsAssetId =
@@ -43,6 +46,12 @@ class DirectiveProcessor extends Transformer {
               'This probably will not end well');
         }
         transform.addOutput(new Asset.fromString(ngDepsAssetId, ngDepsSrc));
+      }
+      if (!ngMeta.isEmpty) {
+        var ngAliasesId =
+            transform.primaryInput.id.changeExtension(ALIAS_EXTENSION);
+        transform.addOutput(new Asset.fromString(ngAliasesId,
+            new JsonEncoder.withIndent("  ").convert(ngMeta.toJson())));
       }
     }, errorMessage: 'Processing ng directives failed.');
   }

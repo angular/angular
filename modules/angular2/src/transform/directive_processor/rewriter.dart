@@ -11,6 +11,7 @@ import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
+import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:path/path.dart' as path;
 
@@ -23,14 +24,19 @@ import 'visitors.dart';
 /// If no Angular 2 `Directive`s are found in `code`, returns the empty
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
-Future<String> createNgDeps(
-    AssetReader reader, AssetId assetId, AnnotationMatcher annotationMatcher,
+Future<String> createNgDeps(AssetReader reader, AssetId assetId,
+    AnnotationMatcher annotationMatcher, NgMeta ngMeta,
     {bool inlineViews}) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new AsyncStringWriter();
-  var visitor = new CreateNgDepsVisitor(writer, assetId,
-      new XhrImpl(reader, assetId), annotationMatcher, _interfaceMatcher,
+  var visitor = new CreateNgDepsVisitor(
+      writer,
+      assetId,
+      new XhrImpl(reader, assetId),
+      annotationMatcher,
+      _interfaceMatcher,
+      ngMeta,
       inlineViews: inlineViews);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
@@ -49,10 +55,19 @@ InterfaceMatcher _interfaceMatcher = new InterfaceMatcher();
 /// associated .ng_deps.dart file.
 class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   final AsyncStringWriter writer;
+
+  /// Output ngMeta information about aliases.
+  // TODO(sigmund): add more to ngMeta. Currently this only contains aliasing
+  // information, but we could produce here all the metadata we need and avoid
+  // parsing the ngdeps files later.
+  final NgMeta ngMeta;
+
   /// Whether an Angular 2 `Injectable` has been found.
   bool _foundNgInjectable = false;
+
   /// Whether this library `imports` or `exports` any non-'dart:' libraries.
   bool _usesNonLangLibs = false;
+
   /// Whether we have written an import of base file
   /// (the file we are processing).
   bool _wroteBaseLibImport = false;
@@ -66,8 +81,13 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(AsyncStringWriter writer, AssetId assetId, XHR xhr,
-      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher,
+  CreateNgDepsVisitor(
+      AsyncStringWriter writer,
+      AssetId assetId,
+      XHR xhr,
+      AnnotationMatcher annotationMatcher,
+      InterfaceMatcher interfaceMatcher,
+      this.ngMeta,
       {bool inlineViews})
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
@@ -220,6 +240,29 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
         ..print(']');
     }
     writer.print('})');
+    return null;
+  }
+
+  @override
+  Object visitTopLevelVariableDeclaration(TopLevelVariableDeclaration node) {
+    // We process any top-level declaration that fits the directive-alias
+    // declaration pattern. Ideally we would use an annotation on the field to
+    // help us filter out only what's needed, but unfortunately TypeScript
+    // doesn't support decorators on variable declarations (see
+    // angular/angular#1747 and angular/ts2dart#249 for context).
+    outer: for (var variable in node.variables.variables) {
+      var initializer = variable.initializer;
+      if (initializer != null && initializer is ListLiteral) {
+        var otherNames = [];
+        for (var exp in initializer.elements) {
+          // Only simple identifiers are supported for now.
+          // TODO(sigmund): add support for prefixes (see issue #3232).
+          if (exp is! SimpleIdentifier) continue outer;
+          otherNames.add(exp.name);
+        }
+        ngMeta.aliases[variable.name.name] = otherNames;
+      }
+    }
     return null;
   }
 

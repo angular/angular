@@ -1,0 +1,15 @@
+{
+  "alias1": {
+    "kind": "alias",
+    "value": [
+      "HelloCmp"
+    ]
+  },
+  "alias2": {
+    "kind": "alias",
+    "value": [
+      "HelloCmp",
+      "Foo"
+    ]
+  }
+}

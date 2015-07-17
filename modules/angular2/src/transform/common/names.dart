@@ -6,6 +6,9 @@ const REFLECTOR_VAR_NAME = 'reflector';
 const TRANSFORM_DYNAMIC_MODE = 'transform_dynamic';
 const DEPS_EXTENSION = '.ng_deps.dart';
 const META_EXTENSION = '.ng_meta.json';
+// TODO(sigmund): consider merging into .ng_meta by generating local metadata
+// upfront (rather than extracting it from ng_deps).
+const ALIAS_EXTENSION = '.aliases.json';
 const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
 const REGISTER_TYPE_METHOD_NAME = 'registerType';
 const REGISTER_GETTERS_METHOD_NAME = 'registerGetters';
@@ -19,6 +22,10 @@ String toMetaExtension(String uri) =>
 /// Returns `uri` with its extension updated to [DEPS_EXTENSION].
 String toDepsExtension(String uri) =>
     _toExtension(uri, const [META_EXTENSION, '.dart'], DEPS_EXTENSION);
+
+/// Returns `uri` with its extension updated to [ALIAS_EXTENSION].
+String toAliasExtension(String uri) =>
+    _toExtension(uri, const [DEPS_EXTENSION, '.dart'], ALIAS_EXTENSION);
 
 /// Returns `uri` with its extension updated to `toExtension` if its
 /// extension is currently in `fromExtension`.
