@@ -1,13 +1,12 @@
-name: examples
+name: angular2_test
 environment:
-  sdk: '>=1.10.0-dev.1.10 <2.0.0'
+  sdk: '>=1.10.0 <2.0.0'
 dependencies:
-  angular2: '^2.0.0-alpha.31'
+  angular2: '0.0.0'
   browser: '^0.10.0'
 dev_dependencies:
   guinness: '^0.1.17'
   test: '^0.12.3'
 dependency_overrides:
   angular2:
-    path: ../dist/dart/angular2
-
+    path: ../../dist/dart/angular2
