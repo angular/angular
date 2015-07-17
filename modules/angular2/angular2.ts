@@ -43,11 +43,12 @@ export {
   DirectiveResolver,
   DynamicComponentLoader,
   ElementRef,
+  EventEmitter,
   IQueryList,
   NgZone,
+  Observable,
   ProtoViewRef,
   QueryList,
-  RenderElementRef,
   UrlResolver,
   ViewContainerRef,
   ViewRef,
@@ -56,7 +57,6 @@ export {
 } from 'angular2/core';
 
 export {
-  ASTWithSource,
   BasePipe,
   ChangeDetectionError,
   ChangeDetectorRef,
@@ -74,47 +74,86 @@ export {
   defaultPipes
 } from './change_detection';
 
-// we have to reexport * because Dart and TS export two different sets of types
-export * from './di';
+export {
+  AbstractBindingError,
+  AncestorMetadata,
+  AsyncBindingError,
+  Binding,
+  BindingBuilder,
+  CyclicDependencyError,
+  DEFAULT_VISIBILITY,
+  Dependency,
+  DependencyMetadata,
+  DependencyProvider,
+  ForwardRefFn,
+  InjectMetadata,
+  InjectableMetadata,
+  Injector,
+  InstantiationError,
+  InvalidBindingError,
+  Key,
+  KeyRegistry,
+  NoAnnotationError,
+  NoBindingError,
+  OpaqueToken,
+  OptionalMetadata,
+  OutOfBoundsError,
+  PRIVATE,
+  PUBLIC,
+  PUBLIC_AND_PRIVATE,
+  ParentMetadata,
+  ProtoInjector,
+  ResolvedBinding,
+  SelfMetadata,
+  TypeLiteral,
+  UnboundedMetadata,
+  VisibilityMetadata,
+  bind,
+  forwardRef,
+  resolveForwardRef,
+  undefinedValue
+} from './di';
+// We have to reexport * because Dart and TS export two different sets of types.
+export * from './src/di/decorators';
 
 export {
   CSSClass,
   NgFor,
   NgIf,
   NgNonBindable,
+  NgStyle,
   NgSwitch,
+  NgSwitchDefault,
   NgSwitchWhen,
-  NgSwitchDefault
+  coreDirectives
 } from './directives';
 
 export {
   AbstractControl,
   AbstractControlDirective,
+  CheckboxControlValueAccessor,
   Control,
+  ControlArray,
   ControlContainer,
   ControlGroup,
-  ControlArray,
-  Form,
-  NgControlName,
-  NgFormControl,
-  NgModel,
-  NgControl,
-  NgControlGroup,
-  NgFormModel,
-  NgForm,
   ControlValueAccessor,
   DefaultValueAccessor,
-  CheckboxControlValueAccessor,
-  SelectControlValueAccessor,
-  formDirectives,
-  Validators,
-  NgValidator,
-  NgRequiredValidator,
+  Form,
   FormBuilder,
+  NgControl,
+  NgControlGroup,
+  NgControlName,
+  NgForm,
+  NgFormControl,
+  NgFormModel,
+  NgModel,
+  NgValidator, NgRequiredValidator,
+  SelectControlValueAccessor,
+  Validators,
+  formDirectives,
   formInjectables
 } from './forms';
 
-export {Observable, EventEmitter} from 'angular2/src/facade/async';
 export {
   DirectiveBinder,
   DirectiveMetadata,
@@ -124,17 +163,17 @@ export {
   PropertyBindingType,
   ProtoViewDto,
   RenderCompiler,
-  Renderer,
+  RenderElementRef,
   RenderEventDispatcher,
   RenderFragmentRef,
   RenderProtoViewMergeMapping,
   RenderProtoViewRef,
   RenderViewRef,
   RenderViewWithFragments,
+  Renderer,
   ViewDefinition,
   ViewType
 } from 'angular2/src/render/api';
-
 export {
   DomRenderer,
   DOCUMENT_TOKEN,

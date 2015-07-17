@@ -14,7 +14,8 @@ export {CSSClass} from './src/directives/class';
 export {NgFor} from './src/directives/ng_for';
 export {NgIf} from './src/directives/ng_if';
 export {NgNonBindable} from './src/directives/ng_non_bindable';
-export {NgSwitch, NgSwitchWhen, NgSwitchDefault, SwitchView} from './src/directives/ng_switch';
+export {NgStyle} from './src/directives/ng_style';
+export {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './src/directives/ng_switch';
 
 /**
  * A collection of the Angular core directives that are likely to be used in each and every Angular
