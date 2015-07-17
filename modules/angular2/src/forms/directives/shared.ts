@@ -1,4 +1,4 @@
-import {ListWrapper, iterableToList, StringMapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, BaseException, looseIdentical} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
@@ -39,8 +39,7 @@ export function setUpControl(c: Control, dir: NgControl) {
 
 export function composeNgValidator(ngValidators: QueryList<NgValidator>): Function {
   if (isBlank(ngValidators)) return Validators.nullValidator;
-  return Validators.compose(
-      (<List<NgValidator>>iterableToList(ngValidators)).map(v => v.validator));
+  return Validators.compose(ngValidators.map(v => v.validator));
 }
 
 function _throwError(dir: NgControl, message: string): void {
