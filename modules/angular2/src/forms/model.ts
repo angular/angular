@@ -144,7 +144,7 @@ export class AbstractControl {
 export class Control extends AbstractControl {
   _onChange: Function;
 
-  constructor(value: any, validator: Function = Validators.nullValidator) {
+  constructor(value: any = null, validator: Function = Validators.nullValidator) {
     super(validator);
     this._value = value;
     this.updateValidity({onlySelf: true});

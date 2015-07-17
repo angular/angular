@@ -36,7 +36,7 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   exportAs: 'form'
 })
 export class NgModel extends NgControl {
-  _control = new Control("");
+  _control = new Control();
   _added = false;
   update = new EventEmitter();
   model: any;

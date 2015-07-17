@@ -19,6 +19,12 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
 export function main() {
   describe("Form Model", () => {
     describe("Control", () => {
+      it("should default the value to null", () => {
+        var c = new Control();
+        expect(c.value).toBe(null);
+        expect(c.validator).toBe(Validators.nullValidator);
+      });
+
       describe("validator", () => {
         it("should run validator with the initial value", () => {
           var c = new Control("value", Validators.required);
