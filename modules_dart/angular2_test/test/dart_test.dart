@@ -27,12 +27,16 @@ const TEMPLATE =
     "<div><copy-me template=\"ng-for #item of items\">{{item.toString()}};</copy-me></div>";
 
 void main() {
-  test("create a component using the TCB", () async {
+  Injector testInjector;
+
+  setUp(() {
     BrowserDomAdapter.makeCurrent();
     reflector.reflectionCapabilities = new ReflectionCapabilities();
 
-    Injector testInjector = createTestInjector([]);
+    testInjector = createTestInjector([]);
+  });
 
+  test("create a component using the TCB", () async {
     await inject([TestComponentBuilder], (TestComponentBuilder tcb) async {
       var rootTC = await tcb
           .overrideTemplate(TestComponent, TEMPLATE)
@@ -44,11 +48,6 @@ void main() {
   });
 
   test("should reflect added elements", () async {
-    BrowserDomAdapter.makeCurrent();
-    reflector.reflectionCapabilities = new ReflectionCapabilities();
-
-    Injector testInjector = createTestInjector([]);
-
     await inject([TestComponentBuilder], (TestComponentBuilder tcb) async {
       var rootTC = await tcb
           .overrideTemplate(TestComponent, TEMPLATE)
