@@ -178,6 +178,18 @@ function splitBySlash(url: string): List<string> {
   return url.split('/');
 }
 
+var RESERVED_CHARS = RegExpWrapper.create('//|\\(|\\)|;|\\?|=');
+function assertPath(path: string) {
+  if (StringWrapper.contains(path, '#')) {
+    throw new BaseException(
+        `Path "${path}" should not include "#". Use "HashLocationStrategy" instead.`);
+  }
+  var illegalCharacter = RegExpWrapper.firstMatch(RESERVED_CHARS, path);
+  if (isPresent(illegalCharacter)) {
+    throw new BaseException(
+        `Path "${path}" contains "${illegalCharacter[0]}" which is not allowed in a route config.`);
+  }
+}
 
 // represents something like '/foo/:bar'
 export class PathRecognizer {
@@ -187,6 +199,7 @@ export class PathRecognizer {
   terminal: boolean = true;
 
   constructor(public path: string, public handler: RouteHandler) {
+    assertPath(path);
     var parsed = parsePathString(path);
     var specificity = parsed['specificity'];
     var segments = parsed['segments'];
