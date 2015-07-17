@@ -40,18 +40,18 @@ export class Pipes {
   }
 
   /**
-   * Takes a {@link Pipes} config object and returns a binding used to append the
-   * provided config to an inherited {@link Pipes} instance and return a new
+   * Takes a {@link Pipes} config object and returns a binding used to extend the
+   * inherited {@link Pipes} instance with the provided config and return a new
    * {@link Pipes} instance.
    *
    * If the provided config contains a key that is not yet present in the
    * inherited {@link Pipes}' config, a new {@link PipeFactory} list will be created
    * for that key. Otherwise, the provided config will be merged with the inherited
-   * {@link Pipes} instance by appending pipes to their respective keys, without mutating
+   * {@link Pipes} instance by prepending pipes to their respective keys, without mutating
    * the inherited {@link Pipes}.
    *
-   * The following example shows how to append a new {@link PipeFactory} to the
-   * existing list of `async` factories, which will only be applied to the injector
+   * The following example shows how to extend an existing list of `async` factories
+   * with a new {@link PipeFactory}, which will only be applied to the injector
    * for this component and its children. This step is all that's required to make a new
    * pipe available to this component's template.
    *
@@ -60,42 +60,40 @@ export class Pipes {
    * ```
    * @Component({
    *   viewInjector: [
-   *     Pipes.append({
+   *     Pipes.extend({
    *       async: [newAsyncPipe]
    *     })
    *   ]
    * })
    * ```
    */
-  static append(config): Binding {
+  static extend(config): Binding {
     return new Binding(Pipes, {
       toFactory: (pipes: Pipes) => {
-        if (!isPresent(pipes)) {
-          // Typically would occur when calling Pipe.append inside of dependencies passed to
-          // bootstrap(), which would override default pipes instead of append.
-          throw new BaseException('Cannot append to Pipes without a parent injector');
+        if (isBlank(pipes)) {
+          // Typically would occur when calling Pipe.extend inside of dependencies passed to
+          // bootstrap(), which would override default pipes instead of extending them.
+          throw new BaseException('Cannot extend Pipes without a parent injector');
         }
-        var mergedConfig: StringMap<string, PipeFactory[]> = <StringMap<string, PipeFactory[]>>{};
-
-        // Manual deep copy of existing Pipes config,
-        // so that lists of PipeFactories don't get mutated.
-        StringMapWrapper.forEach(pipes.config, (v: PipeFactory[], k: string) => {
-          var localPipeList: PipeFactory[] = mergedConfig[k] = [];
-          v.forEach((p: PipeFactory) => { localPipeList.push(p); });
-        });
-
-        StringMapWrapper.forEach(config, (v: PipeFactory[], k: string) => {
-          if (isListLikeIterable(mergedConfig[k])) {
-            mergedConfig[k] = ListWrapper.concat(mergedConfig[k], config[k]);
-          } else {
-            mergedConfig[k] = config[k];
-          }
-        });
-        return new Pipes(mergedConfig);
+        return Pipes.create(config, pipes);
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[Pipes, new UnboundedMetadata(), new OptionalMetadata()]]
     });
+  }
+
+  static create(config, pipes: Pipes = null): Pipes {
+    if (isPresent(pipes)) {
+      StringMapWrapper.forEach(pipes.config, (v: PipeFactory[], k: string) => {
+        if (StringMapWrapper.contains(config, k)) {
+          var configFactories: PipeFactory[] = config[k];
+          config[k] = configFactories.concat(v);
+        } else {
+          config[k] = ListWrapper.clone(v);
+        }
+      });
+    }
+    return new Pipes(config);
   }
 
   private _getListOfFactories(type: string, obj: any): PipeFactory[] {
