@@ -3,6 +3,7 @@ library angular2.transform;
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
+import 'deferred_rewriter/transformer.dart';
 import 'directive_linker/transformer.dart';
 import 'directive_metadata_extractor/transformer.dart';
 import 'directive_processor/transformer.dart';
@@ -29,7 +30,11 @@ class AngularTransformerGroup extends TransformerGroup {
     phases.addAll(new List.generate(
         options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
     phases.addAll([
-      [new DirectiveLinker(), new DirectiveMetadataExtractor()],
+      [
+        new DirectiveLinker(),
+        new DirectiveMetadataExtractor(),
+        new DeferredRewriter(options)
+      ],
       [new BindGenerator(options)],
       [new TemplateCompiler(options)]
     ]);

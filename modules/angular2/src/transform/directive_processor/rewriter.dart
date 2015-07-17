@@ -93,7 +93,9 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   void _maybeWriteImport() {
     if (_wroteBaseLibImport) return;
     _wroteBaseLibImport = true;
-    writer.print('''import '${path.basename(assetId.path)}';''');
+    var origDartFile = path.basename(assetId.path);
+    writer.print('''import '$origDartFile';''');
+    writer.print('''export '$origDartFile';''');
     writer.print("import '$_REFLECTOR_IMPORT' as $_REF_PREFIX;");
   }
 
@@ -106,6 +108,11 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   Object visitImportDirective(ImportDirective node) {
     _maybeWriteImport();
     _updateUsesNonLangLibs(node);
+    // Ignore deferred imports here so as to not load the deferred libraries
+    // code in the current library causing much of the code to not be
+    // deferred. Instead `DeferredRewriter` will rewrite the code as to load
+    // `ng_deps` in a deferred way.
+    if (node.deferredKeyword != null) return null;
     return node.accept(_copyVisitor);
   }
 

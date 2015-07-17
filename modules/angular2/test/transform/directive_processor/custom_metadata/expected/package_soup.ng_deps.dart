@@ -1,6 +1,7 @@
 library dinner.package_soup.ng_deps.dart;
 
 import 'package_soup.dart';
+export 'package_soup.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:soup/soup.dart';
 
