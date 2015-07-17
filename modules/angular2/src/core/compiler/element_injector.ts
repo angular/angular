@@ -476,7 +476,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._host = host;
     this._preBuiltObjects = preBuiltObjects;
 
-    this._reattachInjectors(imperativelyCreatedInjector, host);
+    this._reattachInjectors(imperativelyCreatedInjector);
     this._strategy.hydrate();
 
     if (isPresent(host)) {
@@ -489,52 +489,37 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this.hydrated = true;
   }
 
-  private _reattachInjectors(imperativelyCreatedInjector: Injector, host: ElementInjector): void {
+  private _reattachInjectors(imperativelyCreatedInjector: Injector): void {
+    // Dynamically-loaded component in the template. Not a root ElementInjector.
     if (isPresent(this._parent)) {
-      this._reattachInjector(this._injector, this._parent._injector, false);
-    } else {
-      // This injector is at the boundary.
-      //
-      // The injector tree we are assembling:
-      //
-      // host._injector (only if present)
-      //   |
-      //   |boundary
-      //   |
-      // imperativelyCreatedInjector (only if present)
-      //   |
-      //   |boundary
-      //   |
-      // this._injector
-      //
-
-      // host._injector (only if present)
-      //   |
-      //   |boundary
-      //   |
-      // imperativelyCreatedInjector (only if present)
-      if (isPresent(imperativelyCreatedInjector) && isPresent(host)) {
-        this._reattachInjector(imperativelyCreatedInjector, host._injector, true);
+      if (isPresent(imperativelyCreatedInjector)) {
+        // The imperative injector is similar to having an element between
+        // the dynamic-loaded component and its parent => no boundaries.
+        this._reattachInjector(this._injector, imperativelyCreatedInjector, false);
+        this._reattachInjector(imperativelyCreatedInjector, this._parent._injector, false);
+      } else {
+        this._reattachInjector(this._injector, this._parent._injector, false);
       }
 
-      // host._injector OR imperativelyCreatedInjector OR null
-      //   |
-      //   |boundary
-      //   |
-      // this._injector
-      var parent = this._closestBoundaryInjector(imperativelyCreatedInjector, host);
-      this._reattachInjector(this._injector, parent, true);
-    }
-  }
+      // Dynamically-loaded component in the template. A root ElementInjector.
+    } else if (isPresent(this._host)) {
+      // The imperative injector is similar to having an element between
+      // the dynamic-loaded component and its parent => no boundary between
+      // the component and imperativelyCreatedInjector.
+      // But since it is a root ElementInjector, we need to create a boundary
+      // between imperativelyCreatedInjector and _host.
+      if (isPresent(imperativelyCreatedInjector)) {
+        this._reattachInjector(this._injector, imperativelyCreatedInjector, false);
+        this._reattachInjector(imperativelyCreatedInjector, this._host._injector, true);
+      } else {
+        this._reattachInjector(this._injector, this._host._injector, true);
+      }
 
-  private _closestBoundaryInjector(imperativelyCreatedInjector: Injector,
-                                   host: ElementInjector): Injector {
-    if (isPresent(imperativelyCreatedInjector)) {
-      return imperativelyCreatedInjector;
-    } else if (isPresent(host)) {
-      return host._injector;
+      // Bootstrap
     } else {
-      return null;
+      if (isPresent(imperativelyCreatedInjector)) {
+        this._reattachInjector(this._injector, imperativelyCreatedInjector, true);
+      }
     }
   }
 

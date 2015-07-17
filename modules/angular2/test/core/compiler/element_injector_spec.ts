@@ -247,7 +247,7 @@ export function main() {
 
   for (var i = 0; i < 20; i++) {
     dynamicBindings.push(bind(i).toValue(i));
-  }      
+  }
 
   function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false, dirVariableBindings = null) {
     var directiveBinding = ListWrapper.map(bindings, b => {
@@ -278,7 +278,7 @@ export function main() {
     return inj;
   }
 
-  function parentChildInjectors(parentBindings, childBindings, parentPreBuildObjects = null) {
+  function parentChildInjectors(parentBindings, childBindings, parentPreBuildObjects = null, imperativelyCreatedInjector = null) {
     if (isBlank(parentPreBuildObjects)) parentPreBuildObjects = defaultPreBuiltObjects;
 
     var protoParent = createPei(null, 0, parentBindings);
@@ -288,20 +288,20 @@ export function main() {
 
     var protoChild = createPei(protoParent, 1, childBindings, 1, false);
     var child = protoChild.instantiate(parent);
-    child.hydrate(null, null, defaultPreBuiltObjects);
+    child.hydrate(imperativelyCreatedInjector, null, defaultPreBuiltObjects);
 
     return child;
   }
 
   function hostShadowInjectors(hostBindings: List<any>,
-                               shadowBindings: List<any>): ElementInjector {
+                               shadowBindings: List<any>, imperativelyCreatedInjector = null): ElementInjector {
     var protoHost = createPei(null, 0, hostBindings, 0, true);
     var host = protoHost.instantiate(null);
     host.hydrate(null, null, defaultPreBuiltObjects);
 
     var protoShadow = createPei(null, 0, shadowBindings, 0, false);
     var shadow = protoShadow.instantiate(null);
-    shadow.hydrate(null, host, null);
+    shadow.hydrate(imperativelyCreatedInjector, host, null);
 
     return shadow;
   }
@@ -715,12 +715,32 @@ export function main() {
             expect(shadowInj.get(NeedsService).service).toEqual('hostService');
           });
 
-          it("should instantiate directives that depend on imperativley created injector bindings", () => {
+          it("should instantiate directives that depend on imperatively created injector bindings (bootstrap)", () => {
             var imperativelyCreatedInjector = Injector.resolveAndCreate([
               bind("service").toValue('appService')
             ]);
             var inj = injector([NeedsService], imperativelyCreatedInjector);
             expect(inj.get(NeedsService).service).toEqual('appService');
+
+            expect(() => injector([NeedsAncestorService], imperativelyCreatedInjector)).toThrowError();
+          });
+
+          it("should instantiate directives that depend on imperatively created injector bindings (root injector)", () => {
+            var imperativelyCreatedInjector = Injector.resolveAndCreate([
+              bind("service").toValue('appService')
+            ]);
+            var inj = hostShadowInjectors([SimpleDirective], [NeedsService, NeedsAncestorService], imperativelyCreatedInjector);
+            expect(inj.get(NeedsService).service).toEqual('appService');
+            expect(inj.get(NeedsAncestorService).service).toEqual('appService');
+          });
+
+          it("should instantiate directives that depend on imperatively created injector bindings (child injector)", () => {
+            var imperativelyCreatedInjector = Injector.resolveAndCreate([
+              bind("service").toValue('appService')
+            ]);
+            var inj = parentChildInjectors([], [NeedsService, NeedsAncestorService], null, imperativelyCreatedInjector);
+            expect(inj.get(NeedsService).service).toEqual('appService');
+            expect(inj.get(NeedsAncestorService).service).toEqual('appService');
           });
 
           it("should prioritize viewInjector over hostInjector for the same binding", () => {
@@ -1192,7 +1212,7 @@ export function main() {
         });
       });
     });
-  });    
+  });
 }
 
 class ContextWithHandler {
