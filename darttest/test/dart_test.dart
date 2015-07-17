@@ -7,7 +7,6 @@ import "package:angular2/angular2.dart"
 import "package:angular2/test.dart"
     show TestComponentBuilder, inject, createTestInjector;
 import 'package:angular2/src/dom/browser_adapter.dart'; // for BrowserDomAdapter
-import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart'; // for reflector
 import 'package:angular2/src/reflection/reflection_capabilities.dart'; // For ReflectionCapabilities
 
