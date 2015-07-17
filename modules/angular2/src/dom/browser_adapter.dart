@@ -342,8 +342,11 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return window.location;
   }
   getBaseHref() {
-    var uri = document.baseUri;
-    var baseUri = Uri.parse(uri);
+    var href = getBaseElementHref();
+    if (href == null) {
+      return null;
+    }
+    var baseUri = Uri.parse(href);
     return baseUri.path;
   }
   String getUserAgent() {
@@ -359,4 +362,16 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setGlobalVar(String name, value) {
     js.context[name] = value;
   }
+}
+
+
+var baseElement = null;
+String getBaseElementHref() {
+  if (baseElement == null) {
+    baseElement = document.querySelector('base');
+    if (baseElement == null) {
+      return null;
+    }
+  }
+  return baseElement.getAttribute('href');
 }

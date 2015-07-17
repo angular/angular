@@ -263,12 +263,30 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getHistory(): History { return window.history; }
   getLocation(): Location { return window.location; }
-  getBaseHref(): string { return relativePath(document.baseURI); }
+  getBaseHref(): string {
+    var href = getBaseElementHref();
+    if (isBlank(href)) {
+      return null;
+    }
+    return relativePath(href);
+  }
   getUserAgent(): string { return window.navigator.userAgent; }
   setData(element, name: string, value: string) { element.dataset[name] = value; }
   getData(element, name: string): string { return element.dataset[name]; }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(name: string, value: any) { global[name] = value; }
+}
+
+
+var baseElement = null;
+function getBaseElementHref(): string {
+  if (isBlank(baseElement)) {
+    baseElement = document.querySelector('base');
+    if (isBlank(baseElement)) {
+      return null;
+    }
+  }
+  return baseElement.attr('href');
 }
 
 // based on urlUtils.js in AngularJS 1
