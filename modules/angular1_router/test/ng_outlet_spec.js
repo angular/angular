@@ -10,27 +10,33 @@ describe('ngOutlet', function () {
       $controllerProvider,
       $componentMapperProvider;
 
+  var OneController, TwoController, UserController;
 
-  beforeEach(function() {
+  function instructionFor(componentType) {
+    return jasmine.objectContaining({componentType: componentType});
+  }
+
+
+  beforeEach(function () {
     module('ng');
     module('ngComponentRouter');
-    module(function(_$controllerProvider_, _$componentMapperProvider_) {
+    module(function (_$controllerProvider_, _$componentMapperProvider_) {
       $controllerProvider = _$controllerProvider_;
       $componentMapperProvider = _$componentMapperProvider_;
     });
 
-    inject(function(_$compile_, _$rootScope_, _$router_, _$templateCache_) {
+    inject(function (_$compile_, _$rootScope_, _$router_, _$templateCache_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
       $router = _$router_;
       $templateCache = _$templateCache_;
     });
 
-    registerComponent('user', '<div>hello {{user.name}}</div>', function($routeParams) {
+    UserController = registerComponent('user', '<div>hello {{user.name}}</div>', function ($routeParams) {
       this.name = $routeParams.name;
     });
-    registerComponent('one', '<div>{{one.number}}</div>', boringController('number', 'one'));
-    registerComponent('two', '<div>{{two.number}}</div>', boringController('number', 'two'));
+    OneController = registerComponent('one', '<div>{{one.number}}</div>', boringController('number', 'one'));
+    TwoController = registerComponent('two', '<div>{{two.number}}</div>', boringController('number', 'two'));
   });
 
 
@@ -38,7 +44,7 @@ describe('ngOutlet', function () {
     compile('<ng-outlet></ng-outlet>');
 
     $router.config([
-      { path: '/', component: 'one' }
+      { path: '/', component: OneController }
     ]);
 
     $router.navigate('/');
@@ -66,7 +72,7 @@ describe('ngOutlet', function () {
 
   it('should navigate between components with different parameters', function () {
     $router.config([
-      { path: '/user/:name', component: 'user' }
+      { path: '/user/:name', component: UserController }
     ]);
     compile('<ng-outlet></ng-outlet>');
 
@@ -82,16 +88,17 @@ describe('ngOutlet', function () {
 
   //TODO: fix this
   xit('should not reactivate a parent when navigating between child components with different parameters', function () {
+    var spy = jasmine.createSpy('activate');
+    function ParentController() {}
     ParentController.$routeConfig = [
-      { path: '/user/:name', component: 'user' }
+      { path: '/user/:name', component: UserController }
     ];
-    function ParentController () {}
-    var spy = ParentController.prototype.activate = jasmine.createSpy('activate');
+    ParentController.prototype.activate = spy;
 
     registerComponent('parent', 'parent { <ng-outlet></ng-outlet> }', ParentController);
 
     $router.config([
-      { path: '/parent', component: 'parent' }
+      { path: '/parent', component: ParentController }
     ]);
     compile('<ng-outlet></ng-outlet>');
 
@@ -109,31 +116,31 @@ describe('ngOutlet', function () {
   });
 
 
-  it('should work with multiple named outlets', function () {
-    $router.config([
-      { path: '/',         components:  {left: 'one', right: 'two'} },
-      { path: '/switched', components: {left: 'two', right: 'one'} }
-    ]);
-    compile('outlet 1: <div ng-outlet="left"></div> | ' +
-            'outlet 2: <div ng-outlet="right"></div>');
+  // it('should work with multiple named outlets', function () {
+  //   $router.config([
+  //     { path: '/',         components:  {left: 'one', right: 'two'} },
+  //     { path: '/switched', components: {left: 'two', right: 'one'} }
+  //   ]);
+  //   compile('outlet 1: <div ng-outlet="left"></div> | ' +
+  //           'outlet 2: <div ng-outlet="right"></div>');
 
-    $router.navigate('/');
-    $rootScope.$digest();
-    expect(elt.text()).toBe('outlet 1: one | outlet 2: two');
+  //   $router.navigate('/');
+  //   $rootScope.$digest();
+  //   expect(elt.text()).toBe('outlet 1: one | outlet 2: two');
 
-    $router.navigate('/switched');
-    $rootScope.$digest();
-    expect(elt.text()).toBe('outlet 1: two | outlet 2: one');
-  });
+  //   $router.navigate('/switched');
+  //   $rootScope.$digest();
+  //   expect(elt.text()).toBe('outlet 1: two | outlet 2: one');
+  // });
 
 
   it('should work with nested outlets', function () {
-    registerComponent('childComponent', '<div>inner { <div ng-outlet></div> }</div>', [
-      { path: '/b', component: 'one' }
+    var childComponent = registerComponent('childComponent', '<div>inner { <div ng-outlet></div> }</div>', [
+      { path: '/b', component: OneController }
     ]);
 
     $router.config([
-      { path: '/a', component: 'childComponent' }
+      { path: '/a/...', component: childComponent }
     ]);
     compile('<div>outer { <div ng-outlet></div> }</div>');
 
@@ -145,10 +152,10 @@ describe('ngOutlet', function () {
 
 
   it('should work with recursive nested outlets', function () {
-    put('router', '<div>recur { <div ng-outlet></div> }</div>');
+    put('two', '<div>recur { <div ng-outlet></div> }</div>');
     $router.config([
-      { path: '/recur', component: 'router' },
-      { path: '/', component: 'one' }
+      { path: '/recur', component: TwoController },
+      { path: '/', component: OneController }
     ]);
 
     compile('<div>root { <div ng-outlet></div> }</div>');
@@ -162,10 +169,10 @@ describe('ngOutlet', function () {
     put('one', '<div>{{number}}</div>');
 
     $router.config([
-      { path: '/a', component: 'one' },
-      { path: '/b', component: 'two', as: 'two' }
+      { path: '/a', component: OneController },
+      { path: '/b', component: TwoController, as: 'two' }
     ]);
-    compile('<a ng-link="two">link</a> | outer { <div ng-outlet></div> }');
+    compile('<a ng-link="[\'/two\']">link</a> | outer { <div ng-outlet></div> }');
 
     $router.navigate('/a');
     $rootScope.$digest();
@@ -174,11 +181,11 @@ describe('ngOutlet', function () {
   });
 
   it('should allow linking from the child and the parent', function () {
-    put('one', '<div><a ng-link="two">{{number}}</a></div>');
+    put('one', '<div><a ng-link="[\'/two\']">{{number}}</a></div>');
 
     $router.config([
-      { path: '/a', component: 'one' },
-      { path: '/b', component: 'two', as: 'two' }
+      { path: '/a', component: OneController },
+      { path: '/b', component: TwoController, as: 'two' }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -191,11 +198,11 @@ describe('ngOutlet', function () {
 
   it('should allow params in routerLink directive', function () {
     put('router', '<div>outer { <div ng-outlet></div> }</div>');
-    put('one', '<div><a ng-link="two({param: \'lol\'})">{{number}}</a></div>');
+    put('one', '<div><a ng-link="[\'/two\', {param: \'lol\'}]">{{number}}</a></div>');
 
     $router.config([
-      { path: '/a', component: 'one' },
-      { path: '/b/:param', component: 'two', as: 'two' }
+      { path: '/a', component: OneController },
+      { path: '/b/:param', component: TwoController, as: 'two' }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -208,11 +215,11 @@ describe('ngOutlet', function () {
   // TODO: test dynamic links
   it('should update the href of links with bound params', function () {
     put('router', '<div>outer { <div ng-outlet></div> }</div>');
-    put('one', '<div><a ng-link="two({param: one.number})">{{one.number}}</a></div>');
+    put('one', '<div><a ng-link="[\'/two\', {param: one.number}]">{{one.number}}</a></div>');
 
     $router.config([
-      { path: '/a', component: 'one' },
-      { path: '/b/:param', component: 'two', as: 'two' }
+      { path: '/a', component: OneController },
+      { path: '/b/:param', component: TwoController, as: 'two' }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -225,12 +232,12 @@ describe('ngOutlet', function () {
 
   it('should run the activate hook of controllers', function () {
     var spy = jasmine.createSpy('activate');
-    registerComponent('activate', '', {
-      activate: spy
+    var activate = registerComponent('activate', '', {
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/a', component: 'activate' }
+      { path: '/a', component: activate }
     ]);
     compile('<div>outer { <div ng-outlet></div> }</div>');
 
@@ -241,53 +248,54 @@ describe('ngOutlet', function () {
   });
 
 
-  it('should inject into the activate hook of a controller', inject(function ($http) {
+  it('should pass instruction into the activate hook of a controller', function () {
     var spy = jasmine.createSpy('activate');
-    spy.$inject = ['$routeParams', '$http'];
-    registerComponent('user', '', {
-      activate: spy
+    var UserController = registerComponent('user', '', {
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/user/:name', component: 'user' }
+      { path: '/user/:name', component: UserController }
     ]);
     compile('<div ng-outlet></div>');
 
     $router.navigate('/user/brian');
     $rootScope.$digest();
 
-    expect(spy).toHaveBeenCalledWith({name: 'brian'}, $http);
-  }));
+    expect(spy).toHaveBeenCalledWith(instructionFor(UserController), undefined);
+  });
 
 
-  it('should inject $scope into the activate hook of a controller', function () {
+  it('should pass previous instruction into the activate hook of a controller', function () {
     var spy = jasmine.createSpy('activate');
-    spy.$inject = ['$scope'];
-    registerComponent('user', '', {
-      activate: spy
+    var activate = registerComponent('activate', '', {
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/user/:name', component: 'user' }
+      { path: '/user/:name', component: OneController },
+      { path: '/post/:id', component: activate }
     ]);
     compile('<div ng-outlet></div>');
 
     $router.navigate('/user/brian');
     $rootScope.$digest();
-
-    expect(spy.calls.first().args[0].$root).toEqual($rootScope);
+    $router.navigate('/post/123');
+    $rootScope.$digest();
+    expect(spy).toHaveBeenCalledWith(instructionFor(activate),
+                                     instructionFor(OneController));
   });
 
 
   it('should inject $scope into the controller constructor', function () {
 
     var injectedScope;
-    registerComponent('user', '', function ($scope) {
+    var UserController = registerComponent('user', '', function ($scope) {
       injectedScope = $scope;
     });
 
     $router.config([
-      { path: '/user', component: 'user' }
+      { path: '/user', component: UserController }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -300,13 +308,13 @@ describe('ngOutlet', function () {
 
   it('should run the deactivate hook of controllers', function () {
     var spy = jasmine.createSpy('deactivate');
-    registerComponent('deactivate', '', {
-      deactivate: spy
+    var deactivate = registerComponent('deactivate', '', {
+      onDeactivate: spy
     });
 
     $router.config([
-      { path: '/a', component: 'deactivate' },
-      { path: '/b', component: 'one' }
+      { path: '/a', component: deactivate },
+      { path: '/b', component: OneController }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -318,16 +326,15 @@ describe('ngOutlet', function () {
   });
 
 
-  it('should inject into the deactivate hook of controllers', inject(function ($http) {
+  it('should pass instructions into the deactivate hook of controllers', function () {
     var spy = jasmine.createSpy('deactivate');
-    spy.$inject = ['$routeParams', '$http'];
-    registerComponent('deactivate', '', {
-      deactivate: spy
+    var deactivate = registerComponent('deactivate', '', {
+      onDeactivate: spy
     });
 
     $router.config([
-      { path: '/user/:name', component: 'deactivate' },
-      { path: '/post/:id', component: 'one' }
+      { path: '/user/:name', component: deactivate },
+      { path: '/post/:id', component: OneController }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -335,24 +342,29 @@ describe('ngOutlet', function () {
     $rootScope.$digest();
     $router.navigate('/post/123');
     $rootScope.$digest();
-    expect(spy).toHaveBeenCalledWith({id: '123'}, $http);
-  }));
+    expect(spy).toHaveBeenCalledWith(instructionFor(OneController),
+                                     instructionFor(deactivate));
+  });
 
 
   it('should run the deactivate hook before the activate hook', function () {
     var log = [];
 
-    registerComponent('activate', '', {
-      activate: function () { log.push('activate'); }
+    var activate = registerComponent('activate', '', {
+      onActivate: function () {
+        log.push('activate');
+      }
     });
 
-    registerComponent('deactivate', '', {
-      deactivate: function () { log.push('deactivate'); }
+    var deactivate = registerComponent('deactivate', '', {
+      onDeactivate: function () {
+        log.push('deactivate');
+      }
     });
 
     $router.config([
-      { path: '/a', component: 'deactivate' },
-      { path: '/b', component: 'activate' }
+      { path: '/a', component: deactivate },
+      { path: '/b', component: activate }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -367,13 +379,15 @@ describe('ngOutlet', function () {
 
   it('should not activate a component when canActivate returns false', function () {
     var spy = jasmine.createSpy('activate');
-    registerComponent('activate', '', {
-      canActivate: function () { return false; },
-      activate: spy
+    var activate = registerComponent('activate', '', {
+      canActivate: function () {
+        return false;
+      },
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/a', component: 'activate' }
+      { path: '/a', component: activate }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -385,35 +399,17 @@ describe('ngOutlet', function () {
   });
 
 
-  it('should not activate a component when canActivate returns a rejected promise', inject(function ($q) {
-    var spy = jasmine.createSpy('activate');
-    registerComponent('activate', '', {
-      canActivate: function () { return $q.reject(); },
-      activate: spy
-    });
-
-    $router.config([
-      { path: '/a', component: 'activate' }
-    ]);
-    compile('outer { <div ng-outlet></div> }');
-
-    $router.navigate('/a');
-    $rootScope.$digest();
-
-    expect(spy).not.toHaveBeenCalled();
-    expect(elt.text()).toBe('outer {  }');
-  }));
-
-
   it('should activate a component when canActivate returns true', function () {
     var spy = jasmine.createSpy('activate');
-    registerComponent('activate', 'hi', {
-      canActivate: function () { return true; },
-      activate: spy
+    var activate = registerComponent('activate', 'hi', {
+      canActivate: function () {
+        return true;
+      },
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/a', component: 'activate' }
+      { path: '/a', component: activate }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -427,13 +423,15 @@ describe('ngOutlet', function () {
 
   it('should activate a component when canActivate returns a resolved promise', inject(function ($q) {
     var spy = jasmine.createSpy('activate');
-    registerComponent('activate', 'hi', {
-      canActivate: function () { return $q.when(); },
-      activate: spy
+    var activate = registerComponent('activate', 'hi', {
+      canActivate: function () {
+        return $q.when(true);
+      },
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/a', component: 'activate' }
+      { path: '/a', component: activate }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -447,13 +445,14 @@ describe('ngOutlet', function () {
 
   it('should inject into the canActivate hook of controllers', inject(function ($http) {
     var spy = jasmine.createSpy('canActivate').and.returnValue(true);
-    spy.$inject = ['$routeParams', '$http'];
-    registerComponent('activate', '', {
+    var activate = registerComponent('activate', '', {
       canActivate: spy
     });
 
+    spy.$inject = ['$routeParams', '$http'];
+
     $router.config([
-      { path: '/user/:name', component: 'activate' }
+      { path: '/user/:name', component: activate }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -464,13 +463,15 @@ describe('ngOutlet', function () {
 
 
   it('should not navigate when canDeactivate returns false', function () {
-    registerComponent('activate', 'hi', {
-      canDeactivate: function () { return false; }
+    var activate = registerComponent('activate', 'hi', {
+      canDeactivate: function () {
+        return false;
+      }
     });
 
     $router.config([
-      { path: '/a', component: 'activate' },
-      { path: '/b', component: 'one' }
+      { path: '/a', component: activate },
+      { path: '/b', component: OneController }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -484,35 +485,16 @@ describe('ngOutlet', function () {
   });
 
 
-  it('should not navigate when canDeactivate returns a rejected promise', inject(function ($q) {
-    registerComponent('activate', 'hi', {
-      canDeactivate: function () { return $q.reject(); }
-    });
-
-    $router.config([
-      { path: '/a', component: 'activate' },
-      { path: '/b', component: 'one' }
-    ]);
-    compile('outer { <div ng-outlet></div> }');
-
-    $router.navigate('/a');
-    $rootScope.$digest();
-    expect(elt.text()).toBe('outer { hi }');
-
-    $router.navigate('/b');
-    $rootScope.$digest();
-    expect(elt.text()).toBe('outer { hi }');
-  }));
-
-
   it('should navigate when canDeactivate returns true', function () {
-    registerComponent('activate', 'hi', {
-      canDeactivate: function () { return true; }
+    var activate = registerComponent('activate', 'hi', {
+      canDeactivate: function () {
+        return true;
+      }
     });
 
     $router.config([
-      { path: '/a', component: 'activate' },
-      { path: '/b', component: 'one' }
+      { path: '/a', component: activate },
+      { path: '/b', component: OneController }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -528,13 +510,15 @@ describe('ngOutlet', function () {
 
   it('should activate a component when canActivate returns true', function () {
     var spy = jasmine.createSpy('activate');
-    registerComponent('activate', 'hi', {
-      canActivate: function () { return true; },
-      activate: spy
+    var activate = registerComponent('activate', 'hi', {
+      canActivate: function () {
+        return true;
+      },
+      onActivate: spy
     });
 
     $router.config([
-      { path: '/a', component: 'activate' }
+      { path: '/a', component: activate }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -546,16 +530,15 @@ describe('ngOutlet', function () {
   });
 
 
-  it('should inject into the canDeactivate hook of controllers', inject(function ($http) {
+  it('should pass instructions into the canDeactivate hook of controllers', function () {
     var spy = jasmine.createSpy('canDeactivate').and.returnValue(true);
-    spy.$inject = ['$routeParams', '$http'];
-    registerComponent('deactivate', '', {
+    var deactivate = registerComponent('deactivate', '', {
       canDeactivate: spy
     });
 
     $router.config([
-      { path: '/user/:name', component: 'deactivate' },
-      { path: '/post/:id', component: 'one' }
+      { path: '/user/:name', component: deactivate },
+      { path: '/post/:id', component: OneController }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -563,13 +546,14 @@ describe('ngOutlet', function () {
     $rootScope.$digest();
     $router.navigate('/post/123');
     $rootScope.$digest();
-    expect(spy).toHaveBeenCalledWith({id: '123'}, $http);
-  }));
+    expect(spy).toHaveBeenCalledWith(instructionFor(OneController),
+                                     instructionFor(deactivate));
+  });
 
 
   it('should change location path', inject(function ($location) {
     $router.config([
-      { path: '/user', component: 'user' }
+      { path: '/user', component: UserController }
     ]);
 
     compile('<div ng-outlet></div>');
@@ -584,8 +568,8 @@ describe('ngOutlet', function () {
 
   xit('should navigate on left-mouse click when a link url matches a route', function () {
     $router.config([
-      { path: '/', component: 'one' },
-      { path: '/two', component: 'two' },
+      { path: '/', component: OneController },
+      { path: '/two', component: TwoController }
     ]);
 
     compile('<a href="./two">link</a> | <div ng-outlet></div>');
@@ -600,8 +584,8 @@ describe('ngOutlet', function () {
 
   xit('should not navigate on non-left mouse click when a link url matches a route', inject(function ($router) {
     $router.config([
-      { path: '/', component: 'one' },
-      { path: '/two', component: 'two' },
+      { path: '/', component: OneController },
+      { path: '/two', component: TwoController }
     ]);
 
     compile('<a href="./two">link</a> | <div ng-outlet></div>');
@@ -617,10 +601,10 @@ describe('ngOutlet', function () {
   // See https://github.com/angular/router/issues/206
   it('should not navigate a link without an href', function () {
     $router.config([
-      { path: '/', component: 'one' },
-      { path: '/two', component: 'two' },
+      { path: '/', component: OneController },
+      { path: '/two', component: TwoController }
     ]);
-    expect(function() {
+    expect(function () {
       compile('<a>link</a>');
       $rootScope.$digest();
       expect(elt.text()).toBe('link');
@@ -635,7 +619,7 @@ describe('ngOutlet', function () {
 
     $router.config([
       { path: '/',     redirectTo: '/user' },
-      { path: '/user', component:  'user' }
+      { path: '/user', component:  UserController }
     ]);
 
     $router.navigate('/');
@@ -646,16 +630,16 @@ describe('ngOutlet', function () {
 
 
   it('should change location to the canonical route with nested components', inject(function ($location) {
-    $router.config([
-      { path: '/old-parent', redirectTo: '/new-parent' },
-      { path: '/new-parent', component:  'childRouter' }
+    var childRouter = registerComponent('childRouter', '<div>inner { <div ng-outlet></div> }</div>', [
+      { path: '/old-child', redirectTo: '/new-child' },
+      { path: '/new-child', component: OneController},
+      { path: '/old-child-two', redirectTo: '/new-child-two' },
+      { path: '/new-child-two', component: TwoController}
     ]);
 
-    registerComponent('childRouter', '<div>inner { <div ng-outlet></div> }</div>', [
-      { path: '/old-child', redirectTo: '/new-child' },
-      { path: '/new-child', component: 'one'},
-      { path: '/old-child-two', redirectTo: '/new-child-two' },
-      { path: '/new-child-two', component: 'two'}
+    $router.config([
+      { path: '/old-parent', redirectTo: '/new-parent' },
+      { path: '/new-parent/...', component:  childRouter }
     ]);
 
     compile('<div ng-outlet></div>');
@@ -676,7 +660,7 @@ describe('ngOutlet', function () {
 
   it('should navigate when the location path changes', inject(function ($location) {
     $router.config([
-      { path: '/one', component: 'one' }
+      { path: '/one', component: OneController }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -687,50 +671,60 @@ describe('ngOutlet', function () {
   }));
 
 
-  it('should expose a "navigating" property on $router', function () {
+  it('should expose a "navigating" property on $router', inject(function ($q) {
+    var defer;
+    var pendingActivate = registerComponent('pendingActivate', '', {
+      onActivate: function () {
+        defer = $q.defer();
+        return defer.promise;
+      }
+    });
     $router.config([
-      { path: '/one', component: 'one' }
+      { path: '/pendingActivate', component: pendingActivate }
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/one');
+    $router.navigate('/pendingActivate');
+    $rootScope.$digest();
     expect($router.navigating).toBe(true);
+    defer.resolve();
     $rootScope.$digest();
     expect($router.navigating).toBe(false);
-  });
+  }));
 
 
   function registerComponent(name, template, config) {
+    var Ctrl;
     if (!template) {
       template = '';
     }
-    var Ctrl;
     if (!config) {
       Ctrl = function () {};
     } else if (angular.isArray(config)) {
       Ctrl = function () {};
-      Ctrl.annotations = [ new angular.annotations.RouteConfig(config) ];
+      Ctrl.annotations = [new angular.annotations.RouteConfig(config)];
     } else if (typeof config === 'function') {
       Ctrl = config;
     } else {
       Ctrl = function () {};
       if (config.canActivate) {
-        Ctrl.canActivate = config.canActivate;
+        Ctrl.$canActivate = config.canActivate;
         delete config.canActivate;
       }
       Ctrl.prototype = config;
     }
     $controllerProvider.register(componentControllerName(name), Ctrl);
     put(name, template);
+    return Ctrl;
   }
 
-  function boringController (model, value) {
+  function boringController(model, value) {
     return function () {
       this[model] = value;
     };
   }
 
-  function put (name, template) {
+  function put(name, template) {
     $templateCache.put(componentTemplatePath(name), [200, template, {}]);
   }
 
@@ -752,15 +746,19 @@ describe('ngOutlet animations', function () {
       $templateCache,
       $controllerProvider;
 
-  beforeEach(function() {
+  function UserController($routeParams) {
+    this.name = $routeParams.name;
+  }
+
+  beforeEach(function () {
     module('ngAnimate');
     module('ngAnimateMock');
     module('ngComponentRouter');
-    module(function(_$controllerProvider_) {
+    module(function (_$controllerProvider_) {
       $controllerProvider = _$controllerProvider_;
     });
 
-    inject(function(_$animate_, _$compile_, _$rootScope_, _$router_, _$templateCache_) {
+    inject(function (_$animate_, _$compile_, _$rootScope_, _$router_, _$templateCache_) {
       $animate = _$animate_;
       $compile = _$compile_;
       $rootScope = _$rootScope_;
@@ -769,12 +767,10 @@ describe('ngOutlet animations', function () {
     });
 
     put('user', '<div>hello {{user.name}}</div>');
-    $controllerProvider.register('UserController', function($routeParams) {
-      this.name = $routeParams.name;
-    });
+    $controllerProvider.register('UserController', UserController);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     expect($animate.queue).toEqual([]);
   });
 
@@ -784,7 +780,7 @@ describe('ngOutlet animations', function () {
     compile('<div ng-outlet></div>');
 
     $router.config([
-      { path: '/user/:name', component: 'user' }
+      { path: '/user/:name', component: UserController }
     ]);
 
     $router.navigate('/user/brian');
@@ -811,7 +807,7 @@ describe('ngOutlet animations', function () {
     expect(item.element.text()).toBe('hello brian');
   });
 
-  function put (name, template) {
+  function put(name, template) {
     $templateCache.put(componentTemplatePath(name), [200, template, {}]);
   }
 

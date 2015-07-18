@@ -605,29 +605,17 @@ gulp.task('!test.unit.js/karma-run', function(done) {
   runKarma('karma-js.conf.js', done);
 });
 
-gulp.task('test.unit.router', function (neverDone) {
-
+gulp.task('test.unit.router', function (done) {
   runSequence(
     '!test.unit.router/karma-server',
-    '!test.unit.router/karma-run',
-    'check-format'
+    function() {
+      watch('modules/**', [
+        'buildRouter.dev',
+        '!test.unit.router/karma-run'
+      ]);
+    }
   );
-
-  watch(['modules/**'], function() {
-    runSequence(
-      'buildRouter.dev'
-    );
-  });
 });
-
-gulp.task('watch.router.dev', function (neverDone) {
-  watch('modules/**', function() {
-    runSequence(
-      'buildRouter.dev'
-    );
-  });
-});
-
 
 gulp.task('!test.unit.router/karma-server', function() {
   karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js'});
@@ -681,6 +669,12 @@ gulp.task('!test.unit.dart/karma-server', function() {
   karma.server.start({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'});
 });
 
+
+gulp.task('test.unit.router/ci', function (done) {
+  var browserConf = getBrowsersFromCLI();
+  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
+      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+});
 
 gulp.task('test.unit.js/ci', function (done) {
   var browserConf = getBrowsersFromCLI();

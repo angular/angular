@@ -5,13 +5,6 @@
  */
 angular.module('ngComponentRouter', [])
   .factory('$componentMapper', $componentMapperFactory)
-  .provider('$pipeline', pipelineProvider)
-  .factory('$setupRoutersStep', setupRoutersStepFactory)
-  .factory('$initLocalsStep', initLocalsStepFactory)
-  .value('$runCanDeactivateHookStep', runCanDeactivateHookStep)
-  .factory('$runCanActivateHookStep', runCanActivateHookStepFactory)
-  .factory('$loadTemplatesStep', loadTemplatesStepFactory)
-  .value('$activateStep', activateStepValue)
   .directive('ngOutlet', ngOutletDirective)
   .directive('ngOutlet', ngOutletFillContentDirective)
   .directive('ngLink', ngLinkDirective) // TODO: make this configurable ?
@@ -49,6 +42,7 @@ function $$controllerIntrospectorProvider() {
         constructor = constructor[constructor.length - 1];
       }
       controllersByName[name] = constructor;
+      constructor.$$controllerName = name;
       if (onControllerRegistered) {
         onControllerRegistered(name, constructor);
       } else {
@@ -61,7 +55,7 @@ function $$controllerIntrospectorProvider() {
           name = $componentMapper.component(name);
           return newOnControllerRegistered(name, constructor);
         };
-        while(controllers.length > 0) {
+        while (controllers.length > 0) {
           var rule = controllers.pop();
           onControllerRegistered(rule.name, rule.constructor);
         }
@@ -91,7 +85,8 @@ function $$controllerIntrospectorProvider() {
  *
  * The value for the `ngOutlet` attribute is optional.
  */
-function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $controller) {
+function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $controller,
+                           $$controllerIntrospector, $templateRequest) {
   var rootRouter = $router;
 
   return {
@@ -101,22 +96,9 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
     priority: 400,
     require: ['?^^ngOutlet', 'ngOutlet'],
     link: outletLink,
-    controller: function() {},
+    controller: function () {},
     controllerAs: '$$ngOutlet'
   };
-
-  function invoke(method, context, instruction) {
-    return $injector.invoke(method, context, instruction.locals);
-  }
-
-  function boolToPromise(val) {
-    return $q.when(val).then(function (res) {
-      if (res == false) {
-        return $q.reject(false);
-      }
-      return res;
-    });
-  }
 
   function outletLink(scope, $element, attrs, ctrls, $transclude) {
     var outletName = attrs.ngOutlet || 'default',
@@ -124,8 +106,9 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
       myCtrl = ctrls[1],
       router = (parentCtrl && parentCtrl.$$router) || rootRouter;
 
-    var currentScope,
-      newScope,
+    var childRouter,
+      currentInstruction,
+      currentScope,
       currentController,
       currentElement,
       previousLeaveAnimation;
@@ -142,7 +125,7 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
       }
       if (currentElement) {
         previousLeaveAnimation = $animate.leave(currentElement);
-        previousLeaveAnimation.then(function() {
+        previousLeaveAnimation.then(function () {
           previousLeaveAnimation = null;
         });
         currentElement = null;
@@ -150,52 +133,96 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
     }
 
     router.registerOutlet({
-      canDeactivate: function(instruction) {
-        if (currentController && currentController.canDeactivate) {
-          return boolToPromise(invoke(currentController.canDeactivate, currentController, instruction));
+      commit: function (instruction) {
+        var next;
+        var componentInstruction = instruction.component;
+        if (componentInstruction.reuse) {
+          // todo(shahata): lifecycle - onReuse
+          next = $q.when(true);
+        } else {
+          var self = this;
+          next = this.deactivate(instruction).then(function () {
+            return self.activate(componentInstruction);
+          });
         }
-        return true;
-      },
-      activate: function(instruction) {
-        var controllerConstructor = instruction.controllerConstructor;
-
-        newScope = instruction.locals.$scope = scope.$new();
-
-        var ctrl = $controller(controllerConstructor, instruction.locals);
-        instruction.controllerAs = $componentMapper.controllerAs(instruction.component);
-        instruction.controller = ctrl;
-
-        myCtrl.$$router = instruction.router;
-        myCtrl.$$template = instruction.template;
-        var controllerAs = instruction.controllerAs || instruction.component;
-        var clone = $transclude(newScope, function(clone) {
-          $animate.enter(clone, null, currentElement || $element);
-          cleanupLastView();
-        });
-
-        var newController = instruction.controller;
-        newScope[controllerAs] = newController;
-
-        var result;
-        if (currentController && currentController.deactivate) {
-          result = $q.when(invoke(currentController.deactivate, currentController, instruction));
-        }
-
-        currentController = newController;
-
-        currentElement = clone;
-        currentScope = newScope;
-
-        // finally, run the hook
-        if (newController.activate) {
-          var activationResult = $q.when(invoke(newController.activate, newController, instruction));
-          if (result) {
-            return result.then(activationResult);
+        return next.then(function () {
+          if (childRouter) {
+            return childRouter.commit(instruction.child);
           } else {
-            return activationResult;
+            return $q.when(true);
           }
+        });
+      },
+      canReuse: function (nextInstruction) {
+        var result;
+        var componentInstruction = nextInstruction.component;
+        if (!currentInstruction ||
+            currentInstruction.componentType !== componentInstruction.componentType) {
+          result = false;
+        } else {
+          // todo(shahata): lifecycle - canReuse
+          result = componentInstruction === currentInstruction ||
+                   angular.equals(componentInstruction.params, currentInstruction.params);
         }
-        return result;
+        return $q.when(result).then(function (result) {
+          // TODO: this is a hack
+          componentInstruction.reuse = result;
+          return result;
+        });
+      },
+      canDeactivate: function (instruction) {
+        if (currentInstruction && currentController && currentController.canDeactivate) {
+          return $q.when(currentController.canDeactivate(instruction && instruction.component, currentInstruction));
+        }
+        return $q.when(true);
+      },
+      deactivate: function (instruction) {
+        // todo(shahata): childRouter.dectivate, dispose component?
+        var result = $q.when();
+        return result.then(function () {
+          if (currentController && currentController.onDeactivate) {
+            return currentController.onDeactivate(instruction && instruction.component, currentInstruction);
+          }
+        });
+      },
+      activate: function (instruction) {
+        var previousInstruction = currentInstruction;
+        currentInstruction = instruction;
+        childRouter = router.childRouter(instruction.componentType);
+
+        var controllerConstructor, componentName;
+        controllerConstructor = instruction.componentType;
+        componentName = $componentMapper.component(controllerConstructor.$$controllerName);
+
+        var componentTemplateUrl = $componentMapper.template(componentName);
+        return $templateRequest(componentTemplateUrl).then(function (templateHtml) {
+          myCtrl.$$router = childRouter;
+          myCtrl.$$template = templateHtml;
+        }).then(function () {
+          var newScope = scope.$new();
+          var locals = {
+            $scope: newScope,
+            $router: childRouter,
+            $routeParams: (instruction.params || {})
+          };
+
+          // todo(shahata): controllerConstructor is not minify friendly
+          currentController = $controller(controllerConstructor, locals);
+
+          var clone = $transclude(newScope, function (clone) {
+            $animate.enter(clone, null, currentElement || $element);
+            cleanupLastView();
+          });
+
+          var controllerAs = $componentMapper.controllerAs(componentName) || componentName;
+          newScope[controllerAs] = currentController;
+          currentElement = clone;
+          currentScope = newScope;
+
+          if (currentController.onActivate) {
+            return currentController.onActivate(instruction, previousInstruction);
+          }
+        });
       }
     }, outletName);
   }
@@ -206,7 +233,7 @@ function ngOutletFillContentDirective($compile) {
     restrict: 'EA',
     priority: -400,
     require: 'ngOutlet',
-    link: function(scope, $element, attrs, ctrl) {
+    link: function (scope, $element, attrs, ctrl) {
       var template = ctrl.$$template;
       $element.html(template);
       var link = $compile($element.contents());
@@ -216,7 +243,6 @@ function ngOutletFillContentDirective($compile) {
 }
 
 
-var LINK_MICROSYNTAX_RE = /^(.+?)(?:\((.*)\))?$/;
 /**
  * @name ngLink
  * @description
@@ -257,29 +283,22 @@ function ngLinkDirective($router, $location, $parse) {
     }
 
     var link = attrs.ngLink || '';
-    var parts = link.match(LINK_MICROSYNTAX_RE);
-    var routeName = parts[1];
-    var routeParams = parts[2];
-    var url;
 
-    if (routeParams) {
-      var routeParamsGetter = $parse(routeParams);
-      // we can avoid adding a watcher if it's a literal
-      if (routeParamsGetter.constant) {
-        var params = routeParamsGetter();
-        url = '.' + router.generate(routeName, params);
-        elt.attr('href', url);
-      } else {
-        scope.$watch(function() {
-          return routeParamsGetter(scope);
-        }, function(params) {
-          url = '.' + router.generate(routeName, params);
-          elt.attr('href', url);
-        }, true);
-      }
+    function getLink(params) {
+      return './' + angular.stringifyInstruction(router.generate(params));
+    }
+
+    var routeParamsGetter = $parse(link);
+    // we can avoid adding a watcher if it's a literal
+    if (routeParamsGetter.constant) {
+      var params = routeParamsGetter();
+      elt.attr('href', getLink(params));
     } else {
-      url = '.' + router.generate(routeName);
-      elt.attr('href', url);
+      scope.$watch(function () {
+        return routeParamsGetter(scope);
+      }, function (params) {
+        elt.attr('href', getLink(params));
+      }, true);
     }
   }
 }
@@ -288,17 +307,20 @@ function ngLinkDirective($router, $location, $parse) {
 function anchorLinkDirective($router) {
   return {
     restrict: 'E',
-    link: function(scope, element) {
+    link: function (scope, element) {
       // If the linked element is not an anchor tag anymore, do nothing
-      if (element[0].nodeName.toLowerCase() !== 'a') return;
+      if (element[0].nodeName.toLowerCase() !== 'a') {
+        return;
+      }
 
       // SVGAElement does not use the href attribute, but rather the 'xlinkHref' attribute.
       var hrefAttrName = Object.prototype.toString.call(element.prop('href')) === '[object SVGAnimatedString]' ?
         'xlink:href' : 'href';
 
-      element.on('click', function(event) {
-        if (event.which !== 1)
+      element.on('click', function (event) {
+        if (event.which !== 1) {
           return;
+        }
 
         var href = element.attr(hrefAttrName);
         if (href && $router.recognize(href)) {
@@ -307,127 +329,8 @@ function anchorLinkDirective($router) {
         }
       });
     }
-  }
-}
-
-function setupRoutersStepFactory() {
-  return function(instruction) {
-    return instruction.traverseSync(function (parentInstruction, childInstruction) {
-      childInstruction.router = parentInstruction.router.childRouter(childInstruction.component);
-    });
-  }
-}
-
-/*
- * $initLocalsStep
- */
-function initLocalsStepFactory($componentMapper, $$controllerIntrospector) {
-  return function initLocals(instruction) {
-    return instruction.traverseSync(function(parentInstruction, instruction) {
-      if (typeof instruction.component === 'function') {
-        instruction.controllerConstructor = instruction.component;
-      } else {
-        var controllerName = $componentMapper.controllerName(instruction.component);
-        if (typeof controllerName === 'function') {
-          instruction.controllerConstructor = controllerName;
-        } else {
-          instruction.controllerConstructor = $$controllerIntrospector.getTypeByName(controllerName) || angular.noop;
-        }
-      }
-      return instruction.locals = {
-        $router: instruction.router,
-        $routeParams: (instruction.params || {})
-      };
-    });
-  }
-}
-
-
-function runCanDeactivateHookStep(instruction) {
-  return instruction.router.traverseOutlets(function (outlet, name) {
-    return outlet.canDeactivate(instruction.getChildInstruction(name));
-  });
-}
-
-function runCanActivateHookStepFactory($injector, $q) {
-  function boolToPromise(val) {
-    return $q.when(val).then(function (res) {
-      if (res == false) {
-        return $q.reject(false);
-      }
-      return res;
-    });
-  }
-  function invoke(method, context, instruction) {
-    return $injector.invoke(method, context, instruction.locals);
-  }
-  return function(instruction) {
-    return instruction.traverseAsync(function (childInstruction) {
-      var canActivateHook = childInstruction.controllerConstructor.canActivate;
-      return !canActivateHook || boolToPromise(invoke(canActivateHook, null, childInstruction));
-    });
-  }
-}
-
-function loadTemplatesStepFactory($componentMapper, $templateRequest) {
-  return function loadTemplates(instruction) {
-    return instruction.traverseAsync(function(instruction) {
-      var componentTemplateUrl = $componentMapper.template(instruction.component);
-      return $templateRequest(componentTemplateUrl).then(function (templateHtml) {
-        return instruction.template = templateHtml;
-      });
-    });
   };
 }
-
-
-function activateStepValue(instruction) {
-  return instruction.router.activateOutlets(instruction);
-}
-
-
-function pipelineProvider() {
-  var stepConfiguration;
-
-  var protoStepConfiguration = [
-    '$setupRoutersStep',
-    '$initLocalsStep',
-    '$runCanDeactivateHookStep',
-    '$runCanActivateHookStep',
-    '$loadTemplatesStep',
-    '$activateStep'
-  ];
-
-  return {
-    steps: protoStepConfiguration.slice(0),
-    config: function (newConfig) {
-      protoStepConfiguration = newConfig;
-    },
-    $get: function ($injector, $q) {
-      stepConfiguration = protoStepConfiguration.map(function (step) {
-        return $injector.get(step);
-      });
-
-      return {
-        process: function(instruction) {
-          // make a copy
-          var steps = stepConfiguration.slice(0);
-
-          function processOne(result) {
-            if (steps.length === 0) {
-              return result;
-            }
-            var step = steps.shift();
-            return $q.when(step(instruction)).then(processOne);
-          }
-
-          return processOne();
-        }
-      }
-    }
-  };
-}
-
 
 /**
  * @name $componentMapperFactory
@@ -487,7 +390,7 @@ function $componentMapperFactory() {
      * @name $componentMapper#setCtrlNameMapping
      * @description takes a function for mapping component names to component controller names
      */
-    setCtrlNameMapping: function(newFn) {
+    setCtrlNameMapping: function (newFn) {
       componentToCtrl = newFn;
       return this;
     },
@@ -496,7 +399,7 @@ function $componentMapperFactory() {
      * @name $componentMapper#setCtrlAsMapping
      * @description takes a function for mapping component names to controllerAs name in the template
      */
-    setCtrlAsMapping: function(newFn) {
+    setCtrlAsMapping: function (newFn) {
       componentToControllerAs = newFn;
       return this;
     },
@@ -514,7 +417,7 @@ function $componentMapperFactory() {
      * @name $componentMapper#setTemplateMapping
      * @description takes a function for mapping component names to component template URLs
      */
-    setTemplateMapping: function(newFn) {
+    setTemplateMapping: function (newFn) {
       componentToTemplate = newFn;
       return this;
     }

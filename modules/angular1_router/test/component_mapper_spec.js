@@ -7,9 +7,16 @@ describe('$componentMapper', function () {
       $router,
       $templateCache;
 
+  function Ctrl() {
+    this.message = 'howdy';
+  }
+
   beforeEach(function() {
     module('ng');
     module('ngComponentRouter');
+    module(function ($controllerProvider) {
+      $controllerProvider.register('myComponentController', Ctrl);
+    });
   });
 
   it('should convert a component name to a controller name', inject(function ($componentMapper) {
@@ -49,14 +56,11 @@ describe('$componentMapper', function () {
     });
 
     $templateCache.put('/foo', [200, '{{ctrl.message}}', {}]);
-    function Ctrl() {
-      this.message = 'howdy';
-    };
 
     compile('<ng-outlet></ng-outlet>');
 
     $router.config([
-      { path: '/', component: 'myComponent' }
+      { path: '/', component: Ctrl }
     ]);
 
     $router.navigate('/');

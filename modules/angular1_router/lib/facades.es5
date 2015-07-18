@@ -1,3 +1,19 @@
+function CONST() {
+  return (function(target) {
+    return target;
+  });
+}
+
+function IMPLEMENTS(_) {
+  return (function(t) {
+    return t;
+  });
+}
+
+function CONST_EXPR(expr) {
+  return expr;
+}
+
 function isPresent (x) {
   return !!x;
 }
@@ -6,15 +22,21 @@ function isBlank (x) {
   return !x;
 }
 
+function isString(obj) {
+  return typeof obj === 'string';
+}
+
 function isType (x) {
   return typeof x === 'function';
 }
 
-var StringMapWrapper = {
-  create: function() {
-    return {};
-  }
-};
+function isStringMap(obj) {
+  return typeof obj === 'object' && obj !== null;
+}
+
+function isArray(obj) {
+  return Array.isArray(obj);
+}
 
 var PromiseWrapper = {
   resolve: function (reason) {
@@ -51,7 +73,7 @@ var RegExpWrapper = {
 var reflector = {
   annotations: function (fn) {
     //TODO: implement me
-    return fn.annotations;
+    return fn.annotations || [];
   }
 };
 
@@ -94,6 +116,21 @@ var StringMapWrapper = {
     return !!m[k];
   },
 
+  keys: function(map) {
+    return Object.keys(map);
+  },
+
+  isEmpty: function(map) {
+    for (var prop in map) {
+      return false;
+    }
+    return true;
+  },
+
+  delete: function(map, key) {
+    delete map[key];
+  },
+
   forEach: function (m, fn) {
     for (prop in m) {
       if (m.hasOwnProperty(prop)) {
@@ -116,6 +153,21 @@ var StringMapWrapper = {
       }
     }
     return true;
+  },
+
+  merge: function(m1, m2) {
+    var m = {};
+    for (var attr in m1) {
+      if (m1.hasOwnProperty(attr)) {
+        m[attr] = m1[attr];
+      }
+    }
+    for (var attr in m2) {
+      if (m2.hasOwnProperty(attr)) {
+        m[attr] = m2[attr];
+      }
+    }
+    return m;
   }
 };
 
@@ -133,12 +185,36 @@ var ListWrapper = {
     return l.forEach(fn);
   },
 
+  first: function(array) {
+    if (!array)
+      return null;
+    return array[0];
+  },
+
   map: function (l, fn) {
     return l.map(fn);
   },
 
   join: function (l, str) {
     return l.join(str);
+  },
+
+  reduce: function(list, fn, init) {
+    return list.reduce(fn, init);
+  },
+
+  filter: function(array, pred) {
+    return array.filter(pred);
+  },
+
+  concat: function(a, b) {
+    return a.concat(b);
+  },
+
+  slice: function(l) {
+    var from = arguments[1] !== (void 0) ? arguments[1] : 0;
+    var to = arguments[2] !== (void 0) ? arguments[2] : null;
+    return l.slice(from, to === null ? undefined : to);
   }
 };
 
@@ -170,7 +246,12 @@ var StringWrapper = {
       // The callback receives match, p1, ..., pn
       return cb.apply(null, matches);
     });
+  },
+
+  contains: function(s, substr) {
+    return s.indexOf(substr) != -1;
   }
+
 };
 
 //TODO: implement?
