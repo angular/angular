@@ -644,7 +644,7 @@ gulp.task('test.transpiler.unittest', function(done) {
   runJasmineTests(['tools/transpiler/unittest/**/*.js'], done);
 });
 
-gulp.task('test.dart.angular2_test', shell.task(['pub run test -p firefox'], {'cwd': 'dist/dart/angular2_test'}));
+gulp.task('test.dart.angular2_test', shell.task(['pub run test -p dartium,firefox'], {'cwd': 'dist/dart/angular2_test'}));
 
 // -----------------
 // Pre/Post-test checks
