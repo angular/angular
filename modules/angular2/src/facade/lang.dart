@@ -97,6 +97,8 @@ class StringWrapper {
   static bool contains(String s, String substr) {
     return s.contains(substr);
   }
+
+  static int compare(String a, String b) => a.compareTo(b);
 }
 
 class StringJoiner {

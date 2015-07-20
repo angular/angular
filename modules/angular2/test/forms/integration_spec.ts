@@ -645,13 +645,13 @@ export function main() {
 
              var input = rootTC.query(By.css("input")).nativeElement;
              expect(DOM.classList(input))
-                 .toEqual(['ng-binding', 'ng-untouched', 'ng-pristine', 'ng-invalid']);
+                 .toEqual(['ng-binding', 'ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
@@ -675,13 +675,13 @@ export function main() {
 
              var input = rootTC.query(By.css("input")).nativeElement;
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
@@ -703,13 +703,13 @@ export function main() {
 
              var input = rootTC.query(By.css("input")).nativeElement;
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");

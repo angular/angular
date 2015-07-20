@@ -42,6 +42,7 @@ class MapWrapper {
   static forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }
+  static get(Map map, key) => map[key];
   static int size(Map m) => m.length;
   static void delete(Map m, k) {
     m.remove(k);

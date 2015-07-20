@@ -158,6 +158,16 @@ export class StringWrapper {
   }
 
   static contains(s: string, substr: string): boolean { return s.indexOf(substr) != -1; }
+
+  static compare(a: string, b: string): int {
+    if (a < b) {
+      return -1;
+    } else if (a > b) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 }
 
 export class StringJoiner {
