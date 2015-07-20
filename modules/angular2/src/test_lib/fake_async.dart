@@ -62,8 +62,10 @@ Function fakeAsync(Function fn) {
       });
     },
         zoneSpecification: new ZoneSpecification(
-            handleUncaughtError: (self, parent, zone, error, stackTrace) =>
-                throw error));
+            handleUncaughtError: (self, parent, zone, error, stackTrace){
+//              print(stackTrace);
+                throw error;
+            }));
   };
 }
 

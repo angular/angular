@@ -6,7 +6,8 @@ import {
   Pipes,
   LifecycleEvent,
   Pipe,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  WrappedValue
 } from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
@@ -56,7 +57,7 @@ export class NgFor {
 
   onCheck() {
     var diff = this._pipe.transform(this._ngForOf, null);
-    if (isPresent(diff)) this._applyChanges(diff.wrapped);
+    if (isPresent(diff)) this._applyChanges(WrappedValue.unwrap(diff));
   }
 
   private _applyChanges(changes) {

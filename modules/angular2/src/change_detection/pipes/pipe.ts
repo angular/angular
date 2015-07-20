@@ -15,6 +15,8 @@ export class WrappedValue {
     w.wrapped = value;
     return w;
   }
+
+  static unwrap(value: any): any { return (value instanceof WrappedValue) ? value.wrapped : value; }
 }
 
 var _wrappedValues = [
