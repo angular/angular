@@ -54,8 +54,7 @@ export class DomCompiler extends RenderCompiler {
   }
 
   mergeProtoViewsRecursively(
-      protoViewRefs:
-          List<RenderProtoViewRef | List<any>>): Promise<List<RenderProtoViewMergeMapping>> {
+      protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping> {
     return PromiseWrapper.resolve(pvm.mergeProtoViewsRecursively(protoViewRefs));
   }
 

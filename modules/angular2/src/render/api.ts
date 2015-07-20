@@ -114,19 +114,23 @@ export class ProtoViewDto {
   variableBindings: Map<string, string>;
   type: ViewType;
   textBindings: List<ASTWithSource>;
+  transitiveNgContentCount: number;
 
-  constructor({render, elementBinders, variableBindings, type, textBindings}: {
+  constructor({render, elementBinders, variableBindings, type, textBindings,
+               transitiveNgContentCount}: {
     render?: RenderProtoViewRef,
     elementBinders?: List<ElementBinder>,
     variableBindings?: Map<string, string>,
     type?: ViewType,
-    textBindings?: List<ASTWithSource>
+    textBindings?: List<ASTWithSource>,
+    transitiveNgContentCount?: number
   }) {
     this.render = render;
     this.elementBinders = elementBinders;
     this.variableBindings = variableBindings;
     this.type = type;
     this.textBindings = textBindings;
+    this.transitiveNgContentCount = transitiveNgContentCount;
   }
 }
 
@@ -308,7 +312,9 @@ export class RenderProtoViewMergeMapping {
               // indices for one ProtoView in a consecuitve block.
               public mappedTextIndices: number[],
               // Mapping from view index to app element index
-              public hostElementIndicesByViewIndex: number[]) {}
+              public hostElementIndicesByViewIndex: number[],
+              // Number of contained views by view index
+              public nestedViewCountByViewIndex: number[]) {}
 }
 
 export class RenderCompiler {
@@ -331,10 +337,10 @@ export class RenderCompiler {
    * If the array contains other arrays, they will be merged before processing the parent array.
    * The array must contain an entry for every component and embedded ProtoView of the first entry.
    * @param protoViewRefs List of ProtoViewRefs or nested
-   * @return the merge result for every input array in depth first order.
+   * @return the merge result
    */
   mergeProtoViewsRecursively(
-      protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping[]> {
+      protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping> {
     return null;
   }
 }

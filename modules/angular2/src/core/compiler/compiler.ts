@@ -24,6 +24,7 @@ import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {ElementBinder} from './element_binder';
 
 import * as renderApi from 'angular2/src/render/api';
 
@@ -90,7 +91,7 @@ export class Compiler {
   private _appUrl: string;
   private _render: renderApi.RenderCompiler;
   private _protoViewFactory: ProtoViewFactory;
-  private _unmergedCyclicEmbeddedProtoViews: RecursiveEmbeddedProtoView[] = [];
+  private _protoViewsToBeMerged: AppProtoView[] = [];
 
   /**
    * @private
@@ -146,8 +147,37 @@ export class Compiler {
                 return this._compileNestedProtoViews(hostRenderPv, protoView, componentType);
               });
     }
-    return hostPvPromise.then(
-        hostAppProtoView => this._mergeCyclicEmbeddedProtoViews().then(_ => hostAppProtoView.ref));
+    return hostPvPromise.then(hostAppProtoView =>
+                                  this._mergeUnmergedProtoViews().then(_ => hostAppProtoView.ref));
+  }
+
+  private _mergeUnmergedProtoViews(): Promise<any> {
+    var protoViewsToBeMerged = this._protoViewsToBeMerged;
+    this._protoViewsToBeMerged = [];
+    return PromiseWrapper.all(protoViewsToBeMerged.map((appProtoView) => {
+      return this._render.mergeProtoViewsRecursively(
+                             this._collectMergeRenderProtoViews(appProtoView))
+          .then((mergeResult: renderApi.RenderProtoViewMergeMapping) => {
+            appProtoView.mergeMapping = new AppProtoViewMergeMapping(mergeResult);
+          });
+    }));
+  }
+
+  private _collectMergeRenderProtoViews(
+      appProtoView: AppProtoView): List<renderApi.RenderProtoViewRef | List<any>> {
+    var result = [appProtoView.render];
+    for (var i = 0; i < appProtoView.elementBinders.length; i++) {
+      var binder = appProtoView.elementBinders[i];
+      if (isPresent(binder.nestedProtoView)) {
+        if (binder.hasStaticComponent() ||
+            (binder.hasEmbeddedProtoView() && binder.nestedProtoView.isEmbeddedFragment)) {
+          result.push(this._collectMergeRenderProtoViews(binder.nestedProtoView));
+        } else {
+          result.push(null);
+        }
+      }
+    }
+    return result;
   }
 
   private _compile(componentBinding: DirectiveBinding): Promise<AppProtoView>| AppProtoView {
@@ -207,7 +237,7 @@ export class Compiler {
                                    appProtoView: AppProtoView,
                                    componentType: Type): Promise<AppProtoView> {
     var nestedPVPromises = [];
-    this._loopComponentElementBinders(appProtoView, (parentPv, elementBinder) => {
+    this._loopComponentElementBinders(appProtoView, (parentPv, elementBinder: ElementBinder) => {
       var nestedComponent = elementBinder.componentDirective;
       var elementBinderDone =
           (nestedPv: AppProtoView) => { elementBinder.nestedProtoView = nestedPv; };
@@ -220,31 +250,40 @@ export class Compiler {
     });
     return PromiseWrapper.all(nestedPVPromises)
         .then((_) => {
-          var appProtoViewsToMergeInto = [];
-          var mergeRenderProtoViews = this._collectMergeRenderProtoViewsRecurse(
-              renderProtoView, appProtoView, appProtoViewsToMergeInto);
-          if (isBlank(mergeRenderProtoViews)) {
-            throw new BaseException(`Unconditional component cycle in ${stringify(componentType)}`);
-          }
-          return this._mergeProtoViews(appProtoViewsToMergeInto, mergeRenderProtoViews);
+          this._collectMergableProtoViews(appProtoView, componentType);
+          return appProtoView;
         });
   }
 
-  private _mergeProtoViews(
-      appProtoViewsToMergeInto: AppProtoView[],
-      mergeRenderProtoViews:
-          List<renderApi.RenderProtoViewRef | List<any>>): Promise<AppProtoView> {
-    return this._render.mergeProtoViewsRecursively(mergeRenderProtoViews)
-        .then((mergeResults: List<renderApi.RenderProtoViewMergeMapping>) => {
-          // Note: We don't need to check for nulls here as we filtered them out before!
-          // (in RenderCompiler.mergeProtoViewsRecursively and
-          // _collectMergeRenderProtoViewsRecurse).
-          for (var i = 0; i < mergeResults.length; i++) {
-            appProtoViewsToMergeInto[i].mergeMapping =
-                new AppProtoViewMergeMapping(mergeResults[i]);
-          }
-          return appProtoViewsToMergeInto[0];
-        });
+  private _collectMergableProtoViews(appProtoView: AppProtoView, componentType: Type) {
+    var isRecursive = false;
+    for (var i = 0; i < appProtoView.elementBinders.length; i++) {
+      var binder = appProtoView.elementBinders[i];
+      if (binder.hasStaticComponent()) {
+        if (isBlank(binder.nestedProtoView.isRecursive)) {
+          // cycle via a component. We are in the tail recursion,
+          // so all components should have their isRecursive flag set already.
+          isRecursive = true;
+          break;
+        }
+      } else if (binder.hasEmbeddedProtoView()) {
+        this._collectMergableProtoViews(binder.nestedProtoView, componentType);
+      }
+    }
+    if (isRecursive) {
+      if (appProtoView.isEmbeddedFragment) {
+        throw new BaseException(
+            `<ng-content> is used within the recursive path of ${stringify(componentType)}`);
+      }
+      if (appProtoView.type === renderApi.ViewType.COMPONENT) {
+        throw new BaseException(`Unconditional component cycle in ${stringify(componentType)}`);
+      }
+    }
+    if (appProtoView.type === renderApi.ViewType.EMBEDDED ||
+        appProtoView.type === renderApi.ViewType.HOST) {
+      this._protoViewsToBeMerged.push(appProtoView);
+    }
+    appProtoView.isRecursive = isRecursive;
   }
 
   private _loopComponentElementBinders(appProtoView: AppProtoView, callback: Function) {
@@ -255,48 +294,6 @@ export class Compiler {
         this._loopComponentElementBinders(elementBinder.nestedProtoView, callback);
       }
     });
-  }
-
-  private _collectMergeRenderProtoViewsRecurse(
-      renderProtoView: renderApi.ProtoViewDto, appProtoView: AppProtoView,
-      targetAppProtoViews: AppProtoView[]): List<renderApi.RenderProtoViewRef | List<any>> {
-    targetAppProtoViews.push(appProtoView);
-    var result = [renderProtoView.render];
-    for (var i = 0; i < appProtoView.elementBinders.length; i++) {
-      var binder = appProtoView.elementBinders[i];
-      if (binder.hasStaticComponent()) {
-        if (isBlank(binder.nestedProtoView.mergeMapping)) {
-          // cycle via an embedded ProtoView. store the AppProtoView and ProtoViewDto for later.
-          this._unmergedCyclicEmbeddedProtoViews.push(
-              new RecursiveEmbeddedProtoView(appProtoView, renderProtoView));
-          return null;
-        }
-        result.push(binder.nestedProtoView.mergeMapping.renderProtoViewRef);
-      } else if (binder.hasEmbeddedProtoView()) {
-        result.push(this._collectMergeRenderProtoViewsRecurse(
-            renderProtoView.elementBinders[i].nestedProtoView, binder.nestedProtoView,
-            targetAppProtoViews));
-      }
-    }
-    return result;
-  }
-
-  private _mergeCyclicEmbeddedProtoViews() {
-    var pvs = this._unmergedCyclicEmbeddedProtoViews;
-    this._unmergedCyclicEmbeddedProtoViews = [];
-    var promises = pvs.map(entry => {
-      var appProtoView = entry.appProtoView;
-      var mergeRenderProtoViews = [entry.renderProtoView.render];
-      appProtoView.elementBinders.forEach((binder) => {
-        if (binder.hasStaticComponent()) {
-          mergeRenderProtoViews.push(binder.nestedProtoView.mergeMapping.renderProtoViewRef);
-        } else if (binder.hasEmbeddedProtoView()) {
-          mergeRenderProtoViews.push(null);
-        }
-      });
-      return this._mergeProtoViews([appProtoView], mergeRenderProtoViews);
-    });
-    return PromiseWrapper.all(promises);
   }
 
   private _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {
@@ -355,8 +352,4 @@ export class Compiler {
           `Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
     }
   }
-}
-
-class RecursiveEmbeddedProtoView {
-  constructor(public appProtoView: AppProtoView, public renderProtoView: renderApi.ProtoViewDto) {}
 }

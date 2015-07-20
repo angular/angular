@@ -29,6 +29,7 @@ export class ProtoViewBuilder {
   variableBindings: Map<string, string> = new Map();
   elements: List<ElementBinderBuilder> = [];
   rootTextBindings: Map<Node, ASTWithSource> = new Map();
+  ngContentCount: number = 0;
 
   constructor(public rootElement, public type: api.ViewType,
               public useNativeShadowDom: boolean = false) {}
@@ -57,12 +58,15 @@ export class ProtoViewBuilder {
     this.rootTextBindings.set(textNode, expression);
   }
 
+  bindNgContent() { this.ngContentCount++; }
+
   build(): api.ProtoViewDto {
     var domElementBinders = [];
 
     var apiElementBinders = [];
     var textNodeExpressions = [];
     var rootTextNodeIndices = [];
+    var transitiveNgContentCount = this.ngContentCount;
     queryBoundTextNodeIndices(DOM.content(this.rootElement), this.rootTextBindings,
                               (node, nodeIndex, expression) => {
                                 textNodeExpressions.push(expression);
@@ -85,6 +89,9 @@ export class ProtoViewBuilder {
         });
       });
       var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
+      if (isPresent(nestedProtoView)) {
+        transitiveNgContentCount += nestedProtoView.transitiveNgContentCount;
+      }
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
       var textNodeIndices = [];
       queryBoundTextNodeIndices(ebb.element, ebb.textBindings, (node, nodeIndex, expression) => {
@@ -116,12 +123,12 @@ export class ProtoViewBuilder {
     var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
     return new api.ProtoViewDto({
       render: new DomProtoViewRef(DomProtoView.create(this.type, this.rootElement, [rootNodeCount],
-                                                      rootTextNodeIndices, domElementBinders, null,
-                                                      null, null)),
+                                                      rootTextNodeIndices, domElementBinders)),
       type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings,
-      textBindings: textNodeExpressions
+      textBindings: textNodeExpressions,
+      transitiveNgContentCount: transitiveNgContentCount
     });
   }
 }

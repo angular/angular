@@ -32,6 +32,7 @@ export class AppProtoViewMergeMapping {
   renderTextIndices: number[];
   nestedViewIndicesByElementIndex: number[];
   hostElementIndicesByViewIndex: number[];
+  nestedViewCountByViewIndex: number[];
   constructor(renderProtoViewMergeMapping: renderApi.RenderProtoViewMergeMapping) {
     this.renderProtoViewRef = renderProtoViewMergeMapping.mergedProtoViewRef;
     this.renderFragmentCount = renderProtoViewMergeMapping.fragmentCount;
@@ -42,11 +43,8 @@ export class AppProtoViewMergeMapping {
     this.hostElementIndicesByViewIndex = renderProtoViewMergeMapping.hostElementIndicesByViewIndex;
     this.nestedViewIndicesByElementIndex =
         inverseIndexMapping(this.hostElementIndicesByViewIndex, this.renderElementIndices.length);
+    this.nestedViewCountByViewIndex = renderProtoViewMergeMapping.nestedViewCountByViewIndex;
   }
-
-  get viewCount() { return this.hostElementIndicesByViewIndex.length; }
-
-  get elementCount() { return this.renderElementIndices.length; }
 }
 
 function inverseIndexMapping(input: number[], resultLength: number): number[] {
@@ -215,7 +213,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   dispatchRenderEvent(renderElementIndex: number, eventName: string,
                       locals: Map<string, any>): boolean {
     var elementRef =
-        this.elementRefs[this.proto.mergeMapping.renderInverseElementIndices[renderElementIndex]];
+        this.elementRefs[this.mainMergeMapping.renderInverseElementIndices[renderElementIndex]];
     var view = internalView(elementRef.parentView);
     return view.dispatchEvent(elementRef.boundElementIndex, eventName, locals);
   }
@@ -258,7 +256,11 @@ export class AppProtoView {
   mergeMapping: AppProtoViewMergeMapping;
   ref: ProtoViewRef;
 
-  constructor(public type: renderApi.ViewType, public protoChangeDetector: ProtoChangeDetector,
+  isRecursive: boolean = null;
+
+  constructor(public type: renderApi.ViewType, public isEmbeddedFragment: boolean,
+              public render: renderApi.RenderProtoViewRef,
+              public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>,
               public variableLocations: Map<string, number>, public textBindingCount: number) {
     this.ref = new ProtoViewRef(this);

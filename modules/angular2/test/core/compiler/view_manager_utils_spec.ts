@@ -289,13 +289,32 @@ function calcHostElementIndicesByViewIndex(pv: AppProtoView, elementOffset = 0,
   return target;
 }
 
+function countNestedProtoViews(pv: AppProtoView, target: number[] = null): number[] {
+  if (isBlank(target)) {
+    target = [];
+  }
+  target.push(null);
+  var resultIndex = target.length - 1;
+  var count = 0;
+  for (var binderIdx = 0; binderIdx < pv.elementBinders.length; binderIdx++) {
+    var binder = pv.elementBinders[binderIdx];
+    if (isPresent(binder.nestedProtoView)) {
+      var nextResultIndex = target.length;
+      countNestedProtoViews(binder.nestedProtoView, target);
+      count += target[nextResultIndex] + 1;
+    }
+  }
+  target[resultIndex] = count;
+  return target;
+}
+
 function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
   if (isBlank(binders)) {
     binders = [];
   }
   var protoChangeDetector = <any>new SpyProtoChangeDetector();
   protoChangeDetector.spy('instantiate').andReturn(new SpyChangeDetector());
-  var res = new AppProtoView(type, protoChangeDetector, null, null, 0);
+  var res = new AppProtoView(type, null, null, protoChangeDetector, null, null, 0);
   res.elementBinders = binders;
   var mappedElementIndices = ListWrapper.createFixedSize(countNestedElementBinders(res));
   for (var i = 0; i < binders.length; i++) {
@@ -304,9 +323,11 @@ function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
     binder.protoElementInjector.index = i;
   }
   var hostElementIndicesByViewIndex = calcHostElementIndicesByViewIndex(res);
-  res.mergeMapping = new AppProtoViewMergeMapping(
-      new RenderProtoViewMergeMapping(null, hostElementIndicesByViewIndex.length,
-                                      mappedElementIndices, [], hostElementIndicesByViewIndex));
+  if (type === ViewType.EMBEDDED || type === ViewType.HOST) {
+    res.mergeMapping = new AppProtoViewMergeMapping(new RenderProtoViewMergeMapping(
+        null, hostElementIndicesByViewIndex.length, mappedElementIndices, [],
+        hostElementIndicesByViewIndex, countNestedProtoViews(res)));
+  }
   return res;
 }
 

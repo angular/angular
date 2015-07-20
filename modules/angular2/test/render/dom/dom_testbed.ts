@@ -82,14 +82,13 @@ export class DomTestbed {
     return PromiseWrapper.all(promises);
   }
 
-  merge(protoViews:
-            List<ProtoViewDto | RenderProtoViewRef>): Promise<RenderProtoViewMergeMapping[]> {
+  merge(protoViews: List<ProtoViewDto | RenderProtoViewRef>): Promise<RenderProtoViewMergeMapping> {
     return this.compiler.mergeProtoViewsRecursively(collectMergeRenderProtoViewsRecurse(
         <ProtoViewDto>protoViews[0], ListWrapper.slice(protoViews, 1)));
   }
 
   compileAndMerge(host: DirectiveMetadata,
-                  componentViews: ViewDefinition[]): Promise<RenderProtoViewMergeMapping[]> {
+                  componentViews: ViewDefinition[]): Promise<RenderProtoViewMergeMapping> {
     return this.compile(host, componentViews).then(protoViewDtos => this.merge(protoViewDtos));
   }
 

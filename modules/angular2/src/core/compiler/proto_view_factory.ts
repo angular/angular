@@ -254,9 +254,12 @@ function _createAppProtoView(
     renderProtoView: renderApi.ProtoViewDto, protoChangeDetector: ProtoChangeDetector,
     variableBindings: Map<string, string>, allDirectives: List<DirectiveBinding>): AppProtoView {
   var elementBinders = renderProtoView.elementBinders;
-  var protoView = new AppProtoView(renderProtoView.type, protoChangeDetector, variableBindings,
-                                   createVariableLocations(elementBinders),
-                                   renderProtoView.textBindings.length);
+  // Embedded ProtoViews that contain `<ng-content>` will be merged into their parents and use
+  // a RenderFragmentRef. I.e. renderProtoView.transitiveNgContentCount > 0.
+  var protoView = new AppProtoView(
+      renderProtoView.type, renderProtoView.transitiveNgContentCount > 0, renderProtoView.render,
+      protoChangeDetector, variableBindings, createVariableLocations(elementBinders),
+      renderProtoView.textBindings.length);
   _createElementBinders(protoView, elementBinders, allDirectives);
   _bindDirectiveEvents(protoView, elementBinders);
 
