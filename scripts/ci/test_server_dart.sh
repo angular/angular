@@ -11,8 +11,17 @@ cd $SCRIPT_DIR/../..
 webdriverServerPid=$!
 ps -ef | grep webdriver-manager
 
-./node_modules/.bin/gulp serve.js.dart2js&
-serverPid=$!
+# Serving pre-compiled dart JS takes an extra 15m.
+# So we do this only for post-commit testing.
+# Pull requests test with Dartium and pub serve
+if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+  ./node_modules/.bin/gulp build/pubbuild.dart
+  ./node_modules/.bin/gulp serve.js.dart2js&
+  serverPid=$!
+else
+  ./node_modules/.bin/gulp serve.dart&
+  serverPid=$!
+fi
 
 function killAllServers () {
   kill $serverPid

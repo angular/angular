@@ -9382,6 +9382,9 @@
     "node-uuid": {
       "version": "1.4.3"
     },
+    "on-headers": {
+      "version": "1.0.0"
+    },
     "parse5": {
       "version": "1.3.2"
     },
@@ -9532,6 +9535,9 @@
           "version": "2.6.0"
         }
       }
+    },
+    "proxy-middleware": {
+      "version": "0.13.0"
     },
     "q": {
       "version": "1.3.0"
