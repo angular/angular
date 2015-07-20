@@ -28,6 +28,8 @@ export const PUBLIC = 1;
 export const PRIVATE = 2;
 export const PUBLIC_AND_PRIVATE = 3;
 
+const INJECTOR_KEY = Key.get(Injector);
+
 export interface ProtoInjectorStrategy {
   getBindingAtIndex(index: number): ResolvedBinding;
   createInjectorStrategy(inj: Injector): InjectorStrategy;
@@ -723,7 +725,6 @@ export class Injector {
   }
 }
 
-var INJECTOR_KEY = Key.get(Injector);
 
 
 function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
