@@ -27,7 +27,6 @@ class ObservableListDiffResult implements IIterableChangesResult {
   ObservableListDiffResult(this._collection, this._listChanges);
 
   void forEachAddedItem(Function fn) {
-    print(_listChanges);
     _listChanges.forEach((r) {
       if (r.addedCount > 0) {
         for (var i = 0; i < r.addedCount; ++i) {
@@ -61,7 +60,7 @@ class ObservableListDiffResult implements IIterableChangesResult {
           final currentIndex = r.index + i;
           fn(new ChangeRecord(r.removed[i], currentIndex + shift, null));
         }
-        shift += r.removed.length;
+//        shift += r.removed.length;
       }
     });
   }

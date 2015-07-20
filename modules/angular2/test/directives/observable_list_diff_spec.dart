@@ -132,14 +132,14 @@ main() {
         list.add(2);
         list.add(1);
 
-
         // [#<ListChangeRecord index: 0, removed: [], addedCount: 1>, #<ListChangeRecord index: 2, removed: [2], addedCount: 0>] Broken
         flushMicrotasks();
 
         var diff = pipe.transform(list);
         expect(diff.toString()).toEqual(iterableChangesAsString(
-          additions: ['2[null->0]','1[null->1]'],
-          removals: ['1[0->null]','2[1->null]']
+          additions: ['2[null->0]'],
+//          moves: ['1[0->1]'],
+          removals: ['2[1->null]']
         ));
       }));
 
