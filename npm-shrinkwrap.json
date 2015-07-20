@@ -3355,7 +3355,7 @@
     },
     "clang-format": {
       "version": "1.0.28",
-      "from": "clang-format@1.0.28",
+      "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.28.tgz",
       "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.28.tgz",
       "dependencies": {
         "resolve": {
@@ -14506,6 +14506,11 @@
       "from": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.3.tgz",
       "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.3.tgz"
     },
+    "on-headers": {
+      "version": "1.0.0",
+      "from": "on-headers@*",
+      "resolved": "https://registry.npmjs.org/on-headers/-/on-headers-1.0.0.tgz"
+    },
     "parse5": {
       "version": "1.3.2",
       "from": "https://registry.npmjs.org/parse5/-/parse5-1.3.2.tgz",
@@ -14742,6 +14747,11 @@
           "resolved": "https://registry.npmjs.org/accessibility-developer-tools/-/accessibility-developer-tools-2.6.0.tgz"
         }
       }
+    },
+    "proxy-middleware": {
+      "version": "0.13.0",
+      "from": "proxy-middleware@*",
+      "resolved": "https://registry.npmjs.org/proxy-middleware/-/proxy-middleware-0.13.0.tgz"
     },
     "q": {
       "version": "1.3.0",
@@ -15390,29 +15400,29 @@
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
-          "from": "source-map@>=0.4.2 <0.5.0",
+          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
           "dependencies": {
             "amdefine": {
               "version": "1.0.0",
-              "from": "amdefine@>=0.0.4",
+              "from": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
               "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
             }
           }
         },
         "source-map-support": {
           "version": "0.3.2",
-          "from": "source-map-support@>=0.3.1 <0.4.0",
+          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.2.tgz",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.2.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "source-map@0.1.32",
+              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "dependencies": {
                 "amdefine": {
                   "version": "1.0.0",
-                  "from": "amdefine@>=0.0.4",
+                  "from": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
                   "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
                 }
               }
@@ -15421,7 +15431,7 @@
         },
         "typescript": {
           "version": "1.5.3",
-          "from": "microsoft/TypeScript#release-1.5",
+          "from": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6",
           "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
