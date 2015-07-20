@@ -26,8 +26,8 @@ export class AppViewManagerUtils {
     var renderFragments = renderViewWithFragments.fragmentRefs;
     var renderView = renderViewWithFragments.viewRef;
 
-    var elementCount = mergedParentViewProto.mergeMapping.elementCount;
-    var viewCount = mergedParentViewProto.mergeMapping.viewCount;
+    var elementCount = mergedParentViewProto.mergeMapping.renderElementIndices.length;
+    var viewCount = mergedParentViewProto.mergeMapping.nestedViewCountByViewIndex[0] + 1;
     var elementRefs: ElementRef[] = ListWrapper.createFixedSize(elementCount);
     var viewContainers = ListWrapper.createFixedSize(elementCount);
     var preBuiltObjects: eli.PreBuiltObjects[] = ListWrapper.createFixedSize(elementCount);
@@ -175,13 +175,13 @@ export class AppViewManagerUtils {
   _hydrateView(initView: viewModule.AppView, imperativelyCreatedInjector: Injector,
                hostElementInjector: eli.ElementInjector, context: Object, parentLocals: Locals) {
     var viewIdx = initView.viewOffset;
-    var endViewOffset = viewIdx + initView.proto.mergeMapping.viewCount;
-    while (viewIdx < endViewOffset) {
+    var endViewOffset = viewIdx + initView.mainMergeMapping.nestedViewCountByViewIndex[viewIdx];
+    while (viewIdx <= endViewOffset) {
       var currView = initView.views[viewIdx];
       var currProtoView = currView.proto;
       if (currView !== initView && currView.proto.type === ViewType.EMBEDDED) {
         // Don't hydrate components of embedded fragment views.
-        viewIdx += currProtoView.mergeMapping.viewCount;
+        viewIdx += initView.mainMergeMapping.nestedViewCountByViewIndex[viewIdx] + 1;
       } else {
         if (currView !== initView) {
           // hydrate a nested component view
@@ -263,9 +263,9 @@ export class AppViewManagerUtils {
   }
 
   dehydrateView(initView: viewModule.AppView) {
-    for (var viewIdx = initView.viewOffset,
-             endViewOffset = viewIdx + initView.proto.mergeMapping.viewCount;
-         viewIdx < endViewOffset; viewIdx++) {
+    var endViewOffset = initView.viewOffset +
+                        initView.mainMergeMapping.nestedViewCountByViewIndex[initView.viewOffset];
+    for (var viewIdx = initView.viewOffset; viewIdx <= endViewOffset; viewIdx++) {
       var currView = initView.views[viewIdx];
       if (currView.hydrated()) {
         if (isPresent(currView.locals)) {

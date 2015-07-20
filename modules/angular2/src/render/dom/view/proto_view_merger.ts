@@ -1,5 +1,6 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent, isBlank, BaseException, isArray} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder} from './element_binder';
@@ -11,71 +12,25 @@ import {
   cloneAndQueryProtoView,
   queryBoundElements,
   queryBoundTextNodeIndices,
-  NG_SHADOW_ROOT_ELEMENT_NAME,
-  isElementWithTag
+  NG_SHADOW_ROOT_ELEMENT_NAME
 } from '../util';
-import {CssSelector} from '../compiler/selector';
-
-const NOT_MATCHABLE_SELECTOR = '_not-matchable_';
 
 export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRef | List<any>>):
-    RenderProtoViewMergeMapping[] {
-  var target = [];
-  _mergeProtoViewsRecursively(protoViewRefs, target);
-  return target;
-}
-
-function _mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRef | List<any>>,
-                                     target: RenderProtoViewMergeMapping[]): RenderProtoViewRef {
-  var targetIndex = target.length;
-  target.push(null);
-
-  var resolvedProtoViewRefs = protoViewRefs.map((entry) => {
-    if (isArray(entry)) {
-      return _mergeProtoViewsRecursively(<List<any>>entry, target);
-    } else {
-      return entry;
-    }
-  });
-  var mapping = mergeProtoViews(resolvedProtoViewRefs);
-  target[targetIndex] = mapping;
-  return mapping.mergedProtoViewRef;
-}
-
-export function mergeProtoViews(protoViewRefs: RenderProtoViewRef[]): RenderProtoViewMergeMapping {
-  var hostProtoView = resolveInternalDomProtoView(protoViewRefs[0]);
-
-  var mergeableProtoViews: DomProtoView[] = [];
-  var hostElementIndices: number[] = [];
-
-  mergeableProtoViews.push(hostProtoView);
-  var protoViewIdx = 1;
-  for (var i = 0; i < hostProtoView.elementBinders.length; i++) {
-    var binder = hostProtoView.elementBinders[i];
-    if (binder.hasNestedProtoView) {
-      var nestedProtoViewRef = protoViewRefs[protoViewIdx++];
-      if (isPresent(nestedProtoViewRef)) {
-        mergeableProtoViews.push(resolveInternalDomProtoView(nestedProtoViewRef));
-        hostElementIndices.push(i);
-      }
-    }
-  }
-  return _mergeProtoViews(mergeableProtoViews, hostElementIndices);
-}
-
-
-function _mergeProtoViews(mergeableProtoViews: DomProtoView[], hostElementIndices: number[]):
     RenderProtoViewMergeMapping {
-  var clonedProtoViews: ClonedProtoView[] =
-      mergeableProtoViews.map(domProtoView => cloneAndQueryProtoView(domProtoView, false));
-  var hostProtoView: ClonedProtoView = clonedProtoViews[0];
+  // clone
+  var clonedProtoViews = [];
+  var hostViewAndBinderIndices: number[][] = [];
+  cloneProtoViews(protoViewRefs, clonedProtoViews, hostViewAndBinderIndices);
+  var mainProtoView: ClonedProtoView = clonedProtoViews[0];
 
   // modify the DOM
-  mergeDom(clonedProtoViews, hostElementIndices);
+  mergeEmbeddedPvsIntoComponentOrRootPv(clonedProtoViews, hostViewAndBinderIndices);
+  var fragments = [];
+  mergeComponents(clonedProtoViews, hostViewAndBinderIndices, fragments);
 
   // create a new root element with the changed fragments and elements
-  var rootElement = createRootElementFromFragments(hostProtoView.fragments);
-  var fragmentsRootNodeCount = hostProtoView.fragments.map(fragment => fragment.length);
+  var rootElement = createRootElementFromFragments(fragments);
+  var fragmentsRootNodeCount = fragments.map(fragment => fragment.length);
   var rootNode = DOM.content(rootElement);
 
   // read out the new element / text node / ElementBinder order
@@ -90,16 +45,45 @@ function _mergeProtoViews(mergeableProtoViews: DomProtoView[], hostElementIndice
   // create element / text index mappings
   var mappedElementIndices = calcMappedElementIndices(clonedProtoViews, mergedBoundElements);
   var mappedTextIndices = calcMappedTextIndices(clonedProtoViews, mergedBoundTextIndices);
-  var hostElementIndicesByViewIndex =
-      calcHostElementIndicesByViewIndex(clonedProtoViews, hostElementIndices);
 
   // create result
-  var mergedProtoView = DomProtoView.create(
-      hostProtoView.original.type, rootElement, fragmentsRootNodeCount, rootTextNodeIndices,
-      mergedElementBinders, mappedElementIndices, mappedTextIndices, hostElementIndicesByViewIndex);
-  return new RenderProtoViewMergeMapping(new DomProtoViewRef(mergedProtoView),
-                                         fragmentsRootNodeCount.length, mappedElementIndices,
-                                         mappedTextIndices, hostElementIndicesByViewIndex);
+  var hostElementIndicesByViewIndex =
+      calcHostElementIndicesByViewIndex(clonedProtoViews, hostViewAndBinderIndices);
+  var nestedViewCounts = calcNestedViewCounts(hostViewAndBinderIndices);
+  var mergedProtoView =
+      DomProtoView.create(mainProtoView.original.type, rootElement, fragmentsRootNodeCount,
+                          rootTextNodeIndices, mergedElementBinders);
+  return new RenderProtoViewMergeMapping(
+      new DomProtoViewRef(mergedProtoView), fragmentsRootNodeCount.length, mappedElementIndices,
+      mappedTextIndices, hostElementIndicesByViewIndex, nestedViewCounts);
+}
+
+function cloneProtoViews(protoViewRefs: List<RenderProtoViewRef | List<any>>,
+                         targetClonedProtoViews: ClonedProtoView[],
+                         targetHostViewAndBinderIndices: number[][]) {
+  var hostProtoView = resolveInternalDomProtoView(protoViewRefs[0]);
+  var hostPvIdx = targetClonedProtoViews.length;
+  targetClonedProtoViews.push(cloneAndQueryProtoView(hostProtoView, false));
+  if (targetHostViewAndBinderIndices.length === 0) {
+    targetHostViewAndBinderIndices.push([null, null]);
+  }
+  var protoViewIdx = 1;
+  for (var i = 0; i < hostProtoView.elementBinders.length; i++) {
+    var binder = hostProtoView.elementBinders[i];
+    if (binder.hasNestedProtoView) {
+      var nestedEntry = protoViewRefs[protoViewIdx++];
+      if (isPresent(nestedEntry)) {
+        targetHostViewAndBinderIndices.push([hostPvIdx, i]);
+        if (isArray(nestedEntry)) {
+          cloneProtoViews(<any[]>nestedEntry, targetClonedProtoViews,
+                          targetHostViewAndBinderIndices);
+        } else {
+          targetClonedProtoViews.push(
+              cloneAndQueryProtoView(resolveInternalDomProtoView(nestedEntry), false));
+        }
+      }
+    }
+  }
 }
 
 function indexBoundTextNodes(mergableProtoViews: ClonedProtoView[]): Map<Node, any> {
@@ -112,42 +96,56 @@ function indexBoundTextNodes(mergableProtoViews: ClonedProtoView[]): Map<Node, a
   return boundTextNodeMap;
 }
 
-function mergeDom(clonedProtoViews: ClonedProtoView[], hostElementIndices: number[]) {
-  var nestedProtoViewByHostElement: Map<Element, ClonedProtoView> =
-      indexProtoViewsByHostElement(clonedProtoViews, hostElementIndices);
-
-  var hostProtoView = clonedProtoViews[0];
-  var mergableProtoViewIdx = 1;
-  hostElementIndices.forEach((boundElementIndex) => {
-    var binder = hostProtoView.original.elementBinders[boundElementIndex];
-    if (binder.hasNestedProtoView) {
-      var mergableNestedProtoView: ClonedProtoView = clonedProtoViews[mergableProtoViewIdx++];
-      if (mergableNestedProtoView.original.type === ViewType.COMPONENT) {
-        mergeComponentDom(hostProtoView, boundElementIndex, mergableNestedProtoView,
-                          nestedProtoViewByHostElement);
-      } else {
-        mergeEmbeddedDom(hostProtoView, mergableNestedProtoView);
-      }
+function mergeEmbeddedPvsIntoComponentOrRootPv(clonedProtoViews: ClonedProtoView[],
+                                               hostViewAndBinderIndices: number[][]) {
+  var nearestHostComponentOrRootPvIndices =
+      calcNearestHostComponentOrRootPvIndices(clonedProtoViews, hostViewAndBinderIndices);
+  for (var viewIdx = 1; viewIdx < clonedProtoViews.length; viewIdx++) {
+    var clonedProtoView = clonedProtoViews[viewIdx];
+    if (clonedProtoView.original.type === ViewType.EMBEDDED) {
+      var hostComponentIdx = nearestHostComponentOrRootPvIndices[viewIdx];
+      var hostPv = clonedProtoViews[hostComponentIdx];
+      clonedProtoView.fragments.forEach((fragment) => hostPv.fragments.push(fragment));
     }
-  });
+  }
 }
 
-function indexProtoViewsByHostElement(mergableProtoViews: ClonedProtoView[],
-                                      hostElementIndices: number[]): Map<Element, ClonedProtoView> {
-  var hostProtoView = mergableProtoViews[0];
-  var mergableProtoViewIdx = 1;
-  var nestedProtoViewByHostElement: Map<Element, ClonedProtoView> = new Map();
-  hostElementIndices.forEach((hostElementIndex) => {
-    nestedProtoViewByHostElement.set(hostProtoView.boundElements[hostElementIndex],
-                                     mergableProtoViews[mergableProtoViewIdx++]);
-  });
-  return nestedProtoViewByHostElement;
+function calcNearestHostComponentOrRootPvIndices(clonedProtoViews: ClonedProtoView[],
+                                                 hostViewAndBinderIndices: number[][]): number[] {
+  var nearestHostComponentOrRootPvIndices = ListWrapper.createFixedSize(clonedProtoViews.length);
+  nearestHostComponentOrRootPvIndices[0] = null;
+  for (var viewIdx = 1; viewIdx < hostViewAndBinderIndices.length; viewIdx++) {
+    var hostViewIdx = hostViewAndBinderIndices[viewIdx][0];
+    var hostProtoView = clonedProtoViews[hostViewIdx];
+    if (hostViewIdx === 0 || hostProtoView.original.type === ViewType.COMPONENT) {
+      nearestHostComponentOrRootPvIndices[viewIdx] = hostViewIdx;
+    } else {
+      nearestHostComponentOrRootPvIndices[viewIdx] =
+          nearestHostComponentOrRootPvIndices[hostViewIdx];
+    }
+  }
+  return nearestHostComponentOrRootPvIndices;
 }
 
-function mergeComponentDom(hostProtoView: ClonedProtoView, boundElementIndex: number,
-                           nestedProtoView: ClonedProtoView,
-                           nestedProtoViewByHostElement: Map<Element, ClonedProtoView>) {
-  var hostElement = hostProtoView.boundElements[boundElementIndex];
+function mergeComponents(clonedProtoViews: ClonedProtoView[], hostViewAndBinderIndices: number[][],
+                         targetFragments: Node[][]) {
+  var hostProtoView = clonedProtoViews[0];
+  hostProtoView.fragments.forEach((fragment) => targetFragments.push(fragment));
+
+  for (var viewIdx = 1; viewIdx < clonedProtoViews.length; viewIdx++) {
+    var hostViewIdx = hostViewAndBinderIndices[viewIdx][0];
+    var hostBinderIdx = hostViewAndBinderIndices[viewIdx][1];
+    var hostProtoView = clonedProtoViews[hostViewIdx];
+    var clonedProtoView = clonedProtoViews[viewIdx];
+    if (clonedProtoView.original.type === ViewType.COMPONENT) {
+      mergeComponent(hostProtoView, hostBinderIdx, clonedProtoView, targetFragments);
+    }
+  }
+}
+
+function mergeComponent(hostProtoView: ClonedProtoView, binderIdx: number,
+                        nestedProtoView: ClonedProtoView, targetFragments: Node[][]) {
+  var hostElement = hostProtoView.boundElements[binderIdx];
 
   // We wrap the fragments into elements so that we can expand <ng-content>
   // even for root nodes in the fragment without special casing them.
@@ -163,15 +161,15 @@ function mergeComponentDom(hostProtoView: ClonedProtoView, boundElementIndex: nu
 
   // unwrap the fragment elements into arrays of nodes after projecting
   var fragments = extractFragmentNodesFromElements(fragmentElements);
-  appendComponentNodesToHost(hostProtoView, boundElementIndex, fragments[0]);
+  appendComponentNodesToHost(hostProtoView, binderIdx, fragments[0]);
 
   for (var i = 1; i < fragments.length; i++) {
-    hostProtoView.fragments.push(fragments[i]);
+    targetFragments.push(fragments[i]);
   }
 }
 
 function mapFragmentsIntoElements(fragments: Node[][]): Element[] {
-  return fragments.map((fragment) => {
+  return fragments.map(fragment => {
     var fragmentElement = DOM.createTemplate('');
     fragment.forEach(node => DOM.appendChild(DOM.content(fragmentElement), node));
     return fragmentElement;
@@ -195,10 +193,10 @@ function findContentElements(fragmentElements: Element[]): Element[] {
   return sortContentElements(contentElements);
 }
 
-function appendComponentNodesToHost(hostProtoView: ClonedProtoView, boundElementIndex: number,
+function appendComponentNodesToHost(hostProtoView: ClonedProtoView, binderIdx: number,
                                     componentRootNodes: Node[]) {
-  var hostElement = hostProtoView.boundElements[boundElementIndex];
-  var binder = hostProtoView.original.elementBinders[boundElementIndex];
+  var hostElement = hostProtoView.boundElements[binderIdx];
+  var binder = hostProtoView.original.elementBinders[binderIdx];
   if (binder.hasNativeShadowRoot) {
     var shadowRootWrapper = DOM.createElement(NG_SHADOW_ROOT_ELEMENT_NAME);
     for (var i = 0; i < componentRootNodes.length; i++) {
@@ -218,75 +216,28 @@ function appendComponentNodesToHost(hostProtoView: ClonedProtoView, boundElement
   }
 }
 
-function mergeEmbeddedDom(parentProtoView: ClonedProtoView, nestedProtoView: ClonedProtoView) {
-  nestedProtoView.fragments.forEach((fragment) => parentProtoView.fragments.push(fragment));
-}
-
 function projectMatchingNodes(selector: string, contentElement: Element, nodes: Node[]): Node[] {
   var remaining = [];
-  var removeContentElement = true;
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i];
+    var matches = false;
     if (isWildcard(selector)) {
+      matches = true;
+    } else if (DOM.isElementNode(node) && DOM.elementMatches(node, selector)) {
+      matches = true;
+    }
+    if (matches) {
       DOM.insertBefore(contentElement, node);
-    } else if (DOM.isElementNode(node)) {
-      if (isElementWithTag(node, NG_CONTENT_ELEMENT_NAME)) {
-        // keep the projected content as other <ng-content> elements
-        // might want to use it as well.
-        remaining.push(node);
-        DOM.setAttribute(contentElement, 'select',
-                         mergeSelectors(selector, DOM.getAttribute(node, 'select')));
-        removeContentElement = false;
-      } else {
-        if (DOM.elementMatches(node, selector)) {
-          DOM.insertBefore(contentElement, node);
-        } else {
-          remaining.push(node);
-        }
-      }
     } else {
-      // non projected text nodes
       remaining.push(node);
     }
   }
-  if (removeContentElement) {
-    DOM.remove(contentElement);
-  }
+  DOM.remove(contentElement);
   return remaining;
 }
 
 function isWildcard(selector): boolean {
   return isBlank(selector) || selector.length === 0 || selector == '*';
-}
-
-export function mergeSelectors(selector1: string, selector2: string): string {
-  if (isWildcard(selector1)) {
-    return isBlank(selector2) ? '' : selector2;
-  } else if (isWildcard(selector2)) {
-    return isBlank(selector1) ? '' : selector1;
-  } else {
-    var sels1 = CssSelector.parse(selector1);
-    var sels2 = CssSelector.parse(selector2);
-    if (sels1.length > 1 || sels2.length > 1) {
-      throw new BaseException('multiple selectors are not supported in ng-content');
-    }
-    var sel1 = sels1[0];
-    var sel2 = sels2[0];
-    if (sel1.notSelectors.length > 0 || sel2.notSelectors.length > 0) {
-      throw new BaseException(':not selector is not supported in ng-content');
-    }
-    var merged = new CssSelector();
-    if (isBlank(sel1.element)) {
-      merged.setElement(sel2.element);
-    } else if (isBlank(sel2.element)) {
-      merged.setElement(sel1.element);
-    } else {
-      return NOT_MATCHABLE_SELECTOR;
-    }
-    merged.attrs = sel1.attrs.concat(sel2.attrs);
-    merged.classNames = sel1.classNames.concat(sel2.classNames);
-    return merged.toString();
-  }
 }
 
 // we need to sort content elements as they can originate from
@@ -394,12 +345,8 @@ function calcMappedElementIndices(clonedProtoViews: ClonedProtoView[],
   var mergedBoundElementIndices: Map<Element, number> = indexArray(mergedBoundElements);
   var mappedElementIndices = [];
   clonedProtoViews.forEach((clonedProtoView) => {
-    clonedProtoView.original.mappedElementIndices.forEach((boundElementIndex) => {
-      var mappedElementIndex = null;
-      if (isPresent(boundElementIndex)) {
-        var boundElement = clonedProtoView.boundElements[boundElementIndex];
-        mappedElementIndex = mergedBoundElementIndices.get(boundElement);
-      }
+    clonedProtoView.boundElements.forEach((boundElement) => {
+      var mappedElementIndex = mergedBoundElementIndices.get(boundElement);
       mappedElementIndices.push(mappedElementIndex);
     });
   });
@@ -410,12 +357,8 @@ function calcMappedTextIndices(clonedProtoViews: ClonedProtoView[],
                                mergedBoundTextIndices: Map<Node, number>): number[] {
   var mappedTextIndices = [];
   clonedProtoViews.forEach((clonedProtoView) => {
-    clonedProtoView.original.mappedTextIndices.forEach((textNodeIndex) => {
-      var mappedTextIndex = null;
-      if (isPresent(textNodeIndex)) {
-        var textNode = clonedProtoView.boundTextNodes[textNodeIndex];
-        mappedTextIndex = mergedBoundTextIndices.get(textNode);
-      }
+    clonedProtoView.boundTextNodes.forEach((textNode) => {
+      var mappedTextIndex = mergedBoundTextIndices.get(textNode);
       mappedTextIndices.push(mappedTextIndex);
     });
   });
@@ -423,23 +366,30 @@ function calcMappedTextIndices(clonedProtoViews: ClonedProtoView[],
 }
 
 function calcHostElementIndicesByViewIndex(clonedProtoViews: ClonedProtoView[],
-                                           hostElementIndices: number[]): number[] {
-  var mergedElementCount = 0;
-  var hostElementIndicesByViewIndex = [];
-  for (var i = 0; i < clonedProtoViews.length; i++) {
-    var clonedProtoView = clonedProtoViews[i];
-    clonedProtoView.original.hostElementIndicesByViewIndex.forEach((hostElementIndex) => {
-      var mappedHostElementIndex;
-      if (isBlank(hostElementIndex)) {
-        mappedHostElementIndex = i > 0 ? hostElementIndices[i - 1] : null;
-      } else {
-        mappedHostElementIndex = hostElementIndex + mergedElementCount;
-      }
-      hostElementIndicesByViewIndex.push(mappedHostElementIndex);
-    });
-    mergedElementCount += clonedProtoView.original.mappedElementIndices.length;
+                                           hostViewAndBinderIndices: number[][]): number[] {
+  var hostElementIndices = [null];
+  var viewElementOffsets = [0];
+  var elementIndex = clonedProtoViews[0].original.elementBinders.length;
+  for (var viewIdx = 1; viewIdx < hostViewAndBinderIndices.length; viewIdx++) {
+    viewElementOffsets.push(elementIndex);
+    elementIndex += clonedProtoViews[viewIdx].original.elementBinders.length;
+    var hostViewIdx = hostViewAndBinderIndices[viewIdx][0];
+    var hostBinderIdx = hostViewAndBinderIndices[viewIdx][1];
+    hostElementIndices.push(viewElementOffsets[hostViewIdx] + hostBinderIdx);
   }
-  return hostElementIndicesByViewIndex;
+  return hostElementIndices;
+}
+
+function calcNestedViewCounts(hostViewAndBinderIndices: number[][]): number[] {
+  var nestedViewCounts = ListWrapper.createFixedSize(hostViewAndBinderIndices.length);
+  ListWrapper.fill(nestedViewCounts, 0);
+  for (var viewIdx = hostViewAndBinderIndices.length - 1; viewIdx >= 1; viewIdx--) {
+    var hostViewAndElementIdx = hostViewAndBinderIndices[viewIdx];
+    if (isPresent(hostViewAndElementIdx)) {
+      nestedViewCounts[hostViewAndElementIdx[0]] += nestedViewCounts[viewIdx] + 1;
+    }
+  }
+  return nestedViewCounts;
 }
 
 function indexArray(arr: any[]): Map<any, number> {

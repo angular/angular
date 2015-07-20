@@ -133,7 +133,7 @@ export function main() {
                '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<b class="ng-binding" idx="2">B(<div class="x y"></div>)</b>)</a></root>'
              ]));
 
-      it('should keep non projected embedded views (so that they can be moved manually)',
+      it('should keep non projected embedded views as fragments (so that they can be moved manually)',
          runAndAssert(
              'root', ['<a><template class="x">b</template></a>', ''],
              ['<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"></a></root>', 'b']));
@@ -143,13 +143,6 @@ export function main() {
              'root', ['<a><template class="x">b</template></a>', 'A(<ng-content></ng-content>)'], [
                '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<template class="x ng-binding" idx="2"></template>)</a></root>',
                'b'
-             ]));
-
-      it('should project embedded views and match the single root element',
-         runAndAssert(
-             'root', ['<a><div class="x" *ng-if></div></a>', 'A(<ng-content></ng-content>)'], [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<template class="ng-binding" idx="2" ng-if=""></template>)</a></root>',
-               '<div *ng-if="" class="x"></div>'
              ]));
 
       it('should project nodes using the ng-content in embedded views',
@@ -258,7 +251,7 @@ function runAndAssert(hostElementName: string, componentTemplates: string[],
                                                           directives: [aComp, bComp, cComp]
                                                         })))
         .then((mergeMappings) => {
-          expect(stringify(mergeMappings[0])).toEqual(expectedFragments);
+          expect(stringify(mergeMappings)).toEqual(expectedFragments);
           async.done();
         });
   });

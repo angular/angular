@@ -339,12 +339,19 @@ export class AppViewManager {
       this._utils.dehydrateView(view);
     }
     var viewContainers = view.viewContainers;
-    for (var i = view.elementOffset, ii = view.elementOffset + view.proto.mergeMapping.elementCount;
-         i < ii; i++) {
-      var vc = viewContainers[i];
-      if (isPresent(vc)) {
-        for (var j = vc.views.length - 1; j >= 0; j--) {
-          this._destroyViewInContainer(view, i, j);
+    var startViewOffset = view.viewOffset;
+    var endViewOffset =
+        view.viewOffset + view.mainMergeMapping.nestedViewCountByViewIndex[view.viewOffset];
+    var elementOffset = view.elementOffset;
+    for (var viewIdx = startViewOffset; viewIdx <= endViewOffset; viewIdx++) {
+      var currView = view.views[viewIdx];
+      for (var binderIdx = 0; binderIdx < currView.proto.elementBinders.length;
+           binderIdx++, elementOffset++) {
+        var vc = viewContainers[elementOffset];
+        if (isPresent(vc)) {
+          for (var j = vc.views.length - 1; j >= 0; j--) {
+            this._destroyViewInContainer(currView, elementOffset, j);
+          }
         }
       }
     }

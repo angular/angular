@@ -182,7 +182,8 @@ function createRenderProtoView(elementBinders = null, type: renderApi.ViewType =
     elementBinders: elementBinders,
     type: type,
     variableBindings: variableBindings,
-    textBindings: []
+    textBindings: [],
+    transitiveNgContentCount: 0
   });
 }
 

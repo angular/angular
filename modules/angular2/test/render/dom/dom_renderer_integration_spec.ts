@@ -53,7 +53,7 @@ export function main() {
                      {componentId: 'someComponent', template: '{{a}}', directives: []})
                ])
              .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings[0]);
+               var rootView = tb.createView(protoViewMergeMappings);
 
                tb.renderer.setText(rootView.viewRef, 0, 'hello');
                expect(rootView.hostElement).toHaveText('hello');
@@ -92,7 +92,7 @@ export function main() {
                  expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
                };
 
-               var rootView = tb.createView(protoViewMergeMappings[0]);
+               var rootView = tb.createView(protoViewMergeMappings);
                // root element
                checkSetters(elRef(rootView.viewRef, 0), rootView.hostElement);
                // nested elements
@@ -114,7 +114,7 @@ export function main() {
                               })
                             ])
              .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings[0]);
+               var rootView = tb.createView(protoViewMergeMappings);
                var el = DOM.childNodes(rootView.hostElement)[0];
                tb.renderer.setElementProperty(elRef(rootView.viewRef, 1), 'maxLength', '20');
                expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
@@ -138,7 +138,7 @@ export function main() {
                                 })
                               ])
                .then((protoViewMergeMappings) => {
-                 var rootView = tb.createView(protoViewMergeMappings[0]);
+                 var rootView = tb.createView(protoViewMergeMappings);
                  var el = DOM.childNodes(rootView.hostElement)[0];
                  tb.renderer.setElementProperty(elRef(rootView.viewRef, 1), 'maxLength', '20');
                  expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
@@ -160,7 +160,7 @@ export function main() {
                                 })
                               ])
                .then((protoViewMergeMappings) => {
-                 var rootView = tb.createView(protoViewMergeMappings[0]);
+                 var rootView = tb.createView(protoViewMergeMappings);
 
                  tb.renderer.invokeElementMethod(elRef(rootView.viewRef, 1), 'setAttribute',
                                                  ['a', 'b']);
@@ -183,7 +183,7 @@ export function main() {
                               })
                             ])
              .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings[0]);
+               var rootView = tb.createView(protoViewMergeMappings);
 
                var elr = elRef(rootView.viewRef, 1);
                expect(rootView.hostElement).toHaveText('');
@@ -208,7 +208,7 @@ export function main() {
                               })
                             ])
              .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings[0]);
+               var rootView = tb.createView(protoViewMergeMappings);
 
                var elr = elRef(rootView.viewRef, 1);
                expect(rootView.hostElement).toHaveText('');
@@ -233,8 +233,8 @@ export function main() {
                                 directives: []
                               })
                             ])
-             .then((protoViewDtos) => {
-               var rootView = tb.createView(protoViewDtos[0]);
+             .then((protoViewMergeMappings) => {
+               var rootView = tb.createView(protoViewMergeMappings);
 
                tb.triggerEvent(elRef(rootView.viewRef, 1), 'change');
                var eventEntry = rootView.events[0];
@@ -263,7 +263,7 @@ export function main() {
                          {componentId: 'someComponent', template: 'hello', directives: []})
                    ])
                  .then((protoViewMergeMappings) => {
-                   var rootView = tb.createView(protoViewMergeMappings[0]);
+                   var rootView = tb.createView(protoViewMergeMappings);
                    expect(DOM.getShadowRoot(rootView.hostElement)).toHaveText('hello');
                    async.done();
                  });
