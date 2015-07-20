@@ -1,0 +1,10 @@
+name: angular2_test
+environment:
+  sdk: '>=1.10.0 <2.0.0'
+dependencies:
+  angular2: '0.0.0'
+dev_dependencies:
+  test: '^0.12.3'
+dependency_overrides:
+  angular2:
+    path: ../../dist/dart/angular2
