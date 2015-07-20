@@ -98,9 +98,16 @@ final _keyCodeToKeyMap = const {
 class BrowserDomAdapter extends GenericBrowserDomAdapter {
   js.JsFunction _setProperty;
   js.JsFunction _getProperty;
+  js.JsFunction _hasProperty;
+  Map<String, bool> _hasPropertyCache;
   BrowserDomAdapter() {
-    _setProperty = js.context.callMethod('eval', ['(function(el, prop, value) { if (prop in el) el[prop] = value; })']);
-    _getProperty = js.context.callMethod('eval', ['(function(el, prop) { return el[prop]; })']);
+    _hasPropertyCache = new Map();
+    _setProperty = js.context.callMethod(
+        'eval', ['(function(el, prop, value) { el[prop] = value; })']);
+    _getProperty = js.context.callMethod(
+        'eval', ['(function(el, prop) { return el[prop]; })']);
+    _hasProperty = js.context.callMethod(
+        'eval', ['(function(el, prop) { return prop in el; })']);
   }
   static void makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
@@ -112,8 +119,17 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return true;
   }
 
-  void setProperty(Element element, String name, Object value) =>
+  void setProperty(Element element, String name, Object value) {
+    var cacheKey = "${element.tagName}.${name}";
+    var hasProperty = this._hasPropertyCache[cacheKey];
+    if (hasProperty == null) {
+      hasProperty = this._hasProperty.apply([element, name]);
+      this._hasPropertyCache[cacheKey] = hasProperty;
+    }
+    if (hasProperty) {
       _setProperty.apply([element, name, value]);
+    }
+  }
 
   getProperty(Element element, String name) =>
       _getProperty.apply([element, name]);
