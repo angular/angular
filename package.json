@@ -24,7 +24,7 @@
   },
   "scripts": {
     "preinstall": "node tools/npm/check-node-modules --purge",
-    "postinstall": "node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --config modules/angular2/tsd.json && tsd reinstall --overwrite --config tools/tsd.json",
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && tsd reinstall --overwrite --config modules/angular2/tsd.json && tsd reinstall --overwrite --config tools/tsd.json && gulp pubget.dart",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
@@ -126,6 +126,7 @@
     "ts2dart": "^0.7.0",
     "tsd": "^0.6.3",
     "typescript": "alexeagle/TypeScript#error_is_class",
+    "typescript-require": "^0.2.9",
     "vinyl": "^0.4.6",
     "walk-sync": "^0.1.3",
     "which": "~1",
