@@ -98,6 +98,11 @@ export function main() {
              'root', ['<a>{{b}}</a>', 'A(<ng-content></ng-content>)'],
              ['<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A({0})</a></root>']));
 
+      it('should project text interpolation to elements without bindings',
+         runAndAssert('root', ['<a>{{b}}</a>', '<div><ng-content></ng-content></div>'], [
+           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><div class="ng-binding">{0}</div></a></root>'
+         ]));
+
       it('should project elements',
          runAndAssert('root', ['<a><div></div></a>', 'A(<ng-content></ng-content>)'], [
            '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<div></div>)</a></root>'
