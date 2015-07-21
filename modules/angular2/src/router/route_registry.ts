@@ -37,13 +37,13 @@ export class RouteRegistry {
   /**
    * Given a component and a configuration object, add the route to this registry
    */
-  config(parentComponent: any, config: RouteDefinition): void {
+  config(parentComponent: any, config: RouteDefinition, isRootLevelRoute: boolean = false): void {
     config = normalizeRouteConfig(config);
 
     var recognizer: RouteRecognizer = this._rules.get(parentComponent);
 
     if (isBlank(recognizer)) {
-      recognizer = new RouteRecognizer();
+      recognizer = new RouteRecognizer(isRootLevelRoute);
       this._rules.set(parentComponent, recognizer);
     }
 
@@ -61,7 +61,7 @@ export class RouteRegistry {
   /**
    * Reads the annotations of a component and configures the registry based on them
    */
-  configFromComponent(component: any): void {
+  configFromComponent(component: any, isRootComponent: boolean = false): void {
     if (!isType(component)) {
       return;
     }
@@ -77,7 +77,8 @@ export class RouteRegistry {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
-          ListWrapper.forEach(annotation.configs, (config) => this.config(component, config));
+          ListWrapper.forEach(annotation.configs,
+                              (config) => this.config(component, config, isRootComponent));
         }
       }
     }
@@ -120,7 +121,8 @@ export class RouteRegistry {
 
       if (partialMatch.unmatchedUrl.length == 0) {
         if (recognizer.terminal) {
-          return new Instruction(componentType, partialMatch.matchedUrl, recognizer);
+          return new Instruction(componentType, partialMatch.matchedUrl, recognizer, null,
+                                 partialMatch.params());
         } else {
           return null;
         }

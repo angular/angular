@@ -6,6 +6,7 @@ import {
   describe,
   expect,
   iit,
+  flushMicrotasks,
   inject,
   it,
   xdescribe,
@@ -21,7 +22,14 @@ import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
-import {routerInjectables, Router, appBaseHrefToken, routerDirectives} from 'angular2/router';
+import {
+  routerInjectables,
+  RouteParams,
+  Router,
+  appBaseHrefToken,
+  routerDirectives
+} from 'angular2/router';
+
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {appComponentTypeToken} from 'angular2/src/core/application_tokens';
@@ -112,6 +120,30 @@ export function main() {
       });
     });
     // TODO: add a test in which the child component has bindings
+
+    describe('querystring params app', () => {
+      beforeEachBindings(
+          () => { return [bind(appComponentTypeToken).toValue(QueryStringAppCmp)]; });
+
+      it('should recognize and return querystring params with the injected RouteParams',
+         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+           tcb.createAsync(QueryStringAppCmp)
+               .then((rootTC) => {
+                 var router = rootTC.componentInstance.router;
+                 router.subscribe((_) => {
+                   rootTC.detectChanges();
+
+                   expect(rootTC.nativeElement).toHaveText('qParam = search-for-something');
+                   /*
+                   expect(applicationRef.hostComponent.location.path())
+                       .toEqual('/qs?q=search-for-something');*/
+                   async.done();
+                 });
+                 router.navigate('/qs?q=search-for-something');
+                 rootTC.detectChanges();
+               });
+         }));
+    });
   });
 }
 
@@ -138,6 +170,20 @@ class ParentCmp {
 @View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([new Route({path: '/parent/...', component: ParentCmp})])
 class HierarchyAppCmp {
+  constructor(public router: Router, public location: LocationStrategy) {}
+}
+
+@Component({selector: 'qs-cmp'})
+@View({template: "qParam = {{q}}"})
+class QSCmp {
+  q: string;
+  constructor(params: RouteParams) { this.q = params.get('q'); }
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `<router-outlet></router-outlet>`, directives: routerDirectives})
+@RouteConfig([new Route({path: '/qs', component: QSCmp})])
+class QueryStringAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
