@@ -28,6 +28,7 @@ const kServedPaths = [
   'benchmarks/src/largetable',
   'benchmarks/src/naive_infinite_scroll',
   'benchmarks/src/tree',
+  'benchmarks/src/static_tree',
 
   // Relative (to /modules) paths to external benchmark directories
   'benchmarks_external/src',
@@ -36,6 +37,7 @@ const kServedPaths = [
   'benchmarks_external/src/naive_infinite_scroll',
   'benchmarks_external/src/tree',
   'benchmarks_external/src/tree/react',
+  'benchmarks_external/src/static_tree',
 
   // Relative (to /modules) paths to example directories
   'examples/src/benchpress',
