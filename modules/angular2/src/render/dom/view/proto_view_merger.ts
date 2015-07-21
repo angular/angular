@@ -27,6 +27,9 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   mergeEmbeddedPvsIntoComponentOrRootPv(clonedProtoViews, hostViewAndBinderIndices);
   var fragments = [];
   mergeComponents(clonedProtoViews, hostViewAndBinderIndices, fragments);
+  // Note: Need to remark parent elements of bound text nodes
+  // so that we can find them later via queryBoundElements!
+  markBoundTextNodeParentsAsBoundElements(clonedProtoViews);
 
   // create a new root element with the changed fragments and elements
   var rootElement = createRootElementFromFragments(fragments);
@@ -84,6 +87,17 @@ function cloneProtoViews(protoViewRefs: List<RenderProtoViewRef | List<any>>,
       }
     }
   }
+}
+
+function markBoundTextNodeParentsAsBoundElements(mergableProtoViews: ClonedProtoView[]) {
+  mergableProtoViews.forEach((mergableProtoView) => {
+    mergableProtoView.boundTextNodes.forEach((textNode) => {
+      var parentNode = textNode.parentNode;
+      if (isPresent(parentNode) && DOM.isElementNode(parentNode)) {
+        DOM.addClass(parentNode, NG_BINDING_CLASS);
+      }
+    });
+  });
 }
 
 function indexBoundTextNodes(mergableProtoViews: ClonedProtoView[]): Map<Node, any> {
