@@ -7,6 +7,7 @@ import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
+import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
@@ -22,13 +23,15 @@ import 'visitors.dart';
 /// If no Angular 2 `Directive`s are found in `code`, returns the empty
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
-Future<String> createNgDeps(AssetReader reader, AssetId assetId,
-    AnnotationMatcher annotationMatcher, bool inlineViews) async {
+Future<String> createNgDeps(
+    AssetReader reader, AssetId assetId, AnnotationMatcher annotationMatcher,
+    {bool inlineViews}) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new AsyncStringWriter();
   var visitor = new CreateNgDepsVisitor(writer, assetId,
-      new XhrImpl(reader, assetId), annotationMatcher, inlineViews);
+      new XhrImpl(reader, assetId), annotationMatcher, _interfaceMatcher,
+      inlineViews: inlineViews);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
 
@@ -39,6 +42,8 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
 
   return await writer.asyncToString();
 }
+
+InterfaceMatcher _interfaceMatcher = new InterfaceMatcher();
 
 /// Visitor responsible for processing [CompilationUnit] and creating an
 /// associated .ng_deps.dart file.
@@ -56,18 +61,24 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   final ParameterTransformVisitor _paramsVisitor;
   final AnnotationsTransformVisitor _metaVisitor;
   final AnnotationMatcher _annotationMatcher;
+  final InterfaceMatcher _interfaceMatcher;
 
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(AsyncStringWriter writer, this.assetId, XHR xhr,
-      this._annotationMatcher, inlineViews)
+  CreateNgDepsVisitor(AsyncStringWriter writer, AssetId assetId, XHR xhr,
+      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher,
+      {bool inlineViews})
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
         _metaVisitor = new AnnotationsTransformVisitor(
-            writer, xhr, inlineViews);
+            writer, xhr, annotationMatcher, interfaceMatcher, assetId,
+            inlineViews: inlineViews),
+        _annotationMatcher = annotationMatcher,
+        _interfaceMatcher = interfaceMatcher,
+        this.assetId = assetId;
 
   void _visitNodeListWithSeparator(NodeList<AstNode> list, String separator) {
     if (list == null) return;
@@ -174,7 +185,8 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    if (!node.metadata.any((a) => _annotationMatcher.hasMatch(a, assetId))) {
+    if (!node.metadata
+        .any((a) => _annotationMatcher.hasMatch(a.name, assetId))) {
       return null;
     }
 
@@ -200,11 +212,12 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     if (node.implementsClause != null &&
         node.implementsClause.interfaces != null &&
         node.implementsClause.interfaces.isNotEmpty) {
-      writer.print(''', 'interfaces': const [''');
-      writer.print(node.implementsClause.interfaces
-          .map((interface) => interface.name)
-          .join(', '));
-      writer.print(']');
+      writer
+        ..print(''', 'interfaces': const [''')
+        ..print(node.implementsClause.interfaces
+            .map((interface) => interface.name)
+            .join(', '))
+        ..print(']');
     }
     writer.print('})');
     return null;
@@ -243,7 +256,8 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   bool visitFunctionDeclaration(FunctionDeclaration node) {
-    if (!node.metadata.any((a) => _annotationMatcher.hasMatch(a, assetId))) {
+    if (!node.metadata
+        .any((a) => _annotationMatcher.hasMatch(a.name, assetId))) {
       return null;
     }
 

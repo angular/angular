@@ -59,7 +59,7 @@ class TransformerOptions {
   factory TransformerOptions(List<String> entryPoints,
       {List<String> reflectionEntryPoints, String modeName: 'release',
       MirrorMode mirrorMode: MirrorMode.none, bool initReflector: true,
-      List<AnnotationDescriptor> customAnnotationDescriptors: const [],
+      List<ClassDescriptor> customAnnotationDescriptors: const [],
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
       bool inlineViews: true, bool generateChangeDetectors: true}) {
     if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {

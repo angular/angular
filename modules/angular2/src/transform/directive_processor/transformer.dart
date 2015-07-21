@@ -35,7 +35,8 @@ class DirectiveProcessor extends Transformer {
       var asset = transform.primaryInput;
       var reader = new AssetReader.fromTransform(transform);
       var ngDepsSrc = await createNgDeps(
-          reader, asset.id, options.annotationMatcher, options.inlineViews);
+          reader, asset.id, options.annotationMatcher,
+          inlineViews: options.inlineViews);
       if (ngDepsSrc != null && ngDepsSrc.isNotEmpty) {
         var ngDepsAssetId =
             transform.primaryInput.id.changeExtension(DEPS_EXTENSION);

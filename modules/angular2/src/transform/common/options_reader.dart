@@ -83,8 +83,8 @@ int _readInt(Map config, String paramName, {int defaultValue: null}) {
 }
 
 /// Parse the [CUSTOM_ANNOTATIONS_PARAM] options out of the transformer into
-/// [AnnotationDescriptor]s.
-List<AnnotationDescriptor> _readCustomAnnotations(Map config) {
+/// [ClassDescriptor]s.
+List<ClassDescriptor> _readCustomAnnotations(Map config) {
   var descriptors = [];
   var customAnnotations = config[CUSTOM_ANNOTATIONS_PARAM];
   if (customAnnotations == null) return descriptors;
@@ -104,7 +104,8 @@ List<AnnotationDescriptor> _readCustomAnnotations(Map config) {
         error = true;
         continue;
       }
-      descriptors.add(new AnnotationDescriptor(name, import, superClass));
+      descriptors
+          .add(new ClassDescriptor(name, import, superClass: superClass));
     }
   }
   if (error) {
