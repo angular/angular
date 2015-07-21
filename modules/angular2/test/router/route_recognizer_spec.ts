@@ -125,6 +125,66 @@ export function main() {
           .toThrowError('Route generator for \'name\' was not included in parameters passed.');
     });
 
+    describe('querystring params', () => {
+      it('should recognize querystring parameters within the URL path', () => {
+        var recognizer = new RouteRecognizer(true);
+        recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'user'}));
+
+        var solution = recognizer.recognize('/profile/matsko?comments=all')[0];
+        var params = solution.params();
+        expect(params['name']).toEqual('matsko');
+        expect(params['comments']).toEqual('all');
+      });
+
+      it('should generate and populate the given static-based route with querystring params',
+         () => {
+           var recognizer = new RouteRecognizer(true);
+           recognizer.config(
+               new Route({path: 'forum/featured', component: DummyCmpA, as: 'forum-page'}));
+
+           var params = StringMapWrapper.create();
+           params['start'] = 10;
+           params['end'] = 100;
+
+           var result = recognizer.generate('forum-page', params);
+           expect(result['url']).toEqual('forum/featured?start=10&end=100');
+         });
+
+      it('should place a higher priority on actual route params incase the same params are defined in the querystring',
+         () => {
+           var recognizer = new RouteRecognizer(true);
+           recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'user'}));
+
+           var solution = recognizer.recognize('/profile/yegor?name=igor')[0];
+           var params = solution.params();
+           expect(params['name']).toEqual('yegor');
+         });
+
+      it('should strip out any occurences of matrix params when querystring params are allowed',
+         () => {
+           var recognizer = new RouteRecognizer(true);
+           recognizer.config(new Route({path: '/home', component: DummyCmpA, as: 'user'}));
+
+           var solution = recognizer.recognize('/home;showAll=true;limit=100?showAll=false')[0];
+           var params = solution.params();
+
+           expect(params['showAll']).toEqual('false');
+           expect(params['limit']).toBeFalsy();
+         });
+
+      it('should strip out any occurences of matrix params as input data', () => {
+        var recognizer = new RouteRecognizer(true);
+        recognizer.config(new Route({path: '/home/:subject', component: DummyCmpA, as: 'user'}));
+
+        var solution = recognizer.recognize('/home/zero;one=1?two=2')[0];
+        var params = solution.params();
+
+        expect(params['subject']).toEqual('zero');
+        expect(params['one']).toBeFalsy();
+        expect(params['two']).toEqual('2');
+      });
+    });
+
     describe('matrix params', () => {
       it('should recognize matrix parameters within the URL path', () => {
         var recognizer = new RouteRecognizer();
@@ -199,6 +259,40 @@ export function main() {
            var result = recognizer.generate('profile-page', params);
            expect(result['url']).toEqual('hello/matsko');
          });
+
+      it('should place a higher priority on actual route params incase the same params are defined in the matrix params string',
+         () => {
+           var recognizer = new RouteRecognizer();
+           recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'user'}));
+
+           var solution = recognizer.recognize('/profile/yegor;name=igor')[0];
+           var params = solution.params();
+           expect(params['name']).toEqual('yegor');
+         });
+
+      it('should strip out any occurences of querystring params when matrix params are allowed',
+         () => {
+           var recognizer = new RouteRecognizer();
+           recognizer.config(new Route({path: '/home', component: DummyCmpA, as: 'user'}));
+
+           var solution = recognizer.recognize('/home;limit=100?limit=1000&showAll=true')[0];
+           var params = solution.params();
+
+           expect(params['showAll']).toBeFalsy();
+           expect(params['limit']).toEqual('100');
+         });
+
+      it('should strip out any occurences of matrix params as input data', () => {
+        var recognizer = new RouteRecognizer();
+        recognizer.config(new Route({path: '/home/:subject', component: DummyCmpA, as: 'user'}));
+
+        var solution = recognizer.recognize('/home/zero;one=1?two=2')[0];
+        var params = solution.params();
+
+        expect(params['subject']).toEqual('zero');
+        expect(params['one']).toEqual('1');
+        expect(params['two']).toBeFalsy();
+      });
     });
   });
 }

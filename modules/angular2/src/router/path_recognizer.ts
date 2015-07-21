@@ -17,7 +17,7 @@ import {
   ListWrapper
 } from 'angular2/src/facade/collection';
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
-
+import {parseAndAssignParamString} from 'angular2/src/router/helpers';
 import {escapeRegex} from './url';
 import {RouteHandler} from './route_handler';
 
@@ -61,19 +61,6 @@ function normalizeString(obj: any): string {
   } else {
     return obj.toString();
   }
-}
-
-function parseAndAssignMatrixParams(keyValueMap, matrixString) {
-  if (matrixString[0] == ';') {
-    matrixString = matrixString.substring(1);
-  }
-
-  matrixString.split(';').forEach((entry) => {
-    var tuple = entry.split('=');
-    var key = tuple[0];
-    var value = tuple.length > 1 ? tuple[1] : true;
-    keyValueMap[key] = value;
-  });
 }
 
 class ContinuationSegment extends Segment {}
@@ -198,7 +185,10 @@ export class PathRecognizer {
   specificity: number;
   terminal: boolean = true;
 
-  constructor(public path: string, public handler: RouteHandler) {
+  static matrixRegex: RegExp = RegExpWrapper.create('^(.*\/[^\/]+?)(;[^\/]+)?\/?$');
+  static queryRegex: RegExp = RegExpWrapper.create('^(.*\/[^\/]+?)(\\?[^\/]+)?$');
+
+  constructor(public path: string, public handler: RouteHandler, public isRoot: boolean = false) {
     assertPath(path);
     var parsed = parsePathString(path);
     var specificity = parsed['specificity'];
@@ -228,16 +218,16 @@ export class PathRecognizer {
     var containsStarSegment =
         segmentsLimit >= 0 && this.segments[segmentsLimit] instanceof StarSegment;
 
-    var matrixString;
+    var paramsString, useQueryString = this.isRoot && this.terminal;
     if (!containsStarSegment) {
-      var matches =
-          RegExpWrapper.firstMatch(RegExpWrapper.create('^(.*\/[^\/]+?)(;[^\/]+)?\/?$'), url);
+      var matches = RegExpWrapper.firstMatch(
+          useQueryString ? PathRecognizer.queryRegex : PathRecognizer.matrixRegex, url);
       if (isPresent(matches)) {
         url = matches[1];
-        matrixString = matches[2];
+        paramsString = matches[2];
       }
 
-      url = StringWrapper.replaceAll(url, /(;[^\/]+)(?=(\/|\Z))/g, '');
+      url = StringWrapper.replaceAll(url, /(;[^\/]+)(?=(\/|$))/g, '');
     }
 
     var params = StringMapWrapper.create();
@@ -256,8 +246,11 @@ export class PathRecognizer {
       }
     }
 
-    if (isPresent(matrixString) && matrixString.length > 0 && matrixString[0] == ';') {
-      parseAndAssignMatrixParams(params, matrixString);
+    if (isPresent(paramsString) && paramsString.length > 0) {
+      var expectedStartingValue = useQueryString ? '?' : ';';
+      if (paramsString[0] == expectedStartingValue) {
+        parseAndAssignParamString(expectedStartingValue, paramsString, params);
+      }
     }
 
     return params;
@@ -266,6 +259,7 @@ export class PathRecognizer {
   generate(params: StringMap<string, any>): string {
     var paramTokens = new TouchMap(params);
     var applyLeadingSlash = false;
+    var useQueryString = this.isRoot && this.terminal;
 
     var url = '';
     for (var i = 0; i < this.segments.length; i++) {
@@ -279,12 +273,23 @@ export class PathRecognizer {
     }
 
     var unusedParams = paramTokens.getUnused();
-    StringMapWrapper.forEach(unusedParams, (value, key) => {
-      url += ';' + key;
-      if (isPresent(value)) {
-        url += '=' + value;
-      }
-    });
+    if (!StringMapWrapper.isEmpty(unusedParams)) {
+      url += useQueryString ? '?' : ';';
+      var paramToken = useQueryString ? '&' : ';';
+      var i = 0;
+      StringMapWrapper.forEach(unusedParams, (value, key) => {
+        if (i++ > 0) {
+          url += paramToken;
+        }
+        url += key;
+        if (!isPresent(value) && useQueryString) {
+          value = 'true';
+        }
+        if (isPresent(value)) {
+          url += '=' + value;
+        }
+      });
+    }
 
     if (applyLeadingSlash) {
       url += '/';

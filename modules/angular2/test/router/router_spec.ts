@@ -116,6 +116,27 @@ export function main() {
       expect(router.generate(['/firstCmp/secondCmp'])).toEqual('/first/second');
     });
 
+    describe('querstring params', () => {
+      it('should only apply querystring params if the given URL is on the root router and is terminal',
+         () => {
+           router.config([
+             new Route({path: '/hi/how/are/you', component: DummyComponent, as: 'greeting-url'})
+           ]);
+
+           var path = router.generate(['/greeting-url', {'name': 'brad'}]);
+           expect(path).toEqual('/hi/how/are/you?name=brad');
+         });
+
+      it('should use parameters that are not apart of the route definition as querystring params',
+         () => {
+           router.config(
+               [new Route({path: '/one/two/:three', component: DummyComponent, as: 'number-url'})]);
+
+           var path = router.generate(['/number-url', {'three': 'three', 'four': 'four'}]);
+           expect(path).toEqual('/one/two/three?four=four');
+         });
+    });
+
     describe('matrix params', () => {
       it('should apply inline matrix params for each router path within the generated URL', () => {
         router.config(

@@ -87,8 +87,9 @@ export class Router {
    * ```
    */
   config(definitions: List<RouteDefinition>): Promise<any> {
-    definitions.forEach(
-        (routeDefinition) => { this.registry.config(this.hostComponent, routeDefinition); });
+    definitions.forEach((routeDefinition) => {
+      this.registry.config(this.hostComponent, routeDefinition, this instanceof RootRouter);
+    });
     return this.renavigate();
   }
 
@@ -290,7 +291,7 @@ export class RootRouter extends Router {
     super(registry, pipeline, null, hostComponent);
     this._location = location;
     this._location.subscribe((change) => this.navigate(change['url']));
-    this.registry.configFromComponent(hostComponent);
+    this.registry.configFromComponent(hostComponent, true);
     this.navigate(location.path());
   }
 
