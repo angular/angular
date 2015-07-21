@@ -1,6 +1,7 @@
 import {
   AsyncTestCompleter,
   beforeEach,
+  beforeEachBindings,
   ddescribe,
   describe,
   expect,
@@ -8,6 +9,7 @@ import {
   inject,
   it,
   xdescribe,
+  TestComponentBuilder,
   xit,
 } from 'angular2/test_lib';
 
@@ -22,73 +24,93 @@ import {BaseException} from 'angular2/src/facade/lang';
 import {routerInjectables, Router, appBaseHrefToken, routerDirectives} from 'angular2/router';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {appComponentTypeToken} from 'angular2/src/core/application_tokens';
 
 export function main() {
   describe('router injectables', () => {
-    var fakeDoc, el, testBindings;
-    beforeEach(() => {
-      fakeDoc = DOM.createHtmlDocument();
-      el = DOM.createElement('app-cmp', fakeDoc);
-      DOM.appendChild(fakeDoc.body, el);
-      testBindings = [
-        routerInjectables,
-        bind(LocationStrategy).toClass(MockLocationStrategy),
-        bind(DOCUMENT_TOKEN).toValue(fakeDoc)
-      ];
+    beforeEachBindings(() => {
+      return [routerInjectables, bind(LocationStrategy).toClass(MockLocationStrategy)];
     });
 
-    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
-         bootstrap(AppCmp, testBindings)
-             .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
-               router.subscribe((_) => {
-                 expect(el).toHaveText('outer { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('');
-                 async.done();
-               });
-             });
-       }));
+    // do not refactor out the `bootstrap` functionality. We still want to
+    // keep this test around so we can ensure that bootstrapping a router works
+    describe('boostrap functionality', () => {
+      it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
+           var fakeDoc = DOM.createHtmlDocument();
+           var el = DOM.createElement('app-cmp', fakeDoc);
+           DOM.appendChild(fakeDoc.body, el);
 
-    it('should rethrow exceptions from component constructors',
-       inject([AsyncTestCompleter], (async) => {
-         bootstrap(BrokenAppCmp, testBindings)
-             .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
-               PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
-                 expect(el).toHaveText('outer { oh no }');
-                 expect(error.message).toContain('oops!');
-                 async.done();
+           bootstrap(AppCmp,
+                     [
+                       routerInjectables,
+                       bind(LocationStrategy).toClass(MockLocationStrategy),
+                       bind(DOCUMENT_TOKEN).toValue(fakeDoc)
+                     ])
+               .then((applicationRef) => {
+                 var router = applicationRef.hostComponent.router;
+                 router.subscribe((_) => {
+                   expect(el).toHaveText('outer { hello }');
+                   expect(applicationRef.hostComponent.location.path()).toEqual('');
+                   async.done();
+                 });
                });
-             });
-       }));
+         }));
+    });
 
-    it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async) => {
-         bootstrap(HierarchyAppCmp, testBindings)
-             .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
-               router.subscribe((_) => {
-                 expect(el).toHaveText('root { parent { hello } }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/parent/child');
-                 async.done();
-               });
-               router.navigate('/parent/child');
-             });
-       }));
+    describe('broken app', () => {
+      beforeEachBindings(() => { return [bind(appComponentTypeToken).toValue(BrokenAppCmp)]; });
 
-    it('should bootstrap an app with a custom app base href',
-       inject([AsyncTestCompleter], (async) => {
-         bootstrap(HierarchyAppCmp, [testBindings, bind(appBaseHrefToken).toValue('/my/app')])
-             .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
-               router.subscribe((_) => {
-                 expect(el).toHaveText('root { parent { hello } }');
-                 expect(applicationRef.hostComponent.location.path())
-                     .toEqual('/my/app/parent/child');
-                 async.done();
-               });
-               router.navigate('/parent/child');
+      it('should rethrow exceptions from component constructors',
+         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+           tcb.createAsync(AppCmp).then((rootTC) => {
+             var router = rootTC.componentInstance.router;
+             PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
+               expect(rootTC.nativeElement).toHaveText('outer { oh no }');
+               expect(error.message).toContain('oops!');
+               async.done();
              });
-       }));
+           });
+         }));
+    });
+
+    describe('hierarchical app', () => {
+      beforeEachBindings(() => { return [bind(appComponentTypeToken).toValue(HierarchyAppCmp)]; });
+
+      it('should bootstrap an app with a hierarchy',
+         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+
+           tcb.createAsync(HierarchyAppCmp)
+               .then((rootTC) => {
+                 var router = rootTC.componentInstance.router;
+                 router.subscribe((_) => {
+                   expect(rootTC.nativeElement).toHaveText('root { parent { hello } }');
+                   expect(rootTC.componentInstance.location.path()).toEqual('/parent/child');
+                   async.done();
+                 });
+                 router.navigate('/parent/child');
+               });
+         }));
+
+      describe('custom app base ref', () => {
+        beforeEachBindings(() => { return [bind(appBaseHrefToken).toValue('/my/app')]; });
+        it('should bootstrap', inject([AsyncTestCompleter, TestComponentBuilder],
+                                      (async, tcb: TestComponentBuilder) => {
+
+                                        tcb.createAsync(HierarchyAppCmp)
+                                            .then((rootTC) => {
+                                              var router = rootTC.componentInstance.router;
+                                              router.subscribe((_) => {
+                                                expect(rootTC.nativeElement)
+                                                    .toHaveText('root { parent { hello } }');
+                                                expect(rootTC.componentInstance.location.path())
+                                                    .toEqual('/my/app/parent/child');
+                                                async.done();
+                                              });
+                                              router.navigate('/parent/child');
+                                            });
+                                      }));
+      });
+    });
     // TODO: add a test in which the child component has bindings
   });
 }
