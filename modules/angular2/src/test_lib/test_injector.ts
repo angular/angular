@@ -84,7 +84,7 @@ function _getAppBindings() {
 
   // The document is only available in browser environment
   try {
-    appDoc = DOM.defaultDoc();
+    appDoc = DOM.createHtmlDocument();
   } catch (e) {
     appDoc = null;
   }

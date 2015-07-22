@@ -11,14 +11,11 @@ import {
   forwardRef,
   Binding,
   EventEmitter
-} from 'angular2/angular2';
+} from 'angular2/bootstrap';
 
 import {formDirectives} from 'angular2/forms';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -86,29 +83,29 @@ class DataService {
 @Component({selector: 'order-list-cmp'})
 @View({
   template: `
-    <h1>Orders</h1>   
+    <h1>Orders</h1>
   	<div *ng-for="#order of orders" [class.warning]="order.total > order.limit">
       <div>
-        <label>Customer name:</label> 
+        <label>Customer name:</label>
         {{order.customerName}}
       </div>
-      
+
       <div>
-        <label>Limit: <input [(ng-model)]="order.limit" type="number" placeholder="Limit"></label> 
+        <label>Limit: <input [(ng-model)]="order.limit" type="number" placeholder="Limit"></label>
       </div>
-      
+
       <div>
-        <label>Number of items:</label> 
+        <label>Number of items:</label>
         {{order.items.length}}
       </div>
-      
+
       <div>
-        <label>Order total:</label> 
+        <label>Order total:</label>
         {{order.total}}
       </div>
-      
+
       <button (click)="select(order)">Select</button>
-  	</div>			
+  	</div>
   `,
   directives: [formDirectives, NgFor]
 })
@@ -123,24 +120,24 @@ class OrderListComponent {
 @Component({selector: 'order-item-cmp', properties: ['item'], events: ['delete']})
 @View({
   template: `
-    <div>   
+    <div>
       <div>
-        <label>Product name: <input [(ng-model)]="item.productName" type="text" placeholder="Product name"></label> 
+        <label>Product name: <input [(ng-model)]="item.productName" type="text" placeholder="Product name"></label>
       </div>
-      
+
       <div>
-        <label>Quantity: <input [(ng-model)]="item.qty" type="number" placeholder="Quantity"></label> 
+        <label>Quantity: <input [(ng-model)]="item.qty" type="number" placeholder="Quantity"></label>
       </div>
-      
+
       <div>
-        <label>Unit Price: <input [(ng-model)]="item.unitPrice" type="number" placeholder="Unit price"></label> 
+        <label>Unit Price: <input [(ng-model)]="item.unitPrice" type="number" placeholder="Unit price"></label>
       </div>
-      
+
       <div>
-        <label>Total:</label> 
+        <label>Total:</label>
         {{item.total}}
       </div>
-      
+
       <button (click)="onDelete()">Delete</button>
     </div>
   `,
@@ -157,25 +154,25 @@ class OrderItemComponent {
 @View({
   template: `
     <div *ng-if="order !== null">
-      <h1>Selected Order</h1>    
+      <h1>Selected Order</h1>
       <div>
-        <label>Customer name: <input [(ng-model)]="order.customerName" type="text" placeholder="Customer name"></label> 
+        <label>Customer name: <input [(ng-model)]="order.customerName" type="text" placeholder="Customer name"></label>
       </div>
-      
+
       <div>
-        <label>Limit: <input [(ng-model)]="order.limit" type="number" placeholder="Limit"></label> 
+        <label>Limit: <input [(ng-model)]="order.limit" type="number" placeholder="Limit"></label>
       </div>
-      
+
       <div>
-        <label>Number of items:</label> 
+        <label>Number of items:</label>
         {{order.items.length}}
       </div>
-      
+
       <div>
-        <label>Order total:</label> 
+        <label>Order total:</label>
         {{order.total}}
       </div>
-      
+
       <h2>Items</h2>
       <button (click)="addItem()">Add Item</button>
       <order-item-cmp *ng-for="#item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
@@ -205,6 +202,5 @@ class OrderManagementApplication {
 }
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(OrderManagementApplication);
 }

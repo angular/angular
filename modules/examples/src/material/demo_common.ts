@@ -9,14 +9,11 @@ import {
 } from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Injectable} from 'angular2/di';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
-import {reflector} from 'angular2/src/reflection/reflection';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 
 export function commonDemoSetup(): void {
   BrowserDomAdapter.makeCurrent();
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
 }
 
 @Injectable()

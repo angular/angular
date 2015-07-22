@@ -1,8 +1,13 @@
-import {bootstrap, Compiler, Component, Directive, View, ViewContainerRef} from 'angular2/angular2';
+import {
+  bootstrap,
+  Compiler,
+  Component,
+  Directive,
+  View,
+  ViewContainerRef
+} from 'angular2/bootstrap';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
@@ -24,18 +29,12 @@ function createBindings(): List<Binding> {
   return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
 }
 
-function setupReflector() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-}
-
 var BASELINE_TREE_TEMPLATE;
 var BASELINE_IF_TEMPLATE;
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
   var maxDepth = getIntParameter('depth');
-
-  setupReflector();
 
   BASELINE_TREE_TEMPLATE = DOM.createTemplate(
       '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');

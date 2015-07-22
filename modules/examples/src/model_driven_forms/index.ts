@@ -7,13 +7,10 @@ import {
   Directive,
   View,
   Ancestor
-} from 'angular2/angular2';
+} from 'angular2/bootstrap';
 import {formDirectives, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
-
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 /**
  * Custom validator.
@@ -155,6 +152,5 @@ class ModelDrivenForms {
 }
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(ModelDrivenForms);
 }

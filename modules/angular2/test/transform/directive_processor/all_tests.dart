@@ -116,8 +116,10 @@ void allTests() {
 
 void _testNgDeps(String name, String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [], AssetId assetId,
-    AssetReader reader, List<String> expectedLogs, bool inlineViews: true}) {
-  it(name, () async {
+    AssetReader reader, List<String> expectedLogs, bool inlineViews: true,
+    bool isolate: false}) {
+  var testFn = isolate ? iit : it;
+  testFn(name, () async {
     if (expectedLogs != null) {
       log.setLogger(new RecordingLogger());
     }

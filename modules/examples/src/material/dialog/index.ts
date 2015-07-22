@@ -1,4 +1,4 @@
-import {bootstrap, ElementRef, ComponentRef, Component, View} from 'angular2/angular2';
+import {bootstrap, ElementRef, ComponentRef, Component, View} from 'angular2/bootstrap';
 import {
   MdDialog,
   MdDialogRef,

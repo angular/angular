@@ -1,4 +1,4 @@
-import {bootstrap, Component, View} from 'angular2/angular2';
+import {bootstrap, Component, View} from 'angular2/bootstrap';
 import {MdProgressLinear} from 'angular2_material/src/components/progress-linear/progress_linear';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';

@@ -10,13 +10,10 @@ import {
   NgValidator,
   forwardRef,
   Binding
-} from 'angular2/angular2';
+} from 'angular2/bootstrap';
 import {formDirectives, NgControl, Validators, NgForm} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
-
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 /**
  * A domain model we are binding the form controls to.
@@ -168,6 +165,5 @@ class TemplateDrivenForms {
 }
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(TemplateDrivenForms);
 }

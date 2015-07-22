@@ -1,4 +1,4 @@
-import {bootstrap, Component, View} from 'angular2/angular2';
+import {bootstrap, Component, View} from 'angular2/bootstrap';
 import {MdInputContainer, MdInput} from 'angular2_material/src/components/input/input';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';

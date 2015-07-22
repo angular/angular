@@ -11,12 +11,12 @@ library angular2.test.transform.reflection_remover.reflection_remover_files;
 var code = """
 library web_foo;
 
-import 'package:angular2/src/core/application.dart';
+import 'package:angular2/bootstrap_static.dart';import 'index.ng_deps.dart' as ngStaticInit0;
 import 'package:angular2/src/reflection/reflection.dart';
-/*import 'package:angular2/src/reflection/reflection_capabilities.dart';*/import 'index.ng_deps.dart' as ngStaticInit0;
+/*import 'package:angular2/src/reflection/reflection_capabilities.dart';*/
 
 void main() {
-  /*reflector.reflectionCapabilities = new ReflectionCapabilities();*/ngStaticInit0.initReflector();
-  bootstrap(MyComponent);
+  ngStaticInit0.initReflector();/*reflector.reflectionCapabilities = new ReflectionCapabilities();*/
+  bootstrapStatic(MyComponent);
 }
 """;

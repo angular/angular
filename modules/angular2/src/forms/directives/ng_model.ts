@@ -1,7 +1,8 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Directive, LifecycleEvent, QueryList, Query} from 'angular2/angular2';
+import {QueryList} from 'angular2/core';
+import {Query, Directive, LifecycleEvent} from 'angular2/annotations';
 import {forwardRef, Ancestor, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';

@@ -1,4 +1,4 @@
-import {bootstrap, Component, View} from 'angular2/angular2';
+import {bootstrap, Component, View} from 'angular2/bootstrap';
 import {MdRadioButton, MdRadioGroup} from 'angular2_material/src/components/radio/radio_button';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
 import {UrlResolver} from 'angular2/src/services/url_resolver';

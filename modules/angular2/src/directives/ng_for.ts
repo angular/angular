@@ -1,13 +1,6 @@
-import {Directive} from 'angular2/annotations';
-import {
-  ViewContainerRef,
-  ViewRef,
-  TemplateRef,
-  Pipes,
-  LifecycleEvent,
-  Pipe,
-  ChangeDetectorRef
-} from 'angular2/angular2';
+import {Directive, LifecycleEvent} from 'angular2/annotations';
+import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
+import {ChangeDetectorRef, Pipe, Pipes} from 'angular2/change_detection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**

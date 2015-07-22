@@ -1,8 +1,5 @@
-import {bootstrap, Component, View} from 'angular2/angular2';
+import {bootstrap, Component, View} from 'angular2/bootstrap';
 import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
-
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 @Component({selector: 'key-events-app'})
 @View({
@@ -34,6 +31,5 @@ class KeyEventsApp {
 }
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();  // for the Dart version
   bootstrap(KeyEventsApp);
 }

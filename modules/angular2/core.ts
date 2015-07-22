@@ -3,8 +3,8 @@
  * @description
  * Define angular core API here.
  */
-export {bootstrap, ApplicationRef} from 'angular2/src/core/application';
 export {appComponentTypeToken} from 'angular2/src/core/application_tokens';
+export {ApplicationRef} from 'angular2/src/core/application_common';
 
 
 // Compiler Related Dependencies.

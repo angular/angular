@@ -1,4 +1,4 @@
-import {bootstrap, Component, View, NgFor} from 'angular2/angular2';
+import {bootstrap, Component, View, NgFor} from 'angular2/bootstrap';
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';

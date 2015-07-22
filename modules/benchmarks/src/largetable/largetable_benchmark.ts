@@ -1,9 +1,7 @@
-import {bootstrap, Component, Directive, View} from 'angular2/angular2';
+import {bootstrap, Component, Directive, View} from 'angular2/bootstrap';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/facade/browser';
 import {
@@ -22,6 +20,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {bind} from 'angular2/di';
 import {Inject} from 'angular2/src/di/decorators';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
@@ -41,8 +40,6 @@ function _createBindings() {
 var BASELINE_LARGETABLE_TEMPLATE;
 
 function setupReflector() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-
   // TODO(kegluneq): Generate these.
   reflector.registerGetters({
     'benchmarktype': (o) => o.benchmarktype,
@@ -61,8 +58,6 @@ export function main() {
   var totalRows = getIntParameter('rows');
   var totalColumns = getIntParameter('columns');
   BASELINE_LARGETABLE_TEMPLATE = DOM.createTemplate('<table></table>');
-
-  setupReflector();
 
   var app;
   var lifecycle;
@@ -132,6 +127,7 @@ export function main() {
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
           bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
         });
+    setupReflector();
   }
 
   function baselineDestroyDom() { baselineRootLargetableComponent.update(buildTable(0, 0)); }

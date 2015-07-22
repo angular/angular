@@ -1,4 +1,4 @@
-import {bootstrap, Component, Directive, View} from 'angular2/angular2';
+import {bootstrap, Component, Directive, View} from 'angular2/bootstrap';
 import {MdCheckbox} from 'angular2_material/src/components/checkbox/checkbox';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';

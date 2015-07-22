@@ -32,96 +32,11 @@ class Rewriter {
   String rewrite(CompilationUnit node) {
     if (node == null) throw new ArgumentError.notNull('node');
 
-    var visitor = new _FindReflectionCapabilitiesVisitor(_tester);
+    var visitor = new _RewriterVisitor(this);
+
     node.accept(visitor);
-    if (visitor.reflectionCapabilityImports.isEmpty) {
-      logger.error('Failed to find ${REFLECTION_CAPABILITIES_NAME} import.');
-      return _code;
-    }
-    if (visitor.reflectionCapabilityAssignments.isEmpty) {
-      logger.error('Failed to find ${REFLECTION_CAPABILITIES_NAME} '
-          'instantiation.');
-      return _code;
-    }
 
-    var compare = (AstNode a, AstNode b) => a.offset - b.offset;
-    visitor.reflectionCapabilityImports.sort(compare);
-    visitor.reflectionCapabilityAssignments.sort(compare);
-
-    var importAdded = false;
-    var buf = new StringBuffer();
-    var idx = visitor.reflectionCapabilityImports.fold(0,
-        (int lastIdx, ImportDirective node) {
-      buf.write(_code.substring(lastIdx, node.offset));
-      if ('${node.prefix}' == _codegen.prefix) {
-        logger.warning(
-            'Found import prefix "${_codegen.prefix}" in source file.'
-            ' Transform may not succeed.');
-      }
-      if (_mirrorMode != MirrorMode.none) {
-        buf.write(_importDebugReflectionCapabilities(node));
-      } else {
-        buf.write(_commentedNode(node));
-      }
-      if (!importAdded && _writeStaticInit) {
-        buf.write(_codegen.codegenImport());
-        importAdded = true;
-      }
-      return node.end;
-    });
-
-    var setupAdded = false;
-    idx = visitor.reflectionCapabilityAssignments.fold(idx,
-        (int lastIdx, AssignmentExpression assignNode) {
-      var node = assignNode;
-      while (node.parent is ExpressionStatement) {
-        node = node.parent;
-      }
-      buf.write(_code.substring(lastIdx, node.offset));
-      switch (_mirrorMode) {
-        case MirrorMode.debug:
-          buf.write(node);
-          break;
-        case MirrorMode.verbose:
-          buf.write(_instantiateVerboseReflectionCapabilities(assignNode));
-          break;
-        case MirrorMode.none:
-        default:
-          buf.write(_commentedNode(node));
-          break;
-      }
-      if (!setupAdded && _writeStaticInit) {
-        buf.write(_codegen.codegenSetupReflectionCall(
-            reflectorAssignment: assignNode));
-        setupAdded = true;
-      }
-      return node.end;
-    });
-    if (idx < _code.length) buf.write(_code.substring(idx));
-    return buf.toString();
-  }
-
-  String _instantiateVerboseReflectionCapabilities(
-      AssignmentExpression assignNode) {
-    if (assignNode.rightHandSide is! InstanceCreationExpression) {
-      return '$assignNode;';
-    }
-    var rhs = (assignNode.rightHandSide as InstanceCreationExpression);
-    return '${assignNode.leftHandSide} ${assignNode.operator} '
-        'new ${rhs.constructorName}(verbose: true);';
-  }
-
-  String _importDebugReflectionCapabilities(ImportDirective node) {
-    var uri = '${node.uri}';
-    uri = path
-        .join(path.dirname(uri), 'debug_${path.basename(uri)}')
-        .replaceAll('\\', '/');
-    var asClause = node.prefix != null ? ' as ${node.prefix}' : '';
-    return 'import $uri$asClause;';
-  }
-
-  String _commentedNode(AstNode node) {
-    return '/*${_code.substring(node.offset, node.end)}*/';
+    return visitor.outputRewrittenCode();
   }
 }
 
@@ -130,18 +45,31 @@ class Rewriter {
 ///
 /// This breaks our dependency on dart:mirrors, which enables smaller code
 /// size and better performance.
-class _FindReflectionCapabilitiesVisitor extends Object
+class _RewriterVisitor extends Object
     with RecursiveAstVisitor<Object> {
-  final reflectionCapabilityImports = new List<ImportDirective>();
-  final reflectionCapabilityAssignments = new List<AssignmentExpression>();
-  final AstTester _tester;
+  final Rewriter _rewriter;
+  final buf = new StringBuffer();
+  final reflectionCapabilityAssignments = [];
 
-  _FindReflectionCapabilitiesVisitor(this._tester);
+  int _currentIndex = 0;
+  bool _setupAdded = false;
+  bool _importAdded = false;
+
+  _RewriterVisitor(this._rewriter);
 
   @override
   Object visitImportDirective(ImportDirective node) {
-    if (_tester.isReflectionCapabilitiesImport(node)) {
-      reflectionCapabilityImports.add(node);
+    buf.write(_rewriter._code.substring(_currentIndex, node.offset));
+    _currentIndex = node.offset;
+    if (_rewriter._tester.isReflectionCapabilitiesImport(node)) {
+      _rewriteReflectionCapabilitiesImport(node);
+    } else if (_rewriter._tester.isBootstrapImport(node)) {
+      _rewriteBootstrapImportToStatic(node);
+    }
+    if (!_importAdded && _rewriter._writeStaticInit) {
+      // Add imports for ng_deps (once)
+      buf.write(_rewriter._codegen.codegenImport());
+      _importAdded = true;
     }
     return null;
   }
@@ -149,19 +77,130 @@ class _FindReflectionCapabilitiesVisitor extends Object
   @override
   Object visitAssignmentExpression(AssignmentExpression node) {
     if (node.rightHandSide is InstanceCreationExpression &&
-        _tester.isNewReflectionCapabilities(node.rightHandSide)) {
+        _rewriter._tester.isNewReflectionCapabilities(node.rightHandSide)) {
       reflectionCapabilityAssignments.add(node);
+      _rewriteReflectionCapabilitiesAssignment(node);
     }
     return super.visitAssignmentExpression(node);
   }
 
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
-    if (_tester.isNewReflectionCapabilities(node) &&
+    if (_rewriter._tester.isNewReflectionCapabilities(node) &&
         !reflectionCapabilityAssignments.contains(node.parent)) {
       logger.error('Unexpected format in creation of '
           '${REFLECTION_CAPABILITIES_NAME}');
     }
     return super.visitInstanceCreationExpression(node);
   }
+
+  @override
+  Object visitMethodInvocation(MethodInvocation node) {
+    if (node.methodName.toString() == BOOTSTRAP_NAME) {
+      _rewriteBootstrapCallToStatic(node);
+    }
+    return super.visitMethodInvocation(node);
+  }
+
+  String outputRewrittenCode() {
+    if (_currentIndex < _rewriter._code.length) {
+      buf.write(_rewriter._code.substring(_currentIndex));
+    }
+    return '$buf';
+  }
+
+  _rewriteBootstrapImportToStatic(ImportDirective node) {
+    if (_rewriter._writeStaticInit) {
+      // rewrite `bootstrap.dart` to `bootstrap_static.dart`
+      buf.write(_rewriter._code.substring(_currentIndex, node.offset));
+      // TODO(yjbanov): handle import "..." show/hide ...
+      buf.write("import 'package:angular2/bootstrap_static.dart';");
+    } else {
+      // leave it as is
+      buf.write(_rewriter._code.substring(_currentIndex, node.end));
+    }
+    _currentIndex = node.end;
+  }
+
+  _rewriteBootstrapCallToStatic(MethodInvocation node) {
+    if (_rewriter._writeStaticInit) {
+      buf.write(_rewriter._code.substring(_currentIndex, node.offset));
+      _writeStaticReflectorInitOnce();
+      // rewrite `bootstrap(...)` to `bootstrapStatic(...)`
+      buf.write('bootstrapStatic${node.argumentList}');
+    } else {
+      // leave it as is
+      buf.write(_rewriter._code.substring(_currentIndex, node.end));
+    }
+    _currentIndex = node.end;
+  }
+
+  _writeStaticReflectorInitOnce() {
+    if (!_setupAdded) {
+      buf.write(_rewriter._codegen.codegenSetupReflectionCall());
+      _setupAdded = true;
+    }
+  }
+
+  _rewriteReflectionCapabilitiesImport(ImportDirective node) {
+    buf.write(_rewriter._code.substring(_currentIndex, node.offset));
+    if ('${node.prefix}' == _rewriter._codegen.prefix) {
+      logger.warning(
+          'Found import prefix "${_rewriter._codegen.prefix}" in source file.'
+          ' Transform may not succeed.');
+    }
+    if (_rewriter._mirrorMode != MirrorMode.none) {
+      buf.write(_importDebugReflectionCapabilities(node));
+    } else {
+      buf.write(_commentedNode(node));
+    }
+    _currentIndex = node.end;
+  }
+
+  _rewriteReflectionCapabilitiesAssignment(AssignmentExpression assignNode) {
+    var node = assignNode;
+    while (node.parent is ExpressionStatement) {
+      node = node.parent;
+    }
+    buf.write(_rewriter._code.substring(_currentIndex, node.offset));
+    if (_rewriter._writeStaticInit) {
+      _writeStaticReflectorInitOnce();
+    }
+    switch (_rewriter._mirrorMode) {
+      case MirrorMode.debug:
+        buf.write(node);
+        break;
+      case MirrorMode.verbose:
+        buf.write(_instantiateVerboseReflectionCapabilities(assignNode));
+        break;
+      case MirrorMode.none:
+      default:
+        buf.write(_commentedNode(node));
+        break;
+    }
+    _currentIndex = node.end;
+  }
+
+  String _commentedNode(AstNode node) {
+    return '/*${_rewriter._code.substring(node.offset, node.end)}*/';
+  }
+}
+
+String _importDebugReflectionCapabilities(ImportDirective node) {
+  var uri = '${node.uri}';
+  uri = path
+      .join(path.dirname(uri), 'debug_${path.basename(uri)}')
+      .replaceAll('\\', '/');
+  var asClause = node.prefix != null ? ' as ${node.prefix}' : '';
+  return 'import $uri$asClause;';
+}
+
+String _instantiateVerboseReflectionCapabilities(
+    AssignmentExpression assignNode) {
+  if (assignNode.rightHandSide is! InstanceCreationExpression) {
+    return '$assignNode;';
+  }
+  var rhs = (assignNode.rightHandSide as InstanceCreationExpression);
+  return '${assignNode.leftHandSide} ${assignNode.operator} '
+      'new ${rhs.constructorName}(verbose: true);';
 }

@@ -40,13 +40,13 @@ main() {
 const indexCommonContents = '''
 library examples.src.hello_world.index_common;
 
-import "package:angular2/angular2.dart"
-    show bootstrap, Component, Decorator, Template, NgElement;
+import "package:angular2/bootstrap.dart"
+    show bootstrap, Component, Directive, View, ElementRef;
 import "package:angular2/di.dart" show Injectable;
 
 @Component(selector: "hello-app", services: const [GreetingService])
-@Template(
-    inline: '<div class="greeting">{{greeting}} <span red>world</span>!</div>'
+@View(
+    template: '<div class="greeting">{{greeting}} <span red>world</span>!</div>'
         '<button class="changeButton" (click)="changeGreeting()">'
         'change greeting</button><ng-content></ng-content>',
     directives: const [RedDec])
@@ -60,10 +60,10 @@ class HelloCmp {
   }
 }
 
-@Decorator(selector: "[red]")
+@Directive(selector: "[red]")
 class RedDec {
-  RedDec(NgElement el) {
-    el.domElement.style.color = "red";
+  RedDec(ElementRef el) {
+    el.nativeElement.style.color = "red";
   }
 }
 

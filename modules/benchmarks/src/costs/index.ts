@@ -5,18 +5,15 @@ import {
   DynamicComponentLoader,
   ElementRef,
   View
-} from 'angular2/angular2';
+} from 'angular2/bootstrap';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {NgIf, NgFor} from 'angular2/directives';
 
 var testList = null;
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   var size = getIntParameter('size');
   testList = ListWrapper.createFixedSize(size);
 

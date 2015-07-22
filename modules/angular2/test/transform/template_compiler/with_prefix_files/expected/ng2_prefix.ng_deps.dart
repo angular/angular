@@ -2,7 +2,7 @@ library angular2.test.transform.template_compiler.with_prefix_files.ng2_prefix.n
 
 import 'ng2_prefix.dart';
 import 'package:angular2/angular2.dart' as ng2
-    show bootstrap, Component, Directive, View, NgElement;
+    show Component, Directive, View, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {

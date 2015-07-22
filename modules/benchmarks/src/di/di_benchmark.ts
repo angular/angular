@@ -14,6 +14,7 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   var iterations = getIntParameter('iterations');
 
+  // This benchmark does not use bootstrap and needs to create a reflector
   setupReflector();
   var bindings = [A, B, C, D, E];
   var injector = Injector.resolveAndCreate(bindings);

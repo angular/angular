@@ -1,7 +1,7 @@
 library test.transform.directive_processor.invalid_url_files.hello;
 
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show Component, Directive, View, NgElement;
 
 @Component(selector: 'hello-app')
 @View(

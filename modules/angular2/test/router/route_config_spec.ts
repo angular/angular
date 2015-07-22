@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {bootstrap} from 'angular2/core';
+import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';

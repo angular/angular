@@ -14,6 +14,7 @@ const INJECTABLES = const [
       'Injectable', 'package:angular2/src/di/decorators.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/di.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('Injectable', 'package:angular2/bootstrap_static.dart'),
 ];
 
 const DIRECTIVES = const [
@@ -32,6 +33,8 @@ const DIRECTIVES = const [
       superClass: 'Injectable'),
   const ClassDescriptor('Directive', 'package:angular2/core.dart',
       superClass: 'Injectable'),
+  const ClassDescriptor('Directive', 'package:angular2/bootstrap_static.dart',
+      superClass: 'Injectable'),
 ];
 
 const COMPONENTS = const [
@@ -48,6 +51,8 @@ const COMPONENTS = const [
       superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/angular2.dart',
       superClass: 'Directive'),
+  const ClassDescriptor('Component', 'package:angular2/bootstrap_static.dart',
+      superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/core.dart',
       superClass: 'Directive'),
 ];
@@ -55,6 +60,7 @@ const COMPONENTS = const [
 const VIEWS = const [
   const ClassDescriptor('View', 'package:angular2/view.dart'),
   const ClassDescriptor('View', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('View', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor('View', 'package:angular2/core.dart'),
   const ClassDescriptor(
       'View', 'package:angular2/src/core/annotations/view.dart'),
@@ -75,24 +81,29 @@ class AnnotationMatcher extends ClassMatcherBase {
       ..addAll(VIEWS));
   }
 
-  bool _implementsWithWarning(
-          ClassDescriptor descriptor, List<ClassDescriptor> interfaces) =>
-      implements(descriptor, interfaces,
+  bool _implementsWithWarning(Annotation annotation, AssetId assetId,
+      List<ClassDescriptor> interfaces) {
+    ClassDescriptor descriptor = firstMatch(annotation.name, assetId);
+    if (descriptor == null) {
+      throw 'Unable to locate descriptor for ${annotation.name} in ${assetId}';
+    }
+    return implements(descriptor, interfaces,
           missingSuperClassWarning: 'Missing `custom_annotation` entry for `${descriptor.superClass}`.');
+  }
 
   /// Checks if an [Annotation] node implements [Injectable].
   bool isInjectable(Annotation annotation, AssetId assetId) =>
-      _implementsWithWarning(firstMatch(annotation.name, assetId), INJECTABLES);
+      _implementsWithWarning(annotation, assetId, INJECTABLES);
 
   /// Checks if an [Annotation] node implements [Directive].
   bool isDirective(Annotation annotation, AssetId assetId) =>
-      _implementsWithWarning(firstMatch(annotation.name, assetId), DIRECTIVES);
+      _implementsWithWarning(annotation, assetId, DIRECTIVES);
 
   /// Checks if an [Annotation] node implements [Component].
   bool isComponent(Annotation annotation, AssetId assetId) =>
-      _implementsWithWarning(firstMatch(annotation.name, assetId), COMPONENTS);
+      _implementsWithWarning(annotation, assetId, COMPONENTS);
 
   /// Checks if an [Annotation] node implements [View].
   bool isView(Annotation annotation, AssetId assetId) =>
-      _implementsWithWarning(firstMatch(annotation.name, assetId), VIEWS);
+      _implementsWithWarning(annotation, assetId, VIEWS);
 }
