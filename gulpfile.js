@@ -392,6 +392,13 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
   port: 8008
 }));
 
+gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
+  // Note: we are not using build.dart as the dart analyzer takes too long...
+  watch('modules/**', { ignoreInitial: true }, ['!build/tree.dart', '!build.js.cjs']);
+  runSequence('build/packages.dart', 'build/pubspec.dart', 'build.dart.material.css', 'serve.dart');
+});
+
+
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
