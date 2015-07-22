@@ -292,7 +292,12 @@ export function main() {
       });
 
       it('should show the full path when error happens in a constructor', () => {
-        var injector = createInjector([Car, bind(Engine).toClass(BrokenEngine)]);
+        var bindings = Injector.resolve([Car, bind(Engine).toClass(BrokenEngine)]);
+        var proto = new ProtoInjector([
+          new BindingWithVisibility(bindings[0], PUBLIC),
+          new BindingWithVisibility(bindings[1], PUBLIC)
+        ]);
+        var injector = new Injector(proto, null, null);
 
         try {
           injector.get(Car);
@@ -302,6 +307,24 @@ export function main() {
               .toContain(`Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
           expect(e.originalException instanceof BaseException).toBeTruthy();
           expect(e.causeKey.token).toEqual(Engine);
+        }
+      });
+
+      it('should provide context when throwing an exception ', () => {
+        var engineBinding = Injector.resolve([bind(Engine).toClass(BrokenEngine)])[0];
+        var protoParent = new ProtoInjector([new BindingWithVisibility(engineBinding, PUBLIC)]);
+
+        var carBinding = Injector.resolve([Car])[0];
+        var protoChild = new ProtoInjector([new BindingWithVisibility(carBinding, PUBLIC)]);
+
+        var parent = new Injector(protoParent, null, null, () => "parentContext");
+        var child = new Injector(protoChild, parent, null, () => "childContext");
+
+        try {
+          child.get(Car);
+          throw "Must throw";
+        } catch (e) {
+          expect(e.context).toEqual("childContext");
         }
       });
 
@@ -543,6 +566,13 @@ export function main() {
 
         expect(binding.dependencies[0].key.token).toEqual("dep");
         expect(binding.dependencies[0].properties).toEqual([new CustomDependencyMetadata()]);
+      });
+    });
+
+    describe("displayName", () => {
+      it("should work", () => {
+        expect(Injector.resolveAndCreate([Engine, BrokenEngine]).displayName)
+            .toEqual('Injector(bindings: [ "Engine" ,  "BrokenEngine" ])');
       });
     });
   });

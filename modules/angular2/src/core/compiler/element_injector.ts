@@ -419,6 +419,9 @@ export class ProtoElementInjector {
   getBindingAtIndex(index: number): any { return this.protoInjector.getBindingAtIndex(index); }
 }
 
+class _Context {
+  constructor(public element: any, public componentElement: any, public injector: any) {}
+}
 
 export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
   private _host: ElementInjector;
@@ -438,7 +441,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   constructor(public _proto: ProtoElementInjector, parent: ElementInjector) {
     super(parent);
 
-    this._injector = new Injector(this._proto.protoInjector, null, this);
+    this._injector =
+        new Injector(this._proto.protoInjector, null, this, () => this._debugContext());
+
     // we couple ourselves to the injector strategy to avoid polymoprhic calls
     var injectorStrategy = <any>this._injector.internalStrategy;
     this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
@@ -487,6 +492,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._addVarBindingsToQueries();
 
     this.hydrated = true;
+  }
+
+  private _debugContext(): any {
+    var p = this._preBuiltObjects;
+    return new _Context(p.elementRef.nativeElement, p.view.getHostElement().nativeElement,
+                        this._injector);
   }
 
   private _reattachInjectors(imperativelyCreatedInjector: Injector): void {
@@ -613,7 +624,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
           return null;
         }
 
-        throw new NoBindingError(dirDep.key);
+        throw new NoBindingError(null, dirDep.key);
       }
       return this._preBuiltObjects.templateRef;
     }

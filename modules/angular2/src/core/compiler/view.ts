@@ -200,6 +200,11 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     return isPresent(viewIndex) ? this.views[viewIndex] : null;
   }
 
+  getHostElement(): ElementRef {
+    var boundElementIndex = this.mainMergeMapping.hostElementIndicesByViewIndex[this.viewOffset];
+    return this.elementRefs[boundElementIndex];
+  }
+
   getDetectorFor(directive: DirectiveIndex): any {
     var childView = this.getNestedView(this.elementOffset + directive.elementIndex);
     return isPresent(childView) ? childView.changeDetector : null;

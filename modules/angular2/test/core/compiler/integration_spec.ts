@@ -1154,6 +1154,22 @@ export function main() {
            });
          }));
 
+      it('should provide an error context when an error happens in the DI',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+
+           tcb = tcb.overrideView(MyComp, new viewAnn.View({
+             directives: [DirectiveThrowingAnError],
+             template: `<directive-throwing-error></<directive-throwing-error>`
+           }));
+
+           PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
+             expect(DOM.nodeName(e.context.element).toUpperCase())
+                 .toEqual("DIRECTIVE-THROWING-ERROR");
+             async.done();
+             return null;
+           });
+         }));
+
       if (!IS_DARTIUM) {
         it('should report a meaningful error when a directive is undefined',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
@@ -1868,5 +1884,13 @@ class DuplicateDir {
 class OtherDuplicateDir {
   constructor(renderer: DomRenderer, private elRef: ElementRef) {
     DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'othernoduplicate');
+  }
+}
+
+@Directive({selector: 'directive-throwing-error'})
+class DirectiveThrowingAnError {
+  constructor() {
+    throw new BaseException("BOOM");
+    ;
   }
 }
