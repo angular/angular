@@ -28,5 +28,5 @@ export class TemplateRef {
   /**
    * Whether this template has a local variable with the given name
    */
-  hasLocal(name: string): boolean { return this._getProtoView().protoLocals.has(name); }
+  hasLocal(name: string): boolean { return this._getProtoView().variableBindings.has(name); }
 }

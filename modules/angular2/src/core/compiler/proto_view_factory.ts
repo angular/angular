@@ -366,10 +366,13 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
                                      componentDirectiveBinding, directiveBindings) {
   var protoElementInjector = null;
   // Create a protoElementInjector for any element that either has bindings *or* has one
-  // or more var- defined. Elements with a var- defined need a their own element injector
-  // so that, when hydrating, $implicit can be set to the element.
+  // or more var- defined *or* for <template> elements:
+  // - Elements with a var- defined need a their own element injector
+  //   so that, when hydrating, $implicit can be set to the element.
+  // - <template> elements need their own ElementInjector so that we can query their TemplateRef
   var hasVariables = MapWrapper.size(renderElementBinder.variableBindings) > 0;
-  if (directiveBindings.length > 0 || hasVariables) {
+  if (directiveBindings.length > 0 || hasVariables ||
+      isPresent(renderElementBinder.nestedProtoView)) {
     var directiveVariableBindings =
         createDirectiveVariableBindings(renderElementBinder, directiveBindings);
     protoElementInjector =

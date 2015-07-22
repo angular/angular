@@ -10,12 +10,13 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  asNativeElements
+  asNativeElements,
+  By
 } from 'angular2/test_lib';
 
 
 import {Injectable, Optional} from 'angular2/di';
-import {QueryList} from 'angular2/core';
+import {QueryList, TemplateRef} from 'angular2/core';
 import {Query, ViewQuery, Component, Directive, View} from 'angular2/annotations';
 
 import {NgIf, NgFor} from 'angular2/angular2';
@@ -124,6 +125,24 @@ export function main() {
                  async.done();
                });
          }));
+    });
+
+    describe('query for TemplateRef', () => {
+      it('should find TemplateRefs in the light and shadow dom',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-tpl><template var-x="light"></template></needs-tpl>';
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+                 var needsTpl: NeedsTpl = view.componentViewChildren[0].inject(NeedsTpl);
+                 expect(needsTpl.query.first.hasLocal('light')).toBe(true);
+                 expect(needsTpl.viewQuery.first.hasLocal('shadow')).toBe(true);
+
+                 async.done();
+               });
+         }));
+
     });
 
     describe("onChange", () => {
@@ -545,6 +564,18 @@ class NeedsViewQueryOrder {
   constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
 }
 
+@Component({selector: 'needs-tpl'})
+@View({template: '<template var-x="shadow"></template>'})
+class NeedsTpl {
+  viewQuery: QueryList<TemplateRef>;
+  query: QueryList<TemplateRef>;
+  constructor(@ViewQuery(TemplateRef) viewQuery: QueryList<TemplateRef>,
+              @Query(TemplateRef) query: QueryList<TemplateRef>) {
+    this.viewQuery = viewQuery;
+    this.query = query;
+  }
+}
+
 @Component({selector: 'my-comp'})
 @View({
   directives: [
@@ -558,6 +589,7 @@ class NeedsViewQueryOrder {
     NeedsViewQueryIf,
     NeedsViewQueryNestedIf,
     NeedsViewQueryOrder,
+    NeedsTpl,
     TextDirective,
     InertDirective,
     NgIf,
