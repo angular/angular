@@ -11,10 +11,17 @@ export function getTypeNameForDebugging(type: Type): string {
 
 export class BaseException extends Error {
   stack;
-  constructor(public message?: string, public originalException?, public originalStack?) {
+  constructor(public message?: string, private _originalException?, private _originalStack?,
+              private _context?) {
     super(message);
     this.stack = (<any>new Error(message)).stack;
   }
+
+  get originalException(): any { return this._originalException; }
+
+  get originalStack(): any { return this._originalStack; }
+
+  get context(): any { return this._context; }
 
   toString(): string { return this.message; }
 }
@@ -118,7 +125,9 @@ export function stringify(token): string {
     return token.name;
   }
 
-  return token.toString();
+  var res = token.toString();
+  var newLineIndex = res.indexOf("\n");
+  return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
 }
 
 export class StringWrapper {

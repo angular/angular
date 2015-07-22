@@ -183,11 +183,12 @@ class FunctionWrapper {
 }
 
 class BaseException extends Error {
+  final dynamic context;
   final String message;
   final originalException;
   final originalStack;
 
-  BaseException([this.message, this.originalException, this.originalStack]);
+  BaseException([this.message, this.originalException, this.originalStack, this.context]);
 
   String toString() {
     return this.message;
@@ -225,7 +226,7 @@ bool isJsObject(o) {
 
 var _assertionsEnabled = null;
 bool assertionsEnabled() {
-  if (_assertionsEnabled == null) {    
+  if (_assertionsEnabled == null) {
     try {
       assert(false);
       _assertionsEnabled = false;

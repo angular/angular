@@ -145,6 +145,11 @@ function _createNgZone(givenReporter: Function): NgZone {
   var defaultErrorReporter = (exception, stackTrace) => {
     var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
     DOM.logError(`${exception}\n\n${longStackTrace}`);
+
+    if (exception instanceof BaseException && isPresent(exception.context)) {
+      print("Error Context:");
+      print(exception.context);
+    }
     throw exception;
   };
 
