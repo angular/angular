@@ -4,6 +4,7 @@ import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection
 import {StringWrapper, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as getTestabilityModule from './get_testability';
 import {NgZone} from '../zone/ng_zone';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 
 /**
@@ -46,9 +47,12 @@ export class Testability {
       return;  // Not ready
     }
 
-    while (this._callbacks.length !== 0) {
-      (this._callbacks.pop())();
-    }
+    // Schedules the call backs in a new frame so that it is always async.
+    PromiseWrapper.resolve(null).then((_) => {
+      while (this._callbacks.length !== 0) {
+        (this._callbacks.pop())();
+      }
+    });
   }
 
   whenStable(callback: Function): void {
