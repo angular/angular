@@ -719,6 +719,10 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   }
 
   addDirectivesMatchingQuery(query: Query, list: any[]): void {
+    var templateRef = this._preBuiltObjects.templateRef;
+    if (query.selector === TemplateRef && isPresent(templateRef)) {
+      list.push(templateRef);
+    }
     this._strategy.addDirectivesMatchingQuery(query, list);
   }
 

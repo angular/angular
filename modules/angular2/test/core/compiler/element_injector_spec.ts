@@ -167,6 +167,12 @@ class NeedsQueryByVarBindings {
 }
 
 @Injectable()
+class NeedsTemplateRefQuery {
+  query: QueryList<TemplateRef>;
+  constructor(@Query(TemplateRef) query: QueryList<TemplateRef>) { this.query = query; }
+}
+
+@Injectable()
 class NeedsElementRef {
   elementRef;
   constructor(ref: ElementRef) { this.elementRef = ref; }
@@ -1005,6 +1011,16 @@ export function main() {
 
             expectDirectives(inj.get(NeedsQuery).query, CountingDirective, [0]);
           })
+
+          it('should contain PreBuiltObjects on the same injector', () => {
+            var preBuiltObjects = new PreBuiltObjects(null, null, null, new TemplateRef(<any>new DummyElementRef()));
+            var inj = injector(ListWrapper.concat([
+                NeedsTemplateRefQuery
+              ], extraBindings), null,
+              false, preBuiltObjects);
+
+            expect(inj.get(NeedsTemplateRefQuery).query.first).toBe(preBuiltObjects.templateRef);
+          });
 
           it('should contain multiple directives from the same injector', () => {
             var inj = injector(ListWrapper.concat([
