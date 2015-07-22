@@ -7,8 +7,8 @@ import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {ObservablePipeFactory} from './pipes/observable_pipe';
 import {PromisePipeFactory} from './pipes/promise_pipe';
-import {UpperCaseFactory} from './pipes/uppercase_pipe';
-import {LowerCaseFactory} from './pipes/lowercase_pipe';
+import {UpperCasePipe} from './pipes/uppercase_pipe';
+import {LowerCasePipe} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
 import {LimitToPipeFactory} from './pipes/limit_to_pipe';
 import {DatePipe} from './pipes/date_pipe';
@@ -81,13 +81,13 @@ export const async: List<PipeFactory> = CONST_EXPR([
  * Uppercase text transform.
  */
 export const uppercase: List<PipeFactory> =
-    CONST_EXPR([CONST_EXPR(new UpperCaseFactory()), CONST_EXPR(new NullPipeFactory())]);
+    CONST_EXPR([CONST_EXPR(new UpperCasePipe()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Lowercase text transform.
  */
 export const lowercase: List<PipeFactory> =
-    CONST_EXPR([CONST_EXPR(new LowerCaseFactory()), CONST_EXPR(new NullPipeFactory())]);
+    CONST_EXPR([CONST_EXPR(new LowerCasePipe()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Json stringify transform.

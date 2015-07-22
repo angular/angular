@@ -1,5 +1,5 @@
 import {isString, StringWrapper, CONST} from 'angular2/src/facade/lang';
-import {Pipe, PipeFactory} from './pipe';
+import {Pipe, BasePipe, PipeFactory} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
@@ -22,26 +22,13 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *
  * ```
  */
-export class UpperCasePipe implements Pipe {
-  _latestValue: string = null;
-
+@CONST()
+export class UpperCasePipe extends BasePipe implements PipeFactory {
   supports(str: any): boolean { return isString(str); }
-
-  onDestroy(): void { this._latestValue = null; }
 
   transform(value: string, args: List<any> = null): string {
-    if (this._latestValue !== value) {
-      this._latestValue = value;
-      return StringWrapper.toUpperCase(value);
-    } else {
-      return this._latestValue;
-    }
+    return StringWrapper.toUpperCase(value);
   }
-}
 
-@CONST()
-export class UpperCaseFactory implements PipeFactory {
-  supports(str: any): boolean { return isString(str); }
-
-  create(cdRef: ChangeDetectorRef): Pipe { return new UpperCasePipe(); }
+  create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }
