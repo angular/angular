@@ -317,6 +317,7 @@ export class EventBuilder extends AstTransformer {
   }
 }
 
+var customElmsCache = new Map<String, any>();
 var PROPERTY_PARTS_SEPARATOR = new RegExp('\\.');
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
@@ -341,16 +342,19 @@ function buildElementPropertyBindings(protoElement: /*element*/ any, isNgCompone
 
 function isValidElementPropertyBinding(protoElement: /*element*/ any, isNgComponent: boolean,
                                        binding: api.ElementPropertyBinding): boolean {
+  var elInstance = protoElement;
+  var tagName = DOM.tagName(protoElement);
+
   if (binding.type === api.PropertyBindingType.PROPERTY) {
-    var tagName = DOM.tagName(protoElement);
-    var possibleCustomElement = tagName.indexOf('-') !== -1;
-    if (possibleCustomElement && !isNgComponent) {
-      // can't tell now as we don't know which properties a custom element will get
-      // once it is instantiated
-      return true;
-    } else {
-      return DOM.hasProperty(protoElement, binding.property);
+    if (!isNgComponent && DOM.supportsCustomElements() && tagName.indexOf('-') !== -1) {
+      if (customElmsCache.has(tagName)) {
+        elInstance = customElmsCache.get(tagName);
+      } else {
+        elInstance = DOM.createElement(tagName);
+        customElmsCache.set(tagName, elInstance);
+      }
     }
+    return DOM.hasProperty(elInstance, binding.property);
   }
   return true;
 }

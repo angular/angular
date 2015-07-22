@@ -15,6 +15,7 @@ import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder'
 import {ASTWithSource, AST} from 'angular2/change_detection';
 import {PropertyBindingType, ViewType} from 'angular2/src/render/api';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {TestCustomElement} from './test_custom_element';
 
 export function main() {
   function emptyExpr() { return new ASTWithSource(new AST(), 'empty', 'empty'); }
@@ -41,11 +42,32 @@ export function main() {
           expect(() => builder.build()).not.toThrow();
         });
 
-        it('should allow unknown properties on custom elements', () => {
+        it('should throw for unknown properties on custom-like elements', () => {
           var binder = builder.bindElement(el('<some-custom/>'));
           binder.bindProperty('unknownProperty', emptyExpr());
-          expect(() => builder.build()).not.toThrow();
+          expect(() => builder.build())
+              .toThrowError(
+                  `Can't bind to 'unknownProperty' since it isn't a known property of the '<some-custom>' element and there are no matching directives with a corresponding property`);
         });
+
+        if (DOM.supportsCustomElements()) {
+          DOM.registerElement('some-custom', TestCustomElement);
+
+          it('should allow known properties of custom elements', () => {
+            var binder = builder.bindElement(el('<some-custom/>'));
+            binder.bindProperty('knownProperty', emptyExpr());
+            binder.bindProperty('title', emptyExpr());
+            expect(() => builder.build()).not.toThrow();
+          });
+
+          it('should throw for unknown properties on custom elements', () => {
+            var binder = builder.bindElement(el('<some-custom/>'));
+            binder.bindProperty('unknownProperty', emptyExpr());
+            expect(() => builder.build())
+                .toThrowError(
+                    `Can't bind to 'unknownProperty' since it isn't a known property of the '<some-custom>' element and there are no matching directives with a corresponding property`);
+          });
+        }
 
         it('should throw for unknown properties on custom elements if there is an ng component', () => {
           var binder = builder.bindElement(el('<some-custom/>'));

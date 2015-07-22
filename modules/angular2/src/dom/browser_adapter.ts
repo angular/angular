@@ -143,6 +143,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return t;
   }
   createElement(tagName, doc = document): HTMLElement { return doc.createElement(tagName); }
+  registerElement(tagName, tagType): void {
+    if (this.supportsCustomElements()) {
+      // TODO(pk): I guess TS definition of the Document object should be extended...
+      (<any>document).registerElement(tagName, tagType);
+    }
+  }
   createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
     var el = <HTMLScriptElement>doc.createElement('SCRIPT');
