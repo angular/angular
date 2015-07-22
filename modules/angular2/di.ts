@@ -35,7 +35,6 @@ export {Key, KeyRegistry, TypeLiteral} from './src/di/key';
 export {
   NoBindingError,
   AbstractBindingError,
-  AsyncBindingError,
   CyclicDependencyError,
   InstantiationError,
   InvalidBindingError,
