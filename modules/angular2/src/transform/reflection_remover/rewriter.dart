@@ -45,8 +45,7 @@ class Rewriter {
 ///
 /// This breaks our dependency on dart:mirrors, which enables smaller code
 /// size and better performance.
-class _RewriterVisitor extends Object
-    with RecursiveAstVisitor<Object> {
+class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   final Rewriter _rewriter;
   final buf = new StringBuffer();
   final reflectionCapabilityAssignments = [];

@@ -24,9 +24,7 @@ class DeferredRewriter extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var asset = transform.primaryInput;
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = await rewriteDeferredLibraries(reader, asset.id);
@@ -34,11 +32,7 @@ class DeferredRewriter extends Transformer {
         transform.addOutput(
             new Asset.fromString(transform.primaryInput.id, transformedCode));
       }
-    } catch (ex, stackTrace) {
-      log.logger.warning('Rewritting deferred libraries failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
+    }, errorMessage: 'Rewritting deferred libraries failed.');
   }
 }
 

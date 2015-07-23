@@ -29,9 +29,7 @@ class DirectiveProcessor extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var asset = transform.primaryInput;
       var reader = new AssetReader.fromTransform(transform);
       var ngDepsSrc = await createNgDeps(
@@ -46,10 +44,6 @@ class DirectiveProcessor extends Transformer {
         }
         transform.addOutput(new Asset.fromString(ngDepsAssetId, ngDepsSrc));
       }
-    } catch (ex, stackTrace) {
-      log.logger.warning('Processing ng directives failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
+    }, errorMessage: 'Processing ng directives failed.');
   }
 }

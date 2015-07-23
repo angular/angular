@@ -25,9 +25,7 @@ class DirectiveMetadataExtractor extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var reader = new AssetReader.fromTransform(transform);
       var fromAssetId = transform.primaryInput.id;
 
@@ -40,12 +38,7 @@ class DirectiveMetadataExtractor extends Transformer {
         transform.addOutput(new Asset.fromString(
             _outputAssetId(fromAssetId), _encoder.convert(jsonMap)));
       }
-    } catch (ex, stackTrace) {
-      log.logger.error('Extracting ng metadata failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
-    return null;
+    }, errorMessage: 'Extracting ng metadata failed.');
   }
 }
 

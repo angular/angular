@@ -88,7 +88,7 @@ class AnnotationMatcher extends ClassMatcherBase {
       throw 'Unable to locate descriptor for ${annotation.name} in ${assetId}';
     }
     return implements(descriptor, interfaces,
-          missingSuperClassWarning: 'Missing `custom_annotation` entry for `${descriptor.superClass}`.');
+        missingSuperClassWarning: 'Missing `custom_annotation` entry for `${descriptor.superClass}`.');
   }
 
   /// Checks if an [Annotation] node implements [Injectable].

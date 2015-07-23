@@ -26,18 +26,12 @@ class BindGenerator extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var id = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = await createNgSettersAndGetters(reader, id);
       transform.addOutput(new Asset.fromString(
           id, formatter.format(transformedCode, uri: id.path)));
-    } catch (ex, stackTrace) {
-      log.logger.error('Creating ng setters/getters failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
+    }, errorMessage: 'Creating ng setters/getters failed.');
   }
 }

@@ -120,34 +120,34 @@ void _testNgDeps(String name, String inputPath,
     bool isolate: false}) {
   var testFn = isolate ? iit : it;
   testFn(name, () async {
+    var logger = new RecordingLogger();
+    await log.setZoned(logger, () async {
+      var inputId = _assetIdForPath(inputPath);
+      if (reader == null) {
+        reader = new TestAssetReader();
+      }
+      if (assetId != null) {
+        reader.addAsset(assetId, await reader.readAsString(inputId));
+        inputId = assetId;
+      }
+      var expectedPath = path.join(path.dirname(inputPath), 'expected',
+          path.basename(inputPath).replaceFirst('.dart', '.ng_deps.dart'));
+      var expectedId = _assetIdForPath(expectedPath);
+
+      var annotationMatcher = new AnnotationMatcher()
+        ..addAll(customDescriptors);
+      var output = await createNgDeps(reader, inputId, annotationMatcher,
+          inlineViews: inlineViews);
+      if (output == null) {
+        expect(await reader.hasInput(expectedId)).toBeFalse();
+      } else {
+        var input = await reader.readAsString(expectedId);
+        expect(formatter.format(output)).toEqual(formatter.format(input));
+      }
+    });
+
     if (expectedLogs != null) {
-      log.setLogger(new RecordingLogger());
-    }
-
-    var inputId = _assetIdForPath(inputPath);
-    if (reader == null) {
-      reader = new TestAssetReader();
-    }
-    if (assetId != null) {
-      reader.addAsset(assetId, await reader.readAsString(inputId));
-      inputId = assetId;
-    }
-    var expectedPath = path.join(path.dirname(inputPath), 'expected',
-        path.basename(inputPath).replaceFirst('.dart', '.ng_deps.dart'));
-    var expectedId = _assetIdForPath(expectedPath);
-
-    var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    var output = await createNgDeps(reader, inputId, annotationMatcher,
-        inlineViews: inlineViews);
-    if (output == null) {
-      expect(await reader.hasInput(expectedId)).toBeFalse();
-    } else {
-      var input = await reader.readAsString(expectedId);
-      expect(formatter.format(output)).toEqual(formatter.format(input));
-    }
-
-    if (expectedLogs != null) {
-      expect((log.logger as RecordingLogger).logs, expectedLogs);
+      expect(logger.logs, expectedLogs);
     }
   });
 }

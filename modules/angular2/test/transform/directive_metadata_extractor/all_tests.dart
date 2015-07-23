@@ -20,7 +20,6 @@ void allTests() {
   TestAssetReader reader = null;
 
   beforeEach(() {
-    setLogger(new PrintLogger());
     reader = new TestAssetReader();
   });
 

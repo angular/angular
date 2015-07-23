@@ -28,19 +28,13 @@ class TemplateCompiler extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       Html5LibDomAdapter.makeCurrent();
       var id = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = formatter.format(await processTemplates(reader, id,
           generateChangeDetectors: options.generateChangeDetectors));
       transform.addOutput(new Asset.fromString(id, transformedCode));
-    } catch (ex, stackTrace) {
-      log.logger.error('Parsing ng templates failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
+    }, errorMessage: 'Parsing ng templates failed.');
   }
 }

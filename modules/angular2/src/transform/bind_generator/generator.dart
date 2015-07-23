@@ -15,7 +15,7 @@ Future<String> createNgSettersAndGetters(
 
   String code = ngDeps.code;
   var setters = _generateSetters(_createPropertiesMap(ngDeps));
-  var getters = _generateGetters( _createEventPropertiesList(ngDeps));
+  var getters = _generateGetters(_createEventPropertiesList(ngDeps));
 
   if (setters.isEmpty && getters.isEmpty) return code;
   var out = new StringBuffer();
@@ -97,7 +97,7 @@ List<String> _generateGetters(List<String> eventProperties) {
 
 /// Collapses all `events` in {@link ngDeps} into a list of corresponding
 /// property names.
-List<String>  _createEventPropertiesList(NgDeps ngDeps) {
+List<String> _createEventPropertiesList(NgDeps ngDeps) {
   var visitor = new ExtractNamedExpressionVisitor('events');
   var propertyNames = [];
   ngDeps.registeredTypes.forEach((RegisteredType t) {
