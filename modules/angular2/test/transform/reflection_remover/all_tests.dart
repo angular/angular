@@ -12,6 +12,8 @@ import 'log_mirrors_files/expected/index.dart' as log_mirrors;
 import 'verbose_files/expected/index.dart' as verbose_mirrors;
 import '../common/read_file.dart';
 
+main() => allTests();
+
 void allTests() {
   var codegen = new Codegen('web/index.dart', ['web/index.ng_deps.dart']);
   var code = readFile('reflection_remover/index.dart').replaceAll('\r\n', '\n');

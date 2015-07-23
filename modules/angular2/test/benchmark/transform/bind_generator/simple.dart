@@ -31,12 +31,12 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(ToolTip, {
-      'factory': () => new ToolTip(),
-      'parameters': const [],
-      'annotations': const [
+    ..registerType(ToolTip, new ReflectionInfo(
+      const [
         const Decorator(
             selector: '[tool-tip]', bind: const {'text': 'tool-tip'})
-      ]
-    });
+      ],
+      const [],
+      () => new ToolTip()
+    ));
 }''';

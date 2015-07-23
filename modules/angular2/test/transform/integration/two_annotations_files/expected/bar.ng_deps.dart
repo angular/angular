@@ -14,14 +14,10 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(MyComponent, {
-      'factory': () => new MyComponent(),
-      'parameters': const [],
-      'annotations': const [
-        const Component(selector: '[soup]'),
-        const View(template: 'Salad: {{myNum}} is awesome')
-      ]
-    })
+    ..registerType(MyComponent, new _ngRef.ReflectionInfo(const [
+      const Component(selector: '[soup]'),
+      const View(template: 'Salad: {{myNum}} is awesome')
+    ], const [], () => new MyComponent()))
     ..registerGetters({'myNum': (o) => o.myNum})
     ..registerSetters({'myNum': (o, v) => o.myNum = v});
   _gen.preGeneratedProtoDetectors['MyComponent_comp_0'] =

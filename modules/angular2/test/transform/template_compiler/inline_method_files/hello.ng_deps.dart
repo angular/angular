@@ -9,12 +9,8 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(selector: 'hello-app'),
-        const View(template: '<button (click)=\"action()\">go</button>')
-      ]
-    });
+    ..registerType(HelloCmp, new ReflectionInfo(const [
+      const Component(selector: 'hello-app'),
+      const View(template: '<button (click)=\"action()\">go</button>')
+    ], const [const []], () => new HelloCmp()));
 }

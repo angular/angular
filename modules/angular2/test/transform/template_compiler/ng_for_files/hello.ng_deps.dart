@@ -9,14 +9,10 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(selector: 'hello-app'),
-        const View(
-            template: '<li *ng-for="#thing of things"><div>test</div></li>',
-            directives: const [NgFor])
-      ]
-    });
+    ..registerType(HelloCmp, new ReflectionInfo(const [
+      const Component(selector: 'hello-app'),
+      const View(
+          template: '<li *ng-for="#thing of things"><div>test</div></li>',
+          directives: const [NgFor])
+    ], const [const []], () => new HelloCmp()));
 }

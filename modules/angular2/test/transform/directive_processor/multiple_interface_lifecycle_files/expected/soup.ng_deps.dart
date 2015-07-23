@@ -10,18 +10,17 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(MultiSoupComponent, {
-      'factory': () => new MultiSoupComponent(),
-      'parameters': const [],
-      'annotations': const [
-        const Component(
-            selector: '[soup]',
-            lifecycle: const [
-          LifecycleEvent.onChange,
-          LifecycleEvent.onDestroy,
-          LifecycleEvent.onInit
-        ])
-      ],
-      'interfaces': const [OnChange, OnDestroy, OnInit]
-    });
+    ..registerType(MultiSoupComponent, new _ngRef.ReflectionInfo(const [
+      const Component(
+          selector: '[soup]',
+          lifecycle: const [
+        LifecycleEvent.onChange,
+        LifecycleEvent.onDestroy,
+        LifecycleEvent.onInit
+      ])
+    ], const [], () => new MultiSoupComponent(), const [
+      OnChange,
+      OnDestroy,
+      OnInit
+    ]));
 }

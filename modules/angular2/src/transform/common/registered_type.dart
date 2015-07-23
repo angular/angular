@@ -63,26 +63,22 @@ class _ParseRegisterTypeVisitor extends Object
     typeName = node.argumentList.arguments[0] is Identifier
         ? node.argumentList.arguments[0]
         : null;
-    return super.visitMethodInvocation(node);
-  }
 
-  @override
-  Object visitMapLiteralEntry(MapLiteralEntry node) {
-    if (node.key is StringLiteral) {
-      var key = stringLiteralToString(node.key);
-      switch (key) {
-        case 'annotations':
-          annotations = node.value;
-          break;
-        case 'factory':
-          factoryFn = node.value;
-          break;
-        case 'parameters':
-          parameters = node.value;
-          break;
+    // The second argument to a `registerType` call is the RegistrationInfo
+    // object creation.
+    var info = node.argumentList.arguments[1] as InstanceCreationExpression;
+    var args = info.argumentList.arguments;
+    for (int i = 0; i < args.length; i++) {
+      var arg = args[i];
+      if (i == 0) {
+        annotations = arg;
+      } else if (i == 1) {
+        parameters = arg;
+      } else if (i == 2) {
+        factoryFn = arg;
       }
     }
-    // Do not need to descend any further.
+
     return null;
   }
 }

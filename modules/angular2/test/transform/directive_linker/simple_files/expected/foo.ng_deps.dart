@@ -10,9 +10,7 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(DependencyComponent, {
-      'factory': () => new DependencyComponent(),
-      'parameters': const [],
-      'annotations': const [const Component(selector: '[salad]')]
-    });
+    ..registerType(DependencyComponent, new _ngRef.ReflectionInfo(
+        const [const Component(selector: '[salad]')], const [],
+        () => new DependencyComponent()));
 }

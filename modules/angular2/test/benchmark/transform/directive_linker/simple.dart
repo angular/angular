@@ -46,11 +46,11 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(DependencyComponent, {
-      'factory': () => new DependencyComponent(),
-      'parameters': const [],
-      'annotations': const [const Component(selector: '[salad]')]
-    });
+    ..registerType(DependencyComponent, new ReflectionInfo(
+      const [const Component(selector: '[salad]')],
+      const [],
+      () => new DependencyComponent()
+    ));
 }
 ''';
 
@@ -66,12 +66,12 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(MyComponent, {
-      'factory': () => new MyComponent(),
-      'parameters': const [],
-      'annotations': const [
+    ..registerType(MyComponent, new ReflectionInfo(
+      const [
         const Component(
             selector: '[soup]', services: const [dep.DependencyComponent])
-      ]
-    });
+      ],
+      const [],
+      () => new MyComponent()
+    ));
 }''';

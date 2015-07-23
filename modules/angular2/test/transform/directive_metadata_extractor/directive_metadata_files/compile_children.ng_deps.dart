@@ -8,19 +8,12 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(UnsetComp, {
-      'factory': () => new UnsetComp(),
-      'parameters': const [const []],
-      'annotations': const [const Directive()]
-    })
-    ..registerType(FalseComp, {
-      'factory': () => new FalseComp(),
-      'parameters': const [const []],
-      'annotations': const [const Directive(compileChildren: false)]
-    })
-    ..registerType(TrueComp, {
-      'factory': () => new TrueComp(),
-      'parameters': const [const []],
-      'annotations': const [const Directive(compileChildren: true)]
-    });
+    ..registerType(UnsetComp, new ReflectionInfo(
+        const [const Directive()], const [const []], () => new UnsetComp()))
+    ..registerType(FalseComp, new ReflectionInfo(
+        const [const Directive(compileChildren: false)], const [const []],
+        () => new FalseComp()))
+    ..registerType(TrueComp, new ReflectionInfo(
+        const [const Directive(compileChildren: true)], const [const []],
+        () => new TrueComp()));
 }

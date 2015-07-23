@@ -9,14 +9,10 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(MyApp, {
-      'factory': () => new MyApp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const ng2.Component(selector: 'my-app'),
-        const ng2.View(template: 'MyApp {{name}}')
-      ]
-    })
+    ..registerType(MyApp, new ReflectionInfo(const [
+      const ng2.Component(selector: 'my-app'),
+      const ng2.View(template: 'MyApp {{name}}')
+    ], const [const []], () => new MyApp()))
     ..registerGetters({'name': (o) => o.name})
     ..registerSetters({'name': (o, v) => o.name = v});
 }

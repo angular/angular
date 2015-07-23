@@ -9,9 +9,7 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [const []],
-      'annotations': const [const Directive(exportAs: 'exportAsName')]
-    });
+    ..registerType(HelloCmp, new ReflectionInfo(
+        const [const Directive(exportAs: 'exportAsName')], const [const []],
+        () => new HelloCmp()));
 }

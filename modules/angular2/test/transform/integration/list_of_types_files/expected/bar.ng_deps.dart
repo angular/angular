@@ -11,10 +11,7 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(MyComponent, {
-      'factory': (MyContext c) => new MyComponent(c),
-      'parameters': const [const [MyContext]],
-      'annotations':
-          const [const Component(componentServices: const [MyContext])]
-    });
+    ..registerType(MyComponent, new _ngRef.ReflectionInfo(
+        const [const Component(componentServices: const [MyContext])],
+        const [const [MyContext]], (MyContext c) => new MyComponent(c)));
 }

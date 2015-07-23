@@ -10,13 +10,8 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerFunction(getMessage, {
-      'parameters': const [const [const Inject(Message)]],
-      'annotations': const Injectable()
-    })
-    ..registerType(Message, {
-      'factory': () => new Message(),
-      'parameters': const [],
-      'annotations': const [const Injectable()]
-    });
+    ..registerFunction(getMessage, new _ngRef.ReflectionInfo(
+        const Injectable(), const [const [const Inject(Message)]]))
+    ..registerType(Message, new _ngRef.ReflectionInfo(
+        const [const Injectable()], const [], () => new Message()));
 }

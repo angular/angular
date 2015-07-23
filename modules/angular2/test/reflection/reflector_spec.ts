@@ -1,5 +1,5 @@
 import {describe, it, iit, ddescribe, expect, beforeEach, IS_DARTIUM} from 'angular2/test_lib';
-import {Reflector} from 'angular2/src/reflection/reflection';
+import {Reflector, ReflectionInfo} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
 import {List} from 'angular2/src/facade/collection';
@@ -88,7 +88,7 @@ export function main() {
          () => { expect(() => reflector.factory(TestObjWith21Args)).toThrowError(); });
 
       it("should return a registered factory if available", () => {
-        reflector.registerType(TestObj, {"factory": () => "fake"});
+        reflector.registerType(TestObj, new ReflectionInfo(null, null, () => "fake"));
         expect(reflector.factory(TestObj)()).toEqual("fake");
       });
     });
@@ -105,12 +105,12 @@ export function main() {
       });
 
       it("should return registered parameters if available", () => {
-        reflector.registerType(TestObj, {"parameters": [1, 2]});
-        expect(reflector.parameters(TestObj)).toEqual([1, 2]);
+        reflector.registerType(TestObj, new ReflectionInfo(null, [[1], [2]]));
+        expect(reflector.parameters(TestObj)).toEqual([[1], [2]]);
       });
 
       it("should return an empty list when no paramters field in the stored type info", () => {
-        reflector.registerType(TestObj, {});
+        reflector.registerType(TestObj, new ReflectionInfo());
         expect(reflector.parameters(TestObj)).toEqual([]);
       });
     });
@@ -122,7 +122,7 @@ export function main() {
       });
 
       it("should return registered annotations if available", () => {
-        reflector.registerType(TestObj, {"annotations": [1, 2]});
+        reflector.registerType(TestObj, new ReflectionInfo([1, 2]));
         expect(reflector.annotations(TestObj)).toEqual([1, 2]);
       });
 

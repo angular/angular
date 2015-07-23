@@ -11,15 +11,11 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [],
-      'annotations': const [
-        const Component(selector: 'hello-app'),
-        const View(
-            template: r'''{{greeting}}''',
-            templateUrl: r'package:other_package/template.html',
-            styles: const [r'''.greeting { .color: blue; }''',])
-      ]
-    });
+    ..registerType(HelloCmp, new _ngRef.ReflectionInfo(const [
+      const Component(selector: 'hello-app'),
+      const View(
+          template: r'''{{greeting}}''',
+          templateUrl: r'package:other_package/template.html',
+          styles: const [r'''.greeting { .color: blue; }''',])
+    ], const [], () => new HelloCmp()));
 }

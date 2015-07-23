@@ -10,9 +10,6 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(RelativeSoup, {
-      'factory': () => new RelativeSoup(),
-      'parameters': const [],
-      'annotations': const [const Soup()]
-    });
+    ..registerType(RelativeSoup, new _ngRef.ReflectionInfo(
+        const [const Soup()], const [], () => new RelativeSoup()));
 }

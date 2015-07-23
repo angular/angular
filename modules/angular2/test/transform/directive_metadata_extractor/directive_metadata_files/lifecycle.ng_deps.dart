@@ -9,18 +9,14 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(
-            lifecycle: [
-          LifecycleEvent.onChange,
-          LifecycleEvent.onDestroy,
-          LifecycleEvent.onInit,
-          LifecycleEvent.onCheck,
-          LifecycleEvent.onAllChangesDone
-        ])
-      ]
-    });
+    ..registerType(HelloCmp, new ReflectionInfo(const [
+      const Component(
+          lifecycle: [
+        LifecycleEvent.onChange,
+        LifecycleEvent.onDestroy,
+        LifecycleEvent.onInit,
+        LifecycleEvent.onCheck,
+        LifecycleEvent.onAllChangesDone
+      ])
+    ], const [const []], () => new HelloCmp()));
 }

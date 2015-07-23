@@ -9,11 +9,7 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(properties: const ['key1: val1', 'key2: val2'])
-      ]
-    });
+    ..registerType(HelloCmp, new ReflectionInfo(
+        const [const Component(properties: const ['key1: val1', 'key2: val2'])],
+        const [const []], () => new HelloCmp()));
 }

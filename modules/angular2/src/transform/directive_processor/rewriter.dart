@@ -30,14 +30,9 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new AsyncStringWriter();
-  var visitor = new CreateNgDepsVisitor(
-      writer,
-      assetId,
-      new XhrImpl(reader, assetId),
-      annotationMatcher,
-      _interfaceMatcher,
-      ngMeta,
-      inlineViews: inlineViews);
+  var visitor = new CreateNgDepsVisitor(writer, assetId,
+      new XhrImpl(reader, assetId), annotationMatcher, _interfaceMatcher,
+      ngMeta, inlineViews: inlineViews);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
 
@@ -81,14 +76,9 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(
-      AsyncStringWriter writer,
-      AssetId assetId,
-      XHR xhr,
-      AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher,
-      this.ngMeta,
-      {bool inlineViews})
+  CreateNgDepsVisitor(AsyncStringWriter writer, AssetId assetId, XHR xhr,
+      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher,
+      this.ngMeta, {bool inlineViews})
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
@@ -215,31 +205,31 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     _maybeWriteReflector();
     writer.print('..registerType(');
     node.name.accept(this);
-    writer.print(''', {'factory': ''');
-    if (ctor == null) {
-      _generateEmptyFactory(node.name.toString());
-    } else {
-      ctor.accept(_factoryVisitor);
-    }
-    writer.print(''', 'parameters': ''');
+    writer.print(', new ${_REF_PREFIX}.ReflectionInfo(');
+    node.accept(_metaVisitor);
+    writer.print(', ');
     if (ctor == null) {
       _generateEmptyParams();
     } else {
       ctor.accept(_paramsVisitor);
     }
-    writer.print(''', 'annotations': ''');
-    node.accept(_metaVisitor);
+    writer.print(', ');
+    if (ctor == null) {
+      _generateEmptyFactory(node.name.toString());
+    } else {
+      ctor.accept(_factoryVisitor);
+    }
     if (node.implementsClause != null &&
         node.implementsClause.interfaces != null &&
         node.implementsClause.interfaces.isNotEmpty) {
       writer
-        ..print(''', 'interfaces': const [''')
+        ..print(', const [')
         ..print(node.implementsClause.interfaces
             .map((interface) => interface.name)
             .join(', '))
         ..print(']');
     }
-    writer.print('})');
+    writer.print('))');
     return null;
   }
 
@@ -307,11 +297,11 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     _maybeWriteReflector();
     writer.print('..registerFunction(');
     node.name.accept(this);
-    writer.print(''', {'parameters': const [''');
-    node.functionExpression.parameters.accept(_paramsVisitor);
-    writer.print('''], 'annotations': ''');
+    writer.print(', new ${_REF_PREFIX}.ReflectionInfo(');
     node.metadata.accept(_metaVisitor);
-    writer.print('})');
+    writer.print(', const [');
+    node.functionExpression.parameters.accept(_paramsVisitor);
+    writer.print(']))');
     return null;
   }
 

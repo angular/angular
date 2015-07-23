@@ -9,12 +9,8 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(GoodbyeCmp, {
-      'factory': () => new GoodbyeCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(selector: 'goodbye-app'),
-        const View(template: 'Goodbye {{name}}')
-      ]
-    });
+    ..registerType(GoodbyeCmp, new ReflectionInfo(const [
+      const Component(selector: 'goodbye-app'),
+      const View(template: 'Goodbye {{name}}')
+    ], const [const []], () => new GoodbyeCmp()));
 }

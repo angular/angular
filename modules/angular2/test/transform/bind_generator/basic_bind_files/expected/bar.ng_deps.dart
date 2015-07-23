@@ -8,13 +8,9 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(ToolTip, {
-      'factory': () => new ToolTip(),
-      'parameters': const [],
-      'annotations': const [
-        const Directive(
-            selector: '[tool-tip]', properties: const ['text: tool-tip'])
-      ]
-    })
+    ..registerType(ToolTip, new ReflectionInfo(const [
+      const Directive(
+          selector: '[tool-tip]', properties: const ['text: tool-tip'])
+    ], const [], () => new ToolTip()))
     ..registerSetters({'text': (o, v) => o.text = v});
 }

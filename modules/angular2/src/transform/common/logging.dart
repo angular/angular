@@ -15,12 +15,17 @@ dynamic initZoned(Transform t, _SimpleCallback fn, {String errorMessage: ''}) =>
     setZoned(new BuildLogger(t), fn, errorMessage: errorMessage);
 
 dynamic setZoned(BuildLogger logger, _SimpleCallback fn,
-    {String errorMessage: ''}) => runZoned(fn,
-        zoneValues: {_key: logger}, onError: (e, stackTrace) {
-  logger.error('$errorMessage\n'
-      'Exception: $e\n'
-      'Stack Trace: $stackTrace');
-});
+    {String errorMessage}) {
+  var onError;
+  if (errorMessage != null) {
+    onError = (e, stackTrace) {
+      logger.error('$errorMessage\n'
+          'Exception: $e\n'
+          'Stack Trace: $stackTrace');
+    };
+  }
+  return runZoned(fn, zoneValues: {_key: logger}, onError: onError);
+}
 
 /// The logger for the current {@link Zone}.
 BuildLogger get logger {

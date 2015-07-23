@@ -8,9 +8,7 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(BazComponent, {
-      'factory': () => new BazComponent(),
-      'parameters': const [],
-      'annotations': const [const Component(selector: '[baz]')]
-    });
+    ..registerType(BazComponent, new ReflectionInfo(
+        const [const Component(selector: '[baz]')], const [],
+        () => new BazComponent()));
 }

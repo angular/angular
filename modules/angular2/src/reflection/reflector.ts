@@ -12,8 +12,23 @@ import {PlatformReflectionCapabilities} from './platform_reflection_capabilities
 export {SetterFn, GetterFn, MethodFn} from './types';
 export {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 
+export class ReflectionInfo {
+  _factory: Function;
+  _annotations: List<any>;
+  _parameters: List<List<any>>;
+  _interfaces: List<any>;
+
+  constructor(annotations?: List<any>, parameters?: List<List<any>>, factory?: Function,
+              interfaces?: List<any>) {
+    this._annotations = annotations;
+    this._parameters = parameters;
+    this._factory = factory;
+    this._interfaces = interfaces;
+  }
+}
+
 export class Reflector {
-  _injectableInfo: Map<any, StringMap<string, any>>;
+  _injectableInfo: Map<any, ReflectionInfo>;
   _getters: Map<string, GetterFn>;
   _setters: Map<string, SetterFn>;
   _methods: Map<string, MethodFn>;
@@ -29,11 +44,11 @@ export class Reflector {
 
   isReflectionEnabled(): boolean { return this.reflectionCapabilities.isReflectionEnabled(); }
 
-  registerFunction(func: Function, funcInfo: StringMap<string, any>): void {
+  registerFunction(func: Function, funcInfo: ReflectionInfo): void {
     this._injectableInfo.set(func, funcInfo);
   }
 
-  registerType(type: Type, typeInfo: StringMap<string, any>): void {
+  registerType(type: Type, typeInfo: ReflectionInfo): void {
     this._injectableInfo.set(type, typeInfo);
   }
 
@@ -50,8 +65,9 @@ export class Reflector {
   }
 
   factory(type: Type): Function {
-    if (this._containsTypeInfo(type)) {
-      return this._getTypeInfoField(type, "factory", null);
+    if (this._containsReflectionInfo(type)) {
+      var res = this._injectableInfo.get(type)._factory;
+      return isPresent(res) ? res : null;
     } else {
       return this.reflectionCapabilities.factory(type);
     }
@@ -59,7 +75,8 @@ export class Reflector {
 
   parameters(typeOrFunc: /*Type*/ any): List<any> {
     if (this._injectableInfo.has(typeOrFunc)) {
-      return this._getTypeInfoField(typeOrFunc, "parameters", []);
+      var res = this._injectableInfo.get(typeOrFunc)._parameters;
+      return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.parameters(typeOrFunc);
     }
@@ -67,7 +84,8 @@ export class Reflector {
 
   annotations(typeOrFunc: /*Type*/ any): List<any> {
     if (this._injectableInfo.has(typeOrFunc)) {
-      return this._getTypeInfoField(typeOrFunc, "annotations", []);
+      var res = this._injectableInfo.get(typeOrFunc)._annotations;
+      return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.annotations(typeOrFunc);
     }
@@ -75,7 +93,8 @@ export class Reflector {
 
   interfaces(type: Type): List<any> {
     if (this._injectableInfo.has(type)) {
-      return this._getTypeInfoField(type, "interfaces", []);
+      var res = this._injectableInfo.get(type)._interfaces;
+      return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.interfaces(type);
     }
@@ -105,12 +124,7 @@ export class Reflector {
     }
   }
 
-  _getTypeInfoField(typeOrFunc, key, defaultValue) {
-    var res = this._injectableInfo.get(typeOrFunc)[key];
-    return isPresent(res) ? res : defaultValue;
-  }
-
-  _containsTypeInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
+  _containsReflectionInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
 }
 
 function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {

@@ -9,20 +9,12 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(selector: 'hello-app'),
-        const View(template: 'goodbye-app', directives: const [GoodbyeCmp])
-      ]
-    })
-    ..registerType(GoodbyeCmp, {
-      'factory': () => new GoodbyeCmp(),
-      'parameters': const [const []],
-      'annotations': const [
-        const Component(selector: 'goodbye-app'),
-        const View(template: 'Goodbye')
-      ]
-    });
+    ..registerType(HelloCmp, new ReflectionInfo(const [
+      const Component(selector: 'hello-app'),
+      const View(template: 'goodbye-app', directives: const [GoodbyeCmp])
+    ], const [const []], () => new HelloCmp()))
+    ..registerType(GoodbyeCmp, new ReflectionInfo(const [
+      const Component(selector: 'goodbye-app'),
+      const View(template: 'Goodbye')
+    ], const [const []], () => new GoodbyeCmp()));
 }

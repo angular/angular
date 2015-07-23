@@ -8,9 +8,7 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(FooComponent, {
-      'factory': () => new FooComponent(),
-      'parameters': const [],
-      'annotations': const [const Component(selector: '[fo' 'o]')]
-    });
+    ..registerType(FooComponent, new ReflectionInfo(
+        const [const Component(selector: '[fo' 'o]')], const [],
+        () => new FooComponent()));
 }

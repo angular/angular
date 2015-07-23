@@ -10,9 +10,6 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(PackageSoup, {
-      'factory': () => new PackageSoup(),
-      'parameters': const [],
-      'annotations': const [const Soup()]
-    });
+    ..registerType(PackageSoup, new _ngRef.ReflectionInfo(
+        const [const Soup()], const [], () => new PackageSoup()));
 }
