@@ -35,7 +35,7 @@ module.exports = function addJadeDataDocsProcessor() {
       */
 
       _.forEach(docs, function(doc) {
-        if (doc.docType === 'module' && doc.public && doc.exports.length) {
+        if (doc.docType === 'module' && !doc.private && doc.exports.length) {
           modules.push(doc);
 
           // GET DATA FOR INDEX PAGE OF MODULE SECTION
