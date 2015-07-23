@@ -272,6 +272,23 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should contain all the elements in the light dom even if they get projected',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-query-and-project #q>' +
+                          '<div text="hello"></div><div text="world"></div>' +
+                          '</needs-query-and-project>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+
+                 expect(asNativeElements(view.componentViewChildren)).toHaveText('hello|world|');
+
+                 async.done();
+               });
+         }));
     });
 
     describe("querying in the view", () => {
@@ -417,6 +434,17 @@ class NeedsQueryByTwoLabels {
   }
 }
 
+@Component({selector: 'needs-query-and-project'})
+@View({
+  directives: [NgFor],
+  template: '<div *ng-for="var dir of query">{{dir.text}}|</div><ng-content></ng-content>'
+})
+@Injectable()
+class NeedsQueryAndProject {
+  query: QueryList<TextDirective>;
+  constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
+}
+
 @Component({selector: 'needs-view-query'})
 @View({
   directives: [TextDirective],
@@ -461,7 +489,7 @@ class NeedsViewQueryIf {
   directives: [NgFor, TextDirective],
   template: '<div text="1">' +
                 '<div *ng-for="var i of [\'2\', \'3\']" [text]="i"></div>' +
-                '<div text="4"'
+                '<div text="4">'
 })
 @Injectable()
 class NeedsViewQueryOrder {
@@ -476,6 +504,7 @@ class NeedsViewQueryOrder {
     NeedsQueryDesc,
     NeedsQueryByLabel,
     NeedsQueryByTwoLabels,
+    NeedsQueryAndProject,
     NeedsViewQuery,
     NeedsViewQueryDesc,
     NeedsViewQueryIf,
