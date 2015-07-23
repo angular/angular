@@ -37,8 +37,8 @@ export class AppProtoViewMergeMapping {
     this.renderProtoViewRef = renderProtoViewMergeMapping.mergedProtoViewRef;
     this.renderFragmentCount = renderProtoViewMergeMapping.fragmentCount;
     this.renderElementIndices = renderProtoViewMergeMapping.mappedElementIndices;
-    this.renderInverseElementIndices =
-        inverseIndexMapping(this.renderElementIndices, this.renderElementIndices.length);
+    this.renderInverseElementIndices = inverseIndexMapping(
+        this.renderElementIndices, renderProtoViewMergeMapping.mappedElementCount);
     this.renderTextIndices = renderProtoViewMergeMapping.mappedTextIndices;
     this.hostElementIndicesByViewIndex = renderProtoViewMergeMapping.hostElementIndicesByViewIndex;
     this.nestedViewIndicesByElementIndex =
@@ -48,7 +48,7 @@ export class AppProtoViewMergeMapping {
 }
 
 function inverseIndexMapping(input: number[], resultLength: number): number[] {
-  var result = ListWrapper.createFixedSize(resultLength);
+  var result = ListWrapper.createGrowableSize(resultLength);
   for (var i = 0; i < input.length; i++) {
     var value = input[i];
     if (isPresent(value)) {

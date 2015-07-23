@@ -56,9 +56,10 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   var mergedProtoView =
       DomProtoView.create(mainProtoView.original.type, rootElement, fragmentsRootNodeCount,
                           rootTextNodeIndices, mergedElementBinders);
-  return new RenderProtoViewMergeMapping(
-      new DomProtoViewRef(mergedProtoView), fragmentsRootNodeCount.length, mappedElementIndices,
-      mappedTextIndices, hostElementIndicesByViewIndex, nestedViewCounts);
+  return new RenderProtoViewMergeMapping(new DomProtoViewRef(mergedProtoView),
+                                         fragmentsRootNodeCount.length, mappedElementIndices,
+                                         mergedBoundElements.length, mappedTextIndices,
+                                         hostElementIndicesByViewIndex, nestedViewCounts);
 }
 
 function cloneProtoViews(protoViewRefs: List<RenderProtoViewRef | List<any>>,

@@ -74,7 +74,7 @@ export function main() {
       renderCompiler.spy('mergeProtoViewsRecursively')
           .andCallFake((protoViewRefs: List<renderApi.RenderProtoViewRef | List<any>>) => {
             return PromiseWrapper.resolve(new renderApi.RenderProtoViewMergeMapping(
-                new MergedRenderProtoViewRef(protoViewRefs), 1, [], [], [], [null]));
+                new MergedRenderProtoViewRef(protoViewRefs), 1, [], 0, [], [], [null]));
           });
       // TODO spy on .compile and return RenderProtoViewRef, same for compileHost
       rootProtoView = createRootProtoView(directiveResolver, MainComponent);
