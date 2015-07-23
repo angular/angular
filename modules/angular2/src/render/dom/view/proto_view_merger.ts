@@ -339,7 +339,7 @@ function updateElementBinderTextNodeIndices(elementBinder: DomElementBinder,
       eventLocals: null,
       localEvents: [],
       globalEvents: [],
-      hasNativeShadowRoot: null
+      hasNativeShadowRoot: false
     });
   } else {
     result = new DomElementBinder({
