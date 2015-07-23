@@ -25,7 +25,7 @@ export class ElementRef implements RenderElementRef {
   boundElementIndex: number;
 
   /**
-   * Index of the element inside the {@link RenderViewRef}.
+   * Index of the element inside the `RenderViewRef`.
    *
    * This is used internally by the Angular framework to locate elements.
    */

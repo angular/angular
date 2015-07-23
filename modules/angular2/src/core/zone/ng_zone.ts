@@ -89,7 +89,7 @@ export class NgZone {
    * Sets the zone hook that is called immediately after the last turn in
    * an event completes. At this point Angular will no longer attempt to
    * sync the UI. Any changes to the data model will not be reflected in the
-   * DOM. {@link onEventDoneFn} is executed outside Angular zone.
+   * DOM. `onEventDoneFn` is executed outside Angular zone.
    *
    * This hook is useful for validating application state (e.g. in a test).
    */
