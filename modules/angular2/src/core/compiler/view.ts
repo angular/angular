@@ -261,8 +261,6 @@ export class AppProtoView {
   mergeMapping: AppProtoViewMergeMapping;
   ref: ProtoViewRef;
 
-  isRecursive: boolean = null;
-
   constructor(public type: renderApi.ViewType, public isEmbeddedFragment: boolean,
               public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,

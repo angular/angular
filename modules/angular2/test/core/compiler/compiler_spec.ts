@@ -374,7 +374,7 @@ export function main() {
     it('should cache compiled host components', inject([AsyncTestCompleter], (async) => {
          tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
          var mainPv = createProtoView();
-         var compiler = createCompiler([createRenderProtoView()], [rootProtoView, mainPv]);
+         var compiler = createCompiler([createRenderProtoView([])], [rootProtoView, mainPv]);
          compiler.compileInHost(MainComponent)
              .then((protoViewRef) => {
                expect(internalProtoView(protoViewRef).elementBinders[0].nestedProtoView)
@@ -535,7 +535,8 @@ export function main() {
     it('should create host proto views', inject([AsyncTestCompleter], (async) => {
          tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
          var rootProtoView =
-             createProtoView([createComponentElementBinder(directiveResolver, MainComponent)]);
+             createProtoView([createComponentElementBinder(directiveResolver, MainComponent)],
+                             renderApi.ViewType.HOST);
          var mainProtoView = createProtoView();
          var compiler = createCompiler([createRenderProtoView()], [rootProtoView, mainProtoView]);
          compiler.compileInHost(MainComponent)
@@ -694,9 +695,9 @@ class FakeProtoViewFactory extends ProtoViewFactory {
   }
 
   createAppProtoViews(componentBinding: DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
-                      directives: List<DirectiveBinding>): AppProtoView {
+                      directives: List<DirectiveBinding>): AppProtoView[] {
     this.requests.push([componentBinding, renderProtoView, directives]);
-    return ListWrapper.removeAt(this.results, 0);
+    return collectEmbeddedPvs(ListWrapper.removeAt(this.results, 0));
   }
 }
 
@@ -706,4 +707,17 @@ class MergedRenderProtoViewRef extends renderApi.RenderProtoViewRef {
 
 function originalRenderProtoViewRefs(appProtoView: AppProtoView) {
   return (<MergedRenderProtoViewRef>appProtoView.mergeMapping.renderProtoViewRef).originals;
+}
+
+function collectEmbeddedPvs(pv: AppProtoView, target: AppProtoView[] = null): AppProtoView[] {
+  if (isBlank(target)) {
+    target = [];
+  }
+  target.push(pv);
+  pv.elementBinders.forEach(elementBinder => {
+    if (elementBinder.hasEmbeddedProtoView()) {
+      collectEmbeddedPvs(elementBinder.nestedProtoView, target);
+    }
+  });
+  return target;
 }

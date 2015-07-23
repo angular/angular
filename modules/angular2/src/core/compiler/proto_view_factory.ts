@@ -160,7 +160,7 @@ export class ProtoViewFactory {
 
   createAppProtoViews(hostComponentBinding: DirectiveBinding,
                       rootRenderProtoView: renderApi.ProtoViewDto,
-                      allDirectives: List<DirectiveBinding>): AppProtoView {
+                      allDirectives: List<DirectiveBinding>): AppProtoView[] {
     var allRenderDirectiveMetadata =
         ListWrapper.map(allDirectives, directiveBinding => directiveBinding.metadata);
     var nestedPvsWithIndex = _collectNestedProtoViews(rootRenderProtoView);
@@ -184,7 +184,7 @@ export class ProtoViewFactory {
       }
       appProtoViews[pvWithIndex.index] = appProtoView;
     });
-    return appProtoViews[0];
+    return appProtoViews;
   }
 }
 

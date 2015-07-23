@@ -66,10 +66,10 @@ export function main() {
         var varBindings = new Map();
         varBindings.set('a', 'b');
         var renderPv = createRenderProtoView([], null, varBindings);
-        var appPv =
+        var appPvs =
             protoViewFactory.createAppProtoViews(bindDirective(MainComponent), renderPv, []);
-        expect(appPv.variableBindings.get('a')).toEqual('b');
-        expect(appPv).toBeTruthy();
+        expect(appPvs[0].variableBindings.get('a')).toEqual('b');
+        expect(appPvs.length).toBe(1);
       });
     });
 
