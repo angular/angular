@@ -28,8 +28,11 @@ import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/fa
  * </div>
  * ```
  */
-@Directive(
-    {selector: '[class]', lifecycle: [LifecycleEvent.onCheck], properties: ['rawClass: class']})
+@Directive({
+  selector: '[class]',
+  lifecycle: [LifecycleEvent.onCheck, LifecycleEvent.onDestroy],
+  properties: ['rawClass: class']
+})
 export class CSSClass {
   _pipe: Pipe;
   _rawClass;
@@ -57,6 +60,8 @@ export class CSSClass {
       }
     }
   }
+
+  onDestroy(): void { this._cleanupClasses(this._rawClass); }
 
   private _cleanupClasses(rawClassVal): void {
     if (isPresent(rawClassVal)) {

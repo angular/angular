@@ -14,12 +14,35 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Component, View} from 'angular2/angular2';
+import {Component, View, NgFor, bind} from 'angular2/angular2';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {CSSClass} from 'angular2/src/directives/class';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
 export function main() {
   describe('binding to CSS class list', () => {
+
+    describe('viewpool support', () => {
+      beforeEachBindings(() => { return [bind(APP_VIEW_POOL_CAPACITY).toValue(100)]; });
+
+      it('should clean up when the directive is destroyed',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div *ng-for="var item of items" [class]="item"></div>';
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.componentInstance.items = [['0']];
+                 rootTC.detectChanges();
+                 rootTC.componentInstance.items = [['1']];
+                 rootTC.detectChanges();
+                 expect(rootTC.componentViewChildren[1].nativeElement.className)
+                     .toEqual('ng-binding 1');
+
+                 async.done();
+               });
+         }));
+    });
+
 
     describe('expressions evaluating to objects', () => {
 
@@ -344,9 +367,10 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [CSSClass]})
+@View({directives: [CSSClass, NgFor]})
 class TestComponent {
   condition: boolean = true;
+  items: any[];
   arrExpr: List<string> = ['foo'];
   objExpr = {'foo': true, 'bar': false};
   strExpr = 'foo';
