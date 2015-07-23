@@ -712,6 +712,7 @@ gulp.task('!pre.test.typings', ['docs/typings'], function() {
 gulp.task('test.typings', ['!pre.test.typings'], function() {
   return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/angular2.d.ts'])
       .pipe(tsc({target: 'ES5', module: 'commonjs',
+                 noImplicitAny: true,
                  // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
                  // see https://github.com/ivogabe/gulp-typescript#typescript-version
                  typescript: require('typescript')}));

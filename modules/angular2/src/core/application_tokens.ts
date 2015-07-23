@@ -22,4 +22,4 @@ export const appComponentRefPromiseToken = CONST_EXPR(new OpaqueToken('Promise<C
  *
  * ```
  */
-export const appComponentTypeToken = CONST_EXPR(new OpaqueToken('RootComponent'));
+export const appComponentTypeToken: OpaqueToken = CONST_EXPR(new OpaqueToken('RootComponent'));

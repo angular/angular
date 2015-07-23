@@ -38,7 +38,7 @@ export class QueryList<T> implements IQueryList<T> {
   get first(): T { return ListWrapper.first(this._results); }
   get last(): T { return ListWrapper.last(this._results); }
 
-  map<U>(fn: (T) => U): U[] { return this._results.map(fn); }
+  map<U>(fn: (item: T) => U): U[] { return this._results.map(fn); }
 
   [Symbol.iterator](): any { return this._results[Symbol.iterator](); }
 }
