@@ -19,7 +19,7 @@ applications:
 
 ## Quickstart
 
-[Get started in 5 minutes][quickstart]
+[Get started in 5 minutes][quickstart].
 
 ## Setup & Install Angular 2
 

@@ -645,13 +645,13 @@ export function main() {
 
              var input = rootTC.query(By.css("input")).nativeElement;
              expect(DOM.classList(input))
-                 .toEqual(['ng-binding', 'ng-untouched', 'ng-pristine', 'ng-invalid']);
+                 .toEqual(['ng-binding', 'ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
@@ -675,13 +675,13 @@ export function main() {
 
              var input = rootTC.query(By.css("input")).nativeElement;
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
@@ -703,13 +703,13 @@ export function main() {
 
              var input = rootTC.query(By.css("input")).nativeElement;
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-untouched", "ng-pristine", "ng-invalid"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
              expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-pristine", "ng-invalid", "ng-touched"]);
+                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
@@ -720,6 +720,33 @@ export function main() {
              async.done();
            });
          }));
+    });
+
+    describe("ng-model corner cases", () => {
+      it("should not update the view when the value initially came from the view",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var form = new Control("");
+
+                  var t =
+                      `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.form = form;
+                  rootTC.detectChanges();
+
+                  var input = rootTC.query(By.css("input")).nativeElement;
+                  input.value = "aa";
+                  input.selectionStart = 1;
+                  dispatchEvent(input, "change");
+
+                  tick();
+                  rootTC.detectChanges();
+
+                  // selection start has not changed because we did not reset the value
+                  expect(input.selectionStart).toEqual(1);
+                })));
     });
   });
 }

@@ -19,8 +19,10 @@ import {
 
 import {PathRecognizer} from './path_recognizer';
 import {RouteHandler} from './route_handler';
+import {Route, AsyncRoute, Redirect, RouteDefinition} from './route_config_impl';
 import {AsyncRouteHandler} from './async_route_handler';
 import {SyncRouteHandler} from './sync_route_handler';
+import {parseAndAssignParamString} from 'angular2/src/router/helpers';
 
 /**
  * `RouteRecognizer` is responsible for recognizing routes for a single component.
@@ -32,25 +34,29 @@ export class RouteRecognizer {
   redirects: Map<string, string> = new Map();
   matchers: Map<RegExp, PathRecognizer> = new Map();
 
-  addRedirect(path: string, target: string): void {
-    if (path == '/') {
-      path = '';
-    }
-    this.redirects.set(path, target);
-  }
+  constructor(public isRoot: boolean = false) {}
 
-  addConfig(path: string, handlerObj: any, alias: string = null): boolean {
-    var handler = configObjToHandler(handlerObj['component']);
-    var recognizer = new PathRecognizer(path, handler);
+  config(config: RouteDefinition): boolean {
+    var handler;
+    if (config instanceof Redirect) {
+      let path = config.path == '/' ? '' : config.path;
+      this.redirects.set(path, config.redirectTo);
+      return true;
+    } else if (config instanceof Route) {
+      handler = new SyncRouteHandler(config.component);
+    } else if (config instanceof AsyncRoute) {
+      handler = new AsyncRouteHandler(config.loader);
+    }
+    var recognizer = new PathRecognizer(config.path, handler, this.isRoot);
     MapWrapper.forEach(this.matchers, (matcher, _) => {
       if (recognizer.regex.toString() == matcher.regex.toString()) {
         throw new BaseException(
-            `Configuration '${path}' conflicts with existing route '${matcher.path}'`);
+            `Configuration '${config.path}' conflicts with existing route '${matcher.path}'`);
       }
     });
     this.matchers.set(recognizer.regex, recognizer);
-    if (isPresent(alias)) {
-      this.names.set(alias, recognizer);
+    if (isPresent(config.as)) {
+      this.names.set(config.as, recognizer);
     }
     return recognizer.terminal;
   }
@@ -77,6 +83,17 @@ export class RouteRecognizer {
       }
     });
 
+    var queryParams = StringMapWrapper.create();
+    var queryString = '';
+    var queryIndex = url.indexOf('?');
+    if (queryIndex >= 0) {
+      queryString = url.substring(queryIndex + 1);
+      url = url.substring(0, queryIndex);
+    }
+    if (this.isRoot && queryString.length > 0) {
+      parseAndAssignParamString('&', queryString, queryParams);
+    }
+
     MapWrapper.forEach(this.matchers, (pathRecognizer, regex) => {
       var match;
       if (isPresent(match = RegExpWrapper.firstMatch(regex, url))) {
@@ -86,7 +103,12 @@ export class RouteRecognizer {
           matchedUrl = match[0];
           unmatchedUrl = url.substring(match[0].length);
         }
-        solutions.push(new RouteMatch(pathRecognizer, matchedUrl, unmatchedUrl));
+        var params = null;
+        if (pathRecognizer.terminal && !StringMapWrapper.isEmpty(queryParams)) {
+          params = queryParams;
+          matchedUrl += '?' + queryString;
+        }
+        solutions.push(new RouteMatch(pathRecognizer, matchedUrl, unmatchedUrl, params));
       }
     });
 
@@ -106,10 +128,22 @@ export class RouteRecognizer {
 }
 
 export class RouteMatch {
-  constructor(public recognizer: PathRecognizer, public matchedUrl: string,
-              public unmatchedUrl: string) {}
+  private _params: StringMap<string, any>;
+  private _paramsParsed: boolean = false;
 
-  params(): StringMap<string, string> { return this.recognizer.parseParams(this.matchedUrl); }
+  constructor(public recognizer: PathRecognizer, public matchedUrl: string,
+              public unmatchedUrl: string, p: StringMap<string, any> = null) {
+    this._params = isPresent(p) ? p : StringMapWrapper.create();
+  }
+
+  params(): StringMap<string, any> {
+    if (!this._paramsParsed) {
+      this._paramsParsed = true;
+      StringMapWrapper.forEach(this.recognizer.parseParams(this.matchedUrl),
+                               (value, key) => { StringMapWrapper.set(this._params, key, value); });
+    }
+    return this._params;
+  }
 }
 
 function configObjToHandler(config: any): RouteHandler {

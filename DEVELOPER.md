@@ -187,7 +187,7 @@ rights to built them in your operating system.
 ### E2E tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder).
-2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs a local webserver).
+2. `$(npm bin)/gulp serve.js.prod serve.dart` (runs a local webserver).
 3. `$(npm bin)/protractor protractor-js.conf.js`: JS e2e tests.
 4. `$(npm bin)/protractor protractor-dart2js.conf.js`: dart2js e2e tests.
 
@@ -197,7 +197,7 @@ Angular specific command line options when running protractor:
 ### Performance tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
-2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs a local webserver)
+2. `$(npm bin)/gulp serve.js.prod serve.dart` (runs a local webserver)
 3. `$(npm bin)/protractor protractor-js.conf.js --benchmark`: JS performance tests
 4. `$(npm bin)/protractor protractor-dart2js.conf.js --benchmark`: dart2js performance tests
 

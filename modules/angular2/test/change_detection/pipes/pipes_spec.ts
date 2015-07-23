@@ -76,13 +76,47 @@ export function main() {
           .toThrowError(`Cannot find 'type' pipe supporting object 'some object'`);
     });
 
-    describe('.append()', () => {
-      it('should create a factory that appends new pipes to old', () => {
-        firstPipeFactory.spy("supports").andReturn(false);
+    describe('.create()', () => {
+      it("should create a new Pipes object", () => {
+        firstPipeFactory.spy("supports").andReturn(true);
+        firstPipeFactory.spy("create").andReturn(firstPipe);
+
+        var pipes = Pipes.create({'async': [firstPipeFactory]});
+        expect(pipes.get("async", "first")).toBe(firstPipe);
+      });
+
+      it("should prepend passed it config in existing registry", () => {
+        firstPipeFactory.spy("supports").andReturn(true);
         secondPipeFactory.spy("supports").andReturn(true);
         secondPipeFactory.spy("create").andReturn(secondPipe);
+
+        var pipes1 = Pipes.create({'async': [firstPipeFactory]});
+        var pipes2 = Pipes.create({'async': [secondPipeFactory]}, pipes1);
+
+        expect(pipes2.get("async", "first")).toBe(secondPipe);
+      });
+
+      it("should use inherited pipes when no overrides support the provided object", () => {
+        firstPipeFactory.spy("supports").andReturn(true);
+        firstPipeFactory.spy("create").andReturn(firstPipe);
+        secondPipeFactory.spy("supports").andReturn(false);
+
+        var pipes1 = Pipes.create({'async': [firstPipeFactory], 'date': [firstPipeFactory]});
+        var pipes2 = Pipes.create({'async': [secondPipeFactory]}, pipes1);
+
+        expect(pipes2.get("async", "first")).toBe(firstPipe);
+        expect(pipes2.get("date", "first")).toBe(firstPipe);
+      });
+    });
+
+    describe(".extend()", () => {
+      it('should create a factory that prepend new pipes to old', () => {
+        firstPipeFactory.spy("supports").andReturn(true);
+        secondPipeFactory.spy("supports").andReturn(true);
+        secondPipeFactory.spy("create").andReturn(secondPipe);
+
         var originalPipes = new Pipes({'async': [firstPipeFactory]});
-        var binding = Pipes.append({'async':<PipeFactory[]>[secondPipeFactory]});
+        var binding = Pipes.extend({'async':<PipeFactory[]>[secondPipeFactory]});
         var pipes: Pipes = binding.toFactory(originalPipes);
 
         expect(pipes.config['async'].length).toBe(2);
@@ -90,33 +124,34 @@ export function main() {
         expect(pipes.get('async', 'second plz')).toBe(secondPipe);
       });
 
-
-      it('should append to di-inherited pipes', () => {
-        firstPipeFactory.spy("supports").andReturn(false);
-        secondPipeFactory.spy("supports").andReturn(true);
-        secondPipeFactory.spy("create").andReturn(secondPipe);
-
-        var originalPipes: Pipes = new Pipes({'async': [firstPipeFactory]});
-        var injector: Injector = Injector.resolveAndCreate([bind(Pipes).toValue(originalPipes)]);
-        var childInjector: Injector =
-            injector.resolveAndCreateChild([Pipes.append({'async': [secondPipeFactory]})]);
-        var parentPipes: Pipes = injector.get(Pipes);
-        var childPipes: Pipes = childInjector.get(Pipes);
-        expect(childPipes.config['async'].length).toBe(2);
-        expect(parentPipes.config['async'].length).toBe(1);
-        expect(childPipes.get('async', 'second plz')).toBe(secondPipe);
-      });
-
-
-      it('should throw if calling append when creating root injector', () => {
+      it('should throw if calling extend when creating root injector', () => {
         secondPipeFactory.spy("supports").andReturn(true);
         secondPipeFactory.spy("create").andReturn(secondPipe);
 
         var injector: Injector =
-            Injector.resolveAndCreate([Pipes.append({'async': [secondPipeFactory]})]);
+            Injector.resolveAndCreate([Pipes.extend({'async': [secondPipeFactory]})]);
 
         expect(() => injector.get(Pipes))
-            .toThrowError(/Cannot append to Pipes without a parent injector/g);
+            .toThrowError(/Cannot extend Pipes without a parent injector/g);
+      });
+
+      it('should extend di-inherited pipes', () => {
+        firstPipeFactory.spy("supports").andReturn(true);
+        firstPipeFactory.spy("create").andReturn(firstPipe);
+
+        secondPipeFactory.spy("supports").andReturn(false);
+
+        var originalPipes: Pipes = new Pipes({'async': [firstPipeFactory]});
+        var injector: Injector = Injector.resolveAndCreate([bind(Pipes).toValue(originalPipes)]);
+        var childInjector: Injector =
+            injector.resolveAndCreateChild([Pipes.extend({'async': [secondPipeFactory]})]);
+
+        var parentPipes: Pipes = injector.get(Pipes);
+        var childPipes: Pipes = childInjector.get(Pipes);
+
+        expect(childPipes.config['async'].length).toBe(2);
+        expect(parentPipes.config['async'].length).toBe(1);
+        expect(childPipes.get('async', 'second plz')).toBe(firstPipe);
       });
     });
   });

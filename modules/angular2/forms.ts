@@ -27,7 +27,10 @@ export {NgForm} from './src/forms/directives/ng_form';
 export {ControlValueAccessor} from './src/forms/directives/control_value_accessor';
 export {DefaultValueAccessor} from './src/forms/directives/default_value_accessor';
 export {CheckboxControlValueAccessor} from './src/forms/directives/checkbox_value_accessor';
-export {SelectControlValueAccessor} from './src/forms/directives/select_control_value_accessor';
+export {
+  NgSelectOption,
+  SelectControlValueAccessor
+} from './src/forms/directives/select_control_value_accessor';
 export {formDirectives} from './src/forms/directives';
 export {Validators} from './src/forms/validators';
 export {NgValidator, NgRequiredValidator} from './src/forms/directives/validators';

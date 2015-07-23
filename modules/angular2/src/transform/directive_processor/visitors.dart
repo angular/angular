@@ -4,8 +4,11 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
+import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
+import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:barback/barback.dart';
 
 /// `ToSourceVisitor` designed to accept {@link ConstructorDeclaration} nodes.
 class _CtorTransformVisitor extends ToSourceVisitor {
@@ -203,25 +206,84 @@ class FactoryTransformVisitor extends _CtorTransformVisitor {
   }
 }
 
-// TODO(kegluenq): Use pull #1772 to detect when available.
-bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
-
 /// ToSourceVisitor designed to print a `ClassDeclaration` node as a
 /// 'annotations' value for Angular2's `registerType` calls.
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final AsyncStringWriter writer;
   final XHR _xhr;
+  final AnnotationMatcher _annotationMatcher;
+  final InterfaceMatcher _interfaceMatcher;
+  final AssetId _assetId;
   final bool _inlineViews;
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
-  bool _processingView = false;
+  bool _isProcessingView = false;
+  bool _isProcessingDirective = false;
+  String _lifecycleValue = null;
 
-  AnnotationsTransformVisitor(
-      AsyncStringWriter writer, this._xhr, this._inlineViews)
+  AnnotationsTransformVisitor(AsyncStringWriter writer, this._xhr,
+      this._annotationMatcher, this._interfaceMatcher, this._assetId,
+      {bool inlineViews})
       : this.writer = writer,
+        _inlineViews = inlineViews,
         super(writer);
+
+  /// Determines if the `node` has interface-based lifecycle methods and
+  /// populates `_lifecycleValue` with the appropriate values if so. If none are
+  /// present, `_lifecycleValue` is not modified.
+  void _populateLifecycleValue(ClassDeclaration node) {
+    var lifecycleEntries = [];
+    var prefix = '';
+    var populateImport = (Identifier name) {
+      if (prefix.isNotEmpty) return;
+      var import = _interfaceMatcher.getMatchingImport(name, _assetId);
+      prefix =
+          import != null && import.prefix != null ? '${import.prefix}.' : '';
+    };
+
+    var namesToTest = [];
+
+    if (node.implementsClause != null &&
+        node.implementsClause.interfaces != null &&
+        node.implementsClause.interfaces.isNotEmpty) {
+      namesToTest.addAll(node.implementsClause.interfaces.map((i) => i.name));
+    }
+
+    if (node.extendsClause != null) {
+      namesToTest.add(node.extendsClause.superclass.name);
+    }
+
+    namesToTest.forEach((name) {
+      if (_interfaceMatcher.isOnChange(name, _assetId)) {
+        lifecycleEntries.add('onChange');
+        populateImport(name);
+      }
+      if (_interfaceMatcher.isOnDestroy(name, _assetId)) {
+        lifecycleEntries.add('onDestroy');
+        populateImport(name);
+      }
+      if (_interfaceMatcher.isOnCheck(name, _assetId)) {
+        lifecycleEntries.add('onCheck');
+        populateImport(name);
+      }
+      if (_interfaceMatcher.isOnInit(name, _assetId)) {
+        lifecycleEntries.add('onInit');
+        populateImport(name);
+      }
+      if (_interfaceMatcher.isOnAllChangesDone(name, _assetId)) {
+        lifecycleEntries.add('onAllChangesDone');
+        populateImport(name);
+      }
+    });
+    if (lifecycleEntries.isNotEmpty) {
+      _lifecycleValue = 'const [${prefix}LifecycleEvent.'
+          '${lifecycleEntries.join(", ${prefix}LifecycleEvent.")}]';
+    }
+  }
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
+    _populateLifecycleValue(node);
+
     writer.print('const [');
     var size = node.metadata.length;
     for (var i = 0; i < size; ++i) {
@@ -231,6 +293,8 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       node.metadata[i].accept(this);
     }
     writer.print(']');
+
+    _lifecycleValue = null;
     return null;
   }
 
@@ -238,15 +302,30 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
   Object visitAnnotation(Annotation node) {
     writer.print('const ');
     if (node.name != null) {
-      _processingView = _isViewAnnotation(node);
+      _isProcessingDirective = _annotationMatcher.isDirective(node, _assetId);
+      _isProcessingView = _annotationMatcher.isView(node, _assetId);
       node.name.accept(this);
+    } else {
+      _isProcessingDirective = false;
+      _isProcessingView = false;
     }
     if (node.constructorName != null) {
       writer.print('.');
       node.constructorName.accept(this);
     }
-    if (node.arguments != null) {
-      node.arguments.accept(this);
+    if (node.arguments != null && node.arguments.arguments != null) {
+      var args = node.arguments.arguments;
+      writer.print('(');
+      for (var i = 0, iLen = args.length; i < iLen; ++i) {
+        if (i != 0) {
+          writer.print(', ');
+        }
+        args[i].accept(this);
+      }
+      if (_lifecycleValue != null && _isProcessingDirective) {
+        writer.print(''', lifecycle: $_lifecycleValue ''');
+      }
+      writer.print(')');
     }
     return null;
   }
@@ -255,7 +334,7 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
   @override
   Object visitNamedExpression(NamedExpression node) {
     // TODO(kegluneq): Remove this limitation.
-    if (!_processingView ||
+    if (!_isProcessingView ||
         node.name is! Label ||
         node.name.label is! SimpleIdentifier) {
       return super.visitNamedExpression(node);

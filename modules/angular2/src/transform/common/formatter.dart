@@ -7,9 +7,6 @@ import 'logging.dart';
 DartFormatter _formatter = null;
 
 void init(DartFormatter formatter) {
-  if (_formatter != null) {
-    logger.info('Formatter is being overwritten.');
-  }
   _formatter = formatter;
 }
 

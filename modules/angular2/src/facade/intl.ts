@@ -14,7 +14,7 @@ declare module Intl {
     format(value: number): string;
   }
 
-  var NumberFormat: { new (locale?: string, options?: NumberFormatOptions): NumberFormat; }
+  var NumberFormat: {new (locale?: string, options?: NumberFormatOptions): NumberFormat};
 
   interface DateTimeFormatOptions {
     localeMatcher?: string;
@@ -35,7 +35,7 @@ declare module Intl {
     format(date?: Date | number): string;
   }
 
-  var DateTimeFormat: { new (locale?: string, options?: DateTimeFormatOptions): DateTimeFormat; }
+  var DateTimeFormat: {new (locale?: string, options?: DateTimeFormatOptions): DateTimeFormat};
 }
 
 export enum NumberFormatStyle {

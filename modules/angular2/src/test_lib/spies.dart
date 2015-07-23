@@ -28,3 +28,8 @@ class SpyPipeFactory extends SpyObject implements PipeFactory {
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
+
+@proxy
+class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}

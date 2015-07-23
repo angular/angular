@@ -19,6 +19,12 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
 export function main() {
   describe("Form Model", () => {
     describe("Control", () => {
+      it("should default the value to null", () => {
+        var c = new Control();
+        expect(c.value).toBe(null);
+        expect(c.validator).toBe(Validators.nullValidator);
+      });
+
       describe("validator", () => {
         it("should run validator with the initial value", () => {
           var c = new Control("value", Validators.required);
@@ -69,6 +75,15 @@ export function main() {
           c.updateValue("newValue");
 
           expect(onChange).toEqual(["invoked", "newValue"]);
+        });
+
+        it("should not invoke on change when explicitly specified", () => {
+          var onChange = null;
+          c.registerOnChange((v) => onChange = ["invoked", v]);
+
+          c.updateValue("newValue", {emitModelToViewChange: false});
+
+          expect(onChange).toBeNull();
         });
 
         it("should update the parent", () => {

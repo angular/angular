@@ -51,11 +51,11 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *     {{ 'abcdefghij' | limitTo: -100 }}    // output is 'abcdefghij'
  */
 export class LimitToPipe implements Pipe {
-  static supportsObj(obj): boolean { return isString(obj) || isArray(obj); }
+  static supportsObj(obj: any): boolean { return isString(obj) || isArray(obj); }
 
-  supports(obj): boolean { return LimitToPipe.supportsObj(obj); }
+  supports(obj: any): boolean { return LimitToPipe.supportsObj(obj); }
 
-  transform(value, args: List<any> = null): any {
+  transform(value: any, args: List<any> = null): any {
     if (isBlank(args) || args.length == 0) {
       throw new BaseException('limitTo pipe requires one argument');
     }
@@ -76,7 +76,7 @@ export class LimitToPipe implements Pipe {
 
 @CONST()
 export class LimitToPipeFactory implements PipeFactory {
-  supports(obj): boolean { return LimitToPipe.supportsObj(obj); }
+  supports(obj: any): boolean { return LimitToPipe.supportsObj(obj); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return new LimitToPipe(); }
 }

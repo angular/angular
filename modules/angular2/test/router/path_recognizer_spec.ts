@@ -21,6 +21,39 @@ var mockRouteHandler = new SyncRouteHandler(DummyClass);
 
 export function main() {
   describe('PathRecognizer', () => {
+
+    it('should throw when given an invalid path', () => {
+      expect(() => new PathRecognizer('/hi#', mockRouteHandler))
+          .toThrowError(`Path "/hi#" should not include "#". Use "HashLocationStrategy" instead.`);
+      expect(() => new PathRecognizer('hi?', mockRouteHandler))
+          .toThrowError(`Path "hi?" contains "?" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi;', mockRouteHandler))
+          .toThrowError(`Path "hi;" contains ";" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi=', mockRouteHandler))
+          .toThrowError(`Path "hi=" contains "=" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi(', mockRouteHandler))
+          .toThrowError(`Path "hi(" contains "(" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi)', mockRouteHandler))
+          .toThrowError(`Path "hi)" contains ")" which is not allowed in a route config.`);
+      expect(() => new PathRecognizer('hi//there', mockRouteHandler))
+          .toThrowError(`Path "hi//there" contains "//" which is not allowed in a route config.`);
+    });
+
+    describe('querystring params', () => {
+      it('should parse querystring params so long as the recognizer is a root', () => {
+        var rec = new PathRecognizer('/hello/there', mockRouteHandler, true);
+        var params = rec.parseParams('/hello/there?name=igor');
+        expect(params).toEqual({'name': 'igor'});
+      });
+
+      it('should return a combined map of parameters with the param expected in the URL path',
+         () => {
+           var rec = new PathRecognizer('/hello/:name', mockRouteHandler, true);
+           var params = rec.parseParams('/hello/paul?topic=success');
+           expect(params).toEqual({'name': 'paul', 'topic': 'success'});
+         });
+    });
+
     describe('matrix params', () => {
       it('should recognize a trailing matrix value on a path value and assign it to the params return value',
          () => {

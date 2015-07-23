@@ -17,11 +17,13 @@ import {
   isStringMap,
   isFunction,
   StringWrapper,
-  BaseException
+  BaseException,
+  getTypeNameForDebugging
 } from 'angular2/src/facade/lang';
-import {RouteConfig} from './route_config_impl';
+import {RouteConfig, AsyncRoute, Route, Redirect, RouteDefinition} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Injectable} from 'angular2/di';
+import {normalizeRouteConfig} from './route_config_nomalizer';
 
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
@@ -35,32 +37,23 @@ export class RouteRegistry {
   /**
    * Given a component and a configuration object, add the route to this registry
    */
-  config(parentComponent, config: StringMap<string, any>): void {
-    assertValidConfig(config);
+  config(parentComponent: any, config: RouteDefinition, isRootLevelRoute: boolean = false): void {
+    config = normalizeRouteConfig(config);
 
     var recognizer: RouteRecognizer = this._rules.get(parentComponent);
 
     if (isBlank(recognizer)) {
-      recognizer = new RouteRecognizer();
+      recognizer = new RouteRecognizer(isRootLevelRoute);
       this._rules.set(parentComponent, recognizer);
     }
 
-    if (StringMapWrapper.contains(config, 'redirectTo')) {
-      recognizer.addRedirect(config['path'], config['redirectTo']);
-      return;
-    }
+    var terminal = recognizer.config(config);
 
-    config = StringMapWrapper.merge(
-        config, {'component': normalizeComponentDeclaration(config['component'])});
-
-    var component = config['component'];
-    var terminal = recognizer.addConfig(config['path'], config, config['as']);
-
-    if (component['type'] == 'constructor') {
+    if (config instanceof Route) {
       if (terminal) {
-        assertTerminalComponent(component['constructor'], config['path']);
+        assertTerminalComponent(config.component, config.path);
       } else {
-        this.configFromComponent(component['constructor']);
+        this.configFromComponent(config.component);
       }
     }
   }
@@ -68,7 +61,7 @@ export class RouteRegistry {
   /**
    * Reads the annotations of a component and configures the registry based on them
    */
-  configFromComponent(component): void {
+  configFromComponent(component: any, isRootComponent: boolean = false): void {
     if (!isType(component)) {
       return;
     }
@@ -84,7 +77,8 @@ export class RouteRegistry {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
-          ListWrapper.forEach(annotation.configs, (config) => this.config(component, config));
+          ListWrapper.forEach(annotation.configs,
+                              (config) => this.config(component, config, isRootComponent));
         }
       }
     }
@@ -95,7 +89,7 @@ export class RouteRegistry {
    * Given a URL and a parent component, return the most specific instruction for navigating
    * the application into the state specified by the url
    */
-  recognize(url: string, parentComponent): Promise<Instruction> {
+  recognize(url: string, parentComponent: any): Promise<Instruction> {
     var componentRecognizer = this._rules.get(parentComponent);
     if (isBlank(componentRecognizer)) {
       return PromiseWrapper.resolve(null);
@@ -127,7 +121,8 @@ export class RouteRegistry {
 
       if (partialMatch.unmatchedUrl.length == 0) {
         if (recognizer.terminal) {
-          return new Instruction(componentType, partialMatch.matchedUrl, recognizer);
+          return new Instruction(componentType, partialMatch.matchedUrl, recognizer, null,
+                                 partialMatch.params());
         } else {
           return null;
         }
@@ -149,11 +144,14 @@ export class RouteRegistry {
    * Given a normalized list with component names and params like: `['user', {id: 3 }]`
    * generates a url with a leading slash relative to the provided `parentComponent`.
    */
-  generate(linkParams: List<any>, parentComponent): string {
+  generate(linkParams: List<any>, parentComponent: any): string {
     let url = '';
     let componentCursor = parentComponent;
     for (let i = 0; i < linkParams.length; i += 1) {
       let segment = linkParams[i];
+      if (isBlank(componentCursor)) {
+        throw new BaseException(`Could not find route named "${segment}".`);
+      }
       if (!isString(segment)) {
         throw new BaseException(`Unexpected segment "${segment}" in link DSL. Expected a string.`);
       } else if (segment == '' || segment == '.' || segment == '..') {
@@ -170,9 +168,14 @@ export class RouteRegistry {
 
       var componentRecognizer = this._rules.get(componentCursor);
       if (isBlank(componentRecognizer)) {
-        throw new BaseException(`Could not find route config for "${segment}".`);
+        throw new BaseException(
+            `Component "${getTypeNameForDebugging(componentCursor)}" has no route config.`);
       }
       var response = componentRecognizer.generate(segment, params);
+      if (isBlank(response)) {
+        throw new BaseException(
+            `Component "${getTypeNameForDebugging(componentCursor)}" has no route named "${segment}".`);
+      }
       url += response['url'];
       componentCursor = response['nextComponent'];
     }
@@ -181,50 +184,6 @@ export class RouteRegistry {
   }
 }
 
-
-/*
- * A config should have a "path" property, and exactly one of:
- * - `component`
- * - `redirectTo`
- */
-var ALLOWED_TARGETS = ['component', 'redirectTo'];
-function assertValidConfig(config: StringMap<string, any>): void {
-  if (!StringMapWrapper.contains(config, 'path')) {
-    throw new BaseException(`Route config should contain a "path" property`);
-  }
-  var targets = 0;
-  ListWrapper.forEach(ALLOWED_TARGETS, (target) => {
-    if (StringMapWrapper.contains(config, target)) {
-      targets += 1;
-    }
-  });
-  if (targets != 1) {
-    throw new BaseException(
-        `Route config should contain exactly one 'component', or 'redirectTo' property`);
-  }
-}
-
-/*
- * Returns a StringMap like: `{ 'constructor': SomeType, 'type': 'constructor' }`
- */
-var VALID_COMPONENT_TYPES = ['constructor', 'loader'];
-function normalizeComponentDeclaration(config: any): StringMap<string, any> {
-  if (isType(config)) {
-    return {'constructor': config, 'type': 'constructor'};
-  } else if (isStringMap(config)) {
-    if (isBlank(config['type'])) {
-      throw new BaseException(
-          `Component declaration when provided as a map should include a 'type' property`);
-    }
-    var componentType = config['type'];
-    if (!ListWrapper.contains(VALID_COMPONENT_TYPES, componentType)) {
-      throw new BaseException(`Invalid component type '${componentType}'`);
-    }
-    return config;
-  } else {
-    throw new BaseException(`Component declaration should be either a Map or a Type`);
-  }
-}
 
 /*
  * Given a list of instructions, returns the most specific instruction

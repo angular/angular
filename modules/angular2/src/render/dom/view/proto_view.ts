@@ -1,12 +1,9 @@
-import {isPresent} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 
-import {ElementBinder} from './element_binder';
-import {NG_BINDING_CLASS} from '../util';
+import {DomElementBinder} from './element_binder';
+import {RenderProtoViewRef, ViewType} from '../../api';
 
-import {RenderProtoViewRef} from '../../api';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef): DomProtoView {
   return (<DomProtoViewRef>protoViewRef)._protoView;
@@ -17,24 +14,22 @@ export class DomProtoViewRef extends RenderProtoViewRef {
 }
 
 export class DomProtoView {
-  element;
-  elementBinders: List<ElementBinder>;
-  isTemplateElement: boolean;
-  rootBindingOffset: number;
-  // the number of content tags seen in this or any child proto view.
-  transitiveContentTagCount: number;
-  boundTextNodeCount: number;
-  rootNodeCount: number;
-
-  constructor({elementBinders, element, transitiveContentTagCount, boundTextNodeCount}) {
-    this.element = element;
-    this.elementBinders = elementBinders;
-    this.transitiveContentTagCount = transitiveContentTagCount;
-    this.isTemplateElement = DOM.isTemplateElement(this.element);
-    this.rootBindingOffset =
-        (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
-    this.boundTextNodeCount = boundTextNodeCount;
-    this.rootNodeCount =
-        this.isTemplateElement ? DOM.childNodes(DOM.content(this.element)).length : 1;
+  static create(type: ViewType, rootElement: Element, fragmentsRootNodeCount: number[],
+                rootTextNodeIndices: number[],
+                elementBinders: List<DomElementBinder>): DomProtoView {
+    var boundTextNodeCount = rootTextNodeIndices.length;
+    for (var i = 0; i < elementBinders.length; i++) {
+      boundTextNodeCount += elementBinders[i].textNodeIndices.length;
+    }
+    var isSingleElementFragment = fragmentsRootNodeCount.length === 1 &&
+                                  fragmentsRootNodeCount[0] === 1 &&
+                                  DOM.isElementNode(DOM.firstChild(DOM.content(rootElement)));
+    return new DomProtoView(type, rootElement, elementBinders, rootTextNodeIndices,
+                            boundTextNodeCount, fragmentsRootNodeCount, isSingleElementFragment);
   }
+
+  constructor(public type: ViewType, public rootElement: Element,
+              public elementBinders: List<DomElementBinder>, public rootTextNodeIndices: number[],
+              public boundTextNodeCount: number, public fragmentsRootNodeCount: number[],
+              public isSingleElementFragment: boolean) {}
 }

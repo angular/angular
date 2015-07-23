@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'dart:convert' as convert;
 import 'dart:async' show Future;
 
+String getTypeNameForDebugging(Type type) => type.toString();
+
 class Math {
   static final _random = new math.Random();
   static int floor(num n) => n.floor();
@@ -95,6 +97,8 @@ class StringWrapper {
   static bool contains(String s, String substr) {
     return s.contains(substr);
   }
+
+  static int compare(String a, String b) => a.compareTo(b);
 }
 
 class StringJoiner {
@@ -179,11 +183,12 @@ class FunctionWrapper {
 }
 
 class BaseException extends Error {
+  final dynamic context;
   final String message;
   final originalException;
   final originalStack;
 
-  BaseException([this.message, this.originalException, this.originalStack]);
+  BaseException([this.message, this.originalException, this.originalStack, this.context]);
 
   String toString() {
     return this.message;
@@ -196,7 +201,9 @@ Error makeTypeError([String message = ""]) {
 
 const _NAN_KEY = const Object();
 
-// Dart can have identical(str1, str2) == false while str1 == str2
+// Dart can have identical(str1, str2) == false while str1 == str2. Moreover,
+// after compiling with dart2js identical(str1, str2) might return true.
+// (see dartbug.com/22496 for details).
 bool looseIdentical(a, b) =>
     a is String && b is String ? a == b : identical(a, b);
 
@@ -217,13 +224,17 @@ bool isJsObject(o) {
   return false;
 }
 
+var _assertionsEnabled = null;
 bool assertionsEnabled() {
-  try {
-    assert(false);
-    return false;
-  } catch (e) {
-    return true;
+  if (_assertionsEnabled == null) {
+    try {
+      assert(false);
+      _assertionsEnabled = false;
+    } catch (e) {
+      _assertionsEnabled = true;
+    }
   }
+  return _assertionsEnabled;
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...

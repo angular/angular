@@ -19,7 +19,7 @@ import {QueryList} from 'angular2/core';
 import {Query, ViewQuery, Component, Directive, View} from 'angular2/annotations';
 
 import {NgIf, NgFor} from 'angular2/angular2';
-import {ListWrapper, iterableToList} from 'angular2/src/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
@@ -398,7 +398,7 @@ class NeedsQueryDesc {
 }
 
 @Component({selector: 'needs-query-by-var-binding'})
-@View({directives: [], template: '<content>'})
+@View({directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByLabel {
   query: QueryList<any>;
@@ -408,7 +408,7 @@ class NeedsQueryByLabel {
 }
 
 @Component({selector: 'needs-query-by-var-bindings'})
-@View({directives: [], template: '<content>'})
+@View({directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByTwoLabels {
   query: QueryList<any>;

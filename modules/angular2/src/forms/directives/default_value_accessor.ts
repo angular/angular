@@ -22,7 +22,6 @@ import {setProperty} from './shared';
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()',
-    '[value]': 'value',
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',
     '[class.ng-pristine]': 'ngClassPristine',
@@ -32,8 +31,6 @@ import {setProperty} from './shared';
   }
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
-  value: string = null;
-
   onChange = (_) => {};
   onTouched = () => {};
 
@@ -41,11 +38,11 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     cd.valueAccessor = this;
   }
 
-  writeValue(value) {
+  writeValue(value: any) {
     // both this.value and setProperty are required at the moment
     // remove when a proper imperative API is provided
-    this.value = isBlank(value) ? '' : value;
-    setProperty(this.renderer, this.elementRef, 'value', this.value);
+    var normalizedValue = isBlank(value) ? '' : value;
+    setProperty(this.renderer, this.elementRef, 'value', normalizedValue);
   }
 
   get ngClassUntouched(): boolean {
@@ -63,7 +60,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     return isPresent(this.cd.control) ? !this.cd.control.valid : false;
   }
 
-  registerOnChange(fn): void { this.onChange = fn; }
+  registerOnChange(fn: (_) => void): void { this.onChange = fn; }
 
-  registerOnTouched(fn): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

@@ -4,7 +4,7 @@ import 'hello.dart';
 import 'goodbye.dart' as prefix;
 import 'goodbye.ng_deps.dart' as i0;
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show Component, Directive, View, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {

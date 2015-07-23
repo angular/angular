@@ -14,13 +14,15 @@ import {
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 import {ASTWithSource, AST} from 'angular2/change_detection';
 import {PropertyBindingType, ViewType} from 'angular2/src/render/api';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   function emptyExpr() { return new ASTWithSource(new AST(), 'empty', 'empty'); }
 
   describe('ProtoViewBuilder', () => {
     var builder;
-    beforeEach(() => { builder = new ProtoViewBuilder(el('<div/>'), ViewType.EMBEDDED); });
+    beforeEach(
+        () => { builder = new ProtoViewBuilder(DOM.createTemplate(''), ViewType.EMBEDDED); });
 
     if (!IS_DARTIUM) {
       describe('verification of properties', () => {
@@ -29,7 +31,7 @@ export function main() {
           builder.bindElement(el('<div/>')).bindProperty('unknownProperty', emptyExpr());
           expect(() => builder.build())
               .toThrowError(
-                  `Can't bind to 'unknownProperty' since it isn't a know property of the 'div' element and there are no matching directives with a corresponding property`);
+                  `Can't bind to 'unknownProperty' since it isn't a known property of the '<div>' element and there are no matching directives with a corresponding property`);
         });
 
         it('should allow unknown properties if a directive uses it', () => {
@@ -51,7 +53,7 @@ export function main() {
           binder.setComponentId('someComponent');
           expect(() => builder.build())
               .toThrowError(
-                  `Can't bind to 'unknownProperty' since it isn't a know property of the 'some-custom' element and there are no matching directives with a corresponding property`);
+                  `Can't bind to 'unknownProperty' since it isn't a known property of the '<some-custom>' element and there are no matching directives with a corresponding property`);
         });
 
       });

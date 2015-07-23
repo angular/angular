@@ -1,42 +1,29 @@
 import {AST} from 'angular2/change_detection';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import * as protoViewModule from './proto_view';
 
-export class ElementBinder {
-  contentTagSelector: string;
+export class DomElementBinder {
   textNodeIndices: List<number>;
-  nestedProtoView: protoViewModule.DomProtoView;
+  hasNestedProtoView: boolean;
   eventLocals: AST;
   localEvents: List<Event>;
   globalEvents: List<Event>;
-  componentId: string;
-  parentIndex: number;
-  distanceToParent: number;
-  elementIsEmpty: boolean;
+  hasNativeShadowRoot: boolean;
 
-  constructor({textNodeIndices, contentTagSelector, nestedProtoView, componentId, eventLocals,
-               localEvents, globalEvents, parentIndex, distanceToParent, elementIsEmpty}: {
-    contentTagSelector?: string,
+  constructor({textNodeIndices, hasNestedProtoView, eventLocals, localEvents, globalEvents,
+               hasNativeShadowRoot}: {
     textNodeIndices?: List<number>,
-    nestedProtoView?: protoViewModule.DomProtoView,
+    hasNestedProtoView?: boolean,
     eventLocals?: AST,
     localEvents?: List<Event>,
     globalEvents?: List<Event>,
-    componentId?: string,
-    parentIndex?: number,
-    distanceToParent?: number,
-    elementIsEmpty?: boolean
+    hasNativeShadowRoot?: boolean
   } = {}) {
     this.textNodeIndices = textNodeIndices;
-    this.contentTagSelector = contentTagSelector;
-    this.nestedProtoView = nestedProtoView;
-    this.componentId = componentId;
+    this.hasNestedProtoView = hasNestedProtoView;
     this.eventLocals = eventLocals;
     this.localEvents = localEvents;
     this.globalEvents = globalEvents;
-    this.parentIndex = parentIndex;
-    this.distanceToParent = distanceToParent;
-    this.elementIsEmpty = elementIsEmpty;
+    this.hasNativeShadowRoot = hasNativeShadowRoot;
   }
 }
 

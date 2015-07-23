@@ -69,7 +69,7 @@ export interface Pipe {
  */
 @CONST()
 export class BasePipe implements Pipe {
-  supports(obj): boolean { return true; }
+  supports(obj: any): boolean { return true; }
   onDestroy(): void {}
   transform(value: any, args: List<any>): any { return _abstract(); }
 }

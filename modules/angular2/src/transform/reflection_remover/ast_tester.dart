@@ -15,6 +15,10 @@ class AstTester {
   bool isReflectionCapabilitiesImport(ImportDirective node) {
     return node.uri.stringValue.endsWith("reflection_capabilities.dart");
   }
+
+  bool isBootstrapImport(ImportDirective node) {
+    return node.uri.stringValue.endsWith("/bootstrap.dart");
+  }
 }
 
 /// An object that checks for {@link ReflectionCapabilities} using a fully resolved
@@ -31,5 +35,9 @@ class ResolvedTester implements AstTester {
 
   bool isReflectionCapabilitiesImport(ImportDirective node) {
     return node.uriElement == _forbiddenClass.library;
+  }
+
+  bool isBootstrapImport(ImportDirective node) {
+    throw 'Not implemented';
   }
 }

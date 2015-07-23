@@ -56,33 +56,33 @@ createTemplate(String html) {
   return div;
 }
 
-@Directive(selector: '[dir0]', map: const {'attr0': '=>prop'})
+@Decorator(selector: '[dir0]', map: const {'attr0': '=>prop'})
 class Dir0 {
   Object prop;
 }
 
-@Directive(selector: '[dir1]', map: const {'attr1': '=>prop'})
+@Decorator(selector: '[dir1]', map: const {'attr1': '=>prop'})
 class Dir1 {
   Object prop;
 
   constructor(Dir0 dir0) {}
 }
 
-@Directive(selector: '[dir2]', map: const {'attr2': '=>prop'})
+@Decorator(selector: '[dir2]', map: const {'attr2': '=>prop'})
 class Dir2 {
   Object prop;
 
   constructor(Dir1 dir1) {}
 }
 
-@Directive(selector: '[dir3]', map: const {'attr3': '=>prop'})
+@Decorator(selector: '[dir3]', map: const {'attr3': '=>prop'})
 class Dir3 {
   Object prop;
 
   constructor(Dir2 dir2) {}
 }
 
-@Directive(selector: '[dir4]', map: const {'attr4': '=>prop'})
+@Decorator(selector: '[dir4]', map: const {'attr4': '=>prop'})
 class Dir4 {
   Object prop;
 

@@ -1,7 +1,7 @@
 library examples.src.hello_world.multiple_style_urls_not_inlined_files;
 
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show Component, Directive, View, NgElement;
 
 @Component(selector: 'hello-app')
 @View(

@@ -5,7 +5,6 @@ import {ResolvedBinding, Binding, Dependency, BindingBuilder, bind} from './bind
 import {
   AbstractBindingError,
   NoBindingError,
-  AsyncBindingError,
   CyclicDependencyError,
   InstantiationError,
   InvalidBindingError,
@@ -14,7 +13,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {VisibilityMetadata, DEFAULT_VISIBILITY} from './metadata';
+import {VisibilityMetadata, DEFAULT_VISIBILITY, SelfMetadata, AncestorMetadata} from './metadata';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -174,8 +173,10 @@ export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
 
 export class ProtoInjector {
   _strategy: ProtoInjectorStrategy;
+  numberOfBindings: number;
 
-  constructor(bwv: BindingWithVisibility[], public distanceToParent: number) {
+  constructor(bwv: BindingWithVisibility[]) {
+    this.numberOfBindings = bwv.length;
     this._strategy = bwv.length > _MAX_CONSTRUCTION_COUNTER ?
                          new ProtoInjectorDynamicStrategy(this, bwv) :
                          new ProtoInjectorInlineStrategy(this, bwv);
@@ -459,7 +460,7 @@ export class Injector {
   static fromResolvedBindings(bindings: List<ResolvedBinding>,
                               depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
-    var proto = new ProtoInjector(bd, 0);
+    var proto = new ProtoInjector(bd);
     var inj = new Injector(proto, null, depProvider);
     return inj;
   }
@@ -469,9 +470,17 @@ export class Injector {
   _constructionCounter: number = 0;
 
   constructor(public _proto: ProtoInjector, public _parent: Injector = null,
-              private _depProvider: DependencyProvider = null) {
+              private _depProvider: DependencyProvider = null,
+              private _debugContext: Function = null) {
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
+
+  /**
+   * Returns debug information about the injector.
+   *
+   * This information is included into exceptions thrown by the injector.
+   */
+  debugContext(): any { return this._debugContext(); }
 
   /**
    * Retrieves an instance from the injector.
@@ -480,7 +489,7 @@ export class Injector {
    *binding).
    * @returns an instance represented by the token. Throws if not found.
    */
-  get(token): any {
+  get(token: any): any {
     return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, false, PUBLIC_AND_PRIVATE);
   }
 
@@ -490,7 +499,7 @@ export class Injector {
    * @param `token`: usually a `Type`. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Returns `null` if not found.
    */
-  getOptional(token): any {
+  getOptional(token: any): any {
     return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, true, PUBLIC_AND_PRIVATE);
   }
 
@@ -542,7 +551,7 @@ export class Injector {
   createChildFromResolved(bindings: List<ResolvedBinding>,
                           depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
-    var proto = new ProtoInjector(bd, 1);
+    var proto = new ProtoInjector(bd);
     var inj = new Injector(proto, null, depProvider);
     inj._parent = this;
     return inj;
@@ -550,7 +559,7 @@ export class Injector {
 
   _new(binding: ResolvedBinding, visibility: number): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
-      throw new CyclicDependencyError(binding.key);
+      throw new CyclicDependencyError(this, binding.key);
     }
 
     var factory = binding.factory;
@@ -580,7 +589,9 @@ export class Injector {
       d18 = length > 18 ? this._getByDependency(binding, deps[18], visibility) : null;
       d19 = length > 19 ? this._getByDependency(binding, deps[19], visibility) : null;
     } catch (e) {
-      if (e instanceof AbstractBindingError) e.addKey(binding.key);
+      if (e instanceof AbstractBindingError) {
+        e.addKey(this, binding.key);
+      }
       throw e;
     }
 
@@ -655,7 +666,7 @@ export class Injector {
           break;
       }
     } catch (e) {
-      throw new InstantiationError(e, e.stack, binding.key);
+      throw new InstantiationError(this, e, e.stack, binding.key);
     }
     return obj;
   }
@@ -674,54 +685,92 @@ export class Injector {
 
   private _getByKey(key: Key, depVisibility: VisibilityMetadata, optional: boolean,
                     bindingVisibility: number): any {
-    if (key.token === Injector) {
+    if (key === INJECTOR_KEY) {
       return this;
     }
 
-    var inj = this;
-    var lastInjector = false;
-    var depth = depVisibility.depth;
+    if (depVisibility instanceof SelfMetadata) {
+      return this._getByKeySelf(key, optional, bindingVisibility);
 
-    if (!depVisibility.includeSelf) {
-      depth -= inj._proto.distanceToParent;
+    } else if (depVisibility instanceof AncestorMetadata) {
+      return this._getByKeyAncestor(key, optional, bindingVisibility, depVisibility.includeSelf);
 
-      if (inj._isBoundary) {
-        if (depVisibility.crossBoundaries) {
-          bindingVisibility = PUBLIC_AND_PRIVATE;
-        } else {
-          bindingVisibility = PRIVATE;
-          lastInjector = true;
-        }
-      }
-      inj = inj._parent;
+    } else {
+      return this._getByKeyUnbounded(key, optional, bindingVisibility, depVisibility.includeSelf);
     }
+  }
 
-    while (inj != null && depth >= 0) {
-      var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
-      if (obj !== undefinedValue) return obj;
-
-      depth -= inj._proto.distanceToParent;
-
-      if (lastInjector) break;
-
-      if (inj._isBoundary) {
-        if (depVisibility.crossBoundaries) {
-          bindingVisibility = PUBLIC_AND_PRIVATE;
-        } else {
-          bindingVisibility = PRIVATE;
-          lastInjector = true;
-        }
-      }
-      inj = inj._parent;
-    }
-
+  _throwOrNull(key: Key, optional: boolean): any {
     if (optional) {
       return null;
     } else {
-      throw new NoBindingError(key);
+      throw new NoBindingError(this, key);
     }
   }
+
+  _getByKeySelf(key: Key, optional: boolean, bindingVisibility: number): any {
+    var obj = this._strategy.getObjByKeyId(key.id, bindingVisibility);
+    return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
+  }
+
+  _getByKeyAncestor(key: Key, optional: boolean, bindingVisibility: number,
+                    includeSelf: boolean): any {
+    var inj = this;
+
+    if (!includeSelf) {
+      if (inj._isBoundary) {
+        return this._getPrivateDependency(key, optional, inj);
+      } else {
+        inj = inj._parent;
+      }
+    }
+
+    while (inj != null) {
+      var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
+      if (obj !== undefinedValue) return obj;
+
+      if (isPresent(inj._parent) && inj._isBoundary) {
+        return this._getPrivateDependency(key, optional, inj);
+      } else {
+        inj = inj._parent;
+      }
+    }
+
+    return this._throwOrNull(key, optional);
+  }
+
+  _getPrivateDependency(key: Key, optional: boolean, inj: Injector): any {
+    var obj = inj._parent._strategy.getObjByKeyId(key.id, PRIVATE);
+    return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
+  }
+
+  _getByKeyUnbounded(key: Key, optional: boolean, bindingVisibility: number,
+                     includeSelf: boolean): any {
+    var inj = this;
+    if (!includeSelf) {
+      bindingVisibility = inj._isBoundary ? PUBLIC_AND_PRIVATE : PUBLIC;
+      inj = inj._parent;
+    }
+
+    while (inj != null) {
+      var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
+      if (obj !== undefinedValue) return obj;
+
+      bindingVisibility = inj._isBoundary ? PUBLIC_AND_PRIVATE : PUBLIC;
+      inj = inj._parent;
+    }
+
+    return this._throwOrNull(key, optional);
+  }
+
+  get displayName(): string {
+    return `Injector(bindings: [${_mapBindings(this, b => ` "${b.key.displayName}" `).join(", ")}])`;
+  }
+
+  toString(): string { return this.displayName; }
 }
+
+var INJECTOR_KEY = Key.get(Injector);
 
 
 function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
@@ -761,5 +810,13 @@ function _flattenBindings(bindings: List<ResolvedBinding | List<any>>,
       _flattenBindings(b, res);
     }
   });
+  return res;
+}
+
+function _mapBindings(injector: Injector, fn: Function): any[] {
+  var res = [];
+  for (var i = 0; i < injector._proto.numberOfBindings; ++i) {
+    res.push(fn(injector._proto.getBindingAtIndex(i)));
+  }
   return res;
 }

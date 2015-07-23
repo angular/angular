@@ -16,10 +16,9 @@ module.exports = function(gulp, plugins, config) {
       var packageName = pubspec.name;
 
       var libFiles = [].slice.call(glob.sync('lib/**/*.dart', {cwd: dir}));
-
       var webFiles = [].slice.call(glob.sync('web/**/*.dart', {cwd: dir}));
-
       var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {cwd: dir}));
+
       var analyzeFile = ['library _analyzer;'];
       libFiles.concat(testFiles).concat(webFiles).forEach(function(fileName, index) {
         if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
@@ -31,13 +30,24 @@ module.exports = function(gulp, plugins, config) {
       });
       fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
       var defer = Q.defer();
-      analyze(dir, defer.makeNodeResolver());
+      if (config.use_ddc) {
+        analyze(dir, defer.makeNodeResolver(), true);
+      } else {
+        analyze(dir, defer.makeNodeResolver());
+      }
       return defer.promise;
     });
 
-    function analyze(dirName, done) {
+    function analyze(dirName, done, useDdc) {
       // TODO remove --package-warnings once dartanalyzer handles transitive libraries
-      var args = ['--fatal-warnings', '--package-warnings', '--format=machine'].concat(tempFile);
+      var flags = ['--fatal-warnings', '--package-warnings', '--format=machine'];
+
+      if (useDdc) {
+        console.log('Using DDC analyzer to analyze', dirName);
+        flags.push('--strong');
+      }
+
+      var args = flags.concat(tempFile);
 
       var stream = spawn(config.command, args, {
         // inherit stdin and stderr, but filter stdout
@@ -97,7 +107,19 @@ module.exports = function(gulp, plugins, config) {
         if (report.length > 0) {
           error = 'Dartanalyzer showed ' + report.join(', ');
         }
-        done(error);
+        if (useDdc) {
+          // TODO(yjbanov): fail the build when:
+          //  - DDC analyzer is stable enough
+          //  - We have cleaned up all DDC warnings
+          console.log(error);
+          done();
+        } else {
+          done(error);
+        }
+      });
+      stream.on('error', function(e) {
+        // TODO(yjbanov): fail the build when DDC is stable enough
+        console.log('ERROR: failed to run DDC at all: ' + e);
       });
     }
   };

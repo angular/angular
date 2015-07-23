@@ -1,14 +1,15 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {List, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
+import {List, StringMap} from 'angular2/src/facade/collection';
 
-import {Directive, LifecycleEvent, Query, QueryList} from 'angular2/angular2';
+import {QueryList} from 'angular2/core';
+import {Query, Directive, LifecycleEvent} from 'angular2/annotations';
 import {forwardRef, Ancestor, Binding, Inject} from 'angular2/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {NgValidator} from './validators';
-import {controlPath, composeNgValidator} from './shared';
+import {controlPath, composeNgValidator, isPropertyUpdated} from './shared';
 import {Control} from '../model';
 
 const controlNameBinding =
@@ -82,6 +83,7 @@ export class NgControlName extends NgControl {
   _parent: ControlContainer;
   update = new EventEmitter();
   model: any;
+  viewModel: any;
   ngValidators: QueryList<NgValidator>;
   _added = false;
 
@@ -98,14 +100,18 @@ export class NgControlName extends NgControl {
       this.formDirective.addControl(this);
       this._added = true;
     }
-    if (StringMapWrapper.contains(c, "model")) {
+    if (isPropertyUpdated(c, this.viewModel)) {
+      this.viewModel = this.model;
       this.formDirective.updateModel(this, this.model);
     }
   }
 
   onDestroy() { this.formDirective.removeControl(this); }
 
-  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.update, newValue); }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    ObservableWrapper.callNext(this.update, newValue);
+  }
 
   get path(): List<string> { return controlPath(this.name, this._parent); }
 

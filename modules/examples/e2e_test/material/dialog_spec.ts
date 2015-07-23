@@ -9,6 +9,7 @@ describe('md-dialog', function() {
   it('should open a dialog', function() {
     var openButton = element(by.id('open'));
     openButton.click();
+    browser.sleep(500);
     expect(element(by.css('.md-dialog')).isPresent()).toEqual(true);
 
     var dialog = element(by.css('.md-dialog'));

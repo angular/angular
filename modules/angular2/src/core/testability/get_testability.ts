@@ -8,14 +8,14 @@ class PublicTestability {
 
   whenStable(callback: Function) { this._testability.whenStable(callback); }
 
-  findBindings(using, binding: string, exactMatch: boolean): List<any> {
+  findBindings(using: any, binding: string, exactMatch: boolean): List<any> {
     return this._testability.findBindings(using, binding, exactMatch);
   }
 }
 
 export class GetTestability {
   static addToWindow(registry: TestabilityRegistry) {
-    global.getAngularTestability = function(elem): PublicTestability {
+    global.getAngularTestability = function(elem: Element): PublicTestability {
       var testability = registry.findTestabilityInTree(elem);
 
       if (testability == null) {

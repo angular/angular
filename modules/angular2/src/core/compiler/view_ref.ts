@@ -1,6 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import * as viewModule from './view';
-import {RenderViewRef} from 'angular2/src/render/api';
+import {RenderViewRef, RenderFragmentRef} from 'angular2/src/render/api';
 
 // This is a workaround for privacy in Dart as we don't have library parts
 export function internalView(viewRef: ViewRef): viewModule.AppView {
@@ -70,6 +70,11 @@ export class ViewRef {
    * Return {@link RenderViewRef}
    */
   get render(): RenderViewRef { return this._view.render; }
+
+  /**
+   * Return {@link RenderFragmentRef}
+   */
+  get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
   /**
    * Set local variable for a view.

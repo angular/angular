@@ -33,7 +33,7 @@ export class PromisePipe implements Pipe {
 
   constructor(public _ref: ChangeDetectorRef) {}
 
-  supports(promise): boolean { return isPromise(promise); }
+  supports(promise: any): boolean { return isPromise(promise); }
 
   onDestroy(): void {
     if (isPresent(this._sourcePromise)) {
@@ -78,7 +78,7 @@ export class PromisePipe implements Pipe {
  */
 @CONST()
 export class PromisePipeFactory implements PipeFactory {
-  supports(promise): boolean { return isPromise(promise); }
+  supports(promise: any): boolean { return isPromise(promise); }
 
   create(cdRef: ChangeDetectorRef): Pipe { return new PromisePipe(cdRef); }
 }

@@ -90,7 +90,7 @@ export class MockConnection {
    * returned
    * from {@link Http}.
    */
-  mockError(err?) {
+  mockError(err?: Error) {
     // Matches XHR semantics
     this.readyState = ReadyStates.DONE;
     ObservableWrapper.callThrow(this.response, err);
@@ -185,8 +185,8 @@ export class MockBackend {
   constructor() {
     this.connectionsArray = [];
     this.connections = new EventEmitter();
-    ObservableWrapper.subscribe(this.connections,
-                                connection => this.connectionsArray.push(connection));
+    ObservableWrapper.subscribe<MockConnection>(
+        this.connections, connection => this.connectionsArray.push(connection));
     this.pendingConnections = new EventEmitter();
   }
 
@@ -207,7 +207,9 @@ export class MockBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { ObservableWrapper.subscribe(this.connections, c => c.readyState = 4); }
+  resolveAllConnections() {
+    ObservableWrapper.subscribe<MockConnection>(this.connections, c => c.readyState = 4);
+  }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new

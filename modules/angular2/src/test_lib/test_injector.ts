@@ -50,8 +50,13 @@ import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils
 import {ELEMENT_PROBE_CONFIG} from 'angular2/debug';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/render/api';
-import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {
+  DomRenderer,
+  DOCUMENT_TOKEN,
+  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
+} from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+import {Log} from './utils';
 
 /**
  * Returns the root injector bindings.
@@ -79,7 +84,7 @@ function _getAppBindings() {
 
   // The document is only available in browser environment
   try {
-    appDoc = DOM.defaultDoc();
+    appDoc = DOM.createHtmlDocument();
   } catch (e) {
     appDoc = null;
   }
@@ -90,6 +95,7 @@ function _getAppBindings() {
         .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
+    bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     bind(Renderer).toAlias(DomRenderer),
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
     ProtoViewFactory,
@@ -102,6 +108,7 @@ function _getAppBindings() {
     CompilerCache,
     bind(ViewResolver).toClass(MockViewResolver),
     bind(Pipes).toValue(defaultPipes),
+    Log,
     bind(ChangeDetection).toClass(DynamicChangeDetection),
     ViewLoader,
     DynamicComponentLoader,
@@ -177,8 +184,11 @@ export class FunctionWithParamTokens {
     this._fn = fn;
   }
 
-  execute(injector: Injector): void {
+  /**
+   * Returns the value of the executed function.
+   */
+  execute(injector: Injector): any {
     var params = ListWrapper.map(this._tokens, (t) => injector.get(t));
-    FunctionWrapper.apply(this._fn, params);
+    return FunctionWrapper.apply(this._fn, params);
   }
 }

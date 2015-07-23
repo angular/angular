@@ -19,19 +19,22 @@ import {
 } from 'angular2/change_detection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
-import {ElementBinder, Event, HostAction} from './element_binder';
+import {DomElementBinder, Event, HostAction} from './element_binder';
 
 import * as api from '../../api';
 
-import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
+import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR, queryBoundTextNodeIndices} from '../util';
 
 export class ProtoViewBuilder {
   variableBindings: Map<string, string> = new Map();
   elements: List<ElementBinderBuilder> = [];
+  rootTextBindings: Map<Node, ASTWithSource> = new Map();
+  ngContentCount: number = 0;
 
-  constructor(public rootElement, public type: api.ViewType) {}
+  constructor(public rootElement, public type: api.ViewType,
+              public useNativeShadowDom: boolean = false) {}
 
-  bindElement(element, description = null): ElementBinderBuilder {
+  bindElement(element: HTMLElement, description: string = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
     this.elements.push(builder);
     DOM.addClass(element, NG_BINDING_CLASS);
@@ -39,7 +42,7 @@ export class ProtoViewBuilder {
     return builder;
   }
 
-  bindVariable(name, value) {
+  bindVariable(name: string, value: string) {
     // Store the variable map from value to variable, reflecting how it will be used later by
     // DomView. When a local is set to the view, a lookup for the variable name will take place
     // keyed
@@ -49,12 +52,27 @@ export class ProtoViewBuilder {
     this.variableBindings.set(value, name);
   }
 
+  // Note: We don't store the node index until the compilation is complete,
+  // as the compiler might change the order of elements.
+  bindRootText(textNode: Text, expression: ASTWithSource) {
+    this.rootTextBindings.set(textNode, expression);
+  }
+
+  bindNgContent() { this.ngContentCount++; }
+
   build(): api.ProtoViewDto {
-    var renderElementBinders = [];
+    var domElementBinders = [];
 
     var apiElementBinders = [];
-    var transitiveContentTagCount = 0;
-    var boundTextNodeCount = 0;
+    var textNodeExpressions = [];
+    var rootTextNodeIndices = [];
+    var transitiveNgContentCount = this.ngContentCount;
+    queryBoundTextNodeIndices(DOM.content(this.rootElement), this.rootTextBindings,
+                              (node, nodeIndex, expression) => {
+                                textNodeExpressions.push(expression);
+                                rootTextNodeIndices.push(nodeIndex);
+                              });
+
     ListWrapper.forEach(this.elements, (ebb: ElementBinderBuilder) => {
       var directiveTemplatePropertyNames = new Set();
       var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb: DirectiveBuilder) => {
@@ -71,15 +89,15 @@ export class ProtoViewBuilder {
         });
       });
       var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
-      var nestedRenderProtoView =
-          isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null;
-      if (isPresent(nestedRenderProtoView)) {
-        transitiveContentTagCount += nestedRenderProtoView.transitiveContentTagCount;
-      }
-      if (isPresent(ebb.contentTagSelector)) {
-        transitiveContentTagCount++;
+      if (isPresent(nestedProtoView)) {
+        transitiveNgContentCount += nestedProtoView.transitiveNgContentCount;
       }
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
+      var textNodeIndices = [];
+      queryBoundTextNodeIndices(ebb.element, ebb.textBindings, (node, nodeIndex, expression) => {
+        textNodeExpressions.push(expression);
+        textNodeIndices.push(nodeIndex);
+      });
       apiElementBinders.push(new api.ElementBinder({
         index: ebb.index,
         parentIndex: parentIndex,
@@ -91,64 +109,28 @@ export class ProtoViewBuilder {
                                          ebb.propertyBindings, directiveTemplatePropertyNames),
         variableBindings: ebb.variableBindings,
         eventBindings: ebb.eventBindings,
-        textBindings: ebb.textBindings,
         readAttributes: ebb.readAttributes
       }));
-      var childNodeInfo = this._analyzeChildNodes(ebb.element, ebb.textBindingNodes);
-      boundTextNodeCount += ebb.textBindingNodes.length;
-      renderElementBinders.push(new ElementBinder({
-        textNodeIndices: childNodeInfo.boundTextNodeIndices,
-        contentTagSelector: ebb.contentTagSelector,
-        parentIndex: parentIndex,
-        distanceToParent: ebb.distanceToParent,
-        nestedProtoView:
-            isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null,
-        componentId: ebb.componentId,
+      domElementBinders.push(new DomElementBinder({
+        textNodeIndices: textNodeIndices,
+        hasNestedProtoView: isPresent(nestedProtoView) || isPresent(ebb.componentId),
+        hasNativeShadowRoot: isPresent(ebb.componentId) && this.useNativeShadowDom,
         eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
         localEvents: ebb.eventBuilder.buildLocalEvents(),
-        globalEvents: ebb.eventBuilder.buildGlobalEvents(),
-        elementIsEmpty: childNodeInfo.elementIsEmpty
+        globalEvents: ebb.eventBuilder.buildGlobalEvents()
       }));
     });
+    var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
     return new api.ProtoViewDto({
-      render: new DomProtoViewRef(new DomProtoView({
-        element: this.rootElement,
-        elementBinders: renderElementBinders,
-        transitiveContentTagCount: transitiveContentTagCount,
-        boundTextNodeCount: boundTextNodeCount
-      })),
+      render: new DomProtoViewRef(DomProtoView.create(this.type, this.rootElement, [rootNodeCount],
+                                                      rootTextNodeIndices, domElementBinders)),
       type: this.type,
       elementBinders: apiElementBinders,
-      variableBindings: this.variableBindings
+      variableBindings: this.variableBindings,
+      textBindings: textNodeExpressions,
+      transitiveNgContentCount: transitiveNgContentCount
     });
   }
-
-  // Note: We need to calculate the next node indices not until the compilation is complete,
-  // as the compiler might change the order of elements.
-  private _analyzeChildNodes(parentElement: /*element*/ any,
-                             boundTextNodes: List</*node*/ any>): _ChildNodesInfo {
-    var childNodes = DOM.childNodes(DOM.templateAwareRoot(parentElement));
-    var boundTextNodeIndices = [];
-    var indexInBoundTextNodes = 0;
-    var elementIsEmpty = true;
-    for (var i = 0; i < childNodes.length; i++) {
-      var node = childNodes[i];
-      if (indexInBoundTextNodes < boundTextNodes.length &&
-          node === boundTextNodes[indexInBoundTextNodes]) {
-        boundTextNodeIndices.push(i);
-        indexInBoundTextNodes++;
-        elementIsEmpty = false;
-      } else if ((DOM.isTextNode(node) && DOM.getText(node).trim().length > 0) ||
-                 (DOM.isElementNode(node))) {
-        elementIsEmpty = false;
-      }
-    }
-    return new _ChildNodesInfo(boundTextNodeIndices, elementIsEmpty);
-  }
-}
-
-class _ChildNodesInfo {
-  constructor(public boundTextNodeIndices: List<number>, public elementIsEmpty: boolean) {}
 }
 
 export class ElementBinderBuilder {
@@ -161,15 +143,13 @@ export class ElementBinderBuilder {
   propertyBindingsToDirectives: Set<string> = new Set();
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
-  textBindingNodes: List</*node*/ any> = [];
-  textBindings: List<ASTWithSource> = [];
-  contentTagSelector: string = null;
+  textBindings: Map<Node, ASTWithSource> = new Map();
   readAttributes: Map<string, string> = new Map();
   componentId: string = null;
 
   constructor(public index: number, public element, description: string) {}
 
-  setParent(parent: ElementBinderBuilder, distanceToParent): ElementBinderBuilder {
+  setParent(parent: ElementBinderBuilder, distanceToParent: number): ElementBinderBuilder {
     this.parent = parent;
     if (isPresent(parent)) {
       this.distanceToParent = distanceToParent;
@@ -189,7 +169,7 @@ export class ElementBinderBuilder {
     return directive;
   }
 
-  bindNestedProtoView(rootElement): ProtoViewBuilder {
+  bindNestedProtoView(rootElement: HTMLElement): ProtoViewBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
@@ -207,7 +187,7 @@ export class ElementBinderBuilder {
     this.propertyBindingsToDirectives.add(name);
   }
 
-  bindVariable(name, value) {
+  bindVariable(name: string, value: string) {
     // When current is a view root, the variable bindings are set to the *nested* proto view.
     // The root view conceptually signifies a new "block scope" (the nested view), to which
     // the variables are bound.
@@ -225,16 +205,15 @@ export class ElementBinderBuilder {
     }
   }
 
-  bindEvent(name, expression, target = null) {
+  bindEvent(name: string, expression: ASTWithSource, target: string = null) {
     this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 
-  bindText(textNode, expression) {
-    this.textBindingNodes.push(textNode);
-    this.textBindings.push(expression);
+  // Note: We don't store the node index until the compilation is complete,
+  // as the compiler might change the order of elements.
+  bindText(textNode: Text, expression: ASTWithSource) {
+    this.textBindings.set(textNode, expression);
   }
-
-  setContentTagSelector(value: string) { this.contentTagSelector = value; }
 
   setComponentId(componentId: string) { this.componentId = componentId; }
 }
@@ -263,7 +242,7 @@ export class DirectiveBuilder {
     this.hostPropertyBindings.set(name, expression);
   }
 
-  bindEvent(name, expression, target = null) {
+  bindEvent(name: string, expression: ASTWithSource, target: string = null) {
     this.eventBindings.push(this.eventBuilder.add(name, expression, target));
   }
 }
@@ -354,7 +333,7 @@ function buildElementPropertyBindings(protoElement: /*element*/ any, isNgCompone
       propertyBindings.push(propertyBinding);
     } else if (!SetWrapper.has(directiveTempaltePropertyNames, propertyNameInTemplate)) {
       throw new BaseException(
-          `Can't bind to '${propertyNameInTemplate}' since it isn't a know property of the '${DOM.tagName(protoElement).toLowerCase()}' element and there are no matching directives with a corresponding property`);
+          `Can't bind to '${propertyNameInTemplate}' since it isn't a known property of the '<${DOM.tagName(protoElement).toLowerCase()}>' element and there are no matching directives with a corresponding property`);
     }
   });
   return propertyBindings;

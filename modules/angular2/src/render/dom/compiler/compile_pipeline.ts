@@ -13,16 +13,19 @@ import {ProtoViewDto, ViewType} from '../../api';
  */
 export class CompilePipeline {
   _control: CompileControl;
-  constructor(steps: List<CompileStep>) { this._control = new CompileControl(steps); }
+  constructor(steps: List<CompileStep>, private _useNativeShadowDom: boolean = false) {
+    this._control = new CompileControl(steps);
+  }
 
-  process(rootElement, protoViewType: ViewType = null,
+  process(rootElement: HTMLElement, protoViewType: ViewType = null,
           compilationCtxtDescription: string = ''): List<CompileElement> {
     if (isBlank(protoViewType)) {
       protoViewType = ViewType.COMPONENT;
     }
     var results = [];
     var rootCompileElement = new CompileElement(rootElement, compilationCtxtDescription);
-    rootCompileElement.inheritedProtoView = new ProtoViewBuilder(rootElement, protoViewType);
+    rootCompileElement.inheritedProtoView =
+        new ProtoViewBuilder(rootElement, protoViewType, this._useNativeShadowDom);
     rootCompileElement.isViewRoot = true;
     this._process(results, null, rootCompileElement, compilationCtxtDescription);
     return results;

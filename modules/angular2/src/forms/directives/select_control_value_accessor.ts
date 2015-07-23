@@ -1,5 +1,6 @@
 import {Renderer} from 'angular2/render';
-import {ElementRef, QueryList, Directive, Query} from 'angular2/angular2';
+import {ElementRef, QueryList} from 'angular2/core';
+import {Query, Directive} from 'angular2/annotations';
 
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
@@ -29,7 +30,6 @@ export class NgSelectOption {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()',
-    '[value]': 'value',
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',
     '[class.ng-pristine]': 'ngClassPristine',
@@ -39,7 +39,7 @@ export class NgSelectOption {
   }
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
-  value = '';
+  value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
@@ -50,9 +50,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._updateValueWhenListOfOptionsChanges(query);
   }
 
-  writeValue(value) {
-    // both this.value and setProperty are required at the moment
-    // remove when a proper imperative API is provided
+  writeValue(value: any) {
     this.value = value;
     setProperty(this.renderer, this.elementRef, "value", value);
   }
@@ -72,8 +70,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     return isPresent(this.cd.control) ? !this.cd.control.valid : false;
   }
 
-  registerOnChange(fn): void { this.onChange = fn; }
-  registerOnTouched(fn): void { this.onTouched = fn; }
+  registerOnChange(fn: () => any): void { this.onChange = fn; }
+  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {
     query.onChange(() => this.writeValue(this.value));

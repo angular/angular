@@ -76,17 +76,17 @@ export class DirectiveParser implements CompileStep {
         });
       }
       if (isPresent(dirMetadata.hostListeners)) {
-        MapWrapper.forEach(dirMetadata.hostListeners, (action, eventName) => {
+        this._sortedKeysForEach(dirMetadata.hostListeners, (action, eventName) => {
           this._bindDirectiveEvent(eventName, action, current, directiveBinderBuilder);
         });
       }
       if (isPresent(dirMetadata.hostProperties)) {
-        MapWrapper.forEach(dirMetadata.hostProperties, (expression, hostPropertyName) => {
+        this._sortedKeysForEach(dirMetadata.hostProperties, (expression, hostPropertyName) => {
           this._bindHostProperty(hostPropertyName, expression, current, directiveBinderBuilder);
         });
       }
       if (isPresent(dirMetadata.hostAttributes)) {
-        MapWrapper.forEach(dirMetadata.hostAttributes, (hostAttrValue, hostAttrName) => {
+        this._sortedKeysForEach(dirMetadata.hostAttributes, (hostAttrValue, hostAttrName) => {
           this._addHostAttribute(hostAttrName, hostAttrValue, current);
         });
       }
@@ -95,6 +95,16 @@ export class DirectiveParser implements CompileStep {
                             (attrName) => { elementBinder.readAttribute(attrName); });
       }
     });
+  }
+
+  _sortedKeysForEach(map: Map<string, string>, fn: (value: string, key: string) => void): void {
+    var keys = MapWrapper.keys(map);
+    ListWrapper.sort(keys, (a, b) => {
+      // Ensure a stable sort.
+      var compareVal = StringWrapper.compare(a, b);
+      return compareVal == 0 ? -1 : compareVal;
+    });
+    ListWrapper.forEach(keys, (key) => { fn(MapWrapper.get(map, key), key); });
   }
 
   _ensureHasOnlyOneComponent(elementBinder: ElementBinderBuilder, elDescription: string): void {

@@ -5,24 +5,27 @@ import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:source_span/source_span.dart';
 
-BuildLogger _logger;
+typedef _SimpleCallback();
 
-/// Prepares {@link logger} for use throughout the transformer.
-void init(Transform t) {
-  _logger = new BuildLogger(t);
-}
+// The key used to store the logger on the current zone.
+final _key = #loggingZonedLoggerKey;
 
-/// Sets {@link logger} directly. Used for testing - in general use {@link init}.
-void setLogger(BuildLogger logger) {
-  _logger = logger;
-}
+/// Executes {@link fn} inside a new {@link Zone} with its own logger.
+dynamic initZoned(Transform t, _SimpleCallback fn, {String errorMessage: ''}) =>
+    setZoned(new BuildLogger(t), fn, errorMessage: errorMessage);
 
-/// The logger the transformer should use for messaging.
+dynamic setZoned(BuildLogger logger, _SimpleCallback fn,
+    {String errorMessage: ''}) => runZoned(fn,
+        zoneValues: {_key: logger}, onError: (e, stackTrace) {
+  logger.error('$errorMessage\n'
+      'Exception: $e\n'
+      'Stack Trace: $stackTrace');
+});
+
+/// The logger for the current {@link Zone}.
 BuildLogger get logger {
-  if (_logger == null) {
-    _logger = new PrintLogger();
-  }
-  return _logger;
+  var current = Zone.current[_key] as BuildLogger;
+  return current == null ? new PrintLogger() : current;
 }
 
 class PrintLogger implements BuildLogger {

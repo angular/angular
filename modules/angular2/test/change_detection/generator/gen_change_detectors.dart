@@ -21,7 +21,7 @@ void main(List<String> args) {
     if (i > 0) {
       buf.write(',');
     }
-    buf.write(" '''${allDefs[i].cdDef.id}''': "
+    buf.write(" '''${_escape(allDefs[i].cdDef.id)}''': "
         "$className.$PROTO_CHANGE_DETECTOR_FACTORY_METHOD");
   }
   buf.write('};');
@@ -36,5 +36,7 @@ void main(List<String> args) {
     getFactoryById(String id) => $_MAP_NAME[id];
   '''));
 }
+
+String _escape(String id) => id.replaceAll(r'$', r'\$');
 
 const _MAP_NAME = '_idToProtoMap';

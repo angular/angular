@@ -26,7 +26,7 @@ import {
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
   constructor(styleHost) { super(styleHost); }
 
-  processStyleElement(hostComponentId: string, templateUrl: string, styleEl): void {
+  processStyleElement(hostComponentId: string, templateUrl: string, styleEl: Element): void {
     let cssText = DOM.getText(styleEl);
     cssText = shimCssForComponent(cssText, hostComponentId);
     DOM.setText(styleEl, cssText);
@@ -38,7 +38,7 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
     insertStyleElement(this.styleHost, styleEl);
   }
 
-  processElement(hostComponentId: string, elementComponentId: string, element): void {
+  processElement(hostComponentId: string, elementComponentId: string, element: Element): void {
     // Shim the element as a child of the compiled component
     if (isPresent(hostComponentId)) {
       var contentAttribute = getContentAttribute(getComponentId(hostComponentId));

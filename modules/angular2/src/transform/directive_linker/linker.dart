@@ -9,7 +9,6 @@ import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
-import 'package:path/path.dart' as path;
 
 /// Checks the `.ng_deps.dart` file represented by `entryPoint` and
 /// determines whether it is necessary to the functioning of the Angular 2
@@ -72,8 +71,7 @@ Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
       importBuf.write('''
         import '${linkedDepsMap[it.current]}' as i${i};
       ''');
-      declarationBuf
-          .write('i${i}.${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME});');
+      declarationBuf.write('i${i}.${SETUP_METHOD_NAME}();');
       ++i;
     }
   }
@@ -94,9 +92,6 @@ List<UriBasedDirective> _getSortedDeps(NgDeps ngDeps) {
     ..sort((a, b) => a.end.compareTo(b.end));
 }
 
-String _toDepsUri(String importUri) =>
-    '${path.withoutExtension(importUri)}${DEPS_EXTENSION}';
-
 bool _isNotDartDirective(UriBasedDirective directive) {
   return !stringLiteralToString(directive.uri).startsWith('dart:');
 }
@@ -111,7 +106,7 @@ Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
       .wait(directives
           .where(_isNotDartDirective)
           .map((UriBasedDirective directive) {
-    var ngDepsUri = _toDepsUri(stringLiteralToString(directive.uri));
+    var ngDepsUri = toDepsExtension(stringLiteralToString(directive.uri));
     var spanArg = null;
     var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger, spanArg,
         errorOnAbsolute: false);

@@ -22,9 +22,7 @@ class DirectiveLinker extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var reader = new AssetReader.fromTransform(transform);
       var assetId = transform.primaryInput.id;
       var assetPath = assetId.path;
@@ -33,12 +31,7 @@ class DirectiveLinker extends Transformer {
         var formattedCode = formatter.format(transformedCode, uri: assetPath);
         transform.addOutput(new Asset.fromString(assetId, formattedCode));
       }
-    } catch (ex, stackTrace) {
-      log.logger.error('Linking ng directives failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
-    return null;
+    }, errorMessage: 'Linking ng directives failed.');
   }
 }
 
@@ -52,18 +45,11 @@ class EmptyNgDepsRemover extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var reader = new AssetReader.fromTransform(transform);
       if (!(await isNecessary(reader, transform.primaryInput.id))) {
         transform.consumePrimary();
       }
-    } catch (ex, stackTrace) {
-      log.logger.error('Removing unnecessary ng deps failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
-    return null;
+    }, errorMessage: 'Removing unnecessary ng deps failed.');
   }
 }

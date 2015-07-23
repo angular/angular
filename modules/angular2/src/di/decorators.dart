@@ -32,13 +32,6 @@ class Self extends SelfMetadata {
 }
 
 /**
- * {@link ParentMetadata}.
- */
-class Parent extends ParentMetadata {
-	const Parent({bool self}): super(self:self);
-}
-
-/**
  * {@link AncestorMetadata}.
  */
 class Ancestor extends AncestorMetadata {

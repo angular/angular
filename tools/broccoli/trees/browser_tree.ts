@@ -2,6 +2,7 @@
 
 var Funnel = require('broccoli-funnel');
 var htmlReplace = require('../html-replace');
+var jsReplace = require("../js-replace");
 var path = require('path');
 var stew = require('broccoli-stew');
 
@@ -27,6 +28,7 @@ const kServedPaths = [
   'benchmarks/src/largetable',
   'benchmarks/src/naive_infinite_scroll',
   'benchmarks/src/tree',
+  'benchmarks/src/static_tree',
 
   // Relative (to /modules) paths to external benchmark directories
   'benchmarks_external/src',
@@ -35,6 +37,7 @@ const kServedPaths = [
   'benchmarks_external/src/naive_infinite_scroll',
   'benchmarks_external/src/tree',
   'benchmarks_external/src/tree/react',
+  'benchmarks_external/src/static_tree',
 
   // Relative (to /modules) paths to example directories
   'examples/src/benchpress',
@@ -57,7 +60,8 @@ const kServedPaths = [
   'examples/src/material/input',
   'examples/src/material/progress-linear',
   'examples/src/material/radio',
-  'examples/src/material/switcher'
+  'examples/src/material/switcher',
+  'examples/src/message_broker'
 ];
 
 
@@ -66,27 +70,22 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'modules',
       {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
 
-  // Use Traceur to transpile *.js sources to ES6
-  var traceurTree = transpileWithTraceur(modulesTree, {
-    destExtension: '.js',
-    destSourceMapExtension: '.map',
-    traceurOptions: {
-      sourceMaps: true,
-      annotations: true,      // parse annotations
-      types: true,            // parse types
-      script: false,          // parse as a module
-      memberVariables: true,  // parse class fields
-      modules: 'instantiate',
-      // typeAssertionModule: 'rtts_assert/rtts_assert',
-      // typeAssertions: options.typeAssertions,
-      outputLanguage: 'es6'
+  var scriptPathPatternReplacement = {
+    match: '@@FILENAME_NO_EXT',
+    replacement: function(replacement, relativePath) {
+      return relativePath.replace(/\.\w+$/, '').replace(/\\/g, '/');
     }
+  };
+
+  modulesTree = replace(modulesTree, {
+    files: ["examples*/**/*.js"],
+    patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
   // Use TypeScript to transpile the *.ts files to ES6
   // We don't care about errors: we let the TypeScript compilation to ES5
   // in node_tree.ts do the type-checking.
-  var typescriptTree = compileWithTypescript(modulesTree, {
+  var es6Tree = compileWithTypescript(modulesTree, {
     allowNonTsExtensions: false,
     declaration: true,
     emitDecoratorMetadata: true,
@@ -97,8 +96,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     sourceRoot: '.',
     target: 'ES6'
   });
-
-  var es6Tree = mergeTrees([traceurTree, typescriptTree]);
 
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree = transpileWithTraceur(es6Tree, {
@@ -112,7 +109,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
     es6Tree = mergeTrees([es6Tree, extras]);
   });
-
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
@@ -148,21 +144,15 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     return funnels;
   }
 
-  var scriptPathPatternReplacement = {
-    match: '@@FILENAME_NO_EXT',
-    replacement: function(replacement, relativePath) {
-      return relativePath.replace(/\.\w+$/, '').replace(/\\/g, '/');
-    }
-  };
-
   var htmlTree = new Funnel(modulesTree, {include: ['*/src/**/*.html'], destDir: '/'});
   htmlTree = replace(htmlTree, {
-    files: ['examples*/**'],
+    files: ['examples*/**/*.html'],
     patterns: [
       {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
       scriptPathPatternReplacement
     ]
   });
+
 
   htmlTree = replace(htmlTree, {
     files: ['benchmarks/**'],

@@ -2,7 +2,7 @@ library test.src.transform.template_compiler.ng_for_files.hello.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show Component, Directive, View, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {

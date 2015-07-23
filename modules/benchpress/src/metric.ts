@@ -1,4 +1,4 @@
-import {bind} from 'angular2/di';
+import {bind, Binding} from 'angular2/di';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {ABSTRACT, BaseException} from 'angular2/src/facade/lang';
 import {StringMap} from 'angular2/src/facade/collection';
@@ -8,7 +8,7 @@ import {StringMap} from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class Metric {
-  static bindTo(delegateToken) {
+  static bindTo(delegateToken): Binding[] {
     return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
   }
 

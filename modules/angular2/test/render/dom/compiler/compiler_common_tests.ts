@@ -36,7 +36,7 @@ export function runCompilerCommonTests() {
       }
       var tplLoader = new FakeViewLoader(urlData);
       mockStepFactory = new MockStepFactory([new MockStep(processClosure)]);
-      return new DomCompiler(mockStepFactory, tplLoader);
+      return new DomCompiler(mockStepFactory, tplLoader, false);
     }
 
     describe('compile', () => {
@@ -64,7 +64,8 @@ export function runCompilerCommonTests() {
                {id: 'id', selector: 'CUSTOM', type: DirectiveMetadata.COMPONENT_TYPE});
            compiler.compileHost(dirMetadata)
                .then((protoView) => {
-                 expect(DOM.tagName(resolveInternalDomProtoView(protoView.render).element))
+                 expect(DOM.tagName(DOM.firstChild(DOM.content(
+                            resolveInternalDomProtoView(protoView.render).rootElement))))
                      .toEqual('CUSTOM');
                  expect(mockStepFactory.viewDef.directives).toEqual([dirMetadata]);
                  expect(protoView.variableBindings)
@@ -79,7 +80,7 @@ export function runCompilerCommonTests() {
            compiler.compile(
                        new ViewDefinition({componentId: 'someId', template: 'inline component'}))
                .then((protoView) => {
-                 expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).element))
+                 expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).rootElement))
                      .toEqual('inline component');
                  async.done();
                });
@@ -90,7 +91,7 @@ export function runCompilerCommonTests() {
            var compiler = createCompiler(EMPTY_STEP, urlData);
            compiler.compile(new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'}))
                .then((protoView) => {
-                 expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).element))
+                 expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).rootElement))
                      .toEqual('url component');
                  async.done();
                });

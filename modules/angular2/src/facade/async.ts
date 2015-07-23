@@ -14,9 +14,9 @@ export interface PromiseCompleter<R> {
 }
 
 export class PromiseWrapper {
-  static resolve(obj): Promise<any> { return Promise.resolve(obj); }
+  static resolve<T>(obj: T): Promise<T> { return Promise.resolve(obj); }
 
-  static reject(obj, _): Promise<any> { return Promise.reject(obj); }
+  static reject(obj: any, _): Promise<any> { return Promise.reject(obj); }
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
@@ -29,8 +29,8 @@ export class PromiseWrapper {
     return Promise.all(promises);
   }
 
-  static then<T>(promise: Promise<T>, success: (value: any) => T | Thenable<T>,
-                 rejection?: (error: any, stack?: any) => T | Thenable<T>): Promise<T> {
+  static then<T, U>(promise: Promise<T>, success: (value: T) => U | Thenable<U>,
+                    rejection?: (error: any, stack?: any) => U | Thenable<U>): Promise<U> {
     return promise.then(success, rejection);
   }
 
@@ -66,7 +66,9 @@ export class TimerWrapper {
 }
 
 export class ObservableWrapper {
-  static subscribe(emitter: Observable, onNext, onThrow = null, onReturn = null): Object {
+  static subscribe<T>(emitter: Observable, onNext: (value: T) => void,
+                      onThrow: (exception: any) => void = null,
+                      onReturn: () => void = null): Object {
     return emitter.observer({next: onNext, throw: onThrow, return: onReturn});
   }
 
@@ -109,7 +111,7 @@ export class EventEmitter extends Observable {
     }
   }
 
-  observer(generator): Rx.IDisposable {
+  observer(generator: any): Rx.IDisposable {
     return this._subject.observeOn(this._immediateScheduler)
         .subscribe((value) => { setTimeout(() => generator.next(value)); },
                    (error) => generator.throw ? generator.throw(error) : null,
@@ -118,9 +120,9 @@ export class EventEmitter extends Observable {
 
   toRx(): Rx.Observable<any> { return this._subject; }
 
-  next(value) { this._subject.onNext(value); }
+  next(value: any) { this._subject.onNext(value); }
 
-  throw(error) { this._subject.onError(error); }
+  throw(error: any) { this._subject.onError(error); }
 
-  return (value?) { this._subject.onCompleted(); }
+  return (value?: any) { this._subject.onCompleted(); }
 }

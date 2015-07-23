@@ -1,8 +1,7 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-import {bootstrap} from 'angular2/angular2';
+import {bootstrap} from 'angular2/bootstrap';
 import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 import {App} from './app';
 
@@ -10,8 +9,8 @@ import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind} from 'angular2/di';
 
 export function main() {
-  setupReflector();
   bootstrap(App, createBindings());
+  setupReflector();
 }
 
 function createBindings(): List {
@@ -19,8 +18,6 @@ function createBindings(): List {
 }
 
 export function setupReflector() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-
   // TODO(kegluneq): Generate this.
   reflector.registerSetters({
     'style': (o, m) => {

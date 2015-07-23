@@ -1,4 +1,4 @@
-import {BaseException} from 'angular2/src/facade/lang';
+import {BaseException, isPresent} from 'angular2/src/facade/lang';
 import {ViewRef} from './view_ref';
 import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/render/api';
 
@@ -24,9 +24,18 @@ export class ElementRef implements RenderElementRef {
    */
   boundElementIndex: number;
 
-  constructor(parentView: ViewRef, boundElementIndex: number, private _renderer: Renderer) {
+  /**
+   * Index of the element inside the {@link RenderViewRef}.
+   *
+   * This is used internally by the Angular framework to locate elements.
+   */
+  renderBoundElementIndex: number;
+
+  constructor(parentView: ViewRef, boundElementIndex: number, renderBoundElementIndex: number,
+              private _renderer: Renderer) {
     this.parentView = parentView;
     this.boundElementIndex = boundElementIndex;
+    this.renderBoundElementIndex = renderBoundElementIndex;
   }
 
   /**

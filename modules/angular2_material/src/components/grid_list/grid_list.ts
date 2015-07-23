@@ -1,4 +1,4 @@
-import {Component, View, Parent, LifecycleEvent} from 'angular2/angular2';
+import {Component, View, Ancestor, LifecycleEvent} from 'angular2/angular2';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {StringWrapper, isPresent, isString, NumberWrapper} from 'angular2/src/facade/lang';
@@ -238,7 +238,7 @@ export class MdGridTile {
 
   isRegisteredWithGridList: boolean;
 
-  constructor(@Parent() gridList: MdGridList) {
+  constructor(@Ancestor() gridList: MdGridList) {
     this.gridList = gridList;
 
     // Tiles default to 1x1, but rowspan and colspan can be changed via binding.

@@ -72,8 +72,6 @@ export class Query extends DependencyMetadata {
  * Specifies that a {@link QueryList} should be injected.
  *
  * See {@link QueryList} for usage and example.
- *
- * @exportedAs angular2/annotations
  */
 @CONST()
 export class ViewQuery extends Query {

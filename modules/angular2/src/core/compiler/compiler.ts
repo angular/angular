@@ -15,8 +15,7 @@ import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection
 
 import {DirectiveResolver} from './directive_resolver';
 
-import {AppProtoView} from './view';
-import {ElementBinder} from './element_binder';
+import {AppProtoView, AppProtoViewMergeMapping} from './view';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {ViewResolver} from './view_resolver';
@@ -25,6 +24,7 @@ import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {ElementBinder} from './element_binder';
 
 import * as renderApi from 'angular2/src/render/api';
 
@@ -91,6 +91,7 @@ export class Compiler {
   private _appUrl: string;
   private _render: renderApi.RenderCompiler;
   private _protoViewFactory: ProtoViewFactory;
+  private _protoViewsToBeMerged: AppProtoView[] = [];
 
   /**
    * @private
@@ -137,13 +138,46 @@ export class Compiler {
       Compiler._assertTypeIsComponent(componentBinding);
 
       var directiveMetadata = componentBinding.metadata;
-      hostPvPromise = this._render.compileHost(directiveMetadata)
-                          .then((hostRenderPv) => {
-                            return this._compileNestedProtoViews(componentBinding, hostRenderPv,
-                                                                 [componentBinding]);
-                          });
+      hostPvPromise =
+          this._render.compileHost(directiveMetadata)
+              .then((hostRenderPv) => {
+                var protoView = this._protoViewFactory.createAppProtoViews(
+                    componentBinding, hostRenderPv, [componentBinding]);
+                this._compilerCache.setHost(componentType, protoView);
+                return this._compileNestedProtoViews(hostRenderPv, protoView, componentType);
+              });
     }
-    return hostPvPromise.then((hostAppProtoView) => { return new ProtoViewRef(hostAppProtoView); });
+    return hostPvPromise.then(hostAppProtoView =>
+                                  this._mergeUnmergedProtoViews().then(_ => hostAppProtoView.ref));
+  }
+
+  private _mergeUnmergedProtoViews(): Promise<any> {
+    var protoViewsToBeMerged = this._protoViewsToBeMerged;
+    this._protoViewsToBeMerged = [];
+    return PromiseWrapper.all(protoViewsToBeMerged.map((appProtoView) => {
+      return this._render.mergeProtoViewsRecursively(
+                             this._collectMergeRenderProtoViews(appProtoView))
+          .then((mergeResult: renderApi.RenderProtoViewMergeMapping) => {
+            appProtoView.mergeMapping = new AppProtoViewMergeMapping(mergeResult);
+          });
+    }));
+  }
+
+  private _collectMergeRenderProtoViews(
+      appProtoView: AppProtoView): List<renderApi.RenderProtoViewRef | List<any>> {
+    var result = [appProtoView.render];
+    for (var i = 0; i < appProtoView.elementBinders.length; i++) {
+      var binder = appProtoView.elementBinders[i];
+      if (isPresent(binder.nestedProtoView)) {
+        if (binder.hasStaticComponent() ||
+            (binder.hasEmbeddedProtoView() && binder.nestedProtoView.isEmbeddedFragment)) {
+          result.push(this._collectMergeRenderProtoViews(binder.nestedProtoView));
+        } else {
+          result.push(null);
+        }
+      }
+    }
+    return result;
   }
 
   private _compile(componentBinding: DirectiveBinding): Promise<AppProtoView>| AppProtoView {
@@ -156,12 +190,12 @@ export class Compiler {
       return protoView;
     }
 
-    var pvPromise = this._compiling.get(component);
-    if (isPresent(pvPromise)) {
+    var resultPromise = this._compiling.get(component);
+    if (isPresent(resultPromise)) {
       // The component is already being compiled, attach to the existing Promise
       // instead of re-compiling the component.
       // It happens when a template references a component multiple times.
-      return pvPromise;
+      return resultPromise;
     }
     var view = this._viewResolver.resolve(component);
 
@@ -178,14 +212,19 @@ export class Compiler {
         ListWrapper.map(directives, (directive) => this._bindDirective(directive)));
 
     var renderTemplate = this._buildRenderTemplate(component, view, boundDirectives);
-    pvPromise =
-        this._render.compile(renderTemplate)
-            .then((renderPv) => {
-              return this._compileNestedProtoViews(componentBinding, renderPv, boundDirectives);
-            });
+    resultPromise = this._render.compile(renderTemplate)
+                        .then((renderPv) => {
+                          var protoView = this._protoViewFactory.createAppProtoViews(
+                              componentBinding, renderPv, boundDirectives);
+                          // Populate the cache before compiling the nested components,
+                          // so that components can reference themselves in their template.
+                          this._compilerCache.set(component, protoView);
+                          MapWrapper.delete(this._compiling, component);
 
-    this._compiling.set(component, pvPromise);
-    return pvPromise;
+                          return this._compileNestedProtoViews(renderPv, protoView, component);
+                        });
+    this._compiling.set(component, resultPromise);
+    return resultPromise;
   }
 
   private _removeDuplicatedDirectives(directives: List<DirectiveBinding>): List<DirectiveBinding> {
@@ -194,24 +233,11 @@ export class Compiler {
     return MapWrapper.values(directivesMap);
   }
 
-  private _compileNestedProtoViews(componentBinding, renderPv, directives): Promise<AppProtoView>|
-      AppProtoView {
-    var protoViews =
-        this._protoViewFactory.createAppProtoViews(componentBinding, renderPv, directives);
-    var protoView = protoViews[0];
-    if (isPresent(componentBinding)) {
-      var component = componentBinding.key.token;
-      if (renderPv.type === renderApi.ViewType.COMPONENT) {
-        // Populate the cache before compiling the nested components,
-        // so that components can reference themselves in their template.
-        this._compilerCache.set(component, protoView);
-        MapWrapper.delete(this._compiling, component);
-      } else {
-        this._compilerCache.setHost(component, protoView);
-      }
-    }
+  private _compileNestedProtoViews(renderProtoView: renderApi.ProtoViewDto,
+                                   appProtoView: AppProtoView,
+                                   componentType: Type): Promise<AppProtoView> {
     var nestedPVPromises = [];
-    ListWrapper.forEach(this._collectComponentElementBinders(protoViews), (elementBinder) => {
+    this._loopComponentElementBinders(appProtoView, (parentPv, elementBinder: ElementBinder) => {
       var nestedComponent = elementBinder.componentDirective;
       var elementBinderDone =
           (nestedPv: AppProtoView) => { elementBinder.nestedProtoView = nestedPv; };
@@ -222,24 +248,52 @@ export class Compiler {
         elementBinderDone(<AppProtoView>nestedCall);
       }
     });
-
-    if (nestedPVPromises.length > 0) {
-      return PromiseWrapper.all(nestedPVPromises).then((_) => protoView);
-    } else {
-      return protoView;
-    }
+    return PromiseWrapper.all(nestedPVPromises)
+        .then((_) => {
+          this._collectMergableProtoViews(appProtoView, componentType);
+          return appProtoView;
+        });
   }
 
-  private _collectComponentElementBinders(protoViews: List<AppProtoView>): List<ElementBinder> {
-    var componentElementBinders = [];
-    ListWrapper.forEach(protoViews, (protoView) => {
-      ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
-        if (isPresent(elementBinder.componentDirective)) {
-          componentElementBinders.push(elementBinder);
+  private _collectMergableProtoViews(appProtoView: AppProtoView, componentType: Type) {
+    var isRecursive = false;
+    for (var i = 0; i < appProtoView.elementBinders.length; i++) {
+      var binder = appProtoView.elementBinders[i];
+      if (binder.hasStaticComponent()) {
+        if (isBlank(binder.nestedProtoView.isRecursive)) {
+          // cycle via a component. We are in the tail recursion,
+          // so all components should have their isRecursive flag set already.
+          isRecursive = true;
+          break;
         }
-      });
+      } else if (binder.hasEmbeddedProtoView()) {
+        this._collectMergableProtoViews(binder.nestedProtoView, componentType);
+      }
+    }
+    if (isRecursive) {
+      if (appProtoView.isEmbeddedFragment) {
+        throw new BaseException(
+            `<ng-content> is used within the recursive path of ${stringify(componentType)}`);
+      }
+      if (appProtoView.type === renderApi.ViewType.COMPONENT) {
+        throw new BaseException(`Unconditional component cycle in ${stringify(componentType)}`);
+      }
+    }
+    if (appProtoView.type === renderApi.ViewType.EMBEDDED ||
+        appProtoView.type === renderApi.ViewType.HOST) {
+      this._protoViewsToBeMerged.push(appProtoView);
+    }
+    appProtoView.isRecursive = isRecursive;
+  }
+
+  private _loopComponentElementBinders(appProtoView: AppProtoView, callback: Function) {
+    appProtoView.elementBinders.forEach((elementBinder) => {
+      if (isPresent(elementBinder.componentDirective)) {
+        callback(appProtoView, elementBinder);
+      } else if (isPresent(elementBinder.nestedProtoView)) {
+        this._loopComponentElementBinders(elementBinder.nestedProtoView, callback);
+      }
     });
-    return componentElementBinders;
   }
 
   private _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {

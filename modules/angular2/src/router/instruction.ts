@@ -27,10 +27,9 @@ export class Instruction {
   reuse: boolean = false;
   specificity: number;
 
-  private _params: StringMap<string, string>;
-
   constructor(public component: any, public capturedUrl: string,
-              private _recognizer: PathRecognizer, public child: Instruction = null) {
+              private _recognizer: PathRecognizer, public child: Instruction = null,
+              private _params: StringMap<string, any> = null) {
     this.accumulatedUrl = capturedUrl;
     this.specificity = _recognizer.specificity;
     if (isPresent(child)) {

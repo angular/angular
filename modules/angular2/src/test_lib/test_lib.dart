@@ -1,5 +1,7 @@
 library test_lib.test_lib;
 
+import 'dart:async';
+
 import 'package:guinness/guinness.dart' as gns;
 export 'package:guinness/guinness.dart'
     hide
@@ -12,9 +14,6 @@ export 'package:guinness/guinness.dart'
         xit,
         SpyObject,
         SpyFunction;
-import 'package:unittest/unittest.dart' hide expect;
-
-import 'dart:async';
 
 import 'package:angular2/src/dom/dom_adapter.dart' show DOM;
 
@@ -25,8 +24,8 @@ import 'package:angular2/src/di/binding.dart' show bind;
 import 'package:angular2/src/di/injector.dart' show Injector;
 import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 
-import './test_injector.dart';
-export './test_injector.dart' show inject;
+import 'test_injector.dart';
+export 'test_injector.dart' show inject;
 
 bool IS_DARTIUM = true;
 
@@ -85,9 +84,9 @@ class Expect extends gns.Expect {
 
   void toEqual(expected) => toHaveSameProps(expected);
   void toThrowError([message = ""]) => toThrowWith(message: message);
-  void toBePromise() => _expect(actual is Future, equals(true));
+  void toBePromise() => gns.guinness.matchers.toBeTrue(actual is Future);
   void toImplement(expected) => toBeA(expected);
-  void toBeNaN() => _expect(double.NAN.compareTo(actual) == 0, equals(true));
+  void toBeNaN() => gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);
   void toHaveText(expected) => _expect(elementText(actual), expected);
   void toHaveBeenCalledWith([a = _u, b = _u, c = _u, d = _u, e = _u, f = _u]) =>
       _expect(_argsMatch(actual, a, b, c, d, e, f), true,
@@ -122,8 +121,8 @@ class NotExpect extends gns.NotExpect {
   NotExpect(actual) : super(actual);
 
   void toEqual(expected) => toHaveSameProps(expected);
-  void toBePromise() => _expect(actual is Future, equals(false));
-  void toBeNull() => _expect(actual == null, equals(false));
+  void toBePromise() => gns.guinness.matchers.toBeFalse(actual is Future);
+  void toBeNull() => gns.guinness.matchers.toBeFalse(actual == null);
   Function get _expect => gns.guinness.matchers.expect;
 }
 

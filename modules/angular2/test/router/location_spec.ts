@@ -75,5 +75,13 @@ export function main() {
       location.go('user/btford');
       expect(locationStrategy.path()).toEqual('/my/custom/href/user/btford');
     });
+
+    it('should throw when no base href is provided', () => {
+      var locationStrategy = new MockLocationStrategy();
+      locationStrategy.internalBaseHref = null;
+      expect(() => new Location(locationStrategy))
+          .toThrowError(
+              `No base href set. Either provide a binding to "appBaseHrefToken" or add a base element.`);
+    });
   });
 }

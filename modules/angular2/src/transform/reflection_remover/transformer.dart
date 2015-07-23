@@ -30,9 +30,7 @@ class ReflectionRemover extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    log.init(transform);
-
-    try {
+    await log.initZoned(transform, () async {
       var newEntryPoints = options.entryPoints.map((entryPoint) {
         return new AssetId(transform.primaryInput.id.package, entryPoint)
             .changeExtension(DEPS_EXTENSION);
@@ -54,10 +52,6 @@ class ReflectionRemover extends Transformer {
           mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
       transform.addOutput(
           new Asset.fromString(transform.primaryInput.id, transformedCode));
-    } catch (ex, stackTrace) {
-      log.logger.error('Removing reflection failed.\n'
-          'Exception: $ex\n'
-          'Stack Trace: $stackTrace');
-    }
+    }, errorMessage: 'Removing reflection failed.');
   }
 }

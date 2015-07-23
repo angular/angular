@@ -62,7 +62,7 @@ export class NgZone {
     if (global.zone) {
       this._disabled = false;
       this._mountZone = global.zone;
-      this._innerZone = this._createInnerZone(this._mountZone, enableLongStackTrace)
+      this._innerZone = this._createInnerZone(this._mountZone, enableLongStackTrace);
     } else {
       this._disabled = true;
       this._mountZone = null;
@@ -86,8 +86,8 @@ export class NgZone {
   }
 
   /**
-   * Sets the zone hook that is called immediately after the last turn in the
-   * current event completes. At this point Angular will no longer attempt to
+   * Sets the zone hook that is called immediately after the last turn in
+   * an event completes. At this point Angular will no longer attempt to
    * sync the UI. Any changes to the data model will not be reflected in the
    * DOM. {@link onEventDoneFn} is executed outside Angular zone.
    *
@@ -121,7 +121,7 @@ export class NgZone {
    * });
    * ```
    */
-  run(fn): any {
+  run(fn: () => any): any {
     if (this._disabled) {
       return fn();
     } else {
@@ -145,7 +145,7 @@ export class NgZone {
    * });
    * ```
    */
-  runOutsideAngular(fn): any {
+  runOutsideAngular(fn: () => any): any {
     if (this._disabled) {
       return fn();
     } else {
@@ -159,9 +159,9 @@ export class NgZone {
 
     if (enableLongStackTrace) {
       errorHandling = StringMapWrapper.merge(Zone.longStackTraceZone,
-                                             {onError: function(e) { ngZone._onError(this, e) }});
+                                             {onError: function(e) { ngZone._onError(this, e); }});
     } else {
-      errorHandling = {onError: function(e) { ngZone._onError(this, e) }};
+      errorHandling = {onError: function(e) { ngZone._onError(this, e); }};
     }
 
     return zone.fork(errorHandling)
@@ -200,7 +200,7 @@ export class NgZone {
                   }
                 }
               }
-            }
+            };
           },
           '$scheduleMicrotask': function(parentScheduleMicrotask) {
             return function(fn) {
@@ -213,7 +213,7 @@ export class NgZone {
                 }
               };
               parentScheduleMicrotask.call(this, microtask);
-            }
+            };
           },
           _innerZone: true
         });

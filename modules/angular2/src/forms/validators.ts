@@ -26,7 +26,7 @@ export class Validators {
         return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
       }, {});
       return StringMapWrapper.isEmpty(res) ? null : res;
-    }
+    };
   }
 
   static group(c: modelModule.ControlGroup): StringMap<string, boolean> {

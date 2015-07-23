@@ -34,10 +34,8 @@ export function main() {
       resetShadowDomCache();
     });
 
-    it('should use the host element as shadow root', () => {
-      var host = el('<div><span>original content</span></div>');
-      expect(strategy.prepareShadowRoot(host)).toBe(host);
-    });
+    it('should report that this is not the native strategy',
+       () => { expect(strategy.hasNativeContentElement()).toBe(false); });
 
     it('should move the style element to the style host', () => {
       var compileElement = el('<div><style>.one {}</style></div>');

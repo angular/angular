@@ -6,6 +6,7 @@ import 'package:unittest/vm_config.dart';
 
 import 'common/async_string_writer_tests.dart' as asyncStringWriter;
 import 'bind_generator/all_tests.dart' as bindGenerator;
+import 'deferred_rewriter/all_tests.dart' as deferredRewriter;
 import 'directive_linker/all_tests.dart' as directiveLinker;
 import 'directive_metadata_extractor/all_tests.dart' as directiveMeta;
 import 'directive_processor/all_tests.dart' as directiveProcessor;
@@ -22,6 +23,7 @@ main() {
   describe('Directive Processor', directiveProcessor.allTests);
   describe('Reflection Remover', reflectionRemover.allTests);
   describe('Template Compiler', templateCompiler.allTests);
+  describe('Deferred Rewriter', deferredRewriter.allTests);
   // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
   // designed to work with `guinness`.
   group('Transformer Pipeline', integration.allTests);

@@ -1,6 +1,4 @@
-import {bootstrap, Component, View, NgFor} from 'angular2/angular2';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+import {bootstrap, Component, View, NgFor} from 'angular2/bootstrap';
 import {Zippy} from './zippy';
 
 @Component({selector: 'zippy-app'})
@@ -22,6 +20,5 @@ class ZippyApp {
 }
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(ZippyApp);
 }

@@ -1,8 +1,5 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import * as viewModule from '../view/view';
-
-import {LightDom} from './light_dom';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {insertSharedStyleText} from './util';
 
@@ -20,13 +17,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
 
   hasNativeContentElement(): boolean { return false; }
 
-  prepareShadowRoot(el): Node { return el; }
-
-  constructLightDom(lightDomView: viewModule.DomView, el): LightDom {
-    return new LightDom(lightDomView, el);
-  }
-
-  processStyleElement(hostComponentId: string, templateUrl: string, styleEl): void {
+  processStyleElement(hostComponentId: string, templateUrl: string, styleEl: Element): void {
     var cssText = DOM.getText(styleEl);
     insertSharedStyleText(cssText, this.styleHost, styleEl);
   }

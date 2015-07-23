@@ -61,5 +61,5 @@ export class URLSearchParams {
     return ListWrapper.join(paramsList, '&');
   }
 
-  delete (param): void { MapWrapper.delete(this.paramsMap, param); }
+  delete (param: string): void { MapWrapper.delete(this.paramsMap, param); }
 }

@@ -9382,6 +9382,9 @@
     "node-uuid": {
       "version": "1.4.3"
     },
+    "on-headers": {
+      "version": "1.0.0"
+    },
     "parse5": {
       "version": "1.3.2"
     },
@@ -9532,6 +9535,9 @@
           "version": "2.6.0"
         }
       }
+    },
+    "proxy-middleware": {
+      "version": "0.13.0"
     },
     "q": {
       "version": "1.3.0"
@@ -9953,7 +9959,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.6.9",
+      "version": "0.7.0",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -9978,7 +9984,7 @@
         },
         "typescript": {
           "version": "1.5.3",
-          "resolved": "git://github.com/microsoft/TypeScript.git#331b63df7d05c9476b6b9cae97a7a158eba303ca"
+          "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
     },
@@ -10586,5 +10592,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.30"
+  "version": "2.0.0-alpha.31"
 }

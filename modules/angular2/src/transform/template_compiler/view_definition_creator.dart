@@ -254,7 +254,11 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
       if (_metadataMap.containsKey(name)) {
         viewDef.directives.add(_metadataMap[name]);
       } else {
-        logger.warning('Could not find Directive entry for $name');
+        logger.warning('Could not find Directive entry for $name. '
+            'Please be aware that reusable, pre-defined lists of Directives '
+            '(aka "directive aliases") are not yet supported and will cause '
+            'your application to misbehave. '
+            'See https://github.com/angular/angular/issues/1747 for details.');
       }
     }
   }

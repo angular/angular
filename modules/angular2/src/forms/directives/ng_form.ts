@@ -74,7 +74,7 @@ export class NgForm extends ControlContainer implements Form {
   addControl(dir: NgControl): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
-      var c = new Control("");
+      var c = new Control();
       setUpControl(c, dir);
       container.addControl(dir.name, c);
       c.updateValidity();

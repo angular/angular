@@ -1,5 +1,12 @@
 import {Injectable} from 'angular2/di';
-import {isBlank, isPresent, BaseException, stringify, isPromise} from 'angular2/src/facade/lang';
+import {
+  isBlank,
+  isPresent,
+  BaseException,
+  stringify,
+  isPromise,
+  StringWrapper
+} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -82,9 +89,17 @@ export class ViewLoader {
       throw new BaseException('View should have either the templateUrl or template property set');
     }
 
-    // Inline the style tags from the html
     return html.then(html => {
       var tplEl = DOM.createTemplate(html);
+
+      // Replace $baseUrl with the base url for the template
+      let templateAbsUrl = view.templateAbsUrl;
+      if (isPresent(templateAbsUrl) && templateAbsUrl.indexOf("/") >= 0) {
+        let baseUrl = templateAbsUrl.substring(0, templateAbsUrl.lastIndexOf("/"));
+        this._substituteBaseUrl(DOM.content(tplEl), baseUrl);
+      }
+
+      // Inline the style tags from the html
       let styleEls = DOM.querySelectorAll(DOM.content(tplEl), 'STYLE');
 
       let promises: List<Promise<string>> = [];
@@ -97,6 +112,31 @@ export class ViewLoader {
 
       return promises.length > 0 ? PromiseWrapper.all(promises).then(_ => tplEl) : tplEl;
     });
+  }
+
+  /**
+   * Replace all occurrences of $baseUrl in the attributes of an element and its
+   * children with the base URL of the template.
+   *
+   * @param element The element to process
+   * @param baseUrl The base URL of the template.
+   * @private
+   */
+  private _substituteBaseUrl(element, baseUrl: string): void {
+    if (DOM.isElementNode(element)) {
+      var attrs = DOM.attributeMap(element);
+      MapWrapper.forEach(attrs, (v, k) => {
+        if (isPresent(v) && v.indexOf('$baseUrl') >= 0) {
+          DOM.setAttribute(element, k, StringWrapper.replaceAll(v, /\$baseUrl/g, baseUrl));
+        }
+      });
+    }
+    let children = DOM.childNodes(element);
+    for (let i = 0; i < children.length; i++) {
+      if (DOM.isElementNode(children[i])) {
+        this._substituteBaseUrl(children[i], baseUrl);
+      }
+    }
   }
 
   /**

@@ -27,11 +27,11 @@ var _SELECTOR_REGEXP = RegExpWrapper.create(
  */
 export class CssSelector {
   element: string = null;
-  classNames: List<string> = [];
-  attrs: List<string> = [];
-  notSelectors: List<CssSelector> = [];
+  classNames: string[] = [];
+  attrs: string[] = [];
+  notSelectors: CssSelector[] = [];
 
-  static parse(selector: string): List<CssSelector> {
+  static parse(selector: string): CssSelector[] {
     var results: CssSelector[] = [];
     var _addResult = (res: CssSelector[], cssSel) => {
       if (cssSel.notSelectors.length > 0 && isBlank(cssSel.element) &&
@@ -135,21 +135,21 @@ export class CssSelector {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
-  static createNotMatcher(notSelectors: List<CssSelector>): SelectorMatcher {
+  static createNotMatcher(notSelectors: CssSelector[]): SelectorMatcher {
     var notMatcher = new SelectorMatcher();
     notMatcher.addSelectables(notSelectors, null);
     return notMatcher;
   }
 
-  private _elementMap: Map<string, List<SelectorContext>> = new Map();
+  private _elementMap: Map<string, SelectorContext[]> = new Map();
   private _elementPartialMap: Map<string, SelectorMatcher> = new Map();
-  private _classMap: Map<string, List<SelectorContext>> = new Map();
+  private _classMap: Map<string, SelectorContext[]> = new Map();
   private _classPartialMap: Map<string, SelectorMatcher> = new Map();
-  private _attrValueMap: Map<string, Map<string, List<SelectorContext>>> = new Map();
+  private _attrValueMap: Map<string, Map<string, SelectorContext[]>> = new Map();
   private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>> = new Map();
-  private _listContexts: List<SelectorListContext> = [];
+  private _listContexts: SelectorListContext[] = [];
 
-  addSelectables(cssSelectors: List<CssSelector>, callbackCtxt?: any) {
+  addSelectables(cssSelectors: CssSelector[], callbackCtxt?: any) {
     var listContext = null;
     if (cssSelectors.length > 1) {
       listContext = new SelectorListContext(cssSelectors);
@@ -220,7 +220,7 @@ export class SelectorMatcher {
     }
   }
 
-  private _addTerminal(map: Map<string, List<SelectorContext>>, name: string,
+  private _addTerminal(map: Map<string, SelectorContext[]>, name: string,
                        selectable: SelectorContext) {
     var terminalList = map.get(name);
     if (isBlank(terminalList)) {
@@ -246,7 +246,7 @@ export class SelectorMatcher {
    * @param matchedCallback This callback will be called with the object handed into `addSelectable`
    * @return boolean true if a match was found
   */
-  match(cssSelector: CssSelector, matchedCallback /*: (CssSelector, any) => void*/): boolean {
+  match(cssSelector: CssSelector, matchedCallback: (CssSelector, any) => void): boolean {
     var result = false;
     var element = cssSelector.element;
     var classNames = cssSelector.classNames;
@@ -298,7 +298,7 @@ export class SelectorMatcher {
     return result;
   }
 
-  _matchTerminal(map: Map<string, List<SelectorContext>>, name, cssSelector: CssSelector,
+  _matchTerminal(map: Map<string, SelectorContext[]>, name, cssSelector: CssSelector,
                  matchedCallback: (CssSelector, any) => void): boolean {
     if (isBlank(map) || isBlank(name)) {
       return false;
@@ -338,22 +338,22 @@ export class SelectorMatcher {
 }
 
 
-class SelectorListContext {
+export class SelectorListContext {
   alreadyMatched: boolean = false;
 
-  constructor(public selectors: List<CssSelector>) {}
+  constructor(public selectors: CssSelector[]) {}
 }
 
 // Store context to pass back selector and context when a selector is matched
-class SelectorContext {
-  notSelectors: List<CssSelector>;
+export class SelectorContext {
+  notSelectors: CssSelector[];
 
   constructor(public selector: CssSelector, public cbContext: any,
               public listContext: SelectorListContext) {
     this.notSelectors = selector.notSelectors;
   }
 
-  finalize(cssSelector: CssSelector, callback /*: (CssSelector, any) => void*/): boolean {
+  finalize(cssSelector: CssSelector, callback: (CssSelector, any) => void): boolean {
     var result = true;
     if (this.notSelectors.length > 0 &&
         (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {

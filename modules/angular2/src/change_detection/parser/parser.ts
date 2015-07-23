@@ -167,7 +167,7 @@ class _ParseAST {
   expectIdentifierOrKeyword(): string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
-      this.error(`Unexpected token ${n}, expected identifier or keyword`)
+      this.error(`Unexpected token ${n}, expected identifier or keyword`);
     }
     this.advance();
     return n.toString();
@@ -176,7 +176,7 @@ class _ParseAST {
   expectIdentifierOrKeywordOrString(): string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
-      this.error(`Unexpected token ${n}, expected identifier, keyword, or string`)
+      this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
     }
     this.advance();
     return n.toString();
@@ -479,7 +479,7 @@ class _ParseAST {
     return new LiteralMap(keys, values);
   }
 
-  parseAccessMemberOrMethodCall(receiver, isSafe: boolean = false): AST {
+  parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     let id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter($LPAREN)) {

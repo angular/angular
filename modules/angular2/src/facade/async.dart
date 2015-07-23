@@ -22,7 +22,7 @@ class PromiseWrapper {
   static Future wrap(Function fn) {
     return new Future(fn);
   }
-  
+
   // Note: We can't rename this method to `catch`, as this is not a valid
   // method name in Dart.
   static Future catchError(Future promise, Function onError) {

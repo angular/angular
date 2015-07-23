@@ -1,7 +1,5 @@
-import {bootstrap, NgFor, Component, View} from 'angular2/angular2';
+import {bootstrap, NgFor, Component, View} from 'angular2/bootstrap';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 @Component({selector: 'todo-app', viewInjector: [Store, TodoFactory]})
 @View({templateUrl: 'todo.html', directives: [NgFor]})
@@ -44,6 +42,5 @@ class TodoApp {
 }
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();  // for the Dart version
   bootstrap(TodoApp);
 }

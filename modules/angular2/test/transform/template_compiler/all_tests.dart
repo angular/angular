@@ -18,7 +18,6 @@ main() => allTests();
 
 void allTests() {
   Html5LibDomAdapter.makeCurrent();
-  beforeEach(() => setLogger(new PrintLogger()));
 
   describe('registrations', () {
     noChangeDetectorTests();
@@ -34,7 +33,7 @@ void changeDetectorTests() {
   // when https://github.com/angular/angular/issues/3019 is solved.
   it('shouldn always notifyBinding for template variables', () async {
     var inputPath = 'template_compiler/ng_for_files/hello.ng_deps.dart';
-    var output = await(process(new AssetId('a', inputPath)));
+    var output = await (process(new AssetId('a', inputPath)));
     expect(output).toContain('notifyOnBinding');
   });
 }
@@ -45,27 +44,25 @@ void noChangeDetectorTests() {
 
   it('should parse simple expressions in inline templates.', () async {
     var inputPath =
-      'template_compiler/inline_expression_files/hello.ng_deps.dart';
+        'template_compiler/inline_expression_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
+        'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
 
   it('should parse simple methods in inline templates.', () async {
-    var inputPath =
-      'template_compiler/inline_method_files/hello.ng_deps.dart';
+    var inputPath = 'template_compiler/inline_method_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/inline_method_files/expected/hello.ng_deps.dart');
+        'template_compiler/inline_method_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
 
   it('should parse simple expressions in linked templates.', () async {
-    var inputPath =
-      'template_compiler/url_expression_files/hello.ng_deps.dart';
+    var inputPath = 'template_compiler/url_expression_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/url_expression_files/expected/hello.ng_deps.dart');
+        'template_compiler/url_expression_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
@@ -73,7 +70,7 @@ void noChangeDetectorTests() {
   it('should parse simple methods in linked templates.', () async {
     var inputPath = 'template_compiler/url_method_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/url_method_files/expected/hello.ng_deps.dart');
+        'template_compiler/url_method_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
@@ -81,33 +78,32 @@ void noChangeDetectorTests() {
   it('should not generated duplicate getters/setters', () async {
     var inputPath = 'template_compiler/duplicate_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/duplicate_files/expected/hello.ng_deps.dart');
+        'template_compiler/duplicate_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
 
   it('should parse `View` directives with a single dependency.', () async {
-    var inputPath =
-      'template_compiler/one_directive_files/hello.ng_deps.dart';
+    var inputPath = 'template_compiler/one_directive_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/one_directive_files/expected/hello.ng_deps.dart');
+        'template_compiler/one_directive_files/expected/hello.ng_deps.dart');
 
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
 
   it('should parse `View` directives with a single prefixed dependency.',
-    () async {
+      () async {
     var inputPath = 'template_compiler/with_prefix_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/with_prefix_files/expected/hello.ng_deps.dart');
+        'template_compiler/with_prefix_files/expected/hello.ng_deps.dart');
 
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
 
     inputPath = 'template_compiler/with_prefix_files/goodbye.ng_deps.dart';
     expected = readFile(
-      'template_compiler/with_prefix_files/expected/goodbye.ng_deps.dart');
+        'template_compiler/with_prefix_files/expected/goodbye.ng_deps.dart');
 
     output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
@@ -115,9 +111,9 @@ void noChangeDetectorTests() {
 
   it('should parse angular directives with a prefix', () async {
     var inputPath =
-      'template_compiler/with_prefix_files/ng2_prefix.ng_deps.dart';
+        'template_compiler/with_prefix_files/ng2_prefix.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/with_prefix_files/expected/ng2_prefix.ng_deps.dart');
+        'template_compiler/with_prefix_files/expected/ng2_prefix.ng_deps.dart');
 
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
@@ -125,9 +121,9 @@ void noChangeDetectorTests() {
 
   it('should create the same output for multiple calls.', () async {
     var inputPath =
-      'template_compiler/inline_expression_files/hello.ng_deps.dart';
+        'template_compiler/inline_expression_files/hello.ng_deps.dart';
     var expected = readFile(
-      'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
+        'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
     output = await process(new AssetId('a', inputPath));

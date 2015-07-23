@@ -35,7 +35,7 @@ export function main() {
 
   describe('ProtoViewFactory', () => {
     var changeDetection;
-    var protoViewFactory;
+    var protoViewFactory: ProtoViewFactory;
     var directiveResolver;
 
     beforeEach(() => {
@@ -63,18 +63,23 @@ export function main() {
     describe('createAppProtoViews', () => {
 
       it('should create an AppProtoView for the root render proto view', () => {
-        var renderPv = createRenderProtoView();
-        var pvs = protoViewFactory.createAppProtoViews(bindDirective(MainComponent), renderPv, []);
-        expect(pvs.length).toBe(1);
-        expect(pvs[0].render).toBe(renderPv.render);
+        var varBindings = new Map();
+        varBindings.set('a', 'b');
+        var renderPv = createRenderProtoView([], null, varBindings);
+        var appPv =
+            protoViewFactory.createAppProtoViews(bindDirective(MainComponent), renderPv, []);
+        expect(appPv.variableBindings.get('a')).toEqual('b');
+        expect(appPv).toBeTruthy();
       });
     });
 
     describe("createDirectiveVariableBindings", () => {
       it("should calculate directive variable bindings", () => {
         var dvbs = createDirectiveVariableBindings(
-            new renderApi.ElementBinder(
-                {variableBindings: MapWrapper.createFromStringMap({"exportName": "templateName"})}),
+            new renderApi.ElementBinder({
+              variableBindings:
+                  MapWrapper.createFromStringMap<string>({"exportName": "templateName"})
+            }),
             [
               directiveBinding(
                   {metadata: renderApi.DirectiveMetadata.create({exportAs: 'exportName'})}),
@@ -82,13 +87,15 @@ export function main() {
                   {metadata: renderApi.DirectiveMetadata.create({exportAs: 'otherName'})})
             ]);
 
-        expect(dvbs).toEqual(MapWrapper.createFromStringMap({"templateName": 0}));
+        expect(dvbs).toEqual(MapWrapper.createFromStringMap<number>({"templateName": 0}));
       });
 
       it("should set exportAs to $implicit for component with exportAs = null", () => {
         var dvbs = createDirectiveVariableBindings(
-            new renderApi.ElementBinder(
-                {variableBindings: MapWrapper.createFromStringMap({"$implicit": "templateName"})}),
+            new renderApi.ElementBinder({
+              variableBindings:
+                  MapWrapper.createFromStringMap<string>({"$implicit": "templateName"})
+            }),
             [
               directiveBinding({
                 metadata: renderApi.DirectiveMetadata.create(
@@ -96,7 +103,7 @@ export function main() {
               })
             ]);
 
-        expect(dvbs).toEqual(MapWrapper.createFromStringMap({"templateName": 0}));
+        expect(dvbs).toEqual(MapWrapper.createFromStringMap<number>({"templateName": 0}));
       });
 
       it("should throw we no directive exported with this name", () => {
@@ -104,7 +111,7 @@ export function main() {
           createDirectiveVariableBindings(
               new renderApi.ElementBinder({
                 variableBindings:
-                    MapWrapper.createFromStringMap({"someInvalidName": "templateName"})
+                    MapWrapper.createFromStringMap<string>({"someInvalidName": "templateName"})
               }),
               [
                 directiveBinding(
@@ -117,7 +124,8 @@ export function main() {
         expect(() => {
           createDirectiveVariableBindings(
               new renderApi.ElementBinder({
-                variableBindings: MapWrapper.createFromStringMap({"exportName": "templateName"})
+                variableBindings:
+                    MapWrapper.createFromStringMap<string>({"exportName": "templateName"})
               }),
               [
                 directiveBinding(
@@ -145,11 +153,11 @@ export function main() {
       it('should merge the names in the template for all ElementBinders', () => {
         expect(createVariableLocations([
           new renderApi.ElementBinder(
-              {variableBindings: MapWrapper.createFromStringMap({"x": "a"})}),
+              {variableBindings: MapWrapper.createFromStringMap<string>({"x": "a"})}),
           new renderApi.ElementBinder(
-              {variableBindings: MapWrapper.createFromStringMap({"y": "b"})})
+              {variableBindings: MapWrapper.createFromStringMap<string>({"y": "b"})})
 
-        ])).toEqual(MapWrapper.createFromStringMap({'a': 0, 'b': 1}));
+        ])).toEqual(MapWrapper.createFromStringMap<number>({'a': 0, 'b': 1}));
       });
     });
   });
@@ -159,15 +167,24 @@ function directiveBinding({metadata}: {metadata?: any} = {}) {
   return new DirectiveBinding(Key.get("dummy"), null, [], [], [], metadata);
 }
 
-function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null) {
+function createRenderProtoView(elementBinders = null, type: renderApi.ViewType = null,
+                               variableBindings = null) {
   if (isBlank(type)) {
     type = renderApi.ViewType.COMPONENT;
   }
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
-  return new renderApi.ProtoViewDto(
-      {elementBinders: elementBinders, type: type, variableBindings: new Map()});
+  if (isBlank(variableBindings)) {
+    variableBindings = new Map();
+  }
+  return new renderApi.ProtoViewDto({
+    elementBinders: elementBinders,
+    type: type,
+    variableBindings: variableBindings,
+    textBindings: [],
+    transitiveNgContentCount: 0
+  });
 }
 
 function createRenderComponentElementBinder(directiveIndex) {

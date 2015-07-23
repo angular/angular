@@ -40,7 +40,7 @@ import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
-import {ProtoViewRef, ViewRef} from './view_ref';
+import {TemplateRef} from './template_ref';
 import {Directive, Component, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {ChangeDetector, ChangeDetectorRef, Pipes} from 'angular2/change_detection';
@@ -52,7 +52,7 @@ var _staticKeys;
 
 export class StaticKeys {
   viewManagerId: number;
-  protoViewId: number;
+  templateRefId: number;
   viewContainerId: number;
   changeDetectorRefId: number;
   elementRefId: number;
@@ -60,7 +60,7 @@ export class StaticKeys {
 
   constructor() {
     this.viewManagerId = Key.get(avmModule.AppViewManager).id;
-    this.protoViewId = Key.get(ProtoViewRef).id;
+    this.templateRefId = Key.get(TemplateRef).id;
     this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
@@ -278,7 +278,7 @@ export class DirectiveBinding extends ResolvedBinding {
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
   constructor(public viewManager: avmModule.AppViewManager, public view: viewModule.AppView,
-              public protoView: viewModule.AppProtoView) {}
+              public elementRef: ElementRef, public templateRef: TemplateRef) {}
 }
 
 export class EventEmitterAccessor {
@@ -286,7 +286,7 @@ export class EventEmitterAccessor {
 
   subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
-    return ObservableWrapper.subscribe(
+    return ObservableWrapper.subscribe<Event>(
         eventEmitter,
         eventObj => view.triggerEventHandlers(this.eventName, eventObj, boundElementIndex));
   }
@@ -297,7 +297,7 @@ export class HostActionAccessor {
 
   subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
-    return ObservableWrapper.subscribe(
+    return ObservableWrapper.subscribe<List<any>>(
         eventEmitter,
         actionArgs => view.invokeElementMethod(boundElementIndex, this.methodName, actionArgs));
   }
@@ -397,7 +397,7 @@ export class ProtoElementInjector {
               public directiveVariableBindings: Map<string, number>) {
     var length = bwv.length;
 
-    this.protoInjector = new ProtoInjector(bwv, distanceToParent);
+    this.protoInjector = new ProtoInjector(bwv);
 
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
     this.hostActionAccessors = ListWrapper.createFixedSize(length);
@@ -419,6 +419,9 @@ export class ProtoElementInjector {
   getBindingAtIndex(index: number): any { return this.protoInjector.getBindingAtIndex(index); }
 }
 
+class _Context {
+  constructor(public element: any, public componentElement: any, public injector: any) {}
+}
 
 export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
   private _host: ElementInjector;
@@ -438,7 +441,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   constructor(public _proto: ProtoElementInjector, parent: ElementInjector) {
     super(parent);
 
-    this._injector = new Injector(this._proto.protoInjector, null, this);
+    this._injector =
+        new Injector(this._proto.protoInjector, null, this, () => this._debugContext());
+
     // we couple ourselves to the injector strategy to avoid polymoprhic calls
     var injectorStrategy = <any>this._injector.internalStrategy;
     this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
@@ -476,7 +481,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._host = host;
     this._preBuiltObjects = preBuiltObjects;
 
-    this._reattachInjectors(imperativelyCreatedInjector, host);
+    this._reattachInjectors(imperativelyCreatedInjector);
     this._strategy.hydrate();
 
     if (isPresent(host)) {
@@ -489,52 +494,45 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this.hydrated = true;
   }
 
-  private _reattachInjectors(imperativelyCreatedInjector: Injector, host: ElementInjector): void {
-    if (isPresent(this._parent)) {
-      this._reattachInjector(this._injector, this._parent._injector, false);
-    } else {
-      // This injector is at the boundary.
-      //
-      // The injector tree we are assembling:
-      //
-      // host._injector (only if present)
-      //   |
-      //   |boundary
-      //   |
-      // imperativelyCreatedInjector (only if present)
-      //   |
-      //   |boundary
-      //   |
-      // this._injector
-      //
-
-      // host._injector (only if present)
-      //   |
-      //   |boundary
-      //   |
-      // imperativelyCreatedInjector (only if present)
-      if (isPresent(imperativelyCreatedInjector) && isPresent(host)) {
-        this._reattachInjector(imperativelyCreatedInjector, host._injector, true);
-      }
-
-      // host._injector OR imperativelyCreatedInjector OR null
-      //   |
-      //   |boundary
-      //   |
-      // this._injector
-      var parent = this._closestBoundaryInjector(imperativelyCreatedInjector, host);
-      this._reattachInjector(this._injector, parent, true);
-    }
+  private _debugContext(): any {
+    var p = this._preBuiltObjects;
+    var element = isPresent(p.elementRef) ? p.elementRef.nativeElement : null;
+    var hostRef = p.view.getHostElement();
+    var componentElement = isPresent(hostRef) ? hostRef.nativeElement : null;
+    return new _Context(element, componentElement, this._injector);
   }
 
-  private _closestBoundaryInjector(imperativelyCreatedInjector: Injector,
-                                   host: ElementInjector): Injector {
-    if (isPresent(imperativelyCreatedInjector)) {
-      return imperativelyCreatedInjector;
-    } else if (isPresent(host)) {
-      return host._injector;
+  private _reattachInjectors(imperativelyCreatedInjector: Injector): void {
+    // Dynamically-loaded component in the template. Not a root ElementInjector.
+    if (isPresent(this._parent)) {
+      if (isPresent(imperativelyCreatedInjector)) {
+        // The imperative injector is similar to having an element between
+        // the dynamic-loaded component and its parent => no boundaries.
+        this._reattachInjector(this._injector, imperativelyCreatedInjector, false);
+        this._reattachInjector(imperativelyCreatedInjector, this._parent._injector, false);
+      } else {
+        this._reattachInjector(this._injector, this._parent._injector, false);
+      }
+
+      // Dynamically-loaded component in the template. A root ElementInjector.
+    } else if (isPresent(this._host)) {
+      // The imperative injector is similar to having an element between
+      // the dynamic-loaded component and its parent => no boundary between
+      // the component and imperativelyCreatedInjector.
+      // But since it is a root ElementInjector, we need to create a boundary
+      // between imperativelyCreatedInjector and _host.
+      if (isPresent(imperativelyCreatedInjector)) {
+        this._reattachInjector(this._injector, imperativelyCreatedInjector, false);
+        this._reattachInjector(imperativelyCreatedInjector, this._host._injector, true);
+      } else {
+        this._reattachInjector(this._injector, this._host._injector, true);
+      }
+
+      // Bootstrap
     } else {
-      return null;
+      if (isPresent(imperativelyCreatedInjector)) {
+        this._reattachInjector(this._injector, imperativelyCreatedInjector, true);
+      }
     }
   }
 
@@ -557,7 +555,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return isPresent(index) ? this.getDirectiveAtIndex(<number>index) : this.getElementRef();
   }
 
-  get(token): any { return this._injector.get(token); }
+  get(token: any): any { return this._injector.get(token); }
 
   hasDirective(type: Type): boolean { return isPresent(this._injector.getOptional(type)); }
 
@@ -575,7 +573,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   getComponent(): any { return this._strategy.getComponent(); }
 
-  getElementRef(): ElementRef { return this._preBuiltObjects.view.elementRefs[this._proto.index]; }
+  getElementRef(): ElementRef { return this._preBuiltObjects.elementRef; }
 
   getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
@@ -589,8 +587,10 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     var key: Key = dep.key;
 
     if (!(dep instanceof DirectiveDependency)) return undefinedValue;
+    if (!(binding instanceof DirectiveBinding)) return undefinedValue;
 
     var dirDep = <DirectiveDependency>dep;
+    var dirBin = <DirectiveBinding>binding;
     var staticKeys = StaticKeys.instance();
 
 
@@ -601,8 +601,15 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
 
     if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
-      var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
-      return componentView.changeDetector.ref;
+      // We provide the component's view change detector to components and
+      // the surrounding component's change detector to directives.
+      if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
+        var componentView = this._preBuiltObjects.view.getNestedView(
+            this._preBuiltObjects.elementRef.boundElementIndex);
+        return componentView.changeDetector.ref;
+      } else {
+        return this._preBuiltObjects.view.changeDetector.ref;
+      }
     }
 
     if (dirDep.key.id === StaticKeys.instance().elementRefId) {
@@ -613,15 +620,15 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       return this.getViewContainerRef();
     }
 
-    if (dirDep.key.id === StaticKeys.instance().protoViewId) {
-      if (isBlank(this._preBuiltObjects.protoView)) {
+    if (dirDep.key.id === StaticKeys.instance().templateRefId) {
+      if (isBlank(this._preBuiltObjects.templateRef)) {
         if (dirDep.optional) {
           return null;
         }
 
-        throw new NoBindingError(dirDep.key);
+        throw new NoBindingError(null, dirDep.key);
       }
-      return new ProtoViewRef(this._preBuiltObjects.protoView);
+      return this._preBuiltObjects.templateRef;
     }
 
     return undefinedValue;

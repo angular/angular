@@ -3,8 +3,8 @@
  * @description
  * Define angular core API here.
  */
-export {bootstrap, ApplicationRef} from 'angular2/src/core/application';
 export {appComponentTypeToken} from 'angular2/src/core/application_tokens';
+export {ApplicationRef} from 'angular2/src/core/application_common';
 
 
 // Compiler Related Dependencies.
@@ -15,9 +15,10 @@ export {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 export {Compiler} from 'angular2/src/core/compiler/compiler';
 
 export {AppViewManager} from 'angular2/src/core/compiler/view_manager';
+export {IQueryList} from 'angular2/src/core/compiler/interface_query';
 export {QueryList} from 'angular2/src/core/compiler/query_list';
-export {BaseQueryList} from 'angular2/src/core/compiler/base_query_list';
 export {ElementRef} from 'angular2/src/core/compiler/element_ref';
+export {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 export {RenderElementRef} from 'angular2/src/render/api';
 export {ViewRef, ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 export {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';

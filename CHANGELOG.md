@@ -1,3 +1,68 @@
+<a name"2.0.0-alpha.32"></a>
+### 2.0.0-alpha.32 (2015-07-22)
+
+
+#### Bug Fixes
+
+* **api_docs:**
+  * slightly more accurate description of Dart overrideOnEventDone ([a4915ad6](https://github.com/angular/angular/commit/a4915ad6))
+  * slightly more accurate description of TS overrideOnEventDone ([fe3a5596](https://github.com/angular/angular/commit/fe3a5596))
+* **build:** clang-format ([66ec4d1f](https://github.com/angular/angular/commit/66ec4d1f))
+* **change_detect:**
+  * Sort `DirectiveMetadata` properties during processing ([b2a0be87](https://github.com/angular/angular/commit/b2a0be87))
+  * Handle '$' in change detector strings ([f1e81769](https://github.com/angular/angular/commit/f1e81769))
+* **content_projection:** allow to project text nodes to a place without bindings ([a472eacc](https://github.com/angular/angular/commit/a472eacc), closes [#3163](https://github.com/angular/angular/issues/3163), [#3179](https://github.com/angular/angular/issues/3179))
+* **di:**
+  * fixed dynamic component loading of components created in child injector ([57496926](https://github.com/angular/angular/commit/57496926))
+  * fixed types ([2f08ed8d](https://github.com/angular/angular/commit/2f08ed8d))
+  * do not rely on the fact that types are canonicalized ([2147ce45](https://github.com/angular/angular/commit/2147ce45))
+  * instatiate services lazily ([7531b48d](https://github.com/angular/angular/commit/7531b48d))
+* **element_injector:** inject the containing change detector ref to directives ([7879761a](https://github.com/angular/angular/commit/7879761a))
+* **examples:** add a couple entrypoints, adjust pubspec, fix change detector bug in Dart ([b03560b6](https://github.com/angular/angular/commit/b03560b6))
+* **facade:** use base element to get base href ([8296dcec](https://github.com/angular/angular/commit/8296dcec))
+* **forms:**
+  * default the initial value of Control to null ([5b597de1](https://github.com/angular/angular/commit/5b597de1))
+  * do not reset the value of the input when it came from the view ([b1231593](https://github.com/angular/angular/commit/b1231593))
+* **html_adapter:** Implement hasAttribute and getAttribute. ([e988f59c](https://github.com/angular/angular/commit/e988f59c))
+* **ng_for:** fixed ng_for to pass a change detector ref to the pipe registry ([583c5ffc](https://github.com/angular/angular/commit/583c5ffc))
+* **publish:** add force flag for pub publish script ([621604dc](https://github.com/angular/angular/commit/621604dc), closes [#3077](https://github.com/angular/angular/issues/3077))
+* **renderer:** handle empty fragments correctly ([61c73576](https://github.com/angular/angular/commit/61c73576), closes [#3100](https://github.com/angular/angular/issues/3100))
+* **router:**
+  * improve error for missing base href ([011fab37](https://github.com/angular/angular/commit/011fab37), closes [#3096](https://github.com/angular/angular/issues/3096))
+  * throw when reserved characters used in route definition ([c6409cb6](https://github.com/angular/angular/commit/c6409cb6), closes [#3021](https://github.com/angular/angular/issues/3021))
+  * improve error messages for routes with no config ([8bdca5c0](https://github.com/angular/angular/commit/8bdca5c0), closes [#2323](https://github.com/angular/angular/issues/2323))
+* **transformers:** fix sort order for reflective imports ([762a94f2](https://github.com/angular/angular/commit/762a94f2))
+* **view_manager:** allow to create host views even if there is an embedded view at the same place. ([116b64de](https://github.com/angular/angular/commit/116b64de))
+
+
+#### Features
+
+* FunctionWithParamTokens.execute now returns the value of the function ([3dd05ef7](https://github.com/angular/angular/commit/3dd05ef7))
+* upgrade ts2dart to 0.6.9. ([3810e4be](https://github.com/angular/angular/commit/3810e4be))
+* **build:** require parameter types ([de18da2a](https://github.com/angular/angular/commit/de18da2a), closes [#2833](https://github.com/angular/angular/issues/2833))
+* **change_detection:** added support for ObservableList from package:observe ([d449ea5c](https://github.com/angular/angular/commit/d449ea5c))
+* **compiler:**
+  * Support $baseUrl in HTML attributes when loading a template. ([e9427094](https://github.com/angular/angular/commit/e9427094))
+  * attach components and project light dom during compilation. ([b1df5450](https://github.com/angular/angular/commit/b1df5450), closes [#2529](https://github.com/angular/angular/issues/2529))
+* **core:** add ability to reflect DOM properties as attributes ([903ff904](https://github.com/angular/angular/commit/903ff904), closes [#2910](https://github.com/angular/angular/issues/2910))
+* **facade:** add getTypeNameForDebugging function ([ccb41632](https://github.com/angular/angular/commit/ccb41632))
+* **forms:** Export NgSelectOption directive ([f74d97e1](https://github.com/angular/angular/commit/f74d97e1))
+* **http:** add support for JSONP requests ([81abc399](https://github.com/angular/angular/commit/81abc399), closes [#2905](https://github.com/angular/angular/issues/2905), [#2818](https://github.com/angular/angular/issues/2818))
+* **pipes:** changed .append to .extend ([4c8ea129](https://github.com/angular/angular/commit/4c8ea129))
+* **router:** add interfaces for route definitions in RouteConfig ([4d28167b](https://github.com/angular/angular/commit/4d28167b), closes [#2261](https://github.com/angular/angular/issues/2261))
+* **transformers:**
+  * implement initializing deferred libraries ([5cc84ed4](https://github.com/angular/angular/commit/5cc84ed4))
+  * expose DI transformer for use by packages ([2bc12174](https://github.com/angular/angular/commit/2bc12174), closes [#2814](https://github.com/angular/angular/issues/2814))
+
+
+#### Breaking Changes
+
+*     Pipes.append has been renamed into Pipes.extend.
+    Pipes.extend prepends pipe factories instead of appending them.
+
+ ([4c8ea129](https://github.com/angular/angular/commit/4c8ea129))
+
+
 <a name"2.0.0-alpha.31"></a>
 ### 2.0.0-alpha.31 (2015-07-14)
 

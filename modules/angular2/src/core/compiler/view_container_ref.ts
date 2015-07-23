@@ -6,6 +6,7 @@ import * as avmModule from './view_manager';
 import * as viewModule from './view';
 
 import {ElementRef} from './element_ref';
+import {TemplateRef} from './template_ref';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 
 export class ViewContainerRef {
@@ -28,11 +29,16 @@ export class ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(protoViewRef: ProtoViewRef = null, atIndex: number = -1, context: ElementRef = null,
-         bindings: ResolvedBinding[] = null): ViewRef {
+  createEmbeddedView(templateRef: TemplateRef, atIndex: number = -1): ViewRef {
     if (atIndex == -1) atIndex = this.length;
-    return this.viewManager.createViewInContainer(this.element, atIndex, protoViewRef, context,
-                                                  bindings);
+    return this.viewManager.createEmbeddedViewInContainer(this.element, atIndex, templateRef);
+  }
+
+  createHostView(protoViewRef: ProtoViewRef = null, atIndex: number = -1,
+                 dynamicallyCreatedBindings: ResolvedBinding[] = null): ViewRef {
+    if (atIndex == -1) atIndex = this.length;
+    return this.viewManager.createHostViewInContainer(this.element, atIndex, protoViewRef,
+                                                      dynamicallyCreatedBindings);
   }
 
   insert(viewRef: ViewRef, atIndex: number = -1): ViewRef {

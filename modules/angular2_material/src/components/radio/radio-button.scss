@@ -58,7 +58,7 @@ md-radio-group {
   }
 }
 
-// This is the style applied to the content (included via <content>). If we could rely on shadow
+// This is the style applied to the content (included via <ng-content>). If we could rely on shadow
 // DOM always being present, this would use the ::content psuedo-class.
 .md-radio-label {
   position: relative;

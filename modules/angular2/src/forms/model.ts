@@ -22,7 +22,7 @@ function _find(c: AbstractControl, path: List<string | number>| string) {
   if (!(path instanceof List)) {
     path = StringWrapper.split(<string>path, new RegExp("/"));
   }
-  if (ListWrapper.isEmpty(path)) return null;
+  if (path instanceof List && ListWrapper.isEmpty(path)) return null;
 
   return ListWrapper.reduce(<List<string | number>>path, (v, name) => {
     if (v instanceof ControlGroup) {
@@ -85,7 +85,7 @@ export class AbstractControl {
     }
   }
 
-  setParent(parent) { this._parent = parent; }
+  setParent(parent: ControlGroup | ControlArray) { this._parent = parent; }
 
   updateValidity({onlySelf}: {onlySelf?: boolean} = {}): void {
     onlySelf = isPresent(onlySelf) ? onlySelf : false;
@@ -144,17 +144,20 @@ export class AbstractControl {
 export class Control extends AbstractControl {
   _onChange: Function;
 
-  constructor(value: any, validator: Function = Validators.nullValidator) {
+  constructor(value: any = null, validator: Function = Validators.nullValidator) {
     super(validator);
     this._value = value;
     this.updateValidity({onlySelf: true});
     this._valueChanges = new EventEmitter();
   }
 
-  updateValue(value: any, {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+  updateValue(value: any,
+              {onlySelf, emitEvent, emitModelToViewChange}:
+                  {onlySelf?: boolean, emitEvent?: boolean, emitModelToViewChange?: boolean} = {}):
       void {
+    emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
     this._value = value;
-    if (isPresent(this._onChange)) this._onChange(this._value);
+    if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this._value);
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
 

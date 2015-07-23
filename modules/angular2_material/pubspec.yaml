@@ -7,7 +7,7 @@ authors:
 description: Google material design components for Angular 2
 homepage: <%= packageJson.homepage %>
 environment:
-  sdk: '>=1.10.0-dev.1.10 <2.0.0'
+  sdk: '>=1.10.0 <2.0.0'
 dependencies:
   angular2: '^<%= packageJson.version %>'
   browser: '^0.10.0'

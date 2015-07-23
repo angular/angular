@@ -118,6 +118,16 @@ export function main() {
                                });
            xhr.flush();
          }));
+      it('should replace $baseUrl in attributes with the template base url',
+         inject([AsyncTestCompleter], (async) => {
+           xhr.expect('http://ng.io/path/foo.html', '<img src="$baseUrl/logo.png">');
+           var view = new ViewDefinition({templateAbsUrl: 'http://ng.io/path/foo.html'});
+           loader.load(view).then((el) => {
+             expect(DOM.getInnerHTML(el)).toEqual('<img src="http://ng.io/path/logo.png">');
+             async.done();
+           });
+           xhr.flush();
+         }));
     });
 
     describe('css', () => {

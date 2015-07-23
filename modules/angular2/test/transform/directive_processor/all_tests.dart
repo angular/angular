@@ -24,20 +24,22 @@ void allTests() {
   _testNgDeps('should recognize custom annotations with package: imports',
       'custom_metadata/package_soup.dart',
       customDescriptors: [
-    const AnnotationDescriptor('Soup', 'package:soup/soup.dart', 'Component'),
+    const ClassDescriptor('Soup', 'package:soup/soup.dart',
+        superClass: 'Component'),
   ]);
 
   _testNgDeps('should recognize custom annotations with relative imports',
       'custom_metadata/relative_soup.dart',
       assetId: new AssetId('soup', 'lib/relative_soup.dart'),
       customDescriptors: [
-    const AnnotationDescriptor(
-        'Soup', 'package:soup/annotations/soup.dart', 'Component'),
+    const ClassDescriptor('Soup', 'package:soup/annotations/soup.dart',
+        superClass: 'Component'),
   ]);
 
   _testNgDeps('Requires the specified import.', 'custom_metadata/bad_soup.dart',
       customDescriptors: [
-    const AnnotationDescriptor('Soup', 'package:soup/soup.dart', 'Component'),
+    const ClassDescriptor('Soup', 'package:soup/soup.dart',
+        superClass: 'Component'),
   ]);
 
   _testNgDeps(
@@ -82,6 +84,20 @@ void allTests() {
       'superclass_files/soup.dart');
 
   _testNgDeps(
+      'should populate `lifecycle` when lifecycle interfaces are present.',
+      'interface_lifecycle_files/soup.dart');
+
+  _testNgDeps('should populate multiple `lifecycle` values when necessary.',
+      'multiple_interface_lifecycle_files/soup.dart');
+
+  _testNgDeps(
+      'should populate `lifecycle` when lifecycle superclass is present.',
+      'superclass_lifecycle_files/soup.dart');
+
+  _testNgDeps('should populate `lifecycle` with prefix when necessary.',
+      'prefixed_interface_lifecycle_files/soup.dart');
+
+  _testNgDeps(
       'should not throw/hang on invalid urls', 'invalid_url_files/hello.dart',
       expectedLogs: [
     'ERROR: Uri /bad/absolute/url.html not supported from angular2|test/'
@@ -100,36 +116,38 @@ void allTests() {
 
 void _testNgDeps(String name, String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [], AssetId assetId,
-    AssetReader reader, List<String> expectedLogs, bool inlineViews: true}) {
-  it(name, () async {
+    AssetReader reader, List<String> expectedLogs, bool inlineViews: true,
+    bool isolate: false}) {
+  var testFn = isolate ? iit : it;
+  testFn(name, () async {
+    var logger = new RecordingLogger();
+    await log.setZoned(logger, () async {
+      var inputId = _assetIdForPath(inputPath);
+      if (reader == null) {
+        reader = new TestAssetReader();
+      }
+      if (assetId != null) {
+        reader.addAsset(assetId, await reader.readAsString(inputId));
+        inputId = assetId;
+      }
+      var expectedPath = path.join(path.dirname(inputPath), 'expected',
+          path.basename(inputPath).replaceFirst('.dart', '.ng_deps.dart'));
+      var expectedId = _assetIdForPath(expectedPath);
+
+      var annotationMatcher = new AnnotationMatcher()
+        ..addAll(customDescriptors);
+      var output = await createNgDeps(reader, inputId, annotationMatcher,
+          inlineViews: inlineViews);
+      if (output == null) {
+        expect(await reader.hasInput(expectedId)).toBeFalse();
+      } else {
+        var input = await reader.readAsString(expectedId);
+        expect(formatter.format(output)).toEqual(formatter.format(input));
+      }
+    });
+
     if (expectedLogs != null) {
-      log.setLogger(new RecordingLogger());
-    }
-
-    var inputId = _assetIdForPath(inputPath);
-    if (reader == null) {
-      reader = new TestAssetReader();
-    }
-    if (assetId != null) {
-      reader.addAsset(assetId, await reader.readAsString(inputId));
-      inputId = assetId;
-    }
-    var expectedPath = path.join(path.dirname(inputPath), 'expected',
-        path.basename(inputPath).replaceFirst('.dart', '.ng_deps.dart'));
-    var expectedId = _assetIdForPath(expectedPath);
-
-    var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    var output =
-        await createNgDeps(reader, inputId, annotationMatcher, inlineViews);
-    if (output == null) {
-      expect(await reader.hasInput(expectedId)).toBeFalse();
-    } else {
-      var input = await reader.readAsString(expectedId);
-      expect(formatter.format(output)).toEqual(formatter.format(input));
-    }
-
-    if (expectedLogs != null) {
-      expect((log.logger as RecordingLogger).logs, expectedLogs);
+      expect(logger.logs, expectedLogs);
     }
   });
 }

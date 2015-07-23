@@ -1,14 +1,14 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Directive, LifecycleEvent, QueryList, Query} from 'angular2/angular2';
+import {QueryList} from 'angular2/core';
+import {Query, Directive, LifecycleEvent} from 'angular2/annotations';
 import {forwardRef, Ancestor, Binding} from 'angular2/di';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {NgValidator} from './validators';
-import {setUpControl, composeNgValidator} from './shared';
+import {setUpControl, composeNgValidator, isPropertyUpdated} from './shared';
 
 const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgModel)}));
 
@@ -37,10 +37,11 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   exportAs: 'form'
 })
 export class NgModel extends NgControl {
-  _control = new Control("");
+  _control = new Control();
   _added = false;
   update = new EventEmitter();
   model: any;
+  viewModel: any;
   ngValidators: QueryList<NgValidator>;
 
   // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
@@ -49,14 +50,14 @@ export class NgModel extends NgControl {
     this.ngValidators = ngValidators;
   }
 
-  onChange(c) {
+  onChange(c: StringMap<string, any>) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValidity();
       this._added = true;
     }
 
-    if (StringMapWrapper.contains(c, "model")) {
+    if (isPropertyUpdated(c, this.viewModel)) {
       this._control.updateValue(this.model);
     }
   }
@@ -67,5 +68,8 @@ export class NgModel extends NgControl {
 
   get validator(): Function { return composeNgValidator(this.ngValidators); }
 
-  viewToModelUpdate(newValue: any): void { ObservableWrapper.callNext(this.update, newValue); }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    ObservableWrapper.callNext(this.update, newValue);
+  }
 }

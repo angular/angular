@@ -302,6 +302,9 @@ export function main() {
         expect(val.dispatcher.log).toEqual(['propName=BvalueA']);
       });
 
+      it('should escape values in literals that indicate interpolation',
+         () => { expect(_bindSimpleValue('"$"')).toEqual(['propName=$']); });
+
       describe('pure functions', () => {
         it('should preserve memoized result', () => {
           var person = new Person('bob');

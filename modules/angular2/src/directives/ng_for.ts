@@ -1,12 +1,6 @@
-import {Directive} from 'angular2/annotations';
-import {
-  ViewContainerRef,
-  ViewRef,
-  ProtoViewRef,
-  Pipes,
-  LifecycleEvent,
-  Pipe
-} from 'angular2/angular2';
+import {Directive, LifecycleEvent} from 'angular2/annotations';
+import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
+import {ChangeDetectorRef, Pipe, Pipes} from 'angular2/change_detection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -45,12 +39,12 @@ export class NgFor {
   _ngForOf: any;
   _pipe: Pipe;
 
-  constructor(private viewContainer: ViewContainerRef, private protoViewRef: ProtoViewRef,
-              private pipes: Pipes) {}
+  constructor(private viewContainer: ViewContainerRef, private templateRef: TemplateRef,
+              private pipes: Pipes, private cdr: ChangeDetectorRef) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;
-    this._pipe = this.pipes.get("iterableDiff", value, null, this._pipe);
+    this._pipe = this.pipes.get("iterableDiff", value, this.cdr, this._pipe);
   }
 
   onCheck() {
@@ -78,7 +72,7 @@ export class NgFor {
     changes.forEachAddedItem((addedRecord) =>
                                  insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
-    NgFor.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
+    NgFor.bulkInsert(insertTuples, this.viewContainer, this.templateRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
@@ -108,21 +102,21 @@ export class NgFor {
   }
 
   static bulkInsert(tuples: List<RecordViewTuple>, viewContainer: ViewContainerRef,
-                    protoViewRef: ProtoViewRef): List<RecordViewTuple> {
+                    templateRef: TemplateRef): List<RecordViewTuple> {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
     for (var i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];
       if (isPresent(tuple.view)) {
         viewContainer.insert(tuple.view, tuple.record.currentIndex);
       } else {
-        tuple.view = viewContainer.create(protoViewRef, tuple.record.currentIndex);
+        tuple.view = viewContainer.createEmbeddedView(templateRef, tuple.record.currentIndex);
       }
     }
     return tuples;
   }
 }
 
-class RecordViewTuple {
+export class RecordViewTuple {
   view: ViewRef;
   record: any;
   constructor(record, view) {

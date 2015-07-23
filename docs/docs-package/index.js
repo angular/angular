@@ -18,7 +18,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
-
+.processor(require('./processors/checkUnbalancedBackTicks'))
 
 // Configure the log service
 .config(function(log) {

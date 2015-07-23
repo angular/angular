@@ -15,7 +15,8 @@ import {
   xit,
   containsRegexp,
   stringifyElement,
-  TestComponentBuilder
+  TestComponentBuilder,
+  fakeAsync
 } from 'angular2/test_lib';
 
 
@@ -41,7 +42,6 @@ import {
   forwardRef,
   OpaqueToken,
   Inject,
-  Parent,
   Ancestor,
   Unbounded,
   UnboundedMetadata
@@ -66,9 +66,11 @@ import {NgIf} from 'angular2/src/directives/ng_if';
 import {NgFor} from 'angular2/src/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ProtoViewRef, ViewRef} from 'angular2/src/core/compiler/view_ref';
+import {ViewRef} from 'angular2/src/core/compiler/view_ref';
+
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
@@ -420,8 +422,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template:
-                    '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-parent></cmp-with-parent></template></toolbar></some-directive>',
-                directives: [SomeDirective, CompWithParent, ToolbarComponent, ToolbarPart]
+                    '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-ancestor></cmp-with-ancestor></template></toolbar></some-directive>',
+                directives: [SomeDirective, CompWithAncestor, ToolbarComponent, ToolbarPart]
               }))
                .createAsync(MyComp)
                .then((rootTC) => {
@@ -430,7 +432,7 @@ export function main() {
 
                  expect(rootTC.nativeElement)
                      .toHaveText(
-                         'TOOLBAR(From myComp,From toolbar,Component with an injected parent)');
+                         'TOOLBAR(From myComp,From toolbar,Component with an injected ancestor)');
 
                  async.done();
                });
@@ -659,25 +661,6 @@ export function main() {
                          async.done();
                        })}));
       });
-
-      it('should create a component that injects a @Parent',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async) => {
-                 tcb.overrideView(MyComp, new viewAnn.View({
-                      template:
-                          '<some-directive><cmp-with-parent #child></cmp-with-parent></some-directive>',
-                      directives: [SomeDirective, CompWithParent]
-                    }))
-
-                     .createAsync(MyComp)
-                     .then((rootTC) => {
-
-                       var childComponent = rootTC.componentViewChildren[0].getLocal('child');
-                       expect(childComponent.myParent).toBeAnInstanceOf(SomeDirective);
-
-                       async.done();
-                     })}));
 
       it('should create a component that injects an @Ancestor',
          inject([TestComponentBuilder, AsyncTestCompleter],
@@ -1171,6 +1154,22 @@ export function main() {
            });
          }));
 
+      it('should provide an error context when an error happens in the DI',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+
+           tcb = tcb.overrideView(MyComp, new viewAnn.View({
+             directives: [DirectiveThrowingAnError],
+             template: `<directive-throwing-error></<directive-throwing-error>`
+           }));
+
+           PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
+             expect(DOM.nodeName(e.context.element).toUpperCase())
+                 .toEqual("DIRECTIVE-THROWING-ERROR");
+             async.done();
+             return null;
+           });
+         }));
+
       if (!IS_DARTIUM) {
         it('should report a meaningful error when a directive is undefined',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
@@ -1282,7 +1281,7 @@ export function main() {
 
                      PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                        expect(e.message).toEqual(
-                           `Can't bind to 'unknown' since it isn't a know property of the 'div' element and there are no matching directives with a corresponding property`);
+                           `Can't bind to 'unknown' since it isn't a known property of the '<div>' element and there are no matching directives with a corresponding property`);
                        async.done();
                        return null;
                      });
@@ -1369,8 +1368,8 @@ class SimpleImperativeViewComponent {
   done;
 
   constructor(self: ElementRef, viewManager: AppViewManager, renderer: DomRenderer) {
-    var shadowViewRef = viewManager.getComponentView(self);
-    renderer.setComponentViewRootNodes(shadowViewRef.render, [el('hello imp view')]);
+    var hostElement = renderer.getNativeElementSync(self);
+    DOM.appendChild(hostElement, el('hello imp view'));
   }
 }
 
@@ -1384,7 +1383,7 @@ class DynamicViewport {
 
     var bindings = Injector.resolve([bind(MyService).toValue(myService)]);
     this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.create(hostPv, 0, null, bindings)});
+                    .then((hostPv) => {vc.createHostView(hostPv, 0, bindings)});
   }
 }
 
@@ -1494,14 +1493,6 @@ class SomeDirective {
 
 class SomeDirectiveMissingAnnotation {}
 
-@Component({selector: 'cmp-with-parent'})
-@View({template: '<p>Component with an injected parent</p>', directives: [SomeDirective]})
-@Injectable()
-class CompWithParent {
-  myParent: SomeDirective;
-  constructor(@Parent() someComp: SomeDirective) { this.myParent = someComp; }
-}
-
 @Component({selector: 'cmp-with-ancestor'})
 @View({template: '<p>Component with an injected ancestor</p>', directives: [SomeDirective]})
 @Injectable()
@@ -1524,9 +1515,9 @@ class ChildComp2 {
 @Directive({selector: '[some-viewport]'})
 @Injectable()
 class SomeViewport {
-  constructor(container: ViewContainerRef, protoView: ProtoViewRef) {
-    container.create(protoView).setLocal('some-tmpl', 'hello');
-    container.create(protoView).setLocal('some-tmpl', 'again');
+  constructor(container: ViewContainerRef, templateRef: TemplateRef) {
+    container.createEmbeddedView(templateRef).setLocal('some-tmpl', 'hello');
+    container.createEmbeddedView(templateRef).setLocal('some-tmpl', 'again');
   }
 }
 
@@ -1670,18 +1661,14 @@ class PrivateImpl extends PublicApi {
 @Directive({selector: '[needs-public-api]'})
 @Injectable()
 class NeedsPublicApi {
-  constructor(@Parent() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
+  constructor(@Ancestor() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
 }
 
 @Directive({selector: '[toolbarpart]'})
 @Injectable()
 class ToolbarPart {
-  protoViewRef: ProtoViewRef;
-  elementRef: ElementRef;
-  constructor(protoViewRef: ProtoViewRef, elementRef: ElementRef) {
-    this.elementRef = elementRef;
-    this.protoViewRef = protoViewRef;
-  }
+  templateRef: TemplateRef;
+  constructor(templateRef: TemplateRef) { this.templateRef = templateRef; }
 }
 
 @Directive({selector: '[toolbar-vc]', properties: ['toolbarVc']})
@@ -1691,7 +1678,7 @@ class ToolbarViewContainer {
   constructor(vc: ViewContainerRef) { this.vc = vc; }
 
   set toolbarVc(part: ToolbarPart) {
-    var view = this.vc.create(part.protoViewRef, 0, part.elementRef);
+    var view = this.vc.createEmbeddedView(part.templateRef, 0);
     view.setLocal('toolbarProp', 'From toolbar');
   }
 }
@@ -1857,7 +1844,7 @@ class ChildConsumingEventBus {
 class SomeImperativeViewport {
   view: ViewRef;
   anchor;
-  constructor(public vc: ViewContainerRef, public protoView: ProtoViewRef,
+  constructor(public vc: ViewContainerRef, public templateRef: TemplateRef,
               public renderer: DomRenderer, @Inject(ANCHOR_ELEMENT) anchor) {
     this.view = null;
     this.anchor = anchor;
@@ -1869,8 +1856,8 @@ class SomeImperativeViewport {
       this.view = null;
     }
     if (value) {
-      this.view = this.vc.create(this.protoView);
-      var nodes = this.renderer.getRootNodes(this.view.render);
+      this.view = this.vc.createEmbeddedView(this.templateRef);
+      var nodes = this.renderer.getRootNodes(this.view.renderFragment);
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
       }
@@ -1897,5 +1884,13 @@ class DuplicateDir {
 class OtherDuplicateDir {
   constructor(renderer: DomRenderer, private elRef: ElementRef) {
     DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'othernoduplicate');
+  }
+}
+
+@Directive({selector: 'directive-throwing-error'})
+class DirectiveThrowingAnError {
+  constructor() {
+    throw new BaseException("BOOM");
+    ;
   }
 }

@@ -42,7 +42,7 @@ export class XHRConnection implements Connection {
         responseOptions = baseResponseOptions.merge(responseOptions);
       }
 
-      ObservableWrapper.callNext(this.response, new Response(responseOptions))
+      ObservableWrapper.callNext(this.response, new Response(responseOptions));
     });
     // TODO(jeffbcross): make this more dynamic based on body type
 

@@ -1,4 +1,4 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, looseIdentical} from 'angular2/src/facade/lang';
 import {List, ListWrapper, Map} from 'angular2/src/facade/collection';
 import {RecordType, ProtoRecord} from './proto_record';
 
@@ -44,11 +44,11 @@ function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): P
 }
 
 function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
-  return ListWrapper.find(rs, (rr) => rr.mode !== RecordType.DIRECTIVE_LIFECYCLE &&
-                                      _sameDirIndex(rr, r) && rr.mode === r.mode &&
-                                      rr.funcOrValue === r.funcOrValue &&
-                                      rr.contextIndex === r.contextIndex && rr.name === r.name &&
-                                      ListWrapper.equals(rr.args, r.args));
+  return ListWrapper.find(
+      rs, (rr) => rr.mode !== RecordType.DIRECTIVE_LIFECYCLE && _sameDirIndex(rr, r) &&
+                  rr.mode === r.mode && looseIdentical(rr.funcOrValue, r.funcOrValue) &&
+                  rr.contextIndex === r.contextIndex && looseIdentical(rr.name, r.name) &&
+                  ListWrapper.equals(rr.args, r.args));
 }
 
 function _sameDirIndex(a: ProtoRecord, b: ProtoRecord): boolean {

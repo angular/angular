@@ -1,8 +1,8 @@
-import {bind, OpaqueToken} from 'angular2/di';
+import {bind, Binding, OpaqueToken} from 'angular2/di';
 import {DateWrapper} from 'angular2/src/facade/lang';
 
 export class Options {
-  static get DEFAULT_BINDINGS() { return _DEFAULT_BINDINGS; }
+  static get DEFAULT_BINDINGS(): Binding[] { return _DEFAULT_BINDINGS; }
   // TODO(tbosch): use static initializer when our transpiler supports it
   static get SAMPLE_ID() { return _SAMPLE_ID; }
   // TODO(tbosch): use static initializer when our transpiler supports it
