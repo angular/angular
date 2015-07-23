@@ -50,7 +50,8 @@ export class DemoUrlResolver extends UrlResolver {
       return url;
     }
 
-    if (StringWrapper.startsWith(url, './')) {
+    if (StringWrapper.startsWith(url, './') ||
+        !StringWrapper.contains(url, '/')) {
       return new UrlResolver().resolve(baseUrl, url);
     }
 
