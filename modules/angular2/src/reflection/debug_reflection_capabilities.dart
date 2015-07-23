@@ -1,19 +1,20 @@
 library reflection.debug_reflection_capabilities;
 
-import 'package:logging/logging.dart';
+import 'package:logging/logging.dart' as log;
 import 'package:stack_trace/stack_trace.dart';
 import 'types.dart';
 import 'reflection_capabilities.dart' as standard;
 
 class ReflectionCapabilities extends standard.ReflectionCapabilities {
   final bool _verbose;
-  final Logger _log = new Logger('ReflectionCapabilities');
+  final log.Logger _log = new log.Logger('ReflectionCapabilities');
 
   ReflectionCapabilities({bool verbose: false})
       : _verbose = verbose,
         super() {
-    Logger.root.level = _verbose ? Level.ALL : Level.INFO;
-    Logger.root.onRecord.listen((LogRecord rec) {
+    log.hierarchicalLoggingEnabled = true;
+    _log.level = _verbose ? log.Level.ALL : log.Level.INFO;
+    _log.onRecord.listen((log.LogRecord rec) {
       print('[${rec.loggerName}(${rec.level.name})]: ${rec.message}');
     });
   }
