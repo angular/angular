@@ -21,11 +21,11 @@ const _notFound = CONST_EXPR(new Object());
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
 
-export const undefinedValue = CONST_EXPR(new Object());
+export const undefinedValue: Object = CONST_EXPR(new Object());
 
-export const PUBLIC = 1;
-export const PRIVATE = 2;
-export const PUBLIC_AND_PRIVATE = 3;
+export const PUBLIC: number = 1;
+export const PRIVATE: number = 2;
+export const PUBLIC_AND_PRIVATE: number = 3;
 
 export interface ProtoInjectorStrategy {
   getBindingAtIndex(index: number): ResolvedBinding;

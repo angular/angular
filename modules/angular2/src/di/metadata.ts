@@ -196,4 +196,5 @@ export class UnboundedMetadata extends VisibilityMetadata {
   toString(): string { return `@Unbounded(self: ${this.includeSelf}})`; }
 }
 
-export const DEFAULT_VISIBILITY = CONST_EXPR(new UnboundedMetadata({self: true}));
+export const DEFAULT_VISIBILITY: VisibilityMetadata =
+    CONST_EXPR(new UnboundedMetadata({self: true}));

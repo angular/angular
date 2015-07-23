@@ -60,7 +60,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     return isPresent(this.cd.control) ? !this.cd.control.valid : false;
   }
 
-  registerOnChange(fn: (_) => void): void { this.onChange = fn; }
+  registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
 
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

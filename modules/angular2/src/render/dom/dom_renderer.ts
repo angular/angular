@@ -31,10 +31,10 @@ import {
   RenderViewWithFragments
 } from '../api';
 
-export const DOCUMENT_TOKEN = CONST_EXPR(new OpaqueToken('DocumentToken'));
-export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES =
+export const DOCUMENT_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
+export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES: OpaqueToken =
     CONST_EXPR(new OpaqueToken('DomReflectPropertiesAsAttributes'));
-const REFLECT_PREFIX = 'ng-reflect-';
+const REFLECT_PREFIX: string = 'ng-reflect-';
 
 @Injectable()
 export class DomRenderer extends Renderer {

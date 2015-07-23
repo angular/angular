@@ -278,8 +278,8 @@ export function createNgZone(handler: ExceptionHandler): NgZone {
  * Returns a `Promise` of {@link ApplicationRef}.
  */
 export function commonBootstrap(
-    appComponentType: Type, componentInjectableBindings: List<Type | Binding | List<any>> = null):
-    Promise<ApplicationRef> {
+    appComponentType: /*Type*/ any,
+    componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
