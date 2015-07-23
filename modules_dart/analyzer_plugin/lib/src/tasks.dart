@@ -41,12 +41,12 @@ class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
     outputs[DIRECTIVES] = metaList;
   }
 
-  static Map<String, TaskInput> buildInputs(LibrarySpecificUnit target) {
+  static Map<String, TaskInput> buildInputs(AnalysisTarget target) {
     return <String, TaskInput>{UNIT_INPUT: RESOLVED_UNIT.of(target)};
   }
 
   static BuildUnitDirectivesTask createTask(
-      AnalysisContext context, LibrarySpecificUnit target) {
+      AnalysisContext context, AnalysisTarget target) {
     return new BuildUnitDirectivesTask(context, target);
   }
 }
