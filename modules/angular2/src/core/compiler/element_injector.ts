@@ -496,8 +496,10 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   private _debugContext(): any {
     var p = this._preBuiltObjects;
-    return new _Context(p.elementRef.nativeElement, p.view.getHostElement().nativeElement,
-                        this._injector);
+    var element = isPresent(p.elementRef) ? p.elementRef.nativeElement : null;
+    var hostRef = p.view.getHostElement();
+    var componentElement = isPresent(hostRef) ? hostRef.nativeElement : null;
+    return new _Context(element, componentElement, this._injector);
   }
 
   private _reattachInjectors(imperativelyCreatedInjector: Injector): void {
