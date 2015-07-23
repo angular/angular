@@ -217,10 +217,10 @@ export function main() {
       });
 
       it('should throws exception for invalid exponent', function() {
-        expect(function() { lex("0.5E-"); })
+        expect(() => { lex("0.5E-"); })
             .toThrowError('Lexer Error: Invalid exponent at column 4 in expression [0.5E-]');
 
-        expect(function() { lex("0.5E-A"); })
+        expect(() => { lex("0.5E-A"); })
             .toThrowError('Lexer Error: Invalid exponent at column 4 in expression [0.5E-A]');
       });
 
@@ -230,7 +230,7 @@ export function main() {
       });
 
       it('should throw error on invalid unicode', function() {
-        expect(function() { lex("'\\u1''bla'"); })
+        expect(() => { lex("'\\u1''bla'"); })
             .toThrowError(
                 "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']");
       });
