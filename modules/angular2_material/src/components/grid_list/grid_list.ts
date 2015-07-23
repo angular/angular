@@ -16,7 +16,7 @@ import {Math} from 'angular2/src/facade/math';
   properties: ['cols', 'rowHeight', 'gutterSize'],
   lifecycle: [LifecycleEvent.onAllChangesDone]
 })
-@View({templateUrl: 'angular2_material/src/components/grid_list/grid_list.html'})
+@View({templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html'})
 export class MdGridList {
   /** List of tiles that are being rendered. */
   tiles: List<MdGridTile>;
@@ -223,7 +223,7 @@ export class MdGridList {
   },
   lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange]
 })
-@View({templateUrl: 'angular2_material/src/components/grid_list/grid_tile.html'})
+@View({templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html'})
 export class MdGridTile {
   gridList: MdGridList;
   _rowspan: number;

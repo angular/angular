@@ -18,6 +18,11 @@ class UrlResolver {
    */
   String resolve(String baseUrl, String url) {
     Uri uri = Uri.parse(url);
+
+    if (uri.scheme == 'package') {
+      return '/packages/${uri.path}';
+    }
+
     if (uri.isAbsolute) return uri.toString();
 
     Uri baseUri = Uri.parse(baseUrl);

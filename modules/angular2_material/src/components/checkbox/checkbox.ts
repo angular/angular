@@ -15,7 +15,10 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     '[attr.aria-disabled]': 'disabled'
   }
 })
-@View({templateUrl: 'angular2_material/src/components/checkbox/checkbox.html', directives: []})
+@View({
+  templateUrl: 'package:angular2_material/src/components/checkbox/checkbox.html',
+  directives: []
+})
 export class MdCheckbox {
   /** Whether this checkbox is checked. */
   checked: boolean;

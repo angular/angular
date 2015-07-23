@@ -210,7 +210,7 @@ export class MdDialogConfig {
   host: {'(body:^keydown)': 'documentKeypress($event)'},
 })
 @View({
-  templateUrl: 'angular2_material/src/components/dialog/dialog.html',
+  templateUrl: 'package:angular2_material/src/components/dialog/dialog.html',
   directives: [forwardRef(() => MdDialogContent)]
 })
 class MdDialogContainer {

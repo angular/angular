@@ -36,7 +36,7 @@ var _uniqueIdCounter: number = 0;
     '[attr.aria-activedescendant]': 'activedescendant'
   }
 })
-@View({templateUrl: 'angular2_material/src/components/radio/radio_group.html'})
+@View({templateUrl: 'package:angular2_material/src/components/radio/radio_group.html'})
 export class MdRadioGroup {
   /** The selected value for the radio group. The value comes from the options. */
   value: any;
@@ -190,7 +190,10 @@ export class MdRadioGroup {
     '[attr.aria-disabled]': 'disabled'
   }
 })
-@View({templateUrl: 'angular2_material/src/components/radio/radio_button.html', directives: []})
+@View({
+  templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',
+  directives: []
+})
 export class MdRadioButton {
   /** Whether this radio is checked. */
   checked: boolean;

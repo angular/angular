@@ -15,7 +15,7 @@ import {Math} from 'angular2/src/facade/math';
   }
 })
 @View({
-  templateUrl: 'angular2_material/src/components/progress-linear/progress_linear.html',
+  templateUrl: 'package:angular2_material/src/components/progress-linear/progress_linear.html',
   directives: []
 })
 export class MdProgressLinear {

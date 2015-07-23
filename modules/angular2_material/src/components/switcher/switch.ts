@@ -16,7 +16,8 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     '[attr.role]': '"checkbox"'
   }
 })
-@View({templateUrl: 'angular2_material/src/components/switcher/switch.html', directives: []})
+@View(
+    {templateUrl: 'package:angular2_material/src/components/switcher/switch.html', directives: []})
 export class MdSwitch {
   /** Whether this switch is checked. */
   checked: boolean;
