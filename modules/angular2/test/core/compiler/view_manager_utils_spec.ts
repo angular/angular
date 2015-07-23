@@ -324,9 +324,10 @@ function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
   }
   var hostElementIndicesByViewIndex = calcHostElementIndicesByViewIndex(res);
   if (type === ViewType.EMBEDDED || type === ViewType.HOST) {
-    res.mergeMapping = new AppProtoViewMergeMapping(new RenderProtoViewMergeMapping(
-        null, hostElementIndicesByViewIndex.length, mappedElementIndices, [],
-        hostElementIndicesByViewIndex, countNestedProtoViews(res)));
+    res.mergeMapping = new AppProtoViewMergeMapping(
+        new RenderProtoViewMergeMapping(null, hostElementIndicesByViewIndex.length,
+                                        mappedElementIndices, mappedElementIndices.length, [],
+                                        hostElementIndicesByViewIndex, countNestedProtoViews(res)));
   }
   return res;
 }

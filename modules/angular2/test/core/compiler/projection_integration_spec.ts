@@ -92,6 +92,26 @@ export function main() {
              });
        }));
 
+
+    it('should support projecting text interpolation to a non bound element with other bound elements after it',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(Simple, new viewAnn.View({
+              template: 'SIMPLE(<div><ng-content></ng-content></div><div [tab-index]="0">EL</div>)',
+              directives: []
+            }))
+             .overrideView(
+                 MainComp,
+                 new viewAnn.View({template: '<simple>{{text}}</simple>', directives: [Simple]}))
+             .createAsync(MainComp)
+             .then((main) => {
+
+               main.componentInstance.text = 'A';
+               main.detectChanges();
+               expect(main.nativeElement).toHaveText('SIMPLE(AEL)');
+               async.done();
+             });
+       }));
+
     it('should not show the light dom even if there is no content tag',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp,
