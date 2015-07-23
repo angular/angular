@@ -50,8 +50,9 @@ export class DemoUrlResolver extends UrlResolver {
       return url;
     }
 
-    if (StringWrapper.startsWith(url, './')) {
-      return `${baseUrl}/${url}`;
+    if (StringWrapper.startsWith(url, './') ||
+        !StringWrapper.contains(url, '/')) {
+      return new UrlResolver().resolve(baseUrl, url);
     }
 
     // Whether the `examples/` dir is being directly served (as the server root).
