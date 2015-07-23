@@ -28,7 +28,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 export class ExceptionHandler {
   logError: Function = DOM.logError;
 
-  call(exception: Object, stackTrace: string | string[] = null, reason: string = null) {
+  call(exception: Object, stackTrace: any = null, reason: string = null) {
     var longStackTrace = isListLikeIterable(stackTrace) ?
                              (<any>stackTrace).join("\n\n-----async gap-----\n") :
                              stackTrace;

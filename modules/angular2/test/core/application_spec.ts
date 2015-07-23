@@ -83,8 +83,7 @@ export function main() {
 
     it('should throw if bootstrapped Directive is not a Component',
        inject([AsyncTestCompleter], (async) => {
-         var refPromise =
-             bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e, t) => { throw e; });
+         var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings);
 
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message)
@@ -96,7 +95,7 @@ export function main() {
        }));
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootCmp, [], (e, t) => { throw e; });
+         var refPromise = bootstrap(HelloRootCmp, []);
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();

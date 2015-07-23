@@ -1,7 +1,6 @@
 import {Injectable} from 'angular2/di';
 import {ChangeDetector} from 'angular2/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 
 /**
@@ -32,17 +31,11 @@ import {isPresent, BaseException} from 'angular2/src/facade/lang';
  */
 @Injectable()
 export class LifeCycle {
-  _errorHandler;
   _changeDetector: ChangeDetector;
   _enforceNoNewChanges: boolean;
   _runningTick: boolean = false;
 
-  constructor(exceptionHandler: ExceptionHandler, changeDetector: ChangeDetector = null,
-              enforceNoNewChanges: boolean = false) {
-    this._errorHandler = (exception, stackTrace) => {
-      exceptionHandler.call(exception, stackTrace);
-      throw exception;
-    };
+  constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {
     this._changeDetector =
         changeDetector;  // may be null when instantiated from application bootstrap
     this._enforceNoNewChanges = enforceNoNewChanges;
@@ -55,8 +48,6 @@ export class LifeCycle {
     if (isPresent(changeDetector)) {
       this._changeDetector = changeDetector;
     }
-
-    zone.overrideOnErrorHandler(this._errorHandler);
     zone.overrideOnTurnDone(() => this.tick());
   }
 

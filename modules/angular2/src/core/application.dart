@@ -15,7 +15,7 @@ export 'application_common.dart' show ApplicationRef;
 ///
 /// See [commonBootstrap] for detailed documentation.
 Future<ApplicationRef> bootstrap(Type appComponentType,
-    [List componentInjectableBindings, Function errorReporter]) {
+    [List componentInjectableBindings]) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  return commonBootstrap(appComponentType, componentInjectableBindings, errorReporter);
+  return commonBootstrap(appComponentType, componentInjectableBindings);
 }

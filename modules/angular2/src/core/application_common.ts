@@ -97,9 +97,8 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
 
     bind(appComponentType)
         .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [appComponentRefPromiseToken]),
-    bind(LifeCycle)
-        .toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),
-                   [ExceptionHandler]),
+    bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
+                              [ExceptionHandler]),
     bind(EventManager)
         .toFactory(
             (ngZone) => {
@@ -141,22 +140,13 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
   ];
 }
 
-function _createNgZone(givenReporter: Function): NgZone {
-  var defaultErrorReporter = (exception, stackTrace) => {
-    var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
-    DOM.logError(`${exception}\n\n${longStackTrace}`);
-
-    if (exception instanceof BaseException && isPresent(exception.context)) {
-      print("Error Context:");
-      print(exception.context);
-    }
-    throw exception;
-  };
-
-  var reporter = isPresent(givenReporter) ? givenReporter : defaultErrorReporter;
-
+function _createNgZone(): NgZone {
+  // bootstrapErrorReporter is needed because we cannot use custom exception handler
+  // configured via DI until the root Injector has been created.
+  var handler = new ExceptionHandler();
+  var bootstrapErrorReporter = (exception, stackTrace) => handler.call(exception, stackTrace);
   var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
-  zone.overrideOnErrorHandler(reporter);
+  zone.overrideOnErrorHandler(bootstrapErrorReporter);
   return zone;
 }
 
@@ -287,17 +277,20 @@ function _createNgZone(givenReporter: Function): NgZone {
  * Returns a `Promise` of {@link ApplicationRef}.
  */
 export function commonBootstrap(
-    appComponentType: Type, componentInjectableBindings: List<Type | Binding | List<any>> = null,
-    errorReporter: Function = null): Promise<ApplicationRef> {
+    appComponentType: Type, componentInjectableBindings: List<Type | Binding | List<any>> = null):
+    Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
-  var zone = _createNgZone(errorReporter);
+  var zone = _createNgZone();
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
 
     var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
+    var exceptionHandler = appInjector.get(ExceptionHandler);
+    zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+
     var compRefToken: Promise<any> =
         PromiseWrapper.wrap(() => appInjector.get(appComponentRefPromiseToken));
     var tick = (componentRef) => {
