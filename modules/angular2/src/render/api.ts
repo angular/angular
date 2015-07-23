@@ -356,15 +356,15 @@ export class RenderViewWithFragments {
 /**
  * Abstract reference to the element which can be marshaled across web-worker boundry.
  *
- * This interface is used by the {@link Renderer} api.
+ * This interface is used by the Renderer API.
  */
 export interface RenderElementRef {
   /**
-   * Reference to the {@link RenderViewRef} where the `RenderElementRef` is inside of.
+   * Reference to the `RenderViewRef` where the `RenderElementRef` is inside of.
    */
   renderView: RenderViewRef;
   /**
-   * Index of the element inside the {@link RenderViewRef}.
+   * Index of the element inside the `RenderViewRef`.
    *
    * This is used internally by the Angular framework to locate elements.
    */

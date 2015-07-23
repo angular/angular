@@ -6,7 +6,7 @@ import * as viewModule from './view';
  * Reference to a template within a component.
  *
  * Represents an opaque reference to the underlying template that can
- * be instantiated using the {@Link ViewContainerRef}.
+ * be instantiated using the {@link ViewContainerRef}.
  */
 export class TemplateRef {
   /**

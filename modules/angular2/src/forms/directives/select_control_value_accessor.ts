@@ -11,11 +11,12 @@ import {setProperty} from './shared';
  * Marks <option> as dynamic, so Angular can be notified when options change.
  *
  * #Example:
+ *
  * ```
  * <select ng-control="city">
  *   <option *ng-for="#c of cities" [value]="c"></option>
  * </select>
- * ``
+ * ```
  */
 @Directive({selector: 'option'})
 export class NgSelectOption {

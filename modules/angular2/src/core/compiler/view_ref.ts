@@ -67,12 +67,12 @@ export class ViewRef {
   constructor(public _view: viewModule.AppView) {}
 
   /**
-   * Return {@link RenderViewRef}
+   * Return `RenderViewRef`
    */
   get render(): RenderViewRef { return this._view.render; }
 
   /**
-   * Return {@link RenderFragmentRef}
+   * Return `RenderFragmentRef`
    */
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
