@@ -3,6 +3,10 @@ sudo: false
 node_js:
 - '0.12'
 
+branches:
+  except:
+    - g3sync
+
 cache:
   directories:
     - node_modules
