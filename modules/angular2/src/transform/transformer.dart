@@ -3,16 +3,17 @@ library angular2.transform;
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
+import 'artifact_consumer/transformer.dart';
+import 'bind_generator/transformer.dart';
+import 'common/formatter.dart' as formatter;
+import 'common/options.dart';
+import 'common/options_reader.dart';
 import 'deferred_rewriter/transformer.dart';
 import 'directive_linker/transformer.dart';
 import 'directive_metadata_extractor/transformer.dart';
 import 'directive_processor/transformer.dart';
-import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
 import 'template_compiler/transformer.dart';
-import 'common/formatter.dart' as formatter;
-import 'common/options.dart';
-import 'common/options_reader.dart';
 
 export 'common/options.dart';
 
@@ -36,7 +37,8 @@ class AngularTransformerGroup extends TransformerGroup {
         new DeferredRewriter(options)
       ],
       [new BindGenerator(options)],
-      [new TemplateCompiler(options)]
+      [new TemplateCompiler(options)],
+      [new ArtifactConsumer(options)],
     ]);
     return new AngularTransformerGroup._(phases);
   }

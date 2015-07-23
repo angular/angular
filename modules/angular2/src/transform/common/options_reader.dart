@@ -31,6 +31,8 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   }
   var optimizationPhases = _readInt(config, OPTIMIZATION_PHASES_PARAM,
       defaultValue: DEFAULT_OPTIMIZATION_PHASES);
+  var cleanupBuildArtifacts =
+      _readBool(config, CLEANUP_BUILD_ARTIFACTS, defaultValue: true);
   return new TransformerOptions(entryPoints,
       reflectionEntryPoints: reflectionEntryPoints,
       modeName: settings.mode.name,
@@ -39,7 +41,8 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       inlineViews: inlineViews,
       customAnnotationDescriptors: _readCustomAnnotations(config),
       optimizationPhases: optimizationPhases,
-      generateChangeDetectors: generateChangeDetectors);
+      generateChangeDetectors: generateChangeDetectors,
+      cleanupBuildArtifacts: cleanupBuildArtifacts);
 }
 
 bool _readBool(Map config, String paramName, {bool defaultValue}) {

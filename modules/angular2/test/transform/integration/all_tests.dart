@@ -13,7 +13,8 @@ main() {
 
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
-    ['web/index.dart'], reflectionEntryPoints: ['web/index.dart']));
+    ['web/index.dart'],
+    reflectionEntryPoints: ['web/index.dart'], cleanupBuildArtifacts: false));
 
 class IntegrationTestConfig {
   final String name;

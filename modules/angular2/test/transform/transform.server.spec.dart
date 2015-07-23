@@ -4,6 +4,7 @@ import 'package:guinness/guinness.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import 'package:unittest/vm_config.dart';
 
+import 'artifact_consumer/all_tests.dart' as artifactConsumer;
 import 'common/async_string_writer_tests.dart' as asyncStringWriter;
 import 'bind_generator/all_tests.dart' as bindGenerator;
 import 'deferred_rewriter/all_tests.dart' as deferredRewriter;
@@ -16,6 +17,7 @@ import 'template_compiler/all_tests.dart' as templateCompiler;
 
 main() {
   useVMConfiguration();
+  describe('ArtifactConsumer', artifactConsumer.allTests);
   describe('AsyncStringWriter', asyncStringWriter.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
