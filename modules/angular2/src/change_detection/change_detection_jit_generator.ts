@@ -6,6 +6,7 @@ import {ChangeDetectionUtil} from './change_detection_util';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 import {ProtoRecord, RecordType} from './proto_record';
+import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 
 
 /**
@@ -23,7 +24,6 @@ var DISPATCHER_ACCESSOR = "this.dispatcher";
 var PIPES_ACCESSOR = "this.pipes";
 var PROTOS_ACCESSOR = "this.protos";
 var DIRECTIVES_ACCESSOR = "this.directiveRecords";
-var CONTEXT_ACCESSOR = "this.context";
 var IS_CHANGED_LOCAL = "isChanged";
 var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
@@ -31,41 +31,16 @@ var MODE_ACCESSOR = "this.mode";
 var CURRENT_PROTO = "this.currentProto";
 var ALREADY_CHECKED_ACCESSOR = "this.alreadyChecked";
 
-
 export class ChangeDetectorJITGenerator {
-  _localNames: List<string>;
-  _changeNames: List<string>;
-  _fieldNames: List<string>;
-  _pipeNames: List<string>;
+  _names: CodegenNameUtil;
 
   constructor(public id: string, public changeDetectionStrategy: string,
               public records: List<ProtoRecord>, public directiveRecords: List<any>) {
-    this._localNames = this._getLocalNames(records);
-    this._changeNames = this._getChangeNames(this._localNames);
-    this._fieldNames = this._getFieldNames(this._localNames);
-    this._pipeNames = this._getPipeNames(this._localNames);
-  }
-
-  _getLocalNames(records: List<ProtoRecord>): List<string> {
-    var index = 0;
-    var names = records.map((r) => { return _sanitizeName(`${r.name}${index++}`); });
-    return ["context"].concat(names);
-  }
-
-  _getChangeNames(_localNames: List<string>): List<string> {
-    return _localNames.map((n) => `change_${n}`);
-  }
-
-  _getFieldNames(_localNames: List<string>): List<string> {
-    return _localNames.map((n) => `this.${n}`);
-  }
-
-  _getPipeNames(_localNames: List<string>): List<string> {
-    return _localNames.map((n) => `this.${n}_pipe`);
+    this._names = new CodegenNameUtil(this.records, this.directiveRecords, 'this._', UTIL);
   }
 
   generate(): Function {
-    var typeName = _sanitizeName(`ChangeDetector_${this.id}`);
+    var typeName = sanitizeName(`ChangeDetector_${this.id}`);
     var classDefinition = `
       var ${typeName} = function ${typeName}(dispatcher, protos, directiveRecords) {
         ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)}, dispatcher);
@@ -75,7 +50,7 @@ export class ChangeDetectorJITGenerator {
         ${CURRENT_PROTO} = null;
         ${PIPES_ACCESSOR} = null;
         ${ALREADY_CHECKED_ACCESSOR} = false;
-        ${this._genFieldDefinitions()}
+        ${this._names.genDehydrateFields()}
       }
 
       ${typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
@@ -94,12 +69,11 @@ export class ChangeDetectorJITGenerator {
       ${typeName}.prototype.__detectChangesInRecords = function(throwOnChange) {
         ${CURRENT_PROTO} = null;
 
-        ${this._genLocalDefinitions()}
-        ${this._genChangeDefinitions()}
+        ${this._names.genInitLocals()}
         var ${IS_CHANGED_LOCAL} = false;
         var ${CHANGES_LOCAL} = null;
 
-        context = ${CONTEXT_ACCESSOR};
+        context = ${this._names.getContextName()};
 
         ${this.records.map((r) => this._genRecord(r)).join("\n")}
 
@@ -112,7 +86,7 @@ export class ChangeDetectorJITGenerator {
 
       ${typeName}.prototype.hydrate = function(context, locals, directives, pipes) {
         ${MODE_ACCESSOR} = "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
-        ${CONTEXT_ACCESSOR} = context;
+        ${this._names.getContextName()} = context;
         ${LOCALS_ACCESSOR} = locals;
         ${this._genHydrateDirectives()}
         ${this._genHydrateDetectors()}
@@ -121,14 +95,14 @@ export class ChangeDetectorJITGenerator {
       }
 
       ${typeName}.prototype.dehydrate = function() {
-        ${this._genPipeOnDestroy()}
-        ${this._genFieldDefinitions()}
+        ${this._names.genPipeOnDestroy()}
+        ${this._names.genDehydrateFields()}
         ${LOCALS_ACCESSOR} = null;
         ${PIPES_ACCESSOR} = null;
       }
 
       ${typeName}.prototype.hydrated = function() {
-        return ${CONTEXT_ACCESSOR} !== null;
+        return ${this._names.getContextName()} !== null;
       }
 
       return function(dispatcher) {
@@ -140,44 +114,8 @@ export class ChangeDetectorJITGenerator {
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
   }
 
-  _genGetDirectiveFieldNames(): List<string> {
-    return this.directiveRecords.map(d => this._genGetDirective(d.directiveIndex));
-  }
-
-  _genGetDetectorFieldNames(): List<string> {
-    return this.directiveRecords.filter(r => r.isOnPushChangeDetection())
-        .map((d) => this._genGetDetector(d.directiveIndex));
-  }
-
-  _genGetDirective(d: DirectiveIndex): string { return `this.directive_${d.name}`; }
-
-  _genGetDetector(d: DirectiveIndex): string { return `this.detector_${d.name}`; }
-
-  _getNonNullPipeNames(): List<string> {
-    var pipes = [];
-    this.records.forEach((r) => {
-      if (r.isPipeRecord()) {
-        pipes.push(this._pipeNames[r.selfIndex]);
-      }
-    });
-    return pipes;
-  }
-
-  _genFieldDefinitions(): string {
-    var fields = [];
-    fields = fields.concat(this._fieldNames);
-    fields = fields.concat(this._getNonNullPipeNames());
-    fields = fields.concat(this._genGetDirectiveFieldNames());
-    fields = fields.concat(this._genGetDetectorFieldNames());
-    return fields.map((n) => {
-                   return n == CONTEXT_ACCESSOR ? `${n} = null;` :
-                                                  `${n} = ${UTIL}.uninitialized();`;
-                 })
-        .join("\n");
-  }
-
   _genHydrateDirectives(): string {
-    var directiveFieldNames = this._genGetDirectiveFieldNames();
+    var directiveFieldNames = this._names.getAllDirectiveNames();
     var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
     for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
       lines[i] =
@@ -187,17 +125,13 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genHydrateDetectors(): string {
-    var detectorFieldNames = this._genGetDetectorFieldNames();
+    var detectorFieldNames = this._names.getAllDetectorNames();
     var lines = ListWrapper.createFixedSize(detectorFieldNames.length);
     for (var i = 0, iLen = detectorFieldNames.length; i < iLen; ++i) {
       lines[i] = `${detectorFieldNames[i]} =
           directives.getDetectorFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`;
     }
     return lines.join('\n');
-  }
-
-  _genPipeOnDestroy(): string {
-    return this._getNonNullPipeNames().map((p) => `${p}.onDestroy();`).join("\n");
   }
 
   _genCallOnAllChangesDoneBody(): string {
@@ -207,7 +141,8 @@ export class ChangeDetectorJITGenerator {
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callOnAllChangesDone) {
-        notifications.push(`${this._genGetDirective(dir.directiveIndex)}.onAllChangesDone();`);
+        notifications.push(
+            `${this._names.getDirectiveName(dir.directiveIndex)}.onAllChangesDone();`);
       }
     }
 
@@ -217,12 +152,6 @@ export class ChangeDetectorJITGenerator {
       this.dispatcher.notifyOnAllChangesDone();
       ${directiveNotifications}
     `;
-  }
-
-  _genLocalDefinitions(): string { return this._localNames.map((n) => `var ${n};`).join("\n"); }
-
-  _genChangeDefinitions(): string {
-    return this._changeNames.map((n) => `var ${n} = false;`).join("\n");
   }
 
   _genRecord(r: ProtoRecord): string {
@@ -250,14 +179,14 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genPipeCheck(r: ProtoRecord): string {
-    var context = this._localNames[r.contextIndex];
-    var argString = r.args.map((arg) => this._localNames[arg]).join(", ");
+    var context = this._names.getLocalName(r.contextIndex);
+    var argString = r.args.map((arg) => this._names.getLocalName(arg)).join(", ");
 
-    var oldValue = this._fieldNames[r.selfIndex];
-    var newValue = this._localNames[r.selfIndex];
-    var change = this._changeNames[r.selfIndex];
+    var oldValue = this._names.getFieldName(r.selfIndex);
+    var newValue = this._names.getLocalName(r.selfIndex);
+    var change = this._names.getChangeName(r.selfIndex);
 
-    var pipe = this._pipeNames[r.selfIndex];
+    var pipe = this._names.getPipeName(r.selfIndex);
     var cdRef = "this.ref";
 
     var protoIndex = r.selfIndex - 1;
@@ -284,15 +213,15 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genReferenceCheck(r: ProtoRecord): string {
-    var oldValue = this._fieldNames[r.selfIndex];
-    var newValue = this._localNames[r.selfIndex];
+    var oldValue = this._names.getFieldName(r.selfIndex);
+    var newValue = this._names.getLocalName(r.selfIndex);
 
     var protoIndex = r.selfIndex - 1;
     var check = `
       ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
       ${this._genUpdateCurrentValue(r)}
       if (${newValue} !== ${oldValue}) {
-        ${this._changeNames[r.selfIndex]} = true;
+        ${this._names.getChangeName(r.selfIndex)} = true;
         ${this._genUpdateDirectiveOrElement(r)}
         ${this._genAddToChanges(r)}
         ${oldValue} = ${newValue};
@@ -300,7 +229,7 @@ export class ChangeDetectorJITGenerator {
     `;
 
     if (r.isPureFunction()) {
-      var condition = r.args.map((a) => this._changeNames[a]).join(" || ");
+      var condition = r.args.map((a) => this._names.getChangeName(a)).join(" || ");
       return `if (${condition}) { ${check} } else { ${newValue} = ${oldValue}; }`;
     } else {
       return check;
@@ -308,10 +237,10 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genUpdateCurrentValue(r: ProtoRecord): string {
-    var context = (r.contextIndex == -1) ? this._genGetDirective(r.directiveIndex) :
-                                           this._localNames[r.contextIndex];
-    var newValue = this._localNames[r.selfIndex];
-    var argString = r.args.map((arg) => this._localNames[arg]).join(", ");
+    var context = (r.contextIndex == -1) ? this._names.getDirectiveName(r.directiveIndex) :
+                                           this._names.getLocalName(r.contextIndex);
+    var newValue = this._names.getLocalName(r.selfIndex);
+    var argString = r.args.map((arg) => this._names.getLocalName(arg)).join(", ");
 
     var rhs;
     switch (r.mode) {
@@ -356,7 +285,7 @@ export class ChangeDetectorJITGenerator {
         break;
 
       case RecordType.KEYED_ACCESS:
-        rhs = `${context}[${this._localNames[r.args[0]]}]`;
+        rhs = `${context}[${this._names.getLocalName(r.args[0])}]`;
         break;
 
       default:
@@ -370,7 +299,7 @@ export class ChangeDetectorJITGenerator {
     for (var i = 0; i < r.args.length; ++i) {
       res += JSON.stringify(r.fixedArgs[i]);
       res += " + ";
-      res += `${UTIL}.s(${this._localNames[r.args[i]]})`;
+      res += `${UTIL}.s(${this._names.getLocalName(r.args[i])})`;
       res += " + ";
     }
     res += JSON.stringify(r.fixedArgs[r.args.length]);
@@ -380,13 +309,13 @@ export class ChangeDetectorJITGenerator {
   _genUpdateDirectiveOrElement(r: ProtoRecord): string {
     if (!r.lastInBinding) return "";
 
-    var newValue = this._localNames[r.selfIndex];
-    var oldValue = this._fieldNames[r.selfIndex];
+    var newValue = this._names.getLocalName(r.selfIndex);
+    var oldValue = this._names.getFieldName(r.selfIndex);
 
     var br = r.bindingRecord;
     if (br.isDirective()) {
       var directiveProperty =
-          `${this._genGetDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}`;
+          `${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.propertyName}`;
       return `
         ${this._genThrowOnChangeCheck(oldValue, newValue)}
         ${directiveProperty} = ${newValue};
@@ -409,8 +338,8 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genAddToChanges(r: ProtoRecord): string {
-    var newValue = this._localNames[r.selfIndex];
-    var oldValue = this._fieldNames[r.selfIndex];
+    var newValue = this._names.getLocalName(r.selfIndex);
+    var oldValue = this._names.getFieldName(r.selfIndex);
     if (!r.bindingRecord.callOnChange()) return "";
     return `
       ${CHANGES_LOCAL} = ${UTIL}.addChange(
@@ -430,17 +359,17 @@ export class ChangeDetectorJITGenerator {
 
   _genOnCheck(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange) ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onCheck();`;
+    return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onCheck();`;
   }
 
   _genOnInit(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange && !${ALREADY_CHECKED_ACCESSOR}) ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onInit();`;
+    return `if (!throwOnChange && !${ALREADY_CHECKED_ACCESSOR}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();`;
   }
 
   _genOnChange(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onChange(${CHANGES_LOCAL});`;
+    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onChange(${CHANGES_LOCAL});`;
   }
 
   _genNotifyOnPushDetectors(r: ProtoRecord): string {
@@ -448,13 +377,9 @@ export class ChangeDetectorJITGenerator {
     if (!r.lastInDirective || !br.isOnPushChangeDetection()) return "";
     var retVal = `
       if(${IS_CHANGED_LOCAL}) {
-        ${this._genGetDetector(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
+        ${this._names.getDetectorName(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
       }
     `;
     return retVal;
   }
-}
-
-function _sanitizeName(s: string): string {
-  return s.replace(new RegExp("\\W", "g"), '');
 }

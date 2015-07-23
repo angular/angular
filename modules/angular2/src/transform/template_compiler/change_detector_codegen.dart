@@ -3,6 +3,7 @@ library angular2.transform.template_compiler.change_detector_codegen;
 import 'dart:convert' show JSON;
 import 'package:angular2/src/change_detection/change_detection_util.dart';
 import 'package:angular2/src/change_detection/coalesce.dart';
+import 'package:angular2/src/change_detection/codegen_name_util.dart';
 import 'package:angular2/src/change_detection/directive_record.dart';
 import 'package:angular2/src/change_detection/interfaces.dart';
 import 'package:angular2/src/change_detection/proto_change_detector.dart';
@@ -72,18 +73,14 @@ class _CodegenState {
   final String _changeDetectionMode;
   final List<ProtoRecord> _records;
   final List<DirectiveRecord> _directiveRecords;
-  final List<String> _localNames;
-  final List<String> _changeNames;
-  final List<String> _fieldNames;
-  final List<String> _pipeNames;
+  final CodegenNameUtil _names;
 
   _CodegenState._(this._changeDetectorDefId, this._contextTypeName,
       this._changeDetectorTypeName, String changeDetectionStrategy,
-      this._records, this._directiveRecords, List<String> localNames)
-      : this._localNames = localNames,
-        _changeNames = _getChangeNames(localNames),
-        _fieldNames = _getFieldNames(localNames),
-        _pipeNames = _getPipeNames(localNames),
+      List<ProtoRecord> records, List<DirectiveRecord> directiveRecords)
+      : _records = records,
+        _directiveRecords = directiveRecords,
+        _names = new CodegenNameUtil(records, directiveRecords, '_', _UTIL),
         _changeDetectionMode = ChangeDetectionUtil
             .changeDetectionMode(changeDetectionStrategy);
 
@@ -94,32 +91,8 @@ class _CodegenState {
         .forEach((rec) => protoRecords.add(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
     return new _CodegenState._(def.id, typeName, changeDetectorTypeName,
-        def.strategy, records, def.directiveRecords, _getLocalNames(records));
+        def.strategy, records, def.directiveRecords);
   }
-
-  /// Generates sanitized names for use as local variables.
-  static List<String> _getLocalNames(List<ProtoRecord> records) {
-    var whitespacePattern = new RegExp(r'\W');
-    var localNames = new List<String>(records.length + 1);
-    localNames[0] = 'context';
-    for (var i = 0; i < records.length; ++i) {
-      var sanitizedName = records[i].name.replaceAll(whitespacePattern, '');
-      localNames[i + 1] = '$sanitizedName$i';
-    }
-    return localNames;
-  }
-
-  /// Generates names for use as local change variables.
-  static List<String> _getChangeNames(List<String> localNames) =>
-      localNames.map((name) => 'change_$name').toList();
-
-  /// Generates names for use as private fields.
-  static List<String> _getFieldNames(List<String> localNames) =>
-      localNames.map((name) => '_$name').toList();
-
-  /// Generates names for use as private pipe variables.
-  static List<String> _getPipeNames(List<String> localNames) =>
-      localNames.map((name) => '_${name}_pipe').toList();
 
   void _writeToBuf(StringBuffer buf) {
     buf.write('''\n
@@ -131,17 +104,16 @@ class _CodegenState {
         dynamic $_LOCALS_ACCESSOR = null;
         dynamic $_ALREADY_CHECKED_ACCESSOR = false;
         dynamic $_CURRENT_PROTO = null;
-        ${_allFields().map((f) {
-          if (f == _CONTEXT_ACCESSOR) {
-            return '$_contextTypeName $f = null;';
-          }
-          return 'dynamic $f = $_UTIL.uninitialized();';
-        }).join('')}
+        $_contextTypeName ${_names.getContextName()};
+        ${_names.genDeclareFields()}
 
         $_changeDetectorTypeName(
             dynamic $_DISPATCHER_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
-            this.$_DIRECTIVES_ACCESSOR) : super(${_encodeValue(_changeDetectorDefId)}, $_DISPATCHER_ACCESSOR);
+            this.$_DIRECTIVES_ACCESSOR)
+          : super(${_encodeValue(_changeDetectorDefId)}, $_DISPATCHER_ACCESSOR) {
+          ${_names.genDehydrateFields()}
+        }
 
         void detectChangesInRecords(throwOnChange) {
           if (!hydrated()) {
@@ -155,13 +127,12 @@ class _CodegenState {
         }
 
         void __detectChangesInRecords(throwOnChange) {
-          ${_genLocalDefinitions()}
-          ${_genChangeDefinitons()}
+          ${_names.genInitLocals()}
           var $_IS_CHANGED_LOCAL = false;
           $_CURRENT_PROTO = null;
           var $_CHANGES_LOCAL = null;
 
-          context = $_CONTEXT_ACCESSOR;
+          context = ${_names.getContextName()};
           ${_records.map(_genRecord).join('')}
 
           $_ALREADY_CHECKED_ACCESSOR = true;
@@ -173,7 +144,7 @@ class _CodegenState {
 
         void hydrate($_contextTypeName context, locals, directives, pipes) {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
-          $_CONTEXT_ACCESSOR = context;
+          ${_names.getContextName()} = context;
           $_LOCALS_ACCESSOR = locals;
           ${_genHydrateDirectives()}
           ${_genHydrateDetectors()}
@@ -182,17 +153,13 @@ class _CodegenState {
         }
 
         void dehydrate() {
-          ${_genPipeOnDestroy()}
-          ${_allFields().map((f) {
-            return f == _CONTEXT_ACCESSOR
-              ? '$f = null;'
-              : '$f = $_UTIL.uninitialized();';
-          }).join('')}
+          ${_names.genPipeOnDestroy()}
+          ${_names.genDehydrateFields()}
           $_LOCALS_ACCESSOR = null;
           $_PIPES_ACCESSOR = null;
         }
 
-        hydrated() => $_CONTEXT_ACCESSOR != null;
+        hydrated() => ${_names.getContextName()} != null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
@@ -212,39 +179,9 @@ class _CodegenState {
     ''');
   }
 
-  List<String> _genGetDirectiveFieldNames() {
-    return _directiveRecords
-        .map((d) => _genGetDirective(d.directiveIndex))
-        .toList();
-  }
-
-  List<String> _genGetDetectorFieldNames() {
-    return _directiveRecords
-        .where((d) => d.isOnPushChangeDetection())
-        .map((d) => _genGetDetector(d.directiveIndex))
-        .toList();
-  }
-
-  String _genGetDirective(DirectiveIndex d) => '_directive_${d.name}';
-  String _genGetDetector(DirectiveIndex d) => '_detector_${d.name}';
-
-  List<String> _getNonNullPipeNames() {
-    return _records
-        .where((r) => r.isPipeRecord())
-        .map((r) => _pipeNames[r.selfIndex])
-        .toList();
-  }
-
-  List<String> _allFields() {
-    return new List.from(_fieldNames)
-      ..addAll(_getNonNullPipeNames())
-      ..addAll(_genGetDirectiveFieldNames())
-      ..addAll(_genGetDetectorFieldNames());
-  }
-
   String _genHydrateDirectives() {
     var buf = new StringBuffer();
-    var directiveFieldNames = _genGetDirectiveFieldNames();
+    var directiveFieldNames = _names.getAllDirectiveNames();
     for (var i = 0; i < directiveFieldNames.length; ++i) {
       buf.writeln('${directiveFieldNames[i]} = directives.getDirectiveFor('
           '$_DIRECTIVES_ACCESSOR[$i].directiveIndex);');
@@ -254,16 +191,13 @@ class _CodegenState {
 
   String _genHydrateDetectors() {
     var buf = new StringBuffer();
-    var detectorFieldNames = _genGetDetectorFieldNames();
+    var detectorFieldNames = _names.getAllDetectorNames();
     for (var i = 0; i < detectorFieldNames.length; ++i) {
       buf.writeln('${detectorFieldNames[i]} = directives.getDetectorFor('
           '$_DIRECTIVES_ACCESSOR[$i].directiveIndex);');
     }
     return '$buf';
   }
-
-  String _genPipeOnDestroy() =>
-      _getNonNullPipeNames().map((p) => '$p.onDestroy();').join('');
 
   /// Generates calls to `onAllChangesDone` for all `Directive`s that request
   /// them.
@@ -272,19 +206,13 @@ class _CodegenState {
     var directiveNotifications = _directiveRecords.reversed
         .where((rec) => rec.callOnAllChangesDone)
         .map((rec) =>
-            '${_genGetDirective(rec.directiveIndex)}.onAllChangesDone();')
+            '${_names.getDirectiveName(rec.directiveIndex)}.onAllChangesDone();')
         .join('');
     return '''
       $_DISPATCHER_ACCESSOR.notifyOnAllChangesDone();
       ${directiveNotifications}
     ''';
   }
-
-  String _genLocalDefinitions() =>
-      _localNames.map((name) => 'var $name = null;').join('');
-
-  String _genChangeDefinitons() =>
-      _changeNames.map((name) => 'var $name = false;').join('');
 
   String _genRecord(ProtoRecord r) {
     var rec = null;
@@ -311,14 +239,14 @@ class _CodegenState {
   }
 
   String _genPipeCheck(ProtoRecord r) {
-    var context = _localNames[r.contextIndex];
-    var argString = r.args.map((arg) => this._localNames[arg]).join(", ");
+    var context = _names.getLocalName(r.contextIndex);
+    var argString = r.args.map((arg) => _names.getLocalName(arg)).join(", ");
 
-    var oldValue = _fieldNames[r.selfIndex];
-    var newValue = _localNames[r.selfIndex];
-    var change = _changeNames[r.selfIndex];
+    var oldValue = _names.getFieldName(r.selfIndex);
+    var newValue = _names.getLocalName(r.selfIndex);
+    var change = _names.getChangeName(r.selfIndex);
 
-    var pipe = _pipeNames[r.selfIndex];
+    var pipe = _names.getPipeName(r.selfIndex);
     var cdRef = 'this.ref';
 
     var protoIndex = r.selfIndex - 1;
@@ -344,15 +272,15 @@ class _CodegenState {
   }
 
   String _genReferenceCheck(ProtoRecord r) {
-    var oldValue = _fieldNames[r.selfIndex];
-    var newValue = _localNames[r.selfIndex];
+    var oldValue = _names.getFieldName(r.selfIndex);
+    var newValue = _names.getLocalName(r.selfIndex);
 
     var protoIndex = r.selfIndex - 1;
     var check = '''
       $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
       ${_genUpdateCurrentValue(r)}
       if (!$_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
-        ${_changeNames[r.selfIndex]} = true;
+        ${_names.getChangeName(r.selfIndex)} = true;
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
         $oldValue = $newValue;
@@ -360,7 +288,7 @@ class _CodegenState {
     ''';
     if (r.isPureFunction()) {
       // Add an "if changed guard"
-      var condition = r.args.map((a) => _changeNames[a]).join(' || ');
+      var condition = r.args.map((a) => _names.getChangeName(a)).join(' || ');
       return 'if ($condition) { $check } else { $newValue = $oldValue; }';
     } else {
       return check;
@@ -369,11 +297,11 @@ class _CodegenState {
 
   String _genUpdateCurrentValue(ProtoRecord r) {
     var context = r.contextIndex == -1
-        ? _genGetDirective(r.directiveIndex)
-        : _localNames[r.contextIndex];
+        ? _names.getDirectiveName(r.directiveIndex)
+        : _names.getLocalName(r.contextIndex);
 
-    var newValue = _localNames[r.selfIndex];
-    var argString = r.args.map((arg) => _localNames[arg]).join(', ');
+    var newValue = _names.getLocalName(r.selfIndex);
+    var argString = r.args.map((arg) => _names.getLocalName(arg)).join(', ');
 
     var rhs;
     switch (r.mode) {
@@ -419,7 +347,7 @@ class _CodegenState {
         break;
 
       case RecordType.KEYED_ACCESS:
-        rhs = '$context[${_localNames[r.args[0]]}]';
+        rhs = '$context[${_names.getLocalName(r.args[0])}]';
         break;
 
       default:
@@ -432,7 +360,7 @@ class _CodegenState {
   String _genInterpolation(ProtoRecord r) {
     var res = new StringBuffer();
     for (var i = 0; i < r.args.length; ++i) {
-      var name = _localNames[r.args[i]];
+      var name = _names.getLocalName(r.args[i]);
       res.write(
           '${_encodeValue(r.fixedArgs[i])} "\$\{$name == null ? "" : $name\}" ');
     }
@@ -443,13 +371,13 @@ class _CodegenState {
   String _genUpdateDirectiveOrElement(ProtoRecord r) {
     if (!r.lastInBinding) return '';
 
-    var newValue = _localNames[r.selfIndex];
-    var oldValue = _fieldNames[r.selfIndex];
+    var newValue = _names.getLocalName(r.selfIndex);
+    var oldValue = _names.getFieldName(r.selfIndex);
 
     var br = r.bindingRecord;
     if (br.isDirective()) {
       var directiveProperty =
-          '${_genGetDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}';
+          '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.propertyName}';
       return '''
       ${_genThrowOnChangeCheck(oldValue, newValue)}
       $directiveProperty = $newValue;
@@ -474,8 +402,8 @@ class _CodegenState {
   }
 
   String _genAddToChanges(ProtoRecord r) {
-    var newValue = _localNames[r.selfIndex];
-    var oldValue = _fieldNames[r.selfIndex];
+    var newValue = _names.getLocalName(r.selfIndex);
+    var oldValue = _names.getFieldName(r.selfIndex);
     if (!r.bindingRecord.callOnChange()) return '';
     return '''
       $_CHANGES_LOCAL = $_UTIL.addChange(
@@ -497,19 +425,19 @@ class _CodegenState {
   String _genOnCheck(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange) '
-        '${_genGetDirective(br.directiveRecord.directiveIndex)}.onCheck();';
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onCheck();';
   }
 
   String _genOnInit(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange && !$_ALREADY_CHECKED_ACCESSOR) '
-        '${_genGetDirective(br.directiveRecord.directiveIndex)}.onInit();';
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();';
   }
 
   String _genOnChange(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange && $_CHANGES_LOCAL != null) '
-        '${_genGetDirective(br.directiveRecord.directiveIndex)}'
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}'
         '.onChange($_CHANGES_LOCAL);';
   }
 
@@ -518,7 +446,7 @@ class _CodegenState {
     if (!r.lastInDirective || !br.isOnPushChangeDetection()) return '';
     return '''
       if($_IS_CHANGED_LOCAL) {
-        ${_genGetDetector(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
+        ${_names.getDetectorName(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
       }
     ''';
   }
@@ -532,7 +460,6 @@ const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';
 const _ALREADY_CHECKED_ACCESSOR = '_alreadyChecked';
 const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';
-const _CONTEXT_ACCESSOR = '_context';
 const _CURRENT_PROTO = 'currentProto';
 const _DIRECTIVES_ACCESSOR = '_directiveRecords';
 const _DISPATCHER_ACCESSOR = 'dispatcher';

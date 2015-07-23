@@ -30,13 +30,15 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   dynamic _locals = null;
   dynamic _alreadyChecked = false;
   dynamic currentProto = null;
-  MyComponent _context = null;
-  dynamic _myNum0 = _gen.ChangeDetectionUtil.uninitialized();
-  dynamic _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
+  MyComponent _context;
+  var _myNum0, _interpolate1;
 
   _MyComponent_ChangeDetector0(
       dynamic dispatcher, this._protos, this._directiveRecords)
-      : super("MyComponent_comp_0", dispatcher);
+      : super("MyComponent_comp_0", dispatcher) {
+    _context = null;
+    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
+  }
 
   void detectChangesInRecords(throwOnChange) {
     if (!hydrated()) {
@@ -50,12 +52,8 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   }
 
   void __detectChangesInRecords(throwOnChange) {
-    var context = null;
-    var myNum0 = null;
-    var interpolate1 = null;
-    var change_context = false;
-    var change_myNum0 = false;
-    var change_interpolate1 = false;
+    var context, c_context, myNum0, c_myNum0, interpolate1, c_interpolate1;
+    c_context = c_myNum0 = c_interpolate1 = false;
     var isChanged = false;
     currentProto = null;
     var changes = null;
@@ -64,15 +62,15 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     currentProto = _protos[0];
     myNum0 = context.myNum;
     if (!_gen.looseIdentical(myNum0, _myNum0)) {
-      change_myNum0 = true;
+      c_myNum0 = true;
 
       _myNum0 = myNum0;
     }
-    if (change_myNum0) {
+    if (c_myNum0) {
       currentProto = _protos[1];
       interpolate1 = "Salad: " "${myNum0 == null ? "" : myNum0}" " is awesome";
       if (!_gen.looseIdentical(interpolate1, _interpolate1)) {
-        change_interpolate1 = true;
+        c_interpolate1 = true;
         if (throwOnChange) {
           _gen.ChangeDetectionUtil.throwOnChange(currentProto,
               _gen.ChangeDetectionUtil.simpleChange(
@@ -108,8 +106,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
 
   void dehydrate() {
     _context = null;
-    _myNum0 = _gen.ChangeDetectionUtil.uninitialized();
-    _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
+    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
     _locals = null;
     _pipes = null;
   }
