@@ -48,7 +48,7 @@ export function main() {
     function createCompiler(renderCompileResults:
                                 List<renderApi.ProtoViewDto | Promise<renderApi.ProtoViewDto>>,
                             protoViewFactoryResults: List<AppProtoView>) {
-      var urlResolver = new UrlResolver();
+      var urlResolver = new UrlResolver(new AppRootUrl(""));
       renderCompileRequests = [];
       renderCompileResults = ListWrapper.clone(renderCompileResults);
       renderCompiler.spy('compile').andCallFake((view) => {
@@ -399,9 +399,9 @@ export function main() {
          var reader: any = new SpyDirectiveResolver();
 
          // create the compiler
-         var compiler =
-             new Compiler(reader, cache, tplResolver, cmpUrlMapper, new UrlResolver(),
-                          renderCompiler, protoViewFactory, new AppRootUrl("http://www.app.com"));
+         var compiler = new Compiler(reader, cache, tplResolver, cmpUrlMapper,
+                                     new UrlResolver(new AppRootUrl("")), renderCompiler,
+                                     protoViewFactory, new AppRootUrl("http://www.app.com"));
          compiler.compileInHost(MainComponent)
              .then((protoViewRef) => {
                // the test should have failed if the resolver was called, so we're good

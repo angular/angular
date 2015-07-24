@@ -1,9 +1,21 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  ddescribe,
+  iit,
+  xit,
+  el,
+  IS_DARTIUM
+} from 'angular2/test_lib';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 
 export function main() {
   describe('UrlResolver', () => {
-    var resolver = new UrlResolver();
+    var appRootUrl = new AppRootUrl('http://localhost/example/');
+    var resolver = new UrlResolver(appRootUrl);
 
     describe('absolute base url', () => {
       it('should add a relative path to the base url', () => {
@@ -70,5 +82,14 @@ export function main() {
         expect(resolver.resolve('foo/baz/', '/bar')).toEqual('/bar');
       });
     });
+
+    if (IS_DARTIUM) {
+      describe('package url', () => {
+        it('should be served relative to AppRootUrl', () => {
+          expect(resolver.resolve('foo', 'package:bar/baz.dart'))
+              .toEqual('http://localhost/example/packages/bar/baz.dart');
+        });
+      });
+    }
   });
 }

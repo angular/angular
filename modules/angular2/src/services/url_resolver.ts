@@ -7,6 +7,7 @@ import {
   normalizeBlank
 } from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
+import {AppRootUrl} from 'angular2/src/services/app_root_url';
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
@@ -17,6 +18,8 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  */
 @Injectable()
 export class UrlResolver {
+  constructor(_: AppRootUrl) {}
+
   /**
    * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,

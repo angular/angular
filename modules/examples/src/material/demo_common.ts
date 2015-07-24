@@ -19,7 +19,7 @@ export function commonDemoSetup(): void {
 @Injectable()
 export class DemoUrlResolver extends UrlResolver {
   constructor() {
-    super();
+    super(null);
   }
 
   resolve(baseUrl: string, url: string): string {
