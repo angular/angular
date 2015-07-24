@@ -131,6 +131,9 @@ export class SelfMetadata extends VisibilityMetadata {
  * class Dependency {
  * }
  *
+ * class AncestorDependency {
+ * }
+ *
  * class NeedsDependency {
  *   constructor(public @Ancestor() dependency:Dependency) {}
  * }
@@ -168,8 +171,11 @@ export class AncestorMetadata extends VisibilityMetadata {
  * class Dependency {
  * }
  *
+ * class AncestorDependency {
+ * }
+ *
  * class NeedsDependency {
- *   constructor(public @Ancestor() dependency:Dependency) {}
+ *   constructor(public @Unbounded() dependency:Dependency) {}
  * }
  *
  * var parent = Injector.resolveAndCreate([
@@ -181,12 +187,12 @@ export class AncestorMetadata extends VisibilityMetadata {
  * expect(nd.dependency).toBeAnInstanceOf(AncestorDependency);
  * ```
  *
- * You can make an injector to retrive a dependency either from itself or its ancestor by setting
+ * You can make an injector to retrive a dependency either from itself or its ancestor (crossing boundaries) by setting
  * self to true.
  *
  * ```
  * class NeedsDependency {
- *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
+ *   constructor(public @Unbounded({self:true}) dependency:Dependency) {}
  * }
  * ```
  */
