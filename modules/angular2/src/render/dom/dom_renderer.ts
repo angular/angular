@@ -147,7 +147,7 @@ export class DomRenderer extends Renderer {
     // Reflect the property value as an attribute value with ng-reflect- prefix.
     if (this._reflectPropertiesAsAttributes) {
       this.setElementAttribute(location, `${REFLECT_PREFIX}${camelCaseToDashCase(propertyName)}`,
-                               propertyValue);
+                               `${propertyValue}`);
     }
   }
 
