@@ -895,7 +895,7 @@ var bundleConfig = {
 };
 
 // production build
-gulp.task('bundle.js.prod', ['build.js.prod'], function() {
+gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
   return bundler.bundle(
       bundleConfig,
       'angular2/angular2',
@@ -906,7 +906,7 @@ gulp.task('bundle.js.prod', ['build.js.prod'], function() {
 });
 
 // minified production build
-gulp.task('bundle.js.min', ['build.js.prod'], function() {
+gulp.task('!bundle.js.min', ['build.js.prod'], function() {
   return bundler.bundle(
       bundleConfig,
       'angular2/angular2',
@@ -918,7 +918,7 @@ gulp.task('bundle.js.min', ['build.js.prod'], function() {
 });
 
 // development build
-gulp.task('bundle.js.dev', ['build.js.dev'], function() {
+gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
       merge(true, devBundleConfig.paths, {
@@ -931,7 +931,7 @@ gulp.task('bundle.js.dev', ['build.js.dev'], function() {
       { sourceMaps: true });
 });
 
-gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
+gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
     merge(true, devBundleConfig.paths, {
@@ -940,11 +940,11 @@ gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
   return bundler.bundle(
     devBundleConfig,
     'angular2/router - angular2/angular2',
-    './dist/bundle/router.dev.js',
+    './dist/js/bundle/router.dev.js',
     { sourceMaps: true });
 });
 
-gulp.task('test.bundle.js.dev', ['build.js.dev'], function() {
+gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
     merge(true, devBundleConfig.paths, {
@@ -953,7 +953,7 @@ gulp.task('test.bundle.js.dev', ['build.js.dev'], function() {
   return bundler.bundle(
     devBundleConfig,
     'angular2/test + angular2/mock - angular2/angular2',
-    './dist/bundle/test_lib.dev.js',
+    './dist/js/bundle/test_lib.dev.js',
     { sourceMaps: true });
 });
 
@@ -962,7 +962,7 @@ gulp.task('test.bundle.js.dev', ['build.js.dev'], function() {
 // a corresponding System.import call. It is aimed at ES5 developers that do not
 // use System loader polyfills (like system.js and es6 loader).
 // see: https://github.com/systemjs/builder (SFX bundles).
-gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
+gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
       merge(true, devBundleConfig.paths, {
@@ -976,22 +976,22 @@ gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
       /* self-executing */ true);
 });
 
-gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
+gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   return bundler.modify(
       ['node_modules/zone.js/dist/zone-microtask.js', 'node_modules/reflect-metadata/Reflect.js',
       'dist/build/angular2.js'],
       'angular2.js'
-  ).pipe(gulp.dest('dist/bundle'));
+  ).pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
+gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   return bundler.modify(
       ['node_modules/zone.js/dist/zone-microtask.min.js',
       'node_modules/reflect-metadata/Reflect.js', 'dist/build/angular2.min.js'],
       'angular2.min.js'
   )
   .pipe(uglify())
-  .pipe(gulp.dest('dist/bundle'));
+  .pipe(gulp.dest('dist/js/bundle'));
 });
 
 var JS_DEV_DEPS = [
@@ -1015,29 +1015,29 @@ function insertRXLicense(source) {
   }
 }
 
-gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
+gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']), 'angular2.dev.js')
       .pipe(insert.transform(insertRXLicense))
       .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
-      .pipe(gulp.dest('dist/bundle'));
+      .pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
+gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
                         'angular2.sfx.dev.js')
       .pipe(insert.transform(insertRXLicense))
-      .pipe(gulp.dest('dist/bundle'));
+      .pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('bundle.js.deps', [
-  'bundle.js.prod.deps',
-  'bundle.js.dev.deps',
-  'bundle.js.min.deps',
-  'bundle.js.sfx.dev.deps',
-  'router.bundle.js.dev',
-  'test.bundle.js.dev']);
+gulp.task('bundles.js', [
+  '!bundle.js.prod.deps',
+  '!bundle.js.dev.deps',
+  '!bundle.js.min.deps',
+  '!bundle.js.sfx.dev.deps',
+  '!router.bundle.js.dev',
+  '!test.bundle.js.dev']);
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps', 'benchpress.bundle']);
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js', 'benchpress.bundle']);
 
 gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', 'build/clean.docs', 'build/clean.benchpress.bundle']);
 
