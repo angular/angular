@@ -181,11 +181,6 @@ export function main() {
 
       it('should supporting binding to null', () => {
         var injector = createInjector([bind(Engine).toValue(null)]);
-
-        for (var i = 0; i < 20; ++i) {
-          injector.get(Engine);
-        }
-
         var engine = injector.get(Engine);
         expect(engine).toBeNull();
       });
