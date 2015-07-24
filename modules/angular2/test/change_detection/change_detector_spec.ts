@@ -302,6 +302,15 @@ export function main() {
         expect(val.dispatcher.log).toEqual(['propName=BvalueA']);
       });
 
+      it('should output empty strings for null values in interpolation', () => {
+        var val = _createChangeDetector('interpolation', new TestData('value'));
+        val.changeDetector.hydrate(new TestData(null), null, null, null);
+
+        val.changeDetector.detectChanges();
+
+        expect(val.dispatcher.log).toEqual(['propName=BA']);
+      });
+
       it('should escape values in literals that indicate interpolation',
          () => { expect(_bindSimpleValue('"$"')).toEqual(['propName=$']); });
 

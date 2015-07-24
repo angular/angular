@@ -94,6 +94,19 @@ export function main() {
                });
          }));
 
+      it('should update text node with a blank string when interpolation evaluates to null',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({template: '<div>{{null}}{{ctxProp}}</div>'}))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.componentInstance.ctxProp = null;
+
+                 rootTC.detectChanges();
+                 expect(rootTC.nativeElement).toHaveText('');
+                 async.done();
+               });
+         }));
+
       it('should consume element binding changes',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({template: '<div [id]="ctxProp"></div>'}))

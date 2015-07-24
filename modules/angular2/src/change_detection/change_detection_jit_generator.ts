@@ -371,7 +371,7 @@ export class ChangeDetectorJITGenerator {
     for (var i = 0; i < r.args.length; ++i) {
       res += JSON.stringify(r.fixedArgs[i]);
       res += " + ";
-      res += this._localNames[r.args[i]];
+      res += `${UTIL}.s(${this._localNames[r.args[i]]})`;
       res += " + ";
     }
     res += JSON.stringify(r.fixedArgs[r.args.length]);
