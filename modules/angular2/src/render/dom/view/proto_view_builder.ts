@@ -23,7 +23,12 @@ import {DomElementBinder, Event, HostAction} from './element_binder';
 
 import * as api from '../../api';
 
-import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR, queryBoundTextNodeIndices} from '../util';
+import {
+  NG_BINDING_CLASS,
+  EVENT_TARGET_SEPARATOR,
+  queryBoundTextNodeIndices,
+  camelCaseToDashCase
+} from '../util';
 
 export class ProtoViewBuilder {
   variableBindings: Map<string, string> = new Map();
@@ -366,7 +371,8 @@ function createElementPropertyBinding(ast: ASTWithSource, propertyNameInTemplate
   } else if (parts[0] == ATTRIBUTE_PREFIX) {
     return new api.ElementPropertyBinding(api.PropertyBindingType.ATTRIBUTE, ast, parts[1]);
   } else if (parts[0] == CLASS_PREFIX) {
-    return new api.ElementPropertyBinding(api.PropertyBindingType.CLASS, ast, parts[1]);
+    return new api.ElementPropertyBinding(api.PropertyBindingType.CLASS, ast,
+                                          camelCaseToDashCase(parts[1]));
   } else if (parts[0] == STYLE_PREFIX) {
     var unit = parts.length > 2 ? parts[2] : null;
     return new api.ElementPropertyBinding(api.PropertyBindingType.STYLE, ast, parts[1], unit);

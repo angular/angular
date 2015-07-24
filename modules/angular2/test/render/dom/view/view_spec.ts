@@ -100,11 +100,15 @@ export function main() {
         expect(DOM.hasClass(el, 'active')).toEqual(false);
       });
 
-      it('should de-normalize class names', () => {
+      it('should not de-normalize class names', () => {
         view.setElementClass(0, 'veryActive', true);
+        view.setElementClass(0, 'very-active', true);
+        expect(DOM.hasClass(el, 'veryActive')).toEqual(true);
         expect(DOM.hasClass(el, 'very-active')).toEqual(true);
 
         view.setElementClass(0, 'veryActive', false);
+        view.setElementClass(0, 'very-active', false);
+        expect(DOM.hasClass(el, 'veryActive')).toEqual(false);
         expect(DOM.hasClass(el, 'very-active')).toEqual(false);
       });
     });
