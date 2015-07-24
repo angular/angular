@@ -1,5 +1,6 @@
 import {Renderer} from 'angular2/render';
 import {ElementRef, QueryList} from 'angular2/core';
+import {Self} from 'angular2/di';
 import {Query, Directive} from 'angular2/annotations';
 
 import {NgControl} from './ng_control';
@@ -40,14 +41,15 @@ export class NgSelectOption {
   }
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
+  private cd: NgControl;
   value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef,
+  constructor(@Self() cd: NgControl, private renderer: Renderer, private elementRef: ElementRef,
               @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
+    this.cd = cd;
     cd.valueAccessor = this;
-
     this._updateValueWhenListOfOptionsChanges(query);
   }
 

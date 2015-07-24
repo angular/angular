@@ -1,6 +1,7 @@
 import {Renderer} from 'angular2/render';
 import {Directive} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
+import {Self} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
@@ -31,10 +32,12 @@ import {setProperty} from './shared';
   }
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
+  private cd: NgControl;
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(private cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
+  constructor(@Self() cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
+    this.cd = cd;
     cd.valueAccessor = this;
   }
 
