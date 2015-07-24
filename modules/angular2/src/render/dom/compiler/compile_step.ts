@@ -6,6 +6,8 @@ import * as compileControlModule from './compile_control';
  * Is guaranteed to be called in depth first order
  */
 export interface CompileStep {
-  process(parent: CompileElement, current: CompileElement,
-          control: compileControlModule.CompileControl): void;
+  processElement(parent: CompileElement, current: CompileElement,
+                 control: compileControlModule.CompileControl): void;
+
+  processStyle(style: string): string;
 }

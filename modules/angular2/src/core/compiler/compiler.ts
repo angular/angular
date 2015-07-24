@@ -307,7 +307,8 @@ export class Compiler {
       templateAbsUrl: templateAbsUrl, template: view.template,
       styleAbsUrls: styleAbsUrls,
       styles: view.styles,
-      directives: ListWrapper.map(directives, directiveBinding => directiveBinding.metadata)
+      directives: ListWrapper.map(directives, directiveBinding => directiveBinding.metadata),
+      encapsulation: view.encapsulation
     });
   }
 

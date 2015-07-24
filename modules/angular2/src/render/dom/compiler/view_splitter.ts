@@ -28,7 +28,9 @@ import {dashCaseToCamelCase} from '../util';
 export class ViewSplitter implements CompileStep {
   constructor(public _parser: Parser) {}
 
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
+  processStyle(style: string): string { return style; }
+
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
     var templateBindings = attrs.get('template');
     var hasTemplateBinding = isPresent(templateBindings);

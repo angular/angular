@@ -25,7 +25,9 @@ var BIND_NAME_REGEXP =
 export class PropertyBindingParser implements CompileStep {
   constructor(private _parser: Parser) {}
 
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
+  processStyle(style: string): string { return style; }
+
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
     var newAttrs = new Map();
 

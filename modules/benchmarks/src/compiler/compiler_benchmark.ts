@@ -2,9 +2,6 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DateWrapper, Type, print} from 'angular2/src/facade/lang';
-import {
-  NativeShadowDomStrategy
-} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
 import {
   Parser,
@@ -17,7 +14,6 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
-import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
@@ -28,7 +24,7 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import * as rc from 'angular2/src/render/dom/compiler/compiler';
+import {ViewLoader, DefaultDomCompiler, SharedStylesHost} from 'angular2/src/render/render';
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
@@ -40,12 +36,12 @@ export function main() {
   var viewResolver = new MultipleViewResolver(
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
   var urlResolver = new UrlResolver();
-  var shadowDomStrategy = new NativeShadowDomStrategy();
-  var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
-                                                 new ViewLoader(null, null, null));
-  var compiler = new Compiler(reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver,
-                              renderCompiler, new ProtoViewFactory(new DynamicChangeDetection()),
-                              new AppRootUrl(""));
+  var appRootUrl = new AppRootUrl("");
+  var renderCompiler = new DefaultDomCompiler(
+      new Parser(new Lexer()), new ViewLoader(null, null, null), new SharedStylesHost(), 'a');
+  var compiler =
+      new Compiler(reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver,
+                   renderCompiler, new ProtoViewFactory(new DynamicChangeDetection()), appRootUrl);
 
   function measureWrapper(func, desc) {
     return function() {

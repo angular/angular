@@ -5,9 +5,8 @@
  */
 
 export * from './dom/compiler/view_loader';
+export * from './dom/view/shared_styles_host';
+export * from './dom/compiler/compiler';
 export * from './dom/dom_renderer';
-export * from './dom/shadow_dom/shadow_dom_strategy';
-export * from './dom/shadow_dom/native_shadow_dom_strategy';
-export * from './dom/shadow_dom/emulated_scoped_shadow_dom_strategy';
-export * from './dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
+export * from './dom/dom_tokens';
 export * from './api';

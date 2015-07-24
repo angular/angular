@@ -123,3 +123,20 @@ export function queryBoundTextNodeIndices(parentNode: Node, boundTextNodes: Map<
     }
   }
 }
+
+export function prependAll(parentNode: Node, nodes: Node[]) {
+  var lastInsertedNode = null;
+  nodes.forEach(node => {
+    if (isBlank(lastInsertedNode)) {
+      var firstChild = DOM.firstChild(parentNode);
+      if (isPresent(firstChild)) {
+        DOM.insertBefore(firstChild, node);
+      } else {
+        DOM.appendChild(parentNode, node);
+      }
+    } else {
+      DOM.insertAfter(lastInsertedNode, node);
+    }
+    lastInsertedNode = node;
+  });
+}

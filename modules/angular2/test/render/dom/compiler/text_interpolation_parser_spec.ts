@@ -9,6 +9,7 @@ import {
   ElementBinderBuilder
 } from 'angular2/src/render/dom/view/proto_view_builder';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {ViewDefinition, ViewType} from 'angular2/src/render/api';
 
 export function main() {
   describe('TextInterpolationParser', () => {
@@ -17,8 +18,13 @@ export function main() {
           [new IgnoreChildrenStep(), new TextInterpolationParser(new Parser(new Lexer()))]);
     }
 
+    function createViewDefinition(): ViewDefinition {
+      return new ViewDefinition({componentId: 'someComponent'});
+    }
+
     function process(templateString: string): ProtoViewBuilder {
-      var compileElements = createPipeline().process(DOM.createTemplate(templateString));
+      var compileElements = createPipeline().processElements(
+          DOM.createTemplate(templateString), ViewType.COMPONENT, createViewDefinition());
       return compileElements[0].inheritedProtoView;
     }
 

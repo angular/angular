@@ -2,6 +2,7 @@ import {
   Component,
   Directive,
   View,
+  ViewEncapsulation,
   Ancestor,
   ElementRef,
   DynamicComponentLoader,
@@ -211,7 +212,8 @@ export class MdDialogConfig {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/dialog/dialog.html',
-  directives: [forwardRef(() => MdDialogContent)]
+  directives: [forwardRef(() => MdDialogContent)],
+  encapsulation: ViewEncapsulation.NONE
 })
 class MdDialogContainer {
   // Ref to the dialog content. Used by the DynamicComponentLoader to load the dialog content.

@@ -24,15 +24,16 @@ import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {
   DomRenderer,
   DOCUMENT_TOKEN,
-  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
-} from 'angular2/src/render/dom/dom_renderer';
-import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
+  DefaultDomCompiler,
+  APP_ID_RANDOM_BINDING
+} from 'angular2/src/render/render';
+import {
+  SharedStylesHost,
+  DomSharedStylesHost
+} from 'angular2/src/render/dom/view/shared_styles_host';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
-import {
-  EmulatedUnscopedShadowDomStrategy
-} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
@@ -89,14 +90,15 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
               return new EventManager(plugins, ngZone);
             },
             [NgZone]),
-    bind(ShadowDomStrategy)
-        .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     DomRenderer,
-    DefaultDomCompiler,
-    Serializer,
     bind(Renderer).toAlias(DomRenderer),
+    APP_ID_RANDOM_BINDING,
+    DefaultDomCompiler,
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
+    DomSharedStylesHost,
+    bind(SharedStylesHost).toAlias(DomSharedStylesHost),
+    Serializer,
     bind(ON_WEBWORKER).toValue(false),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,

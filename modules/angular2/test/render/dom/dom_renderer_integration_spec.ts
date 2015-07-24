@@ -18,9 +18,13 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DomTestbed, TestRootView, elRef} from './dom_testbed';
 
-import {ViewDefinition, DirectiveMetadata, RenderViewRef} from 'angular2/src/render/api';
-import {DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from 'angular2/src/render/dom/dom_renderer';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/render/render';
+import {
+  ViewDefinition,
+  DirectiveMetadata,
+  RenderViewRef,
+  ViewEncapsulation
+} from 'angular2/src/render/api';
+import {DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from 'angular2/src/render/dom/dom_tokens';
 import {bind} from 'angular2/di';
 
 export function main() {
@@ -271,17 +275,17 @@ export function main() {
 
     if (DOM.supportsNativeShadowDOM()) {
       describe('native shadow dom support', () => {
-        beforeEachBindings(
-            () => { return [bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy())]; });
-
-        it('should support shadow dom components',
+        it('should put the template into a shadow root',
            inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-             tb.compileAndMerge(
-                   someComponent,
-                   [
-                     new ViewDefinition(
-                         {componentId: 'someComponent', template: 'hello', directives: []})
-                   ])
+             tb.compileAndMerge(someComponent,
+                                [
+                                  new ViewDefinition({
+                                    componentId: 'someComponent',
+                                    template: 'hello',
+                                    directives: [],
+                                    encapsulation: ViewEncapsulation.NATIVE
+                                  })
+                                ])
                  .then((protoViewMergeMappings) => {
                    var rootView = tb.createView(protoViewMergeMappings);
                    expect(DOM.getShadowRoot(rootView.hostElement)).toHaveText('hello');
@@ -289,6 +293,48 @@ export function main() {
                  });
 
            }));
+
+        it('should add styles from non native components to shadow roots while the view is not destroyed',
+           inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
+             tb.compileAndMerge(someComponent,
+                                [
+                                  new ViewDefinition({
+                                    componentId: 'someComponent',
+                                    template: '',
+                                    directives: [],
+                                    encapsulation: ViewEncapsulation.NATIVE,
+                                    styles: ['a {};']
+                                  })
+                                ])
+                 .then((protoViewMergeMappings) => {
+                   var rootView = tb.createView(protoViewMergeMappings);
+                   tb.compiler.compile(new ViewDefinition({
+                                componentId: 'someComponent',
+                                template: '',
+                                directives: [],
+                                encapsulation: ViewEncapsulation.NONE,
+                                styles: ['b {};']
+                              }))
+                       .then(_ => {
+                         expect(DOM.getShadowRoot(rootView.hostElement)).toHaveText('a {};b {};');
+                         tb.renderer.destroyView(rootView.viewRef);
+                         tb.compiler.compile(new ViewDefinition({
+                                      componentId: 'someComponent',
+                                      template: '',
+                                      directives: [],
+                                      encapsulation: ViewEncapsulation.NONE,
+                                      styles: ['c {};']
+                                    }))
+                             .then(_ => {
+                               expect(DOM.getShadowRoot(rootView.hostElement))
+                                   .toHaveText('a {};b {};');
+                               async.done();
+                             });
+
+                       });
+                 });
+           }));
+
       });
     }
 

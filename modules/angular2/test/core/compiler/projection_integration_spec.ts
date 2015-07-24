@@ -34,9 +34,9 @@ import {
   ViewContainerRef,
   ElementRef,
   TemplateRef,
-  bind
+  bind,
+  ViewEncapsulation
 } from 'angular2/angular2';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/render/render';
 
 export function main() {
   describe('projection', () => {
@@ -399,27 +399,21 @@ export function main() {
        }));
 
     if (DOM.supportsNativeShadowDOM()) {
-      describe('native shadow dom support', () => {
-        beforeEachBindings(
-            () => { return [bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy())]; });
+      it('should support native content projection',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MainComp, new viewAnn.View({
+                template: '<simple-native>' +
+                              '<div>A</div>' +
+                              '</simple-native>',
+                directives: [SimpleNative]
+              }))
+               .createAsync(MainComp)
+               .then((main) => {
 
-        it('should support native content projection',
-           inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MainComp, new viewAnn.View({
-                         template: '<simple-native>' +
-                                       '<div>A</div>' +
-                                       '</simple-native>',
-                         directives: [SimpleNative]
-                       }))
-                        .createAsync(MainComp)
-                        .then((main) => {
-
-                          expect(main.nativeElement).toHaveText('SIMPLE(A)');
-                          async.done();
-                        });
-                  }));
-      });
+                 expect(main.nativeElement).toHaveText('SIMPLE(A)');
+                 async.done();
+               });
+         }));
     }
 
   });
@@ -438,7 +432,11 @@ class Simple {
 }
 
 @Component({selector: 'simple-native'})
-@View({template: 'SIMPLE(<content></content>)', directives: []})
+@View({
+  template: 'SIMPLE(<content></content>)',
+  directives: [],
+  encapsulation: ViewEncapsulation.NATIVE
+})
 class SimpleNative {
 }
 

@@ -5,7 +5,7 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
 import {ProtoViewBuilder} from '../view/proto_view_builder';
-import {ProtoViewDto, ViewType} from '../../api';
+import {ProtoViewDto, ViewType, ViewDefinition} from '../../api';
 
 /**
  * CompilePipeline for executing CompileSteps recursively for
@@ -13,26 +13,29 @@ import {ProtoViewDto, ViewType} from '../../api';
  */
 export class CompilePipeline {
   _control: CompileControl;
-  constructor(steps: List<CompileStep>, private _useNativeShadowDom: boolean = false) {
-    this._control = new CompileControl(steps);
+  constructor(public steps: List<CompileStep>) { this._control = new CompileControl(steps); }
+
+  processStyles(styles: string[]): string[] {
+    return styles.map(style => {
+      this.steps.forEach(step => { style = step.processStyle(style); });
+      return style;
+    });
   }
 
-  process(rootElement: HTMLElement, protoViewType: ViewType = null,
-          compilationCtxtDescription: string = ''): List<CompileElement> {
-    if (isBlank(protoViewType)) {
-      protoViewType = ViewType.COMPONENT;
-    }
-    var results = [];
+  processElements(rootElement: Element, protoViewType: ViewType,
+                  viewDef: ViewDefinition): CompileElement[] {
+    var results: CompileElement[] = [];
+    var compilationCtxtDescription = viewDef.componentId;
     var rootCompileElement = new CompileElement(rootElement, compilationCtxtDescription);
     rootCompileElement.inheritedProtoView =
-        new ProtoViewBuilder(rootElement, protoViewType, this._useNativeShadowDom);
+        new ProtoViewBuilder(rootElement, protoViewType, viewDef.encapsulation);
     rootCompileElement.isViewRoot = true;
-    this._process(results, null, rootCompileElement, compilationCtxtDescription);
+    this._processElement(results, null, rootCompileElement, compilationCtxtDescription);
     return results;
   }
 
-  _process(results, parent: CompileElement, current: CompileElement,
-           compilationCtxtDescription: string = '') {
+  _processElement(results: CompileElement[], parent: CompileElement, current: CompileElement,
+                  compilationCtxtDescription: string = '') {
     var additionalChildren = this._control.internalProcess(results, 0, parent, current);
 
     if (current.compileChildren) {
@@ -46,7 +49,7 @@ export class CompilePipeline {
           childCompileElement.inheritedProtoView = current.inheritedProtoView;
           childCompileElement.inheritedElementBinder = current.inheritedElementBinder;
           childCompileElement.distanceToInheritedBinder = current.distanceToInheritedBinder + 1;
-          this._process(results, current, childCompileElement);
+          this._processElement(results, current, childCompileElement);
         }
         node = nextNode;
       }
@@ -54,7 +57,7 @@ export class CompilePipeline {
 
     if (isPresent(additionalChildren)) {
       for (var i = 0; i < additionalChildren.length; i++) {
-        this._process(results, current, additionalChildren[i]);
+        this._processElement(results, current, additionalChildren[i]);
       }
     }
   }

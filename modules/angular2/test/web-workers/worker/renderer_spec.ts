@@ -104,12 +104,13 @@ export function main() {
          var compiler: WorkerCompiler = createWorkerCompiler(workerSerializer, uiSerializer, tb);
 
          var dirMetadata = DirectiveMetadata.create(
-             {id: 'id', selector: 'CUSTOM', type: DirectiveMetadata.COMPONENT_TYPE});
+             {id: 'id', selector: 'custom', type: DirectiveMetadata.COMPONENT_TYPE});
          compiler.compileHost(dirMetadata)
              .then((protoView) => {
-               expect(DOM.tagName(DOM.firstChild(
-                          DOM.content(resolveWebWorkerRef(protoView.render).rootElement))))
-                   .toEqual('CUSTOM');
+               expect(DOM.tagName(DOM.firstChild(DOM.content(
+                                      resolveWebWorkerRef(protoView.render).rootElement)))
+                          .toLowerCase())
+                   .toEqual('custom');
                expect(protoView).not.toBeNull();
                async.done();
              });

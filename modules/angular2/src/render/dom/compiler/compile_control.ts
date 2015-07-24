@@ -29,7 +29,7 @@ export class CompileControl {
       var step = this._steps[i];
       this._parent = parent;
       this._currentStepIndex = i;
-      step.process(parent, current, this);
+      step.processElement(parent, current, this);
       parent = this._parent;
     }
 

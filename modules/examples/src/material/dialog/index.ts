@@ -67,7 +67,7 @@ class DemoApp {
     <p>There are {{numCoconuts}} coconuts.</p>
     <p>Return: <input (input)="updateValue($event)"></p>
     <button type="button" (click)="done()">Done</button>
-  `,
+  `
 })
 class SimpleDialogComponent {
   numCoconuts: number;

@@ -14,5 +14,6 @@ export {
   RenderViewWithFragments,
   DomRenderer,
   DOCUMENT_TOKEN,
+  APP_ID_TOKEN,
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
 } from './src/render/render';

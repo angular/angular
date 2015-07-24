@@ -35,9 +35,10 @@ export class ProtoViewBuilder {
   elements: List<ElementBinderBuilder> = [];
   rootTextBindings: Map<Node, ASTWithSource> = new Map();
   ngContentCount: number = 0;
+  hostAttributes: Map<string, string> = new Map();
 
   constructor(public rootElement, public type: api.ViewType,
-              public useNativeShadowDom: boolean = false) {}
+              public viewEncapsulation: api.ViewEncapsulation) {}
 
   bindElement(element: HTMLElement, description: string = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
@@ -64,6 +65,8 @@ export class ProtoViewBuilder {
   }
 
   bindNgContent() { this.ngContentCount++; }
+
+  setHostAttribute(name: string, value: string) { this.hostAttributes.set(name, value); }
 
   build(): api.ProtoViewDto {
     var domElementBinders = [];
@@ -119,7 +122,7 @@ export class ProtoViewBuilder {
       domElementBinders.push(new DomElementBinder({
         textNodeIndices: textNodeIndices,
         hasNestedProtoView: isPresent(nestedProtoView) || isPresent(ebb.componentId),
-        hasNativeShadowRoot: isPresent(ebb.componentId) && this.useNativeShadowDom,
+        hasNativeShadowRoot: false,
         eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
         localEvents: ebb.eventBuilder.buildLocalEvents(),
         globalEvents: ebb.eventBuilder.buildGlobalEvents()
@@ -127,8 +130,9 @@ export class ProtoViewBuilder {
     });
     var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
     return new api.ProtoViewDto({
-      render: new DomProtoViewRef(DomProtoView.create(this.type, this.rootElement, [rootNodeCount],
-                                                      rootTextNodeIndices, domElementBinders)),
+      render: new DomProtoViewRef(
+          DomProtoView.create(this.type, this.rootElement, this.viewEncapsulation, [rootNodeCount],
+                              rootTextNodeIndices, domElementBinders, this.hostAttributes)),
       type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings,
@@ -178,7 +182,8 @@ export class ElementBinderBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
-    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ViewType.EMBEDDED);
+    this.nestedProtoView =
+        new ProtoViewBuilder(rootElement, api.ViewType.EMBEDDED, api.ViewEncapsulation.NONE);
     return this.nestedProtoView;
   }
 

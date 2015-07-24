@@ -1,10 +1,15 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent, isBlank, BaseException, isArray} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, SetWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder} from './element_binder';
-import {RenderProtoViewMergeMapping, RenderProtoViewRef, ViewType} from '../../api';
+import {
+  RenderProtoViewMergeMapping,
+  RenderProtoViewRef,
+  ViewType,
+  ViewEncapsulation
+} from '../../api';
 import {
   NG_BINDING_CLASS,
   NG_CONTENT_ELEMENT_NAME,
@@ -12,7 +17,9 @@ import {
   cloneAndQueryProtoView,
   queryBoundElements,
   queryBoundTextNodeIndices,
-  NG_SHADOW_ROOT_ELEMENT_NAME
+  NG_SHADOW_ROOT_ELEMENT_NAME,
+  isElementWithTag,
+  prependAll
 } from '../util';
 
 export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRef | List<any>>):
@@ -26,7 +33,9 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   // modify the DOM
   mergeEmbeddedPvsIntoComponentOrRootPv(clonedProtoViews, hostViewAndBinderIndices);
   var fragments = [];
-  mergeComponents(clonedProtoViews, hostViewAndBinderIndices, fragments);
+  var elementsWithNativeShadowRoot: Set<Element> = new Set();
+  mergeComponents(clonedProtoViews, hostViewAndBinderIndices, fragments,
+                  elementsWithNativeShadowRoot);
   // Note: Need to remark parent elements of bound text nodes
   // so that we can find them later via queryBoundElements!
   markBoundTextNodeParentsAsBoundElements(clonedProtoViews);
@@ -42,8 +51,9 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   var boundTextNodeMap: Map<Node, any> = indexBoundTextNodes(clonedProtoViews);
   var rootTextNodeIndices =
       calcRootTextNodeIndices(rootNode, boundTextNodeMap, mergedBoundTextIndices);
-  var mergedElementBinders = calcElementBinders(clonedProtoViews, mergedBoundElements,
-                                                boundTextNodeMap, mergedBoundTextIndices);
+  var mergedElementBinders =
+      calcElementBinders(clonedProtoViews, mergedBoundElements, elementsWithNativeShadowRoot,
+                         boundTextNodeMap, mergedBoundTextIndices);
 
   // create element / text index mappings
   var mappedElementIndices = calcMappedElementIndices(clonedProtoViews, mergedBoundElements);
@@ -53,9 +63,9 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   var hostElementIndicesByViewIndex =
       calcHostElementIndicesByViewIndex(clonedProtoViews, hostViewAndBinderIndices);
   var nestedViewCounts = calcNestedViewCounts(hostViewAndBinderIndices);
-  var mergedProtoView =
-      DomProtoView.create(mainProtoView.original.type, rootElement, fragmentsRootNodeCount,
-                          rootTextNodeIndices, mergedElementBinders);
+  var mergedProtoView = DomProtoView.create(
+      mainProtoView.original.type, rootElement, mainProtoView.original.encapsulation,
+      fragmentsRootNodeCount, rootTextNodeIndices, mergedElementBinders, new Map());
   return new RenderProtoViewMergeMapping(new DomProtoViewRef(mergedProtoView),
                                          fragmentsRootNodeCount.length, mappedElementIndices,
                                          mergedBoundElements.length, mappedTextIndices,
@@ -143,7 +153,8 @@ function calcNearestHostComponentOrRootPvIndices(clonedProtoViews: ClonedProtoVi
 }
 
 function mergeComponents(clonedProtoViews: ClonedProtoView[], hostViewAndBinderIndices: number[][],
-                         targetFragments: Node[][]) {
+                         targetFragments: Node[][],
+                         targetElementsWithNativeShadowRoot: Set<Element>) {
   var hostProtoView = clonedProtoViews[0];
   hostProtoView.fragments.forEach((fragment) => targetFragments.push(fragment));
 
@@ -153,13 +164,15 @@ function mergeComponents(clonedProtoViews: ClonedProtoView[], hostViewAndBinderI
     var hostProtoView = clonedProtoViews[hostViewIdx];
     var clonedProtoView = clonedProtoViews[viewIdx];
     if (clonedProtoView.original.type === ViewType.COMPONENT) {
-      mergeComponent(hostProtoView, hostBinderIdx, clonedProtoView, targetFragments);
+      mergeComponent(hostProtoView, hostBinderIdx, clonedProtoView, targetFragments,
+                     targetElementsWithNativeShadowRoot);
     }
   }
 }
 
 function mergeComponent(hostProtoView: ClonedProtoView, binderIdx: number,
-                        nestedProtoView: ClonedProtoView, targetFragments: Node[][]) {
+                        nestedProtoView: ClonedProtoView, targetFragments: Node[][],
+                        targetElementsWithNativeShadowRoot: Set<Element>) {
   var hostElement = hostProtoView.boundElements[binderIdx];
 
   // We wrap the fragments into elements so that we can expand <ng-content>
@@ -176,8 +189,14 @@ function mergeComponent(hostProtoView: ClonedProtoView, binderIdx: number,
 
   // unwrap the fragment elements into arrays of nodes after projecting
   var fragments = extractFragmentNodesFromElements(fragmentElements);
-  appendComponentNodesToHost(hostProtoView, binderIdx, fragments[0]);
-
+  var useNativeShadowRoot = nestedProtoView.original.encapsulation === ViewEncapsulation.NATIVE;
+  if (useNativeShadowRoot) {
+    targetElementsWithNativeShadowRoot.add(hostElement);
+  }
+  MapWrapper.forEach(nestedProtoView.original.hostAttributes, (attrValue, attrName) => {
+    DOM.setAttribute(hostElement, attrName, attrValue);
+  });
+  appendComponentNodesToHost(hostProtoView, binderIdx, fragments[0], useNativeShadowRoot);
   for (var i = 1; i < fragments.length; i++) {
     targetFragments.push(fragments[i]);
   }
@@ -209,10 +228,9 @@ function findContentElements(fragmentElements: Element[]): Element[] {
 }
 
 function appendComponentNodesToHost(hostProtoView: ClonedProtoView, binderIdx: number,
-                                    componentRootNodes: Node[]) {
+                                    componentRootNodes: Node[], useNativeShadowRoot: boolean) {
   var hostElement = hostProtoView.boundElements[binderIdx];
-  var binder = hostProtoView.original.elementBinders[binderIdx];
-  if (binder.hasNativeShadowRoot) {
+  if (useNativeShadowRoot) {
     var shadowRootWrapper = DOM.createElement(NG_SHADOW_ROOT_ELEMENT_NAME);
     for (var i = 0; i < componentRootNodes.length; i++) {
       DOM.appendChild(shadowRootWrapper, componentRootNodes[i]);
@@ -298,6 +316,7 @@ function calcRootTextNodeIndices(rootNode: Node, boundTextNodes: Map<Node, any>,
 }
 
 function calcElementBinders(clonedProtoViews: ClonedProtoView[], mergedBoundElements: Element[],
+                            elementsWithNativeShadowRoot: Set<Element>,
                             boundTextNodes: Map<Node, any>,
                             targetBoundTextIndices: Map<Node, number>): DomElementBinder[] {
   var elementBinderByElement: Map<Element, DomElementBinder> =
@@ -311,7 +330,8 @@ function calcElementBinders(clonedProtoViews: ClonedProtoView[], mergedBoundElem
       targetBoundTextIndices.set(textNode, targetBoundTextIndices.size);
     });
     mergedElementBinders.push(
-        updateElementBinderTextNodeIndices(elementBinderByElement.get(element), textNodeIndices));
+        updateElementBinders(elementBinderByElement.get(element), textNodeIndices,
+                             SetWrapper.has(elementsWithNativeShadowRoot, element)));
   }
   return mergedElementBinders;
 }
@@ -330,8 +350,8 @@ function indexElementBindersByElement(mergableProtoViews: ClonedProtoView[]):
   return elementBinderByElement;
 }
 
-function updateElementBinderTextNodeIndices(elementBinder: DomElementBinder,
-                                            textNodeIndices: number[]): DomElementBinder {
+function updateElementBinders(elementBinder: DomElementBinder, textNodeIndices: number[],
+                              hasNativeShadowRoot: boolean): DomElementBinder {
   var result;
   if (isBlank(elementBinder)) {
     result = new DomElementBinder({
@@ -349,7 +369,7 @@ function updateElementBinderTextNodeIndices(elementBinder: DomElementBinder,
       eventLocals: elementBinder.eventLocals,
       localEvents: elementBinder.localEvents,
       globalEvents: elementBinder.globalEvents,
-      hasNativeShadowRoot: elementBinder.hasNativeShadowRoot
+      hasNativeShadowRoot: hasNativeShadowRoot
     });
   }
   return result;

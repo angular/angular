@@ -3,11 +3,10 @@ import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {PropertyBindingParser} from 'angular2/src/render/dom/compiler/property_binding_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
-import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
-import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {ViewDefinition, ViewType} from 'angular2/src/render/api';
+import {MockStep} from './pipeline_spec';
 
 var EMPTY_MAP = new Map();
 
@@ -24,9 +23,15 @@ export function main() {
       ]);
     }
 
+    function createViewDefinition(): ViewDefinition {
+      return new ViewDefinition({componentId: 'someComponent'});
+    }
+
     function process(element, hasNestedProtoView = false): List<ElementBinderBuilder> {
-      return ListWrapper.map(createPipeline(hasNestedProtoView).process(element),
-                             (compileElement) => compileElement.inheritedElementBinder);
+      return ListWrapper.map(
+          createPipeline(hasNestedProtoView)
+              .processElements(element, ViewType.COMPONENT, createViewDefinition()),
+          (compileElement) => compileElement.inheritedElementBinder);
     }
 
     it('should detect [] syntax', () => {
@@ -174,13 +179,15 @@ export function main() {
     });
 
     it('should store bound properties as temporal attributes', () => {
-      var results = createPipeline().process(el('<div bind-a="b" [c]="d"></div>'));
+      var results = createPipeline().processElements(el('<div bind-a="b" [c]="d"></div>'),
+                                                     ViewType.COMPONENT, createViewDefinition());
       expect(results[0].attrs().get('a')).toEqual('b');
       expect(results[0].attrs().get('c')).toEqual('d');
     });
 
     it('should store variables as temporal attributes', () => {
-      var results = createPipeline().process(el('<div var-a="b" #c="d"></div>'));
+      var results = createPipeline().processElements(el('<div var-a="b" #c="d"></div>'),
+                                                     ViewType.COMPONENT, createViewDefinition());
       expect(results[0].attrs().get('a')).toEqual('b');
       expect(results[0].attrs().get('c')).toEqual('d');
     });
@@ -209,12 +216,4 @@ export function main() {
       expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
     });
   });
-}
-
-class MockStep implements CompileStep {
-  processClosure: Function;
-  constructor(process) { this.processClosure = process; }
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
-    this.processClosure(parent, current, control);
-  }
 }

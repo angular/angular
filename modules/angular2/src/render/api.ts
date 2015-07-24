@@ -273,6 +273,25 @@ export class RenderFragmentRef {}
 // An opaque reference to a view
 export class RenderViewRef {}
 
+/**
+ * How the template and styles of a view should be encapsulated.
+ */
+export enum ViewEncapsulation {
+  /**
+   * Emulate scoping of styles by preprocessing the style rules
+   * and adding additional attributes to elements. This is the default.
+   */
+  EMULATED,
+  /**
+   * Uses the native mechanism of the renderer. For the DOM this means creating a ShadowRoot.
+   */
+  NATIVE,
+  /**
+   * Don't scope the template nor the styles.
+   */
+  NONE
+}
+
 export class ViewDefinition {
   componentId: string;
   templateAbsUrl: string;
@@ -280,21 +299,25 @@ export class ViewDefinition {
   directives: List<DirectiveMetadata>;
   styleAbsUrls: List<string>;
   styles: List<string>;
+  encapsulation: ViewEncapsulation;
 
-  constructor({componentId, templateAbsUrl, template, styleAbsUrls, styles, directives}: {
+  constructor({componentId, templateAbsUrl, template, styleAbsUrls, styles, directives,
+               encapsulation}: {
     componentId?: string,
     templateAbsUrl?: string,
     template?: string,
     styleAbsUrls?: List<string>,
     styles?: List<string>,
-    directives?: List<DirectiveMetadata>
-  }) {
+    directives?: List<DirectiveMetadata>,
+    encapsulation?: ViewEncapsulation
+  } = {}) {
     this.componentId = componentId;
     this.templateAbsUrl = templateAbsUrl;
     this.template = template;
     this.styleAbsUrls = styleAbsUrls;
     this.styles = styles;
     this.directives = directives;
+    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.EMULATED;
   }
 }
 

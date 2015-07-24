@@ -1,4 +1,4 @@
-import {Component, View, Attribute} from 'angular2/angular2';
+import {Component, View, Attribute, ViewEncapsulation} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 import {KEY_SPACE} from 'angular2_material/src/core/constants';
 import {KeyboardEvent} from 'angular2/src/facade/browser';
@@ -17,7 +17,8 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/checkbox/checkbox.html',
-  directives: []
+  directives: [],
+  encapsulation: ViewEncapsulation.NONE
 })
 export class MdCheckbox {
   /** Whether this checkbox is checked. */

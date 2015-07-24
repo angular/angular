@@ -1,4 +1,7 @@
 import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
+import {ViewEncapsulation} from 'angular2/src/render/api';
+
+export {ViewEncapsulation} from 'angular2/src/render/api';
 
 /**
  * Declares the available HTML templates for an application.
@@ -85,17 +88,17 @@ export class View {
   directives: List<Type | any | List<any>>;
 
   /**
-   * Specify a custom renderer for this View.
-   * If this is set, neither `template`, `templateUrl`, `styles`, `styleUrls` nor `directives` are
-   * used.
+   * Specify how the template and the styles should be encapsulated.
+   * The default is {@link ViewEncapsulation.EMULATED} if the view has styles,
+   * otherwise {@link ViewEncapsulation.NONE}.
    */
-  renderer: string;
+  encapsulation: ViewEncapsulation;
 
-  constructor({templateUrl, template, directives, renderer, styles, styleUrls}: {
+  constructor({templateUrl, template, directives, encapsulation, styles, styleUrls}: {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
-    renderer?: string,
+    encapsulation?: ViewEncapsulation,
     styles?: List<string>,
     styleUrls?: List<string>,
   } = {}) {
@@ -104,6 +107,6 @@ export class View {
     this.styleUrls = styleUrls;
     this.styles = styles;
     this.directives = directives;
-    this.renderer = renderer;
+    this.encapsulation = encapsulation;
   }
 }

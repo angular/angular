@@ -213,7 +213,8 @@ export class Serializer {
       'template': view.template,
       'directives': this.serialize(view.directives, DirectiveMetadata),
       'styleAbsUrls': view.styleAbsUrls,
-      'styles': view.styles
+      'styles': view.styles,
+      'encapsulation': view.encapsulation
     };
   }
 
@@ -223,7 +224,8 @@ export class Serializer {
       templateAbsUrl: obj['templateAbsUrl'], template: obj['template'],
       directives: this.deserialize(obj['directives'], DirectiveMetadata),
       styleAbsUrls: obj['styleAbsUrls'],
-      styles: obj['styles']
+      styles: obj['styles'],
+      encapsulation: obj['encapsulation']
     });
   }
 

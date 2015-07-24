@@ -9,7 +9,7 @@ import {
   el,
   normalizeCSS
 } from 'angular2/test_lib';
-import {ShadowCss} from 'angular2/src/render/dom/shadow_dom/shadow_css';
+import {ShadowCss} from 'angular2/src/render/dom/compiler/shadow_css';
 
 import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';

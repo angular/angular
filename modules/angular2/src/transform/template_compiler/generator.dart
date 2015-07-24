@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:angular2/src/change_detection/parser/lexer.dart' as ng;
 import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
 import 'package:angular2/src/core/compiler/proto_view_factory.dart';
+import 'package:angular2/src/dom/dom_adapter.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compile_pipeline.dart';
 import 'package:angular2/src/render/dom/compiler/style_inliner.dart';
@@ -96,7 +97,7 @@ class _TemplateExtractor {
     // Check for "imperative views".
     if (viewDef.template == null && viewDef.templateAbsUrl == null) return null;
 
-    var templateEl = await _loader.load(viewDef);
+    var templateAndStyles = await _loader.load(viewDef);
 
     // NOTE(kegluneq): Since this is a global, we must not have any async
     // operations between saving and restoring it, otherwise we can get into
@@ -108,7 +109,7 @@ class _TemplateExtractor {
     var pipeline = new CompilePipeline(_factory.createSteps(viewDef));
 
     var compileElements =
-        pipeline.process(templateEl, ViewType.COMPONENT, viewDef.componentId);
+        pipeline.processElements(DOM.createTemplate(templateAndStyles.template), ViewType.COMPONENT, viewDef);
     var protoViewDto = compileElements[0].inheritedProtoView.build();
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;

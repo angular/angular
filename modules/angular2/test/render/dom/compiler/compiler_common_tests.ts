@@ -17,26 +17,38 @@ import {Type, isBlank, stringify, isPresent, BaseException} from 'angular2/src/f
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {DomCompiler} from 'angular2/src/render/dom/compiler/compiler';
-import {ProtoViewDto, ViewDefinition, DirectiveMetadata, ViewType} from 'angular2/src/render/api';
-import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
+import {
+  ProtoViewDto,
+  ViewDefinition,
+  DirectiveMetadata,
+  ViewType,
+  ViewEncapsulation
+} from 'angular2/src/render/api';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
-import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
-import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/view_loader';
 
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
+import {SharedStylesHost} from 'angular2/src/render/dom/view/shared_styles_host';
+
+import {MockStep} from './pipeline_spec';
 
 export function runCompilerCommonTests() {
   describe('DomCompiler', function() {
     var mockStepFactory: MockStepFactory;
+    var sharedStylesHost: SharedStylesHost;
 
-    function createCompiler(processClosure, urlData = null) {
+    beforeEach(() => {sharedStylesHost = new SharedStylesHost()});
+
+    function createCompiler(processElementClosure = null, processStyleClosure = null,
+                            urlData = null) {
       if (isBlank(urlData)) {
         urlData = new Map();
       }
       var tplLoader = new FakeViewLoader(urlData);
-      mockStepFactory = new MockStepFactory([new MockStep(processClosure)]);
-      return new DomCompiler(mockStepFactory, tplLoader, false);
+      mockStepFactory =
+          new MockStepFactory([new MockStep(processElementClosure, processStyleClosure)]);
+      return new DomCompiler(mockStepFactory, tplLoader, sharedStylesHost);
     }
 
     describe('compile', () => {
@@ -61,12 +73,13 @@ export function runCompilerCommonTests() {
            });
 
            var dirMetadata = DirectiveMetadata.create(
-               {id: 'id', selector: 'CUSTOM', type: DirectiveMetadata.COMPONENT_TYPE});
+               {id: 'id', selector: 'custom', type: DirectiveMetadata.COMPONENT_TYPE});
            compiler.compileHost(dirMetadata)
                .then((protoView) => {
                  expect(DOM.tagName(DOM.firstChild(DOM.content(
-                            resolveInternalDomProtoView(protoView.render).rootElement))))
-                     .toEqual('CUSTOM');
+                                        resolveInternalDomProtoView(protoView.render).rootElement)))
+                            .toLowerCase())
+                     .toEqual('custom');
                  expect(mockStepFactory.viewDef.directives).toEqual([dirMetadata]);
                  expect(protoView.variableBindings)
                      .toEqual(MapWrapper.createFromStringMap({'a': 'b'}));
@@ -88,7 +101,7 @@ export function runCompilerCommonTests() {
 
       it('should load url templates', inject([AsyncTestCompleter], (async) => {
            var urlData = MapWrapper.createFromStringMap({'someUrl': 'url component'});
-           var compiler = createCompiler(EMPTY_STEP, urlData);
+           var compiler = createCompiler(EMPTY_STEP, null, urlData);
            compiler.compile(new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'}))
                .then((protoView) => {
                  expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).rootElement))
@@ -98,7 +111,7 @@ export function runCompilerCommonTests() {
          }));
 
       it('should report loading errors', inject([AsyncTestCompleter], (async) => {
-           var compiler = createCompiler(EMPTY_STEP, new Map());
+           var compiler = createCompiler(EMPTY_STEP, null, new Map());
            PromiseWrapper.catchError(
                compiler.compile(
                    new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'})),
@@ -137,6 +150,110 @@ export function runCompilerCommonTests() {
 
     });
 
+    describe('compile styles', () => {
+      it('should run the steps', inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler(null, (style) => { return style + 'b {};'; });
+           compiler.compile(new ViewDefinition(
+                                {componentId: 'someComponent', template: '', styles: ['a {};']}))
+               .then((protoViewDto) => {
+                 expect(sharedStylesHost.getAllStyles()).toEqual(['a {};b {};']);
+                 async.done();
+               });
+         }));
+
+      it('should store the styles in the SharedStylesHost for ViewEncapsulation.NONE',
+         inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler();
+           compiler.compile(new ViewDefinition({
+                     componentId: 'someComponent',
+                     template: '',
+                     styles: ['a {};'],
+                     encapsulation: ViewEncapsulation.NONE
+                   }))
+               .then((protoViewDto) => {
+                 var domProtoView = resolveInternalDomProtoView(protoViewDto.render);
+                 expect(DOM.getInnerHTML(domProtoView.rootElement)).toEqual('');
+                 expect(sharedStylesHost.getAllStyles()).toEqual(['a {};']);
+                 async.done();
+               });
+         }));
+
+      it('should store the styles in the SharedStylesHost for ViewEncapsulation.EMULATED',
+         inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler();
+           compiler.compile(new ViewDefinition({
+                     componentId: 'someComponent',
+                     template: '',
+                     styles: ['a {};'],
+                     encapsulation: ViewEncapsulation.EMULATED
+                   }))
+               .then((protoViewDto) => {
+                 var domProtoView = resolveInternalDomProtoView(protoViewDto.render);
+                 expect(DOM.getInnerHTML(domProtoView.rootElement)).toEqual('');
+                 expect(sharedStylesHost.getAllStyles()).toEqual(['a {};']);
+                 async.done();
+               });
+         }));
+
+      if (DOM.supportsNativeShadowDOM()) {
+        it('should store the styles in the template for ViewEncapsulation.NATIVE',
+           inject([AsyncTestCompleter], (async) => {
+             var compiler = createCompiler();
+             compiler.compile(new ViewDefinition({
+                       componentId: 'someComponent',
+                       template: '',
+                       styles: ['a {};'],
+                       encapsulation: ViewEncapsulation.NATIVE
+                     }))
+                 .then((protoViewDto) => {
+                   var domProtoView = resolveInternalDomProtoView(protoViewDto.render);
+                   expect(DOM.getInnerHTML(domProtoView.rootElement))
+                       .toEqual('<style>a {};</style>');
+                   expect(sharedStylesHost.getAllStyles()).toEqual([]);
+                   async.done();
+                 });
+           }));
+      }
+
+      it('should default to ViewEncapsulation.NONE if no styles are specified',
+         inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler();
+           compiler.compile(
+                       new ViewDefinition({componentId: 'someComponent', template: '', styles: []}))
+               .then((protoView) => {
+                 expect(mockStepFactory.viewDef.encapsulation).toBe(ViewEncapsulation.NONE);
+                 async.done();
+               });
+         }));
+
+      it('should default to ViewEncapsulation.EMULATED if styles are specified',
+         inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler();
+           compiler.compile(new ViewDefinition(
+                                {componentId: 'someComponent', template: '', styles: ['a {};']}))
+               .then((protoView) => {
+                 expect(mockStepFactory.viewDef.encapsulation).toBe(ViewEncapsulation.EMULATED);
+                 async.done();
+               });
+         }));
+
+    });
+
+    describe('mergeProtoViews', () => {
+      it('should store the styles of the merged ProtoView in the SharedStylesHost',
+         inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler();
+           compiler.compile(new ViewDefinition(
+                                {componentId: 'someComponent', template: '', styles: ['a {};']}))
+               .then(protoViewDto => compiler.mergeProtoViewsRecursively([protoViewDto.render]))
+               .then(_ => {
+                 expect(sharedStylesHost.getAllStyles()).toEqual(['a {};']);
+                 async.done();
+               });
+         }));
+
+    });
+
   });
 }
 
@@ -155,14 +272,6 @@ class MockStepFactory extends CompileStepFactory {
   }
 }
 
-class MockStep implements CompileStep {
-  processClosure: Function;
-  constructor(process) { this.processClosure = process; }
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
-    this.processClosure(parent, current, control);
-  }
-}
-
 var EMPTY_STEP = (parent, current, control) => {
   if (isPresent(parent)) {
     current.inheritedProtoView = parent.inheritedProtoView;
@@ -176,16 +285,17 @@ class FakeViewLoader extends ViewLoader {
     this._urlData = urlData;
   }
 
-  load(view: ViewDefinition): Promise<any> {
-    if (isPresent(view.template)) {
-      return PromiseWrapper.resolve(DOM.createTemplate(view.template));
+  load(viewDef): Promise<any> {
+    var styles = isPresent(viewDef.styles) ? viewDef.styles : [];
+    if (isPresent(viewDef.template)) {
+      return PromiseWrapper.resolve(new TemplateAndStyles(viewDef.template, styles));
     }
 
-    if (isPresent(view.templateAbsUrl)) {
-      var content = this._urlData.get(view.templateAbsUrl);
+    if (isPresent(viewDef.templateAbsUrl)) {
+      var content = this._urlData.get(viewDef.templateAbsUrl);
       return isPresent(content) ?
-                 PromiseWrapper.resolve(DOM.createTemplate(content)) :
-                 PromiseWrapper.reject(`Failed to fetch url "${view.templateAbsUrl}"`, null);
+                 PromiseWrapper.resolve(new TemplateAndStyles(content, styles)) :
+                 PromiseWrapper.reject(`Failed to fetch url "${viewDef.templateAbsUrl}"`, null);
     }
 
     throw new BaseException('View should have either the templateUrl or template property set');

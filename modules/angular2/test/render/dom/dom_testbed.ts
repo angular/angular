@@ -4,7 +4,8 @@ import {MapWrapper, ListWrapper, List, Map} from 'angular2/src/facade/collection
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
+import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_tokens';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {
   RenderViewWithFragments,

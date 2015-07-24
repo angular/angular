@@ -1,4 +1,12 @@
-import {Component, View, LifecycleEvent, Ancestor, Attribute, Optional} from 'angular2/angular2';
+import {
+  Component,
+  View,
+  ViewEncapsulation,
+  LifecycleEvent,
+  Ancestor,
+  Attribute,
+  Optional
+} from 'angular2/angular2';
 
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
@@ -36,7 +44,10 @@ var _uniqueIdCounter: number = 0;
     '[attr.aria-activedescendant]': 'activedescendant'
   }
 })
-@View({templateUrl: 'package:angular2_material/src/components/radio/radio_group.html'})
+@View({
+  templateUrl: 'package:angular2_material/src/components/radio/radio_group.html',
+  encapsulation: ViewEncapsulation.NONE
+})
 export class MdRadioGroup {
   /** The selected value for the radio group. The value comes from the options. */
   value: any;
@@ -192,7 +203,8 @@ export class MdRadioGroup {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',
-  directives: []
+  directives: [],
+  encapsulation: ViewEncapsulation.NONE
 })
 export class MdRadioButton {
   /** Whether this radio is checked. */

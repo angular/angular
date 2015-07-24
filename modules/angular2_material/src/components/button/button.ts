@@ -1,9 +1,12 @@
-import {Component, View, LifecycleEvent} from 'angular2/angular2';
+import {Component, View, LifecycleEvent, ViewEncapsulation} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 
 
 @Component({selector: '[md-button]:not([href])'})
-@View({templateUrl: 'package:angular2_material/src/components/button/button.html'})
+@View({
+  templateUrl: 'package:angular2_material/src/components/button/button.html',
+  encapsulation: ViewEncapsulation.NONE
+})
 export class MdButton {
   // TODO(jelbourn): Ink ripples.
 }
@@ -15,7 +18,10 @@ export class MdButton {
   host: {'(click)': 'onClick($event)', '[tabIndex]': 'tabIndex'},
   lifecycle: [LifecycleEvent.onChange]
 })
-@View({templateUrl: 'package:angular2_material/src/components/button/button.html'})
+@View({
+  templateUrl: 'package:angular2_material/src/components/button/button.html',
+  encapsulation: ViewEncapsulation.NONE
+})
 export class MdAnchor {
   tabIndex: number;
 

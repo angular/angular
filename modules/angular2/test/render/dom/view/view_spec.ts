@@ -30,7 +30,7 @@ export function main() {
         binders = [];
       }
       var rootEl = DOM.createTemplate('<div></div>');
-      return DomProtoView.create(null, <Element>rootEl, [1], [], binders);
+      return DomProtoView.create(null, <Element>rootEl, null, [1], [], binders, null);
     }
 
     function createElementBinder() { return new DomElementBinder({textNodeIndices: []}); }

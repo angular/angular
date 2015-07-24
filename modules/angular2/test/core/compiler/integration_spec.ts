@@ -1452,7 +1452,7 @@ class MyService {
 }
 
 @Component({selector: 'simple-imp-cmp'})
-@View({renderer: 'simple-imp-cmp-renderer', template: ''})
+@View({template: ''})
 @Injectable()
 class SimpleImperativeViewComponent {
   done;

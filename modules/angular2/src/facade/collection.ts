@@ -290,4 +290,5 @@ var createSetFromList: {(lst: List<any>): Set<any>} = (function() {
 export class SetWrapper {
   static createFromList<T>(lst: List<T>): Set<T> { return createSetFromList(lst); }
   static has<T>(s: Set<T>, key: T): boolean { return s.has(key); }
+  static delete<K>(m: Set<K>, k: K) { m.delete(k); }
 }

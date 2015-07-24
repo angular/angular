@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/di';
 
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {BaseException, isPresent} from 'angular2/src/facade/lang';
+import {BaseException, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {
@@ -11,14 +11,18 @@ import {
   DirectiveMetadata,
   RenderCompiler,
   RenderProtoViewRef,
-  RenderProtoViewMergeMapping
+  RenderProtoViewMergeMapping,
+  ViewEncapsulation
 } from '../../api';
 import {CompilePipeline} from './compile_pipeline';
-import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/src/change_detection/change_detection';
-import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 import * as pvm from '../view/proto_view_merger';
+import {DOCUMENT_TOKEN, APP_ID_TOKEN} from '../dom_tokens';
+import {Inject} from 'angular2/di';
+import {SharedStylesHost} from '../view/shared_styles_host';
+import {prependAll} from '../util';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -26,15 +30,17 @@ import * as pvm from '../view/proto_view_merger';
  * the CompilePipeline and the CompileSteps.
  */
 export class DomCompiler extends RenderCompiler {
-  constructor(public _stepFactory: CompileStepFactory, public _viewLoader: ViewLoader,
-              public _useNativeShadowDom: boolean) {
+  constructor(private _stepFactory: CompileStepFactory, private _viewLoader: ViewLoader,
+              private _sharedStylesHost: SharedStylesHost) {
     super();
   }
 
   compile(view: ViewDefinition): Promise<ProtoViewDto> {
     var tplPromise = this._viewLoader.load(view);
     return PromiseWrapper.then(
-        tplPromise, (el) => this._compileTemplate(view, el, ViewType.COMPONENT), (e) => {
+        tplPromise, (tplAndStyles: TemplateAndStyles) =>
+                        this._compileView(view, tplAndStyles, ViewType.COMPONENT),
+        (e) => {
           throw new BaseException(`Failed to load the template for "${view.componentId}" : ${e}`);
           return null;
         });
@@ -46,11 +52,13 @@ export class DomCompiler extends RenderCompiler {
       templateAbsUrl: null, template: null,
       styles: null,
       styleAbsUrls: null,
-      directives: [directiveMetadata]
+      directives: [directiveMetadata],
+      encapsulation: ViewEncapsulation.NONE
     });
-    var template = DOM.createTemplate('');
-    DOM.appendChild(DOM.content(template), DOM.createElement(directiveMetadata.selector));
-    return this._compileTemplate(hostViewDef, template, ViewType.HOST);
+    return this._compileView(
+        hostViewDef, new TemplateAndStyles(
+                         `<${directiveMetadata.selector}></${directiveMetadata.selector}>`, []),
+        ViewType.HOST);
   }
 
   mergeProtoViewsRecursively(
@@ -58,20 +66,47 @@ export class DomCompiler extends RenderCompiler {
     return PromiseWrapper.resolve(pvm.mergeProtoViewsRecursively(protoViewRefs));
   }
 
-  _compileTemplate(viewDef: ViewDefinition, tplElement,
-                   protoViewType: ViewType): Promise<ProtoViewDto> {
-    var pipeline =
-        new CompilePipeline(this._stepFactory.createSteps(viewDef), this._useNativeShadowDom);
-    var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);
+  _compileView(viewDef: ViewDefinition, templateAndStyles: TemplateAndStyles,
+               protoViewType: ViewType): Promise<ProtoViewDto> {
+    if (viewDef.encapsulation === ViewEncapsulation.EMULATED &&
+        templateAndStyles.styles.length === 0) {
+      viewDef = this._normalizeViewEncapsulationIfThereAreNoStyles(viewDef);
+    }
+    var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef));
+
+    var compiledStyles = pipeline.processStyles(templateAndStyles.styles);
+    var compileElements = pipeline.processElements(DOM.createTemplate(templateAndStyles.template),
+                                                   protoViewType, viewDef);
+    if (viewDef.encapsulation === ViewEncapsulation.NATIVE) {
+      prependAll(DOM.content(compileElements[0].element),
+                 compiledStyles.map(style => DOM.createStyleElement(style)));
+    } else {
+      this._sharedStylesHost.addStyles(compiledStyles);
+    }
 
     return PromiseWrapper.resolve(compileElements[0].inheritedProtoView.build());
+  }
+
+  _normalizeViewEncapsulationIfThereAreNoStyles(viewDef: ViewDefinition): ViewDefinition {
+    if (viewDef.encapsulation === ViewEncapsulation.EMULATED) {
+      return new ViewDefinition({
+        componentId: viewDef.componentId,
+        templateAbsUrl: viewDef.templateAbsUrl, template: viewDef.template,
+        styleAbsUrls: viewDef.styleAbsUrls,
+        styles: viewDef.styles,
+        directives: viewDef.directives,
+        encapsulation: ViewEncapsulation.NONE
+      });
+    } else {
+      return viewDef;
+    }
   }
 }
 
 @Injectable()
 export class DefaultDomCompiler extends DomCompiler {
-  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy, viewLoader: ViewLoader) {
-    super(new DefaultStepFactory(parser, shadowDomStrategy), viewLoader,
-          shadowDomStrategy.hasNativeContentElement());
+  constructor(parser: Parser, viewLoader: ViewLoader, sharedStylesHost: SharedStylesHost,
+              @Inject(APP_ID_TOKEN) appId: any) {
+    super(new DefaultStepFactory(parser, appId), viewLoader, sharedStylesHost);
   }
 }

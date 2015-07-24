@@ -9,16 +9,21 @@ import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
-import {ProtoViewDto, ViewType} from 'angular2/src/render/api';
+import {ProtoViewDto, ViewType, ViewEncapsulation, ViewDefinition} from 'angular2/src/render/api';
 
 export function main() {
   describe('compile_pipeline', () => {
+    function createViewDefinition(): ViewDefinition {
+      return new ViewDefinition({componentId: 'someComponent'});
+    }
+
     describe('children compilation', () => {
       it('should walk the tree in depth first order including template contents', () => {
         var element = el('<div id="1"><template id="2"><span id="3"></span></template></div>');
 
         var step0Log = [];
-        var results = new CompilePipeline([createLoggerStep(step0Log)]).process(element);
+        var results = new CompilePipeline([createLoggerStep(step0Log)])
+                          .processElements(element, ViewType.COMPONENT, createViewDefinition());
 
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(resultIdLog(results)).toEqual(['1', '2', '3']);
@@ -30,7 +35,7 @@ export function main() {
 
         var step0Log = [];
         var pipeline = new CompilePipeline([new IgnoreChildrenStep(), createLoggerStep(step0Log)]);
-        var results = pipeline.process(element);
+        var results = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
 
         expect(step0Log).toEqual(['1', '1<2']);
         expect(resultIdLog(results)).toEqual(['1', '2']);
@@ -42,11 +47,12 @@ export function main() {
       var pipeline = new CompilePipeline([
         new MockStep((parent, current, control) => {
           if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
-            current.inheritedProtoView = new ProtoViewBuilder(current.element, ViewType.EMBEDDED);
+            current.inheritedProtoView =
+                new ProtoViewBuilder(current.element, ViewType.EMBEDDED, ViewEncapsulation.NONE);
           }
         })
       ]);
-      var results = pipeline.process(element);
+      var results = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
       expect(results[0].inheritedProtoView).toBe(results[1].inheritedProtoView);
       expect(results[2].inheritedProtoView).toBe(results[3].inheritedProtoView);
     });
@@ -60,14 +66,15 @@ export function main() {
           }
         })
       ]);
-      var results = pipeline.process(element);
+      var results = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
       expect(results[0].inheritedElementBinder).toBe(results[1].inheritedElementBinder);
       expect(results[2].inheritedElementBinder).toBe(results[3].inheritedElementBinder);
     });
 
     it('should mark root elements as viewRoot', () => {
       var rootElement = el('<div></div>');
-      var results = new CompilePipeline([]).process(rootElement);
+      var results = new CompilePipeline([])
+                        .processElements(rootElement, ViewType.COMPONENT, createViewDefinition());
       expect(results[0].isViewRoot).toBe(true);
     });
 
@@ -80,7 +87,7 @@ export function main() {
           }
         })
       ]);
-      var results = pipeline.process(element);
+      var results = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
       expect(results[0].inheritedElementBinder.distanceToParent).toBe(0);
       expect(results[1].inheritedElementBinder.distanceToParent).toBe(1);
       expect(results[3].inheritedElementBinder.distanceToParent).toBe(2);
@@ -95,7 +102,7 @@ export function main() {
         new IgnoreCurrentElementStep(),
         createLoggerStep(logs),
       ]);
-      var results = pipeline.process(element);
+      var results = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
 
       expect(results.length).toBe(2);
       expect(logs).toEqual(['1', '1<3'])
@@ -108,7 +115,7 @@ export function main() {
         var step1Log = [];
         var pipeline =
             new CompilePipeline([createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
-        var result = pipeline.process(element);
+        var result = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<3']);
         expect(resultIdLog(result)).toEqual(['1', 'wrap0#0', '2', '3']);
@@ -125,7 +132,7 @@ export function main() {
           createWrapperStep('wrap1', step1Log),
           createLoggerStep(step2Log)
         ]);
-        var result = pipeline.process(element);
+        var result = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<3']);
         expect(step2Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<wrap1#0', 'wrap1#0<2', '2<3']);
@@ -143,7 +150,7 @@ export function main() {
           createWrapperStep('wrap1', step1Log),
           createLoggerStep(step2Log)
         ]);
-        var result = pipeline.process(element);
+        var result = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<3']);
         expect(step2Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<wrap1#0', 'wrap1#0<3']);
@@ -156,7 +163,7 @@ export function main() {
         var step1Log = [];
         var pipeline =
             new CompilePipeline([createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
-        var result = pipeline.process(element);
+        var result = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<wrap0#1', 'wrap0#1<2', '2<3']);
         expect(resultIdLog(result)).toEqual(['1', 'wrap0#0', 'wrap0#1', '2', '3']);
@@ -177,40 +184,68 @@ export function main() {
           }),
           createLoggerStep(resultLog)
         ]);
-        var result = pipeline.process(element);
+        var result = pipeline.processElements(element, ViewType.COMPONENT, createViewDefinition());
         expect(result[2]).toBe(newChild);
         expect(resultLog).toEqual(['1', '1<2', '1<3']);
         expect(resultIdLog(result)).toEqual(['1', '2', '3']);
       });
     });
 
+    describe('processStyles', () => {
+      it('should call the steps for every style', () => {
+        var stepCalls = [];
+        var pipeline = new CompilePipeline([
+          new MockStep(null,
+                       (style) => {
+                         stepCalls.push(style);
+                         return style;
+                       })
+        ]);
+        var result = pipeline.processStyles(['a', 'b']);
+        expect(result[0]).toEqual('a');
+        expect(result[1]).toEqual('b');
+        expect(result).toEqual(stepCalls);
+      });
+    });
+
   });
 }
 
-class MockStep implements CompileStep {
-  processClosure: Function;
-  constructor(process) { this.processClosure = process; }
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
-    this.processClosure(parent, current, control);
+export class MockStep implements CompileStep {
+  constructor(private processElementClosure: Function,
+              private processStyleClosure: Function = null) {}
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
+    if (isPresent(this.processElementClosure)) {
+      this.processElementClosure(parent, current, control);
+    }
+  }
+  processStyle(style: string): string {
+    if (isPresent(this.processStyleClosure)) {
+      return this.processStyleClosure(style);
+    } else {
+      return style;
+    }
   }
 }
 
 export class IgnoreChildrenStep implements CompileStep {
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (attributeMap.has('ignore-children')) {
       current.compileChildren = false;
     }
   }
+  processStyle(style: string): string { return style; }
 }
 
 class IgnoreCurrentElementStep implements CompileStep {
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (attributeMap.has('ignore-current')) {
       control.ignoreCurrentElement();
     }
   }
+  processStyle(style: string): string { return style; }
 }
 
 function logEntry(log: string[], parent, current) {

@@ -9,6 +9,7 @@ import {
   Class
 } from '../../util/decorators';
 import {Type} from 'angular2/src/facade/lang';
+import {ViewEncapsulation} from 'angular2/src/render/api';
 
 /**
  * Interface for the {@link Directive} decorator function.
@@ -226,7 +227,7 @@ export interface ViewFactory {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
-    renderer?: string,
+    encapsulation?: ViewEncapsulation,
     styles?: List<string>,
     styleUrls?: List<string>,
   }): ViewDecorator;
@@ -234,7 +235,7 @@ export interface ViewFactory {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
-    renderer?: string,
+    encapsulation?: ViewEncapsulation,
     styles?: List<string>,
     styleUrls?: List<string>,
   }): ViewAnnotation;

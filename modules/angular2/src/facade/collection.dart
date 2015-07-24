@@ -212,4 +212,7 @@ void iterateListLike(iter, fn(item)) {
 class SetWrapper {
   static Set createFromList(List l) => new Set.from(l);
   static bool has(Set s, key) => s.contains(key);
+  static void delete(Set m, k) {
+    m.remove(k);
+  }
 }

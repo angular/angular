@@ -29,6 +29,8 @@ export class DirectiveParser implements CompileStep {
     }
   }
 
+  processStyle(style: string): string { return style; }
+
   _ensureComponentOnlyHasElementSelector(selector, directive) {
     var isElementSelector = selector.length === 1 && selector[0].isElementSelector();
     if (!isElementSelector && directive.type === DirectiveMetadata.COMPONENT_TYPE) {
@@ -37,7 +39,7 @@ export class DirectiveParser implements CompileStep {
     }
   }
 
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
     var classList = current.classList();
     var cssSelector = new CssSelector();

@@ -4,12 +4,10 @@ import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/col
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DirectiveParser} from 'angular2/src/render/dom/compiler/directive_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
-import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
-import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
-import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
-import {ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
+import {ViewDefinition, DirectiveMetadata, ViewType} from 'angular2/src/render/api';
 import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {MockStep} from './pipeline_spec';
 
 export function main() {
   describe('DirectiveParser', () => {
@@ -47,9 +45,15 @@ export function main() {
       ]);
     }
 
+    function createViewDefinition(): ViewDefinition {
+      return new ViewDefinition({componentId: 'someComponent'});
+    }
+
     function process(el, propertyBindings = null, directives = null): List<ElementBinderBuilder> {
       var pipeline = createPipeline(propertyBindings, directives);
-      return ListWrapper.map(pipeline.process(el), (ce) => ce.inheritedElementBinder);
+      return ListWrapper.map(
+          pipeline.processElements(el, ViewType.COMPONENT, createViewDefinition()),
+          (ce) => ce.inheritedElementBinder);
     }
 
     it('should not add directives if they are not used', () => {
@@ -70,12 +74,14 @@ export function main() {
     });
 
     it('should compile children by default', () => {
-      var results = createPipeline().process(el('<div some-decor></div>'));
+      var results = createPipeline().processElements(el('<div some-decor></div>'),
+                                                     ViewType.COMPONENT, createViewDefinition());
       expect(results[0].compileChildren).toEqual(true);
     });
 
     it('should stop compiling children when specified in the directive config', () => {
-      var results = createPipeline().process(el('<div some-decor-ignoring-children></div>'));
+      var results = createPipeline().processElements(el('<div some-decor-ignoring-children></div>'),
+                                                     ViewType.COMPONENT, createViewDefinition());
       expect(results[0].compileChildren).toEqual(false);
     });
 
@@ -189,14 +195,6 @@ export function main() {
       });
     });
   });
-}
-
-class MockStep implements CompileStep {
-  processClosure: Function;
-  constructor(process) { this.processClosure = process; }
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
-    this.processClosure(parent, current, control);
-  }
 }
 
 var someComponent = DirectiveMetadata.create(

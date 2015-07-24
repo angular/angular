@@ -24,7 +24,7 @@ import {Component, View, LifecycleEvent} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {

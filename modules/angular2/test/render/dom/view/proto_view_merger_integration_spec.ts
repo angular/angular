@@ -21,15 +21,15 @@ import {DomTestbed} from '../dom_testbed';
 import {
   ViewDefinition,
   DirectiveMetadata,
-  RenderProtoViewMergeMapping
+  RenderProtoViewMergeMapping,
+  ViewEncapsulation,
+  ViewType
 } from 'angular2/src/render/api';
-import {bind} from 'angular2/di';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {cloneAndQueryProtoView} from 'angular2/src/render/dom/util';
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
-
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/render/render';
+import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 
 export function main() {
   describe('ProtoViewMerger integration test', () => {
@@ -232,13 +232,31 @@ export function main() {
     });
 
     describe('native shadow dom support', () => {
-      beforeEachBindings(
-          () => { return [bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy())]; });
-
       it('should keep the non projected light dom and wrap the component view into a shadow-root element',
-         runAndAssert('root', ['<a>b</a>', 'c'], [
-           '<root class="ng-binding" idx="0"><shadow-root><a class="ng-binding" idx="1"><shadow-root>c</shadow-root>b</a></shadow-root></root>'
+         runAndAssert('native-root', ['<a>b</a>', 'c'], [
+           '<native-root class="ng-binding" idx="0"><shadow-root><a class="ng-binding" idx="1"><shadow-root>c</shadow-root>b</a></shadow-root></native-root>'
          ]));
+
+    });
+
+    describe('host attributes', () => {
+      it('should set host attributes while merging',
+         inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
+           tb.compiler.compileHost(rootDirective('root'))
+               .then((rootProtoViewDto) => {
+                 var builder = new ProtoViewBuilder(DOM.createTemplate(''), ViewType.COMPONENT,
+                                                    ViewEncapsulation.NONE);
+                 builder.setHostAttribute('a', 'b');
+                 var componentProtoViewDto = builder.build();
+                 tb.merge([rootProtoViewDto, componentProtoViewDto])
+                     .then(mergeMappings => {
+                       var domPv = resolveInternalDomProtoView(mergeMappings.mergedProtoViewRef);
+                       expect(DOM.getInnerHTML(domPv.rootElement))
+                           .toEqual('<root class="ng-binding" a="b"></root>');
+                       async.done();
+                     });
+               });
+         }));
 
     });
 
@@ -247,18 +265,32 @@ export function main() {
 
 function runAndAssert(hostElementName: string, componentTemplates: string[],
                       expectedFragments: string[]) {
-  var rootComp = DirectiveMetadata.create(
-      {id: 'rootComp', type: DirectiveMetadata.COMPONENT_TYPE, selector: hostElementName});
+  var useNativeEncapsulation = hostElementName.startsWith('native-');
+  var rootComp = rootDirective(hostElementName);
   return inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-    tb.compileAndMerge(rootComp, componentTemplates.map(template => new ViewDefinition({
-                                                          componentId: 'someComp',
-                                                          template: template,
-                                                          directives: [aComp, bComp, cComp]
-                                                        })))
+    tb.compileAndMerge(rootComp, componentTemplates.map(template => componentView(
+                                                            template, useNativeEncapsulation ?
+                                                                          ViewEncapsulation.NATIVE :
+                                                                          ViewEncapsulation.NONE)))
         .then((mergeMappings) => {
           expect(stringify(mergeMappings)).toEqual(expectedFragments);
           async.done();
         });
+  });
+}
+
+function rootDirective(hostElementName: string) {
+  return DirectiveMetadata.create(
+      {id: 'rootComp', type: DirectiveMetadata.COMPONENT_TYPE, selector: hostElementName});
+}
+
+function componentView(template: string,
+                       encapsulation: ViewEncapsulation = ViewEncapsulation.NONE) {
+  return new ViewDefinition({
+    componentId: 'someComp',
+    template: template,
+    directives: [aComp, bComp, cComp],
+    encapsulation: encapsulation
   });
 }
 

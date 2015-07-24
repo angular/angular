@@ -15,10 +15,6 @@ import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
-import {
-  EmulatedUnscopedShadowDomStrategy
-} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
 import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -54,9 +50,12 @@ import {RenderCompiler, Renderer} from 'angular2/src/render/api';
 import {
   DomRenderer,
   DOCUMENT_TOKEN,
-  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
-} from 'angular2/src/render/dom/dom_renderer';
-import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
+  DefaultDomCompiler,
+  APP_ID_TOKEN,
+  SharedStylesHost,
+  DomSharedStylesHost
+} from 'angular2/src/render/render';
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
 import {Log} from './utils';
 
@@ -94,13 +93,14 @@ function _getAppBindings() {
   return [
     bind(DOCUMENT_TOKEN)
         .toValue(appDoc),
-    bind(ShadowDomStrategy)
-        .toFactory((doc) => new EmulatedUnscopedShadowDomStrategy(doc.head), [DOCUMENT_TOKEN]),
     DomRenderer,
-    DefaultDomCompiler,
-    bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     bind(Renderer).toAlias(DomRenderer),
+    bind(APP_ID_TOKEN).toValue('a'),
+    DefaultDomCompiler,
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
+    DomSharedStylesHost,
+    bind(SharedStylesHost).toAlias(DomSharedStylesHost),
+    bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     ProtoViewFactory,
     AppViewPool,
     AppViewManager,

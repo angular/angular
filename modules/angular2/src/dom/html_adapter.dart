@@ -317,10 +317,10 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   bool supportsDOMEvents() {
-    throw 'not implemented';
+    return false;
   }
   bool supportsNativeShadowDOM() {
-    throw 'not implemented';
+    return false;
   }
   getHistory() {
     throw 'not implemented';

@@ -16,7 +16,7 @@ import {
 
 import {el} from './utils';
 
-import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DebugElement} from 'angular2/src/debug/debug_element';

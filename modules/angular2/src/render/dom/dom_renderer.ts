@@ -15,6 +15,7 @@ import {EventManager} from './events/event_manager';
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './view/proto_view';
 import {DomView, DomViewRef, resolveInternalDomView} from './view/view';
 import {DomFragmentRef, resolveInternalDomFragment} from './view/fragment';
+import {DomSharedStylesHost} from './view/shared_styles_host';
 import {
   NG_BINDING_CLASS_SELECTOR,
   NG_BINDING_CLASS,
@@ -31,9 +32,8 @@ import {
   RenderViewWithFragments
 } from '../api';
 
-export const DOCUMENT_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
-export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('DomReflectPropertiesAsAttributes'));
+import {DOCUMENT_TOKEN, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens';
+
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
 @Injectable()
@@ -41,7 +41,8 @@ export class DomRenderer extends Renderer {
   _document;
   _reflectPropertiesAsAttributes: boolean;
 
-  constructor(public _eventManager: EventManager, @Inject(DOCUMENT_TOKEN) document,
+  constructor(public _eventManager: EventManager, private _domSharedStylesHost: DomSharedStylesHost,
+              @Inject(DOCUMENT_TOKEN) document,
               @Inject(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES) reflectPropertiesAsAttributes:
                   boolean) {
     super();
@@ -65,7 +66,14 @@ export class DomRenderer extends Renderer {
   }
 
   destroyView(viewRef: RenderViewRef) {
-    // noop for now
+    var view = resolveInternalDomView(viewRef);
+    var elementBinders = view.proto.elementBinders;
+    for (var i = 0; i < elementBinders.length; i++) {
+      var binder = elementBinders[i];
+      if (binder.hasNativeShadowRoot) {
+        this._domSharedStylesHost.removeHost(DOM.getShadowRoot(view.boundElements[i]));
+      }
+    }
   }
 
   getNativeElementSync(location: RenderElementRef): any {
@@ -226,7 +234,9 @@ export class DomRenderer extends Renderer {
       // native shadow DOM
       if (binder.hasNativeShadowRoot) {
         var shadowRootWrapper = DOM.firstChild(element);
-        moveChildNodes(shadowRootWrapper, DOM.createShadowRoot(element));
+        var shadowRoot = DOM.createShadowRoot(element);
+        this._domSharedStylesHost.addHost(shadowRoot);
+        moveChildNodes(shadowRootWrapper, shadowRoot);
         DOM.remove(shadowRootWrapper);
       }
 

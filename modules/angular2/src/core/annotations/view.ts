@@ -1,1 +1,1 @@
-export {View as ViewAnnotation} from '../annotations_impl/view';
+export {View as ViewAnnotation, ViewEncapsulation} from '../annotations_impl/view';

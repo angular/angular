@@ -13,7 +13,9 @@ import {CompileControl} from './compile_control';
 export class TextInterpolationParser implements CompileStep {
   constructor(public _parser: Parser) {}
 
-  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
+  processStyle(style: string): string { return style; }
+
+  processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     if (!current.compileChildren) {
       return;
     }

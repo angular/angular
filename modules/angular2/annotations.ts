@@ -15,7 +15,7 @@ export {
   LifecycleEvent
 } from './src/core/annotations/annotations';
 
-export {ViewAnnotation} from 'angular2/src/core/annotations/view';
+export {ViewAnnotation, ViewEncapsulation} from 'angular2/src/core/annotations/view';
 export {QueryAnnotation, AttributeAnnotation} from 'angular2/src/core/annotations/di';
 
 export {

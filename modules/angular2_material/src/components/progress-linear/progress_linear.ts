@@ -1,4 +1,4 @@
-import {Component, LifecycleEvent, View, Attribute} from 'angular2/angular2';
+import {Component, LifecycleEvent, View, ViewEncapsulation, Attribute} from 'angular2/angular2';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
@@ -16,7 +16,8 @@ import {Math} from 'angular2/src/facade/math';
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/progress-linear/progress_linear.html',
-  directives: []
+  directives: [],
+  encapsulation: ViewEncapsulation.NONE
 })
 export class MdProgressLinear {
   /** Value for the primary bar. */

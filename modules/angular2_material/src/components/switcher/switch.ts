@@ -1,4 +1,4 @@
-import {Component, View, Attribute} from 'angular2/angular2';
+import {Component, View, ViewEncapsulation, Attribute} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 import {KEY_SPACE} from 'angular2_material/src/core/constants';
 import {KeyboardEvent} from 'angular2/src/facade/browser';
@@ -16,8 +16,11 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     '[attr.role]': '"checkbox"'
   }
 })
-@View(
-    {templateUrl: 'package:angular2_material/src/components/switcher/switch.html', directives: []})
+@View({
+  templateUrl: 'package:angular2_material/src/components/switcher/switch.html',
+  directives: [],
+  encapsulation: ViewEncapsulation.NONE
+})
 export class MdSwitch {
   /** Whether this switch is checked. */
   checked: boolean;
