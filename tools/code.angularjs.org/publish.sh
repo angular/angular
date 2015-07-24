@@ -13,7 +13,7 @@ ARG_DEFS=(
 
 function init {
   TMP_DIR=$(resolveDir ../../tmp)
-  BUILD_DIR=$(resolveDir ../../dist/bundle)
+  BUILD_DIR=$(resolveDir ../../dist/js/bundle)
   REPO_DIR=$TMP_DIR/code.angularjs.org
   # TODO: replace with version read from the bundle dir.
   NEW_VERSION=$VERSION_NUMBER
