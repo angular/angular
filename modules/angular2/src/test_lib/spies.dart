@@ -1,6 +1,6 @@
 library test_lib.spies;
 
-import 'package:angular2/change_detection.dart';
+import 'package:angular2/src/change_detection/change_detection.dart';
 import 'package:angular2/di.dart';
 import './test_lib.dart';
 

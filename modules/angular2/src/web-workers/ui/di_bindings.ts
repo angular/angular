@@ -13,7 +13,7 @@ import {
   PreGeneratedChangeDetection,
   Pipes,
   defaultPipes
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';

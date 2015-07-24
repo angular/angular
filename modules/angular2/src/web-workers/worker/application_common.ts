@@ -20,7 +20,7 @@ import {
   Pipes,
   defaultPipes,
   PreGeneratedChangeDetection
-} from 'angular2/change_detection';
+} from 'angular2/src/change_detection/change_detection';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';

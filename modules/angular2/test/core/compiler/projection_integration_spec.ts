@@ -36,7 +36,7 @@ import {
   TemplateRef,
   bind
 } from 'angular2/angular2';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/render';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/render/render';
 
 export function main() {
   describe('projection', () => {

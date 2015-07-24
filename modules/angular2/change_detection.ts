@@ -23,14 +23,5 @@ export {
   PipeFactory,
   BasePipe,
   NullPipe,
-  NullPipeFactory,
-
-  ChangeDetector,
-  ChangeDispatcher,
-  ChangeDetection,
-  ChangeDetectorDefinition,
-  DynamicChangeDetection,
-  JitChangeDetection,
-  PreGeneratedChangeDetection,
-  preGeneratedProtoDetectors
+  NullPipeFactory
 } from 'angular2/src/change_detection/change_detection';

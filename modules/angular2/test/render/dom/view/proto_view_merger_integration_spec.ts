@@ -29,7 +29,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {cloneAndQueryProtoView} from 'angular2/src/render/dom/util';
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
 
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/render';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/render/render';
 
 export function main() {
   describe('ProtoViewMerger integration test', () => {

@@ -4,9 +4,15 @@
  * This module provides advanced support for extending dom strategy.
  */
 
-export * from './src/render/dom/compiler/view_loader';
-export * from './src/render/dom/shadow_dom/shadow_dom_strategy';
-export * from './src/render/dom/shadow_dom/native_shadow_dom_strategy';
-export * from './src/render/dom/shadow_dom/emulated_scoped_shadow_dom_strategy';
-export * from './src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
-export * from './src/render/api';
+export {
+  RenderEventDispatcher,
+  Renderer,
+  RenderElementRef,
+  RenderViewRef,
+  RenderProtoViewRef,
+  RenderFragmentRef,
+  RenderViewWithFragments,
+  DomRenderer,
+  DOCUMENT_TOKEN,
+  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
+} from './src/render/render';

@@ -16,7 +16,7 @@ import {
   ViewType
 } from "angular2/src/render/api";
 import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
-import {AST, ASTWithSource} from "angular2/change_detection";
+import {AST, ASTWithSource} from 'angular2/src/change_detection/change_detection';
 import {Parser} from "angular2/src/change_detection/parser/parser";
 import {Injectable} from "angular2/di";
 import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_proto_view_ref_store';

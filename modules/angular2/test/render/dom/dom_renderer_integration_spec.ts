@@ -20,7 +20,7 @@ import {DomTestbed, TestRootView, elRef} from './dom_testbed';
 
 import {ViewDefinition, DirectiveMetadata, RenderViewRef} from 'angular2/src/render/api';
 import {DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from 'angular2/src/render/dom/dom_renderer';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/render';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/render/render';
 import {bind} from 'angular2/di';
 
 export function main() {
