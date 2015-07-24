@@ -22,5 +22,15 @@ void initReflector() {
       OnChange,
       OnDestroy,
       OnInit
-    ]));
+    ]))
+    ..registerType(MixedSoupComponent, new _ngRef.ReflectionInfo(const [
+      const Component(
+          selector: '[soup]',
+          lifecycle: const [LifecycleEvent.onChange, LifecycleEvent.onCheck])
+    ], const [], () => new MixedSoupComponent(), const [OnChange]))
+    ..registerType(MatchedSoupComponent, new _ngRef.ReflectionInfo(const [
+      const Component(
+          selector: '[soup]',
+          lifecycle: const [LifecycleEvent.onChange])
+    ], const [], () => new MatchedSoupComponent(), const [OnChange]));
 }

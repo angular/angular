@@ -165,7 +165,9 @@ void _testProcessor(String name, String inputPath,
       }
     });
 
-    if (expectedLogs != null) {
+    if (expectedLogs == null) {
+      expect(logger.hasErrors).toBeFalse();
+    } else {
       expect(logger.logs, expectedLogs);
     }
   });
@@ -180,6 +182,8 @@ class RecordingLogger implements BuildLogger {
   @override
   final bool convertErrorsToWarnings = false;
 
+  bool hasErrors = false;
+
   List<String> logs = [];
 
   void _record(prefix, msg) => logs.add('$prefix: $msg');
@@ -190,7 +194,10 @@ class RecordingLogger implements BuildLogger {
 
   void warning(msg, {AssetId asset, SourceSpan span}) => _record('WARN', msg);
 
-  void error(msg, {AssetId asset, SourceSpan span}) => _record('ERROR', msg);
+  void error(msg, {AssetId asset, SourceSpan span}) {
+    hasErrors = true;
+    _record('ERROR', msg);
+  }
 
   Future writeOutput() => throw new UnimplementedError();
   Future addLogFilesFromAsset(AssetId id, [int nextNumber = 1]) =>
