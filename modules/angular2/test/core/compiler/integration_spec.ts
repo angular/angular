@@ -50,8 +50,6 @@ import {
   PipeFactory,
   Pipes,
   defaultPipes,
-  ChangeDetection,
-  DynamicChangeDetection,
   Pipe,
   ChangeDetectorRef,
   ON_PUSH
