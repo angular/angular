@@ -24,7 +24,6 @@ void initReflector() {
       _MyComponent_ChangeDetector0.newProtoChangeDetector;
 }
 class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
-  final dynamic _dispatcher;
   _gen.Pipes _pipes;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
@@ -36,8 +35,8 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   dynamic _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
 
   _MyComponent_ChangeDetector0(
-      this._dispatcher, this._protos, this._directiveRecords)
-      : super("MyComponent_comp_0");
+      dynamic dispatcher, this._protos, this._directiveRecords)
+      : super("MyComponent_comp_0", dispatcher);
 
   void detectChangesInRecords(throwOnChange) {
     if (!hydrated()) {
@@ -80,7 +79,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
                   _interpolate1, interpolate1));
         }
 
-        _dispatcher.notifyOnBinding(currentProto.bindingRecord, interpolate1);
+        dispatcher.notifyOnBinding(currentProto.bindingRecord, interpolate1);
 
         _interpolate1 = interpolate1;
       }
@@ -95,7 +94,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   }
 
   void callOnAllChangesDone() {
-    _dispatcher.notifyOnAllChangesDone();
+    dispatcher.notifyOnAllChangesDone();
   }
 
   void hydrate(MyComponent context, locals, directives, pipes) {

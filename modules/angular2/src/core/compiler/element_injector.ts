@@ -496,10 +496,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   private _debugContext(): any {
     var p = this._preBuiltObjects;
-    var element = isPresent(p.elementRef) ? p.elementRef.nativeElement : null;
-    var hostRef = p.view.getHostElement();
-    var componentElement = isPresent(hostRef) ? hostRef.nativeElement : null;
-    return new _Context(element, componentElement, this._injector);
+    var index = p.elementRef.boundElementIndex - p.view.elementOffset;
+    var c = this._preBuiltObjects.view.getDebugContext(index, null);
+    return new _Context(c["element"], c["componentElement"], c["injector"]);
   }
 
   private _reattachInjectors(imperativelyCreatedInjector: Injector): void {
@@ -572,6 +571,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   }
 
   getComponent(): any { return this._strategy.getComponent(); }
+
+  getInjector(): Injector { return this._injector; }
 
   getElementRef(): ElementRef { return this._preBuiltObjects.elementRef; }
 

@@ -7,6 +7,12 @@ import {ProtoRecord} from './proto_record';
 import {Locals} from './parser/locals';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
+class _Context {
+  constructor(public element: any, public componentElement: any, public instance: any,
+              public context: any, public locals: any, public injector: any,
+              public expression: any) {}
+}
+
 export class AbstractChangeDetector implements ChangeDetector {
   lightDomChildren: List<any> = [];
   shadowDomChildren: List<any> = [];
@@ -14,7 +20,7 @@ export class AbstractChangeDetector implements ChangeDetector {
   mode: string = null;
   ref: ChangeDetectorRef;
 
-  constructor(public id: string) { this.ref = new ChangeDetectorRef(this); }
+  constructor(public id: string, public dispatcher: any) { this.ref = new ChangeDetectorRef(this); }
 
   addChild(cd: ChangeDetector): void {
     this.lightDomChildren.push(cd);
@@ -83,6 +89,9 @@ export class AbstractChangeDetector implements ChangeDetector {
   }
 
   throwError(proto: ProtoRecord, exception: any, stack: any): void {
-    throw new ChangeDetectionError(proto, exception, stack);
+    var c = this.dispatcher.getDebugContext(proto.bindingRecord.elementIndex, proto.directiveIndex);
+    var context = new _Context(c["element"], c["componentElement"], c["directive"], c["context"],
+                               c["locals"], c["injector"], proto.expressionAsString);
+    throw new ChangeDetectionError(proto, exception, stack, context);
   }
 }

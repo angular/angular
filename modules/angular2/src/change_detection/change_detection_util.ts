@@ -129,7 +129,7 @@ export class ChangeDetectionUtil {
   }
 
   static throwOnChange(proto: ProtoRecord, change) {
-    throw new ExpressionChangedAfterItHasBeenChecked(proto, change);
+    throw new ExpressionChangedAfterItHasBeenChecked(proto, change, null);
   }
 
   static throwDehydrated() { throw new DehydratedException(); }

@@ -124,7 +124,6 @@ class _CodegenState {
   void _writeToBuf(StringBuffer buf) {
     buf.write('''\n
       class $_changeDetectorTypeName extends $_BASE_CLASS {
-        final dynamic $_DISPATCHER_ACCESSOR;
         $_GEN_PREFIX.Pipes $_PIPES_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
@@ -140,9 +139,9 @@ class _CodegenState {
         }).join('')}
 
         $_changeDetectorTypeName(
-            this.$_DISPATCHER_ACCESSOR,
+            dynamic $_DISPATCHER_ACCESSOR,
             this.$_PROTOS_ACCESSOR,
-            this.$_DIRECTIVES_ACCESSOR) : super(${_encodeValue(_changeDetectorDefId)});
+            this.$_DIRECTIVES_ACCESSOR) : super(${_encodeValue(_changeDetectorDefId)}, $_DISPATCHER_ACCESSOR);
 
         void detectChangesInRecords(throwOnChange) {
           if (!hydrated()) {
@@ -536,7 +535,7 @@ const _CHANGES_LOCAL = 'changes';
 const _CONTEXT_ACCESSOR = '_context';
 const _CURRENT_PROTO = 'currentProto';
 const _DIRECTIVES_ACCESSOR = '_directiveRecords';
-const _DISPATCHER_ACCESSOR = '_dispatcher';
+const _DISPATCHER_ACCESSOR = 'dispatcher';
 const _GEN_PREFIX = '_gen';
 const _GEN_RECORDS_METHOD_NAME = '_createRecords';
 const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';

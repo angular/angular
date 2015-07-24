@@ -1165,7 +1165,7 @@ export function main() {
            });
          }));
 
-      it('should provide an error context when an error happens in the DI',
+      it('should provide an error context when an error happens in DI',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
            tcb = tcb.overrideView(MyComp, new viewAnn.View({
@@ -1174,10 +1174,55 @@ export function main() {
            }));
 
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
-             expect(DOM.nodeName(e.context.element).toUpperCase())
-                 .toEqual("DIRECTIVE-THROWING-ERROR");
+             var c = e.context;
+             expect(DOM.nodeName(c.element).toUpperCase()).toEqual("DIRECTIVE-THROWING-ERROR");
+             expect(DOM.nodeName(c.componentElement).toUpperCase()).toEqual("DIV");
+             expect(c.injector).toBeAnInstanceOf(Injector);
              async.done();
              return null;
+           });
+         }));
+
+      it('should provide an error context when an error happens in change detection',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+
+           tcb = tcb.overrideView(
+               MyComp, new viewAnn.View({template: `<input [value]="one.two.three" #local>`}));
+
+           tcb.createAsync(MyComp).then(rootTC => {
+             try {
+               rootTC.detectChanges();
+               throw "Should throw";
+             } catch (e) {
+               var c = e.context;
+               expect(DOM.nodeName(c.element).toUpperCase()).toEqual("INPUT");
+               expect(DOM.nodeName(c.componentElement).toUpperCase()).toEqual("DIV");
+               expect(c.injector).toBeAnInstanceOf(Injector);
+               expect(c.expression).toContain("one.two.three");
+               expect(c.context).toBe(rootTC.componentInstance);
+               expect(c.locals["local"]).not.toBeNull();
+             }
+
+             async.done();
+           });
+         }));
+
+      it('should provide an error context when an error happens in change detection (text node)',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+
+           tcb = tcb.overrideView(MyComp, new viewAnn.View({template: `{{one.two.three}}`}));
+
+           tcb.createAsync(MyComp).then(rootTC => {
+             try {
+               rootTC.detectChanges();
+               throw "Should throw";
+             } catch (e) {
+               var c = e.context;
+               expect(c.element).toBeNull();
+               expect(c.injector).toBeNull();
+             }
+
+             async.done();
            });
          }));
 

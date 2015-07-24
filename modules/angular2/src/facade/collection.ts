@@ -62,6 +62,11 @@ export class MapWrapper {
     }
     return result;
   }
+  static toStringMap<T>(m: Map<string, T>): StringMap<string, T> {
+    var r = {};
+    m.forEach((v, k) => r[k] = v);
+    return r;
+  }
   static createFromPairs(pairs: List<any>): Map<any, any> { return createMapFromPairs(pairs); }
   static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
   static get<K, V>(map: Map<K, V>, key: K): V { return map.get(key); }

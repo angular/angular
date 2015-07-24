@@ -2,7 +2,7 @@ import {ProtoRecord} from './proto_record';
 import {BaseException} from "angular2/src/facade/lang";
 
 export class ExpressionChangedAfterItHasBeenChecked extends BaseException {
-  constructor(proto: ProtoRecord, change: any) {
+  constructor(proto: ProtoRecord, change: any, context: any) {
     super(`Expression '${proto.expressionAsString}' has changed after it was checked. ` +
           `Previous value: '${change.previousValue}'. Current value: '${change.currentValue}'`);
   }
@@ -11,9 +11,9 @@ export class ExpressionChangedAfterItHasBeenChecked extends BaseException {
 export class ChangeDetectionError extends BaseException {
   location: string;
 
-  constructor(proto: ProtoRecord, originalException: any, originalStack: any) {
-    super(`${originalException} in [${proto.expressionAsString}]`, originalException,
-          originalStack);
+  constructor(proto: ProtoRecord, originalException: any, originalStack: any, context: any) {
+    super(`${originalException} in [${proto.expressionAsString}]`, originalException, originalStack,
+          context);
     this.location = proto.expressionAsString;
   }
 }

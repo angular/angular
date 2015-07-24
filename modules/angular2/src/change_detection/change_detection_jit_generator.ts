@@ -68,8 +68,7 @@ export class ChangeDetectorJITGenerator {
     var typeName = _sanitizeName(`ChangeDetector_${this.id}`);
     var classDefinition = `
       var ${typeName} = function ${typeName}(dispatcher, protos, directiveRecords) {
-        ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)});
-        ${DISPATCHER_ACCESSOR} = dispatcher;
+        ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)}, dispatcher);
         ${PROTOS_ACCESSOR} = protos;
         ${DIRECTIVES_ACCESSOR} = directiveRecords;
         ${LOCALS_ACCESSOR} = null;

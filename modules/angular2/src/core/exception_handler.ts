@@ -50,7 +50,7 @@ export class ExceptionHandler {
 
     if (isPresent(stackTrace) && isBlank(originalStack)) {
       this.logger.log("STACKTRACE:");
-      this.logger.log(this._longStackTrace(stackTrace))
+      this.logger.log(this._longStackTrace(stackTrace));
     }
 
     if (isPresent(reason)) {

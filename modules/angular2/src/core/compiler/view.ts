@@ -1,4 +1,11 @@
-import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
+import {
+  ListWrapper,
+  MapWrapper,
+  Map,
+  StringMapWrapper,
+  List,
+  StringMap
+} from 'angular2/src/facade/collection';
 import {
   AST,
   Locals,
@@ -202,7 +209,36 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
   getHostElement(): ElementRef {
     var boundElementIndex = this.mainMergeMapping.hostElementIndicesByViewIndex[this.viewOffset];
-    return this.elementRefs[boundElementIndex];
+    return isPresent(boundElementIndex) ? this.elementRefs[boundElementIndex] : null;
+  }
+
+  getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): StringMap<string, any> {
+    try {
+      var offsettedIndex = this.elementOffset + elementIndex;
+      var hasRefForIndex = offsettedIndex < this.elementRefs.length;
+
+      var elementRef = hasRefForIndex ? this.elementRefs[this.elementOffset + elementIndex] : null;
+      var host = this.getHostElement();
+      var ei = hasRefForIndex ? this.elementInjectors[this.elementOffset + elementIndex] : null;
+
+      var element = isPresent(elementRef) ? elementRef.nativeElement : null;
+      var componentElement = isPresent(host) ? host.nativeElement : null;
+      var directive = isPresent(directiveIndex) ? this.getDirectiveFor(directiveIndex) : null;
+      var injector = isPresent(ei) ? ei.getInjector() : null;
+
+      return {
+        element: element,
+        componentElement: componentElement,
+        directive: directive,
+        context: this.context,
+        locals: _localsToStringMap(this.locals),
+        injector: injector
+      };
+    } catch (e) {
+      // TODO: vsavkin log the exception once we have a good way to log errors and warnings
+      // if an error happens during getting the debug context, we return an empty map.
+      return {};
+    }
   }
 
   getDetectorFor(directive: DirectiveIndex): any {
@@ -250,6 +286,16 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     }
     return allowDefaultBehavior;
   }
+}
+
+function _localsToStringMap(locals: Locals): StringMap<string, any> {
+  var res = {};
+  var c = locals;
+  while (isPresent(c)) {
+    res = StringMapWrapper.merge(res, MapWrapper.toStringMap(c.current));
+    c = c.parent;
+  }
+  return res;
 }
 
 /**

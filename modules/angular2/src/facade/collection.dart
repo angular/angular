@@ -34,7 +34,13 @@ class IterableMap extends IterableBase<List> {
 
 class MapWrapper {
   static Map clone(Map m) => new Map.from(m);
+
+  // in opposite to JS, Dart does not create a new map
   static Map createFromStringMap(Map m) => m;
+
+  // in opposite to JS, Dart does not create a new map
+  static Map toStringMap(Map m) => m;
+
   static Map createFromPairs(List pairs) => pairs.fold({}, (m, p) {
     m[p[0]] = p[1];
     return m;

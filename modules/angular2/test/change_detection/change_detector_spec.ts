@@ -1043,6 +1043,10 @@ class TestDispatcher implements ChangeDispatcher {
 
   notifyOnAllChangesDone() { this.onAllChangesDoneCalled = true; }
 
+  getDebugContext(a, b) {
+    return {}
+  }
+
   _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
 }
 

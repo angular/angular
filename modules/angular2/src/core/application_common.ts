@@ -128,7 +128,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     DirectiveResolver,
     Parser,
     Lexer,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM)),
+    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
