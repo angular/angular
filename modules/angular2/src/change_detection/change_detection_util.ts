@@ -151,4 +151,6 @@ export class ChangeDetectionUtil {
   }
 
   static isValueBlank(value: any): boolean { return isBlank(value); }
+
+  static s(value: any): string { return isPresent(value) ? `${value}` : ''; }
 }
