@@ -23,6 +23,9 @@ export class DomAdapter {
   invoke(el: Element, methodName: string, args: List<any>): any { throw _abstract(); }
 
   logError(error) { throw _abstract(); }
+  log(error) { throw _abstract(); }
+  logGroup(error) { throw _abstract(); }
+  logGroupEnd() { throw _abstract(); }
 
   /**
    * Maps attribute names to their corresponding property names for cases

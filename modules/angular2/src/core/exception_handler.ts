@@ -1,7 +1,13 @@
 import {Injectable} from 'angular2/di';
-import {isPresent, print, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, print, BaseException} from 'angular2/src/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+
+class _ArrayLogger {
+  res: any[] = [];
+  log(s: any): void { this.res.push(s); }
+  logGroup(s: any): void { this.res.push(s); }
+  logGroupEnd(){};
+}
 
 /**
  * Provides a hook for centralized exception handling.
@@ -26,31 +32,91 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
  */
 @Injectable()
 export class ExceptionHandler {
-  logError: Function = DOM.logError;
+  constructor(private logger: any, private rethrowException: boolean = true) {}
 
-  call(exception: Object, stackTrace: any = null, reason: string = null) {
-    var longStackTrace = isListLikeIterable(stackTrace) ?
-                             (<any>stackTrace).join("\n\n-----async gap-----\n") :
-                             stackTrace;
+  static exceptionToString(exception: any, stackTrace: any = null, reason: string = null): string {
+    var l = new _ArrayLogger();
+    var e = new ExceptionHandler(l, false);
+    e.call(exception, stackTrace, reason);
+    return l.res.join("\n");
+  }
 
-    this.logError(`${exception}\n\n${longStackTrace}`);
+  call(exception: any, stackTrace: any = null, reason: string = null): void {
+    var originalException = this._findOriginalException(exception);
+    var originalStack = this._findOriginalStack(exception);
+    var context = this._findContext(exception);
+
+    this.logger.logGroup(`EXCEPTION: ${exception}`);
+
+    if (isPresent(stackTrace) && isBlank(originalStack)) {
+      this.logger.log("STACKTRACE:");
+      this.logger.log(this._longStackTrace(stackTrace))
+    }
 
     if (isPresent(reason)) {
-      this.logError(`Reason: ${reason}`);
+      this.logger.log(`REASON: ${reason}`);
     }
 
-    var context = this._findContext(exception);
+    if (isPresent(originalException)) {
+      this.logger.log(`ORIGINAL EXCEPTION: ${originalException}`);
+    }
+
+    if (isPresent(originalStack)) {
+      this.logger.log("ORIGINAL STACKTRACE:");
+      this.logger.log(this._longStackTrace(originalStack));
+    }
+
     if (isPresent(context)) {
-      this.logError("Error Context:");
-      this.logError(context);
+      this.logger.log("ERROR CONTEXT:");
+      this.logger.log(context);
     }
 
-    throw exception;
+    this.logger.logGroupEnd();
+
+    // We rethrow exceptions, so operations like 'bootstrap' will result in an error
+    // when an exception happens. If we do not rethrow, bootstrap will always succeed.
+    if (this.rethrowException) throw exception;
+  }
+
+  _longStackTrace(stackTrace: any): any {
+    return isListLikeIterable(stackTrace) ? (<any>stackTrace).join("\n\n-----async gap-----\n") :
+                                            stackTrace;
   }
 
   _findContext(exception: any): any {
+    try {
+      if (!(exception instanceof BaseException)) return null;
+      return isPresent(exception.context) ? exception.context :
+                                            this._findContext(exception.originalException);
+    } catch (e) {
+      // exception.context can throw an exception. if it happens, we ignore the context.
+      return null;
+    }
+  }
+
+  _findOriginalException(exception: any): any {
     if (!(exception instanceof BaseException)) return null;
-    return isPresent(exception.context) ? exception.context :
-                                          this._findContext(exception.originalException);
+
+    var e = exception.originalException;
+    while (e instanceof BaseException && isPresent(e.originalException)) {
+      e = e.originalException;
+    }
+
+    return e;
+  }
+
+  _findOriginalStack(exception: any): any {
+    if (!(exception instanceof BaseException)) return null;
+
+    var e = exception;
+    var stack = exception.originalStack;
+    while (e instanceof BaseException && isPresent(e.originalException)) {
+      e = e.originalException;
+      if (e instanceof BaseException && isPresent(e.originalException)) {
+        stack = e.originalStack;
+      }
+    }
+
+    return stack;
   }
 }

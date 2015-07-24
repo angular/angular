@@ -27,6 +27,11 @@ class Html5LibDomAdapter implements DomAdapter {
     stderr.writeln('${error}');
   }
 
+  log(error) { stdout.writeln('${error}'); }
+  logGroup(error) { stdout.writeln('${error}'); }
+  logGroupEnd() { }
+
+
   @override
   final attrToPropMap = const {
     'innerHtml': 'innerHTML',

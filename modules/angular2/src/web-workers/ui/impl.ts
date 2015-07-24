@@ -31,6 +31,7 @@ import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Injectable} from 'angular2/di';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 /**
  * Creates a zone, sets up the DI bindings
@@ -38,7 +39,7 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
  */
 export function bootstrapUICommon(bus: MessageBus) {
   BrowserDomAdapter.makeCurrent();
-  var zone = createNgZone(new ExceptionHandler());
+  var zone = createNgZone(new ExceptionHandler(DOM));
   zone.run(() => {
     var injector = createInjector(zone);
     var webWorkerMain = injector.get(WebWorkerMain);

@@ -74,7 +74,7 @@ export function main() {
              var router = rootTC.componentInstance.router;
              PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
                expect(rootTC.nativeElement).toHaveText('outer { oh no }');
-               expect(error.message).toContain('oops!');
+               expect(error).toContainError('oops!');
                async.done();
              });
            });

@@ -67,8 +67,8 @@ main() {
           directives: [ThrowingComponent]))
 
       .createAsync(Dummy).catchError((e, stack) {
-        expect(e.message).toContain("MockException");
-        expect(e.message).toContain("functionThatThrows");
+        expect(e).toContainError("MockException");
+        expect(e).toContainError("functionThatThrows");
         async.done();
       });
     }));
@@ -82,8 +82,8 @@ main() {
           directives: [ThrowingComponent2]))
 
       .createAsync(Dummy).catchError((e, stack) {
-        expect(e.message).toContain("NonError");
-        expect(e.message).toContain("functionThatThrows");
+        expect(e).toContainError("NonError");
+        expect(e).toContainError("functionThatThrows");
         async.done();
       });
     }));

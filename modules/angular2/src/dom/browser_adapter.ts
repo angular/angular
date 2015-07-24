@@ -61,6 +61,22 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   // TODO(tbosch): move this into a separate environment class once we have it
   logError(error) { window.console.error(error); }
 
+  log(error) { window.console.log(error); }
+
+  logGroup(error) {
+    if (window.console.group) {
+      window.console.group(error);
+    } else {
+      window.console.log(error);
+    }
+  }
+
+  logGroupEnd() {
+    if (window.console.groupEnd) {
+      window.console.groupEnd();
+    }
+  }
+
   get attrToPropMap(): any { return _attrToPropMap; }
 
   query(selector: string): any { return document.querySelector(selector); }

@@ -62,12 +62,17 @@ import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
-import {WorkerExceptionHandler} from 'angular2/src/web-workers/worker/exception_handler';
 
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [bind(Reflector).toValue(reflector)];
+
+class PrintLogger {
+  log = print;
+  logGroup = print;
+  logGroupEnd() {}
+}
 
 function _injectorBindings(appComponentType, bus: WorkerMessageBus,
                            initData: StringMap<string, any>): List<Type | Binding | List<any>> {
@@ -118,8 +123,7 @@ function _injectorBindings(appComponentType, bus: WorkerMessageBus,
     DirectiveResolver,
     Parser,
     Lexer,
-    WorkerExceptionHandler,
-    bind(ExceptionHandler).toAlias(WorkerExceptionHandler),
+    bind(ExceptionHandler).toFactory(() => {new ExceptionHandler(new PrintLogger())}),
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
@@ -135,7 +139,7 @@ export function bootstrapWebworkerCommon(
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   var bootstrapProcess = PromiseWrapper.completer();
 
-  var zone = createNgZone(new WorkerExceptionHandler());
+  var zone = createNgZone(new ExceptionHandler(new PrintLogger()));
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.

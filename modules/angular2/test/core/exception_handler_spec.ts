@@ -17,74 +17,78 @@ import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
 class _CustomException {
   context = "some context";
+  toString(): string { return "custom"; }
 }
 
 export function main() {
   describe('ExceptionHandler', () => {
-    var log, handler;
-
-    beforeEach(() => {
-      log = new Log();
-      handler = new ExceptionHandler();
-      handler.logError = (e) => log.add(e);
-    });
-
     it("should output exception", () => {
-      try {
-        handler.call(new BaseException("message!"));
-      } catch (e) {
-      }
-      expect(log.result()).toContain("message!");
+      var e = ExceptionHandler.exceptionToString(new BaseException("message!"));
+      expect(e).toContain("message!");
     });
 
     it("should output stackTrace", () => {
-      try {
-        handler.call(new BaseException("message!"), "stack!");
-      } catch (e) {
-      }
-      expect(log.result()).toContain("stack!");
+      var e = ExceptionHandler.exceptionToString(new BaseException("message!"), "stack!");
+      expect(e).toContain("stack!");
     });
 
     it("should join a long stackTrace", () => {
-      try {
-        handler.call(new BaseException("message!"), ["stack1", "stack2"]);
-      } catch (e) {
-      }
-      expect(log.result()).toContain("stack1");
-      expect(log.result()).toContain("stack2");
+      var e =
+          ExceptionHandler.exceptionToString(new BaseException("message!"), ["stack1", "stack2"]);
+      expect(e).toContain("stack1");
+      expect(e).toContain("stack2");
     });
 
     it("should output reason when present", () => {
-      try {
-        handler.call(new BaseException("message!"), null, "reason!");
-      } catch (e) {
-      }
-      expect(log.result()).toContain("reason!");
+      var e = ExceptionHandler.exceptionToString(new BaseException("message!"), null, "reason!");
+      expect(e).toContain("reason!");
     });
 
-    it("should print context", () => {
-      try {
-        handler.call(new BaseException("message!", null, null, "context!"));
-      } catch (e) {
-      }
-      expect(log.result()).toContain("context!");
-    });
+    describe("context", () => {
+      it("should print context", () => {
+        var e = ExceptionHandler.exceptionToString(
+            new BaseException("message!", null, null, "context!"));
+        expect(e).toContain("context!");
+      });
 
-    it("should print nested context", () => {
-      try {
+      it("should print nested context", () => {
         var original = new BaseException("message!", null, null, "context!");
-        handler.call(new BaseException("message", original));
-      } catch (e) {
-      }
-      expect(log.result()).toContain("context!");
+        var e = ExceptionHandler.exceptionToString(new BaseException("message", original));
+        expect(e).toContain("context!");
+      });
+
+      it("should not print context when the passed-in exception is not a BaseException", () => {
+        var e = ExceptionHandler.exceptionToString(new _CustomException());
+        expect(e).not.toContain("context");
+      });
     });
 
-    it("should not print context when the passed-in exception is not a BaseException", () => {
-      try {
-        handler.call(new _CustomException());
-      } catch (e) {
-      }
-      expect(log.result()).not.toContain("context");
+    describe('original exception', () => {
+      it("should print original exception message if available (original is BaseException)", () => {
+        var realOriginal = new BaseException("inner");
+        var original = new BaseException("wrapped", realOriginal);
+        var e = ExceptionHandler.exceptionToString(new BaseException("wrappedwrapped", original));
+        expect(e).toContain("inner");
+      });
+
+      it("should print original exception message if available (original is not BaseException)",
+         () => {
+           var realOriginal = new _CustomException();
+           var original = new BaseException("wrapped", realOriginal);
+           var e =
+               ExceptionHandler.exceptionToString(new BaseException("wrappedwrapped", original));
+           expect(e).toContain("custom");
+         });
+    });
+
+    describe('original stack', () => {
+      it("should print original stack if available", () => {
+        var realOriginal = new BaseException("inner");
+        var original = new BaseException("wrapped", realOriginal, "originalStack");
+        var e = ExceptionHandler.exceptionToString(
+            new BaseException("wrappedwrapped", original, "wrappedStack"));
+        expect(e).toContain("originalStack");
+      });
     });
   });
 }

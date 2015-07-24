@@ -22,6 +22,7 @@ import 'package:angular2/src/reflection/reflection_capabilities.dart';
 
 import 'package:angular2/src/di/binding.dart' show bind;
 import 'package:angular2/src/di/injector.dart' show Injector;
+import 'package:angular2/src/core/exception_handler.dart' show ExceptionHandler;
 import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 
 import 'test_injector.dart';
@@ -77,13 +78,27 @@ Expect expect(actual, [matcher]) {
 
 const _u = const Object();
 
+expectErrorMessage(actual, expectedMessage) {
+  expect(ExceptionHandler.exceptionToString(actual)).toContain(expectedMessage);
+}
+
+expectException(Function actual, expectedMessage) {
+  try {
+    actual();
+  } catch (e, s) {
+    expectErrorMessage(e, expectedMessage);
+  }
+}
+
 class Expect extends gns.Expect {
   Expect(actual) : super(actual);
 
   NotExpect get not => new NotExpect(actual);
 
   void toEqual(expected) => toHaveSameProps(expected);
+  void toContainError(message) => expectErrorMessage(this.actual, message);
   void toThrowError([message = ""]) => toThrowWith(message: message);
+  void toThrowErrorWith(message) => expectException(this.actual, message);
   void toBePromise() => gns.guinness.matchers.toBeTrue(actual is Future);
   void toImplement(expected) => toBeA(expected);
   void toBeNaN() => gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);

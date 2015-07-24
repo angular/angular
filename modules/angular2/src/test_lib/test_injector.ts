@@ -119,7 +119,7 @@ function _getAppBindings() {
     DirectiveResolver,
     Parser,
     Lexer,
-    ExceptionHandler,
+    bind(ExceptionHandler).toValue(new ExceptionHandler(DOM)),
     bind(LocationStrategy).toClass(MockLocationStrategy),
     bind(XHR).toClass(MockXHR),
     ComponentUrlMapper,

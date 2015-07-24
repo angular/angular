@@ -132,7 +132,7 @@ export function main() {
             Injector.resolveAndCreate([Pipes.extend({'async': [secondPipeFactory]})]);
 
         expect(() => injector.get(Pipes))
-            .toThrowError(/Cannot extend Pipes without a parent injector/g);
+            .toThrowErrorWith("Cannot extend Pipes without a parent injector");
       });
 
       it('should extend di-inherited pipes', () => {

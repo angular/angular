@@ -64,7 +64,6 @@ import {
 } from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
-
 import {appComponentRefPromiseToken, appComponentTypeToken} from './application_tokens';
 
 var _rootInjector: Injector;
@@ -129,7 +128,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     DirectiveResolver,
     Parser,
     Lexer,
-    ExceptionHandler,
+    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM)),
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
@@ -282,8 +281,7 @@ export function commonBootstrap(
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
-
-  var zone = createNgZone(new ExceptionHandler());
+  var zone = createNgZone(new ExceptionHandler(DOM));
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.

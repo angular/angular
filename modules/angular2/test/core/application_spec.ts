@@ -18,6 +18,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject, Injector} from 'angular2/di';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
 
@@ -65,6 +66,12 @@ class HelloRootMissingTemplate {
 class HelloRootDirectiveIsNotCmp {
 }
 
+class _NilLogger {
+  log(s: any): void {}
+  logGroup(s: any): void {}
+  logGroupEnd(){};
+}
+
 export function main() {
   var fakeDoc, el, el2, testBindings, lightDom;
 
@@ -85,17 +92,19 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings);
 
-         PromiseWrapper.then(refPromise, null, (reason) => {
-           expect(reason.message)
-               .toContain(
-                   `Could not load '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
+         PromiseWrapper.then(refPromise, null, (exception) => {
+           expect(exception).toContainError(
+               `Could not load '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
            async.done();
            return null;
          });
        }));
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootCmp, []);
+         // do not print errors to the console
+         var e = new ExceptionHandler(new _NilLogger());
+
+         var refPromise = bootstrap(HelloRootCmp, [bind(ExceptionHandler).toValue(e)]);
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();

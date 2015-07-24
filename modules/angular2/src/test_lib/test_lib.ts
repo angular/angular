@@ -6,6 +6,7 @@ import {global} from 'angular2/src/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {bind} from 'angular2/di';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
 import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
 
@@ -24,6 +25,8 @@ export interface NgMatchers extends jasmine.Matchers {
   toBeAnInstanceOf(expected: any): boolean;
   toHaveText(expected: any): boolean;
   toImplement(expected: any): boolean;
+  toContainError(expected: any): boolean;
+  toThrowErrorWith(expectedMessage: any): boolean;
   not: NgMatchers;
 }
 
@@ -236,6 +239,38 @@ _global.beforeEach(function() {
             pass: actualText == expectedText,
             get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
           };
+        }
+      };
+    },
+
+    toContainError: function() {
+      return {
+        compare: function(actual, expectedText) {
+          var errorMessage = ExceptionHandler.exceptionToString(actual);
+          return {
+            pass: errorMessage.indexOf(expectedText) > -1,
+            get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
+          };
+        }
+      };
+    },
+
+    toThrowErrorWith: function() {
+      return {
+        compare: function(actual, expectedText) {
+          try {
+            actual();
+            return {
+              pass: false,
+              get message() { return "Was expected to throw, but did not throw"; }
+            };
+          } catch (e) {
+            var errorMessage = ExceptionHandler.exceptionToString(e);
+            return {
+              pass: errorMessage.indexOf(expectedText) > -1,
+              get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
+            };
+          }
         }
       };
     },

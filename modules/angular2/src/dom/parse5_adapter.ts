@@ -47,6 +47,12 @@ export class Parse5DomAdapter extends DomAdapter {
 
   logError(error) { console.error(error); }
 
+  log(error) { console.log(error); }
+
+  logGroup(error) { console.log(error); }
+
+  logGroupEnd() {}
+
   get attrToPropMap() { return _attrToPropMap; }
 
   query(selector) { throw _notImplemented('query'); }
