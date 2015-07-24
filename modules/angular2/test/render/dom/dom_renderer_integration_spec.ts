@@ -146,6 +146,26 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should reflect non-string property values as attributes if flag is set',
+         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+           tb.compileAndMerge(someComponent,
+                              [
+                                new ViewDefinition({
+                                  componentId: 'someComponent',
+                                  template: '<input [title]="y">',
+                                  directives: []
+                                })
+                              ])
+               .then((protoViewMergeMappings) => {
+                 var rootView = tb.createView(protoViewMergeMappings);
+                 var el = DOM.childNodes(rootView.hostElement)[0];
+                 tb.renderer.setElementProperty(elRef(rootView.viewRef, 1), 'maxLength', 20);
+                 expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
+                     .toEqual('20');
+                 async.done();
+               });
+         }));
     });
 
     if (DOM.supportsDOMEvents()) {
