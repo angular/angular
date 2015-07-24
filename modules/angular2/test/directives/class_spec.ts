@@ -61,6 +61,22 @@ export function main() {
                });
          }));
 
+
+      it('should add classes specified in an object literal without change in class names',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = `<div [class]="{'foo-bar': true, 'fooBar': true}"></div>`;
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 expect(rootTC.componentViewChildren[0].nativeElement.className)
+                     .toEqual('ng-binding foo-bar fooBar');
+
+                 async.done();
+               });
+         }));
+
       it('should add and remove classes based on changes in object literal values',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div [class]="{foo: condition, bar: !condition}"></div>';
@@ -141,14 +157,14 @@ export function main() {
 
       it('should add classes specified in a list literal',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = `<div [class]="['foo', 'bar']"></div>`;
+           var template = `<div [class]="['foo', 'bar', 'foo-bar', 'fooBar']"></div>`;
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
                  rootTC.detectChanges();
                  expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar');
+                     .toEqual('ng-binding foo bar foo-bar fooBar');
 
                  async.done();
                });
@@ -212,14 +228,14 @@ export function main() {
 
       it('should add classes specified in a string literal',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = `<div [class]="'foo bar'"></div>`;
+           var template = `<div [class]="'foo bar foo-bar fooBar'"></div>`;
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
                  rootTC.detectChanges();
                  expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar');
+                     .toEqual('ng-binding foo bar foo-bar fooBar');
 
                  async.done();
                });

@@ -42,11 +42,10 @@ export class DomView {
 
   setElementClass(elementIndex: number, className: string, isAdd: boolean) {
     var element = this.boundElements[elementIndex];
-    var dashCasedClassName = camelCaseToDashCase(className);
     if (isAdd) {
-      DOM.addClass(element, dashCasedClassName);
+      DOM.addClass(element, className);
     } else {
-      DOM.removeClass(element, dashCasedClassName);
+      DOM.removeClass(element, className);
     }
   }
 
