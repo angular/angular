@@ -4,6 +4,7 @@ import 'package:guinness/guinness.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import 'package:unittest/vm_config.dart';
 
+import 'artifact_consumer/all_tests.dart' as artifactConsumer;
 import 'common/async_string_writer_tests.dart' as asyncStringWriter;
 import 'common/ng_meta_test.dart' as ngMetaTest;
 import 'bind_generator/all_tests.dart' as bindGenerator;
@@ -17,6 +18,7 @@ import 'template_compiler/all_tests.dart' as templateCompiler;
 
 main() {
   useVMConfiguration();
+  describe('ArtifactConsumer', artifactConsumer.allTests);
   describe('AsyncStringWriter', asyncStringWriter.allTests);
   describe('NgMeta', ngMetaTest.allTests);
   describe('Bind Generator', bindGenerator.allTests);

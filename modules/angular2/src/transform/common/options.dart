@@ -14,6 +14,7 @@ const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
 const OPTIMIZATION_PHASES_PARAM = 'optimization_phases';
 const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_points';
+const CLEANUP_BUILD_ARTIFACTS = 'cleanup_build_artifacts';
 
 /// Provides information necessary to transform an Angular2 app.
 class TransformerOptions {
@@ -51,17 +52,22 @@ class TransformerOptions {
   /// The "correct" number of phases varies with the structure of the app.
   final int optimizationPhases;
 
+  /// Whether or not to consume the build artifacts at the end.
+  final bool cleanupBuildArtifacts;
+
   TransformerOptions._internal(this.entryPoints, this.reflectionEntryPoints,
       this.modeName, this.mirrorMode, this.initReflector,
       this.annotationMatcher, this.optimizationPhases,
-      this.generateChangeDetectors, this.inlineViews);
+      this.generateChangeDetectors, this.inlineViews,
+      this.cleanupBuildArtifacts);
 
   factory TransformerOptions(List<String> entryPoints,
       {List<String> reflectionEntryPoints, String modeName: 'release',
       MirrorMode mirrorMode: MirrorMode.none, bool initReflector: true,
       List<ClassDescriptor> customAnnotationDescriptors: const [],
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
-      bool inlineViews: true, bool generateChangeDetectors: true}) {
+      bool inlineViews: true, bool generateChangeDetectors: true,
+      bool cleanupBuildArtifacts: true}) {
     if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {
       reflectionEntryPoints = entryPoints;
     }
@@ -70,6 +76,7 @@ class TransformerOptions {
     optimizationPhases = optimizationPhases.isNegative ? 0 : optimizationPhases;
     return new TransformerOptions._internal(entryPoints, reflectionEntryPoints,
         modeName, mirrorMode, initReflector, annotationMatcher,
-        optimizationPhases, generateChangeDetectors, inlineViews);
+        optimizationPhases, generateChangeDetectors, inlineViews,
+        cleanupBuildArtifacts);
   }
 }
