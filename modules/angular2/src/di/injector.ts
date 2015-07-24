@@ -193,7 +193,7 @@ export interface InjectorStrategy {
   getMaxNumberOfObjects(): number;
 
   attach(parent: Injector, isBoundary: boolean): void;
-  resetContructionCounter(): void;
+  resetConstructionCounter(): void;
   instantiateBinding(binding: ResolvedBinding, visibility: number): any;
 }
 
@@ -211,7 +211,7 @@ export class InjectorInlineStrategy implements InjectorStrategy {
 
   constructor(public injector: Injector, public protoStrategy: ProtoInjectorInlineStrategy) {}
 
-  resetContructionCounter(): void { this.injector._constructionCounter = 0; }
+  resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
 
   instantiateBinding(binding: ResolvedBinding, visibility: number): any {
     return this.injector._new(binding, visibility);
@@ -317,7 +317,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     ListWrapper.fill(this.objs, undefinedValue);
   }
 
-  resetContructionCounter(): void { this.injector._constructionCounter = 0; }
+  resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
 
   instantiateBinding(binding: ResolvedBinding, visibility: number): any {
     return this.injector._new(binding, visibility);

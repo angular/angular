@@ -868,7 +868,7 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
   hydrate(): void {
     var i = this.injectorStrategy;
     var p = i.protoStrategy;
-    i.resetContructionCounter();
+    i.resetConstructionCounter();
 
     if (p.binding0 instanceof DirectiveBinding && isPresent(p.keyId0) && i.obj0 === undefinedValue)
       i.obj0 = i.instantiateBinding(p.binding0, p.visibility0);
