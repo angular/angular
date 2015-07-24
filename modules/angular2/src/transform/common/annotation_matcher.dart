@@ -84,9 +84,7 @@ class AnnotationMatcher extends ClassMatcherBase {
   bool _implementsWithWarning(Annotation annotation, AssetId assetId,
       List<ClassDescriptor> interfaces) {
     ClassDescriptor descriptor = firstMatch(annotation.name, assetId);
-    if (descriptor == null) {
-      throw 'Unable to locate descriptor for ${annotation.name} in ${assetId}';
-    }
+    if (descriptor == null) return false;
     return implements(descriptor, interfaces,
         missingSuperClassWarning: 'Missing `custom_annotation` entry for `${descriptor.superClass}`.');
   }
