@@ -7,6 +7,36 @@ typedef void ZeroArgFunction();
 typedef void ErrorHandlingFn(error, stackTrace);
 
 /**
+ * A `Timer` wrapper that lets you specify additional functions to call when it
+ * is cancelled.
+ */
+class WrappedTimer implements Timer {
+
+  Timer _timer;
+  ZeroArgFunction _onCancelCb;
+
+  WrappedTimer(Timer timer) {
+    _timer = timer;
+  }
+
+  void addOnCancelCb(ZeroArgFunction onCancelCb) {
+    if (this._onCancelCb != null) {
+      throw "On cancel cb already registered";
+    }
+    this._onCancelCb = onCancelCb;
+  }
+
+  void cancel() {
+    if (this._onCancelCb != null) {
+      this._onCancelCb();
+    }
+    _timer.cancel();
+  }
+
+  bool get isActive => _timer.isActive;
+}
+
+/**
  * A `Zone` wrapper that lets you schedule tasks after its private microtask queue is exhausted but
  * before the next "VM turn", i.e. event loop iteration.
  *
@@ -44,6 +74,8 @@ class NgZone {
   int _nestedRun = 0;
 
   bool _inVmTurnDone = false;
+
+  List<Timer> _pendingTimers = [];
 
   /**
    * Associates with this
@@ -92,8 +124,16 @@ class NgZone {
    *
    * This hook is useful for validating application state (e.g. in a test).
    */
-  void overrideOnEventDone(ZeroArgFunction onEventDoneFn) {
+  void overrideOnEventDone(ZeroArgFunction onEventDoneFn, [bool waitForAsync = false]) {
     _onEventDone = onEventDoneFn;
+
+    if (waitForAsync) {
+      _onEventDone = () {
+        if (_pendingTimers.length == 0) {
+          onEventDoneFn();
+        }
+      };
+    }
   }
 
   /**
@@ -224,6 +264,20 @@ class NgZone {
     }
   }
 
+  Timer _createTimer(Zone self, ZoneDelegate parent, Zone zone, Duration duration, fn()) {
+    WrappedTimer wrappedTimer;
+    var cb = () {
+      fn();
+      _pendingTimers.remove(wrappedTimer);
+    };
+    Timer timer = parent.createTimer(zone, duration, cb);
+    wrappedTimer = new WrappedTimer(timer);
+    wrappedTimer.addOnCancelCb(() => _pendingTimers.remove(wrappedTimer));
+
+    _pendingTimers.add(wrappedTimer);
+    return wrappedTimer;
+  }
+
   Zone _createInnerZone(Zone zone, {handleUncaughtError}) {
     return zone.fork(
         specification: new ZoneSpecification(
@@ -231,7 +285,8 @@ class NgZone {
             run: _run,
             runUnary: _runUnary,
             runBinary: _runBinary,
-            handleUncaughtError: handleUncaughtError),
+            handleUncaughtError: handleUncaughtError,
+            createTimer: _createTimer),
         zoneValues: {'_innerZone': true});
   }
 }
