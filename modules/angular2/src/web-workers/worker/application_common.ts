@@ -26,7 +26,7 @@ import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/render/xhr';
@@ -137,7 +137,7 @@ function _injectorBindings(appComponentType, bus: WorkerMessageBus,
 export function bootstrapWebworkerCommon(
     appComponentType: Type, bus: WorkerMessageBus,
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
-  var bootstrapProcess = PromiseWrapper.completer();
+  var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
   var zone = createNgZone(new ExceptionHandler(new PrintLogger()));
   zone.run(() => {

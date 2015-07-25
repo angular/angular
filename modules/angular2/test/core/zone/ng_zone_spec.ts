@@ -13,7 +13,7 @@ import {
   isInInnerZone
 } from 'angular2/test_lib';
 
-import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
+import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -65,7 +65,7 @@ export function main() {
       it('should produce long stack traces', inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
              _zone.overrideOnErrorHandler(logError);
-             var c = PromiseWrapper.completer();
+             var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
              _zone.run(() => {
                TimerWrapper.setTimeout(() => {
@@ -88,7 +88,7 @@ export function main() {
          inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
              _zone.overrideOnErrorHandler(logError);
-             var c = PromiseWrapper.completer();
+             var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
              _zone.run(() => {
                microTask(() => {
@@ -116,7 +116,7 @@ export function main() {
       it('should disable long stack traces', inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
              _zone.overrideOnErrorHandler(logError);
-             var c = PromiseWrapper.completer();
+             var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
              _zone.run(() => {
                TimerWrapper.setTimeout(() => {
@@ -304,8 +304,8 @@ function commonTests() {
 
     it('should call onTurnStart and onTurnDone before and after each turn',
        inject([AsyncTestCompleter], (async) => {
-         var a;
-         var b;
+         var a: PromiseCompleter<string>;
+         var b: PromiseCompleter<string>;
 
          macroTask(() => {
            _zone.run(() => {
@@ -345,7 +345,7 @@ function commonTests() {
 
     it('should call onTurnStart and onTurnDone when an inner microtask is scheduled from outside angular',
        inject([AsyncTestCompleter], (async) => {
-         var completer;
+         var completer: PromiseCompleter<any>;
 
          macroTask(
              () => { _zone.runOutsideAngular(() => { completer = PromiseWrapper.completer(); }); });
@@ -495,7 +495,8 @@ function commonTests() {
 
     it('should call onTurnStart and onTurnDone before and after each turn, respectively',
        inject([AsyncTestCompleter], (async) => {
-         var completerA, completerB;
+         var completerA: PromiseCompleter<any>;
+         var completerB: PromiseCompleter<any>;
 
          macroTask(() => {
            _zone.run(() => {

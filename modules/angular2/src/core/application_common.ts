@@ -30,7 +30,7 @@ import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
@@ -280,7 +280,7 @@ export function commonBootstrap(
     appComponentType: /*Type*/ any,
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
-  var bootstrapProcess = PromiseWrapper.completer();
+  var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
   var zone = createNgZone(new ExceptionHandler(DOM));
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only

@@ -19,7 +19,13 @@ import {Injector, bind} from 'angular2/di';
 import {Component, View} from 'angular2/src/core/annotations/decorators';
 import * as annotations from 'angular2/src/core/annotations_impl/view';
 import {CONST, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {
+  Promise,
+  PromiseWrapper,
+  PromiseCompleter,
+  EventEmitter,
+  ObservableWrapper
+} from 'angular2/src/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
@@ -42,7 +48,8 @@ import {CanActivate} from 'angular2/src/router/lifecycle_annotations';
 import {Instruction} from 'angular2/src/router/instruction';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
-var cmpInstanceCount, log, eventBus, completer;
+var cmpInstanceCount, log, eventBus;
+var completer: PromiseCompleter<any>;
 
 export function main() {
   describe('Outlet Directive', () => {
