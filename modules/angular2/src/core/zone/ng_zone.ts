@@ -149,7 +149,7 @@ export class NgZone {
    * ```
    * var zone: NgZone = [ref to the application zone];
    *
-   * zone.runOusideAngular(() => {
+   * zone.runOutsideAngular(() => {
    *   element.onClick(() => {
    *     // Clicking on the element would not trigger the change detection
    *   });
