@@ -29,7 +29,7 @@ class PromiseWrapper {
     return promise.catchError(onError);
   }
 
-  static CompleterWrapper completer() => new CompleterWrapper(new Completer());
+  static PromiseCompleter<dynamic> completer() => new PromiseCompleter(new Completer());
 }
 
 class TimerWrapper {
@@ -104,10 +104,10 @@ class EventEmitter extends Stream {
   }
 }
 
-class CompleterWrapper {
-  final Completer c;
+class PromiseCompleter<T> {
+  final Completer<T> c;
 
-  CompleterWrapper(this.c);
+  PromiseCompleter(this.c);
 
   Future get promise => c.future;
 

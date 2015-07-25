@@ -1,4 +1,9 @@
-import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+import {
+  PromiseWrapper,
+  ObservableWrapper,
+  EventEmitter,
+  PromiseCompleter
+} from 'angular2/src/facade/async';
 import {StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive} from 'angular2/annotations';
@@ -134,7 +139,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   _later(fn) {
-    var c = PromiseWrapper.completer();
+    var c: PromiseCompleter<any> = PromiseWrapper.completer();
     PromiseWrapper.then(c.promise, fn, (_) => {});
     c.resolve(null);
   }

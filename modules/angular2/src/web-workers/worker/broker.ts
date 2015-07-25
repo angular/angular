@@ -41,7 +41,7 @@ export class MessageBroker {
     var promise: Promise<any>;
     var id: string = null;
     if (returnType != null) {
-      var completer = PromiseWrapper.completer();
+      var completer: PromiseCompleter<any> = PromiseWrapper.completer();
       id = this._generateMessageId(args.type + args.method);
       this._pending.set(id, completer.resolve);
       PromiseWrapper.catchError(completer.promise, (err, stack?) => {

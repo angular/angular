@@ -16,7 +16,7 @@ import {
 
 import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {IMPLEMENTS, Type, isBlank, stringify, isPresent, isArray} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView} from 'angular2/src/core/compiler/view';
@@ -442,7 +442,8 @@ export function main() {
 
     it('should re-use components being compiled', inject([AsyncTestCompleter], (async) => {
          tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
-         var renderProtoViewCompleter = PromiseWrapper.completer();
+         var renderProtoViewCompleter: PromiseCompleter<renderApi.ProtoViewDto> =
+             PromiseWrapper.completer();
          var expectedProtoView = createProtoView();
          var compiler = createCompiler([renderProtoViewCompleter.promise],
                                        [rootProtoView, rootProtoView, expectedProtoView]);

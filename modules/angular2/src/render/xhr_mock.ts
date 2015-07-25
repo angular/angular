@@ -1,7 +1,7 @@
 import {XHR} from 'angular2/src/render/xhr';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, normalizeBlank, BaseException} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 export class MockXHR extends XHR {
   private _expectations: List<_Expectation>;
@@ -77,7 +77,7 @@ export class MockXHR extends XHR {
 
 class _PendingRequest {
   url: string;
-  completer;
+  completer: PromiseCompleter<string>;
 
   constructor(url) {
     this.url = url;
