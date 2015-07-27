@@ -16,7 +16,9 @@ import {
   containsRegexp,
   stringifyElement,
   TestComponentBuilder,
-  fakeAsync
+  fakeAsync,
+  tick,
+  clearPendingTimers
 } from 'angular2/test_lib';
 
 
@@ -1200,7 +1202,7 @@ export function main() {
                expect(c.injector).toBeAnInstanceOf(Injector);
                expect(c.expression).toContain("one.two.three");
                expect(c.context).toBe(rootTC.componentInstance);
-               expect(c.locals["local"]).not.toBeNull();
+               expect(c.locals["local"]).toBeDefined();
              }
 
              async.done();
@@ -1225,6 +1227,38 @@ export function main() {
              async.done();
            });
          }));
+
+      if (DOM.supportsDOMEvents()) {  // this is required to use fakeAsync
+        it('should provide an error context when an error happens in an event handler',
+           inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+
+                    tcb = tcb.overrideView(MyComp, new viewAnn.View({
+                      template: `<span emitter listener (event)="throwError()" #local></span>`,
+                      directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
+                    }));
+
+                    var rootTC;
+                    tcb.createAsync(MyComp).then(root => { rootTC = root; });
+                    tick();
+
+                    var tc = rootTC.componentViewChildren[0];
+                    tc.inject(DirectiveEmitingEvent).fireEvent("boom");
+
+                    try {
+                      tick();
+                      throw "Should throw";
+                    } catch (e) {
+                      clearPendingTimers();
+
+                      var c = e.context;
+                      expect(DOM.nodeName(c.element).toUpperCase()).toEqual("SPAN");
+                      expect(DOM.nodeName(c.componentElement).toUpperCase()).toEqual("DIV");
+                      expect(c.injector).toBeAnInstanceOf(Injector);
+                      expect(c.context).toBe(rootTC.componentInstance);
+                      expect(c.locals["local"]).toBeDefined();
+                    }
+                  })));
+      }
 
       if (!IS_DARTIUM) {
         it('should report a meaningful error when a directive is undefined',
@@ -1513,6 +1547,8 @@ class MyComp {
     this.ctxNumProp = 0;
     this.ctxBoolProp = false;
   }
+
+  throwError() { throw 'boom'; }
 }
 
 @Component({selector: 'child-cmp', properties: ['dirProp'], viewInjector: [MyService]})

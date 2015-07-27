@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'dart:convert' as convert;
 import 'dart:async' show Future;
 
+bool isDart = true;
+
 String getTypeNameForDebugging(Type type) => type.toString();
 
 class Math {

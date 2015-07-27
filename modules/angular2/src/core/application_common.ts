@@ -7,7 +7,8 @@ import {
   BaseException,
   assertionsEnabled,
   print,
-  stringify
+  stringify,
+  isDart
 } from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -128,7 +129,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     DirectiveResolver,
     Parser,
     Lexer,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
+    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM, isDart ? false : true), []),
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
@@ -280,8 +281,8 @@ export function commonBootstrap(
     appComponentType: /*Type*/ any,
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
-  var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
-  var zone = createNgZone(new ExceptionHandler(DOM));
+  var bootstrapProcess = PromiseWrapper.completer();
+  var zone = createNgZone(new ExceptionHandler(DOM, isDart ? false : true));
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
@@ -290,19 +291,27 @@ export function commonBootstrap(
     var exceptionHandler = appInjector.get(ExceptionHandler);
     zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
 
-    var compRefToken: Promise<any> =
-        PromiseWrapper.wrap(() => appInjector.get(appComponentRefPromiseToken));
-    var tick = (componentRef) => {
-      var appChangeDetector = internalView(componentRef.hostView).changeDetector;
-      // retrieve life cycle: may have already been created if injected in root component
-      var lc = appInjector.get(LifeCycle);
-      lc.registerWith(zone, appChangeDetector);
-      lc.tick();  // the first tick that will bootstrap the app
+    try {
+      var compRefToken: Promise<any> = appInjector.get(appComponentRefPromiseToken);
+      var tick = (componentRef) => {
+        var appChangeDetector = internalView(componentRef.hostView).changeDetector;
+        // retrieve life cycle: may have already been created if injected in root component
+        var lc = appInjector.get(LifeCycle);
+        lc.registerWith(zone, appChangeDetector);
+        lc.tick();  // the first tick that will bootstrap the app
 
-      bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
-    };
-    PromiseWrapper.then(compRefToken, tick,
-                        (err, stackTrace) => bootstrapProcess.reject(err, stackTrace));
+        bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
+      };
+
+      var tickResult = PromiseWrapper.then(compRefToken, tick);
+
+      PromiseWrapper.then(tickResult,
+                          (_) => {});  // required for Dart to trigger the default error handler
+      PromiseWrapper.then(tickResult, null,
+                          (err, stackTrace) => { bootstrapProcess.reject(err, stackTrace); });
+    } catch (e) {
+      bootstrapProcess.reject(e, e.stack);
+    }
   });
 
   return bootstrapProcess.promise;

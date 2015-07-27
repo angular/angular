@@ -212,7 +212,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     return isPresent(boundElementIndex) ? this.elementRefs[boundElementIndex] : null;
   }
 
-  getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): StringMap<string, any> {
+  getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
     try {
       var offsettedIndex = this.elementOffset + elementIndex;
       var hasRefForIndex = offsettedIndex < this.elementRefs.length;
@@ -226,18 +226,13 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       var directive = isPresent(directiveIndex) ? this.getDirectiveFor(directiveIndex) : null;
       var injector = isPresent(ei) ? ei.getInjector() : null;
 
-      return {
-        element: element,
-        componentElement: componentElement,
-        directive: directive,
-        context: this.context,
-        locals: _localsToStringMap(this.locals),
-        injector: injector
-      };
+      return new DebugContext(element, componentElement, directive, this.context,
+                              _localsToStringMap(this.locals), injector);
+
     } catch (e) {
       // TODO: vsavkin log the exception once we have a good way to log errors and warnings
       // if an error happens during getting the debug context, we return an empty map.
-      return {};
+      return null;
     }
   }
 
@@ -262,29 +257,37 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
   // returns false if preventDefault must be applied to the DOM event
   dispatchEvent(boundElementIndex: number, eventName: string, locals: Map<string, any>): boolean {
-    // Most of the time the event will be fired only when the view is in the live document.
-    // However, in a rare circumstance the view might get dehydrated, in between the event
-    // queuing up and firing.
-    var allowDefaultBehavior = true;
-    if (this.hydrated()) {
-      var elBinder = this.proto.elementBinders[boundElementIndex - this.elementOffset];
-      if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
-      var eventMap = elBinder.hostListeners[eventName];
-      if (isBlank(eventMap)) return allowDefaultBehavior;
-      MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
-        var context;
-        if (directiveIndex === -1) {
-          context = this.context;
-        } else {
-          context = this.elementInjectors[boundElementIndex].getDirectiveAtIndex(directiveIndex);
-        }
-        var result = expr.eval(context, new Locals(this.locals, locals));
-        if (isPresent(result)) {
-          allowDefaultBehavior = allowDefaultBehavior && result == true;
-        }
-      });
+    try {
+      // Most of the time the event will be fired only when the view is in the live document.
+      // However, in a rare circumstance the view might get dehydrated, in between the event
+      // queuing up and firing.
+      var allowDefaultBehavior = true;
+      if (this.hydrated()) {
+        var elBinder = this.proto.elementBinders[boundElementIndex - this.elementOffset];
+        if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
+        var eventMap = elBinder.hostListeners[eventName];
+        if (isBlank(eventMap)) return allowDefaultBehavior;
+        MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
+          var context;
+          if (directiveIndex === -1) {
+            context = this.context;
+          } else {
+            context = this.elementInjectors[boundElementIndex].getDirectiveAtIndex(directiveIndex);
+          }
+          var result = expr.eval(context, new Locals(this.locals, locals));
+          if (isPresent(result)) {
+            allowDefaultBehavior = allowDefaultBehavior && result == true;
+          }
+        });
+      }
+      return allowDefaultBehavior;
+    } catch (e) {
+      var c = this.getDebugContext(boundElementIndex - this.elementOffset, null);
+      var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
+                                                c.injector) :
+                                   null;
+      throw new EventEvaluationError(eventName, e, e.stack, context);
     }
-    return allowDefaultBehavior;
   }
 }
 
@@ -297,6 +300,29 @@ function _localsToStringMap(locals: Locals): StringMap<string, any> {
   }
   return res;
 }
+
+export class DebugContext {
+  constructor(public element: any, public componentElement: any, public directive: any,
+              public context: any, public locals: any, public injector: any) {}
+}
+
+/**
+ * Error context included when an event handler throws an exception.
+ */
+class _Context {
+  constructor(public element: any, public componentElement: any, public context: any,
+              public locals: any, public injector: any) {}
+}
+
+/**
+ * Wraps an exception thrown by an event handler.
+ */
+class EventEvaluationError extends BaseException {
+  constructor(eventName: string, originalException: any, originalStack: any, context: any) {
+    super(`Error during evaluation of "${eventName}"`, originalException, originalStack, context);
+  }
+}
+
 
 /**
  *

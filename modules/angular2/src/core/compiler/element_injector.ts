@@ -502,7 +502,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     var p = this._preBuiltObjects;
     var index = p.elementRef.boundElementIndex - p.view.elementOffset;
     var c = this._preBuiltObjects.view.getDebugContext(index, null);
-    return new _Context(c["element"], c["componentElement"], c["injector"]);
+    return isPresent(c) ? new _Context(c.element, c.componentElement, c.injector) : null;
   }
 
   private _reattachInjectors(imperativelyCreatedInjector: Injector): void {

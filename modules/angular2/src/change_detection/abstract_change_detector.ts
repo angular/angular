@@ -90,8 +90,9 @@ export class AbstractChangeDetector implements ChangeDetector {
 
   throwError(proto: ProtoRecord, exception: any, stack: any): void {
     var c = this.dispatcher.getDebugContext(proto.bindingRecord.elementIndex, proto.directiveIndex);
-    var context = new _Context(c["element"], c["componentElement"], c["directive"], c["context"],
-                               c["locals"], c["injector"], proto.expressionAsString);
+    var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.directive, c.context,
+                                              c.locals, c.injector, proto.expressionAsString) :
+                                 null;
     throw new ChangeDetectionError(proto, exception, stack, context);
   }
 }

@@ -81,6 +81,13 @@ void tick([int millis = 0]) {
 }
 
 /**
+ * This is not needed in Dart. Because quiver correctly removes a timer when
+ * it throws an exception.
+ */
+void clearPendingTimers() {
+}
+
+/**
  * Flush any pending microtasks.
  */
 void flushMicrotasks() {

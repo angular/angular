@@ -66,11 +66,13 @@ class HelloRootMissingTemplate {
 class HelloRootDirectiveIsNotCmp {
 }
 
-class _NilLogger {
-  log(s: any): void {}
-  logGroup(s: any): void {}
+class _ArrayLogger {
+  res: any[] = [];
+  log(s: any): void { this.res.push(s); }
+  logGroup(s: any): void { this.res.push(s); }
   logGroupEnd(){};
 }
+
 
 export function main() {
   var fakeDoc, el, el2, testBindings, lightDom;
@@ -90,7 +92,7 @@ export function main() {
 
     it('should throw if bootstrapped Directive is not a Component',
        inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings);
+         var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, [testBindings]);
 
          PromiseWrapper.then(refPromise, null, (exception) => {
            expect(exception).toContainError(
@@ -101,16 +103,34 @@ export function main() {
        }));
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
-         // do not print errors to the console
-         var e = new ExceptionHandler(new _NilLogger());
+         var logger = new _ArrayLogger();
+         var exceptionHandler = new ExceptionHandler(logger, IS_DARTIUM ? false : true);
 
-         var refPromise = bootstrap(HelloRootCmp, [bind(ExceptionHandler).toValue(e)]);
+         var refPromise =
+             bootstrap(HelloRootCmp, [bind(ExceptionHandler).toValue(exceptionHandler)]);
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
            return null;
          });
        }));
+
+    if (DOM.supportsDOMEvents()) {
+      it('should invoke the default exception handler when bootstrap fails',
+         inject([AsyncTestCompleter], (async) => {
+           var logger = new _ArrayLogger();
+           var exceptionHandler = new ExceptionHandler(logger, IS_DARTIUM ? false : true);
+
+           var refPromise =
+               bootstrap(HelloRootCmp, [bind(ExceptionHandler).toValue(exceptionHandler)]);
+           PromiseWrapper.then(refPromise, null, (reason) => {
+             expect(logger.res.join(""))
+                 .toContain('The selector "hello-app" did not match any elements');
+             async.done();
+             return null;
+           });
+         }));
+    }
 
     it('should create an injector promise', () => {
       var refPromise = bootstrap(HelloRootCmp, testBindings);
