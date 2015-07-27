@@ -658,11 +658,14 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   }
 
   private _addViewQueries(host: ElementInjector): void {
-    if (isPresent(host._query0) && host._query0.originator == host)
+    if (isPresent(host._query0) && host._query0.originator == host &&
+        host._query0.query.isViewQuery)
       this._addViewQuery(host._query0);
-    if (isPresent(host._query1) && host._query1.originator == host)
+    if (isPresent(host._query1) && host._query1.originator == host &&
+        host._query1.query.isViewQuery)
       this._addViewQuery(host._query1);
-    if (isPresent(host._query2) && host._query2.originator == host)
+    if (isPresent(host._query2) && host._query2.originator == host &&
+        host._query2.query.isViewQuery)
       this._addViewQuery(host._query2);
   }
 

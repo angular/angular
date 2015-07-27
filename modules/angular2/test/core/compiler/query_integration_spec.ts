@@ -397,7 +397,10 @@ class TextDirective {
 }
 
 @Component({selector: 'needs-query'})
-@View({directives: [NgFor], template: '<div *ng-for="var dir of query">{{dir.text}}|</div>'})
+@View({
+  directives: [NgFor, TextDirective],
+  template: '<div text="ignoreme"></div><div *ng-for="var dir of query">{{dir.text}}|</div>'
+})
 @Injectable()
 class NeedsQuery {
   query: QueryList<TextDirective>;
