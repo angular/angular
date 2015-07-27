@@ -24,12 +24,27 @@ import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_respo
 import {ResponseTypes} from 'angular2/src/http/enums';
 
 var abortSpy;
+var observerSpy;
 var sendSpy;
 var openSpy;
 var setRequestHeaderSpy;
 var addEventListenerSpy;
 var existingXHRs = [];
 var unused: Response;
+
+class SpyObserver extends SpyObject {
+  next: Function;
+  throw: Function;
+  return: Function;
+  dispose: Function;
+  constructor() {
+    super();
+    this.next = this.spy('next');
+    this.throw = this.spy('throw');
+    this.return = this.spy('return');
+    this.dispose = this.spy('dispose');
+  }
+}
 
 class MockBrowserXHR extends BrowserXhr {
   abort: any;
@@ -99,6 +114,14 @@ export function main() {
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
         connection.dispose();
         expect(abortSpy).toHaveBeenCalled();
+      });
+
+      it('should dispose EventEmitter when disposed', () => {
+        var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
+        var observerSpy = connection.response = new SpyObserver();
+        expect(observerSpy.dispose).not.toHaveBeenCalled();
+        connection.dispose();
+        expect(observerSpy.dispose).toHaveBeenCalled();
       });
 
 
