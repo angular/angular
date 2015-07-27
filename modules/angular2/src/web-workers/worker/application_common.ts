@@ -101,7 +101,7 @@ function _injectorBindings(appComponentType, bus: WorkerMessageBus,
     Serializer,
     bind(WorkerMessageBus).toValue(bus),
     bind(MessageBroker)
-        .toFactory((a, b) => new MessageBroker(a, b), [WorkerMessageBus, Serializer]),
+        .toFactory((a, b, c) => new MessageBroker(a, b, c), [WorkerMessageBus, Serializer, NgZone]),
     WorkerRenderer,
     bind(Renderer).toAlias(WorkerRenderer),
     WorkerCompiler,

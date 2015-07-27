@@ -56,7 +56,7 @@ export function main() {
     workerMessageBus.attachToBus(uiMessageBus);
 
     // set up the worker side
-    var broker = new MessageBroker(workerMessageBus, workerSerializer);
+    var broker = new MessageBroker(workerMessageBus, workerSerializer, null);
 
     // set up the ui side
     var webWorkerMain = new WebWorkerMain(tb.compiler, tb.renderer, uiRenderViewStore, uiSerializer,
@@ -117,7 +117,6 @@ export function main() {
   });
 
   describe("Web Worker Renderer", () => {
-    beforeEachBindings(() => [DomTestbed]);
     var renderer: WorkerRenderer;
     var workerSerializer: Serializer;
     var workerRenderViewStore: RenderViewWithFragmentsStore;
@@ -143,7 +142,6 @@ export function main() {
       renderer = createWorkerRenderer(workerSerializer, uiSerializer, tb, uiRenderViewStore,
                                       workerRenderViewStore);
     });
-
 
     it('should create and destroy root host views while using the given elements in place',
        inject([AsyncTestCompleter], (async) => {
@@ -313,7 +311,7 @@ function createSerializer(protoViewRefStore: RenderProtoViewRefStore,
   return injector.get(Serializer);
 }
 
-class MockMessageBusSource implements MessageBusSource {
+export class MockMessageBusSource implements MessageBusSource {
   private _listenerStore: Map<int, SourceListener> = new Map<int, SourceListener>();
   private _numListeners: number = 0;
 
@@ -329,7 +327,7 @@ class MockMessageBusSource implements MessageBusSource {
   }
 }
 
-class MockMessageBusSink implements MessageBusSink {
+export class MockMessageBusSink implements MessageBusSink {
   private _sendTo: MockMessageBusSource;
 
   send(message: Object): void { this._sendTo.receive({'data': message}); }
@@ -337,7 +335,7 @@ class MockMessageBusSink implements MessageBusSink {
   attachToSource(source: MockMessageBusSource) { this._sendTo = source; }
 }
 
-class MockMessageBus implements MessageBus {
+export class MockMessageBus implements MessageBus {
   constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) {}
   attachToBus(bus: MockMessageBus) { this.sink.attachToSource(bus.source); }
 }

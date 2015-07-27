@@ -1,5 +1,5 @@
-// TODO: This whole file is nearly identical to core/application.ts.
-// There should be a way to refactor application so that this file is unnecessary
+// TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
+// There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/di";
 import {Type, isBlank, isPresent} from "angular2/src/facade/lang";
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';

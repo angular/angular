@@ -12,20 +12,22 @@ export class RenderViewWithFragmentsStore {
 
   constructor(@Inject(ON_WEBWORKER) onWebWorker) {
     this._onWebWorker = onWebWorker;
-    if (!onWebWorker) {
-      this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
-      this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
-    }
+    this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
+    this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
   }
 
   allocate(fragmentCount: number): RenderViewWithFragments {
+    var initialIndex = this._nextIndex;
+
     var viewRef = new WorkerRenderViewRef(this._nextIndex++);
     var fragmentRefs = ListWrapper.createGrowableSize(fragmentCount);
 
     for (var i = 0; i < fragmentCount; i++) {
       fragmentRefs[i] = new WorkerRenderFragmentRef(this._nextIndex++);
     }
-    return new RenderViewWithFragments(viewRef, fragmentRefs);
+    var renderViewWithFragments = new RenderViewWithFragments(viewRef, fragmentRefs);
+    this.store(renderViewWithFragments, initialIndex);
+    return renderViewWithFragments;
   }
 
   store(view: RenderViewWithFragments, startIndex: number) {
@@ -61,7 +63,7 @@ export class RenderViewWithFragmentsStore {
     }
 
     if (this._onWebWorker) {
-      return WorkerRenderViewRef.deserialize(ref);
+      return this.retreive(ref);
     } else {
       return this.retreive(ref);
     }
@@ -73,7 +75,7 @@ export class RenderViewWithFragmentsStore {
     }
 
     if (this._onWebWorker) {
-      return WorkerRenderFragmentRef.deserialize(ref);
+      return this.retreive(ref);
     } else {
       return this.retreive(ref);
     }

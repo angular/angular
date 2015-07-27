@@ -1,4 +1,5 @@
 import {ElementRef, Component, Directive, View, Injectable, Renderer} from 'angular2/angular2';
+import {StringWrapper} from 'angular2/src/facade/lang';
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
@@ -37,7 +38,8 @@ class RedDec {
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
   template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-           <button class="changeButton">change greeting</button>`,
+           <button class="changeButton" (click)="changeGreeting()">change greeting</button>
+           <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{lastKey}}</div><br>`,
   // All directives used in the template need to be specified. This allows for
   // modularity (RedDec can only be used in this template)
   // and better tooling (the template can be invalidated if the attribute is
@@ -46,8 +48,11 @@ class RedDec {
 })
 export class HelloCmp {
   greeting: string;
+  lastKey: string = 'none';
 
   constructor(service: GreetingService) { this.greeting = service.greeting; }
 
   changeGreeting(): void { this.greeting = 'howdy'; }
+
+  onKeyDown(event): void { this.lastKey = StringWrapper.fromCharCode(event.keyCode); }
 }
