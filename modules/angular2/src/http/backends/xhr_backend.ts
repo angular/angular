@@ -43,6 +43,8 @@ export class XHRConnection implements Connection {
       }
 
       ObservableWrapper.callNext(this.response, new Response(responseOptions));
+      // TODO(gdi2290): defer complete if array buffer until done
+      ObservableWrapper.callReturn(this.response);
     });
     // TODO(jeffbcross): make this more dynamic based on body type
 

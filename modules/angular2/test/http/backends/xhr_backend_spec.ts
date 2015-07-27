@@ -95,6 +95,16 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
+      it('should complete a request', inject([AsyncTestCompleter], async => {
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({type: ResponseTypes.Error}));
+           ObservableWrapper.subscribe<Response>(connection.response, res => {
+             expect(res.type).toBe(ResponseTypes.Error);
+           }, null, () => { async.done(); });
+
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
       it('should call abort when disposed', () => {
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
         connection.dispose();
