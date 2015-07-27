@@ -2,14 +2,12 @@ import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
 
 export function main() {
   describe('StyleUrlResolver', () => {
     let styleUrlResolver;
 
-    beforeEach(
-        () => { styleUrlResolver = new StyleUrlResolver(new UrlResolver(new AppRootUrl(""))); });
+    beforeEach(() => { styleUrlResolver = new StyleUrlResolver(new UrlResolver()); });
 
     it('should resolve "url()" urls', () => {
       var css = `

@@ -39,7 +39,7 @@ export function main() {
   var cache = new CompilerCache();
   var viewResolver = new MultipleViewResolver(
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
-  var urlResolver = new UrlResolver(new AppRootUrl(""));
+  var urlResolver = new UrlResolver();
   var shadowDomStrategy = new NativeShadowDomStrategy();
   var renderCompiler = new rc.DefaultDomCompiler(new Parser(new Lexer()), shadowDomStrategy,
                                                  new ViewLoader(null, null, null));

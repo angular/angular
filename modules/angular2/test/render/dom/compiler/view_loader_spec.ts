@@ -15,7 +15,6 @@ import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
 
 import {ViewDefinition} from 'angular2/src/render/api';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
@@ -29,7 +28,7 @@ export function main() {
 
     beforeEach(() => {
       xhr = new MockXHR();
-      urlResolver = new UrlResolver(new AppRootUrl(''));
+      urlResolver = new UrlResolver();
       styleUrlResolver = new StyleUrlResolver(urlResolver);
       let styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
       loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);

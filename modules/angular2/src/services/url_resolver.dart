@@ -1,15 +1,9 @@
 library angular2.src.services.url_resolver;
 
 import 'package:angular2/di.dart' show Injectable;
-import 'package:angular2/src/services/app_root_url.dart' show AppRootUrl;
 
 @Injectable()
 class UrlResolver {
-
-  final AppRootUrl _appRootUrl;
-
-  UrlResolver(this._appRootUrl);
-
   /**
    * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,
@@ -26,8 +20,7 @@ class UrlResolver {
     Uri uri = Uri.parse(url);
 
     if (uri.scheme == 'package') {
-      var maybeSlash = _appRootUrl.value.endsWith('/') ? '' : '/';
-      return '${_appRootUrl.value}${maybeSlash}packages/${uri.path}';
+      return '/packages/${uri.path}';
     }
 
     if (uri.isAbsolute) return uri.toString();

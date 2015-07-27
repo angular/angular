@@ -12,7 +12,6 @@ import 'package:angular2/src/render/dom/compiler/style_url_resolver.dart';
 import 'package:angular2/src/render/dom/compiler/view_loader.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
-import 'package:angular2/src/services/app_root_url.dart';
 import 'package:angular2/src/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
@@ -86,7 +85,7 @@ class _TemplateExtractor {
 
   _TemplateExtractor(XHR xhr)
       : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
-    var urlResolver = new UrlResolver(new AppRootUrl(''));
+    var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
 

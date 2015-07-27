@@ -18,5 +18,5 @@ class DemoApp {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [bind(UrlResolver).toClass(DemoUrlResolver)]);
+  bootstrap(DemoApp, [bind(UrlResolver).toValue(new DemoUrlResolver())]);
 }
