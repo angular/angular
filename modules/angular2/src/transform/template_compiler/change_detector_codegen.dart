@@ -256,7 +256,7 @@ class _CodegenState {
     var pipeType = r.name;
     return '''
       $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
-      if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized())) {
+      if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
         $pipe = $_PIPES_ACCESSOR.get('$pipeType', $context, $cdRef);
       } else if (!$pipe.supports($context)) {
         $pipe.onDestroy();

@@ -5,7 +5,7 @@ import {Locals} from 'angular2/src/change_detection/parser/locals';
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {BindingRecord} from './binding_record';
 import {Pipes} from './pipes/pipes';
-import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
+import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 
 
 import {ProtoRecord, RecordType} from './proto_record';
@@ -29,9 +29,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.changes = ListWrapper.createFixedSize(protos.length + 1);
 
     this.values[0] = null;
-    ListWrapper.fill(this.values, uninitialized, 1);
+    ListWrapper.fill(this.values, ChangeDetectionUtil.uninitialized, 1);
     ListWrapper.fill(this.localPipes, null);
-    ListWrapper.fill(this.prevContexts, uninitialized);
+    ListWrapper.fill(this.prevContexts, ChangeDetectionUtil.uninitialized);
     ListWrapper.fill(this.changes, false);
   }
 
@@ -47,10 +47,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   dehydrate() {
     this._destroyPipes();
     this.values[0] = null;
-    ListWrapper.fill(this.values, uninitialized, 1);
+    ListWrapper.fill(this.values, ChangeDetectionUtil.uninitialized, 1);
     ListWrapper.fill(this.changes, false);
     ListWrapper.fill(this.localPipes, null);
-    ListWrapper.fill(this.prevContexts, uninitialized);
+    ListWrapper.fill(this.prevContexts, ChangeDetectionUtil.uninitialized);
     this.locals = null;
     this.pipes = null;
   }

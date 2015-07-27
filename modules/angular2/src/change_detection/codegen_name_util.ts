@@ -102,7 +102,7 @@ export class CodegenNameUtil {
     ListWrapper.removeAt(fields, _CONTEXT_IDX);
     if (!ListWrapper.isEmpty(fields)) {
       // At least one assignment.
-      fields.push(`${this.utilName}.uninitialized();`);
+      fields.push(`${this.utilName}.uninitialized;`);
     }
     return `${this.getContextName()} = null; ${ListWrapper.join(fields, ' = ')}`;
   }

@@ -51,7 +51,6 @@ export {DirectiveIndex, DirectiveRecord} from './directive_record';
 export {DynamicChangeDetector} from './dynamic_change_detector';
 export {ChangeDetectorRef} from './change_detector_ref';
 export {Pipes} from './pipes/pipes';
-export {uninitialized} from './change_detection_util';
 export {WrappedValue, Pipe, PipeFactory, BasePipe} from './pipes/pipe';
 export {NullPipe, NullPipeFactory} from './pipes/null_pipe';
 

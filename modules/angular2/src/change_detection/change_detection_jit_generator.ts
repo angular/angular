@@ -198,7 +198,7 @@ export class ChangeDetectorJITGenerator {
 
     return `
       ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
-      if (${pipe} === ${UTIL}.uninitialized()) {
+      if (${pipe} === ${UTIL}.uninitialized) {
         ${pipe} = ${PIPES_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
       } else if (!${pipe}.supports(${context})) {
         ${pipe}.onDestroy();

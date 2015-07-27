@@ -1,16 +1,14 @@
-import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
+import {CONST_EXPR, isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {DehydratedException, ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 import {WrappedValue} from './pipes/pipe';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
-export var uninitialized = new Object();
-
 export class SimpleChange {
   constructor(public previousValue: any, public currentValue: any) {}
 
-  isFirstChange(): boolean { return this.previousValue === uninitialized; }
+  isFirstChange(): boolean { return this.previousValue === ChangeDetectionUtil.uninitialized; }
 }
 
 var _simpleChangesIndex = 0;
@@ -47,7 +45,7 @@ function _simpleChange(previousValue, currentValue): SimpleChange {
 
 /* tslint:disable:requireParameterType */
 export class ChangeDetectionUtil {
-  static uninitialized(): Object { return uninitialized; }
+  static uninitialized: Object = CONST_EXPR<Object>(new Object());
 
   static arrayFn0(): any[] { return []; }
   static arrayFn1(a1): any[] { return [a1]; }

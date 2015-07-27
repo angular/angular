@@ -37,7 +37,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
       dynamic dispatcher, this._protos, this._directiveRecords)
       : super("MyComponent_comp_0", dispatcher) {
     _context = null;
-    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
+    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
   void detectChangesInRecords(throwOnChange) {
@@ -108,7 +108,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
 
   void dehydrate() {
     _context = null;
-    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized();
+    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
     _locals = null;
     _pipes = null;
   }
