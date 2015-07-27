@@ -188,6 +188,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   void preventDefault(Event evt) {
     evt.preventDefault();
   }
+  bool isPrevented(Event evt) {
+    return evt.defaultPrevented;
+  }
   String getInnerHTML(Element el) => el.innerHtml;
   String getOuterHTML(Element el) => el.outerHtml;
   void setInnerHTML(Element el, String value) {

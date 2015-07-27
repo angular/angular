@@ -541,8 +541,7 @@ export function main() {
                  rootTC.detectChanges();
 
                  var dispatchedEvent = clickOnElement(rootTC);
-                 expect(dispatchedEvent.defaultPrevented || !dispatchedEvent.returnValue)
-                     .toBe(true);
+                 expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
 
                  // router navigation is async.
                  rtr.subscribe((_) => {
@@ -563,8 +562,7 @@ export function main() {
                  rootTC.detectChanges();
 
                  var dispatchedEvent = clickOnElement(rootTC);
-                 expect(dispatchedEvent.defaultPrevented || !dispatchedEvent.returnValue)
-                     .toBe(true);
+                 expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
 
                  // router navigation is async.
                  rtr.subscribe((_) => {

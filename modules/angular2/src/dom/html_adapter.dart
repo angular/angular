@@ -102,6 +102,9 @@ class Html5LibDomAdapter implements DomAdapter {
   preventDefault(evt) {
     throw 'not implemented';
   }
+  isPrevented(evt) {
+    throw 'not implemented';
+  }
   getInnerHTML(el) {
     return el.innerHtml;
   }

@@ -79,7 +79,7 @@ export class DomView {
       allowDefaultBehavior =
           this.eventDispatcher.dispatchRenderEvent(elementIndex, eventName, evalLocals);
       if (!allowDefaultBehavior) {
-        event.preventDefault();
+        DOM.preventDefault(event);
       }
     }
     return allowDefaultBehavior;

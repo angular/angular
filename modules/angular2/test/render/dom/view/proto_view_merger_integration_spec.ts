@@ -265,8 +265,8 @@ export function main() {
                  tb.merge([rootProtoViewDto, componentProtoViewDto])
                      .then(mergeMappings => {
                        var domPv = resolveInternalDomProtoView(mergeMappings.mergedProtoViewRef);
-                       expect(DOM.getInnerHTML(templateRoot(domPv)))
-                           .toEqual('<root class="ng-binding" a="b"></root>');
+                       expect(stringifyElement(templateRoot(domPv)))
+                           .toEqual('<template><root a="b" class="ng-binding"></root></template>');
                        async.done();
                      });
                });

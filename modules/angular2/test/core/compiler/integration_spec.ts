@@ -899,14 +899,14 @@ export function main() {
 
                  .createAsync(MyComp)
                  .then((rootTC) => {
-                   expect(DOM.getChecked(rootTC.componentViewChildren[0].nativeElement))
-                       .toBeFalsy();
-                   expect(DOM.getChecked(rootTC.componentViewChildren[1].nativeElement))
-                       .toBeFalsy();
+                   var dispatchedEvent = DOM.createMouseEvent('click');
+                   var dispatchedEvent2 = DOM.createMouseEvent('click');
                    DOM.dispatchEvent(rootTC.componentViewChildren[0].nativeElement,
-                                     DOM.createMouseEvent('click'));
+                                     dispatchedEvent);
                    DOM.dispatchEvent(rootTC.componentViewChildren[1].nativeElement,
-                                     DOM.createMouseEvent('click'));
+                                     dispatchedEvent2);
+                   expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
+                   expect(DOM.isPrevented(dispatchedEvent2)).toBe(false);
                    expect(DOM.getChecked(rootTC.componentViewChildren[0].nativeElement))
                        .toBeFalsy();
                    expect(DOM.getChecked(rootTC.componentViewChildren[1].nativeElement))
