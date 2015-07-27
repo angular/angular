@@ -14,7 +14,7 @@ declare module ng {
   type SetterFn = typeof Function;
   type int = number;
   interface Type extends Function {
-    new (...args: any[]): Type;
+    new (...args: any[]): any;
   }
 
   // See https://github.com/Microsoft/TypeScript/issues/1168
