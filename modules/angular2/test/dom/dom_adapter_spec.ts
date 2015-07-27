@@ -34,7 +34,7 @@ export function main() {
 
       expect(clone).not.toBe(el1);
       DOM.setAttribute(clone, 'test', '1');
-      expect(DOM.getOuterHTML(clone)).toEqual('<div x="y" test="1">a<span>b</span></div>');
+      expect(stringifyElement(clone)).toEqual('<div test="1" x="y">a<span>b</span></div>');
       expect(DOM.getAttribute(el1, 'test')).toBeFalsy();
 
       var cNodes = DOM.childNodes(clone);

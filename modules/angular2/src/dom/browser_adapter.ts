@@ -104,6 +104,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     evt.preventDefault();
     evt.returnValue = false;
   }
+  isPrevented(evt: Event): boolean {
+    return evt.defaultPrevented || isPresent(evt.returnValue) && !evt.returnValue;
+  }
   getInnerHTML(el): string { return el.innerHTML; }
   getOuterHTML(el): string { return el.outerHTML; }
   nodeName(node: Node): string { return node.nodeName; }
