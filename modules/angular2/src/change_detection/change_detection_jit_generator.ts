@@ -35,7 +35,8 @@ export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
 
   constructor(public id: string, public changeDetectionStrategy: string,
-              public records: List<ProtoRecord>, public directiveRecords: List<any>) {
+              public records: List<ProtoRecord>, public directiveRecords: List<any>,
+              private generateCheckNoChanges: boolean) {
     this._names = new CodegenNameUtil(this.records, this.directiveRecords, 'this._', UTIL);
   }
 
@@ -80,6 +81,8 @@ export class ChangeDetectorJITGenerator {
         ${ALREADY_CHECKED_ACCESSOR} = true;
       }
 
+      ${this._genCheckNoChanges(typeName)}
+
       ${typeName}.prototype.callOnAllChangesDone = function() {
         ${this._genCallOnAllChangesDoneBody()}
       }
@@ -109,6 +112,7 @@ export class ChangeDetectorJITGenerator {
         return new ${typeName}(dispatcher, protos, directiveRecords);
       }
     `;
+
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
                         'directiveRecords', classDefinition)(
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
@@ -330,11 +334,23 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genThrowOnChangeCheck(oldValue: string, newValue: string): string {
-    return `
-      if(throwOnChange) {
-        ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
-      }
-      `;
+    if (this.generateCheckNoChanges) {
+      return `
+        if(throwOnChange) {
+          ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
+        }
+        `;
+    } else {
+      return '';
+    }
+  }
+
+  _genCheckNoChanges(typeName: string): string {
+    if (this.generateCheckNoChanges) {
+      return `${typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
+    } else {
+      return '';
+    }
   }
 
   _genAddToChanges(r: ProtoRecord): string {

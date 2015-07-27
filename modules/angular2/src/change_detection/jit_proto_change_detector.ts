@@ -23,7 +23,8 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
                         (b) => { recordBuilder.add(b, definition.variableNames); });
     var records = coalesce(recordBuilder.records);
     return new ChangeDetectorJITGenerator(definition.id, definition.strategy, records,
-                                          this.definition.directiveRecords)
+                                          this.definition.directiveRecords,
+                                          this.definition.generateCheckNoChanges)
         .generate();
   }
 }

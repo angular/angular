@@ -69,7 +69,7 @@ export function getDefinition(id: string): TestDefinition {
     var bindingRecords = _createBindingRecords(id);
     var directiveRecords = [];
     let cdDef = new ChangeDetectorDefinition(id, strategy, variableBindings, bindingRecords,
-                                             directiveRecords);
+                                             directiveRecords, true);
     testDef = new TestDefinition(id, cdDef, null);
   }
   if (isBlank(testDef)) {
@@ -107,7 +107,7 @@ class _ExpressionWithLocals {
     var bindingRecords = _createBindingRecords(this._expression);
     var directiveRecords = [];
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings, bindingRecords,
-                                        directiveRecords);
+                                        directiveRecords, true);
   }
 
   /**
@@ -151,7 +151,7 @@ class _ExpressionWithMode {
       directiveRecords = [];
     }
     return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
-                                        bindingRecords, directiveRecords);
+                                        bindingRecords, directiveRecords, true);
   }
 
   /**
@@ -174,7 +174,7 @@ class _DirectiveUpdating {
     var variableBindings = [];
 
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings,
-                                        this._bindingRecords, this._directiveRecords);
+                                        this._bindingRecords, this._directiveRecords, true);
   }
 
   static updateA(expression: string, dirRecord): BindingRecord {

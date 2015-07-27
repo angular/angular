@@ -1,4 +1,4 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
@@ -38,11 +38,11 @@ export class AbstractChangeDetector implements ChangeDetector {
 
   remove(): void { this.parent.removeChild(this); }
 
-  detectChanges(): void { this._detectChanges(false); }
+  detectChanges(): void { this.runDetectChanges(false); }
 
-  checkNoChanges(): void { this._detectChanges(true); }
+  checkNoChanges(): void { throw new BaseException("Not implemented"); }
 
-  _detectChanges(throwOnChange: boolean): void {
+  runDetectChanges(throwOnChange: boolean): void {
     if (this.mode === DETACHED || this.mode === CHECKED) return;
 
     this.detectChangesInRecords(throwOnChange);
@@ -67,14 +67,14 @@ export class AbstractChangeDetector implements ChangeDetector {
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;
     for (var i = 0; i < c.length; ++i) {
-      c[i]._detectChanges(throwOnChange);
+      c[i].runDetectChanges(throwOnChange);
     }
   }
 
   _detectChangesInShadowDomChildren(throwOnChange: boolean): void {
     var c = this.shadowDomChildren;
     for (var i = 0; i < c.length; ++i) {
-      c[i]._detectChanges(throwOnChange);
+      c[i].runDetectChanges(throwOnChange);
     }
   }
 

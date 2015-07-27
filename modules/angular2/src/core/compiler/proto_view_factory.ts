@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/di';
 
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, assertionsEnabled} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {
@@ -246,7 +246,7 @@ function _getChangeDetectorDefinitions(
     var id = `${hostComponentMetadata.id}_${typeString}_${pvWithIndex.index}`;
     var variableNames = nestedPvVariableNames[pvWithIndex.index];
     return new ChangeDetectorDefinition(id, strategyName, variableNames, bindingRecords,
-                                        directiveRecords);
+                                        directiveRecords, assertionsEnabled());
   });
 }
 

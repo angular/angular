@@ -65,6 +65,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   hydrated(): boolean { return this.values[0] !== null; }
 
+  checkNoChanges(): void { this.runDetectChanges(true); }
+
   detectChangesInRecords(throwOnChange: boolean) {
     if (!this.hydrated()) {
       ChangeDetectionUtil.throwDehydrated();

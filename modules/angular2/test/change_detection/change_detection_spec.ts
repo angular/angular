@@ -23,7 +23,7 @@ export function main() {
 
     beforeEach(() => {
       proto = new SpyProtoChangeDetector();
-      def = new ChangeDetectorDefinition('id', null, [], [], []);
+      def = new ChangeDetectorDefinition('id', null, [], [], [], true);
     });
 
     it("should return a proto change detector when one is available", () => {

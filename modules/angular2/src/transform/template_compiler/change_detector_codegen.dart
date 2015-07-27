@@ -74,10 +74,11 @@ class _CodegenState {
   final List<ProtoRecord> _records;
   final List<DirectiveRecord> _directiveRecords;
   final CodegenNameUtil _names;
+  final bool _generateCheckNoChanges;
 
   _CodegenState._(this._changeDetectorDefId, this._contextTypeName,
       this._changeDetectorTypeName, String changeDetectionStrategy,
-      List<ProtoRecord> records, List<DirectiveRecord> directiveRecords)
+      List<ProtoRecord> records, List<DirectiveRecord> directiveRecords, this._generateCheckNoChanges)
       : _records = records,
         _directiveRecords = directiveRecords,
         _names = new CodegenNameUtil(records, directiveRecords, '_', _UTIL),
@@ -91,7 +92,7 @@ class _CodegenState {
         .forEach((rec) => protoRecords.add(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
     return new _CodegenState._(def.id, typeName, changeDetectorTypeName,
-        def.strategy, records, def.directiveRecords);
+        def.strategy, records, def.directiveRecords, def.generateCheckNoChanges);
   }
 
   void _writeToBuf(StringBuffer buf) {
@@ -137,6 +138,8 @@ class _CodegenState {
 
           $_ALREADY_CHECKED_ACCESSOR = true;
         }
+
+        ${_genCheckNoChanges()}
 
         void callOnAllChangesDone() {
           ${_getCallOnAllChangesDoneBody()}
@@ -393,12 +396,24 @@ class _CodegenState {
   }
 
   String _genThrowOnChangeCheck(String oldValue, String newValue) {
-    return '''
-      if(throwOnChange) {
-        $_UTIL.throwOnChange(
-            $_CURRENT_PROTO, $_UTIL.simpleChange(${oldValue}, ${newValue}));
-      }
-    ''';
+    if (this._generateCheckNoChanges) {
+      return '''
+        if(throwOnChange) {
+          $_UTIL.throwOnChange(
+              $_CURRENT_PROTO, $_UTIL.simpleChange(${oldValue}, ${newValue}));
+        }
+      ''';
+    } else {
+      return "";
+    }
+  }
+
+  String _genCheckNoChanges() {
+    if (this._generateCheckNoChanges) {
+      return 'void checkNoChanges() { this.runDetectChanges(true); }';
+    } else {
+      return '';
+    }
   }
 
   String _genAddToChanges(ProtoRecord r) {

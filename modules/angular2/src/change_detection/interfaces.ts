@@ -63,5 +63,6 @@ export interface ProtoChangeDetector { instantiate(dispatcher: any): ChangeDetec
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: string, public variableNames: List<string>,
               public bindingRecords: List<BindingRecord>,
-              public directiveRecords: List<DirectiveRecord>) {}
+              public directiveRecords: List<DirectiveRecord>,
+              public generateCheckNoChanges: boolean) {}
 }
