@@ -146,8 +146,8 @@ export function main() {
                  async.done();
                });
          }));
-         
-       it('should reflect non-string property values as attributes if flag is set',
+
+      it('should reflect non-string property values as attributes if flag is set',
          inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
            tb.compileAndMerge(someComponent,
                               [
