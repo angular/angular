@@ -42,6 +42,10 @@ export class AsyncTestCompleter {
   done() { this._done(); }
 }
 
+export function testSetup() {
+  // Intentionally blank, this exists for compatibility with dart.
+}
+
 var jsmBeforeEach = _global.beforeEach;
 var jsmDescribe = _global.describe;
 var jsmDDescribe = _global.fdescribe;

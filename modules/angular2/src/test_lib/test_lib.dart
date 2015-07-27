@@ -2,8 +2,8 @@ library test_lib.test_lib;
 
 import 'dart:async';
 
-import 'package:guinness/guinness.dart' as gns;
-export 'package:guinness/guinness.dart'
+import 'package:guinness2/guinness2.dart' as gns;
+export 'package:guinness2/guinness2.dart'
     hide
         Expect,
         expect,
@@ -24,6 +24,7 @@ import 'package:angular2/src/di/binding.dart' show bind;
 import 'package:angular2/src/di/injector.dart' show Injector;
 import 'package:angular2/src/core/exception_handler.dart' show ExceptionHandler;
 import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
+import 'package:angular2/src/dom/browser_adapter.dart';
 
 import 'test_injector.dart';
 export 'test_injector.dart' show inject;
@@ -46,6 +47,7 @@ class AsyncTestCompleter {
 }
 
 void testSetup() {
+  BrowserDomAdapter.makeCurrent();
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   // beforeEach configuration:
   // - Priority 3: clear the bindings before each test,

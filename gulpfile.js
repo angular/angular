@@ -27,9 +27,10 @@ var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
+var createTestMain = require('./tools/build/create_dart_test_main.js');
 var karma = require('karma');
 var minimist = require('minimist');
-var runServerDartTests = require('./tools/build/run_server_dart_tests');
+var runServerDartTests = require('./tools/build/run_server_dart_tests'); // TODO - merge this in?
 var sourcemaps = require('gulp-sourcemaps');
 var tsc = require('gulp-typescript');
 var util = require('./tools/build/util');
@@ -567,8 +568,8 @@ gulp.task('test.unit.dart', function (done) {
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     '!build/remove-pub-symlinks',
-    '!test.unit.dart/karma-server',
-    '!test.unit.dart/karma-run',
+    '!test.unit.dart/create-dart-test-main',
+    '!test.unit.dart/pub-run-test',
     function(error) {
       // if initial build failed (likely due to build or formatting step) then exit
       // otherwise karma server doesn't start and we can't continue running properly
@@ -579,23 +580,27 @@ gulp.task('test.unit.dart', function (done) {
 
       watch('modules/angular2/**', { ignoreInitial: true }, [
         '!build/tree.dart',
-        '!test.unit.dart/karma-run'
+        '!test.unit.dart/pub-run-test'
       ]);
     }
   );
 });
 
-gulp.task('!test.unit.dart/karma-run', function (done) {
-  // run the run command in a new process to avoid duplicate logging by both server and runner from
-  // a single process
-  runKarma('karma-dart.conf.js', done);
+gulp.task('!test.unit.dart/create-dart-test-main', createTestMain);
+
+gulp.task('!test.unit.dart/pub-run-test', function (done) {
+  // TODO - run for all modules, not just angular2
+  // TODO - make one master file which starts all tests.
+  var testArgs = ['run', 'test', 'main_test.dart', '-p', 'dartium'];
+
+  var proc = spawn(DART_SDK.PUB, testArgs, {cwd: 'dist/dart/angular2', stdio: 'inherit'});
+  proc.on('error', function(code) {
+    done(new Error('Failed to run dart:test'));
+  });
+  proc.on('close', function() {
+    done();
+  });
 });
-
-
-gulp.task('!test.unit.dart/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'});
-});
-
 
 gulp.task('test.unit.js/ci', function (done) {
   karma.server.start({configFile: __dirname + '/karma-js.conf.js',
@@ -603,8 +608,7 @@ gulp.task('test.unit.js/ci', function (done) {
 });
 
 gulp.task('test.unit.dart/ci', function (done) {
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js',
-    singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+  runSequence(['!test.unit.dart/create-dart-test-main', '!test.unit.dart/pub-run-test']);
 });
 
 
