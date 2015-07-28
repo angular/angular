@@ -11,7 +11,6 @@ typedef void ErrorHandlingFn(error, stackTrace);
  * is cancelled.
  */
 class WrappedTimer implements Timer {
-
   Timer _timer;
   ZeroArgFunction _onCancelCb;
 
@@ -124,7 +123,8 @@ class NgZone {
    *
    * This hook is useful for validating application state (e.g. in a test).
    */
-  void overrideOnEventDone(ZeroArgFunction onEventDoneFn, [bool waitForAsync = false]) {
+  void overrideOnEventDone(ZeroArgFunction onEventDoneFn,
+      [bool waitForAsync = false]) {
     _onEventDone = onEventDoneFn;
 
     if (waitForAsync) {
@@ -264,7 +264,8 @@ class NgZone {
     }
   }
 
-  Timer _createTimer(Zone self, ZoneDelegate parent, Zone zone, Duration duration, fn()) {
+  Timer _createTimer(
+      Zone self, ZoneDelegate parent, Zone zone, Duration duration, fn()) {
     WrappedTimer wrappedTimer;
     var cb = () {
       fn();

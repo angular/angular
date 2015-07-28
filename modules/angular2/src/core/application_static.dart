@@ -6,8 +6,7 @@ import 'application_common.dart';
 /// Starts an application from a root component.
 ///
 /// See [commonBootstrap] for detailed documentation.
-Future<ApplicationRef> bootstrapStatic(
-    Type appComponentType,
+Future<ApplicationRef> bootstrapStatic(Type appComponentType,
     [List componentInjectableBindings]) {
   return commonBootstrap(appComponentType, componentInjectableBindings);
 }

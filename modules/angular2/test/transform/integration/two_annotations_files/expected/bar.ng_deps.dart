@@ -91,7 +91,9 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     _alreadyChecked = true;
   }
 
-  void checkNoChanges() {this.runDetectChanges(true);}
+  void checkNoChanges() {
+    this.runDetectChanges(true);
+  }
 
   void callOnAllChangesDone() {
     dispatcher.notifyOnAllChangesDone();

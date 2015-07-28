@@ -5,8 +5,7 @@ import 'dart:async';
 import 'dart:core';
 import 'package:angular2/src/web-workers/shared/message_bus.dart'
     show MessageBus, MessageBusSink, MessageBusSource;
-import 'package:angular2/src/web-workers/ui/impl.dart'
-    show bootstrapUICommon;
+import 'package:angular2/src/web-workers/ui/impl.dart' show bootstrapUICommon;
 
 /**
  * Bootstrapping a WebWorker
@@ -23,7 +22,7 @@ void bootstrap(String uri) {
 /**
  * To be called from the main thread to spawn and communicate with the worker thread
  */
-Future<UIMessageBus> spawnWorker(Uri uri){
+Future<UIMessageBus> spawnWorker(Uri uri) {
   var receivePort = new ReceivePort();
   var isolateEndSendPort = receivePort.sendPort;
   return Isolate.spawnUri(uri, const [], isolateEndSendPort).then((_) {
@@ -57,7 +56,8 @@ class UIMessageBusSink extends MessageBusSink {
 class UIMessageBusSource extends MessageBusSource {
   final ReceivePort _port;
   final Stream rawDataStream;
-  Map<int, StreamSubscription> _listenerStore = new Map<int, StreamSubscription>();
+  Map<int, StreamSubscription> _listenerStore =
+      new Map<int, StreamSubscription>();
   int _numListeners = 0;
 
   UIMessageBusSource(ReceivePort port)
@@ -68,8 +68,8 @@ class UIMessageBusSource extends MessageBusSource {
     return message is SendPort;
   });
 
-  int addListener(Function fn){
-    var subscription = rawDataStream.listen((message){
+  int addListener(Function fn) {
+    var subscription = rawDataStream.listen((message) {
       fn({"data": message});
     });
 
@@ -77,7 +77,7 @@ class UIMessageBusSource extends MessageBusSource {
     return _numListeners;
   }
 
-  void removeListener(int index){
+  void removeListener(int index) {
     _listenerStore[index].cancel();
     _listenerStore.remove(index);
   }

@@ -29,7 +29,8 @@ class PromiseWrapper {
     return promise.catchError(onError);
   }
 
-  static PromiseCompleter<dynamic> completer() => new PromiseCompleter(new Completer());
+  static PromiseCompleter<dynamic> completer() =>
+      new PromiseCompleter(new Completer());
 }
 
 class TimerWrapper {

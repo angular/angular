@@ -101,7 +101,8 @@ class Expect extends gns.Expect {
   void toThrowErrorWith(message) => expectException(this.actual, message);
   void toBePromise() => gns.guinness.matchers.toBeTrue(actual is Future);
   void toImplement(expected) => toBeA(expected);
-  void toBeNaN() => gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);
+  void toBeNaN() =>
+      gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);
   void toHaveText(expected) => _expect(elementText(actual), expected);
   void toHaveBeenCalledWith([a = _u, b = _u, c = _u, d = _u, e = _u, f = _u]) =>
       _expect(_argsMatch(actual, a, b, c, d, e, f), true,

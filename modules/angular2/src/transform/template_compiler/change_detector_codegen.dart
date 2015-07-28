@@ -78,7 +78,8 @@ class _CodegenState {
 
   _CodegenState._(this._changeDetectorDefId, this._contextTypeName,
       this._changeDetectorTypeName, String changeDetectionStrategy,
-      List<ProtoRecord> records, List<DirectiveRecord> directiveRecords, this._generateCheckNoChanges)
+      List<ProtoRecord> records, List<DirectiveRecord> directiveRecords,
+      this._generateCheckNoChanges)
       : _records = records,
         _directiveRecords = directiveRecords,
         _names = new CodegenNameUtil(records, directiveRecords, '_', _UTIL),
@@ -92,7 +93,8 @@ class _CodegenState {
         .forEach((rec) => protoRecords.add(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
     return new _CodegenState._(def.id, typeName, changeDetectorTypeName,
-        def.strategy, records, def.directiveRecords, def.generateCheckNoChanges);
+        def.strategy, records, def.directiveRecords,
+        def.generateCheckNoChanges);
   }
 
   void _writeToBuf(StringBuffer buf) {

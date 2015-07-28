@@ -19,30 +19,32 @@ main() {
       });
 
       it("should be false otherwise", () {
-        expect(pipeFactory.supports([1,2,3])).toBe(false);
+        expect(pipeFactory.supports([1, 2, 3])).toBe(false);
       });
     });
 
-    it("should return the wrapped value to trigger change detection on first invocation of transform", () {
+    it("should return the wrapped value to trigger change detection on first invocation of transform",
+        () {
       final pipe = pipeFactory.create(changeDetectorRef);
-      final c = new ObservableList.from([1,2]);
+      final c = new ObservableList.from([1, 2]);
       expect(pipe.transform(c, []).wrapped).toBe(pipe);
     });
 
     it("should return itself when no changes between the calls", () {
       final pipe = pipeFactory.create(changeDetectorRef);
 
-      final c = new ObservableList.from([1,2]);
+      final c = new ObservableList.from([1, 2]);
 
       pipe.transform(c, []);
 
       expect(pipe.transform(c, [])).toBe(pipe);
     });
 
-    it("should return the wrapped value once a change has been trigger", fakeAsync(() {
+    it("should return the wrapped value once a change has been trigger",
+        fakeAsync(() {
       final pipe = pipeFactory.create(changeDetectorRef);
 
-      final c = new ObservableList.from([1,2]);
+      final c = new ObservableList.from([1, 2]);
 
       pipe.transform(c, []);
 
@@ -56,10 +58,11 @@ main() {
       expect(pipe.transform(c, []).wrapped).toBe(pipe);
     }));
 
-    it("should request a change detection check upon receiving a change", fakeAsync(() {
+    it("should request a change detection check upon receiving a change",
+        fakeAsync(() {
       final pipe = pipeFactory.create(changeDetectorRef);
 
-      final c = new ObservableList.from([1,2]);
+      final c = new ObservableList.from([1, 2]);
       pipe.transform(c, []);
 
       c.add(3);
@@ -71,20 +74,21 @@ main() {
     it("should return the wrapped value after changing a collection", () {
       final pipe = pipeFactory.create(changeDetectorRef);
 
-      final c1 = new ObservableList.from([1,2]);
-      final c2 = new ObservableList.from([3,4]);
+      final c1 = new ObservableList.from([1, 2]);
+      final c2 = new ObservableList.from([3, 4]);
 
       expect(pipe.transform(c1, []).wrapped).toBe(pipe);
       expect(pipe.transform(c2, []).wrapped).toBe(pipe);
     });
 
-    it("should not unbsubscribe from the stream of chagnes after changing a collection", () {
+    it("should not unbsubscribe from the stream of chagnes after changing a collection",
+        () {
       final pipe = pipeFactory.create(changeDetectorRef);
 
-      final c1 = new ObservableList.from([1,2]);
+      final c1 = new ObservableList.from([1, 2]);
       expect(pipe.transform(c1, []).wrapped).toBe(pipe);
 
-      final c2 = new ObservableList.from([3,4]);
+      final c2 = new ObservableList.from([3, 4]);
       expect(pipe.transform(c2, []).wrapped).toBe(pipe);
 
       // pushing into the first collection has no effect, and we do not see the change

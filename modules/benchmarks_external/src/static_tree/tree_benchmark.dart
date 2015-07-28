@@ -38,8 +38,8 @@ main() {
 
   TreeNode createData() {
     var values = count++ % 2 == 0
-          ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*']
-          : ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+        ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*']
+        : ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
     return buildTree(MAX_DEPTH, values, 0);
   }
 
@@ -62,8 +62,7 @@ main() {
 @Component(
     selector: 'tree0',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} '
-)
+    template: '<span> {{data.value}} ')
 class TreeComponent0 {
   var data;
 }
@@ -71,8 +70,7 @@ class TreeComponent0 {
 @Component(
     selector: 'tree1',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree0 data=data.right></tree0><tree0 data=data.left></tree0>'
-)
+    template: '<span> {{data.value}} <tree0 data=data.right></tree0><tree0 data=data.left></tree0>')
 class TreeComponent1 {
   var data;
 }
@@ -80,8 +78,7 @@ class TreeComponent1 {
 @Component(
     selector: 'tree2',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree1 data=data.right></tree1><tree1 data=data.left></tree1>'
-)
+    template: '<span> {{data.value}} <tree1 data=data.right></tree1><tree1 data=data.left></tree1>')
 class TreeComponent2 {
   var data;
 }
@@ -89,8 +86,7 @@ class TreeComponent2 {
 @Component(
     selector: 'tree3',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree2 data=data.right></tree2><tree2 data=data.left></tree2>'
-)
+    template: '<span> {{data.value}} <tree2 data=data.right></tree2><tree2 data=data.left></tree2>')
 class TreeComponent3 {
   var data;
 }
@@ -98,8 +94,7 @@ class TreeComponent3 {
 @Component(
     selector: 'tree4',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree3 data=data.right></tree3><tree3 data=data.left></tree3>'
-)
+    template: '<span> {{data.value}} <tree3 data=data.right></tree3><tree3 data=data.left></tree3>')
 class TreeComponent4 {
   var data;
 }
@@ -107,8 +102,7 @@ class TreeComponent4 {
 @Component(
     selector: 'tree5',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree4 data=data.right></tree4><tree4 data=data.left></tree4>'
-)
+    template: '<span> {{data.value}} <tree4 data=data.right></tree4><tree4 data=data.left></tree4>')
 class TreeComponent5 {
   var data;
 }
@@ -116,8 +110,7 @@ class TreeComponent5 {
 @Component(
     selector: 'tree6',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree5 data=data.right></tree5><tree5 data=data.left></tree5>'
-)
+    template: '<span> {{data.value}} <tree5 data=data.right></tree5><tree5 data=data.left></tree5>')
 class TreeComponent6 {
   var data;
 }
@@ -125,8 +118,7 @@ class TreeComponent6 {
 @Component(
     selector: 'tree7',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree6 data=data.right></tree6><tree6 data=data.left></tree6>'
-)
+    template: '<span> {{data.value}} <tree6 data=data.right></tree6><tree6 data=data.left></tree6>')
 class TreeComponent7 {
   var data;
 }
@@ -134,8 +126,7 @@ class TreeComponent7 {
 @Component(
     selector: 'tree8',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree7 data=data.right></tree7><tree7 data=data.left></tree7>'
-)
+    template: '<span> {{data.value}} <tree7 data=data.right></tree7><tree7 data=data.left></tree7>')
 class TreeComponent8 {
   var data;
 }
@@ -143,8 +134,7 @@ class TreeComponent8 {
 @Component(
     selector: 'tree9',
     map: const {'data': '=>data'},
-    template: '<span> {{data.value}} <tree8 data=data.right></tree8><tree8 data=data.left></tree8>'
-)
+    template: '<span> {{data.value}} <tree8 data=data.right></tree8><tree8 data=data.left></tree8>')
 class TreeComponent9 {
   var data;
 }

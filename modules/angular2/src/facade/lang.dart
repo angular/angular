@@ -201,7 +201,8 @@ class BaseException extends Error {
   final originalException;
   final originalStack;
 
-  BaseException([this.message, this.originalException, this.originalStack, this.context]);
+  BaseException(
+      [this.message, this.originalException, this.originalStack, this.context]);
 
   String toString() {
     return this.message;

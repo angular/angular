@@ -15,8 +15,7 @@ export 'package:angular2/src/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
 export 'package:angular2/src/change_detection/interfaces.dart'
     show ChangeDetector, ChangeDetectorDefinition, ProtoChangeDetector;
-export 'package:angular2/src/change_detection/pipes/pipes.dart'
-    show Pipes;
+export 'package:angular2/src/change_detection/pipes/pipes.dart' show Pipes;
 export 'package:angular2/src/change_detection/proto_record.dart'
     show ProtoRecord;
 export 'package:angular2/src/change_detection/change_detection_util.dart'
@@ -27,8 +26,7 @@ typedef ProtoChangeDetector PregenProtoChangeDetectorFactory(
     ChangeDetectorDefinition definition);
 
 typedef ChangeDetector InstantiateMethod(dynamic dispatcher,
-    List<ProtoRecord> protoRecords,
-    List<DirectiveRecord> directiveRecords);
+    List<ProtoRecord> protoRecords, List<DirectiveRecord> directiveRecords);
 
 /// Implementation of [ProtoChangeDetector] for use by pre-generated change
 /// detectors in Angular 2 Dart.
@@ -52,19 +50,19 @@ class PregenProtoChangeDetector extends ProtoChangeDetector {
 
   static bool isSupported() => true;
 
-  factory PregenProtoChangeDetector(InstantiateMethod instantiateMethod,
-      ChangeDetectorDefinition def) {
+  factory PregenProtoChangeDetector(
+      InstantiateMethod instantiateMethod, ChangeDetectorDefinition def) {
     // TODO(kegluneq): Pre-generate these (#2067).
     var recordBuilder = new ProtoRecordBuilder();
     def.bindingRecords.forEach((b) {
       recordBuilder.add(b, def.variableNames);
     });
     var protoRecords = coalesce(recordBuilder.records);
-    return new PregenProtoChangeDetector._(def.id, instantiateMethod,
-        protoRecords, def.directiveRecords);
+    return new PregenProtoChangeDetector._(
+        def.id, instantiateMethod, protoRecords, def.directiveRecords);
   }
 
   @override
-  instantiate(dynamic dispatcher) => _instantiateMethod(
-      dispatcher, _protoRecords, _directiveRecords);
+  instantiate(dynamic dispatcher) =>
+      _instantiateMethod(dispatcher, _protoRecords, _directiveRecords);
 }

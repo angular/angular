@@ -30,7 +30,6 @@ void initReflector() {
     ], const [], () => new MixedSoupComponent(), const [OnChange]))
     ..registerType(MatchedSoupComponent, new _ngRef.ReflectionInfo(const [
       const Component(
-          selector: '[soup]',
-          lifecycle: const [LifecycleEvent.onChange])
+          selector: '[soup]', lifecycle: const [LifecycleEvent.onChange])
     ], const [], () => new MatchedSoupComponent(), const [OnChange]));
 }

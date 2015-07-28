@@ -17,20 +17,25 @@ class Html5LibDomAdapter implements DomAdapter {
     return true;
   }
 
-  void setProperty(Element element, String name, Object value) => throw 'not implemented';
+  void setProperty(Element element, String name, Object value) =>
+      throw 'not implemented';
 
   getProperty(Element element, String name) => throw 'not implemented';
 
-  invoke(Element element, String methodName, List args) => throw 'not implemented';
+  invoke(Element element, String methodName, List args) =>
+      throw 'not implemented';
 
   logError(error) {
     stderr.writeln('${error}');
   }
 
-  log(error) { stdout.writeln('${error}'); }
-  logGroup(error) { stdout.writeln('${error}'); }
-  logGroupEnd() { }
-
+  log(error) {
+    stdout.writeln('${error}');
+  }
+  logGroup(error) {
+    stdout.writeln('${error}');
+  }
+  logGroupEnd() {}
 
   @override
   final attrToPropMap = const {
@@ -245,8 +250,8 @@ class Html5LibDomAdapter implements DomAdapter {
   }
   getAttribute(element, String attribute) {
     // `attributes` keys can be {@link AttributeName}s.
-    var key = element.attributes.keys.firstWhere(
-        (key) => '$key' == attribute, orElse: () {});
+    var key = element.attributes.keys.firstWhere((key) => '$key' == attribute,
+        orElse: () {});
     return element.attributes[key];
   }
   setAttribute(element, String name, String value) {

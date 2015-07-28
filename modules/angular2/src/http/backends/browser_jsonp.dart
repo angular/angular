@@ -1,4 +1,5 @@
 library angular2.src.http.backends.browser_jsonp;
+
 import 'package:angular2/di.dart';
 import 'dart:html' show document;
 import 'dart:js' show context, JsObject, JsArray;
@@ -50,7 +51,9 @@ class BrowserJsonp {
   }
 
   // Attach the <script> element to the DOM
-  send(dynamic node) { document.body.append(node); }
+  send(dynamic node) {
+    document.body.append(node);
+  }
 
   // Remove <script> element from the DOM
   cleanup(dynamic node) {

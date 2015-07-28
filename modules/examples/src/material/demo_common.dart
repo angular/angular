@@ -8,7 +8,6 @@ void commonDemoSetup() {
 }
 
 class DemoUrlResolver extends UrlResolver {
-
   @override
   String resolve(String baseUrl, String url) {
     const MATERIAL_PKG = 'package:angular2_material/';
@@ -16,7 +15,8 @@ class DemoUrlResolver extends UrlResolver {
     // We run a proxy server in front of pub serve that prepends "example" to
     // paths
     if (url.startsWith(MATERIAL_PKG)) {
-      return '/examples/packages/angular2_material/' + url.substring(MATERIAL_PKG.length);
+      return '/examples/packages/angular2_material/' +
+          url.substring(MATERIAL_PKG.length);
     }
     return super.resolve(baseUrl, url);
   }

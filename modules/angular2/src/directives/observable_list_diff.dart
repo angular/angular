@@ -41,16 +41,16 @@ class ObservableListDiff extends IterableChanges {
       _updated = false;
       return super.transform(collection, args);
 
-    // An update has been registered since the last change detection check.
-    // - We reset the flag.
-    // - We diff the collection.
-    } else if (_updated){
+      // An update has been registered since the last change detection check.
+      // - We reset the flag.
+      // - We diff the collection.
+    } else if (_updated) {
       _updated = false;
-      return  super.transform(collection, args);
+      return super.transform(collection, args);
 
-    // No updates has been registered.
-    // Returning this tells change detection that object has not change,
-    // so it should NOT update the binding.
+      // No updates has been registered.
+      // Returning this tells change detection that object has not change,
+      // so it should NOT update the binding.
     } else {
       return this;
     }

@@ -18,8 +18,8 @@ main() {
         });
 
         it("should be true when the lifecycle includes onChange", () {
-          expect(metadata(DirectiveNoHooks,
-              new Directive(lifecycle: [LifecycleEvent.onChange])).callOnChange).toBe(true);
+          expect(metadata(DirectiveNoHooks, new Directive(
+              lifecycle: [LifecycleEvent.onChange])).callOnChange).toBe(true);
         });
 
         it("should be false otherwise", () {
@@ -40,8 +40,8 @@ main() {
         });
 
         it("should be true when the lifecycle includes onDestroy", () {
-          expect(metadata(DirectiveNoHooks,
-              new Directive(lifecycle: [LifecycleEvent.onDestroy])).callOnDestroy).toBe(true);
+          expect(metadata(DirectiveNoHooks, new Directive(
+              lifecycle: [LifecycleEvent.onDestroy])).callOnDestroy).toBe(true);
         });
 
         it("should be false otherwise", () {
@@ -58,8 +58,8 @@ main() {
         });
 
         it("should be true when the lifecycle includes onCheck", () {
-          expect(metadata(DirectiveNoHooks,
-              new Directive(lifecycle: [LifecycleEvent.onCheck])).callOnCheck).toBe(true);
+          expect(metadata(DirectiveNoHooks, new Directive(
+              lifecycle: [LifecycleEvent.onCheck])).callOnCheck).toBe(true);
         });
 
         it("should be false otherwise", () {
@@ -77,7 +77,8 @@ main() {
 
         it("should be true when the lifecycle includes onInit", () {
           expect(metadata(DirectiveNoHooks,
-              new Directive(lifecycle: [LifecycleEvent.onInit])).callOnInit).toBe(true);
+                  new Directive(lifecycle: [LifecycleEvent.onInit])).callOnInit)
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
@@ -94,7 +95,9 @@ main() {
 
         it("should be true when the lifecycle includes onAllChangesDone", () {
           expect(metadata(DirectiveNoHooks, new Directive(
-              lifecycle: [LifecycleEvent.onAllChangesDone])).callOnAllChangesDone).toBe(true);
+              lifecycle: [
+            LifecycleEvent.onAllChangesDone
+          ])).callOnAllChangesDone).toBe(true);
         });
 
         it("should be false otherwise", () {

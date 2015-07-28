@@ -10,7 +10,8 @@ import './interface_query.dart';
  * In the future this class will implement an Observable interface.
  * For now it uses a plain list of observable callbacks.
  */
-class QueryList<T> extends Object with IterableMixin<T> implements IQueryList<T> {
+class QueryList<T> extends Object with IterableMixin<T>
+    implements IQueryList<T> {
   List<T> _results = [];
   List _callbacks = [];
   bool _dirty = false;

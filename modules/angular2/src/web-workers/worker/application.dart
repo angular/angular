@@ -3,7 +3,7 @@ library angular2.src.web_workers.worker;
 import "package:angular2/src/web-workers/shared/message_bus.dart"
     show MessageBus, MessageBusSource, MessageBusSink;
 import "package:angular2/src/web-workers/worker/application_common.dart"
-  show bootstrapWebworkerCommon;
+    show bootstrapWebworkerCommon;
 import "package:angular2/src/facade/async.dart" show Future;
 import "package:angular2/src/core/application.dart" show ApplicationRef;
 import "package:angular2/src/facade/lang.dart" show Type, BaseException;
@@ -27,8 +27,8 @@ Future<ApplicationRef> bootstrapWebworker(
     [List<dynamic> componentInjectableBindings = null]) {
   ReceivePort rPort = new ReceivePort();
   WorkerMessageBus bus = new WorkerMessageBus.fromPorts(replyTo, rPort);
-  return bootstrapWebworkerCommon(appComponentType, bus,
-                                    componentInjectableBindings);
+  return bootstrapWebworkerCommon(
+      appComponentType, bus, componentInjectableBindings);
 }
 
 class WorkerMessageBus extends MessageBus {
@@ -57,15 +57,16 @@ class WorkerMessageBusSink extends MessageBusSink {
 class WorkerMessageBusSource extends MessageBusSource {
   final ReceivePort _port;
   final Stream rawDataStream;
-  Map<int, StreamSubscription> _listenerStore = new Map<int, StreamSubscription>();
+  Map<int, StreamSubscription> _listenerStore =
+      new Map<int, StreamSubscription>();
   int _numListeners = 0;
 
   WorkerMessageBusSource(ReceivePort rPort)
       : _port = rPort,
         rawDataStream = rPort.asBroadcastStream();
 
-  int addListener(Function fn){
-    var subscription = rawDataStream.listen((message){
+  int addListener(Function fn) {
+    var subscription = rawDataStream.listen((message) {
       fn({"data": message});
     });
 
@@ -73,7 +74,7 @@ class WorkerMessageBusSource extends MessageBusSource {
     return _numListeners;
   }
 
-  void removeListener(int index){
+  void removeListener(int index) {
     _listenerStore[index].cancel();
     _listenerStore.remove(index);
   }

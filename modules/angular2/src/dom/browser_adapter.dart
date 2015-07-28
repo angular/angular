@@ -392,7 +392,6 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 }
 
-
 var baseElement = null;
 String getBaseElementHref() {
   if (baseElement == null) {
