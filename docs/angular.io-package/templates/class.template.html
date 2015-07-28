@@ -8,7 +8,7 @@ p.location-badge.
   defined in {$ githubViewLink(doc) $}
 
 :markdown
-{$ doc.description | indent(2, true) $}
+{$ doc.description | indent(2, true) | trimBlankLines $}
 
 {%- if doc.decorators %}
 .l-main-section
@@ -37,7 +37,7 @@ p.location-badge.
         {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.parameters) | indent(4, true) | trim $}
     {% endif %}
     :markdown
-{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') $}
+{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') | trimBlankLines $}
 
 
 {% endif -%}
@@ -52,8 +52,7 @@ p.location-badge.
         {$ member.name $}{$ paramList(member.parameters) | indent(4, true) | trim $}{$ returnType(doc.returnType) $}
     {% endif %}
     :markdown
-
-{$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '')  $}
+{$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') | trimBlankLines $}
 
 
 

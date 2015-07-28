@@ -54,4 +54,11 @@ module.exports = new Package('angular.io', [basePackage])
 
 .config(function(getLinkInfo) {
   getLinkInfo.relativeLinks = true;
+})
+
+
+.config(function(templateEngine, getInjectables) {
+  templateEngine.filters = templateEngine.filters.concat(getInjectables([require('./rendering/trimBlankLines')]));
 });
+
+

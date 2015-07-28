@@ -17,6 +17,6 @@
     defined in {$ githubViewLink(doc) $}
 
   :markdown
-{$ doc.description | indent(4, true) $}
+{$ doc.description | indent(4, true) | trimBlankLines $}
 
 {% endblock %}
