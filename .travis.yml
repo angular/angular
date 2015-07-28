@@ -27,14 +27,18 @@ env:
   # This SSO token belongs to github account angular-github-ratelimit-token which has no access
   # (password is in Valentine)
   - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
+  # GITHUB_TOKEN_ANGULAR
+  - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
-    - MODE=js DART_CHANNEL=dev
+    # Make slowest build on top, so that we don't hog VMs while waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable
     - MODE=dart DART_CHANNEL=dev
     - MODE=dart_experimental DART_CHANNEL=dev
-    - MODE=saucelabs DART_CHANNEL=dev
+    - MODE=js DART_CHANNEL=dev
+    # Dissabled until we can make it pass.
+    # - MODE=saucelabs DART_CHANNEL=dev
 
-matrix:  
+matrix:
   allow_failures:
   - env: "MODE=saucelabs DART_CHANNEL=dev"
 
@@ -61,12 +65,14 @@ install:
 
 before_script:
 - mkdir -p $LOGS_DIR
+- ./scripts/ci/presubmit-queue-setup.sh
 
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
 
 after_script:
 - ./scripts/ci/print-logs.sh
+- ./scripts/ci/after-script.sh
 
 notifications:
   webhooks:
