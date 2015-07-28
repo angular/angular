@@ -18,7 +18,7 @@ p.location-badge.
     h3.annotation {$ decorator.name $}
     pre.prettyprint
       code.
-        @{$ decorator.name $}{$ paramList(decorator.arguments) $}
+        @{$ decorator.name $}{$ paramList(decorator.arguments) | indent(8, false) $}
 {% endfor %}
 {% endif -%}
 
