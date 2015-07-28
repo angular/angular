@@ -97,6 +97,8 @@ export class QueryList<T> {
 
   removeCallback(callback: () => void): void { ListWrapper.remove(this._callbacks, callback); }
 
+  toString(): string { return this._results.toString(); }
+
   get length(): number { return this._results.length; }
   get first(): T { return ListWrapper.first(this._results); }
   get last(): T { return ListWrapper.last(this._results); }
