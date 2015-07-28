@@ -8,15 +8,16 @@ import {
 } from 'angular2/src/facade/collection';
 import {
   AST,
-  Locals,
-  ChangeDispatcher,
-  ProtoChangeDetector,
-  ChangeDetector,
   BindingRecord,
-  DirectiveRecord,
+  ChangeDetector,
+  ChangeDetectorRef,
+  ChangeDispatcher,
   DirectiveIndex,
-  ChangeDetectorRef
+  DirectiveRecord,
+  Locals,
+  ProtoChangeDetector
 } from 'angular2/src/change_detection/change_detection';
+import {DebugContext} from 'angular2/src/change_detection/interfaces';
 
 import {
   ProtoElementInjector,
@@ -30,6 +31,8 @@ import * as renderApi from 'angular2/src/render/api';
 import {RenderEventDispatcher} from 'angular2/src/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
+
+export {DebugContext} from 'angular2/src/change_detection/interfaces';
 
 export class AppProtoViewMergeMapping {
   renderProtoViewRef: renderApi.RenderProtoViewRef;
@@ -299,11 +302,6 @@ function _localsToStringMap(locals: Locals): StringMap<string, any> {
     c = c.parent;
   }
   return res;
-}
-
-export class DebugContext {
-  constructor(public element: any, public componentElement: any, public directive: any,
-              public context: any, public locals: any, public injector: any) {}
 }
 
 /**

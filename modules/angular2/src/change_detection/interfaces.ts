@@ -2,7 +2,7 @@ import {List} from 'angular2/src/facade/collection';
 import {CONST} from 'angular2/src/facade/lang';
 import {Locals} from './parser/locals';
 import {BindingRecord} from './binding_record';
-import {DirectiveRecord} from './directive_record';
+import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 /**
  * Interface used by Angular to control the change detection strategy for an application.
@@ -36,7 +36,13 @@ export class ChangeDetection {
   }
 }
 
+export class DebugContext {
+  constructor(public element: any, public componentElement: any, public directive: any,
+              public context: any, public locals: any, public injector: any) {}
+}
+
 export interface ChangeDispatcher {
+  getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext;
   notifyOnBinding(bindingRecord: BindingRecord, value: any): void;
   notifyOnAllChangesDone(): void;
 }
@@ -58,7 +64,7 @@ export interface ChangeDetector {
   checkNoChanges(): void;
 }
 
-export interface ProtoChangeDetector { instantiate(dispatcher: any): ChangeDetector; }
+export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher): ChangeDetector; }
 
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: string, public variableNames: List<string>,

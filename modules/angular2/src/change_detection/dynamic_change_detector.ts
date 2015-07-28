@@ -10,19 +10,16 @@ import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 
 import {ProtoRecord, RecordType} from './proto_record';
 
-export class DynamicChangeDetector extends AbstractChangeDetector {
-  locals: Locals = null;
+export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   values: List<any>;
   changes: List<any>;
   localPipes: List<any>;
   prevContexts: List<any>;
   directives: any = null;
-  alreadyChecked: boolean = false;
-  private pipes: Pipes = null;
 
   constructor(id: string, private changeControlStrategy: string, dispatcher: any,
-              private protos: List<ProtoRecord>, private directiveRecords: List<any>) {
-    super(id, dispatcher);
+              protos: List<ProtoRecord>, directiveRecords: List<any>) {
+    super(id, dispatcher, protos, directiveRecords);
     this.values = ListWrapper.createFixedSize(protos.length + 1);
     this.localPipes = ListWrapper.createFixedSize(protos.length + 1);
     this.prevContexts = ListWrapper.createFixedSize(protos.length + 1);

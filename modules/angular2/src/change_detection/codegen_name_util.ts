@@ -5,8 +5,21 @@ import {DirectiveIndex} from './directive_record';
 
 import {ProtoRecord} from './proto_record';
 
-// `context` is always the first field.
-var _CONTEXT_IDX = 0;
+// The names of these fields must be kept in sync with abstract_change_detector.ts or change
+// detection will fail.
+const _ALREADY_CHECKED_ACCESSOR = "alreadyChecked";
+const _CONTEXT_ACCESSOR = "context";
+const _CURRENT_PROTO = "currentProto";
+const _DIRECTIVES_ACCESSOR = "directiveRecords";
+const _DISPATCHER_ACCESSOR = "dispatcher";
+const _LOCALS_ACCESSOR = "locals";
+const _MODE_ACCESSOR = "mode";
+const _PIPES_ACCESSOR = "pipes";
+const _PROTOS_ACCESSOR = "protos";
+
+// `context` is always first.
+export const CONTEXT_INDEX = 0;
+const _FIELD_PREFIX = 'this.';
 
 var _whiteSpaceRegExp = RegExpWrapper.create("\\W", "g");
 
@@ -29,18 +42,34 @@ export class CodegenNameUtil {
    */
   _sanitizedNames: List<string>;
 
-  constructor(public records: List<ProtoRecord>, public directiveRecords: List<any>,
-              public fieldPrefix: string, public utilName: string) {
+  constructor(private records: List<ProtoRecord>, private directiveRecords: List<any>,
+              private utilName: string) {
     this._sanitizedNames = ListWrapper.createFixedSize(this.records.length + 1);
-    this._sanitizedNames[_CONTEXT_IDX] = 'context';
+    this._sanitizedNames[CONTEXT_INDEX] = _CONTEXT_ACCESSOR;
     for (var i = 0, iLen = this.records.length; i < iLen; ++i) {
       this._sanitizedNames[i + 1] = sanitizeName(`${this.records[i].name}${i}`);
     }
   }
 
-  getContextName(): string { return this.getFieldName(_CONTEXT_IDX); }
+  _addFieldPrefix(name: string): string { return `${_FIELD_PREFIX}${name}`; }
 
-  getLocalName(idx: int): string { return this._sanitizedNames[idx]; }
+  getDispatcherName(): string { return this._addFieldPrefix(_DISPATCHER_ACCESSOR); }
+
+  getPipesAccessorName(): string { return this._addFieldPrefix(_PIPES_ACCESSOR); }
+
+  getProtosName(): string { return this._addFieldPrefix(_PROTOS_ACCESSOR); }
+
+  getDirectivesAccessorName(): string { return this._addFieldPrefix(_DIRECTIVES_ACCESSOR); }
+
+  getLocalsAccessorName(): string { return this._addFieldPrefix(_LOCALS_ACCESSOR); }
+
+  getAlreadyCheckedName(): string { return this._addFieldPrefix(_ALREADY_CHECKED_ACCESSOR); }
+
+  getModeName(): string { return this._addFieldPrefix(_MODE_ACCESSOR); }
+
+  getCurrentProtoName(): string { return this._addFieldPrefix(_CURRENT_PROTO); }
+
+  getLocalName(idx: int): string { return `l_${this._sanitizedNames[idx]}`; }
 
   getChangeName(idx: int): string { return `c_${this._sanitizedNames[idx]}`; }
 
@@ -51,17 +80,22 @@ export class CodegenNameUtil {
     var declarations = [];
     var assignments = [];
     for (var i = 0, iLen = this.getFieldCount(); i < iLen; ++i) {
-      var changeName = this.getChangeName(i);
-      declarations.push(`${this.getLocalName(i)},${changeName}`);
-      assignments.push(changeName);
+      if (i == CONTEXT_INDEX) {
+        declarations.push(`${this.getLocalName(i)} = ${this.getFieldName(i)}`);
+      } else {
+        var changeName = this.getChangeName(i);
+        declarations.push(`${this.getLocalName(i)},${changeName}`);
+        assignments.push(changeName);
+      }
     }
-    return `var ${ListWrapper.join(declarations, ',')};` +
-           `${ListWrapper.join(assignments, '=')} = false;`;
+    var assignmentsCode =
+        ListWrapper.isEmpty(assignments) ? '' : `${ListWrapper.join(assignments, '=')} = false;`;
+    return `var ${ListWrapper.join(declarations, ',')};${assignmentsCode}`;
   }
 
   getFieldCount(): int { return this._sanitizedNames.length; }
 
-  getFieldName(idx: int): string { return `${this.fieldPrefix}${this._sanitizedNames[idx]}`; }
+  getFieldName(idx: int): string { return this._addFieldPrefix(this._sanitizedNames[idx]); }
 
   getAllFieldNames(): List<string> {
     var fieldList = [];
@@ -85,26 +119,16 @@ export class CodegenNameUtil {
   }
 
   /**
-   * Generates a statement which declares all fields.
-   * This is only necessary for Dart change detectors.
-   */
-  genDeclareFields(): string {
-    var fields = this.getAllFieldNames();
-    ListWrapper.removeAt(fields, _CONTEXT_IDX);
-    return ListWrapper.isEmpty(fields) ? '' : `var ${ListWrapper.join(fields, ', ')};`;
-  }
-
-  /**
    * Generates statements which clear all fields so that the change detector is dehydrated.
    */
   genDehydrateFields(): string {
     var fields = this.getAllFieldNames();
-    ListWrapper.removeAt(fields, _CONTEXT_IDX);
+    ListWrapper.removeAt(fields, CONTEXT_INDEX);
     if (!ListWrapper.isEmpty(fields)) {
       // At least one assignment.
       fields.push(`${this.utilName}.uninitialized;`);
     }
-    return `${this.getContextName()} = null; ${ListWrapper.join(fields, ' = ')}`;
+    return `${this.getFieldName(CONTEXT_INDEX)} = null; ${ListWrapper.join(fields, ' = ')}`;
   }
 
   /**
@@ -116,13 +140,17 @@ export class CodegenNameUtil {
     }), (r) => { return `${this.getPipeName(r.selfIndex)}.onDestroy();`; }), '\n');
   }
 
-  getPipeName(idx: int): string { return `${this.fieldPrefix}${this._sanitizedNames[idx]}_pipe`; }
+  getPipeName(idx: int): string {
+    return this._addFieldPrefix(`${this._sanitizedNames[idx]}_pipe`);
+  }
 
   getAllDirectiveNames(): List<string> {
     return ListWrapper.map(this.directiveRecords, d => this.getDirectiveName(d.directiveIndex));
   }
 
-  getDirectiveName(d: DirectiveIndex): string { return `${this.fieldPrefix}directive_${d.name}`; }
+  getDirectiveName(d: DirectiveIndex): string {
+    return this._addFieldPrefix(`directive_${d.name}`);
+  }
 
   getAllDetectorNames(): List<string> {
     return ListWrapper.map(
@@ -130,5 +158,5 @@ export class CodegenNameUtil {
         (d) => this.getDetectorName(d.directiveIndex));
   }
 
-  getDetectorName(d: DirectiveIndex): string { return `${this.fieldPrefix}detector_${d.name}`; }
+  getDetectorName(d: DirectiveIndex): string { return this._addFieldPrefix(`detector_${d.name}`); }
 }

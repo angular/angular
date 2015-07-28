@@ -42,7 +42,8 @@ export {
   ChangeDetector,
   ChangeDispatcher,
   ChangeDetection,
-  ChangeDetectorDefinition
+  ChangeDetectorDefinition,
+  DebugContext
 } from './interfaces';
 export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';

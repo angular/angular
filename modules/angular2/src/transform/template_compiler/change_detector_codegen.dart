@@ -82,7 +82,7 @@ class _CodegenState {
       this._generateCheckNoChanges)
       : _records = records,
         _directiveRecords = directiveRecords,
-        _names = new CodegenNameUtil(records, directiveRecords, '_', _UTIL),
+        _names = new CodegenNameUtil(records, directiveRecords, _UTIL),
         _changeDetectionMode = ChangeDetectionUtil
             .changeDetectionMode(changeDetectionStrategy);
 
@@ -99,22 +99,12 @@ class _CodegenState {
 
   void _writeToBuf(StringBuffer buf) {
     buf.write('''\n
-      class $_changeDetectorTypeName extends $_BASE_CLASS {
-        $_GEN_PREFIX.Pipes $_PIPES_ACCESSOR;
-        final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
-        final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
-            $_DIRECTIVES_ACCESSOR;
-        dynamic $_LOCALS_ACCESSOR = null;
-        dynamic $_ALREADY_CHECKED_ACCESSOR = false;
-        dynamic $_CURRENT_PROTO = null;
-        $_contextTypeName ${_names.getContextName()};
-        ${_names.genDeclareFields()}
+      class $_changeDetectorTypeName extends $_BASE_CLASS<$_contextTypeName> {
+        ${_genDeclareFields()}
 
-        $_changeDetectorTypeName(
-            dynamic $_DISPATCHER_ACCESSOR,
-            this.$_PROTOS_ACCESSOR,
-            this.$_DIRECTIVES_ACCESSOR)
-          : super(${_encodeValue(_changeDetectorDefId)}, $_DISPATCHER_ACCESSOR) {
+        $_changeDetectorTypeName(dispatcher, protos, directiveRecords)
+          : super(${_encodeValue(_changeDetectorDefId)},
+              dispatcher, protos, directiveRecords) {
           dehydrateDirectives(false);
         }
 
@@ -125,20 +115,20 @@ class _CodegenState {
           try {
             __detectChangesInRecords(throwOnChange);
           } catch (e, s) {
-            throwError($_CURRENT_PROTO, e, s);
+            throwError(${_names.getCurrentProtoName()}, e, s);
           }
         }
 
         void __detectChangesInRecords(throwOnChange) {
+          ${_names.getCurrentProtoName()} = null;
+
           ${_names.genInitLocals()}
           var $_IS_CHANGED_LOCAL = false;
-          $_CURRENT_PROTO = null;
           var $_CHANGES_LOCAL = null;
 
-          context = ${_names.getContextName()};
           ${_records.map(_genRecord).join('')}
 
-          $_ALREADY_CHECKED_ACCESSOR = true;
+          ${_names.getAlreadyCheckedName()} = true;
         }
 
         ${_genCheckNoChanges()}
@@ -147,26 +137,27 @@ class _CodegenState {
           ${_getCallOnAllChangesDoneBody()}
         }
 
-        void hydrate($_contextTypeName context, locals, directives, pipes) {
-          $_MODE_ACCESSOR = '$_changeDetectionMode';
-          ${_names.getContextName()} = context;
-          $_LOCALS_ACCESSOR = locals;
+        void hydrate(
+            $_contextTypeName context, locals, directives, pipes) {
+          ${_names.getModeName()} = '$_changeDetectionMode';
+          ${_names.getFieldName(CONTEXT_INDEX)} = context;
+          ${_names.getLocalsAccessorName()} = locals;
           hydrateDirectives(directives);
-          $_ALREADY_CHECKED_ACCESSOR = false;
-          $_PIPES_ACCESSOR = pipes;
+          ${_names.getAlreadyCheckedName()} = false;
+          ${_names.getPipesAccessorName()} = pipes;
         }
 
         ${_maybeGenHydrateDirectives()}
 
         void dehydrate() {
           dehydrateDirectives(true);
-          $_LOCALS_ACCESSOR = null;
-          $_PIPES_ACCESSOR = null;
+          ${_names.getLocalsAccessorName()} = null;
+          ${_names.getPipesAccessorName()} = null;
         }
 
         ${_maybeGenDehydrateDirectives()}
 
-        hydrated() => ${_names.getContextName()} != null;
+        hydrated() => ${_names.getFieldName(CONTEXT_INDEX)} != null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
@@ -190,16 +181,12 @@ class _CodegenState {
     var destroyPipesParamName = 'destroyPipes';
     var destroyPipesCode = _names.genPipeOnDestroy();
     if (destroyPipesCode.isNotEmpty) {
-      destroyPipesCode = 'if (${destroyPipesParamName}) { '
-          '${destroyPipesCode}'
-          '}';
+      destroyPipesCode = 'if (${destroyPipesParamName}) {${destroyPipesCode}}';
     }
     var dehydrateFieldsCode = _names.genDehydrateFields();
     if (destroyPipesCode.isEmpty && dehydrateFieldsCode.isEmpty) return '';
-    return 'void dehydrateDirectives(${destroyPipesParamName}) {'
-        '${destroyPipesCode}'
-        '${dehydrateFieldsCode}'
-        '}';
+    return 'void dehydrateDirectives(${destroyPipesParamName}) '
+        '{ ${destroyPipesCode} ${dehydrateFieldsCode} }';
   }
 
   String _maybeGenHydrateDirectives() {
@@ -208,10 +195,8 @@ class _CodegenState {
     if (hydrateDirectivesCode.isEmpty && hydrateDetectorsCode.isEmpty) {
       return '';
     }
-    return 'void hydrateDirectives(directives) { '
-        '$hydrateDirectivesCode'
-        '$hydrateDetectorsCode'
-        '}';
+    return 'void hydrateDirectives(directives) '
+        '{ $hydrateDirectivesCode $hydrateDetectorsCode }';
   }
 
   String _genHydrateDirectives() {
@@ -219,7 +204,7 @@ class _CodegenState {
     var directiveFieldNames = _names.getAllDirectiveNames();
     for (var i = 0; i < directiveFieldNames.length; ++i) {
       buf.writeln('${directiveFieldNames[i]} = directives.getDirectiveFor('
-          '$_DIRECTIVES_ACCESSOR[$i].directiveIndex);');
+          '${_names.getDirectivesAccessorName()}[$i].directiveIndex);');
     }
     return '$buf';
   }
@@ -229,7 +214,7 @@ class _CodegenState {
     var detectorFieldNames = _names.getAllDetectorNames();
     for (var i = 0; i < detectorFieldNames.length; ++i) {
       buf.writeln('${detectorFieldNames[i]} = directives.getDetectorFor('
-          '$_DIRECTIVES_ACCESSOR[$i].directiveIndex);');
+          '${_names.getDirectivesAccessorName()}[$i].directiveIndex);');
     }
     return '$buf';
   }
@@ -244,9 +229,20 @@ class _CodegenState {
             '${_names.getDirectiveName(rec.directiveIndex)}.onAllChangesDone();')
         .join('');
     return '''
-      $_DISPATCHER_ACCESSOR.notifyOnAllChangesDone();
+      ${_names.getDispatcherName()}.notifyOnAllChangesDone();
       ${directiveNotifications}
     ''';
+  }
+
+  String _genDeclareFields() {
+    var fields = _names.getAllFieldNames();
+    // If there's only one field, it's `context`, declared in the superclass.
+    if (fields.length == 1) return '';
+    fields.removeAt(CONTEXT_INDEX);
+    var toRemove = 'this.';
+    var declareNames = fields
+        .map((f) => f.startsWith(toRemove) ? f.substring(toRemove.length) : f);
+    return 'var ${declareNames.join(', ')};';
   }
 
   String _genRecord(ProtoRecord r) {
@@ -287,12 +283,12 @@ class _CodegenState {
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
     return '''
-      $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
+      ${_names.getCurrentProtoName()} = ${_names.getProtosName()}[$protoIndex];
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
-        $pipe = $_PIPES_ACCESSOR.get('$pipeType', $context, $cdRef);
+        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
       } else if (!$pipe.supports($context)) {
         $pipe.onDestroy();
-        $pipe = $_PIPES_ACCESSOR.get('$pipeType', $context, $cdRef);
+        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
       }
 
       $newValue = $pipe.transform($context, [$argString]);
@@ -312,7 +308,7 @@ class _CodegenState {
 
     var protoIndex = r.selfIndex - 1;
     var check = '''
-      $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
+      ${_names.getCurrentProtoName()} = ${_names.getProtosName()}[$protoIndex];
       ${_genUpdateCurrentValue(r)}
       if ($_NOT_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
         ${_names.getChangeName(r.selfIndex)} = true;
@@ -357,7 +353,7 @@ class _CodegenState {
         break;
 
       case RecordType.LOCAL:
-        rhs = '$_LOCALS_ACCESSOR.get("${r.name}")';
+        rhs = '${_names.getLocalsAccessorName()}.get("${r.name}")';
         break;
 
       case RecordType.INVOKE_METHOD:
@@ -421,8 +417,8 @@ class _CodegenState {
     } else {
       return '''
       ${_genThrowOnChangeCheck(oldValue, newValue)}
-      $_DISPATCHER_ACCESSOR.notifyOnBinding(
-          $_CURRENT_PROTO.bindingRecord, ${newValue});
+      ${_names.getDispatcherName()}.notifyOnBinding(
+          ${_names.getCurrentProtoName()}.bindingRecord, ${newValue});
     ''';
     }
   }
@@ -432,7 +428,7 @@ class _CodegenState {
       return '''
         if(throwOnChange) {
           $_UTIL.throwOnChange(
-              $_CURRENT_PROTO, $_UTIL.simpleChange(${oldValue}, ${newValue}));
+              ${_names.getCurrentProtoName()}, $_UTIL.simpleChange(${oldValue}, ${newValue}));
         }
       ''';
     } else {
@@ -455,7 +451,7 @@ class _CodegenState {
     return '''
       $_CHANGES_LOCAL = $_UTIL.addChange(
           $_CHANGES_LOCAL,
-          $_CURRENT_PROTO.bindingRecord.propertyName,
+          ${_names.getCurrentProtoName()}.bindingRecord.propertyName,
           $_UTIL.simpleChange($oldValue, $newValue));
     ''';
   }
@@ -477,7 +473,7 @@ class _CodegenState {
 
   String _genOnInit(ProtoRecord r) {
     var br = r.bindingRecord;
-    return 'if (!throwOnChange && !$_ALREADY_CHECKED_ACCESSOR) '
+    return 'if (!throwOnChange && !${_names.getAlreadyCheckedName()}) '
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();';
   }
 
@@ -504,21 +500,13 @@ class _CodegenState {
 
 const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';
 
-const _ALREADY_CHECKED_ACCESSOR = '_alreadyChecked';
 const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';
-const _CURRENT_PROTO = 'currentProto';
-const _DIRECTIVES_ACCESSOR = '_directiveRecords';
-const _DISPATCHER_ACCESSOR = 'dispatcher';
 const _GEN_PREFIX = '_gen';
 const _GEN_RECORDS_METHOD_NAME = '_createRecords';
 const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
 const _NOT_IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseNotIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
-const _LOCALS_ACCESSOR = '_locals';
-const _MODE_ACCESSOR = 'mode';
 const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
     'package:angular2/src/change_detection/pregen_proto_change_detector.dart';
-const _PIPES_ACCESSOR = '_pipes';
-const _PROTOS_ACCESSOR = '_protos';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';

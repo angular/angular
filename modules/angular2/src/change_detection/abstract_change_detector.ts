@@ -1,10 +1,12 @@
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from './change_detector_ref';
-import {ChangeDetector} from './interfaces';
+import {DirectiveRecord} from './directive_record';
+import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {ChangeDetectionError} from './exceptions';
 import {ProtoRecord} from './proto_record';
 import {Locals} from './parser/locals';
+import {Pipes} from './pipes/pipes';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
 class _Context {
@@ -13,14 +15,31 @@ class _Context {
               public expression: any) {}
 }
 
-export class AbstractChangeDetector implements ChangeDetector {
+export class AbstractChangeDetector<T> implements ChangeDetector {
   lightDomChildren: List<any> = [];
   shadowDomChildren: List<any> = [];
   parent: ChangeDetector;
-  mode: string = null;
   ref: ChangeDetectorRef;
 
-  constructor(public id: string, public dispatcher: any) { this.ref = new ChangeDetectorRef(this); }
+  // The names of the below fields must be kept in sync with codegen_name_util.ts or
+  // change detection will fail.
+  alreadyChecked: any = false;
+  context: T;
+  currentProto: ProtoRecord = null;
+  directiveRecords: List<DirectiveRecord>;
+  dispatcher: ChangeDispatcher;
+  locals: Locals = null;
+  mode: string = null;
+  pipes: Pipes = null;
+  protos: List<ProtoRecord>;
+
+  constructor(public id: string, dispatcher: ChangeDispatcher, protos: List<ProtoRecord>,
+              directiveRecords: List<DirectiveRecord>) {
+    this.ref = new ChangeDetectorRef(this);
+    this.directiveRecords = directiveRecords;
+    this.dispatcher = dispatcher;
+    this.protos = protos;
+  }
 
   addChild(cd: ChangeDetector): void {
     this.lightDomChildren.push(cd);
@@ -58,7 +77,7 @@ export class AbstractChangeDetector implements ChangeDetector {
 
   detectChangesInRecords(throwOnChange: boolean): void {}
 
-  hydrate(context: any, locals: Locals, directives: any, pipes: any): void {}
+  hydrate(context: T, locals: Locals, directives: any, pipes: any): void {}
 
   hydrateDirectives(directives: any): void {}
 

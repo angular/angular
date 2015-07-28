@@ -23,19 +23,12 @@ void initReflector() {
   _gen.preGeneratedProtoDetectors['MyComponent_comp_0'] =
       _MyComponent_ChangeDetector0.newProtoChangeDetector;
 }
-class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
-  _gen.Pipes _pipes;
-  final _gen.List<_gen.ProtoRecord> _protos;
-  final _gen.List<_gen.DirectiveRecord> _directiveRecords;
-  dynamic _locals = null;
-  dynamic _alreadyChecked = false;
-  dynamic currentProto = null;
-  MyComponent _context;
-  var _myNum0, _interpolate1;
+class _MyComponent_ChangeDetector0
+    extends _gen.AbstractChangeDetector<MyComponent> {
+  var myNum0, interpolate1;
 
-  _MyComponent_ChangeDetector0(
-      dynamic dispatcher, this._protos, this._directiveRecords)
-      : super("MyComponent_comp_0", dispatcher) {
+  _MyComponent_ChangeDetector0(dispatcher, protos, directiveRecords)
+      : super("MyComponent_comp_0", dispatcher, protos, directiveRecords) {
     dehydrateDirectives(false);
   }
 
@@ -46,48 +39,53 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     try {
       __detectChangesInRecords(throwOnChange);
     } catch (e, s) {
-      throwError(currentProto, e, s);
+      throwError(this.currentProto, e, s);
     }
   }
 
   void __detectChangesInRecords(throwOnChange) {
-    var context, c_context, myNum0, c_myNum0, interpolate1, c_interpolate1;
-    c_context = c_myNum0 = c_interpolate1 = false;
+    this.currentProto = null;
+    var l_context = this.context,
+        l_myNum0,
+        c_myNum0,
+        l_interpolate1,
+        c_interpolate1;
+    c_myNum0 = c_interpolate1 = false;
     var isChanged = false;
-    currentProto = null;
     var changes = null;
 
-    context = _context;
-    currentProto = _protos[0];
-    myNum0 = context.myNum;
-    if (_gen.looseNotIdentical(myNum0, _myNum0)) {
+    this.currentProto = this.protos[0];
+    l_myNum0 = l_context.myNum;
+    if (_gen.looseNotIdentical(l_myNum0, this.myNum0)) {
       c_myNum0 = true;
 
-      _myNum0 = myNum0;
+      this.myNum0 = l_myNum0;
     }
     if (c_myNum0) {
-      currentProto = _protos[1];
-      interpolate1 = "Salad: " "${myNum0 == null ? "" : myNum0}" " is awesome";
-      if (_gen.looseNotIdentical(interpolate1, _interpolate1)) {
+      this.currentProto = this.protos[1];
+      l_interpolate1 =
+          "Salad: " "${l_myNum0 == null ? "" : l_myNum0}" " is awesome";
+      if (_gen.looseNotIdentical(l_interpolate1, this.interpolate1)) {
         c_interpolate1 = true;
         if (throwOnChange) {
-          _gen.ChangeDetectionUtil.throwOnChange(currentProto,
+          _gen.ChangeDetectionUtil.throwOnChange(this.currentProto,
               _gen.ChangeDetectionUtil.simpleChange(
-                  _interpolate1, interpolate1));
+                  this.interpolate1, l_interpolate1));
         }
 
-        dispatcher.notifyOnBinding(currentProto.bindingRecord, interpolate1);
+        this.dispatcher.notifyOnBinding(
+            this.currentProto.bindingRecord, l_interpolate1);
 
-        _interpolate1 = interpolate1;
+        this.interpolate1 = l_interpolate1;
       }
     } else {
-      interpolate1 = _interpolate1;
+      l_interpolate1 = this.interpolate1;
     }
     changes = null;
 
     isChanged = false;
 
-    _alreadyChecked = true;
+    this.alreadyChecked = true;
   }
 
   void checkNoChanges() {
@@ -95,30 +93,30 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   }
 
   void callOnAllChangesDone() {
-    dispatcher.notifyOnAllChangesDone();
+    this.dispatcher.notifyOnAllChangesDone();
   }
 
   void hydrate(MyComponent context, locals, directives, pipes) {
-    mode = 'ALWAYS_CHECK';
-    _context = context;
-    _locals = locals;
+    this.mode = 'ALWAYS_CHECK';
+    this.context = context;
+    this.locals = locals;
     hydrateDirectives(directives);
-    _alreadyChecked = false;
-    _pipes = pipes;
+    this.alreadyChecked = false;
+    this.pipes = pipes;
   }
 
   void dehydrate() {
     dehydrateDirectives(true);
-    _locals = null;
-    _pipes = null;
+    this.locals = null;
+    this.pipes = null;
   }
 
   void dehydrateDirectives(destroyPipes) {
-    _context = null;
-    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
+    this.context = null;
+    this.myNum0 = this.interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
-  hydrated() => _context != null;
+  hydrated() => this.context != null;
 
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.ChangeDetectorDefinition def) {

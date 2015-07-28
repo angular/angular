@@ -6,7 +6,7 @@ import {ChangeDetectionUtil} from './change_detection_util';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 import {ProtoRecord, RecordType} from './proto_record';
-import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
+import {CONTEXT_INDEX, CodegenNameUtil, sanitizeName} from './codegen_name_util';
 
 
 /**
@@ -20,16 +20,8 @@ import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 */
 var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 var UTIL = "ChangeDetectionUtil";
-var DISPATCHER_ACCESSOR = "this.dispatcher";
-var PIPES_ACCESSOR = "this.pipes";
-var PROTOS_ACCESSOR = "this.protos";
-var DIRECTIVES_ACCESSOR = "this.directiveRecords";
 var IS_CHANGED_LOCAL = "isChanged";
 var CHANGES_LOCAL = "changes";
-var LOCALS_ACCESSOR = "this.locals";
-var MODE_ACCESSOR = "this.mode";
-var CURRENT_PROTO = "this.currentProto";
-var ALREADY_CHECKED_ACCESSOR = "this.alreadyChecked";
 
 export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
@@ -38,20 +30,14 @@ export class ChangeDetectorJITGenerator {
   constructor(public id: string, public changeDetectionStrategy: string,
               public records: List<ProtoRecord>, public directiveRecords: List<any>,
               private generateCheckNoChanges: boolean) {
-    this._names = new CodegenNameUtil(this.records, this.directiveRecords, 'this._', UTIL);
+    this._names = new CodegenNameUtil(this.records, this.directiveRecords, UTIL);
     this._typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
   generate(): Function {
     var classDefinition = `
       var ${this._typeName} = function ${this._typeName}(dispatcher, protos, directiveRecords) {
-        ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)}, dispatcher);
-        ${PROTOS_ACCESSOR} = protos;
-        ${DIRECTIVES_ACCESSOR} = directiveRecords;
-        ${LOCALS_ACCESSOR} = null;
-        ${CURRENT_PROTO} = null;
-        ${PIPES_ACCESSOR} = null;
-        ${ALREADY_CHECKED_ACCESSOR} = false;
+        ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)}, dispatcher, protos, directiveRecords);
         this.dehydrateDirectives(false);
       }
 
@@ -64,22 +50,20 @@ export class ChangeDetectorJITGenerator {
         try {
           this.__detectChangesInRecords(throwOnChange);
         } catch (e) {
-          this.throwError(${CURRENT_PROTO}, e, e.stack);
+          this.throwError(${this._names.getCurrentProtoName()}, e, e.stack);
         }
       }
 
       ${this._typeName}.prototype.__detectChangesInRecords = function(throwOnChange) {
-        ${CURRENT_PROTO} = null;
+        ${this._names.getCurrentProtoName()} = null;
 
         ${this._names.genInitLocals()}
         var ${IS_CHANGED_LOCAL} = false;
         var ${CHANGES_LOCAL} = null;
 
-        context = ${this._names.getContextName()};
-
         ${this.records.map((r) => this._genRecord(r)).join("\n")}
 
-        ${ALREADY_CHECKED_ACCESSOR} = true;
+        ${this._names.getAlreadyCheckedName()} = true;
       }
 
       ${this._genCheckNoChanges()}
@@ -89,26 +73,27 @@ export class ChangeDetectorJITGenerator {
       }
 
       ${this._typeName}.prototype.hydrate = function(context, locals, directives, pipes) {
-        ${MODE_ACCESSOR} = "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
-        ${this._names.getContextName()} = context;
-        ${LOCALS_ACCESSOR} = locals;
+        ${this._names.getModeName()} =
+            "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
+        ${this._names.getFieldName(CONTEXT_INDEX)} = context;
+        ${this._names.getLocalsAccessorName()} = locals;
         this.hydrateDirectives(directives);
-        ${PIPES_ACCESSOR} = pipes;
-        ${ALREADY_CHECKED_ACCESSOR} = false;
+        ${this._names.getPipesAccessorName()} = pipes;
+        ${this._names.getAlreadyCheckedName()} = false;
       }
 
       ${this._maybeGenHydrateDirectives()}
 
       ${this._typeName}.prototype.dehydrate = function() {
         this.dehydrateDirectives(true);
-        ${LOCALS_ACCESSOR} = null;
-        ${PIPES_ACCESSOR} = null;
+        ${this._names.getLocalsAccessorName()} = null;
+        ${this._names.getPipesAccessorName()} = null;
       }
 
       ${this._maybeGenDehydrateDirectives()}
 
       ${this._typeName}.prototype.hydrated = function() {
-        return ${this._names.getContextName()} !== null;
+        return ${this._names.getFieldName(CONTEXT_INDEX)} !== null;
       }
 
       return function(dispatcher) {
@@ -148,8 +133,8 @@ export class ChangeDetectorJITGenerator {
     var directiveFieldNames = this._names.getAllDirectiveNames();
     var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
     for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
-      lines[i] =
-          `${directiveFieldNames[i]} = directives.getDirectiveFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`;
+      lines[i] = `${directiveFieldNames[i]} = directives.getDirectiveFor(
+          ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
     }
     return lines.join('\n');
   }
@@ -158,8 +143,8 @@ export class ChangeDetectorJITGenerator {
     var detectorFieldNames = this._names.getAllDetectorNames();
     var lines = ListWrapper.createFixedSize(detectorFieldNames.length);
     for (var i = 0, iLen = detectorFieldNames.length; i < iLen; ++i) {
-      lines[i] = `${detectorFieldNames[i]} =
-          directives.getDetectorFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);`;
+      lines[i] = `${detectorFieldNames[i]} = directives.getDetectorFor(
+          ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
     }
     return lines.join('\n');
   }
@@ -179,7 +164,7 @@ export class ChangeDetectorJITGenerator {
     var directiveNotifications = notifications.join("\n");
 
     return `
-      this.dispatcher.notifyOnAllChangesDone();
+      ${this._names.getDispatcherName()}.notifyOnAllChangesDone();
       ${directiveNotifications}
     `;
   }
@@ -223,12 +208,12 @@ export class ChangeDetectorJITGenerator {
     var pipeType = r.name;
 
     return `
-      ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
+      ${this._names.getCurrentProtoName()} = ${this._names.getProtosName()}[${protoIndex}];
       if (${pipe} === ${UTIL}.uninitialized) {
-        ${pipe} = ${PIPES_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
+        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
       } else if (!${pipe}.supports(${context})) {
         ${pipe}.onDestroy();
-        ${pipe} = ${PIPES_ACCESSOR}.get('${pipeType}', ${context}, ${cdRef});
+        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
       }
 
       ${newValue} = ${pipe}.transform(${context}, [${argString}]);
@@ -248,7 +233,7 @@ export class ChangeDetectorJITGenerator {
 
     var protoIndex = r.selfIndex - 1;
     var check = `
-      ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
+      ${this._names.getCurrentProtoName()} = ${this._names.getProtosName()}[${protoIndex}];
       ${this._genUpdateCurrentValue(r)}
       if (${newValue} !== ${oldValue}) {
         ${this._names.getChangeName(r.selfIndex)} = true;
@@ -291,7 +276,7 @@ export class ChangeDetectorJITGenerator {
         break;
 
       case RecordType.LOCAL:
-        rhs = `${LOCALS_ACCESSOR}.get('${r.name}')`;
+        rhs = `${this._names.getLocalsAccessorName()}.get('${r.name}')`;
         break;
 
       case RecordType.INVOKE_METHOD:
@@ -354,7 +339,8 @@ export class ChangeDetectorJITGenerator {
     } else {
       return `
         ${this._genThrowOnChangeCheck(oldValue, newValue)}
-        ${DISPATCHER_ACCESSOR}.notifyOnBinding(${CURRENT_PROTO}.bindingRecord, ${newValue});
+        ${this._names.getDispatcherName()}.notifyOnBinding(
+            ${this._names.getCurrentProtoName()}.bindingRecord, ${newValue});
       `;
     }
   }
@@ -363,7 +349,7 @@ export class ChangeDetectorJITGenerator {
     if (this.generateCheckNoChanges) {
       return `
         if(throwOnChange) {
-          ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
+          ${UTIL}.throwOnChange(${this._names.getCurrentProtoName()}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
         }
         `;
     } else {
@@ -385,7 +371,7 @@ export class ChangeDetectorJITGenerator {
     if (!r.bindingRecord.callOnChange()) return "";
     return `
       ${CHANGES_LOCAL} = ${UTIL}.addChange(
-          ${CHANGES_LOCAL}, ${CURRENT_PROTO}.bindingRecord.propertyName,
+          ${CHANGES_LOCAL}, ${this._names.getCurrentProtoName()}.bindingRecord.propertyName,
           ${UTIL}.simpleChange(${oldValue}, ${newValue}));
     `;
   }
@@ -406,7 +392,7 @@ export class ChangeDetectorJITGenerator {
 
   _genOnInit(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange && !${ALREADY_CHECKED_ACCESSOR}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();`;
+    return `if (!throwOnChange && !${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();`;
   }
 
   _genOnChange(r: ProtoRecord): string {

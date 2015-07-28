@@ -8,6 +8,7 @@ import {
   Parser,
   ChangeDispatcher,
   ChangeDetection,
+  DebugContext,
   DynamicChangeDetection,
   JitChangeDetection,
   ChangeDetectorDefinition,
@@ -380,6 +381,9 @@ class FakeDirectives {
 }
 
 class DummyDispatcher implements ChangeDispatcher {
+  getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
+    throw "getDebugContext not implemented.";
+  }
   notifyOnBinding(bindingRecord, newValue) { throw "Should not be used"; }
   notifyOnAllChangesDone() {}
 }
