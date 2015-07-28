@@ -33,8 +33,11 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
-@Directive(
-    {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.onCheck]})
+@Directive({
+  selector: '[ng-for][ng-for-of]',
+  properties: ['ngForOf'],
+  lifecycle: [LifecycleEvent.onCheck]
+})
 export class NgFor {
   _ngForOf: any;
   _pipe: Pipe;
