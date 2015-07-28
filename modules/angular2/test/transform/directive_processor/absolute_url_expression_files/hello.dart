@@ -8,3 +8,6 @@ import 'package:angular2/angular2.dart'
     templateUrl: 'package:other_package/template.html',
     styleUrls: const ['package:other_package/template.css'])
 class HelloCmp {}
+
+@Injectable()
+hello() {}

@@ -297,9 +297,9 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
     _maybeWriteReflector();
     writer.print('..registerFunction(');
     node.name.accept(this);
-    writer.print(', new ${_REF_PREFIX}.ReflectionInfo(');
+    writer.print(', new ${_REF_PREFIX}.ReflectionInfo(const [');
     node.metadata.accept(_metaVisitor);
-    writer.print(', const [');
+    writer.print('], const [');
     node.functionExpression.parameters.accept(_paramsVisitor);
     writer.print(']))');
     return null;

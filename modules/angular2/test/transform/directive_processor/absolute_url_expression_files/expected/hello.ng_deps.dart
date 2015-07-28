@@ -17,5 +17,7 @@ void initReflector() {
           template: r'''{{greeting}}''',
           templateUrl: r'package:other_package/template.html',
           styles: const [r'''.greeting { .color: blue; }''',])
-    ], const [], () => new HelloCmp()));
+    ], const [], () => new HelloCmp()))
+    ..registerFunction(
+        hello, new _ngRef.ReflectionInfo(const [const Injectable()], const []));
 }
