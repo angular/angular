@@ -20,6 +20,7 @@ import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {Parser} from 'angular2/src/change_detection/change_detection';
 import * as pvm from '../view/proto_view_merger';
+import {CssSelector} from './selector';
 import {DOCUMENT_TOKEN, APP_ID_TOKEN} from '../dom_tokens';
 import {Inject} from 'angular2/di';
 import {SharedStylesHost} from '../view/shared_styles_host';
@@ -50,7 +51,7 @@ export class DomCompiler extends RenderCompiler {
   }
 
   compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> {
-    var hostViewDef = new ViewDefinition({
+    let hostViewDef = new ViewDefinition({
       componentId: directiveMetadata.id,
       templateAbsUrl: null, template: null,
       styles: null,
@@ -58,10 +59,12 @@ export class DomCompiler extends RenderCompiler {
       directives: [directiveMetadata],
       encapsulation: ViewEncapsulation.NONE
     });
-    return this._compileView(
-        hostViewDef, new TemplateAndStyles(
-                         `<${directiveMetadata.selector}></${directiveMetadata.selector}>`, []),
-        ViewType.HOST);
+
+    let selector = CssSelector.parse(directiveMetadata.selector)[0];
+    let hostTemplate = selector.getMatchingElementTemplate();
+    let templateAndStyles = new TemplateAndStyles(hostTemplate, []);
+
+    return this._compileView(hostViewDef, templateAndStyles, ViewType.HOST);
   }
 
   mergeProtoViewsRecursively(

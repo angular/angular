@@ -335,4 +335,27 @@ export function main() {
       expect(cssSelectors[2].notSelectors[0].classNames).toEqual(['special']);
     });
   });
+
+  describe('CssSelector.getMatchingElementTemplate', () => {
+    it('should create an element with a tagName, classes, and attributes', () => {
+      let selector = CssSelector.parse('blink.neon.hotpink[sweet][dismissable=false]')[0];
+      let template = selector.getMatchingElementTemplate();
+
+      expect(template).toEqual('<blink class="neon hotpink" sweet dismissable="false"></blink>');
+    });
+
+    it('should create an element without a tag name', () => {
+      let selector = CssSelector.parse('[fancy]')[0];
+      let template = selector.getMatchingElementTemplate();
+
+      expect(template).toEqual('<div fancy></div>');
+    });
+
+    it('should ignore :not selectors', () => {
+      let selector = CssSelector.parse('grape:not(.red)')[0];
+      let template = selector.getMatchingElementTemplate();
+
+      expect(template).toEqual('<grape></grape>');
+    });
+  });
 }
