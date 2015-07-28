@@ -1,4 +1,4 @@
-/// <reference path="../../typings/rx/rx.d.ts" />
+/// <reference path="../../angular2/typings/rx/rx.d.ts" />
 
 import {
   ReadyStates,

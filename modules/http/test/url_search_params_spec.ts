@@ -9,7 +9,7 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {URLSearchParams} from 'angular2/src/http/url_search_params';
+import {URLSearchParams} from 'http/src/url_search_params';
 
 export function main() {
   describe('URLSearchParams', () => {

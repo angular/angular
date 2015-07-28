@@ -53,3 +53,4 @@ function publishModule {
 publishRttsAssert
 publishModule angular2
 publishModule benchpress
+publishModule http

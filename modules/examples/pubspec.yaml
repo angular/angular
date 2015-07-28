@@ -4,6 +4,7 @@ environment:
 dependencies:
   angular2: '^<%= packageJson.version %>'
   angular2_material: '^<%= packageJson.version %>'
+  http: '^<%= packageJson.version %>'
   browser: '^0.10.0'
 dev_dependencies:
   guinness: '^0.1.17'
@@ -14,6 +15,8 @@ dependency_overrides:
     path: ../angular2
   angular2_material:
     path: ../angular2_material
+  http:
+    path: ../http
 transformers:
 - angular2:
     $exclude:
