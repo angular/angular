@@ -88,6 +88,8 @@ export function main() {
       var locationStrategy = new MockLocationStrategy();
       var location = new Location(locationStrategy);
 
+      function assertUrl(path) { expect(location.path()).toEqual(path); }
+
       location.go('/ready');
       assertUrl('/ready');
 
@@ -102,8 +104,6 @@ export function main() {
 
       location.back();
       assertUrl('/ready');
-
-      function assertUrl(path) { expect(location.path()).toEqual(path); }
     });
   });
 }

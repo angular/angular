@@ -76,6 +76,20 @@ export function main() {
              });
        }));
 
+    it('should not push a history change on when navigate is called with skipUrlChange',
+       inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerOutlet(outlet)
+             .then((_) => router.config([new Route({path: '/b', component: DummyComponent})]))
+             .then((_) => router.navigate('/b', true))
+             .then((_) => {
+               expect(outlet.spy('commit')).toHaveBeenCalled();
+               expect(location.urlChanges).toEqual([]);
+               async.done();
+             });
+       }));
+
 
     it('should navigate after being configured', inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();

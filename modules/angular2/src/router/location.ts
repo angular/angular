@@ -34,7 +34,9 @@ export class Location {
     this._platformStrategy.onPopState((_) => this._onPopState(_));
   }
 
-  _onPopState(_): void { ObservableWrapper.callNext(this._subject, {'url': this.path()}); }
+  _onPopState(_): void {
+    ObservableWrapper.callNext(this._subject, {'url': this.path(), 'pop': true});
+  }
 
   path(): string { return this.normalize(this._platformStrategy.path()); }
 

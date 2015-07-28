@@ -27,7 +27,8 @@ import {
   RouteParams,
   Router,
   appBaseHrefToken,
-  routerDirectives
+  routerDirectives,
+  HashLocationStrategy
 } from 'angular2/router';
 
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
@@ -78,6 +79,57 @@ export function main() {
                async.done();
              });
            });
+         }));
+    });
+
+    describe('back button app', () => {
+      beforeEachBindings(() => { return [bind(appComponentTypeToken).toValue(HierarchyAppCmp)]; });
+
+      it('should change the url without pushing a new history state for back navigations',
+         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+
+           tcb.createAsync(HierarchyAppCmp)
+               .then((rootTC) => {
+                 var router = rootTC.componentInstance.router;
+                 var position = 0;
+                 var flipped = false;
+                 var history =
+                     [
+                       ['/parent/child', 'root { parent { hello } }', '/super-parent/child'],
+                       ['/super-parent/child', 'root { super-parent { hello2 } }', '/parent/child'],
+                       ['/parent/child', 'root { parent { hello } }', false]
+                     ]
+
+                     router.subscribe((_) => {
+                       var location = rootTC.componentInstance.location;
+                       var element = rootTC.nativeElement;
+                       var path = location.path();
+
+                       var entry = history[position];
+
+                       expect(path).toEqual(entry[0]);
+                       expect(element).toHaveText(entry[1]);
+
+                       var nextUrl = entry[2];
+                       if (nextUrl == false) {
+                         flipped = true;
+                       }
+
+                       if (flipped && position == 0) {
+                         async.done();
+                         return;
+                       }
+
+                       position = position + (flipped ? -1 : 1);
+                       if (flipped) {
+                         location.back();
+                       } else {
+                         router.navigate(nextUrl);
+                       }
+                     });
+
+                 router.navigate(history[0][0]);
+               });
          }));
     });
 
@@ -153,6 +205,11 @@ export function main() {
 class HelloCmp {
 }
 
+@Component({selector: 'hello2-cmp'})
+@View({template: 'hello2'})
+class Hello2Cmp {
+}
+
 @Component({selector: 'app-cmp'})
 @View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
 @RouteConfig([new Route({path: '/', component: HelloCmp})])
@@ -166,9 +223,18 @@ class AppCmp {
 class ParentCmp {
 }
 
+@Component({selector: 'super-parent-cmp'})
+@View({template: `super-parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@RouteConfig([new Route({path: '/child', component: Hello2Cmp})])
+class SuperParentCmp {
+}
+
 @Component({selector: 'app-cmp'})
 @View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
-@RouteConfig([new Route({path: '/parent/...', component: ParentCmp})])
+@RouteConfig([
+  new Route({path: '/parent/...', component: ParentCmp}),
+  new Route({path: '/super-parent/...', component: SuperParentCmp})
+])
 class HierarchyAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
