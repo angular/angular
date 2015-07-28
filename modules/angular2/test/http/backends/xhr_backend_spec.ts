@@ -51,6 +51,11 @@ class MockBrowserXHR extends BrowserXhr {
   }
 
   setStatusCode(status) { this.status = status; }
+
+  setResponse(value) { this.response = value; }
+
+  setResponseText(value) { this.responseText = value; }
+
   addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
 
   dispatchEvent(type: string) { this.callbacks.get(type)({}); }
@@ -143,7 +148,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           ObservableWrapper.subscribe(connection.response, res => {
+           ObservableWrapper.subscribe<Response>(connection.response, res => {
              expect(res.status).toBe(statusCode);
              async.done();
            });
@@ -158,7 +163,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           ObservableWrapper.subscribe(connection.response, res => {
+           ObservableWrapper.subscribe<Response>(connection.response, res => {
              expect(res.status).toBe(normalizedCode);
              async.done();
            });
@@ -166,6 +171,32 @@ export function main() {
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
+
+      it('should normalize responseText and response', inject([AsyncTestCompleter], async => {
+           var responseBody = 'Doge';
+
+           var connection1 =
+               new XHRConnection(sampleRequest, new MockBrowserXHR(), new ResponseOptions());
+
+           var connection2 =
+               new XHRConnection(sampleRequest, new MockBrowserXHR(), new ResponseOptions());
+
+           ObservableWrapper.subscribe<Response>(connection1.response, res => {
+             expect(res.text()).toBe(responseBody);
+
+             ObservableWrapper.subscribe<Response>(connection2.response, ress => {
+               expect(ress.text()).toBe(responseBody);
+               async.done();
+             });
+             existingXHRs[1].dispatchEvent('load');
+           });
+
+           existingXHRs[0].setResponseText(responseBody);
+           existingXHRs[1].setResponse(responseBody);
+
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
     });
   });
 }
