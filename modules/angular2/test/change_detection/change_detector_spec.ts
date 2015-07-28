@@ -351,6 +351,14 @@ export function main() {
             val.changeDetector.detectChanges();
             expect(val.dispatcher.loggedValues).toEqual(['value one two default']);
           });
+
+          it('should support pipes as arguments to pure functions', () => {
+            var registry = new FakePipes('pipe', () => new IdentityPipe());
+            var person = new Person('bob');
+            var val = _createChangeDetector('(name | pipe).length', person, registry);
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual([3]);
+          });
         });
 
         it('should notify the dispatcher on all changes done', () => {

@@ -246,14 +246,14 @@ class _CodegenState {
 
     var oldValue = _names.getFieldName(r.selfIndex);
     var newValue = _names.getLocalName(r.selfIndex);
-    var change = _names.getChangeName(r.selfIndex);
 
     var pipe = _names.getPipeName(r.selfIndex);
     var cdRef = 'this.ref';
 
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
-    return '''
+
+    var read = '''
       ${_names.getCurrentProtoName()} = ${_names.getProtosName()}[$protoIndex];
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
@@ -261,16 +261,20 @@ class _CodegenState {
         $pipe.onDestroy();
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
       }
-
       $newValue = $pipe.transform($context, [$argString]);
+    ''';
+
+    var check = '''
       if ($_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
         $newValue = $_UTIL.unwrapValue($newValue);
-        $change = true;
+        ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
         $oldValue = $newValue;
       }
     ''';
+
+    return r.shouldBeChecked() ? "${read}${check}" : read;
   }
 
   String _genReferenceCheck(ProtoRecord r) {
@@ -278,22 +282,33 @@ class _CodegenState {
     var newValue = _names.getLocalName(r.selfIndex);
 
     var protoIndex = r.selfIndex - 1;
-    var check = '''
+
+    var read = '''
       ${_names.getCurrentProtoName()} = ${_names.getProtosName()}[$protoIndex];
       ${_genUpdateCurrentValue(r)}
+    ''';
+
+    var check = '''
       if ($_NOT_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
-        ${_names.getChangeName(r.selfIndex)} = true;
+        ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
         $oldValue = $newValue;
       }
     ''';
+
+    var genCode = r.shouldBeChecked() ? "${read}${check}" : read;
+
     if (r.isPureFunction()) {
       // Add an "if changed guard"
       var condition = r.args.map((a) => _names.getChangeName(a)).join(' || ');
-      return 'if ($condition) { $check } else { $newValue = $oldValue; }';
+      if (r.isUsedByOtherRecord()) {
+        return 'if ($condition) { $genCode } else { $newValue = $oldValue; }';
+      } else  {
+        return 'if ($condition) { $genCode }';
+      }
     } else {
-      return check;
+      return genCode;
     }
   }
 
@@ -344,6 +359,10 @@ class _CodegenState {
         rhs = '$_UTIL.${r.name}($argString)';
         break;
 
+      case RecordType.COLLECTION_LITERAL:
+        rhs = '$_UTIL.${r.name}($argString)';
+        break;
+
       case RecordType.INTERPOLATE:
         rhs = _genInterpolation(r);
         break;
@@ -368,6 +387,10 @@ class _CodegenState {
     }
     res.write(_encodeValue(r.fixedArgs[r.args.length]));
     return '$res';
+  }
+
+  String _genChangeMarker(ProtoRecord r) {
+    return r.argumentToPureFunction ? "${this._names.getChangeName(r.selfIndex)} = true;" : "";
   }
 
   String _genUpdateDirectiveOrElement(ProtoRecord r) {

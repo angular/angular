@@ -12,7 +12,7 @@ import {RecordType, ProtoRecord} from './proto_record';
  * Records that are last in bindings CANNOT be removed, and instead are
  * replaced with very cheap SELF records.
  */
-export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
+export function coalesce(records: ProtoRecord[]): ProtoRecord[] {
   var res: List<ProtoRecord> = [];
   var indexMap: Map<number, number> = new Map<number, number>();
 
@@ -24,8 +24,13 @@ export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
     if (isPresent(matchingRecord) && record.lastInBinding) {
       res.push(_selfRecord(record, matchingRecord.selfIndex, res.length + 1));
       indexMap.set(r.selfIndex, matchingRecord.selfIndex);
+      matchingRecord.referencedBySelf = true;
 
     } else if (isPresent(matchingRecord) && !record.lastInBinding) {
+      if (record.argumentToPureFunction) {
+        matchingRecord.argumentToPureFunction = true;
+      }
+
       indexMap.set(r.selfIndex, matchingRecord.selfIndex);
 
     } else {
@@ -40,7 +45,7 @@ export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
 function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): ProtoRecord {
   return new ProtoRecord(RecordType.SELF, "self", null, [], r.fixedArgs, contextIndex,
                          r.directiveIndex, selfIndex, r.bindingRecord, r.expressionAsString,
-                         r.lastInBinding, r.lastInDirective);
+                         r.lastInBinding, r.lastInDirective, false, false);
 }
 
 function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
@@ -66,7 +71,8 @@ function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, a
   var contextIndex = _map(indexMap, r.contextIndex);
   return new ProtoRecord(r.mode, r.name, r.funcOrValue, args, r.fixedArgs, contextIndex,
                          r.directiveIndex, selfIndex, r.bindingRecord, r.expressionAsString,
-                         r.lastInBinding, r.lastInDirective);
+                         r.lastInBinding, r.lastInDirective, r.argumentToPureFunction,
+                         r.referencedBySelf);
 }
 
 function _map(indexMap: Map<any, any>, value: number) {
