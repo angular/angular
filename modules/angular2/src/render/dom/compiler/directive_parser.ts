@@ -24,20 +24,11 @@ export class DirectiveParser implements CompileStep {
     for (var i = 0; i < _directives.length; i++) {
       var directive = _directives[i];
       var selector = CssSelector.parse(directive.selector);
-      this._ensureComponentOnlyHasElementSelector(selector, directive);
       this._selectorMatcher.addSelectables(selector, i);
     }
   }
 
   processStyle(style: string): string { return style; }
-
-  _ensureComponentOnlyHasElementSelector(selector, directive) {
-    var isElementSelector = selector.length === 1 && selector[0].isElementSelector();
-    if (!isElementSelector && directive.type === DirectiveMetadata.COMPONENT_TYPE) {
-      throw new BaseException(
-          `Component '${directive.id}' can only have an element selector, but had '${directive.selector}'`);
-    }
-  }
 
   processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();

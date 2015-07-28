@@ -91,6 +91,21 @@ export class CssSelector {
     this.element = element;
   }
 
+  /** Gets a template string for an element that matches the selector. */
+  getMatchingElementTemplate(): string {
+    let tagName = isPresent(this.element) ? this.element : 'div';
+    let classAttr = this.classNames.length > 0 ? ` class="${this.classNames.join(' ')}"` : '';
+
+    let attrs = '';
+    for (let i = 0; i < this.attrs.length; i += 2) {
+      let attrName = this.attrs[i];
+      let attrValue = this.attrs[i + 1] !== '' ? `="${this.attrs[i + 1]}"` : '';
+      attrs += ` ${attrName}${attrValue}`;
+    }
+
+    return `<${tagName}${classAttr}${attrs}></${tagName}>`;
+  }
+
   addAttribute(name: string, value: string = _EMPTY_ATTR_VALUE) {
     this.attrs.push(name.toLowerCase());
     if (isPresent(value)) {

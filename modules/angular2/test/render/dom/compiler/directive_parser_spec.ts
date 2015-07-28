@@ -174,12 +174,6 @@ export function main() {
         expect(results[0].componentId).toEqual('someComponent');
       });
 
-      it('should throw when the provided selector is not an element selector', () => {
-        expect(() => { createPipeline(null, [componentWithNonElementSelector]); })
-            .toThrowError(
-                `Component 'componentWithNonElementSelector' can only have an element selector, but had '[attr]'`);
-      });
-
       it('should not allow multiple component directives on the same element', () => {
         expect(() => {
           process(el('<some-comp></some-comp>'), null, [someComponent, someComponentDup]);

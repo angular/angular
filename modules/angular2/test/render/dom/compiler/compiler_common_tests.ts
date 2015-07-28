@@ -89,6 +89,27 @@ export function runCompilerCommonTests() {
                });
          }));
 
+      it('should create element from component selector', inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler((parent, current, control) => {
+             current.inheritedProtoView.bindVariable('b', 'a');
+           });
+
+           var dirMetadata = DirectiveMetadata.create({
+             id: 'id',
+             selector: 'marquee.jazzy[size=huge]',
+             type: DirectiveMetadata.COMPONENT_TYPE
+           });
+
+           compiler.compileHost(dirMetadata)
+               .then((protoView) => {
+                 let element = DOM.firstChild(DOM.content(templateRoot(protoView)));
+                 expect(DOM.tagName(element).toLowerCase()).toEqual('marquee');
+                 expect(DOM.hasClass(element, 'jazzy')).toBe(true);
+                 expect(DOM.getAttribute(element, 'size')).toEqual('huge');
+                 async.done();
+               });
+         }));
+
       it('should use the inline template and compile in sync',
          inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler(EMPTY_STEP);
