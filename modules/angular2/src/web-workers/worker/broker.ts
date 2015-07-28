@@ -8,6 +8,7 @@ import {Injectable} from "angular2/di";
 import {Type} from "angular2/src/facade/lang";
 import {RenderViewRef, RenderEventDispatcher} from 'angular2/src/render/api';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
 export class MessageBroker {
@@ -96,6 +97,7 @@ export class MessageBroker {
   private _dispatchEvent(eventData: RenderEventData): void {
     var dispatcher = this._eventDispatchRegistry.get(eventData.viewRef);
     this._zone.run(() => {
+      eventData.locals['$event'] = deserializeGenericEvent(eventData.locals['$event']);
       dispatcher.dispatchRenderEvent(eventData.elementIndex, eventData.eventName, eventData.locals);
     });
   }

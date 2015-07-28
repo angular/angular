@@ -64,7 +64,8 @@ const kServedPaths = [
   'examples/src/material/radio',
   'examples/src/material/switcher',
   'examples/src/message_broker',
-  'examples/src/web_workers'
+  'examples/src/web_workers/kitchen_sink',
+  'examples/src/web_workers/todo'
 ];
 
 
