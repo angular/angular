@@ -61,7 +61,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     context = _context;
     currentProto = _protos[0];
     myNum0 = context.myNum;
-    if (!_gen.looseIdentical(myNum0, _myNum0)) {
+    if (_gen.looseNotIdentical(myNum0, _myNum0)) {
       c_myNum0 = true;
 
       _myNum0 = myNum0;
@@ -69,7 +69,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     if (c_myNum0) {
       currentProto = _protos[1];
       interpolate1 = "Salad: " "${myNum0 == null ? "" : myNum0}" " is awesome";
-      if (!_gen.looseIdentical(interpolate1, _interpolate1)) {
+      if (_gen.looseNotIdentical(interpolate1, _interpolate1)) {
         c_interpolate1 = true;
         if (throwOnChange) {
           _gen.ChangeDetectionUtil.throwOnChange(currentProto,

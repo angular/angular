@@ -266,7 +266,7 @@ class _CodegenState {
       }
 
       $newValue = $pipe.transform($context, [$argString]);
-      if (!$_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
+      if ($_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
         $newValue = $_UTIL.unwrapValue($newValue);
         $change = true;
         ${_genUpdateDirectiveOrElement(r)}
@@ -284,7 +284,7 @@ class _CodegenState {
     var check = '''
       $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
       ${_genUpdateCurrentValue(r)}
-      if (!$_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
+      if ($_NOT_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
         ${_names.getChangeName(r.selfIndex)} = true;
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
@@ -483,6 +483,7 @@ const _DISPATCHER_ACCESSOR = 'dispatcher';
 const _GEN_PREFIX = '_gen';
 const _GEN_RECORDS_METHOD_NAME = '_createRecords';
 const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
+const _NOT_IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseNotIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
