@@ -1,4 +1,4 @@
-library angular2.examples.web_workers;
+library angular2.examples.web_workers.todo.index;
 
 import "package:angular2/src/web-workers/ui/application.dart" show bootstrap;
 import "package:angular2/src/reflection/reflection_capabilities.dart";
