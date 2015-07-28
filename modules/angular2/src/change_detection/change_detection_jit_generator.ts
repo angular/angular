@@ -33,17 +33,18 @@ var ALREADY_CHECKED_ACCESSOR = "this.alreadyChecked";
 
 export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
+  _typeName: string;
 
   constructor(public id: string, public changeDetectionStrategy: string,
               public records: List<ProtoRecord>, public directiveRecords: List<any>,
               private generateCheckNoChanges: boolean) {
     this._names = new CodegenNameUtil(this.records, this.directiveRecords, 'this._', UTIL);
+    this._typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
   generate(): Function {
-    var typeName = sanitizeName(`ChangeDetector_${this.id}`);
     var classDefinition = `
-      var ${typeName} = function ${typeName}(dispatcher, protos, directiveRecords) {
+      var ${this._typeName} = function ${this._typeName}(dispatcher, protos, directiveRecords) {
         ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)}, dispatcher);
         ${PROTOS_ACCESSOR} = protos;
         ${DIRECTIVES_ACCESSOR} = directiveRecords;
@@ -51,12 +52,12 @@ export class ChangeDetectorJITGenerator {
         ${CURRENT_PROTO} = null;
         ${PIPES_ACCESSOR} = null;
         ${ALREADY_CHECKED_ACCESSOR} = false;
-        ${this._names.genDehydrateFields()}
+        this.dehydrateDirectives(false);
       }
 
-      ${typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
+      ${this._typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 
-      ${typeName}.prototype.detectChangesInRecords = function(throwOnChange) {
+      ${this._typeName}.prototype.detectChangesInRecords = function(throwOnChange) {
         if (!this.hydrated()) {
           ${UTIL}.throwDehydrated();
         }
@@ -67,7 +68,7 @@ export class ChangeDetectorJITGenerator {
         }
       }
 
-      ${typeName}.prototype.__detectChangesInRecords = function(throwOnChange) {
+      ${this._typeName}.prototype.__detectChangesInRecords = function(throwOnChange) {
         ${CURRENT_PROTO} = null;
 
         ${this._names.genInitLocals()}
@@ -81,41 +82,66 @@ export class ChangeDetectorJITGenerator {
         ${ALREADY_CHECKED_ACCESSOR} = true;
       }
 
-      ${this._genCheckNoChanges(typeName)}
+      ${this._genCheckNoChanges()}
 
-      ${typeName}.prototype.callOnAllChangesDone = function() {
+      ${this._typeName}.prototype.callOnAllChangesDone = function() {
         ${this._genCallOnAllChangesDoneBody()}
       }
 
-      ${typeName}.prototype.hydrate = function(context, locals, directives, pipes) {
+      ${this._typeName}.prototype.hydrate = function(context, locals, directives, pipes) {
         ${MODE_ACCESSOR} = "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
         ${this._names.getContextName()} = context;
         ${LOCALS_ACCESSOR} = locals;
-        ${this._genHydrateDirectives()}
-        ${this._genHydrateDetectors()}
+        this.hydrateDirectives(directives);
         ${PIPES_ACCESSOR} = pipes;
         ${ALREADY_CHECKED_ACCESSOR} = false;
       }
 
-      ${typeName}.prototype.dehydrate = function() {
-        ${this._names.genPipeOnDestroy()}
-        ${this._names.genDehydrateFields()}
+      ${this._maybeGenHydrateDirectives()}
+
+      ${this._typeName}.prototype.dehydrate = function() {
+        this.dehydrateDirectives(true);
         ${LOCALS_ACCESSOR} = null;
         ${PIPES_ACCESSOR} = null;
       }
 
-      ${typeName}.prototype.hydrated = function() {
+      ${this._maybeGenDehydrateDirectives()}
+
+      ${this._typeName}.prototype.hydrated = function() {
         return ${this._names.getContextName()} !== null;
       }
 
       return function(dispatcher) {
-        return new ${typeName}(dispatcher, protos, directiveRecords);
+        return new ${this._typeName}(dispatcher, protos, directiveRecords);
       }
     `;
 
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
                         'directiveRecords', classDefinition)(
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
+  }
+
+  _maybeGenDehydrateDirectives(): string {
+    var destroyPipesCode = this._names.genPipeOnDestroy();
+    if (destroyPipesCode) {
+      destroyPipesCode = `if (destroyPipes) { ${destroyPipesCode} }`;
+    }
+    var dehydrateFieldsCode = this._names.genDehydrateFields();
+    if (!destroyPipesCode && !dehydrateFieldsCode) return '';
+    return `${this._typeName}.prototype.dehydrateDirectives = function(destroyPipes) {
+        ${destroyPipesCode}
+        ${dehydrateFieldsCode}
+    }`;
+  }
+
+  _maybeGenHydrateDirectives(): string {
+    var hydrateDirectivesCode = this._genHydrateDirectives();
+    var hydrateDetectorsCode = this._genHydrateDetectors();
+    if (!hydrateDirectivesCode && !hydrateDetectorsCode) return '';
+    return `${this._typeName}.prototype.hydrateDirectives = function(directives) {
+      ${hydrateDirectivesCode}
+      ${hydrateDetectorsCode}
+    }`;
   }
 
   _genHydrateDirectives(): string {
@@ -345,9 +371,9 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
-  _genCheckNoChanges(typeName: string): string {
+  _genCheckNoChanges(): string {
     if (this.generateCheckNoChanges) {
-      return `${typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
+      return `${this._typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
     } else {
       return '';
     }

@@ -115,7 +115,7 @@ class _CodegenState {
             this.$_PROTOS_ACCESSOR,
             this.$_DIRECTIVES_ACCESSOR)
           : super(${_encodeValue(_changeDetectorDefId)}, $_DISPATCHER_ACCESSOR) {
-          ${_names.genDehydrateFields()}
+          dehydrateDirectives(false);
         }
 
         void detectChangesInRecords(throwOnChange) {
@@ -123,9 +123,9 @@ class _CodegenState {
             $_UTIL.throwDehydrated();
           }
           try {
-            this.__detectChangesInRecords(throwOnChange);
+            __detectChangesInRecords(throwOnChange);
           } catch (e, s) {
-            this.throwError($_CURRENT_PROTO, e, s);
+            throwError($_CURRENT_PROTO, e, s);
           }
         }
 
@@ -151,18 +151,20 @@ class _CodegenState {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
           ${_names.getContextName()} = context;
           $_LOCALS_ACCESSOR = locals;
-          ${_genHydrateDirectives()}
-          ${_genHydrateDetectors()}
+          hydrateDirectives(directives);
           $_ALREADY_CHECKED_ACCESSOR = false;
           $_PIPES_ACCESSOR = pipes;
         }
 
+        ${_maybeGenHydrateDirectives()}
+
         void dehydrate() {
-          ${_names.genPipeOnDestroy()}
-          ${_names.genDehydrateFields()}
+          dehydrateDirectives(true);
           $_LOCALS_ACCESSOR = null;
           $_PIPES_ACCESSOR = null;
         }
+
+        ${_maybeGenDehydrateDirectives()}
 
         hydrated() => ${_names.getContextName()} != null;
 
@@ -182,6 +184,34 @@ class _CodegenState {
       $_GEN_PREFIX.preGeneratedProtoDetectors['$_changeDetectorDefId'] =
           $_changeDetectorTypeName.newProtoChangeDetector;
     ''');
+  }
+
+  String _maybeGenDehydrateDirectives() {
+    var destroyPipesParamName = 'destroyPipes';
+    var destroyPipesCode = _names.genPipeOnDestroy();
+    if (destroyPipesCode.isNotEmpty) {
+      destroyPipesCode = 'if (${destroyPipesParamName}) { '
+          '${destroyPipesCode}'
+          '}';
+    }
+    var dehydrateFieldsCode = _names.genDehydrateFields();
+    if (destroyPipesCode.isEmpty && dehydrateFieldsCode.isEmpty) return '';
+    return 'void dehydrateDirectives(${destroyPipesParamName}) {'
+        '${destroyPipesCode}'
+        '${dehydrateFieldsCode}'
+        '}';
+  }
+
+  String _maybeGenHydrateDirectives() {
+    var hydrateDirectivesCode = _genHydrateDirectives();
+    var hydrateDetectorsCode = _genHydrateDetectors();
+    if (hydrateDirectivesCode.isEmpty && hydrateDetectorsCode.isEmpty) {
+      return '';
+    }
+    return 'void hydrateDirectives(directives) { '
+        '$hydrateDirectivesCode'
+        '$hydrateDetectorsCode'
+        '}';
   }
 
   String _genHydrateDirectives() {
@@ -412,7 +442,7 @@ class _CodegenState {
 
   String _genCheckNoChanges() {
     if (this._generateCheckNoChanges) {
-      return 'void checkNoChanges() { this.runDetectChanges(true); }';
+      return 'void checkNoChanges() { runDetectChanges(true); }';
     } else {
       return '';
     }

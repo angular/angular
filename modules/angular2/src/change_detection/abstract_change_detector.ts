@@ -60,7 +60,11 @@ export class AbstractChangeDetector implements ChangeDetector {
 
   hydrate(context: any, locals: Locals, directives: any, pipes: any): void {}
 
+  hydrateDirectives(directives: any): void {}
+
   dehydrate(): void {}
+
+  dehydrateDirectives(destroyPipes: boolean): void {}
 
   callOnAllChangesDone(): void {}
 

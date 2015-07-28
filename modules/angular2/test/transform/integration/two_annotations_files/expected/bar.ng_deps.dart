@@ -36,8 +36,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   _MyComponent_ChangeDetector0(
       dynamic dispatcher, this._protos, this._directiveRecords)
       : super("MyComponent_comp_0", dispatcher) {
-    _context = null;
-    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
+    dehydrateDirectives(false);
   }
 
   void detectChangesInRecords(throwOnChange) {
@@ -45,9 +44,9 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
       _gen.ChangeDetectionUtil.throwDehydrated();
     }
     try {
-      this.__detectChangesInRecords(throwOnChange);
+      __detectChangesInRecords(throwOnChange);
     } catch (e, s) {
-      this.throwError(currentProto, e, s);
+      throwError(currentProto, e, s);
     }
   }
 
@@ -92,7 +91,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   }
 
   void checkNoChanges() {
-    this.runDetectChanges(true);
+    runDetectChanges(true);
   }
 
   void callOnAllChangesDone() {
@@ -103,16 +102,20 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
     mode = 'ALWAYS_CHECK';
     _context = context;
     _locals = locals;
-
+    hydrateDirectives(directives);
     _alreadyChecked = false;
     _pipes = pipes;
   }
 
   void dehydrate() {
-    _context = null;
-    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
+    dehydrateDirectives(true);
     _locals = null;
     _pipes = null;
+  }
+
+  void dehydrateDirectives(destroyPipes) {
+    _context = null;
+    _myNum0 = _interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
   hydrated() => _context != null;
