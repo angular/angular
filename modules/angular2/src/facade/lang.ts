@@ -3,7 +3,13 @@ var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : 
 export {_global as global};
 
 export var Type = Function;
-export type Type = new (...args: any[]) => any;
+
+/**
+ * Runtime representation of a type.
+ *
+ * In JavaScript a Type is a constructor function.
+ */
+export interface Type extends Function { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {
   return type['name'];

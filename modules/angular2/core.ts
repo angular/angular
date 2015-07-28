@@ -5,6 +5,7 @@
  */
 export {appComponentTypeToken} from 'angular2/src/core/application_tokens';
 export {ApplicationRef} from 'angular2/src/core/application_common';
+export {Type} from 'angular2/src/facade/lang';
 
 
 // Compiler Related Dependencies.
