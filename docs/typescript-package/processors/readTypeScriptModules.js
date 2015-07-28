@@ -250,7 +250,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     var decorators = declaration.decorators && declaration.decorators.map(function(decorator) {
       decorator = decorator.expression;
       return {
-        name: decorator.expression.text,
+        name: decorator.expression ? decorator.expression.text : decorator.text,
         arguments: decorator.arguments && decorator.arguments.map(function(argument) {
           return getText(sourceFile, argument).trim();
         })
