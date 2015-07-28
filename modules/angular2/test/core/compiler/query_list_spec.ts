@@ -1,6 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
 
 import {List, MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/facade/collection';
+import {StringWrapper} from 'angular2/src/facade/lang';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 
@@ -41,6 +42,14 @@ export function main() {
       queryList.add('one');
       queryList.add('two');
       expect(queryList.map((x) => x)).toEqual(['one', 'two']);
+    });
+
+    it('should support toString', () => {
+      queryList.add('one');
+      queryList.add('two');
+      var listString = queryList.toString();
+      expect(StringWrapper.contains(listString, 'one')).toBeTruthy();
+      expect(StringWrapper.contains(listString, 'two')).toBeTruthy();
     });
 
     it('should support first and last', () => {

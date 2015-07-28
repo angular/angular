@@ -46,6 +46,9 @@ class QueryList<T> extends Object with IterableMixin<T> implements IQueryList<T>
   int get length => _results.length;
   T get first => _results.first;
   T get last => _results.last;
+  String toString() {
+    return _results.toString();
+  }
 
   List map(fn(T)) {
     // Note: we need to return a list instead of iterable to match JS.
