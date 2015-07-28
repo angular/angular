@@ -789,8 +789,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     }
 
     this.remove();
-
-    ListWrapper.forEach(queriesToUpdate, (q) => q.update());
+    var nonViewQueries = ListWrapper.filter(queriesToUpdate, (q) => !q.query.isViewQuery);
+    ListWrapper.forEach(nonViewQueries, (q) => q.update());
   }
 
   private _pruneQueryFromTree(query: QueryRef): void {

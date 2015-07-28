@@ -365,6 +365,30 @@ export function main() {
                });
          }));
 
+      it('should not be affected by other changes in the component',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-query-nested-if #q></needs-view-query-nested-if>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsViewQueryNestedIf = view.componentViewChildren[0].getLocal("q");
+
+                 view.detectChanges();
+
+                 expect(q.query.length).toEqual(1);
+                 expect(q.query.first.text).toEqual("1");
+
+                 q.show = false;
+                 view.detectChanges();
+
+                 expect(q.query.length).toEqual(1);
+                 expect(q.query.first.text).toEqual("1");
+
+                 async.done();
+               });
+         }));
+
       /* TODO(rado): fix and reenable.
 
       it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
@@ -393,6 +417,12 @@ export function main() {
 @Injectable()
 class TextDirective {
   text: string;
+  constructor() {}
+}
+
+@Directive({selector: '[dir]'})
+@Injectable()
+class InertDirective {
   constructor() {}
 }
 
@@ -487,6 +517,22 @@ class NeedsViewQueryIf {
 }
 
 
+@Component({selector: 'needs-view-query-nested-if'})
+@View({
+  directives: [NgIf, InertDirective, TextDirective],
+  template: '<div text="1"><div *ng-if="show"><div dir></div></div></div>'
+})
+@Injectable()
+class NeedsViewQueryNestedIf {
+  show: boolean;
+  query: QueryList<TextDirective>;
+  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
+    this.query = query;
+    this.show = true;
+  }
+}
+
+
 @Component({selector: 'needs-view-query-order'})
 @View({
   directives: [NgFor, TextDirective],
@@ -511,8 +557,10 @@ class NeedsViewQueryOrder {
     NeedsViewQuery,
     NeedsViewQueryDesc,
     NeedsViewQueryIf,
+    NeedsViewQueryNestedIf,
     NeedsViewQueryOrder,
     TextDirective,
+    InertDirective,
     NgIf,
     NgFor
   ]
