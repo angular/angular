@@ -53,7 +53,7 @@ export class DynamicComponentLoader {
    * Loads a root component that is placed at the first element that matches the component's
    * selector.
    *
-   * - `typeOrBinding` {@link Type} \ {@link Binding} - representing the component to load.
+   * - `typeOrBinding` `Type` \ {@link Binding} - representing the component to load.
    * - `overrideSelector` (optional) selector to load the component at (or use
    *   `@Component.selector`) The selector can be anywhere (i.e. outside the current component.)
    * - `injector` {@link Injector} - optional injector to use for the component.
