@@ -9,6 +9,13 @@ defined in {$ githubViewLink(doc) $}
 </p>
 <p>{$ doc.description | marked $}</p>
 
+{%- if doc.decorators %}
+<h2>Annotations</h2>
+{%- for decorator in doc.decorators %}
+  <h3 class="annotation">@{$ decorator.name $}{$ paramList(decorator.arguments) $}</h3>
+{% endfor %}
+{% endif -%}
+
 {%- if doc.constructorDoc or doc.members.length -%}
 <h2>Members</h2>
 

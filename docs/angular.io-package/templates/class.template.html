@@ -10,6 +10,19 @@ p.location-badge.
 :markdown
 {$ doc.description | indent(2, true) $}
 
+{%- if doc.decorators %}
+.l-main-section
+  h2 Annotations
+{%- for decorator in doc.decorators %}
+  .l-sub-section
+    h3.annotation {$ decorator.name $}
+    pre.prettyprint
+      code.
+        @{$ decorator.name $}{$ paramList(decorator.arguments) | indent(8, false) $}
+{% endfor %}
+{% endif -%}
+
+
 {%- if doc.constructorDoc or doc.members.length -%}
 .l-main-section
   h2 Members

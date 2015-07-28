@@ -176,6 +176,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
       id: moduleDoc.id + '/' + name,
       typeParams: typeParamString,
       heritage: heritageString,
+      decorators: getDecorators(exportSymbol),
       aliases: aliasNames,
       moduleDoc: moduleDoc,
       content: getContent(exportSymbol),
@@ -197,6 +198,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
       docType: 'member',
       classDoc: classDoc,
       name: memberSymbol.name,
+      decorators: getDecorators(memberSymbol),
       content: getContent(memberSymbol),
       fileInfo: getFileInfo(memberSymbol, basePath),
       location: getLocation(memberSymbol)
@@ -238,6 +240,23 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     }
 
     return memberDoc;
+  }
+
+
+  function getDecorators(symbol) {
+    var declaration = symbol.valueDeclaration || symbol.declarations[0];
+    var sourceFile = ts.getSourceFileOfNode(declaration);
+
+    var decorators = declaration.decorators && declaration.decorators.map(function(decorator) {
+      decorator = decorator.expression;
+      return {
+        name: decorator.expression.text,
+        arguments: decorator.arguments && decorator.arguments.map(function(argument) {
+          return getText(sourceFile, argument).trim();
+        })
+      };
+    });
+    return decorators;
   }
 
   function getParameters(typeChecker, symbol) {
