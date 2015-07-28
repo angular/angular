@@ -83,9 +83,14 @@ export class CodegenNameUtil {
       if (i == CONTEXT_INDEX) {
         declarations.push(`${this.getLocalName(i)} = ${this.getFieldName(i)}`);
       } else {
-        var changeName = this.getChangeName(i);
-        declarations.push(`${this.getLocalName(i)},${changeName}`);
-        assignments.push(changeName);
+        var rec = this.records[i - 1];
+        if (rec.argumentToPureFunction) {
+          var changeName = this.getChangeName(i);
+          declarations.push(`${this.getLocalName(i)},${changeName}`);
+          assignments.push(changeName);
+        } else {
+          declarations.push(`${this.getLocalName(i)}`);
+        }
       }
     }
     var assignmentsCode =
@@ -100,14 +105,18 @@ export class CodegenNameUtil {
   getAllFieldNames(): List<string> {
     var fieldList = [];
     for (var k = 0, kLen = this.getFieldCount(); k < kLen; ++k) {
-      fieldList.push(this.getFieldName(k));
+      if (k === 0 || this.records[k - 1].shouldBeChecked()) {
+        fieldList.push(this.getFieldName(k));
+      }
     }
+
     for (var i = 0, iLen = this.records.length; i < iLen; ++i) {
       var rec = this.records[i];
       if (rec.isPipeRecord()) {
         fieldList.push(this.getPipeName(rec.selfIndex));
       }
     }
+
     for (var j = 0, jLen = this.directiveRecords.length; j < jLen; ++j) {
       var dRec = this.directiveRecords[j];
       fieldList.push(this.getDirectiveName(dRec.directiveIndex));

@@ -7,14 +7,22 @@ import {DirectiveIndex} from 'angular2/src/change_detection/directive_record';
 
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex,
-             {lastInBinding, mode, name, directiveIndex}:
-                 {lastInBinding?: any, mode?: any, name?: any, directiveIndex?: any} = {}) {
+             {lastInBinding, mode, name, directiveIndex, argumentToPureFunction}: {
+               lastInBinding?: any,
+               mode?: any,
+               name?: any,
+               directiveIndex?: any,
+               argumentToPureFunction?: boolean
+             } = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
     if (isBlank(mode)) mode = RecordType.PROPERTY;
     if (isBlank(name)) name = "name";
     if (isBlank(directiveIndex)) directiveIndex = null;
+    if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;
+
     return new ProtoRecord(mode, name, funcOrValue, args, null, contextIndex, directiveIndex,
-                           selfIndex, null, null, lastInBinding, false);
+                           selfIndex, null, null, lastInBinding, false, argumentToPureFunction,
+                           false);
   }
 
   describe("change detection - coalesce", () => {
@@ -56,7 +64,14 @@ export function main() {
           [r("user", [], 0, 1, {lastInBinding: true}), r("user", [], 0, 2, {lastInBinding: true})]);
 
       expect(rs[1]).toEqual(new ProtoRecord(RecordType.SELF, "self", null, [], null, 1, null, 2,
-                                            null, null, true, false));
+                                            null, null, true, false, false, false));
+    });
+
+    it("should set referencedBySelf", () => {
+      var rs = coalesce(
+          [r("user", [], 0, 1, {lastInBinding: true}), r("user", [], 0, 2, {lastInBinding: true})]);
+
+      expect(rs[0].referencedBySelf).toBeTruthy();
     });
 
     it("should not coalesce directive lifecycle records", () => {
@@ -88,5 +103,26 @@ export function main() {
          ]);
          expect(rs.length).toEqual(4);
        });
+
+    it('should preserve the argumentToPureFunction property', () => {
+      var rs = coalesce([
+        r("user", [], 0, 1),
+        r("user", [], 0, 2, {argumentToPureFunction: true}),
+        r("user", [], 0, 3),
+        r("name", [], 3, 4)
+      ]);
+      expect(rs)
+          .toEqual([r("user", [], 0, 1, {argumentToPureFunction: true}), r("name", [], 1, 2)]);
+    });
+
+    it('should preserve the argumentToPureFunction property (the original record)', () => {
+      var rs = coalesce([
+        r("user", [], 0, 1, {argumentToPureFunction: true}),
+        r("user", [], 0, 2),
+        r("name", [], 2, 3)
+      ]);
+      expect(rs)
+          .toEqual([r("user", [], 0, 1, {argumentToPureFunction: true}), r("name", [], 1, 2)]);
+    });
   });
 }

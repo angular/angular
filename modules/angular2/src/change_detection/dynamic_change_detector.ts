@@ -158,26 +158,30 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       return null;
     }
 
-    var prevValue = this._readSelf(proto);
     var currValue = this._calculateCurrValue(proto);
+    if (proto.shouldBeChecked()) {
+      var prevValue = this._readSelf(proto);
+      if (!isSame(prevValue, currValue)) {
+        if (proto.lastInBinding) {
+          var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
+          if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
 
-    if (!isSame(prevValue, currValue)) {
-      if (proto.lastInBinding) {
-        var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
-        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
-
-        this._writeSelf(proto, currValue);
-        this._setChanged(proto, true);
-
-        return change;
-
+          this._writeSelf(proto, currValue);
+          this._setChanged(proto, true);
+          return change;
+        } else {
+          this._writeSelf(proto, currValue);
+          this._setChanged(proto, true);
+          return null;
+        }
       } else {
-        this._writeSelf(proto, currValue);
-        this._setChanged(proto, true);
+        this._setChanged(proto, false);
         return null;
       }
+
     } else {
-      this._setChanged(proto, false);
+      this._writeSelf(proto, currValue);
+      this._setChanged(proto, true);
       return null;
     }
   }
@@ -223,6 +227,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
       case RecordType.INTERPOLATE:
       case RecordType.PRIMITIVE_OP:
+      case RecordType.COLLECTION_LITERAL:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto));
 
       default:
@@ -235,28 +240,34 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     var args = this._readArgs(proto);
 
     var pipe = this._pipeFor(proto, context);
-    var prevValue = this._readSelf(proto);
     var currValue = pipe.transform(context, args);
 
-    if (!isSame(prevValue, currValue)) {
-      currValue = ChangeDetectionUtil.unwrapValue(currValue);
+    if (proto.shouldBeChecked()) {
+      var prevValue = this._readSelf(proto);
+      if (!isSame(prevValue, currValue)) {
+        currValue = ChangeDetectionUtil.unwrapValue(currValue);
 
-      if (proto.lastInBinding) {
-        var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
-        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
+        if (proto.lastInBinding) {
+          var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
+          if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
 
-        this._writeSelf(proto, currValue);
-        this._setChanged(proto, true);
+          this._writeSelf(proto, currValue);
+          this._setChanged(proto, true);
 
-        return change;
+          return change;
 
+        } else {
+          this._writeSelf(proto, currValue);
+          this._setChanged(proto, true);
+          return null;
+        }
       } else {
-        this._writeSelf(proto, currValue);
-        this._setChanged(proto, true);
+        this._setChanged(proto, false);
         return null;
       }
     } else {
-      this._setChanged(proto, false);
+      this._writeSelf(proto, currValue);
+      this._setChanged(proto, true);
       return null;
     }
   }
@@ -292,7 +303,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
 
-  _setChanged(proto: ProtoRecord, value: boolean) { this.changes[proto.selfIndex] = value; }
+  _setChanged(proto: ProtoRecord, value: boolean) {
+    if (proto.argumentToPureFunction) this.changes[proto.selfIndex] = value;
+  }
 
   _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
     return proto.isPureFunction() && !this._argsChanged(proto);

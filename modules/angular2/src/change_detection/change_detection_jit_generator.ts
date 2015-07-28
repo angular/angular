@@ -100,7 +100,6 @@ export class ChangeDetectorJITGenerator {
         return new ${this._typeName}(dispatcher, protos, directiveRecords);
       }
     `;
-
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
                         'directiveRecords', classDefinition)(
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
@@ -199,7 +198,6 @@ export class ChangeDetectorJITGenerator {
 
     var oldValue = this._names.getFieldName(r.selfIndex);
     var newValue = this._names.getLocalName(r.selfIndex);
-    var change = this._names.getChangeName(r.selfIndex);
 
     var pipe = this._names.getPipeName(r.selfIndex);
     var cdRef = "this.ref";
@@ -207,7 +205,7 @@ export class ChangeDetectorJITGenerator {
     var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
 
-    return `
+    var read = `
       ${this._names.getCurrentProtoName()} = ${this._names.getProtosName()}[${protoIndex}];
       if (${pipe} === ${UTIL}.uninitialized) {
         ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
@@ -215,16 +213,20 @@ export class ChangeDetectorJITGenerator {
         ${pipe}.onDestroy();
         ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
       }
-
       ${newValue} = ${pipe}.transform(${context}, [${argString}]);
+    `;
+
+    var check = `
       if (${oldValue} !== ${newValue}) {
-        ${newValue} = ${UTIL}.unwrapValue(${newValue});
-        ${change} = true;
+        ${newValue} = ${UTIL}.unwrapValue(${newValue})
+        ${this._genChangeMarker(r)}
         ${this._genUpdateDirectiveOrElement(r)}
         ${this._genAddToChanges(r)}
         ${oldValue} = ${newValue};
       }
     `;
+
+    return r.shouldBeChecked() ? `${read}${check}` : read;
   }
 
   _genReferenceCheck(r: ProtoRecord): string {
@@ -232,22 +234,32 @@ export class ChangeDetectorJITGenerator {
     var newValue = this._names.getLocalName(r.selfIndex);
 
     var protoIndex = r.selfIndex - 1;
-    var check = `
+
+    var read = `
       ${this._names.getCurrentProtoName()} = ${this._names.getProtosName()}[${protoIndex}];
       ${this._genUpdateCurrentValue(r)}
+    `;
+
+    var check = `
       if (${newValue} !== ${oldValue}) {
-        ${this._names.getChangeName(r.selfIndex)} = true;
+        ${this._genChangeMarker(r)}
         ${this._genUpdateDirectiveOrElement(r)}
         ${this._genAddToChanges(r)}
         ${oldValue} = ${newValue};
       }
     `;
 
+    var genCode = r.shouldBeChecked() ? `${read}${check}` : read;
+
     if (r.isPureFunction()) {
       var condition = r.args.map((a) => this._names.getChangeName(a)).join(" || ");
-      return `if (${condition}) { ${check} } else { ${newValue} = ${oldValue}; }`;
+      if (r.isUsedByOtherRecord()) {
+        return `if (${condition}) { ${genCode} } else { ${newValue} = ${oldValue}; }`;
+      } else {
+        return `if (${condition}) { ${genCode} }`;
+      }
     } else {
-      return check;
+      return genCode;
     }
   }
 
@@ -295,6 +307,10 @@ export class ChangeDetectorJITGenerator {
         rhs = `${UTIL}.${r.name}(${argString})`;
         break;
 
+      case RecordType.COLLECTION_LITERAL:
+        rhs = `${UTIL}.${r.name}(${argString})`;
+        break;
+
       case RecordType.INTERPOLATE:
         rhs = this._genInterpolation(r);
         break;
@@ -319,6 +335,10 @@ export class ChangeDetectorJITGenerator {
     }
     res += JSON.stringify(r.fixedArgs[r.args.length]);
     return res;
+  }
+
+  _genChangeMarker(r: ProtoRecord): string {
+    return r.argumentToPureFunction ? `${this._names.getChangeName(r.selfIndex)} = true` : ``;
   }
 
   _genUpdateDirectiveOrElement(r: ProtoRecord): string {

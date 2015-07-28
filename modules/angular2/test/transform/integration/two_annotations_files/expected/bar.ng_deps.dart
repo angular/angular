@@ -48,9 +48,8 @@ class _MyComponent_ChangeDetector0
     var l_context = this.context,
         l_myNum0,
         c_myNum0,
-        l_interpolate1,
-        c_interpolate1;
-    c_myNum0 = c_interpolate1 = false;
+        l_interpolate1;
+    c_myNum0 = false;
     var isChanged = false;
     var changes = null;
 
@@ -66,7 +65,6 @@ class _MyComponent_ChangeDetector0
       l_interpolate1 =
           "Salad: " "${l_myNum0 == null ? "" : l_myNum0}" " is awesome";
       if (_gen.looseNotIdentical(l_interpolate1, this.interpolate1)) {
-        c_interpolate1 = true;
         if (throwOnChange) {
           _gen.ChangeDetectionUtil.throwOnChange(this.currentProto,
               _gen.ChangeDetectionUtil.simpleChange(
@@ -78,8 +76,6 @@ class _MyComponent_ChangeDetector0
 
         this.interpolate1 = l_interpolate1;
       }
-    } else {
-      l_interpolate1 = this.interpolate1;
     }
     changes = null;
 
