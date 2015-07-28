@@ -100,7 +100,7 @@ export class Router {
    * If the given URL begins with a `/`, router will navigate absolutely.
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
    */
-  navigate(url: string): Promise<any> {
+  navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
     return this._currentNavigation = this._currentNavigation.then((_) => {
       this.lastNavigationAttempt = url;
       this._startNavigating();
@@ -117,7 +117,7 @@ export class Router {
               return this._canDeactivate(matchedInstruction)
                   .then((result) => {
                     if (result) {
-                      return this.commit(matchedInstruction)
+                      return this.commit(matchedInstruction, _skipLocationChange)
                           .then((_) => {
                             this._emitNavigationFinish(matchedInstruction.accumulatedUrl);
                             return true;
@@ -180,7 +180,7 @@ export class Router {
   /**
    * Updates this router and all descendant routers according to the given instruction
    */
-  commit(instruction: Instruction): Promise<any> {
+  commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
     this._currentInstruction = instruction;
     if (isPresent(this._outlet)) {
       return this._outlet.commit(instruction);
@@ -290,14 +290,17 @@ export class RootRouter extends Router {
               hostComponent: Type) {
     super(registry, pipeline, null, hostComponent);
     this._location = location;
-    this._location.subscribe((change) => this.navigate(change['url']));
+    this._location.subscribe((change) => this.navigate(change['url'], isPresent(change['pop'])));
     this.registry.configFromComponent(hostComponent, true);
     this.navigate(location.path());
   }
 
-  commit(instruction: Instruction): Promise<any> {
-    return super.commit(instruction)
-        .then((_) => { this._location.go(instruction.accumulatedUrl); });
+  commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
+    var promise = super.commit(instruction);
+    if (!_skipLocationChange) {
+      promise = promise.then((_) => { this._location.go(instruction.accumulatedUrl); });
+    }
+    return promise;
   }
 }
 
@@ -308,9 +311,9 @@ class ChildRouter extends Router {
   }
 
 
-  navigate(url: string): Promise<any> {
+  navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
     // Delegate navigation to the root router
-    return this.parent.navigate(url);
+    return this.parent.navigate(url, _skipLocationChange);
   }
 }
 
