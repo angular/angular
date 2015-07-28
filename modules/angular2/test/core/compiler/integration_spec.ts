@@ -73,7 +73,6 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
@@ -1479,7 +1478,7 @@ class MyService {
 class SimpleImperativeViewComponent {
   done;
 
-  constructor(self: ElementRef, viewManager: AppViewManager, renderer: DomRenderer) {
+  constructor(self: ElementRef, renderer: DomRenderer) {
     var hostElement = renderer.getNativeElementSync(self);
     DOM.appendChild(hostElement, el('hello imp view'));
   }
@@ -1722,7 +1721,6 @@ var globalCounter = 0;
 @Injectable()
 class DirectiveListeningDomEventOther {
   eventType: string;
-  counter: int;
   constructor() { this.eventType = ''; }
   onEvent(eventType: string) {
     globalCounter++;
@@ -1856,15 +1854,6 @@ class DirectiveProvidingInjectable {
 class DirectiveProvidingInjectableInView {
 }
 
-@Component({
-  selector: 'directive-providing-injectable',
-  hostInjector: [new Binding(InjectableService, {toValue: 'host'})],
-  viewInjector: [new Binding(InjectableService, {toValue: 'view'})]
-})
-@View({template: ''})
-@Injectable()
-class DirectiveProvidingInjectableInHostAndView {
-}
 
 
 @Component({selector: 'directive-consuming-injectable'})
@@ -1989,22 +1978,19 @@ class ComponentWithoutView {
 
 @Directive({selector: '[no-duplicate]'})
 class DuplicateDir {
-  constructor(renderer: DomRenderer, private elRef: ElementRef) {
+  constructor(elRef: ElementRef) {
     DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'noduplicate');
   }
 }
 
 @Directive({selector: '[no-duplicate]'})
 class OtherDuplicateDir {
-  constructor(renderer: DomRenderer, private elRef: ElementRef) {
+  constructor(elRef: ElementRef) {
     DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'othernoduplicate');
   }
 }
 
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
-  constructor() {
-    throw new BaseException("BOOM");
-    ;
-  }
+  constructor() { throw new BaseException("BOOM"); }
 }
