@@ -7,7 +7,7 @@ p.location-badge.
 ul
   for page, slug in public.docs[current.path[1]][current.path[2]][current.path[3]][current.path[4]]._data
     if slug != 'index'
-      url = "/docs/" + current.path[1] + "/" + current.path[2] + "/" + current.path[3] + "/" + current.path[4] + "/" + slug + ".html"
+      - var url = "/docs/" + current.path[1] + "/" + current.path[2] + "/" + current.path[3] + "/" + current.path[4] + "/" + slug + ".html"
 
       li.c8
         != partial("../../../../../_includes/_hover-card", {name: page.title, url: url })
