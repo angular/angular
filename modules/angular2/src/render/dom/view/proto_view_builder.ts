@@ -145,7 +145,6 @@ export class ElementBinderBuilder {
   nestedProtoView: ProtoViewBuilder = null;
   propertyBindings: Map<string, ASTWithSource> = new Map();
   variableBindings: Map<string, string> = new Map();
-  propertyBindingsToDirectives: Set<string> = new Set();
   eventBindings: List<api.EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
   textBindings: Map<Node, ASTWithSource> = new Map();
@@ -184,12 +183,6 @@ export class ElementBinderBuilder {
 
   bindProperty(name: string, expression: ASTWithSource) {
     this.propertyBindings.set(name, expression);
-  }
-
-  bindPropertyToDirective(name: string) {
-    // we are filling in a set of property names that are bound to a property
-    // of at least one directive. This allows us to report "dangling" bindings.
-    this.propertyBindingsToDirectives.add(name);
   }
 
   bindVariable(name: string, value: string) {
