@@ -789,8 +789,10 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     }
 
     this.remove();
-
-    ListWrapper.forEach(queriesToUpdate, (q) => q.update());
+    // TODO(rado): update should work on view queries too, however currently it
+    // is not implemented, so we filter to non-view queries.
+    var nonViewQueries = ListWrapper.filter(queriesToUpdate, (q) => !q.query.isViewQuery);
+    ListWrapper.forEach(nonViewQueries, (q) => q.update());
   }
 
   private _pruneQueryFromTree(query: QueryRef): void {
