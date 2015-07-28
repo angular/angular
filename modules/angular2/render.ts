@@ -5,6 +5,8 @@
  */
 
 export {
+  DirectiveMetadata,
+  DomRenderer,
   RenderEventDispatcher,
   Renderer,
   RenderElementRef,
@@ -12,7 +14,7 @@ export {
   RenderProtoViewRef,
   RenderFragmentRef,
   RenderViewWithFragments,
-  DomRenderer,
+  ViewDefinition,
   DOCUMENT_TOKEN,
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
 } from './src/render/render';

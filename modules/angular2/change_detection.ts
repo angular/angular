@@ -18,6 +18,7 @@ export {
   ChangeDetectorRef,
 
   WrappedValue,
+  defaultPipes,
   Pipe,
   Pipes,
   PipeFactory,
