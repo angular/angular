@@ -11,17 +11,20 @@ import {
   xit,
   SpyObject
 } from 'angular2/test_lib';
-import {Http} from 'angular2/src/http/http';
 import {Injector, bind} from 'angular2/di';
-import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
-import {Response} from 'angular2/src/http/static_response';
-import {RequestMethods} from 'angular2/src/http/enums';
-import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
-import {ResponseOptions} from 'angular2/src/http/base_response_options';
-import {Request} from 'angular2/src/http/static_request';
+import {MockBackend, MockConnection} from 'http/src/backends/mock_backend';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {ConnectionBackend} from 'angular2/src/http/interfaces';
-import {URLSearchParams} from 'angular2/src/http/url_search_params';
+import {
+  BaseRequestOptions,
+  ConnectionBackend,
+  Http,
+  Request,
+  RequestMethods,
+  RequestOptions,
+  Response,
+  ResponseOptions,
+  URLSearchParams
+} from 'http/http';
 
 class SpyObserver extends SpyObject {
   onNext: Function;

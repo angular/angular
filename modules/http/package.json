@@ -1,0 +1,16 @@
+{
+  "name": "ngHttp",
+  "version": "<%= packageJson.version %>",
+  "description": "Http module for Angular 2",
+  "homepage": "<%= packageJson.homepage %>",
+  "bugs": "<%= packageJson.bugs %>",
+  "contributors": <%= JSON.stringify(packageJson.contributors) %>,
+  "license": "<%= packageJson.license %>",
+  "dependencies": {
+    "angular2": "<%= packageJson.version %>",
+    "rx": "<%= packageJson.dependencies['rx'] %>",
+    "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
+    "traceur": "<%= packageJson.dependencies['traceur'] %>"
+  },
+  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>
+}

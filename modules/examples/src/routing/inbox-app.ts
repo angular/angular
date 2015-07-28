@@ -8,7 +8,7 @@ import {
   Location,
   RouteParams
 } from 'angular2/router';
-import {Http, Response} from 'angular2/http';
+import {Http, Response} from 'http/http';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';

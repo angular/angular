@@ -1,5 +1,5 @@
 import {Component, View, NgFor} from 'angular2/angular2';
-import {Http, Response} from 'angular2/http';
+import {Http, Response} from 'http/http';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 
 @Component({selector: 'http-app'})

@@ -12,17 +12,17 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
-import {JSONPConnection, JSONPBackend} from 'angular2/src/http/backends/jsonp_backend';
+import {BrowserJsonp} from 'http/src/backends/browser_jsonp';
+import {JSONPConnection, JSONPBackend} from 'http/src/backends/jsonp_backend';
 import {bind, Injector} from 'angular2/di';
 import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {TimerWrapper} from 'angular2/src/facade/async';
-import {Request} from 'angular2/src/http/static_request';
-import {Response} from 'angular2/src/http/static_response';
+import {Request} from 'http/src/static_request';
+import {Response} from 'http/src/static_response';
 import {Map} from 'angular2/src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseTypes, ReadyStates, RequestMethods} from 'angular2/src/http/enums';
+import {RequestOptions, BaseRequestOptions} from 'http/src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from 'http/src/base_response_options';
+import {ResponseTypes, ReadyStates, RequestMethods} from 'http/src/enums';
 
 var addEventListenerSpy;
 var existingScripts = [];

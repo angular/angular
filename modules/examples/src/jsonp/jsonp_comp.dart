@@ -1,7 +1,7 @@
 library examples.src.jsonp.jsonp_comp;
 
 import "package:angular2/angular2.dart" show Component, View, NgFor;
-import "package:angular2/http.dart" show Jsonp;
+import "package:http/http.dart" show Jsonp;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 
 @Component(selector: "jsonp-app")

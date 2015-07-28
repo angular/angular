@@ -12,16 +12,16 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
-import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
+import {BrowserXhr} from 'http/src/backends/browser_xhr';
+import {XHRConnection, XHRBackend} from 'http/src/backends/xhr_backend';
 import {bind, Injector} from 'angular2/di';
-import {Request} from 'angular2/src/http/static_request';
-import {Response} from 'angular2/src/http/static_response';
-import {Headers} from 'angular2/src/http/headers';
+import {Request} from 'http/src/static_request';
+import {Response} from 'http/src/static_response';
+import {Headers} from 'http/src/headers';
 import {Map} from 'angular2/src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseTypes} from 'angular2/src/http/enums';
+import {RequestOptions, BaseRequestOptions} from 'http/src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from 'http/src/base_response_options';
+import {ResponseTypes} from 'http/src/enums';
 
 var abortSpy;
 var sendSpy;

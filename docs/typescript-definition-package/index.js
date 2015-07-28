@@ -39,7 +39,8 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readTypeScriptModules.sourceFiles = [
     'angular2/angular2.ts',
-    'angular2/router.ts'
+    'angular2/router.ts',
+    'http/http.ts'
   ];
   readTypeScriptModules.basePath = path.resolve(path.resolve(__dirname, '../../modules'));
 
@@ -58,6 +59,13 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
         references: ['../es6-promise/es6-promise.d.ts'],
         modules: {
           'angular2/router': 'angular2/router'
+        }
+      },
+      {
+        id: 'http/http',
+        namespace: 'ngHttp',
+        modules: {
+          'http/http':'http/http'
         }
       }
   ];

@@ -615,7 +615,7 @@ gulp.task('test.unit.dart', function (done) {
         return;
       }
 
-      watch('modules/angular2/**', { ignoreInitial: true }, [
+      watch(['modules/angular2/**', 'modules/http/**'], { ignoreInitial: true }, [
         '!build/tree.dart',
         '!test.unit.dart/karma-run'
       ]);
@@ -655,7 +655,7 @@ gulp.task('test.unit.dart/ci', function (done) {
 
 
 gulp.task('test.unit.cjs/ci', function(done) {
-  runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
+  runJasmineTests(['dist/js/cjs/{angular2,benchpress,http}/test/**/*_spec.js'], done);
 });
 
 
@@ -761,7 +761,7 @@ gulp.task('!pre.test.typings', ['docs/typings'], function() {
 
 // -----------------
 gulp.task('test.typings', ['!pre.test.typings'], function() {
-  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/*.d.ts'])
+  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/*.d.ts', 'dist/docs/typings/http.d.ts'])
       .pipe(tsc({target: 'ES5', module: 'commonjs',
                  experimentalDecorators: true,
                  noImplicitAny: true,
@@ -957,6 +957,16 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
       './dist/build/angular2.js',
       {
         sourceMaps: true
+      }).
+      then(function(){
+        return bundler.bundle(
+          bundleConfig,
+          'http/http',
+          './dist/build/http.js',
+          {
+            sourceMaps: true
+          }
+        )
       });
 });
 
@@ -969,6 +979,17 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
       {
         sourceMaps: true,
         minify: true
+      }).
+      then(function(){
+        return bundler.bundle(
+          bundleConfig,
+          'http/http',
+          './dist/build/http.min.js',
+          {
+            sourceMaps: true,
+            minify: true
+          }
+        )
       });
 });
 
@@ -983,7 +1004,14 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
       devBundleConfig,
       'angular2/angular2',
       './dist/build/angular2.dev.js',
-      { sourceMaps: true });
+      { sourceMaps: true }).
+      then(function() {
+        return bundler.bundle(
+          devBundleConfig,
+          'http/http',
+          './dist/build/http.dev.js',
+          { sourceMaps: true });
+      });
 });
 
 gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
@@ -1028,25 +1056,41 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
       'angular2/angular2_sfx',
       './dist/build/angular2.sfx.dev.js',
       { sourceMaps: true },
-      /* self-executing */ true);
+      /* self-executing */ true).
+      then(function() {
+        return bundler.bundle(
+          devBundleConfig,
+          'http/http_sfx',
+          './dist/build/http.sfx.dev.js',
+          { sourceMaps: true },
+          true)
+      });
 });
 
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
-  return bundler.modify(
+  return merge2(bundler.modify(
       ['node_modules/zone.js/dist/zone-microtask.js', 'node_modules/reflect-metadata/Reflect.js',
       'dist/build/angular2.js'],
       'angular2.js'
-  ).pipe(gulp.dest('dist/js/bundle'));
+    ),
+    bundler.modify(
+        ['node_modules/reflect-metadata/Reflect.js', 'node_modules/rx/dist/rx.lite.js', 'dist/build/http.js'],
+        'http.js'
+    )).pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
-  return bundler.modify(
+  return merge2(bundler.modify(
       ['node_modules/zone.js/dist/zone-microtask.min.js',
       'node_modules/reflect-metadata/Reflect.js', 'dist/build/angular2.min.js'],
       'angular2.min.js'
-  )
-  .pipe(uglify())
-  .pipe(gulp.dest('dist/js/bundle'));
+    ),
+    bundler.modify(
+        ['node_modules/reflect-metadata/Reflect.js', 'node_modules/rx/dist/rx.lite.js','dist/build/http.min.js'],
+        'http.min.js'
+    ))
+    .pipe(uglify())
+    .pipe(gulp.dest('dist/js/bundle'));
 });
 
 var JS_DEV_DEPS = [
@@ -1071,17 +1115,26 @@ function insertRXLicense(source) {
 }
 
 gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
-  return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']), 'angular2.dev.js')
-      .pipe(insert.transform(insertRXLicense))
-      .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
-      .pipe(gulp.dest('dist/js/bundle'));
+  return merge2(
+    bundler.modify(
+      JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']),
+      'angular2.dev.js')
+        .pipe(insert.transform(insertRXLicense))
+        .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
+        .pipe(gulp.dest('dist/js/bundle')),
+    bundler.modify(
+      ['dist/build/http.dev.js'], 'http.dev.js')
+        .pipe(gulp.dest('dist/js/bundle')));
 });
 
 gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
-  return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
+  return merge2(
+    bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
                         'angular2.sfx.dev.js')
-      .pipe(insert.transform(insertRXLicense))
-      .pipe(gulp.dest('dist/js/bundle'));
+      .pipe(gulp.dest('dist/js/bundle')),
+    bundler.modify(['dist/build/http.sfx.dev.js'],
+                        'http.sfx.dev.js')
+      .pipe(gulp.dest('dist/js/bundle')));
 });
 
 gulp.task('bundles.js', [

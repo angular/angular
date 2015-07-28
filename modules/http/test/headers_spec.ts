@@ -1,4 +1,4 @@
-import {Headers} from 'angular2/src/http/headers';
+import {Headers} from 'http/src/headers';
 import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   AsyncTestCompleter,

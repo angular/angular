@@ -14,10 +14,10 @@ var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..')
 
 module.exports = function makeNodeTree(destinationPath) {
   // list of npm packages that this build will create
-  var outputPackages = ['angular2', 'benchpress', 'rtts_assert'];
+  var outputPackages = ['angular2', 'http', 'benchpress', 'rtts_assert'];
 
   var modulesTree = new Funnel('modules', {
-    include: ['angular2/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
+    include: ['angular2/**', 'http/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
       'angular2/test/core/zone/**',

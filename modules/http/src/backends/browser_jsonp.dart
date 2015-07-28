@@ -1,4 +1,4 @@
-library angular2.src.http.backends.browser_jsonp;
+library angular2_http.src.backends.browser_jsonp;
 
 import 'package:angular2/di.dart';
 import 'dart:html' show document;

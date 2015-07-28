@@ -84,7 +84,8 @@ export class XHRConnection implements Connection {
  * #Example
  *
  * ```
- * import {Http, MyNodeBackend, httpInjectables, BaseRequestOptions} from 'angular2/http';
+ * import {Http, MyNodeBackend, httpInjectables, BaseRequestOptions} from
+ *'angular2/http';
  * @Component({
  *   viewBindings: [
  *     httpInjectables,

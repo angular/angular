@@ -1,4 +1,4 @@
-library angular2.src.http.backends.browser_xhr;
+library angular2_http.src.backends.browser_xhr;
 
 import 'dart:html' show HttpRequest;
 import 'package:angular2/di.dart';
