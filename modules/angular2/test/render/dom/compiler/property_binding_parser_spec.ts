@@ -8,13 +8,14 @@ import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {MockElementSchemaRegistry} from 'angular2/src/mock/element_schema_registry_mock';
 
 var EMPTY_MAP = new Map();
 
 export function main() {
   describe('PropertyBindingParser', () => {
     function createPipeline(hasNestedProtoView = false) {
-      return new CompilePipeline([
+      return new CompilePipeline(new MockElementSchemaRegistry(), [
         new MockStep((parent, current, control) => {
           if (hasNestedProtoView) {
             current.bindElement().bindNestedProtoView(el('<template></template>'));

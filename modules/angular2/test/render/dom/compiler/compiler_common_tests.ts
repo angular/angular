@@ -23,6 +23,7 @@ import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {MockElementSchemaRegistry} from 'angular2/src/mock/element_schema_registry_mock';
 
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
 
@@ -36,7 +37,7 @@ export function runCompilerCommonTests() {
       }
       var tplLoader = new FakeViewLoader(urlData);
       mockStepFactory = new MockStepFactory([new MockStep(processClosure)]);
-      return new DomCompiler(mockStepFactory, tplLoader, false);
+      return new DomCompiler(mockStepFactory, tplLoader, new MockElementSchemaRegistry(), false);
     }
 
     describe('compile', () => {

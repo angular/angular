@@ -20,6 +20,7 @@ import {
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder, Event, HostAction} from './element_binder';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
 import * as api from '../../api';
 
@@ -36,11 +37,12 @@ export class ProtoViewBuilder {
   rootTextBindings: Map<Node, ASTWithSource> = new Map();
   ngContentCount: number = 0;
 
-  constructor(public rootElement, public type: api.ViewType,
-              public useNativeShadowDom: boolean = false) {}
+  constructor(private _elementSchemaRegistry: ElementSchemaRegistry, public rootElement,
+              public type: api.ViewType, public useNativeShadowDom: boolean = false) {}
 
   bindElement(element: HTMLElement, description: string = null): ElementBinderBuilder {
-    var builder = new ElementBinderBuilder(this.elements.length, element, description);
+    var builder = new ElementBinderBuilder(this._elementSchemaRegistry, this.elements.length,
+                                           element, description);
     this.elements.push(builder);
     DOM.addClass(element, NG_BINDING_CLASS);
 
@@ -152,7 +154,8 @@ export class ElementBinderBuilder {
   readAttributes: Map<string, string> = new Map();
   componentId: string = null;
 
-  constructor(public index: number, public element, description: string) {}
+  constructor(private _elementSchemaRegistry: ElementSchemaRegistry, public index: number,
+              public element, description: string) {}
 
   setParent(parent: ElementBinderBuilder, distanceToParent: number): ElementBinderBuilder {
     this.parent = parent;
@@ -178,7 +181,8 @@ export class ElementBinderBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
-    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ViewType.EMBEDDED);
+    this.nestedProtoView =
+        new ProtoViewBuilder(this._elementSchemaRegistry, rootElement, api.ViewType.EMBEDDED);
     return this.nestedProtoView;
   }
 

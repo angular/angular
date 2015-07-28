@@ -9,11 +9,13 @@ import {
   ElementBinderBuilder
 } from 'angular2/src/render/dom/view/proto_view_builder';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {MockElementSchemaRegistry} from 'angular2/src/mock/element_schema_registry_mock';
 
 export function main() {
   describe('TextInterpolationParser', () => {
     function createPipeline() {
       return new CompilePipeline(
+          new MockElementSchemaRegistry(),
           [new IgnoreChildrenStep(), new TextInterpolationParser(new Parser(new Lexer()))]);
     }
 
