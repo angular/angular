@@ -49,7 +49,7 @@
     "canonical-path": "0.0.2",
     "chokidar": "^1.0.1",
     "clang-format": "^1.0.25",
-    "conventional-changelog": "^0.0.17",
+    "conventional-changelog": "^0.2.1",
     "css": "mlaval/css#issue65",
     "del": "~1",
     "dgeni": "^0.4.1",
