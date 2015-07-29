@@ -7,6 +7,10 @@ import * as dirAnn from 'angular2/src/core/annotations_impl/annotations';
 class SomeDirective {
 }
 
+@Directive({selector: 'someChildDirective'})
+class SomeChildDirective extends SomeDirective {
+}
+
 class SomeDirectiveWithoutAnnotation {}
 
 export function main() {
@@ -23,6 +27,11 @@ export function main() {
     it('should throw if not matching annotation is found', () => {
       expect(() => { reader.resolve(SomeDirectiveWithoutAnnotation); })
           .toThrowError('No Directive annotation found on SomeDirectiveWithoutAnnotation');
+    });
+
+    it('should not read parent class Directive annotations', function() {
+      var directiveMetadata = reader.resolve(SomeChildDirective);
+      expect(directiveMetadata).toEqual(new dirAnn.Directive({selector: 'someChildDirective'}));
     });
   });
 }
