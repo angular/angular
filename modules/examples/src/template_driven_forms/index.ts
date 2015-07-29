@@ -6,7 +6,7 @@ import {
   Component,
   Directive,
   View,
-  Ancestor,
+  Host,
   NgValidator,
   forwardRef,
   Binding
@@ -76,7 +76,7 @@ class ShowError {
   controlPath: string;
   errorTypes: List<string>;
 
-  constructor(@Ancestor() formDir: NgForm) { this.formDir = formDir; }
+  constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage() {
     var c = this.formDir.form.find(this.controlPath);

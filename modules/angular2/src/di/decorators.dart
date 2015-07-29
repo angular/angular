@@ -32,15 +32,15 @@ class Self extends SelfMetadata {
 }
 
 /**
- * {@link AncestorMetadata}.
+ * {@link HostMetadata}.
  */
-class Ancestor extends AncestorMetadata {
-  const Ancestor({bool self}) : super(self: self);
+class Host extends HostMetadata {
+  const Host() : super();
 }
 
 /**
- * {@link UnboundedMetadata}.
+ * {@link SkipSelfMetadata}.
  */
-class Unbounded extends UnboundedMetadata {
-  const Unbounded({bool self}) : super(self: self);
+class SkipSelf extends SkipSelfMetadata {
+  const SkipSelf() : super();
 }

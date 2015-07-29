@@ -3,7 +3,8 @@ import {
   Directive,
   View,
   ViewEncapsulation,
-  Ancestor,
+  Host,
+  SkipSelf,
   ElementRef,
   DynamicComponentLoader,
   ComponentRef,
@@ -212,8 +213,7 @@ export class MdDialogConfig {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/dialog/dialog.html',
-  directives: [forwardRef(() => MdDialogContent)],
-  encapsulation: ViewEncapsulation.NONE
+  directives: [forwardRef(() => MdDialogContent)]
 })
 class MdDialogContainer {
   // Ref to the dialog content. Used by the DynamicComponentLoader to load the dialog content.
@@ -245,7 +245,7 @@ class MdDialogContainer {
  */
 @Directive({selector: 'md-dialog-content'})
 class MdDialogContent {
-  constructor(@Ancestor() dialogContainer: MdDialogContainer, elementRef: ElementRef) {
+  constructor(@Host() @SkipSelf() dialogContainer: MdDialogContainer, elementRef: ElementRef) {
     dialogContainer.contentRef = elementRef;
   }
 }

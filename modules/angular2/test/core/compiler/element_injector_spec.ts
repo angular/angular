@@ -40,7 +40,7 @@ import {
   Directive,
   LifecycleEvent
 } from 'angular2/annotations';
-import {bind, Injector, Binding, Optional, Inject, Injectable, Self, Ancestor, Unbounded, InjectMetadata, AncestorMetadata} from 'angular2/di';
+import {bind, Injector, Binding, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
@@ -103,15 +103,15 @@ class OptionallyNeedsDirective {
 }
 
 @Injectable()
-class NeedsDirectiveFromAncestor {
+class NeeedsDirectiveFromHost {
   dependency: SimpleDirective;
-  constructor(@Ancestor() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Host() dependency: SimpleDirective) { this.dependency = dependency; }
 }
 
 @Injectable()
-class NeedsDirectiveFromAnAncestorShadowDom {
+class NeedsDirectiveFromHostShadowDom {
   dependency: SimpleDirective;
-  constructor(@Unbounded() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(dependency: SimpleDirective) { this.dependency = dependency; }
 }
 
 @Injectable()
@@ -121,9 +121,9 @@ class NeedsService {
 }
 
 @Injectable()
-class NeedsAncestorService {
+class NeedsServiceFromHost {
   service: any;
-  constructor(@Ancestor() @Inject("service") service) { this.service = service; }
+  constructor(@Host() @Inject("service") service) { this.service = service; }
 }
 
 class HasEventEmitter {
@@ -597,7 +597,7 @@ export function main() {
                        bind('injectable2')
                            .toFactory(
                                (val) => `${val}-injectable2`,
-                               [[new InjectMetadata('injectable1'), new AncestorMetadata()]])
+                               [[new InjectMetadata('injectable1'), new SkipSelfMetadata()]])
                      ]
                    }))]);
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
@@ -710,25 +710,25 @@ export function main() {
             var inj = injector([NeedsService], imperativelyCreatedInjector);
             expect(inj.get(NeedsService).service).toEqual('appService');
 
-            expect(() => injector([NeedsAncestorService], imperativelyCreatedInjector)).toThrowError();
+            expect(() => injector([NeedsServiceFromHost], imperativelyCreatedInjector)).toThrowError();
           });
 
           it("should instantiate directives that depend on imperatively created injector bindings (root injector)", () => {
             var imperativelyCreatedInjector = Injector.resolveAndCreate([
               bind("service").toValue('appService')
             ]);
-            var inj = hostShadowInjectors([SimpleDirective], [NeedsService, NeedsAncestorService], imperativelyCreatedInjector);
+            var inj = hostShadowInjectors([SimpleDirective], [NeedsService, NeedsServiceFromHost], imperativelyCreatedInjector);
             expect(inj.get(NeedsService).service).toEqual('appService');
-            expect(inj.get(NeedsAncestorService).service).toEqual('appService');
+            expect(inj.get(NeedsServiceFromHost).service).toEqual('appService');
           });
 
           it("should instantiate directives that depend on imperatively created injector bindings (child injector)", () => {
             var imperativelyCreatedInjector = Injector.resolveAndCreate([
               bind("service").toValue('appService')
             ]);
-            var inj = parentChildInjectors([], [NeedsService, NeedsAncestorService], null, imperativelyCreatedInjector);
+            var inj = parentChildInjectors([], [NeedsService, NeedsServiceFromHost], null, imperativelyCreatedInjector);
             expect(inj.get(NeedsService).service).toEqual('appService');
-            expect(inj.get(NeedsAncestorService).service).toEqual('appService');
+            expect(inj.get(NeedsServiceFromHost).service).toEqual('appService');
           });
 
           it("should prioritize viewInjector over hostInjector for the same binding", () => {
@@ -750,7 +750,7 @@ export function main() {
                       hostInjector: [bind('service').toValue('hostService')]})
                   )], extraBindings),
 
-                ListWrapper.concat([NeedsAncestorService], extraBindings)
+                ListWrapper.concat([NeedsServiceFromHost], extraBindings)
               );
             }).toThrowError(new RegExp("No provider for service!"));
           });
@@ -763,31 +763,31 @@ export function main() {
             expect(inj.get(NeedsTemplateRef).templateRef).toEqual(templateRef);
           });
 
-          it("should get directives from ancestor", () => {
-            var child = parentChildInjectors(ListWrapper.concat([SimpleDirective], extraBindings),
-                                             [NeedsDirectiveFromAncestor]);
+          it("should get directives", () => {
+            var child = hostShadowInjectors(
+                ListWrapper.concat([SomeOtherDirective, SimpleDirective], extraBindings),
+                [NeedsDirectiveFromHostShadowDom]);
 
-            var d = child.get(NeedsDirectiveFromAncestor);
+            var d = child.get(NeedsDirectiveFromHostShadowDom);
 
-            expect(d).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
+            expect(d).toBeAnInstanceOf(NeedsDirectiveFromHostShadowDom);
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should get directives crossing the boundaries", () => {
-            var child = hostShadowInjectors(
-                ListWrapper.concat([SomeOtherDirective, SimpleDirective], extraBindings),
-                [NeedsDirectiveFromAnAncestorShadowDom]);
+          it("should get directives from the host", () => {
+            var child = parentChildInjectors(ListWrapper.concat([SimpleDirective], extraBindings),
+                                             [NeeedsDirectiveFromHost]);
 
-            var d = child.get(NeedsDirectiveFromAnAncestorShadowDom);
+            var d = child.get(NeeedsDirectiveFromHost);
 
-            expect(d).toBeAnInstanceOf(NeedsDirectiveFromAnAncestorShadowDom);
+            expect(d).toBeAnInstanceOf(NeeedsDirectiveFromHost);
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
           it("should throw when a dependency cannot be resolved", () => {
-            expect(() => injector(ListWrapper.concat([NeedsDirectiveFromAncestor], extraBindings)))
+            expect(() => injector(ListWrapper.concat([NeeedsDirectiveFromHost], extraBindings)))
                 .toThrowError(containsRegexp(
-                    `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirectiveFromAncestor) } -> ${stringify(SimpleDirective) })`));
+                    `No provider for ${stringify(SimpleDirective) }! (${stringify(NeeedsDirectiveFromHost) } -> ${stringify(SimpleDirective) })`));
           });
 
           it("should inject null when an optional dependency cannot be resolved", () => {
@@ -820,10 +820,10 @@ export function main() {
             var directiveBinding =
                 DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component());
             var shadow = hostShadowInjectors(ListWrapper.concat([directiveBinding], extraBindings),
-                                             [NeedsDirectiveFromAncestor]);
+                                             [NeeedsDirectiveFromHost]);
 
-            var d = shadow.get(NeedsDirectiveFromAncestor);
-            expect(d).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
+            var d = shadow.get(NeeedsDirectiveFromHost);
+            expect(d).toBeAnInstanceOf(NeeedsDirectiveFromHost);
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 

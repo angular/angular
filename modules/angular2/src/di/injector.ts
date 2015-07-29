@@ -13,7 +13,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
-import {VisibilityMetadata, DEFAULT_VISIBILITY, SelfMetadata, AncestorMetadata} from './metadata';
+import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
 
 const _constructing = CONST_EXPR(new Object());
 const _notFound = CONST_EXPR(new Object());
@@ -192,7 +192,7 @@ export interface InjectorStrategy {
   getObjAtIndex(index: number): any;
   getMaxNumberOfObjects(): number;
 
-  attach(parent: Injector, isBoundary: boolean): void;
+  attach(parent: Injector, isHost: boolean): void;
   resetConstructionCounter(): void;
   instantiateBinding(binding: ResolvedBinding, visibility: number): any;
 }
@@ -217,10 +217,10 @@ export class InjectorInlineStrategy implements InjectorStrategy {
     return this.injector._new(binding, visibility);
   }
 
-  attach(parent: Injector, isBoundary: boolean): void {
+  attach(parent: Injector, isHost: boolean): void {
     var inj = this.injector;
     inj._parent = parent;
-    inj._isBoundary = isBoundary;
+    inj._isHost = isHost;
   }
 
   getObjByKeyId(keyId: number, visibility: number): any {
@@ -323,10 +323,10 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     return this.injector._new(binding, visibility);
   }
 
-  attach(parent: Injector, isBoundary: boolean): void {
+  attach(parent: Injector, isHost: boolean): void {
     var inj = this.injector;
     inj._parent = parent;
-    inj._isBoundary = isBoundary;
+    inj._isHost = isHost;
   }
 
   getObjByKeyId(keyId: number, visibility: number): any {
@@ -466,7 +466,7 @@ export class Injector {
   }
 
   _strategy: InjectorStrategy;
-  _isBoundary: boolean = false;
+  _isHost: boolean = false;
   _constructionCounter: number = 0;
 
   constructor(public _proto: ProtoInjector, public _parent: Injector = null,
@@ -490,7 +490,7 @@ export class Injector {
    * @returns an instance represented by the token. Throws if not found.
    */
   get(token: any): any {
-    return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, false, PUBLIC_AND_PRIVATE);
+    return this._getByKey(Key.get(token), null, null, false, PUBLIC_AND_PRIVATE);
   }
 
   /**
@@ -500,7 +500,7 @@ export class Injector {
    * @returns an instance represented by the token. Returns `null` if not found.
    */
   getOptional(token: any): any {
-    return this._getByKey(Key.get(token), DEFAULT_VISIBILITY, true, PUBLIC_AND_PRIVATE);
+    return this._getByKey(Key.get(token), null, null, true, PUBLIC_AND_PRIVATE);
   }
 
   /**
@@ -679,24 +679,25 @@ export class Injector {
     if (special !== undefinedValue) {
       return special;
     } else {
-      return this._getByKey(dep.key, dep.visibility, dep.optional, bindingVisibility);
+      return this._getByKey(dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
+                            dep.optional, bindingVisibility);
     }
   }
 
-  private _getByKey(key: Key, depVisibility: VisibilityMetadata, optional: boolean,
-                    bindingVisibility: number): any {
+  private _getByKey(key: Key, lowerBoundVisibility: Object, upperBoundVisibility: Object,
+                    optional: boolean, bindingVisibility: number): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
 
-    if (depVisibility instanceof SelfMetadata) {
+    if (upperBoundVisibility instanceof SelfMetadata) {
       return this._getByKeySelf(key, optional, bindingVisibility);
 
-    } else if (depVisibility instanceof AncestorMetadata) {
-      return this._getByKeyAncestor(key, optional, bindingVisibility, depVisibility.includeSelf);
+    } else if (upperBoundVisibility instanceof HostMetadata) {
+      return this._getByKeyHost(key, optional, bindingVisibility, lowerBoundVisibility);
 
     } else {
-      return this._getByKeyUnbounded(key, optional, bindingVisibility, depVisibility.includeSelf);
+      return this._getByKeyDefault(key, optional, bindingVisibility, lowerBoundVisibility);
     }
   }
 
@@ -713,12 +714,12 @@ export class Injector {
     return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
   }
 
-  _getByKeyAncestor(key: Key, optional: boolean, bindingVisibility: number,
-                    includeSelf: boolean): any {
+  _getByKeyHost(key: Key, optional: boolean, bindingVisibility: number,
+                lowerBoundVisibility: Object): any {
     var inj = this;
 
-    if (!includeSelf) {
-      if (inj._isBoundary) {
+    if (lowerBoundVisibility instanceof SkipSelfMetadata) {
+      if (inj._isHost) {
         return this._getPrivateDependency(key, optional, inj);
       } else {
         inj = inj._parent;
@@ -729,7 +730,7 @@ export class Injector {
       var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
       if (obj !== undefinedValue) return obj;
 
-      if (isPresent(inj._parent) && inj._isBoundary) {
+      if (isPresent(inj._parent) && inj._isHost) {
         return this._getPrivateDependency(key, optional, inj);
       } else {
         inj = inj._parent;
@@ -744,11 +745,12 @@ export class Injector {
     return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
   }
 
-  _getByKeyUnbounded(key: Key, optional: boolean, bindingVisibility: number,
-                     includeSelf: boolean): any {
+  _getByKeyDefault(key: Key, optional: boolean, bindingVisibility: number,
+                   lowerBoundVisibility: Object): any {
     var inj = this;
-    if (!includeSelf) {
-      bindingVisibility = inj._isBoundary ? PUBLIC_AND_PRIVATE : PUBLIC;
+
+    if (lowerBoundVisibility instanceof SkipSelfMetadata) {
+      bindingVisibility = inj._isHost ? PUBLIC_AND_PRIVATE : PUBLIC;
       inj = inj._parent;
     }
 
@@ -756,7 +758,7 @@ export class Injector {
       var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
       if (obj !== undefinedValue) return obj;
 
-      bindingVisibility = inj._isBoundary ? PUBLIC_AND_PRIVATE : PUBLIC;
+      bindingVisibility = inj._isHost ? PUBLIC_AND_PRIVATE : PUBLIC;
       inj = inj._parent;
     }
 

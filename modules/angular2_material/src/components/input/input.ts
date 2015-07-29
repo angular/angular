@@ -1,4 +1,4 @@
-import {Directive, LifecycleEvent, Attribute, Ancestor} from 'angular2/angular2';
+import {Directive, LifecycleEvent, Attribute, Host, SkipSelf} from 'angular2/angular2';
 
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
@@ -73,7 +73,7 @@ export class MdInput {
   mdChange: EventEmitter;
   mdFocusChange: EventEmitter;
 
-  constructor(@Attribute('value') value: string, @Ancestor() container: MdInputContainer,
+  constructor(@Attribute('value') value: string, @SkipSelf() @Host() container: MdInputContainer,
               @Attribute('id') id: string) {
     // TODO(jelbourn): Remove this when #1402 is done.
     this.yes = true;
@@ -111,7 +111,7 @@ export class MdInput {
 export class MdTextarea extends MdInput {
   constructor(
       @Attribute('value') value: string,
-      @Ancestor() container: MdInputContainer,
+      @SkipSelf() @Host() container: MdInputContainer,
       @Attribute('id') id: string) {
     super(value, container, id);
   }

@@ -25,7 +25,6 @@ import {
   AbstractBindingError,
   CyclicDependencyError,
   resolveForwardRef,
-  VisibilityMetadata,
   DependencyProvider
 } from 'angular2/di';
 import {
@@ -167,9 +166,10 @@ export class TreeNode<T extends TreeNode<any>> {
 }
 
 export class DirectiveDependency extends Dependency {
-  constructor(key: Key, optional: boolean, visibility: any, properties: List<any>,
-              public attributeName: string, public queryDecorator: Query) {
-    super(key, optional, visibility, properties);
+  constructor(key: Key, optional: boolean, lowerBoundVisibility: Object,
+              upperBoundVisibility: Object, properties: List<any>, public attributeName: string,
+              public queryDecorator: Query) {
+    super(key, optional, lowerBoundVisibility, upperBoundVisibility, properties);
     this._verify();
   }
 
@@ -183,9 +183,9 @@ export class DirectiveDependency extends Dependency {
   }
 
   static createFrom(d: Dependency): Dependency {
-    return new DirectiveDependency(d.key, d.optional, d.visibility, d.properties,
-                                   DirectiveDependency._attributeName(d.properties),
-                                   DirectiveDependency._query(d.properties));
+    return new DirectiveDependency(
+        d.key, d.optional, d.lowerBoundVisibility, d.upperBoundVisibility, d.properties,
+        DirectiveDependency._attributeName(d.properties), DirectiveDependency._query(d.properties));
   }
 
   static _attributeName(properties): string {

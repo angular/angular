@@ -8,12 +8,10 @@ export {
   InjectMetadata,
   OptionalMetadata,
   InjectableMetadata,
-  VisibilityMetadata,
   SelfMetadata,
-  AncestorMetadata,
-  UnboundedMetadata,
-  DependencyMetadata,
-  DEFAULT_VISIBILITY
+  HostMetadata,
+  SkipSelfMetadata,
+  DependencyMetadata
 } from './src/di/metadata';
 
 // we have to reexport * because Dart and TS export two different sets of types

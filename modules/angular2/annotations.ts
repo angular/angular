@@ -5,7 +5,7 @@
  * Annotations provide the additional information that Angular requires in order to run your
  * application. This module
  * contains {@link Component}, {@link Directive}, and {@link View} annotations, as well as
- * the {@link Ancestor} annotation that is used by Angular to resolve dependencies.
+ * the {@link Host} annotation that is used by Angular to resolve dependencies.
  *
  */
 

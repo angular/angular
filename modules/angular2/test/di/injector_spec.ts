@@ -19,8 +19,8 @@ import {
   Injectable,
   InjectMetadata,
   SelfMetadata,
-  AncestorMetadata,
-  UnboundedMetadata,
+  HostMetadata,
+  SkipSelfMetadata,
   Optional,
   Inject,
   BindingWithVisibility,
@@ -420,57 +420,56 @@ export function main() {
         });
       });
 
-      describe("@Ancestor()", () => {
-        it("should return a dependency from same boundary", () => {
+      describe("@Host()", () => {
+        it("should return a dependency from same host", () => {
           var parent = Injector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild(
-              [bind(Car).toFactory((e) => new Car(e), [[Engine, new AncestorMetadata()]])]);
+              [bind(Car).toFactory((e) => new Car(e), [[Engine, new HostMetadata()]])]);
 
           expect(child.get(Car)).toBeAnInstanceOf(Car);
         });
 
-        it("should return a private dependency declared at the boundary", () => {
+        it("should return a private dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
           var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PRIVATE)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate(
-              [bind(Car).toFactory((e) => new Car(e), [[Engine, new AncestorMetadata()]])]);
+              [bind(Car).toFactory((e) => new Car(e), [[Engine, new HostMetadata()]])]);
 
-          child.internalStrategy.attach(parent, true);  // boundary
+          child.internalStrategy.attach(parent, true);  // host
 
           expect(child.get(Car)).toBeAnInstanceOf(Car);
         });
 
-        it("should not return a public dependency declared at the boundary", () => {
+        it("should not return a public dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
           var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PUBLIC)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate(
-              [bind(Car).toFactory((e) => new Car(e), [[Engine, new AncestorMetadata()]])]);
+              [bind(Car).toFactory((e) => new Car(e), [[Engine, new HostMetadata()]])]);
 
-          child.internalStrategy.attach(parent, true);  // boundary
+          child.internalStrategy.attach(parent, true);  // host
 
           expect(() => child.get(Car))
               .toThrowError(`No provider for Engine! (${stringify(Car)} -> ${stringify(Engine)})`);
         });
 
-        it("should return a dependency from self when explicitly specified", () => {
+        it("should not skip self", () => {
           var parent = Injector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild([
             bind(Engine)
                 .toClass(TurboEngine),
-            bind(Car)
-                .toFactory((e) => new Car(e), [[Engine, new AncestorMetadata({self: true})]])
+            bind(Car).toFactory((e) => new Car(e), [[Engine, new HostMetadata()]])
           ]);
 
           expect(child.get(Car).engine).toBeAnInstanceOf(TurboEngine);
         });
       });
 
-      describe("@Unboudned()", () => {
-        it("should return a private dependency declared at the boundary", () => {
+      describe("default", () => {
+        it("should return a private dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
           var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PRIVATE)]);
           var parent = new Injector(protoParent);
@@ -478,14 +477,14 @@ export function main() {
           var child = Injector.resolveAndCreate([
             bind(Engine)
                 .toClass(BrokenEngine),
-            bind(Car).toFactory((e) => new Car(e), [[Engine, new UnboundedMetadata()]])
+            bind(Car).toFactory((e) => new Car(e), [[Engine, new SkipSelfMetadata()]])
           ]);
           child.internalStrategy.attach(parent, true);  // boundary
 
           expect(child.get(Car)).toBeAnInstanceOf(Car);
         });
 
-        it("should return a public dependency declared at the boundary", () => {
+        it("should return a public dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
           var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PUBLIC)]);
           var parent = new Injector(protoParent);
@@ -493,14 +492,14 @@ export function main() {
           var child = Injector.resolveAndCreate([
             bind(Engine)
                 .toClass(BrokenEngine),
-            bind(Car).toFactory((e) => new Car(e), [[Engine, new UnboundedMetadata()]])
+            bind(Car).toFactory((e) => new Car(e), [[Engine, new SkipSelfMetadata()]])
           ]);
           child.internalStrategy.attach(parent, true);  // boundary
 
           expect(child.get(Car)).toBeAnInstanceOf(Car);
         });
 
-        it("should not return a private dependency declared NOT at the boundary", () => {
+        it("should not return a private dependency declared NOT at the host", () => {
           var engine = Injector.resolve([Engine])[0];
           var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PRIVATE)]);
           var parent = new Injector(protoParent);
@@ -508,7 +507,7 @@ export function main() {
           var child = Injector.resolveAndCreate([
             bind(Engine)
                 .toClass(BrokenEngine),
-            bind(Car).toFactory((e) => new Car(e), [[Engine, new UnboundedMetadata()]])
+            bind(Car).toFactory((e) => new Car(e), [[Engine, new SkipSelfMetadata()]])
           ]);
           child.internalStrategy.attach(parent, false);
 
@@ -516,13 +515,12 @@ export function main() {
               .toThrowError(`No provider for Engine! (${stringify(Car)} -> ${stringify(Engine)})`);
         });
 
-        it("should return a dependency from self when explicitly specified", () => {
+        it("should not skip self", () => {
           var parent = Injector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild([
             bind(Engine)
                 .toClass(TurboEngine),
-            bind(Car)
-                .toFactory((e) => new Car(e), [[Engine, new UnboundedMetadata({self: true})]])
+            bind(Car).toFactory((e) => new Car(e), [Engine])
           ]);
 
           expect(child.get(Car).engine).toBeAnInstanceOf(TurboEngine);

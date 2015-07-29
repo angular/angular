@@ -44,9 +44,9 @@ import {
   forwardRef,
   OpaqueToken,
   Inject,
-  Ancestor,
-  Unbounded,
-  UnboundedMetadata
+  Host,
+  SkipSelf,
+  SkipSelfMetadata
 } from 'angular2/di';
 import {
   PipeFactory,
@@ -435,8 +435,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template:
-                    '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-ancestor></cmp-with-ancestor></template></toolbar></some-directive>',
-                directives: [SomeDirective, CompWithAncestor, ToolbarComponent, ToolbarPart]
+                    '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>',
+                directives: [SomeDirective, CompWithHost, ToolbarComponent, ToolbarPart]
               }))
                .createAsync(MyComp)
                .then((rootTC) => {
@@ -445,7 +445,7 @@ export function main() {
 
                  expect(rootTC.nativeElement)
                      .toHaveText(
-                         'TOOLBAR(From myComp,From toolbar,Component with an injected ancestor)');
+                         'TOOLBAR(From myComp,From toolbar,Component with an injected host)');
 
                  async.done();
                });
@@ -675,38 +675,38 @@ export function main() {
                        })}));
       });
 
-      it('should create a component that injects an @Ancestor',
+      it('should create a component that injects an @Host',
          inject([TestComponentBuilder, AsyncTestCompleter],
                 (tcb: TestComponentBuilder, async) => {
                     tcb.overrideView(MyComp, new viewAnn.View({
                          template: `
             <some-directive>
               <p>
-                <cmp-with-ancestor #child></cmp-with-ancestor>
+                <cmp-with-host #child></cmp-with-host>
               </p>
             </some-directive>`,
-                         directives: [SomeDirective, CompWithAncestor]
+                         directives: [SomeDirective, CompWithHost]
                        }))
 
                         .createAsync(MyComp)
                         .then((rootTC) => {
 
                           var childComponent = rootTC.componentViewChildren[0].getLocal('child');
-                          expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
+                          expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
 
                           async.done();
                         })}));
 
-      it('should create a component that injects an @Ancestor through viewcontainer directive',
+      it('should create a component that injects an @Host through viewcontainer directive',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template: `
             <some-directive>
               <p *ng-if="true">
-                <cmp-with-ancestor #child></cmp-with-ancestor>
+                <cmp-with-host #child></cmp-with-host>
               </p>
             </some-directive>`,
-                directives: [SomeDirective, CompWithAncestor, NgIf]
+                directives: [SomeDirective, CompWithHost, NgIf]
               }))
 
                .createAsync(MyComp)
@@ -716,7 +716,7 @@ export function main() {
                  var tc = rootTC.componentViewChildren[0].children[1];
 
                  var childComponent = tc.getLocal('child');
-                 expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
+                 expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
 
                  async.done();
                });
@@ -1585,12 +1585,12 @@ class SomeDirective {
 
 class SomeDirectiveMissingAnnotation {}
 
-@Component({selector: 'cmp-with-ancestor'})
-@View({template: '<p>Component with an injected ancestor</p>', directives: [SomeDirective]})
+@Component({selector: 'cmp-with-host'})
+@View({template: '<p>Component with an injected host</p>', directives: [SomeDirective]})
 @Injectable()
-class CompWithAncestor {
-  myAncestor: SomeDirective;
-  constructor(@Ancestor() someComp: SomeDirective) { this.myAncestor = someComp; }
+class CompWithHost {
+  myHost: SomeDirective;
+  constructor(@Host() someComp: SomeDirective) { this.myHost = someComp; }
 }
 
 @Component({selector: '[child-cmp2]', viewInjector: [MyService]})
@@ -1753,7 +1753,7 @@ class PrivateImpl extends PublicApi {
 @Directive({selector: '[needs-public-api]'})
 @Injectable()
 class NeedsPublicApi {
-  constructor(@Ancestor() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
+  constructor(@Host() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
 }
 
 @Directive({selector: '[toolbarpart]'})
@@ -1851,7 +1851,7 @@ class DirectiveProvidingInjectableInHostAndView {
 class DirectiveConsumingInjectable {
   injectable;
 
-  constructor(@Ancestor() @Inject(InjectableService) injectable) { this.injectable = injectable; }
+  constructor(@Host() @Inject(InjectableService) injectable) { this.injectable = injectable; }
 }
 
 
@@ -1868,8 +1868,8 @@ class DirectiveContainingDirectiveConsumingAnInjectable {
 class DirectiveConsumingInjectableUnbounded {
   injectable;
 
-  constructor(@Unbounded() injectable: InjectableService,
-              @Ancestor() parent: DirectiveContainingDirectiveConsumingAnInjectable) {
+  constructor(injectable: InjectableService,
+              @SkipSelf() parent: DirectiveContainingDirectiveConsumingAnInjectable) {
     this.injectable = injectable;
     parent.directive = this;
   }
@@ -1905,7 +1905,7 @@ function createParentBus(peb) {
   selector: 'parent-providing-event-bus',
   hostInjector: [
     new Binding(EventBus,
-                {toFactory: createParentBus, deps: [[EventBus, new UnboundedMetadata()]]})
+                {toFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]})
   ]
 })
 @View({
@@ -1918,7 +1918,7 @@ class ParentProvidingEventBus {
   bus: EventBus;
   grandParentBus: EventBus;
 
-  constructor(bus: EventBus, @Unbounded() grandParentBus: EventBus) {
+  constructor(bus: EventBus, @SkipSelf() grandParentBus: EventBus) {
     this.bus = bus;
     this.grandParentBus = grandParentBus;
   }
@@ -1928,7 +1928,7 @@ class ParentProvidingEventBus {
 class ChildConsumingEventBus {
   bus: EventBus;
 
-  constructor(@Unbounded() bus: EventBus) { this.bus = bus; }
+  constructor(@SkipSelf() bus: EventBus) { this.bus = bus; }
 }
 
 @Directive({selector: '[some-impvp]', properties: ['someImpvp']})

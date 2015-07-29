@@ -83,22 +83,6 @@ export class InjectableMetadata {
 }
 
 /**
- * Specifies how injector should resolve a dependency.
- *
- * See {@link Self}, {@link Ancestor}, {@link Unbounded}.
- */
-@CONST()
-export class VisibilityMetadata {
-  constructor(public crossBoundaries: boolean, public _includeSelf: boolean) {}
-
-  get includeSelf(): boolean { return isBlank(this._includeSelf) ? false : this._includeSelf; }
-
-  toString(): string {
-    return `@Visibility(crossBoundaries: ${this.crossBoundaries}, includeSelf: ${this.includeSelf}})`;
-  }
-}
-
-/**
  * Specifies that an injector should retrieve a dependency from itself.
  *
  * ## Example
@@ -117,50 +101,45 @@ export class VisibilityMetadata {
  * ```
  */
 @CONST()
-export class SelfMetadata extends VisibilityMetadata {
-  constructor() { super(false, true); }
+export class SelfMetadata {
   toString(): string { return `@Self()`; }
 }
 
 /**
- * Specifies that an injector should retrieve a dependency from any ancestor from the same boundary.
+ * Specifies that the dependency resolution should start from the parent injector.
  *
  * ## Example
  *
+ *
  * ```
- * class Dependency {
+ * class Service {}
+ *
+ * class ParentService implements Service {
  * }
  *
- * class NeedsDependency {
- *   constructor(public @Ancestor() dependency:Dependency) {}
+ * class ChildService implements Service {
+ *   constructor(public @SkipSelf() parentService:Service) {}
  * }
  *
  * var parent = Injector.resolveAndCreate([
- *   bind(Dependency).toClass(AncestorDependency)
+ *   bind(Service).toClass(ParentService)
  * ]);
- * var child = parent.resolveAndCreateChild([]);
- * var grandChild = child.resolveAndCreateChild([NeedsDependency, Depedency]);
- * var nd = grandChild.get(NeedsDependency);
- * expect(nd.dependency).toBeAnInstanceOf(AncestorDependency);
- * ```
- *
- * You can make an injector to retrive a dependency either from itself or its ancestor by setting
- * self to true.
- *
- * ```
- * class NeedsDependency {
- *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
- * }
+ * var child = parent.resolveAndCreateChild([
+ *   bind(Service).toClass(ChildSerice)
+ * ]);
+ * var s = child.get(Service);
+ * expect(s).toBeAnInstanceOf(ChildService);
+ * expect(s.parentService).toBeAnInstanceOf(ParentService);
  * ```
  */
 @CONST()
-export class AncestorMetadata extends VisibilityMetadata {
-  constructor({self}: {self?: boolean} = {}) { super(false, self); }
-  toString(): string { return `@Ancestor(self: ${this.includeSelf}})`; }
+export class SkipSelfMetadata {
+  toString(): string { return `@SkipSelf()`; }
 }
 
 /**
- * Specifies that an injector should retrieve a dependency from any ancestor, crossing boundaries.
+ * Specifies that an injector should retrieve a dependency from any injector until reaching the
+ * closest host.
  *
  * ## Example
  *
@@ -169,32 +148,20 @@ export class AncestorMetadata extends VisibilityMetadata {
  * }
  *
  * class NeedsDependency {
- *   constructor(public @Ancestor() dependency:Dependency) {}
+ *   constructor(public @Host() dependency:Dependency) {}
  * }
  *
  * var parent = Injector.resolveAndCreate([
- *   bind(Dependency).toClass(AncestorDependency)
+ *   bind(Dependency).toClass(HostDependency)
  * ]);
  * var child = parent.resolveAndCreateChild([]);
  * var grandChild = child.resolveAndCreateChild([NeedsDependency, Depedency]);
  * var nd = grandChild.get(NeedsDependency);
- * expect(nd.dependency).toBeAnInstanceOf(AncestorDependency);
+ * expect(nd.dependency).toBeAnInstanceOf(HostDependency);
  * ```
- *
- * You can make an injector to retrive a dependency either from itself or its ancestor by setting
- * self to true.
- *
- * ```
- * class NeedsDependency {
- *   constructor(public @Ancestor({self:true}) dependency:Dependency) {}
- * }
  * ```
  */
 @CONST()
-export class UnboundedMetadata extends VisibilityMetadata {
-  constructor({self}: {self?: boolean} = {}) { super(true, self); }
-  toString(): string { return `@Unbounded(self: ${this.includeSelf}})`; }
+export class HostMetadata {
+  toString(): string { return `@Host()`; }
 }
-
-export const DEFAULT_VISIBILITY: VisibilityMetadata =
-    CONST_EXPR(new UnboundedMetadata({self: true}));
