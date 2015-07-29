@@ -53,6 +53,6 @@ class DirectiveProcessor extends Transformer {
         transform.addOutput(new Asset.fromString(ngAliasesId,
             new JsonEncoder.withIndent("  ").convert(ngMeta.toJson())));
       }
-    }, errorMessage: 'Processing ng directives failed.');
+    });
   }
 }

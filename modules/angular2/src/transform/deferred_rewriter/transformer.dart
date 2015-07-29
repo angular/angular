@@ -32,7 +32,7 @@ class DeferredRewriter extends Transformer {
         transform.addOutput(
             new Asset.fromString(transform.primaryInput.id, transformedCode));
       }
-    }, errorMessage: 'Rewritting deferred libraries failed.');
+    });
   }
 }
 

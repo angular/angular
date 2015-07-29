@@ -35,7 +35,8 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
     {bool generateRegistrations: true,
     bool generateChangeDetectors: true}) async {
   var viewDefResults = await createViewDefinitions(reader, entryPoint);
-  var extractor = new _TemplateExtractor(new DomElementSchemaRegistry(), new XhrImpl(reader, entryPoint));
+  var extractor = new _TemplateExtractor(
+      new DomElementSchemaRegistry(), new XhrImpl(reader, entryPoint));
 
   var registrations = new reg.Codegen();
   var changeDetectorClasses = new change.Codegen();
@@ -112,9 +113,11 @@ class _TemplateExtractor {
 
     var pipeline = new CompilePipeline(_factory.createSteps(viewDef));
 
-    var compileElements =
-        pipeline.processElements(DOM.createTemplate(templateAndStyles.template), ViewType.COMPONENT, viewDef);
-    var protoViewDto = compileElements[0].inheritedProtoView.build(_schemaRegistry);
+    var compileElements = pipeline.processElements(
+        DOM.createTemplate(templateAndStyles.template), ViewType.COMPONENT,
+        viewDef);
+    var protoViewDto =
+        compileElements[0].inheritedProtoView.build(_schemaRegistry);
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 
