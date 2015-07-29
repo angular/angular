@@ -30,6 +30,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {cloneAndQueryProtoView} from 'angular2/src/render/dom/util';
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
 
 export function main() {
   describe('ProtoViewMerger integration test', () => {
@@ -247,7 +248,7 @@ export function main() {
                  var builder = new ProtoViewBuilder(DOM.createTemplate(''), ViewType.COMPONENT,
                                                     ViewEncapsulation.NONE);
                  builder.setHostAttribute('a', 'b');
-                 var componentProtoViewDto = builder.build();
+                 var componentProtoViewDto = builder.build(new ElementSchemaRegistry());
                  tb.merge([rootProtoViewDto, componentProtoViewDto])
                      .then(mergeMappings => {
                        var domPv = resolveInternalDomProtoView(mergeMappings.mergedProtoViewRef);

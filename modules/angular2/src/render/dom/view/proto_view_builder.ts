@@ -20,6 +20,7 @@ import {
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder, Event, HostAction} from './element_binder';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
 import * as api from '../../api';
 
@@ -68,7 +69,7 @@ export class ProtoViewBuilder {
 
   setHostAttribute(name: string, value: string) { this.hostAttributes.set(name, value); }
 
-  build(): api.ProtoViewDto {
+  build(schemaRegistry: ElementSchemaRegistry): api.ProtoViewDto {
     var domElementBinders = [];
 
     var apiElementBinders = [];
@@ -91,12 +92,12 @@ export class ProtoViewBuilder {
           directiveIndex: dbb.directiveIndex,
           propertyBindings: dbb.propertyBindings,
           eventBindings: dbb.eventBindings,
-          hostPropertyBindings:
-              buildElementPropertyBindings(ebb.element, isPresent(ebb.componentId),
-                                           dbb.hostPropertyBindings, directiveTemplatePropertyNames)
+          hostPropertyBindings: buildElementPropertyBindings(schemaRegistry, ebb.element, true,
+                                                             dbb.hostPropertyBindings, new Set())
         });
       });
-      var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
+      var nestedProtoView =
+          isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build(schemaRegistry) : null;
       if (isPresent(nestedProtoView)) {
         transitiveNgContentCount += nestedProtoView.transitiveNgContentCount;
       }
@@ -113,7 +114,7 @@ export class ProtoViewBuilder {
         directives: apiDirectiveBinders,
         nestedProtoView: nestedProtoView,
         propertyBindings:
-            buildElementPropertyBindings(ebb.element, isPresent(ebb.componentId),
+            buildElementPropertyBindings(schemaRegistry, ebb.element, isPresent(ebb.componentId),
                                          ebb.propertyBindings, directiveTemplatePropertyNames),
         variableBindings: ebb.variableBindings,
         eventBindings: ebb.eventBindings,
@@ -325,14 +326,15 @@ const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 
-function buildElementPropertyBindings(protoElement: /*element*/ any, isNgComponent: boolean,
-                                      bindingsInTemplate: Map<string, ASTWithSource>,
-                                      directiveTempaltePropertyNames: Set<string>):
+function buildElementPropertyBindings(
+    schemaRegistry: ElementSchemaRegistry, protoElement: /*element*/ any, isNgComponent: boolean,
+    bindingsInTemplate: Map<string, ASTWithSource>, directiveTempaltePropertyNames: Set<string>):
     List<api.ElementPropertyBinding> {
   var propertyBindings = [];
   MapWrapper.forEach(bindingsInTemplate, (ast, propertyNameInTemplate) => {
-    var propertyBinding = createElementPropertyBinding(ast, propertyNameInTemplate);
-    if (isValidElementPropertyBinding(protoElement, isNgComponent, propertyBinding)) {
+    var propertyBinding = createElementPropertyBinding(schemaRegistry, ast, propertyNameInTemplate);
+    if (isValidElementPropertyBinding(schemaRegistry, protoElement, isNgComponent,
+                                      propertyBinding)) {
       propertyBindings.push(propertyBinding);
     } else if (!SetWrapper.has(directiveTempaltePropertyNames, propertyNameInTemplate)) {
       throw new BaseException(
@@ -342,29 +344,25 @@ function buildElementPropertyBindings(protoElement: /*element*/ any, isNgCompone
   return propertyBindings;
 }
 
-function isValidElementPropertyBinding(protoElement: /*element*/ any, isNgComponent: boolean,
+function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
+                                       protoElement: /*element*/ any, isNgComponent: boolean,
                                        binding: api.ElementPropertyBinding): boolean {
   if (binding.type === api.PropertyBindingType.PROPERTY) {
-    var tagName = DOM.tagName(protoElement);
-    var possibleCustomElement = tagName.indexOf('-') !== -1;
-    if (possibleCustomElement && !isNgComponent) {
-      // can't tell now as we don't know which properties a custom element will get
-      // once it is instantiated
-      return true;
+    if (!isNgComponent) {
+      return schemaRegistry.hasProperty(protoElement, binding.property);
     } else {
+      // TODO(pk): change this logic as soon as we can properly detect custom elements
       return DOM.hasProperty(protoElement, binding.property);
     }
   }
   return true;
 }
 
-function createElementPropertyBinding(ast: ASTWithSource, propertyNameInTemplate: string):
-    api.ElementPropertyBinding {
+function createElementPropertyBinding(schemaRegistry: ElementSchemaRegistry, ast: ASTWithSource,
+                                      propertyNameInTemplate: string): api.ElementPropertyBinding {
   var parts = StringWrapper.split(propertyNameInTemplate, PROPERTY_PARTS_SEPARATOR);
   if (parts.length === 1) {
-    var propName = parts[0];
-    var mappedPropName = StringMapWrapper.get(DOM.attrToPropMap, propName);
-    propName = isPresent(mappedPropName) ? mappedPropName : propName;
+    var propName = schemaRegistry.getMappedPropName(parts[0]);
     return new api.ElementPropertyBinding(api.PropertyBindingType.PROPERTY, ast, propName);
   } else if (parts[0] == ATTRIBUTE_PREFIX) {
     return new api.ElementPropertyBinding(api.PropertyBindingType.ATTRIBUTE, ast, parts[1]);
