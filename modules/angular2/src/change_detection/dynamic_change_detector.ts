@@ -1,10 +1,8 @@
 import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Locals} from 'angular2/src/change_detection/parser/locals';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {BindingRecord} from './binding_record';
-import {Pipes} from './pipes/pipes';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 
 
@@ -17,39 +15,34 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   prevContexts: List<any>;
   directives: any = null;
 
-  constructor(id: string, private changeControlStrategy: string, dispatcher: any,
+  constructor(id: string, changeDetectionStrategy: string, dispatcher: any,
               protos: List<ProtoRecord>, directiveRecords: List<any>) {
-    super(id, dispatcher, protos, directiveRecords);
-    this.values = ListWrapper.createFixedSize(protos.length + 1);
-    this.localPipes = ListWrapper.createFixedSize(protos.length + 1);
-    this.prevContexts = ListWrapper.createFixedSize(protos.length + 1);
-    this.changes = ListWrapper.createFixedSize(protos.length + 1);
+    super(id, dispatcher, protos, directiveRecords,
+          ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy));
+    var len = protos.length + 1;
+    this.values = ListWrapper.createFixedSize(len);
+    this.localPipes = ListWrapper.createFixedSize(len);
+    this.prevContexts = ListWrapper.createFixedSize(len);
+    this.changes = ListWrapper.createFixedSize(len);
 
-    this.values[0] = null;
-    ListWrapper.fill(this.values, ChangeDetectionUtil.uninitialized, 1);
-    ListWrapper.fill(this.localPipes, null);
-    ListWrapper.fill(this.prevContexts, ChangeDetectionUtil.uninitialized);
-    ListWrapper.fill(this.changes, false);
+    this.dehydrateDirectives(false);
   }
 
-  hydrate(context: any, locals: Locals, directives: any, pipes: Pipes): void {
-    this.mode = ChangeDetectionUtil.changeDetectionMode(this.changeControlStrategy);
-    this.values[0] = context;
-    this.locals = locals;
+  hydrateDirectives(directives: any): void {
+    this.values[0] = this.context;
     this.directives = directives;
-    this.alreadyChecked = false;
-    this.pipes = pipes;
   }
 
-  dehydrate() {
-    this._destroyPipes();
+  dehydrateDirectives(destroyPipes: boolean) {
+    if (destroyPipes) {
+      this._destroyPipes();
+    }
     this.values[0] = null;
+    this.directives = null;
     ListWrapper.fill(this.values, ChangeDetectionUtil.uninitialized, 1);
     ListWrapper.fill(this.changes, false);
     ListWrapper.fill(this.localPipes, null);
     ListWrapper.fill(this.prevContexts, ChangeDetectionUtil.uninitialized);
-    this.locals = null;
-    this.pipes = null;
   }
 
   _destroyPipes() {
@@ -60,10 +53,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  hydrated(): boolean { return this.values[0] !== null; }
-
   checkNoChanges(): void { this.runDetectChanges(true); }
 
+  // TODO(vsavkin): #3366. Update to work with [AbstractChangeDetector#detectChangesInRecords]
   detectChangesInRecords(throwOnChange: boolean) {
     if (!this.hydrated()) {
       ChangeDetectionUtil.throwDehydrated();

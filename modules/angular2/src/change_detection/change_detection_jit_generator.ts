@@ -6,7 +6,7 @@ import {ChangeDetectionUtil} from './change_detection_util';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 import {ProtoRecord, RecordType} from './proto_record';
-import {CONTEXT_INDEX, CodegenNameUtil, sanitizeName} from './codegen_name_util';
+import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 
 
 /**
@@ -27,7 +27,7 @@ export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
   _typeName: string;
 
-  constructor(public id: string, public changeDetectionStrategy: string,
+  constructor(public id: string, private changeDetectionStrategy: string,
               public records: List<ProtoRecord>, public directiveRecords: List<any>,
               private generateCheckNoChanges: boolean) {
     this._names = new CodegenNameUtil(this.records, this.directiveRecords, UTIL);
@@ -37,24 +37,15 @@ export class ChangeDetectorJITGenerator {
   generate(): Function {
     var classDefinition = `
       var ${this._typeName} = function ${this._typeName}(dispatcher, protos, directiveRecords) {
-        ${ABSTRACT_CHANGE_DETECTOR}.call(this, ${JSON.stringify(this.id)}, dispatcher, protos, directiveRecords);
+        ${ABSTRACT_CHANGE_DETECTOR}.call(
+            this, ${JSON.stringify(this.id)}, dispatcher, protos, directiveRecords,
+            "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}");
         this.dehydrateDirectives(false);
       }
 
       ${this._typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 
-      ${this._typeName}.prototype.detectChangesInRecords = function(throwOnChange) {
-        if (!this.hydrated()) {
-          ${UTIL}.throwDehydrated();
-        }
-        try {
-          this.__detectChangesInRecords(throwOnChange);
-        } catch (e) {
-          this.throwError(${this._names.getCurrentProtoName()}, e, e.stack);
-        }
-      }
-
-      ${this._typeName}.prototype.__detectChangesInRecords = function(throwOnChange) {
+      ${this._typeName}.prototype.detectChangesInRecordsInternal = function(throwOnChange) {
         ${this._names.getCurrentProtoName()} = null;
 
         ${this._names.genInitLocals()}
@@ -72,29 +63,9 @@ export class ChangeDetectorJITGenerator {
         ${this._genCallOnAllChangesDoneBody()}
       }
 
-      ${this._typeName}.prototype.hydrate = function(context, locals, directives, pipes) {
-        ${this._names.getModeName()} =
-            "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}";
-        ${this._names.getFieldName(CONTEXT_INDEX)} = context;
-        ${this._names.getLocalsAccessorName()} = locals;
-        this.hydrateDirectives(directives);
-        ${this._names.getPipesAccessorName()} = pipes;
-        ${this._names.getAlreadyCheckedName()} = false;
-      }
-
       ${this._maybeGenHydrateDirectives()}
 
-      ${this._typeName}.prototype.dehydrate = function() {
-        this.dehydrateDirectives(true);
-        ${this._names.getLocalsAccessorName()} = null;
-        ${this._names.getPipesAccessorName()} = null;
-      }
-
       ${this._maybeGenDehydrateDirectives()}
-
-      ${this._typeName}.prototype.hydrated = function() {
-        return ${this._names.getFieldName(CONTEXT_INDEX)} !== null;
-      }
 
       return function(dispatcher) {
         return new ${this._typeName}(dispatcher, protos, directiveRecords);
@@ -153,6 +124,7 @@ export class ChangeDetectorJITGenerator {
     var notifications = [];
     var dirs = this.directiveRecords;
 
+    // NOTE(kegluneq): Order is important!
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callOnAllChangesDone) {

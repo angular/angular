@@ -27,23 +27,13 @@ class _MyComponent_ChangeDetector0
     extends _gen.AbstractChangeDetector<MyComponent> {
   var myNum0, interpolate1;
 
-  _MyComponent_ChangeDetector0(dispatcher, protos, directiveRecords)
-      : super("MyComponent_comp_0", dispatcher, protos, directiveRecords) {
+  _MyComponent_ChangeDetector0(dispatcher, protos, directiveRecords) : super(
+          "MyComponent_comp_0", dispatcher, protos, directiveRecords,
+          'ALWAYS_CHECK') {
     dehydrateDirectives(false);
   }
 
-  void detectChangesInRecords(throwOnChange) {
-    if (!hydrated()) {
-      _gen.ChangeDetectionUtil.throwDehydrated();
-    }
-    try {
-      __detectChangesInRecords(throwOnChange);
-    } catch (e, s) {
-      throwError(this.currentProto, e, s);
-    }
-  }
-
-  void __detectChangesInRecords(throwOnChange) {
+  void detectChangesInRecordsInternal(throwOnChange) {
     this.currentProto = null;
     var l_context = this.context,
         l_myNum0,
@@ -96,27 +86,9 @@ class _MyComponent_ChangeDetector0
     this.dispatcher.notifyOnAllChangesDone();
   }
 
-  void hydrate(MyComponent context, locals, directives, pipes) {
-    this.mode = 'ALWAYS_CHECK';
-    this.context = context;
-    this.locals = locals;
-    hydrateDirectives(directives);
-    this.alreadyChecked = false;
-    this.pipes = pipes;
-  }
-
-  void dehydrate() {
-    dehydrateDirectives(true);
-    this.locals = null;
-    this.pipes = null;
-  }
-
   void dehydrateDirectives(destroyPipes) {
-    this.context = null;
     this.myNum0 = this.interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
-
-  hydrated() => this.context != null;
 
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.ChangeDetectorDefinition def) {

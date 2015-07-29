@@ -1,5 +1,6 @@
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {DirectiveRecord} from './directive_record';
 import {ChangeDetector, ChangeDispatcher} from './interfaces';
@@ -34,7 +35,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   protos: List<ProtoRecord>;
 
   constructor(public id: string, dispatcher: ChangeDispatcher, protos: List<ProtoRecord>,
-              directiveRecords: List<DirectiveRecord>) {
+              directiveRecords: List<DirectiveRecord>, public modeOnHydrate: string) {
     this.ref = new ChangeDetectorRef(this);
     this.directiveRecords = directiveRecords;
     this.dispatcher = dispatcher;
@@ -75,15 +76,58 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
   }
 
-  detectChangesInRecords(throwOnChange: boolean): void {}
+  // This method is not intended to be overridden. Subclasses should instead provide an
+  // implementation of `detectChangesInRecordsInternal` which does the work of detecting changes
+  // and which this method will call.
+  // This method expects that `detectChangesInRecordsInternal` will set the property
+  // `this.currentProto` to whichever [ProtoRecord] is currently being processed. This is to
+  // facilitate error reporting.
+  detectChangesInRecords(throwOnChange: boolean): void {
+    if (!this.hydrated()) {
+      ChangeDetectionUtil.throwDehydrated();
+    }
+    try {
+      this.detectChangesInRecordsInternal(throwOnChange);
+    } catch (e) {
+      this.throwError(this.currentProto, e, e.stack);
+    }
+  }
 
-  hydrate(context: T, locals: Locals, directives: any, pipes: any): void {}
+  // Subclasses should override this method to perform any work necessary to detect and report
+  // changes. For example, changes should be reported via `ChangeDetectionUtil.addChange`, lifecycle
+  // methods should be called, etc.
+  // This implementation should also set `this.currentProto` to whichever [ProtoRecord] is
+  // currently being processed to facilitate error reporting. See {@link #detectChangesInRecords}.
+  detectChangesInRecordsInternal(throwOnChange: boolean): void {}
 
+  // This method is not intended to be overridden. Subclasses should instead provide an
+  // implementation of `hydrateDirectives`.
+  hydrate(context: T, locals: Locals, directives: any, pipes: any): void {
+    this.mode = this.modeOnHydrate;
+    this.context = context;
+    this.locals = locals;
+    this.pipes = pipes;
+    this.hydrateDirectives(directives);
+    this.alreadyChecked = false;
+  }
+
+  // Subclasses should override this method to hydrate any directives.
   hydrateDirectives(directives: any): void {}
 
-  dehydrate(): void {}
+  // This method is not intended to be overridden. Subclasses should instead provide an
+  // implementation of `dehydrateDirectives`.
+  dehydrate(): void {
+    this.dehydrateDirectives(true);
+    this.context = null;
+    this.locals = null;
+    this.pipes = null;
+  }
 
+  // Subclasses should override this method to dehydrate any directives. This method should reverse
+  // any work done in `hydrateDirectives`.
   dehydrateDirectives(destroyPipes: boolean): void {}
+
+  hydrated(): boolean { return this.context !== null; }
 
   callOnAllChangesDone(): void {}
 

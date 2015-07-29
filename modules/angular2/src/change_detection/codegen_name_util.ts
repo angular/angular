@@ -124,11 +124,11 @@ export class CodegenNameUtil {
   genDehydrateFields(): string {
     var fields = this.getAllFieldNames();
     ListWrapper.removeAt(fields, CONTEXT_INDEX);
-    if (!ListWrapper.isEmpty(fields)) {
-      // At least one assignment.
-      fields.push(`${this.utilName}.uninitialized;`);
-    }
-    return `${this.getFieldName(CONTEXT_INDEX)} = null; ${ListWrapper.join(fields, ' = ')}`;
+    if (ListWrapper.isEmpty(fields)) return '';
+
+    // At least one assignment.
+    fields.push(`${this.utilName}.uninitialized;`);
+    return ListWrapper.join(fields, ' = ');
   }
 
   /**

@@ -104,22 +104,11 @@ class _CodegenState {
 
         $_changeDetectorTypeName(dispatcher, protos, directiveRecords)
           : super(${_encodeValue(_changeDetectorDefId)},
-              dispatcher, protos, directiveRecords) {
+              dispatcher, protos, directiveRecords, '$_changeDetectionMode') {
           dehydrateDirectives(false);
         }
 
-        void detectChangesInRecords(throwOnChange) {
-          if (!hydrated()) {
-            $_UTIL.throwDehydrated();
-          }
-          try {
-            __detectChangesInRecords(throwOnChange);
-          } catch (e, s) {
-            throwError(${_names.getCurrentProtoName()}, e, s);
-          }
-        }
-
-        void __detectChangesInRecords(throwOnChange) {
+        void detectChangesInRecordsInternal(throwOnChange) {
           ${_names.getCurrentProtoName()} = null;
 
           ${_names.genInitLocals()}
@@ -137,27 +126,9 @@ class _CodegenState {
           ${_getCallOnAllChangesDoneBody()}
         }
 
-        void hydrate(
-            $_contextTypeName context, locals, directives, pipes) {
-          ${_names.getModeName()} = '$_changeDetectionMode';
-          ${_names.getFieldName(CONTEXT_INDEX)} = context;
-          ${_names.getLocalsAccessorName()} = locals;
-          hydrateDirectives(directives);
-          ${_names.getAlreadyCheckedName()} = false;
-          ${_names.getPipesAccessorName()} = pipes;
-        }
-
         ${_maybeGenHydrateDirectives()}
 
-        void dehydrate() {
-          dehydrateDirectives(true);
-          ${_names.getLocalsAccessorName()} = null;
-          ${_names.getPipesAccessorName()} = null;
-        }
-
         ${_maybeGenDehydrateDirectives()}
-
-        hydrated() => ${_names.getFieldName(CONTEXT_INDEX)} != null;
 
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
