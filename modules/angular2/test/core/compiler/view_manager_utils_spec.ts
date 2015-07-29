@@ -171,7 +171,8 @@ export function main() {
            createViews(2);
            utils.attachViewInContainer(parentView, 0, contextView, 1, 0, childView);
            expect(childView.rootElementInjectors[0].spy('linkAfter'))
-               .toHaveBeenCalledWith(contextView.elementInjectors[0], null);
+               .toHaveBeenCalledWith(contextView.elementInjectors[0],
+                                     contextView.elementInjectors[1]);
          });
     });
 
