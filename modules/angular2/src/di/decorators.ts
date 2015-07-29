@@ -3,9 +3,8 @@ import {
   OptionalMetadata,
   InjectableMetadata,
   SelfMetadata,
-  VisibilityMetadata,
-  AncestorMetadata,
-  UnboundedMetadata
+  HostMetadata,
+  SkipSelfMetadata
 } from './metadata';
 import {makeDecorator, makeParamDecorator, TypeDecorator} from '../util/decorators';
 
@@ -42,19 +41,19 @@ export interface SelfFactory {
 }
 
 /**
- * Factory for creating {@link AncestorMetadata}.
+ * Factory for creating {@link HostMetadata}.
  */
-export interface AncestorFactory {
-  (visibility?: {self: boolean}): any;
-  new (visibility?: {self: boolean}): AncestorMetadata;
+export interface HostFactory {
+  (): any;
+  new (): HostMetadata;
 }
 
 /**
- * Factory for creating {@link UnboundedMetadata}.
+ * Factory for creating {@link SkipSelfMetadata}.
  */
-export interface UnboundedFactory {
-  (visibility?: {self: boolean}): any;
-  new (visibility?: {self: boolean}): UnboundedMetadata;
+export interface SkipSelfFactory {
+  (): any;
+  new (): SkipSelfMetadata;
 }
 
 /**
@@ -78,11 +77,11 @@ export var Injectable: InjectableFactory = <InjectableFactory>makeDecorator(Inje
 export var Self: SelfFactory = makeParamDecorator(SelfMetadata);
 
 /**
- * Factory for creating {@link AncestorMetadata}.
+ * Factory for creating {@link HostMetadata}.
  */
-export var Ancestor: AncestorFactory = makeParamDecorator(AncestorMetadata);
+export var Host: HostFactory = makeParamDecorator(HostMetadata);
 
 /**
- * Factory for creating {@link UnboundedMetadata}.
+ * Factory for creating {@link SkipSelfMetadata}.
  */
-export var Unbounded: UnboundedFactory = makeParamDecorator(UnboundedMetadata);
+export var SkipSelf: SkipSelfFactory = makeParamDecorator(SkipSelfMetadata);

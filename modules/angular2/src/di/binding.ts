@@ -14,9 +14,10 @@ import {Key} from './key';
 import {
   InjectMetadata,
   InjectableMetadata,
-  VisibilityMetadata,
   OptionalMetadata,
-  DEFAULT_VISIBILITY,
+  SelfMetadata,
+  HostMetadata,
+  SkipSelfMetadata,
   DependencyMetadata
 } from './metadata';
 import {NoAnnotationError} from './exceptions';
@@ -26,12 +27,10 @@ import {resolveForwardRef} from './forward_ref';
  * @private
  */
 export class Dependency {
-  constructor(public key: Key, public optional: boolean, public visibility: VisibilityMetadata,
-              public properties: List<any>) {}
+  constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
+              public upperBoundVisibility: any, public properties: List<any>) {}
 
-  static fromKey(key: Key): Dependency {
-    return new Dependency(key, false, DEFAULT_VISIBILITY, []);
-  }
+  static fromKey(key: Key): Dependency { return new Dependency(key, false, null, null, []); }
 }
 
 const _EMPTY_LIST = CONST_EXPR([]);
@@ -390,50 +389,61 @@ function _dependenciesFor(typeOrFunc): List<Dependency> {
   return ListWrapper.map(params, (p: List<any>) => _extractToken(typeOrFunc, p, params));
 }
 
-function _extractToken(typeOrFunc, annotations /*List<any> | any*/, params: List<List<any>>):
+function _extractToken(typeOrFunc, metadata /*List<any> | any*/, params: List<List<any>>):
     Dependency {
   var depProps = [];
   var token = null;
   var optional = false;
 
-  if (!isArray(annotations)) {
-    return _createDependency(annotations, optional, DEFAULT_VISIBILITY, depProps);
+  if (!isArray(metadata)) {
+    return _createDependency(metadata, optional, null, null, depProps);
   }
 
-  var visibility = DEFAULT_VISIBILITY;
+  var lowerBoundVisibility = null;
+  ;
+  var upperBoundVisibility = null;
+  ;
 
-  for (var i = 0; i < annotations.length; ++i) {
-    var paramAnnotation = annotations[i];
+  for (var i = 0; i < metadata.length; ++i) {
+    var paramMetadata = metadata[i];
 
-    if (paramAnnotation instanceof Type) {
-      token = paramAnnotation;
+    if (paramMetadata instanceof Type) {
+      token = paramMetadata;
 
-    } else if (paramAnnotation instanceof InjectMetadata) {
-      token = paramAnnotation.token;
+    } else if (paramMetadata instanceof InjectMetadata) {
+      token = paramMetadata.token;
 
-    } else if (paramAnnotation instanceof OptionalMetadata) {
+    } else if (paramMetadata instanceof OptionalMetadata) {
       optional = true;
 
-    } else if (paramAnnotation instanceof VisibilityMetadata) {
-      visibility = paramAnnotation;
+    } else if (paramMetadata instanceof SelfMetadata) {
+      upperBoundVisibility = paramMetadata;
 
-    } else if (paramAnnotation instanceof DependencyMetadata) {
-      if (isPresent(paramAnnotation.token)) {
-        token = paramAnnotation.token;
+    } else if (paramMetadata instanceof HostMetadata) {
+      upperBoundVisibility = paramMetadata;
+
+    } else if (paramMetadata instanceof SkipSelfMetadata) {
+      lowerBoundVisibility = paramMetadata;
+
+    } else if (paramMetadata instanceof DependencyMetadata) {
+      if (isPresent(paramMetadata.token)) {
+        token = paramMetadata.token;
       }
-      depProps.push(paramAnnotation);
+      depProps.push(paramMetadata);
     }
   }
 
   token = resolveForwardRef(token);
 
   if (isPresent(token)) {
-    return _createDependency(token, optional, visibility, depProps);
+    return _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps);
   } else {
     throw new NoAnnotationError(typeOrFunc, params);
   }
 }
 
-function _createDependency(token, optional, visibility, depProps): Dependency {
-  return new Dependency(Key.get(token), optional, visibility, depProps);
+function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps):
+    Dependency {
+  return new Dependency(Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility,
+                        depProps);
 }

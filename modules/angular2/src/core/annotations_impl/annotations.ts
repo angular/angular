@@ -53,11 +53,9 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * To inject other directives, declare the constructor parameter as:
  * - `directive:DirectiveType`: a directive on the current element only
- * - `@Ancestor() directive:DirectiveType`: any directive that matches the type between the current
+ * - `@Host() directive:DirectiveType`: any directive that matches the type between the current
  * element and the
- *    Shadow DOM root. Current element is not included in the resolution, therefore even if it could
- * resolve it, it will
- *    be ignored.
+ *    Shadow DOM root.
  * - `@Query(DirectiveType) query:QueryList<DirectiveType>`: A live collection of direct child
  * directives.
  * - `@QueryDescendants(DirectiveType) query:QueryList<DirectiveType>`: A live collection of any
@@ -164,21 +162,19 @@ import {DEFAULT} from 'angular2/change_detection';
  * ### Injecting a directive from any ancestor elements
  *
  * Directives can inject other directives declared on any ancestor element (in the current Shadow
- * DOM), i.e. on the
- * parent element and its parents. By definition, a directive with an `@Ancestor` annotation does
- * not attempt to
- * resolve dependencies for the current element, even if this would satisfy the dependency.
- *
+ * DOM), i.e. on the current element, the
+ * parent element, or its parents.
  * ```
  * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
- *   constructor(@Ancestor() dependency: Dependency) {
+ *   constructor(@Host() dependency: Dependency) {
  *     expect(dependency.id).toEqual(2);
  *   }
  * }
  * ```
  *
- * `@Ancestor` checks the parent, as well as its parents recursively. If `dependency="2"` didn't
+ * `@Host` checks the current element, the parent, as well as its parents recursively. If
+ * `dependency="2"` didn't
  * exist on the direct parent, this injection would
  * have returned
  * `dependency="1"`.

@@ -1,7 +1,7 @@
 import {ListWrapper, isListLikeIterable, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, BaseException, CONST} from 'angular2/src/facade/lang';
 import {Pipe, PipeFactory} from './pipe';
-import {Injectable, UnboundedMetadata, OptionalMetadata} from 'angular2/di';
+import {Injectable, OptionalMetadata, SkipSelfMetadata} from 'angular2/di';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {Binding} from 'angular2/di';
 
@@ -80,7 +80,7 @@ export class Pipes {
         return Pipes.create(config, pipes);
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[Pipes, new UnboundedMetadata(), new OptionalMetadata()]]
+      deps: [[Pipes, new SkipSelfMetadata(), new OptionalMetadata()]]
     });
   }
 

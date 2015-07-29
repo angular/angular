@@ -6,7 +6,7 @@ import {
   Component,
   Directive,
   View,
-  Ancestor,
+  Host,
   NgValidator,
   forwardRef,
   Binding,

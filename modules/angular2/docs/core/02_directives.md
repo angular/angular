@@ -261,7 +261,7 @@ Injecting other directives into directives follows a similar mechanism as inject
 There are five kinds of visibilities:
 
 * (no annotation): Inject dependent directives only if they are on the current element.
-* `@ancestor`: Inject a directive if it is at any element above the current element.
+* `@SkipSelf()`: Inject a directive if it is at any element above the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)
 * `@descendant`: Inject a list of any children which match a given type. (Used with `Query`)
 
@@ -299,8 +299,8 @@ class FieldSet {                     |
 @Directive({ selector: 'field' })    |
 class Field {                        |
   constructor(                       |
-    @ancestor field:Form,            |
-    @ancestor field:FieldSet,        |
+    @SkipSelf() field:Form,          |
+    @SkipSelf() field:FieldSet,      |
   ) { ... }                          |
 }                                    |
                                      |
@@ -336,7 +336,7 @@ Shadow DOM provides an encapsulation for components, so as a general rule it doe
 })
 class Kid {
   constructor(
-    @Ancestor() dad:Dad,
+    @SkipSelf() dad:Dad,
     @Optional() grandpa:Grandpa
   ) {
     this.name = 'Billy';
@@ -353,7 +353,7 @@ class Kid {
   directives: [Kid]
 })
 class Dad {
-  constructor(@Ancestor() dad:Grandpa) {
+  constructor(@SkipSelf() dad:Grandpa) {
     this.name = 'Joe Jr';
     this.dad = dad.name;
   }

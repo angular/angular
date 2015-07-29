@@ -1,5 +1,5 @@
 import {Directive} from 'angular2/annotations';
-import {Ancestor} from 'angular2/di';
+import {Host} from 'angular2/di';
 import {ViewContainerRef, TemplateRef} from 'angular2/core';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
@@ -157,7 +157,7 @@ export class NgSwitchWhen {
   _view: SwitchView;
 
   constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
-              @Ancestor() sswitch: NgSwitch) {
+              @Host() sswitch: NgSwitch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;
@@ -187,7 +187,7 @@ export class NgSwitchWhen {
 @Directive({selector: '[ng-switch-default]'})
 export class NgSwitchDefault {
   constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
-              @Ancestor() sswitch: NgSwitch) {
+              @Host() sswitch: NgSwitch) {
     sswitch._registerView(_whenDefault, new SwitchView(viewContainer, templateRef));
   }
 }
