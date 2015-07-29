@@ -17,6 +17,7 @@ import {
 import {CompilePipeline} from './compile_pipeline';
 import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {Parser} from 'angular2/src/change_detection/change_detection';
 import * as pvm from '../view/proto_view_merger';
 import {DOCUMENT_TOKEN, APP_ID_TOKEN} from '../dom_tokens';
@@ -30,7 +31,8 @@ import {prependAll} from '../util';
  * the CompilePipeline and the CompileSteps.
  */
 export class DomCompiler extends RenderCompiler {
-  constructor(private _stepFactory: CompileStepFactory, private _viewLoader: ViewLoader,
+  constructor(private _schemaRegistry: ElementSchemaRegistry,
+              private _stepFactory: CompileStepFactory, private _viewLoader: ViewLoader,
               private _sharedStylesHost: SharedStylesHost) {
     super();
   }
@@ -84,7 +86,8 @@ export class DomCompiler extends RenderCompiler {
       this._sharedStylesHost.addStyles(compiledStyles);
     }
 
-    return PromiseWrapper.resolve(compileElements[0].inheritedProtoView.build());
+    return PromiseWrapper.resolve(
+        compileElements[0].inheritedProtoView.build(this._schemaRegistry));
   }
 
   _normalizeViewEncapsulationIfThereAreNoStyles(viewDef: ViewDefinition): ViewDefinition {
@@ -105,8 +108,8 @@ export class DomCompiler extends RenderCompiler {
 
 @Injectable()
 export class DefaultDomCompiler extends DomCompiler {
-  constructor(parser: Parser, viewLoader: ViewLoader, sharedStylesHost: SharedStylesHost,
-              @Inject(APP_ID_TOKEN) appId: any) {
-    super(new DefaultStepFactory(parser, appId), viewLoader, sharedStylesHost);
+  constructor(schemaRegistry: ElementSchemaRegistry, parser: Parser, viewLoader: ViewLoader,
+              sharedStylesHost: SharedStylesHost, @Inject(APP_ID_TOKEN) appId: any) {
+    super(schemaRegistry, new DefaultStepFactory(parser, appId), viewLoader, sharedStylesHost);
   }
 }

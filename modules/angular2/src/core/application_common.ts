@@ -61,6 +61,8 @@ import {
   DefaultDomCompiler,
   APP_ID_RANDOM_BINDING
 } from 'angular2/src/render/render';
+import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
+import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
@@ -113,6 +115,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
     DefaultDomCompiler,
+    bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
