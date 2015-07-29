@@ -32,6 +32,6 @@ class BindGenerator extends Transformer {
       var transformedCode = await createNgSettersAndGetters(reader, id);
       transform.addOutput(new Asset.fromString(
           id, formatter.format(transformedCode, uri: id.path)));
-    }, errorMessage: 'Creating ng setters/getters failed.');
+    });
   }
 }

@@ -35,6 +35,6 @@ class TemplateCompiler extends Transformer {
       var transformedCode = formatter.format(await processTemplates(reader, id,
           generateChangeDetectors: options.generateChangeDetectors));
       transform.addOutput(new Asset.fromString(id, transformedCode));
-    }, errorMessage: 'Parsing ng templates failed.');
+    });
   }
 }

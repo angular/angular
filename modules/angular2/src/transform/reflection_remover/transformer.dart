@@ -52,6 +52,6 @@ class ReflectionRemover extends Transformer {
           mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
       transform.addOutput(
           new Asset.fromString(transform.primaryInput.id, transformedCode));
-    }, errorMessage: 'Removing reflection failed.');
+    });
   }
 }

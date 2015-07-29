@@ -33,7 +33,7 @@ class DirectiveMetadataExtractor extends Transformer {
         transform.addOutput(new Asset.fromString(
             _outputAssetId(fromAssetId), _encoder.convert(ngMeta.toJson())));
       }
-    }, errorMessage: 'Extracting ng metadata failed.');
+    });
   }
 }
 

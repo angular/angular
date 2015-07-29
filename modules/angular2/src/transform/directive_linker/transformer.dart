@@ -31,7 +31,7 @@ class DirectiveLinker extends Transformer {
         var formattedCode = formatter.format(transformedCode, uri: assetPath);
         transform.addOutput(new Asset.fromString(assetId, formattedCode));
       }
-    }, errorMessage: 'Linking ng directives failed.');
+    });
   }
 }
 
@@ -50,6 +50,6 @@ class EmptyNgDepsRemover extends Transformer {
       if (!(await isNecessary(reader, transform.primaryInput.id))) {
         transform.consumePrimary();
       }
-    }, errorMessage: 'Removing unnecessary ng deps failed.');
+    });
   }
 }

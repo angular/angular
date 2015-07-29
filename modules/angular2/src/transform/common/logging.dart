@@ -11,20 +11,11 @@ typedef _SimpleCallback();
 final _key = #loggingZonedLoggerKey;
 
 /// Executes {@link fn} inside a new {@link Zone} with its own logger.
-dynamic initZoned(Transform t, _SimpleCallback fn, {String errorMessage: ''}) =>
-    setZoned(new BuildLogger(t), fn, errorMessage: errorMessage);
+dynamic initZoned(Transform t, _SimpleCallback fn) =>
+    setZoned(new BuildLogger(t), fn);
 
-dynamic setZoned(BuildLogger logger, _SimpleCallback fn,
-    {String errorMessage}) {
-  var onError;
-  if (errorMessage != null) {
-    onError = (e, stackTrace) {
-      logger.error('$errorMessage\n'
-          'Exception: $e\n'
-          'Stack Trace: $stackTrace');
-    };
-  }
-  return runZoned(fn, zoneValues: {_key: logger}, onError: onError);
+dynamic setZoned(BuildLogger logger, _SimpleCallback fn) {
+  return runZoned(fn, zoneValues: {_key: logger});
 }
 
 /// The logger for the current {@link Zone}.
