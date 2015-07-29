@@ -10,6 +10,7 @@ import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 import {ProtoViewDto, ViewType} from 'angular2/src/render/api';
+import {MockElementSchemaRegistry} from 'angular2/src/mock/element_schema_registry_mock';
 
 export function main() {
   describe('compile_pipeline', () => {
@@ -18,7 +19,9 @@ export function main() {
         var element = el('<div id="1"><template id="2"><span id="3"></span></template></div>');
 
         var step0Log = [];
-        var results = new CompilePipeline([createLoggerStep(step0Log)]).process(element);
+        var results =
+            new CompilePipeline(new MockElementSchemaRegistry(), [createLoggerStep(step0Log)])
+                .process(element);
 
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(resultIdLog(results)).toEqual(['1', '2', '3']);
@@ -29,7 +32,8 @@ export function main() {
             '<div id="1"><template id="2" ignore-children><span id="3"></span></template></div>');
 
         var step0Log = [];
-        var pipeline = new CompilePipeline([new IgnoreChildrenStep(), createLoggerStep(step0Log)]);
+        var pipeline = new CompilePipeline(new MockElementSchemaRegistry(),
+                                           [new IgnoreChildrenStep(), createLoggerStep(step0Log)]);
         var results = pipeline.process(element);
 
         expect(step0Log).toEqual(['1', '1<2']);
@@ -39,10 +43,11 @@ export function main() {
 
     it('should inherit protoViewBuilders to children', () => {
       var element = el('<div><div><span viewroot><span></span></span></div></div>');
-      var pipeline = new CompilePipeline([
+      var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
         new MockStep((parent, current, control) => {
           if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
-            current.inheritedProtoView = new ProtoViewBuilder(current.element, ViewType.EMBEDDED);
+            current.inheritedProtoView = new ProtoViewBuilder(new MockElementSchemaRegistry(),
+                                                              current.element, ViewType.EMBEDDED);
           }
         })
       ]);
@@ -53,7 +58,7 @@ export function main() {
 
     it('should inherit elementBinderBuilders to children', () => {
       var element = el('<div bind><div><span bind><span></span></span></div></div>');
-      var pipeline = new CompilePipeline([
+      var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
         new MockStep((parent, current, control) => {
           if (isPresent(DOM.getAttribute(current.element, 'bind'))) {
             current.bindElement();
@@ -67,13 +72,13 @@ export function main() {
 
     it('should mark root elements as viewRoot', () => {
       var rootElement = el('<div></div>');
-      var results = new CompilePipeline([]).process(rootElement);
+      var results = new CompilePipeline(new MockElementSchemaRegistry(), []).process(rootElement);
       expect(results[0].isViewRoot).toBe(true);
     });
 
     it('should calculate distanceToParent / parent correctly', () => {
       var element = el('<div bind><div bind></div><div><div bind></div></div></div>');
-      var pipeline = new CompilePipeline([
+      var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
         new MockStep((parent, current, control) => {
           if (isPresent(DOM.getAttribute(current.element, 'bind'))) {
             current.bindElement();
@@ -91,7 +96,7 @@ export function main() {
     it('should not execute further steps when ignoreCurrentElement has been called', () => {
       var element = el('<div id="1"><span id="2" ignore-current></span><span id="3"></span></div>');
       var logs = [];
-      var pipeline = new CompilePipeline([
+      var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
         new IgnoreCurrentElementStep(),
         createLoggerStep(logs),
       ]);
@@ -107,7 +112,8 @@ export function main() {
         var step0Log = [];
         var step1Log = [];
         var pipeline =
-            new CompilePipeline([createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
+            new CompilePipeline(new MockElementSchemaRegistry(),
+                                [createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
         var result = pipeline.process(element);
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<3']);
@@ -120,7 +126,7 @@ export function main() {
         var step0Log = [];
         var step1Log = [];
         var step2Log = [];
-        var pipeline = new CompilePipeline([
+        var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
           createWrapperStep('wrap0', step0Log),
           createWrapperStep('wrap1', step1Log),
           createLoggerStep(step2Log)
@@ -138,7 +144,7 @@ export function main() {
         var step0Log = [];
         var step1Log = [];
         var step2Log = [];
-        var pipeline = new CompilePipeline([
+        var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
           createWrapperStep('wrap0', step0Log),
           createWrapperStep('wrap1', step1Log),
           createLoggerStep(step2Log)
@@ -155,7 +161,8 @@ export function main() {
         var step0Log = [];
         var step1Log = [];
         var pipeline =
-            new CompilePipeline([createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
+            new CompilePipeline(new MockElementSchemaRegistry(),
+                                [createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
         var result = pipeline.process(element);
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<wrap0#1', 'wrap0#1<2', '2<3']);
@@ -169,7 +176,7 @@ export function main() {
         var element = el('<div id="1"><div id="2"></div></div>');
         var resultLog = [];
         var newChild = new CompileElement(el('<div id="3"></div>'));
-        var pipeline = new CompilePipeline([
+        var pipeline = new CompilePipeline(new MockElementSchemaRegistry(), [
           new MockStep((parent, current, control) => {
             if (StringWrapper.equals(DOM.getAttribute(current.element, 'id'), '1')) {
               control.addChild(newChild);

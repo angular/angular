@@ -6,6 +6,7 @@ import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
 import {ProtoViewBuilder} from '../view/proto_view_builder';
 import {ProtoViewDto, ViewType} from '../../api';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
 /**
  * CompilePipeline for executing CompileSteps recursively for
@@ -13,7 +14,8 @@ import {ProtoViewDto, ViewType} from '../../api';
  */
 export class CompilePipeline {
   _control: CompileControl;
-  constructor(steps: List<CompileStep>, private _useNativeShadowDom: boolean = false) {
+  constructor(private _elementSchemaRegistry: ElementSchemaRegistry, steps: List<CompileStep>,
+              private _useNativeShadowDom: boolean = false) {
     this._control = new CompileControl(steps);
   }
 
@@ -24,8 +26,8 @@ export class CompilePipeline {
     }
     var results = [];
     var rootCompileElement = new CompileElement(rootElement, compilationCtxtDescription);
-    rootCompileElement.inheritedProtoView =
-        new ProtoViewBuilder(rootElement, protoViewType, this._useNativeShadowDom);
+    rootCompileElement.inheritedProtoView = new ProtoViewBuilder(
+        this._elementSchemaRegistry, rootElement, protoViewType, this._useNativeShadowDom);
     rootCompileElement.isViewRoot = true;
     this._process(results, null, rootCompileElement, compilationCtxtDescription);
     return results;

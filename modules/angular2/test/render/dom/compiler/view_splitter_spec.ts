@@ -14,6 +14,7 @@ import {ViewSplitter} from 'angular2/src/render/dom/compiler/view_splitter';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {ProtoViewDto, ViewType} from 'angular2/src/render/api';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {MockElementSchemaRegistry} from 'angular2/src/mock/element_schema_registry_mock';
 
 import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 
@@ -21,7 +22,8 @@ export function main() {
   describe('ViewSplitter', () => {
 
     function createPipeline() {
-      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer()))]);
+      return new CompilePipeline(new MockElementSchemaRegistry(),
+                                 [new ViewSplitter(new Parser(new Lexer()))]);
     }
 
     describe('<template> elements', () => {

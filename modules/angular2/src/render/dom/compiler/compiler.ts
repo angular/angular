@@ -18,6 +18,7 @@ import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/src/change_detection/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import * as pvm from '../view/proto_view_merger';
 
 /**
@@ -27,7 +28,7 @@ import * as pvm from '../view/proto_view_merger';
  */
 export class DomCompiler extends RenderCompiler {
   constructor(public _stepFactory: CompileStepFactory, public _viewLoader: ViewLoader,
-              public _useNativeShadowDom: boolean) {
+              private _schemaRegistry: ElementSchemaRegistry, public _useNativeShadowDom: boolean) {
     super();
   }
 
@@ -60,8 +61,8 @@ export class DomCompiler extends RenderCompiler {
 
   _compileTemplate(viewDef: ViewDefinition, tplElement,
                    protoViewType: ViewType): Promise<ProtoViewDto> {
-    var pipeline =
-        new CompilePipeline(this._stepFactory.createSteps(viewDef), this._useNativeShadowDom);
+    var pipeline = new CompilePipeline(this._schemaRegistry, this._stepFactory.createSteps(viewDef),
+                                       this._useNativeShadowDom);
     var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);
 
     return PromiseWrapper.resolve(compileElements[0].inheritedProtoView.build());
@@ -70,8 +71,9 @@ export class DomCompiler extends RenderCompiler {
 
 @Injectable()
 export class DefaultDomCompiler extends DomCompiler {
-  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy, viewLoader: ViewLoader) {
-    super(new DefaultStepFactory(parser, shadowDomStrategy), viewLoader,
+  constructor(parser: Parser, shadowDomStrategy: ShadowDomStrategy, viewLoader: ViewLoader,
+              schemaRegistry: ElementSchemaRegistry) {
+    super(new DefaultStepFactory(parser, shadowDomStrategy), viewLoader, schemaRegistry,
           shadowDomStrategy.hasNativeContentElement());
   }
 }

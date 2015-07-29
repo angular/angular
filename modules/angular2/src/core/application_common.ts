@@ -64,6 +64,8 @@ import {
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES
 } from 'angular2/src/render/dom/dom_renderer';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
+import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {appComponentRefPromiseToken, appComponentTypeToken} from './application_tokens';
 
@@ -114,6 +116,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
+    bind(ElementSchemaRegistry).toFactory(() => new DomElementSchemaRegistry([])),
     ProtoViewFactory,
     AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),

@@ -10,6 +10,7 @@ import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
 import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {MockElementSchemaRegistry} from 'angular2/src/mock/element_schema_registry_mock';
 
 export function main() {
   describe('DirectiveParser', () => {
@@ -35,7 +36,7 @@ export function main() {
     function createPipeline(propertyBindings = null, directives = null) {
       if (isBlank(directives)) directives = annotatedDirectives;
 
-      return new CompilePipeline([
+      return new CompilePipeline(new MockElementSchemaRegistry(), [
         new MockStep((parent, current, control) => {
           if (isPresent(propertyBindings)) {
             StringMapWrapper.forEach(propertyBindings, (ast, name) => {
