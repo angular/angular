@@ -3,12 +3,6 @@ var ts = require('typescript');
 module.exports = function getExportDocType(log) {
 
   return function(symbol) {
-    if(symbol.flags & ts.SymbolFlags.FunctionScopedVariable) {
-      return 'var';
-    }
-    if(symbol.flags & ts.SymbolFlags.BlockScopedVariable) {
-      return getBlockScopedVariableDocType(symbol);
-    }
     if(symbol.flags & ts.SymbolFlags.Function) {
       return 'function';
     }
@@ -29,6 +23,12 @@ module.exports = function getExportDocType(log) {
     }
     if(symbol.flags & ts.SymbolFlags.TypeAlias) {
       return 'type-alias';
+    }
+    if(symbol.flags & ts.SymbolFlags.FunctionScopedVariable) {
+      return 'var';
+    }
+    if(symbol.flags & ts.SymbolFlags.BlockScopedVariable) {
+      return getBlockScopedVariableDocType(symbol);
     }
 
     log.warn('getExportDocType(): Unknown symbol type', {
