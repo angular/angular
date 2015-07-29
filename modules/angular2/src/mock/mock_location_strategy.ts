@@ -31,4 +31,12 @@ export class MockLocationStrategy extends LocationStrategy {
   onPopState(fn: (value: any) => void): void { ObservableWrapper.subscribe(this._subject, fn); }
 
   getBaseHref(): string { return this.internalBaseHref; }
+
+  back(): void {
+    if (this.urlChanges.length > 0) {
+      this.urlChanges.pop();
+      var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
+      this.simulatePopState(nextUrl);
+    }
+  }
 }

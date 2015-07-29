@@ -83,5 +83,27 @@ export function main() {
           .toThrowError(
               `No base href set. Either provide a binding to "appBaseHrefToken" or add a base element.`);
     });
+
+    it('should revert to the previous path when a back() operation is executed', () => {
+      var locationStrategy = new MockLocationStrategy();
+      var location = new Location(locationStrategy);
+
+      location.go('/ready');
+      assertUrl('/ready');
+
+      location.go('/ready/set');
+      assertUrl('/ready/set');
+
+      location.go('/ready/set/go');
+      assertUrl('/ready/set/go');
+
+      location.back();
+      assertUrl('/ready/set');
+
+      location.back();
+      assertUrl('/ready');
+
+      function assertUrl(path) { expect(location.path()).toEqual(path); }
+    });
   });
 }
