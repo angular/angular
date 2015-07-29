@@ -119,13 +119,14 @@ export class AppViewManagerUtils {
       parentView.viewContainers[boundElementIndex] = viewContainer;
     }
     ListWrapper.insert(viewContainer.views, atIndex, view);
+    var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
+
     var sibling;
     if (atIndex == 0) {
-      sibling = null;
+      sibling = elementInjector;
     } else {
       sibling = ListWrapper.last(viewContainer.views[atIndex - 1].rootElementInjectors);
     }
-    var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
     for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
       if (isPresent(elementInjector.parent)) {
         view.rootElementInjectors[i].linkAfter(elementInjector.parent, sibling);
