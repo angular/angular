@@ -1,7 +1,7 @@
 import {bootstrap, NgFor, Component, View} from 'angular2/bootstrap';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
-@Component({selector: 'todo-app', viewInjector: [Store, TodoFactory]})
+@Component({selector: 'todo-app', viewBindings: [Store, TodoFactory]})
 @View({templateUrl: 'todo.html', directives: [NgFor]})
 class TodoApp {
   todoEdit: Todo = null;

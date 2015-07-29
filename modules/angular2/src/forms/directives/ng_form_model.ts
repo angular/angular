@@ -82,7 +82,7 @@ const formDirectiveBinding =
  */
 @Directive({
   selector: '[ng-form-model]',
-  hostInjector: [formDirectiveBinding],
+  bindings: [formDirectiveBinding],
   properties: ['form: ng-form-model'],
   lifecycle: [LifecycleEvent.onChange],
   host: {

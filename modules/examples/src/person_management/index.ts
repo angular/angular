@@ -194,7 +194,7 @@ class PersonsComponent {
 }
 
 
-@Component({selector: 'person-management-app', viewInjector: [DataService]})
+@Component({selector: 'person-management-app', viewBindings: [DataService]})
 @View({
   template: `
     <button (click)="switchToEditName()">Edit Full Name</button>

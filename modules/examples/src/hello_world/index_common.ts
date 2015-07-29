@@ -29,7 +29,7 @@ class RedDec {
   selector: 'hello-app',
   // These are services that would be created if a class in the component's
   // template tries to inject them.
-  viewInjector: [GreetingService]
+  viewBindings: [GreetingService]
 })
 // The template for the component.
 @View({

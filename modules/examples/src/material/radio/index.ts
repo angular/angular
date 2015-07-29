@@ -5,7 +5,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
 
-@Component({selector: 'demo-app', viewInjector: [MdRadioDispatcher]})
+@Component({selector: 'demo-app', viewBindings: [MdRadioDispatcher]})
 @View({templateUrl: './demo_app.html', directives: [MdRadioGroup, MdRadioButton]})
 class DemoApp {
   thirdValue;

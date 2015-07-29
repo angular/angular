@@ -12,7 +12,7 @@ const requiredValidatorBinding =
 
 @Directive({
   selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]',
-  hostInjector: [requiredValidatorBinding]
+  bindings: [requiredValidatorBinding]
 })
 export class NgRequiredValidator extends NgValidator {
   get validator(): Function { return Validators.required; }

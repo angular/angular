@@ -193,7 +193,7 @@ class OrderDetailsComponent {
   addItem(): void { this.service.addItemForOrder(this.order); }
 }
 
-@Component({selector: 'order-management-app', viewInjector: [DataService]})
+@Component({selector: 'order-management-app', viewBindings: [DataService]})
 @View({
   template: `
     <order-list-cmp></order-list-cmp>

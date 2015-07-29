@@ -73,7 +73,7 @@ const controlNameBinding =
  */
 @Directive({
   selector: '[ng-control]',
-  hostInjector: [controlNameBinding],
+  bindings: [controlNameBinding],
   properties: ['name: ngControl', 'model: ngModel'],
   events: ['update: ngModel'],
   lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange],

@@ -200,8 +200,8 @@ export class DirectiveDependency extends Dependency {
 
 export class DirectiveBinding extends ResolvedBinding {
   constructor(key: Key, factory: Function, dependencies: List<Dependency>,
-              public resolvedHostInjectables: List<ResolvedBinding>,
-              public resolvedViewInjectables: List<ResolvedBinding>,
+              public resolvedBindings: List<ResolvedBinding>,
+              public resolvedViewBindings: List<ResolvedBinding>,
               public metadata: DirectiveMetadata) {
     super(key, factory, dependencies);
   }
@@ -233,11 +233,10 @@ export class DirectiveBinding extends ResolvedBinding {
 
     var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    var resolvedHostInjectables =
-        isPresent(ann.hostInjector) ? Injector.resolve(ann.hostInjector) : [];
-    var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ?
-                                      Injector.resolve(ann.viewInjector) :
-                                      [];
+    var resolvedBindings = isPresent(ann.bindings) ? Injector.resolve(ann.bindings) : [];
+    var resolvedViewBindings = ann instanceof Component && isPresent(ann.viewBindings) ?
+                                   Injector.resolve(ann.viewBindings) :
+                                   [];
     var metadata = DirectiveMetadata.create({
       id: stringify(rb.key.token),
       type: ann instanceof Component ? DirectiveMetadata.COMPONENT_TYPE :
@@ -259,8 +258,8 @@ export class DirectiveBinding extends ResolvedBinding {
 
       exportAs: ann.exportAs
     });
-    return new DirectiveBinding(rb.key, rb.factory, deps, resolvedHostInjectables,
-                                resolvedViewInjectables, metadata);
+    return new DirectiveBinding(rb.key, rb.factory, deps, resolvedBindings, resolvedViewBindings,
+                                metadata);
   }
 
   static _readAttributes(deps) {
@@ -353,10 +352,9 @@ export class ProtoElementInjector {
     ProtoElementInjector._createDirectiveBindingWithVisibility(bindings, bd,
                                                                firstBindingIsComponent);
     if (firstBindingIsComponent) {
-      ProtoElementInjector._createViewInjectorBindingWithVisibility(bindings, bd);
+      ProtoElementInjector._createViewBindingsWithVisibility(bindings, bd);
     }
-    ProtoElementInjector._createHostInjectorBindingWithVisibility(bindings, bd,
-                                                                  firstBindingIsComponent);
+    ProtoElementInjector._createBindingsWithVisibility(bindings, bd, firstBindingIsComponent);
     return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent,
                                     directiveVariableBindings);
   }
@@ -370,11 +368,11 @@ export class ProtoElementInjector {
     });
   }
 
-  private static _createHostInjectorBindingWithVisibility(dirBindings: List<ResolvedBinding>,
-                                                          bd: BindingWithVisibility[],
-                                                          firstBindingIsComponent: boolean) {
+  private static _createBindingsWithVisibility(dirBindings: List<ResolvedBinding>,
+                                               bd: BindingWithVisibility[],
+                                               firstBindingIsComponent: boolean) {
     ListWrapper.forEach(dirBindings, dirBinding => {
-      ListWrapper.forEach(dirBinding.resolvedHostInjectables, b => {
+      ListWrapper.forEach(dirBinding.resolvedBindings, b => {
         bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent,
                                                                   dirBinding, dirBindings, b));
       });
@@ -387,10 +385,10 @@ export class ProtoElementInjector {
     return new BindingWithVisibility(binding, isComponent ? PUBLIC_AND_PRIVATE : PUBLIC);
   }
 
-  private static _createViewInjectorBindingWithVisibility(bindings: List<ResolvedBinding>,
-                                                          bd: BindingWithVisibility[]) {
+  private static _createViewBindingsWithVisibility(bindings: List<ResolvedBinding>,
+                                                   bd: BindingWithVisibility[]) {
     var db = <DirectiveBinding>bindings[0];
-    ListWrapper.forEach(db.resolvedViewInjectables,
+    ListWrapper.forEach(db.resolvedViewBindings,
                         b => bd.push(new BindingWithVisibility(b, PRIVATE)));
   }
 

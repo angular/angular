@@ -36,7 +36,7 @@ class CheckoutModel {
 const creditCardValidatorBinding =
     CONST_EXPR(new Binding(NgValidator, {toAlias: forwardRef(() => CreditCardValidator)}));
 
-@Directive({selector: '[credit-card]', hostInjector: [creditCardValidatorBinding]})
+@Directive({selector: '[credit-card]', bindings: [creditCardValidatorBinding]})
 class CreditCardValidator {
   get validator() { return CreditCardValidator.validate; }
 

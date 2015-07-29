@@ -41,7 +41,7 @@ void functionThatThrowsNonError() {
 
 main() {
   describe('TypeLiteral', () {
-    it('should publish via viewInjector', inject([
+    it('should publish via viewBindings', inject([
       TestComponentBuilder,
       AsyncTestCompleter
     ], (tb, async) {
@@ -200,7 +200,7 @@ class Dummy {
 
 @Component(
     selector: 'type-literal-component',
-    viewInjector: const [
+    viewBindings: const [
   const Binding(const TypeLiteral<List<String>>(),
       toValue: const <String>['Hello', 'World'])
 ])
@@ -268,7 +268,7 @@ class OnChangeComponent implements OnChange {
     selector: 'component-with-observable-list',
     changeDetection: ON_PUSH,
     properties: const ['list'],
-    hostInjector: const [
+    bindings: const [
   const Binding(Pipes,
       toValue: const Pipes(const {
     "iterableDiff": const [

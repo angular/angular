@@ -447,13 +447,13 @@ export function main() {
     });
 
     describe(".create", () => {
-      it("should collect hostInjector injectables from all directives", () => {
+      it("should collect bindings from all directives", () => {
         var pei = createPei(null, 0, [
           DirectiveBinding.createFromType(
               SimpleDirective,
-              new dirAnn.Component({hostInjector: [bind('injectable1').toValue('injectable1')]})),
+              new dirAnn.Component({bindings: [bind('injectable1').toValue('injectable1')]})),
           DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Component({
-            hostInjector: [bind('injectable2').toValue('injectable2')]
+            bindings: [bind('injectable2').toValue('injectable2')]
           }))
         ]);
 
@@ -463,10 +463,10 @@ export function main() {
         expect(pei.getBindingAtIndex(3).key.token).toEqual("injectable2");
       });
 
-      it("should collect viewInjector injectables from the component", () => {
+      it("should collect view bindings from the component", () => {
         var pei = createPei(null, 0,
                             [DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                              viewInjector: [bind('injectable1').toValue('injectable1')]
+                              viewBindings: [bind('injectable1').toValue('injectable1')]
                             }))],
                             0, true);
 
@@ -474,13 +474,13 @@ export function main() {
         expect(pei.getBindingAtIndex(1).key.token).toEqual("injectable1");
       });
 
-      it("should collect view and host injectables from nested arrays", () => {
+      it("should flatten nested arrays", () => {
         var pei = createPei(null, 0, [
           DirectiveBinding.createFromType(
               SimpleDirective,
               new dirAnn.Component({
-                viewInjector: [[[bind('view').toValue('view')]]],
-                hostInjector: [[[bind('host').toValue('host')]]]
+                viewBindings: [[[bind('view').toValue('view')]]],
+                bindings: [[[bind('host').toValue('host')]]]
               }))
         ], 0, true);
 
@@ -582,16 +582,16 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should instantiate hostInjector injectables that have dependencies with set visibility",
+          it("should instantiate bindings that have dependencies with set visibility",
              function() {
                var childInj = parentChildInjectors(
                    ListWrapper.concat(
                        [DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                         hostInjector: [bind('injectable1').toValue('injectable1')]
+                         bindings: [bind('injectable1').toValue('injectable1')]
                        }))],
                        extraBindings),
                    [DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                     hostInjector: [
+                     bindings: [
                        bind('injectable1')
                            .toValue('new-injectable1'),
                        bind('injectable2')
@@ -603,8 +603,8 @@ export function main() {
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
              });
 
-          it("should instantiate hostInjector injectables that have dependencies", () => {
-            var hostInjector = [
+          it("should instantiate bindings that have dependencies", () => {
+            var bindings = [
                     bind('injectable1')
                         .toValue('injectable1'),
                     bind('injectable2')
@@ -615,14 +615,14 @@ export function main() {
 
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(SimpleDirective,
-                  new dirAnn.Directive({hostInjector: hostInjector}))],
+                  new dirAnn.Directive({bindings: bindings}))],
                 extraBindings));
 
             expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
           });
 
-          it("should instantiate viewInjector injectables that have dependencies", () => {
-            var viewInjector = [
+          it("should instantiate viewBindings that have dependencies", () => {
+            var viewBindings = [
                     bind('injectable1')
                         .toValue('injectable1'),
                     bind('injectable2')
@@ -634,26 +634,26 @@ export function main() {
 
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                  viewInjector: viewInjector}))], extraBindings),
+                  viewBindings: viewBindings}))], extraBindings),
                 null, true);
             expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
           });
 
-          it("should instantiate components that depend on viewInjector bindings", () => {
+          it("should instantiate components that depend on viewBindings bindings", () => {
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(NeedsService, new dirAnn.Component({
-                                     viewInjector: [bind('service').toValue('service')]
+                                     viewBindings: [bind('service').toValue('service')]
                                    }))],
                                    extraBindings),
                 null, true);
             expect(inj.get(NeedsService).service).toEqual('service');
           });
 
-          it("should instantiate hostInjector injectables lazily", () => {
+          it("should instantiate bindings lazily", () => {
             var created = false;
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                                     hostInjector: [bind('service').toFactory(() => created = true)]
+                                     bindings: [bind('service').toFactory(() => created = true)]
                                    }))],
                                    extraBindings),
                 null, true);
@@ -665,11 +665,11 @@ export function main() {
             expect(created).toBe(true);
           });
 
-          it("should instantiate viewInjector injectables lazily", () => {
+          it("should instantiate view bindings lazily", () => {
             var created = false;
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                                     viewInjector: [bind('service').toFactory(() => created = true)]
+                                     viewBindings: [bind('service').toFactory(() => created = true)]
                                    }))],
                                    extraBindings),
                 null, true);
@@ -681,10 +681,10 @@ export function main() {
             expect(created).toBe(true);
           });
 
-          it("should not instantiate other directives that depend on viewInjector bindings",
+          it("should not instantiate other directives that depend on viewBindings bindings",
              () => {
                var directiveAnnotation = new dirAnn.Component({
-                 viewInjector: ListWrapper.concat([bind("service").toValue("service")], extraBindings)
+                 viewBindings: ListWrapper.concat([bind("service").toValue("service")], extraBindings)
                });
                var componentDirective =
                    DirectiveBinding.createFromType(SimpleDirective, directiveAnnotation);
@@ -693,10 +693,10 @@ export function main() {
                        `No provider for service! (${stringify(NeedsService) } -> service)`));
              });
 
-          it("should instantiate directives that depend on hostInjector bindings of other directives", () => {
+          it("should instantiate directives that depend on bindings bindings of other directives", () => {
             var shadowInj = hostShadowInjectors(
                 ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new dirAnn.Component({
-                      hostInjector: [bind('service').toValue('hostService')]})
+                      bindings: [bind('service').toValue('hostService')]})
                     )], extraBindings),
                 ListWrapper.concat([NeedsService], extraBindings)
             );
@@ -731,23 +731,23 @@ export function main() {
             expect(inj.get(NeedsServiceFromHost).service).toEqual('appService');
           });
 
-          it("should prioritize viewInjector over hostInjector for the same binding", () => {
+          it("should prioritize viewBindings over bindings for the same binding", () => {
             var inj = injector(
                 ListWrapper.concat([DirectiveBinding.createFromType(NeedsService, new dirAnn.Component({
-                      hostInjector: [bind('service').toValue('hostService')],
-                      viewInjector: [bind('service').toValue('viewService')]})
+                      bindings: [bind('service').toValue('hostService')],
+                      viewBindings: [bind('service').toValue('viewService')]})
                     )], extraBindings), null, true);
             expect(inj.get(NeedsService).service).toEqual('viewService');
           });
 
-          it("should not instantiate a directive in a view that has an ancestor dependency on hostInjector"+
+          it("should not instantiate a directive in a view that has an ancestor dependency on bindings"+
             " bindings of a decorator directive", () => {
             expect(() => {
               hostShadowInjectors(
                 ListWrapper.concat([
                   SimpleDirective,
                   DirectiveBinding.createFromType(SomeOtherDirective, new dirAnn.Directive({
-                      hostInjector: [bind('service').toValue('hostService')]})
+                      bindings: [bind('service').toValue('hostService')]})
                   )], extraBindings),
 
                 ListWrapper.concat([NeedsServiceFromHost], extraBindings)
@@ -856,7 +856,7 @@ export function main() {
           it("should work with services", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(
-                    SimpleDirective, new dirAnn.Directive({hostInjector: [SimpleService]}))],
+                    SimpleDirective, new dirAnn.Directive({bindings: [SimpleService]}))],
                 extraBindings));
             inj.dehydrate();
           });

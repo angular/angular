@@ -52,7 +52,7 @@ const formDirectiveBinding =
  */
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
-  hostInjector: [formDirectiveBinding],
+  bindings: [formDirectiveBinding],
   host: {
     '(submit)': 'onSubmit()',
   },

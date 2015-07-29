@@ -133,7 +133,7 @@ class DraftsCmp {
   }
 }
 
-@Component({selector: 'inbox-app', viewInjector: [DbService]})
+@Component({selector: 'inbox-app', viewBindings: [DbService]})
 @View({templateUrl: "inbox-app.html", directives: [RouterOutlet, RouterLink]})
 @RouteConfig([
   new Route({path: '/', component: InboxCmp, as: 'inbox'}),

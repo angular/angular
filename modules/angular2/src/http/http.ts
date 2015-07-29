@@ -52,7 +52,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * ```
  * import {Http, httpInjectables} from 'angular2/http';
- * @Component({selector: 'http-app', viewInjector: [httpInjectables]})
+ * @Component({selector: 'http-app', viewBindings: [httpInjectables]})
  * @View({templateUrl: 'people.html'})
  * class PeopleComponent {
  *   constructor(http: Http) {

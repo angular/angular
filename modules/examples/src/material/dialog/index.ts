@@ -12,7 +12,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'demo-app',
-  viewInjector: [MdDialog],
+  viewBindings: [MdDialog],
 })
 @View({
   templateUrl: './demo_app.html',

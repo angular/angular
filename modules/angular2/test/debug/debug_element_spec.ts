@@ -66,7 +66,7 @@ class ChildComp {
   constructor() { this.childBinding = 'Original'; }
 }
 
-@Component({selector: 'parent-comp', viewInjector: [Logger]})
+@Component({selector: 'parent-comp', viewBindings: [Logger]})
 @View({
   template: `<div class="parent" message="parent">
                <span class="parentnested" message="nestedparent">Parent</span>
@@ -110,7 +110,7 @@ class EventsComp {
   handleCustom() { this.customed = true; }
 }
 
-@Component({selector: 'using-for', viewInjector: [Logger]})
+@Component({selector: 'using-for', viewBindings: [Logger]})
 @View({
   template: `<span *ng-for="#thing of stuff">{{thing}}</span>
             <ul message="list">

@@ -998,7 +998,7 @@ export function main() {
     });
 
     describe("dependency injection", () => {
-      it("should support hostInjector",
+      it("should support bindings",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template: `
@@ -1018,7 +1018,7 @@ export function main() {
                });
          }));
 
-      it("should support viewInjector",
+      it("should support viewBindings",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(DirectiveProvidingInjectableInView, new viewAnn.View({
                 template: `
@@ -1102,7 +1102,7 @@ export function main() {
                });
          }));
 
-      it("should create viewInjector injectables lazily",
+      it("should instantiate bindings lazily",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template: `
@@ -1548,7 +1548,7 @@ class PipesWithDouble extends Pipes {
 
 @Component({
   selector: 'my-comp-with-pipes',
-  viewInjector: [new Binding(Pipes, {toClass: PipesWithDouble})]
+  viewBindings: [new Binding(Pipes, {toClass: PipesWithDouble})]
 })
 @View({directives: []})
 @Injectable()
@@ -1572,7 +1572,7 @@ class MyComp {
   throwError() { throw 'boom'; }
 }
 
-@Component({selector: 'child-cmp', properties: ['dirProp'], viewInjector: [MyService]})
+@Component({selector: 'child-cmp', properties: ['dirProp'], viewBindings: [MyService]})
 @View({directives: [MyDir], template: '{{ctxProp}}'})
 @Injectable()
 class ChildComp {
@@ -1614,7 +1614,7 @@ class CompWithHost {
   constructor(@Host() someComp: SomeDirective) { this.myHost = someComp; }
 }
 
-@Component({selector: '[child-cmp2]', viewInjector: [MyService]})
+@Component({selector: '[child-cmp2]', viewBindings: [MyService]})
 @Injectable()
 class ChildComp2 {
   ctxProp: string;
@@ -1833,7 +1833,7 @@ function createInjectableWithLogging(inj: Injector) {
 
 @Component({
   selector: 'component-providing-logging-injectable',
-  hostInjector:
+  bindings:
       [new Binding(InjectableService, {toFactory: createInjectableWithLogging, deps: [Injector]})]
 })
 @View({template: ''})
@@ -1843,17 +1843,26 @@ class ComponentProvidingLoggingInjectable {
 }
 
 
-@Directive({selector: 'directive-providing-injectable', hostInjector: [[InjectableService]]})
+@Directive({selector: 'directive-providing-injectable', bindings: [[InjectableService]]})
 @Injectable()
 class DirectiveProvidingInjectable {
 }
 
-@Component({selector: 'directive-providing-injectable', viewInjector: [[InjectableService]]})
+@Component({selector: 'directive-providing-injectable', viewBindings: [[InjectableService]]})
 @View({template: ''})
 @Injectable()
 class DirectiveProvidingInjectableInView {
 }
 
+@Component({
+  selector: 'directive-providing-injectable',
+  bindings: [new Binding(InjectableService, {toValue: 'host'})],
+  viewBindings: [new Binding(InjectableService, {toValue: 'view'})]
+})
+@View({template: ''})
+@Injectable()
+class DirectiveProvidingInjectableInHostAndView {
+}
 
 
 @Component({selector: 'directive-consuming-injectable'})
@@ -1900,7 +1909,7 @@ class EventBus {
 
 @Directive({
   selector: 'grand-parent-providing-event-bus',
-  hostInjector: [new Binding(EventBus, {toValue: new EventBus(null, "grandparent")})]
+  bindings: [new Binding(EventBus, {toValue: new EventBus(null, "grandparent")})]
 })
 class GrandParentProvidingEventBus {
   bus: EventBus;
@@ -1914,7 +1923,7 @@ function createParentBus(peb) {
 
 @Component({
   selector: 'parent-providing-event-bus',
-  hostInjector: [
+  bindings: [
     new Binding(EventBus,
                 {toFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]})
   ]

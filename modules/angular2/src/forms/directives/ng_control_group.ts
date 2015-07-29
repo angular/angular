@@ -50,7 +50,7 @@ const controlGroupBinding =
  */
 @Directive({
   selector: '[ng-control-group]',
-  hostInjector: [controlGroupBinding],
+  bindings: [controlGroupBinding],
   properties: ['name: ng-control-group'],
   lifecycle: [LifecycleEvent.onInit, LifecycleEvent.onDestroy],
   exportAs: 'form'

@@ -99,13 +99,13 @@ export interface ViewDecorator extends TypeDecorator {
 export interface DirectiveFactory {
   (obj: {
     selector?: string, properties?: List<string>, events?: List<string>,
-        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>,
-        hostInjector?: List<any>, exportAs?: string, compileChildren?: boolean;
+        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>, bindings?: List<any>,
+        exportAs?: string, compileChildren?: boolean;
   }): DirectiveDecorator;
   new (obj: {
     selector?: string, properties?: List<string>, events?: List<string>,
-        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>,
-        hostInjector?: List<any>, exportAs?: string, compileChildren?: boolean;
+        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>, bindings?: List<any>,
+        exportAs?: string, compileChildren?: boolean;
   }): DirectiveAnnotation;
 }
 
@@ -159,10 +159,10 @@ export interface ComponentFactory {
     events?: List<string>,
     host?: StringMap<string, string>,
     lifecycle?: List<LifecycleEvent>,
-    hostInjector?: List<any>,
+    bindings?: List<any>,
     exportAs?: string,
     compileChildren?: boolean,
-    viewInjector?: List<any>,
+    viewBindings?: List<any>,
     changeDetection?: string,
   }): ComponentDecorator;
   new (obj: {
@@ -171,10 +171,10 @@ export interface ComponentFactory {
     events?: List<string>,
     host?: StringMap<string, string>,
     lifecycle?: List<LifecycleEvent>,
-    hostInjector?: List<any>,
+    bindings?: List<any>,
     exportAs?: string,
     compileChildren?: boolean,
-    viewInjector?: List<any>,
+    viewBindings?: List<any>,
     changeDetection?: string,
   }): ComponentAnnotation;
 }

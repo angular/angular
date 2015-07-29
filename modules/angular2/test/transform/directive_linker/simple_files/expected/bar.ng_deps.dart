@@ -14,7 +14,7 @@ void initReflector() {
   _ngRef.reflector
     ..registerType(MyComponent, new ReflectionInfo(const [
       const Component(
-          selector: '[soup]', viewInjector: const [dep.DependencyComponent])
+          selector: '[soup]', viewBindings: const [dep.DependencyComponent])
     ], const [], () => new MyComponent()));
   i0.initReflector();
 }

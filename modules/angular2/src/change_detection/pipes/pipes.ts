@@ -19,7 +19,7 @@ export class Pipes {
    *   'json': [jsonPipeFactory]
    * }
    * @Component({
-   *   viewInjector: [
+   *   viewBindings: [
    *     bind(Pipes).toValue(new Pipes(pipesConfig))
    *   ]
    * })
@@ -61,7 +61,7 @@ export class Pipes {
    *
    * ```
    * @Component({
-   *   viewInjector: [
+   *   viewBindings: [
    *     Pipes.extend({
    *       async: [newAsyncPipe]
    *     })

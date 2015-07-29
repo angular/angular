@@ -710,7 +710,7 @@ export class Directive extends InjectableMetadata {
    *
    * @Directive({
    *   selector: 'greet',
-   *   hostInjector: [
+   *   bindings: [
    *     Greeter
    *   ]
    * })
@@ -723,7 +723,7 @@ export class Directive extends InjectableMetadata {
    * }
    * ```
    */
-  hostInjector: List<any>;
+  bindings: List<any>;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -753,7 +753,7 @@ export class Directive extends InjectableMetadata {
   exportAs: string;
 
   constructor({
-                  selector, properties, events, host, lifecycle, hostInjector, exportAs,
+                  selector, properties, events, host, lifecycle, bindings, exportAs,
                   compileChildren = true,
               }: {
     selector?: string,
@@ -761,7 +761,7 @@ export class Directive extends InjectableMetadata {
     events?: List<string>,
     host?: StringMap<string, string>,
     lifecycle?: List<LifecycleEvent>,
-    hostInjector?: List<any>,
+    bindings?: List<any>,
     exportAs?: string,
     compileChildren?: boolean,
   } = {}) {
@@ -773,7 +773,7 @@ export class Directive extends InjectableMetadata {
     this.exportAs = exportAs;
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
-    this.hostInjector = hostInjector;
+    this.bindings = bindings;
   }
 }
 
@@ -788,7 +788,7 @@ export class Directive extends InjectableMetadata {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates all the injectable objects configured with `hostInjector` and `viewInjector`.
+ * - creates all the injectable objects configured with `bindings` and `viewBindings`.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
@@ -855,7 +855,7 @@ export class Component extends Directive {
    *
    * @Component({
    *   selector: 'greet',
-   *   viewInjector: [
+   *   viewBindings: [
    *     Greeter
    *   ]
    * })
@@ -868,19 +868,19 @@ export class Component extends Directive {
    *
    * ```
    */
-  viewInjector: List<any>;
+  viewBindings: List<any>;
 
-  constructor({selector, properties, events, host, exportAs, lifecycle, hostInjector, viewInjector,
+  constructor({selector, properties, events, host, exportAs, lifecycle, bindings, viewBindings,
                changeDetection = DEFAULT, compileChildren = true}: {
     selector?: string,
     properties?: List<string>,
     events?: List<string>,
     host?: StringMap<string, string>,
     lifecycle?: List<LifecycleEvent>,
-    hostInjector?: List<any>,
+    bindings?: List<any>,
     exportAs?: string,
     compileChildren?: boolean,
-    viewInjector?: List<any>,
+    viewBindings?: List<any>,
     changeDetection?: string,
   } = {}) {
     super({
@@ -889,13 +889,13 @@ export class Component extends Directive {
       events: events,
       host: host,
       exportAs: exportAs,
-      hostInjector: hostInjector,
+      bindings: bindings,
       lifecycle: lifecycle,
       compileChildren: compileChildren
     });
 
     this.changeDetection = changeDetection;
-    this.viewInjector = viewInjector;
+    this.viewBindings = viewBindings;
   }
 }
 

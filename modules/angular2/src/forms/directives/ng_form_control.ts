@@ -60,7 +60,7 @@ const formControlBinding =
  */
 @Directive({
   selector: '[ng-form-control]',
-  hostInjector: [formControlBinding],
+  bindings: [formControlBinding],
   properties: ['form: ngFormControl', 'model: ngModel'],
   events: ['update: ngModel'],
   lifecycle: [LifecycleEvent.onChange],

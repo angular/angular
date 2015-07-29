@@ -15,7 +15,7 @@ import * as modelModule from './model';
  *
  * @Component({
  *   selector: 'login-comp',
- *   viewInjector: [
+ *   viewBindings: [
  *     FormBuilder
  *   ]
  * })
