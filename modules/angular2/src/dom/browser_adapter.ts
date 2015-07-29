@@ -118,7 +118,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   firstChild(el): Node { return el.firstChild; }
   nextSibling(el): Node { return el.nextSibling; }
-  parentElement(el): Node { return el.parentElement; }
+  parentElement(el): Node { return el.parentNode; }
   childNodes(el): List<Node> { return el.childNodes; }
   childNodesAsList(el): List<any> {
     var childNodes = el.childNodes;
@@ -130,14 +130,14 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   clearNodes(el) {
     while (el.firstChild) {
-      el.firstChild.remove();
+      el.removeChild(el.firstChild);
     }
   }
   appendChild(el, node) { el.appendChild(node); }
   removeChild(el, node) { el.removeChild(node); }
   replaceChild(el: Node, newChild, oldChild) { el.replaceChild(newChild, oldChild); }
   remove(node): Node {
-    node.remove();
+    node.parentNode.removeChild(node);
     return node;
   }
   insertBefore(el, node) { el.parentNode.insertBefore(node, el); }

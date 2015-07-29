@@ -26,14 +26,14 @@ export function main() {
 
     it('should add styles specified in an object literal',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = `<div [ng-style]="{'text-align': 'right'}"></div>`;
+         var template = `<div [ng-style]="{'max-width': '40px'}"></div>`;
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
-                   .toEqual('right');
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+                   .toEqual('40px');
 
                async.done();
              });
@@ -48,16 +48,16 @@ export function main() {
              .then((rootTC) => {
                var expr: Map<string, any>;
 
-               rootTC.componentInstance.expr = {'text-align': 'right'};
+               rootTC.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
-                   .toEqual('right');
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+                   .toEqual('40px');
 
                expr = rootTC.componentInstance.expr;
-               expr['text-align'] = 'left';
+               expr['max-width'] = '30%';
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
-                   .toEqual('left');
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+                   .toEqual('30%');
 
                async.done();
              });
@@ -70,14 +70,14 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.expr = {'text-align': 'right'};
+               rootTC.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
-                   .toEqual('right');
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+                   .toEqual('40px');
 
-               StringMapWrapper.delete(rootTC.componentInstance.expr, 'text-align');
+               StringMapWrapper.delete(rootTC.componentInstance.expr, 'max-width');
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
                    .toEqual('');
 
                async.done();
@@ -91,16 +91,16 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.expr = {'text-align': 'right'};
+               rootTC.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
-                   .toEqual('right');
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+                   .toEqual('40px');
                expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
-               StringMapWrapper.delete(rootTC.componentInstance.expr, 'text-align');
+               StringMapWrapper.delete(rootTC.componentInstance.expr, 'max-width');
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
                    .toEqual('');
                expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
                    .toEqual('12px');
@@ -116,19 +116,19 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.expr = {'text-align': 'right'};
+               rootTC.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
-                   .toEqual('right');
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+                   .toEqual('40px');
                expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
-               StringMapWrapper.delete(rootTC.componentInstance.expr, 'text-align');
+               StringMapWrapper.delete(rootTC.componentInstance.expr, 'max-width');
                expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'text-align'))
+               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
                    .toEqual('');
 
                async.done();

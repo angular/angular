@@ -129,10 +129,10 @@ export function main() {
       });
 
       it('should de-normalize style names', () => {
-        view.setElementStyle(0, 'textAlign', 'right');
-        expect(DOM.getStyle(el, 'text-align')).toEqual('right');
-        view.setElementStyle(0, 'textAlign', null);
-        expect(DOM.getStyle(el, 'text-align')).toEqual('');
+        view.setElementStyle(0, 'maxWidth', '40px');
+        expect(DOM.getStyle(el, 'max-width')).toEqual('40px');
+        view.setElementStyle(0, 'maxWidth', null);
+        expect(DOM.getStyle(el, 'max-width')).toEqual('');
       });
 
     });
