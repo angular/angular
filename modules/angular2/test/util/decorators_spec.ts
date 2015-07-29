@@ -23,16 +23,18 @@ class TerminalAnnotation {
   terminal = true;
 }
 
+class DecoratedParent {}
+class DecoratedChild extends DecoratedParent {}
+
 export function main() {
   var Reflect = global.Reflect;
 
   var TerminalDecorator = makeDecorator(TerminalAnnotation);
   var TestDecorator = makeDecorator(TestAnnotation, (fn: any) => fn.Terminal = TerminalDecorator);
-  var TestParamDecorator = makeParamDecorator(TestAnnotation);
 
   describe('decorators', () => {
-    it('shoulld invoke as decorator', () => {
-      function Type(){};
+    it('should invoke as decorator', () => {
+      function Type() {}
       TestDecorator({marker: 'WORKS'})(Type);
       var annotations = Reflect.getMetadata('annotations', Type);
       expect(annotations[0].arg.marker).toEqual('WORKS');
@@ -51,6 +53,15 @@ export function main() {
       expect(chain.annotations[0] instanceof TestAnnotation).toEqual(true);
       expect(chain.annotations[0].arg.marker).toEqual('WORKS');
       expect(chain.annotations[1] instanceof TerminalAnnotation).toEqual(true);
+    });
+
+    it('should not apply decorators from the prototype chain', function() {
+      TestDecorator({marker: 'parent'})(DecoratedParent);
+      TestDecorator({marker: 'child'})(DecoratedChild);
+
+      var annotations = Reflect.getOwnMetadata('annotations', DecoratedChild);
+      expect(annotations.length).toBe(1);
+      expect(annotations[0].arg.marker).toEqual('child');
     });
 
     describe('Class', () => {
