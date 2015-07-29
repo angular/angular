@@ -70,5 +70,26 @@ export function main() {
       var resolvedCss = styleUrlResolver.resolveUrls(css, 'http://ng.io');
       expect(resolvedCss).toEqual(expectedCss);
     });
+
+    it('should not strip quotes from inlined SVG styles', () => {
+      var css = `
+      .selector {
+        background:rgb(55,71,79) url('data:image/svg+xml;utf8,<?xml version="1.0"?>');
+        background:rgb(55,71,79) url("data:image/svg+xml;utf8,<?xml version='1.0'?>");
+        background:rgb(55,71,79) url("/some/data:image");
+      }
+      `;
+
+      var expectedCss = `
+      .selector {
+        background:rgb(55,71,79) url('data:image/svg+xml;utf8,<?xml version="1.0"?>');
+        background:rgb(55,71,79) url("data:image/svg+xml;utf8,<?xml version='1.0'?>");
+        background:rgb(55,71,79) url('http://ng.io/some/data:image');
+      }
+      `;
+
+      var resolvedCss = styleUrlResolver.resolveUrls(css, 'http://ng.io');
+      expect(resolvedCss).toEqual(expectedCss);
+    });
   });
 }

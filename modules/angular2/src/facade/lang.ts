@@ -263,7 +263,10 @@ export class RegExpWrapper {
     regExp.lastIndex = 0;
     return regExp.exec(input);
   }
-  static test(regExp: RegExp, input: string): boolean { return regExp.test(input); }
+  static test(regExp: RegExp, input: string): boolean {
+    regExp.lastIndex = 0;
+    return regExp.test(input);
+  }
   static matcher(regExp: RegExp, input: string): {
     re: RegExp;
     input: string
