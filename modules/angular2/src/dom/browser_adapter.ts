@@ -121,7 +121,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   firstChild(el): Node { return el.firstChild; }
   nextSibling(el): Node { return el.nextSibling; }
-  parentElement(el): Node { return el.parentElement; }
+  parentElement(el): Node { return el.parentNode; }
   childNodes(el): List<Node> { return el.childNodes; }
   childNodesAsList(el): List<any> {
     var childNodes = el.childNodes;
