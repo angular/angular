@@ -79,7 +79,7 @@ class TestComponent {
 }
 
 
-@proxy
+@proxy()
 @IMPLEMENTS(Location)
 class DummyLocation extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
@@ -92,7 +92,7 @@ function makeDummyLocation() {
 }
 
 
-@proxy
+@proxy()
 @IMPLEMENTS(Router)
 class DummyRouter extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }

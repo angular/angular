@@ -62,7 +62,7 @@ export function main() {
   });
 }
 
-@proxy
+@proxy()
 @IMPLEMENTS(AppView)
 class AppViewSpy extends SpyObject {
   viewContainers: AppViewContainer[] = [null];
@@ -70,7 +70,7 @@ class AppViewSpy extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy
+@proxy()
 @IMPLEMENTS(AppViewManager)
 class AppViewManagerSpy extends SpyObject {
   constructor() { super(AppViewManager); }

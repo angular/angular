@@ -27,12 +27,7 @@ export {
 } from 'angular2/src/core/compiler/interfaces';
 
 
-export {
-  Class,
-  ClassDefinition,
-  ParameterDecorator,
-  TypeDecorator
-} from 'angular2/src/util/decorators';
+export {Class, ClassDefinition, TypeDecorator} from 'angular2/src/util/decorators';
 
 export {
   Attribute,

@@ -22,10 +22,15 @@ export class Route implements RouteDefinition {
   path: string;
   component: Type;
   as: string;
+  // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+  loader: Function;
+  redirectTo: string;
   constructor({path, component, as}: {path: string, component: Type, as?: string}) {
     this.path = path;
     this.component = component;
     this.as = as;
+    this.loader = null;
+    this.redirectTo = null;
   }
 }
 

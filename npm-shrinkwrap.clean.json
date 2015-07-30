@@ -10788,8 +10788,8 @@
       }
     },
     "typescript": {
-      "version": "1.5.0",
-      "resolved": "git://github.com/alexeagle/TypeScript.git#be9a7edff73ac2592e508732c771c85357041385"
+      "version": "1.5.3",
+      "resolved": "git://github.com/alexeagle/TypeScript.git#076bca017732cc9c44000ca0866199be64e21810"
     },
     "vinyl": {
       "version": "0.4.6",

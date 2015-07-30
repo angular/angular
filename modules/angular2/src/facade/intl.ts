@@ -8,6 +8,9 @@ declare module Intl {
     currency?: string;
     currencyDisplay?: string;
     useGrouping?: boolean;
+    minimumIntegerDigits?: number;
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
   }
 
   interface NumberFormat {

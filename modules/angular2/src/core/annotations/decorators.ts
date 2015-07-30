@@ -1,13 +1,7 @@
 import {ComponentAnnotation, DirectiveAnnotation, LifecycleEvent} from './annotations';
 import {ViewAnnotation} from './view';
 import {AttributeAnnotation, QueryAnnotation, ViewQueryAnnotation} from './di';
-import {
-  makeDecorator,
-  makeParamDecorator,
-  TypeDecorator,
-  ParameterDecorator,
-  Class
-} from '../../util/decorators';
+import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
 import {Type} from 'angular2/src/facade/lang';
 import {ViewEncapsulation} from 'angular2/src/render/api';
 

@@ -48,7 +48,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/change_detection/change_detection';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
-@proxy
+@proxy()
 @IMPLEMENTS(AppView)
 class DummyView extends SpyObject {
   changeDetector;
@@ -59,7 +59,7 @@ class DummyView extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
 
-@proxy
+@proxy()
 @IMPLEMENTS(ElementRef)
 class DummyElementRef extends SpyObject {
   boundElementIndex: number = 0;

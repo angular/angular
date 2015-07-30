@@ -59,18 +59,18 @@ export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
 
-export function CONST():<T>(target: T) => T {
+export function CONST(): ClassDecorator {
   return (target) => target;
 }
 
-export function ABSTRACT():<T>(target: T) => T {
+export function ABSTRACT(): ClassDecorator {
   return (t) => t;
 }
 
 // Note: This is only a marker annotation needed for ts2dart.
 // This is written so that is can be used as a Traceur annotation
 // or a Typescript decorator.
-export function IMPLEMENTS(_):<T>(target: T) => T {
+export function IMPLEMENTS(_): ClassDecorator {
   return (t) => t;
 }
 
