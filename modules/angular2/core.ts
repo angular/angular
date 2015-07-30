@@ -18,6 +18,7 @@ export {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 export {IQueryList} from 'angular2/src/core/compiler/interface_query';
 export {QueryList} from 'angular2/src/core/compiler/query_list';
 export {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
+export {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
 export {ElementRef} from 'angular2/src/core/compiler/element_ref';
 export {TemplateRef} from 'angular2/src/core/compiler/template_ref';
