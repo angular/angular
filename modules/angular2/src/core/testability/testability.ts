@@ -82,6 +82,8 @@ export class TestabilityRegistry {
     this._applications.set(token, testability);
   }
 
+  getAllTestabilities(): List<Testability> { return MapWrapper.values(this._applications); }
+
   findTestabilityInTree(elem: Node): Testability {
     if (elem == null) {
       return null;
