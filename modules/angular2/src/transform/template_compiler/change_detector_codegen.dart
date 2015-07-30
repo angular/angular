@@ -109,8 +109,6 @@ class _CodegenState {
         }
 
         void detectChangesInRecordsInternal(throwOnChange) {
-          ${_names.getCurrentProtoName()} = null;
-
           ${_names.genInitLocals()}
           var $_IS_CHANGED_LOCAL = false;
           var $_CHANGES_LOCAL = null;
@@ -225,7 +223,11 @@ class _CodegenState {
     } else {
       rec = _genReferenceCheck(r);
     }
-    return '$rec${_maybeGenLastInDirective(r)}';
+    return '''
+      ${this._maybeFirstInBinding(r)}
+      ${rec}
+      ${this._maybeGenLastInDirective(r)}
+    ''';
   }
 
   String _genDirectiveLifecycle(ProtoRecord r) {
@@ -249,12 +251,9 @@ class _CodegenState {
 
     var pipe = _names.getPipeName(r.selfIndex);
     var cdRef = 'this.ref';
-
-    var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
 
     var read = '''
-      ${_names.getCurrentProtoName()} = ${_names.getProtosName()}[$protoIndex];
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
       } else if (!$pipe.supports($context)) {
@@ -280,11 +279,7 @@ class _CodegenState {
   String _genReferenceCheck(ProtoRecord r) {
     var oldValue = _names.getFieldName(r.selfIndex);
     var newValue = _names.getLocalName(r.selfIndex);
-
-    var protoIndex = r.selfIndex - 1;
-
     var read = '''
-      ${_names.getCurrentProtoName()} = ${_names.getProtosName()}[$protoIndex];
       ${_genUpdateCurrentValue(r)}
     ''';
 
@@ -411,8 +406,7 @@ class _CodegenState {
     } else {
       return '''
       ${_genThrowOnChangeCheck(oldValue, newValue)}
-      ${_names.getDispatcherName()}.notifyOnBinding(
-          ${_names.getCurrentProtoName()}.bindingRecord, ${newValue});
+      this.notifyDispatcher(${newValue});
     ''';
     }
   }
@@ -421,8 +415,7 @@ class _CodegenState {
     if (this._generateCheckNoChanges) {
       return '''
         if(throwOnChange) {
-          $_UTIL.throwOnChange(
-              ${_names.getCurrentProtoName()}, $_UTIL.simpleChange(${oldValue}, ${newValue}));
+          this.throwOnChangeError(${oldValue}, ${newValue});
         }
       ''';
     } else {
@@ -438,16 +431,17 @@ class _CodegenState {
     }
   }
 
+  String _maybeFirstInBinding(ProtoRecord r) {
+    var prev = ChangeDetectionUtil.protoByIndex(_records, r.selfIndex - 1);
+    var firstInBindng = prev == null || prev.bindingRecord != r.bindingRecord;
+    return firstInBindng ? "${_names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};" : '';
+  }
+
   String _genAddToChanges(ProtoRecord r) {
     var newValue = _names.getLocalName(r.selfIndex);
     var oldValue = _names.getFieldName(r.selfIndex);
     if (!r.bindingRecord.callOnChange()) return '';
-    return '''
-      $_CHANGES_LOCAL = $_UTIL.addChange(
-          $_CHANGES_LOCAL,
-          ${_names.getCurrentProtoName()}.bindingRecord.propertyName,
-          $_UTIL.simpleChange($oldValue, $newValue));
-    ''';
+    return "$_CHANGES_LOCAL = addChange($_CHANGES_LOCAL, $oldValue, $newValue);";
   }
 
   String _maybeGenLastInDirective(ProtoRecord r) {

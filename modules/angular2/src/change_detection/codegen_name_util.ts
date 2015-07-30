@@ -9,7 +9,7 @@ import {ProtoRecord} from './proto_record';
 // detection will fail.
 const _ALREADY_CHECKED_ACCESSOR = "alreadyChecked";
 const _CONTEXT_ACCESSOR = "context";
-const _CURRENT_PROTO = "currentProto";
+const _FIRST_PROTO_IN_CURRENT_BINDING = "firstProtoInCurrentBinding";
 const _DIRECTIVES_ACCESSOR = "directiveRecords";
 const _DISPATCHER_ACCESSOR = "dispatcher";
 const _LOCALS_ACCESSOR = "locals";
@@ -67,7 +67,9 @@ export class CodegenNameUtil {
 
   getModeName(): string { return this._addFieldPrefix(_MODE_ACCESSOR); }
 
-  getCurrentProtoName(): string { return this._addFieldPrefix(_CURRENT_PROTO); }
+  getFirstProtoInCurrentBinding(): string {
+    return this._addFieldPrefix(_FIRST_PROTO_IN_CURRENT_BINDING);
+  }
 
   getLocalName(idx: int): string { return `l_${this._sanitizedNames[idx]}`; }
 

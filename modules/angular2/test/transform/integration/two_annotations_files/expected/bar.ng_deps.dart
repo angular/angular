@@ -34,7 +34,6 @@ class _MyComponent_ChangeDetector0
   }
 
   void detectChangesInRecordsInternal(throwOnChange) {
-    this.currentProto = null;
     var l_context = this.context,
         l_myNum0,
         c_myNum0,
@@ -43,7 +42,7 @@ class _MyComponent_ChangeDetector0
     var isChanged = false;
     var changes = null;
 
-    this.currentProto = this.protos[0];
+    this.firstProtoInCurrentBinding = 1;
     l_myNum0 = l_context.myNum;
     if (_gen.looseNotIdentical(l_myNum0, this.myNum0)) {
       c_myNum0 = true;
@@ -51,18 +50,14 @@ class _MyComponent_ChangeDetector0
       this.myNum0 = l_myNum0;
     }
     if (c_myNum0) {
-      this.currentProto = this.protos[1];
       l_interpolate1 =
           "Salad: " "${l_myNum0 == null ? "" : l_myNum0}" " is awesome";
       if (_gen.looseNotIdentical(l_interpolate1, this.interpolate1)) {
         if (throwOnChange) {
-          _gen.ChangeDetectionUtil.throwOnChange(this.currentProto,
-              _gen.ChangeDetectionUtil.simpleChange(
-                  this.interpolate1, l_interpolate1));
+          this.throwOnChangeError(this.interpolate1, l_interpolate1);
         }
 
-        this.dispatcher.notifyOnBinding(
-            this.currentProto.bindingRecord, l_interpolate1);
+        this.notifyDispatcher(l_interpolate1);
 
         this.interpolate1 = l_interpolate1;
       }

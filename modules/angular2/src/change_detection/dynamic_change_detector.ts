@@ -55,12 +55,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   checkNoChanges(): void { this.runDetectChanges(true); }
 
-  // TODO(vsavkin): #3366. Update to work with [AbstractChangeDetector#detectChangesInRecords]
-  detectChangesInRecords(throwOnChange: boolean) {
-    if (!this.hydrated()) {
-      ChangeDetectionUtil.throwDehydrated();
-    }
-    var protos: List<ProtoRecord> = this.protos;
+  detectChangesInRecordsInternal(throwOnChange: boolean) {
+    var protos = this.protos;
 
     var changes = null;
     var isChanged = false;
@@ -68,6 +64,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       var proto: ProtoRecord = protos[i];
       var bindingRecord = proto.bindingRecord;
       var directiveRecord = bindingRecord.directiveRecord;
+
+      if (this._firstInBinding(proto)) {
+        this.firstProtoInCurrentBinding = proto.selfIndex;
+      }
 
       if (proto.isLifeCycleRecord()) {
         if (proto.name === "onCheck" && !throwOnChange) {
@@ -100,6 +100,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     this.alreadyChecked = true;
   }
 
+  _firstInBinding(r: ProtoRecord): boolean {
+    var prev = ChangeDetectionUtil.protoByIndex(this.protos, r.selfIndex - 1);
+    return isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
+  }
+
   callOnAllChangesDone() {
     this.dispatcher.notifyOnAllChangesDone();
     var dirs = this.directiveRecords;
@@ -122,7 +127,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _addChange(bindingRecord: BindingRecord, change, changes) {
     if (bindingRecord.callOnChange()) {
-      return ChangeDetectionUtil.addChange(changes, bindingRecord.propertyName, change);
+      return super.addChange(changes, change.previousValue, change.currentValue);
     } else {
       return changes;
     }
@@ -133,14 +138,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
 
   _check(proto: ProtoRecord, throwOnChange: boolean): SimpleChange {
-    try {
-      if (proto.isPipeRecord()) {
-        return this._pipeCheck(proto, throwOnChange);
-      } else {
-        return this._referenceCheck(proto, throwOnChange);
-      }
-    } catch (e) {
-      this.throwError(proto, e, e.stack);
+    if (proto.isPipeRecord()) {
+      return this._pipeCheck(proto, throwOnChange);
+    } else {
+      return this._referenceCheck(proto, throwOnChange);
     }
   }
 
@@ -156,7 +157,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       if (!isSame(prevValue, currValue)) {
         if (proto.lastInBinding) {
           var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
-          if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
+          if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
 
           this._writeSelf(proto, currValue);
           this._setChanged(proto, true);
@@ -241,7 +242,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
         if (proto.lastInBinding) {
           var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
-          if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
+          if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
 
           this._writeSelf(proto, currValue);
           this._setChanged(proto, true);

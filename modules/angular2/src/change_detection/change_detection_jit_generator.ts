@@ -46,8 +46,6 @@ export class ChangeDetectorJITGenerator {
       ${this._typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 
       ${this._typeName}.prototype.detectChangesInRecordsInternal = function(throwOnChange) {
-        ${this._names.getCurrentProtoName()} = null;
-
         ${this._names.genInitLocals()}
         var ${IS_CHANGED_LOCAL} = false;
         var ${CHANGES_LOCAL} = null;
@@ -149,7 +147,11 @@ export class ChangeDetectorJITGenerator {
     } else {
       rec = this._genReferenceCheck(r);
     }
-    return `${rec}${this._maybeGenLastInDirective(r)}`;
+    return `
+      ${this._maybeFirstInBinding(r)}
+      ${rec}
+      ${this._maybeGenLastInDirective(r)}
+    `;
   }
 
   _genDirectiveLifecycle(r: ProtoRecord): string {
@@ -173,12 +175,9 @@ export class ChangeDetectorJITGenerator {
 
     var pipe = this._names.getPipeName(r.selfIndex);
     var cdRef = "this.ref";
-
-    var protoIndex = r.selfIndex - 1;
     var pipeType = r.name;
 
     var read = `
-      ${this._names.getCurrentProtoName()} = ${this._names.getProtosName()}[${protoIndex}];
       if (${pipe} === ${UTIL}.uninitialized) {
         ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
       } else if (!${pipe}.supports(${context})) {
@@ -204,11 +203,7 @@ export class ChangeDetectorJITGenerator {
   _genReferenceCheck(r: ProtoRecord): string {
     var oldValue = this._names.getFieldName(r.selfIndex);
     var newValue = this._names.getLocalName(r.selfIndex);
-
-    var protoIndex = r.selfIndex - 1;
-
     var read = `
-      ${this._names.getCurrentProtoName()} = ${this._names.getProtosName()}[${protoIndex}];
       ${this._genUpdateCurrentValue(r)}
     `;
 
@@ -331,8 +326,7 @@ export class ChangeDetectorJITGenerator {
     } else {
       return `
         ${this._genThrowOnChangeCheck(oldValue, newValue)}
-        ${this._names.getDispatcherName()}.notifyOnBinding(
-            ${this._names.getCurrentProtoName()}.bindingRecord, ${newValue});
+        this.notifyDispatcher(${newValue});
       `;
     }
   }
@@ -341,7 +335,7 @@ export class ChangeDetectorJITGenerator {
     if (this.generateCheckNoChanges) {
       return `
         if(throwOnChange) {
-          ${UTIL}.throwOnChange(${this._names.getCurrentProtoName()}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
+          this.throwOnChangeError(${oldValue}, ${newValue});
         }
         `;
     } else {
@@ -361,11 +355,13 @@ export class ChangeDetectorJITGenerator {
     var newValue = this._names.getLocalName(r.selfIndex);
     var oldValue = this._names.getFieldName(r.selfIndex);
     if (!r.bindingRecord.callOnChange()) return "";
-    return `
-      ${CHANGES_LOCAL} = ${UTIL}.addChange(
-          ${CHANGES_LOCAL}, ${this._names.getCurrentProtoName()}.bindingRecord.propertyName,
-          ${UTIL}.simpleChange(${oldValue}, ${newValue}));
-    `;
+    return `${CHANGES_LOCAL} = this.addChange(${CHANGES_LOCAL}, ${oldValue}, ${newValue});`;
+  }
+
+  _maybeFirstInBinding(r: ProtoRecord): string {
+    var prev = ChangeDetectionUtil.protoByIndex(this.records, r.selfIndex - 1);
+    var firstInBindng = isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
+    return firstInBindng ? `${this._names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};` : '';
   }
 
   _maybeGenLastInDirective(r: ProtoRecord): string {
