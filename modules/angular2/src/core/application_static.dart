@@ -7,6 +7,9 @@ import 'application_common.dart';
 ///
 /// See [commonBootstrap] for detailed documentation.
 Future<ApplicationRef> bootstrapStatic(Type appComponentType,
-    [List componentInjectableBindings]) {
+    [List componentInjectableBindings, void initReflector()]) {
+  if (initReflector != null) {
+    initReflector();
+  }
   return commonBootstrap(appComponentType, componentInjectableBindings);
 }

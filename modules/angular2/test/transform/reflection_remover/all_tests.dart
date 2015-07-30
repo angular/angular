@@ -10,6 +10,7 @@ import 'reflection_remover_files/expected/index.dart' as expected;
 import 'debug_mirrors_files/expected/index.dart' as debug_mirrors;
 import 'log_mirrors_files/expected/index.dart' as log_mirrors;
 import 'verbose_files/expected/index.dart' as verbose_mirrors;
+import 'bootstrap_files/expected/index.dart' as bootstrap_expected;
 import '../common/read_file.dart';
 
 main() => allTests();
@@ -17,6 +18,7 @@ main() => allTests();
 void allTests() {
   var codegen = new Codegen('web/index.dart', ['web/index.ng_deps.dart']);
   var code = readFile('reflection_remover/index.dart').replaceAll('\r\n', '\n');
+  var bootstrapCode = readFile('reflection_remover/bootstrap_files/index.dart').replaceAll('\r\n', '\n');
 
   it('should remove uses of mirrors & '
       'insert calls to generated code by default.', () {
@@ -44,5 +46,11 @@ void allTests() {
     var output = new Rewriter(code, codegen, writeStaticInit: false)
         .rewrite(parseCompilationUnit(code));
     expect(output).toEqual(log_mirrors.code);
+  });
+
+  it('should rewrite bootstrap.', () {
+    var output = new Rewriter(bootstrapCode, codegen, writeStaticInit: true)
+        .rewrite(parseCompilationUnit(bootstrapCode));
+    expect(output).toEqual(bootstrap_expected.code);
   });
 }
