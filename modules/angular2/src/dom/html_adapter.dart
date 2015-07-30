@@ -184,6 +184,7 @@ class Html5LibDomAdapter implements DomAdapter {
   setChecked(el, bool value) {
     throw 'not implemented';
   }
+  createComment(String text) => new Comment(text);
   createTemplate(String html) => createElement('template')..innerHtml = html;
   createElement(tagName, [doc]) {
     return new Element.tag(tagName);
@@ -290,6 +291,9 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   importIntoDoc(node) {
+    throw 'not implemented';
+  }
+  adoptNode(node) {
     throw 'not implemented';
   }
   bool isPageRule(rule) {

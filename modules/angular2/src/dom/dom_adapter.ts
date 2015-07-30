@@ -69,6 +69,7 @@ export class DomAdapter {
   setValue(el, value: string) { throw _abstract(); }
   getChecked(el): boolean { throw _abstract(); }
   setChecked(el, value: boolean) { throw _abstract(); }
+  createComment(text: string): any { throw _abstract(); }
   createTemplate(html): HTMLElement { throw _abstract(); }
   createElement(tagName, doc = null): HTMLElement { throw _abstract(); }
   createTextNode(text: string, doc = null): Text { throw _abstract(); }
@@ -110,6 +111,7 @@ export class DomAdapter {
   hasShadowRoot(node): boolean { throw _abstract(); }
   isShadowRoot(node): boolean { throw _abstract(); }
   importIntoDoc /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/ { throw _abstract(); }
+  adoptNode /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/ { throw _abstract(); }
   isPageRule(rule): boolean { throw _abstract(); }
   isStyleRule(rule): boolean { throw _abstract(); }
   isMediaRule(rule): boolean { throw _abstract(); }

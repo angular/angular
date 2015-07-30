@@ -77,6 +77,9 @@ export class Parse5DomAdapter extends DomAdapter {
     return res;
   }
   elementMatches(node, selector: string, matcher = null): boolean {
+    if (!selector || selector === '*') {
+      return true;
+    }
     var result = false;
     if (selector && selector.charAt(0) == "#") {
       result = this.getAttribute(node, 'id') == selector.substring(1);
@@ -252,6 +255,7 @@ export class Parse5DomAdapter extends DomAdapter {
   setValue(el, value: string) { el.value = value; }
   getChecked(el): boolean { return el.checked; }
   setChecked(el, value: boolean) { el.checked = value; }
+  createComment(text: string): Comment { return treeAdapter.createCommentNode(text); }
   createTemplate(html): HTMLElement {
     var template = treeAdapter.createElement("template", 'http://www.w3.org/1999/xhtml', []);
     var content = parser.parseFragment(html);
@@ -447,6 +451,7 @@ export class Parse5DomAdapter extends DomAdapter {
   hasShadowRoot(node): boolean { return isPresent(node.shadowRoot); }
   isShadowRoot(node): boolean { return this.getShadowRoot(node) == node; }
   importIntoDoc(node): any { return this.clone(node); }
+  adoptNode(node): any { return node; }
   isPageRule(rule): boolean {
     return rule.type === 6;  // CSSRule.PAGE_RULE
   }

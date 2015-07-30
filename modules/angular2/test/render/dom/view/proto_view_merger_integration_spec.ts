@@ -3,6 +3,7 @@ import {
   beforeEach,
   ddescribe,
   describe,
+  xdescribe,
   el,
   expect,
   iit,
@@ -27,8 +28,8 @@ import {
 } from 'angular2/src/render/api';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {cloneAndQueryProtoView} from 'angular2/src/render/dom/util';
-import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
+import {cloneAndQueryProtoView, ReferenceCloneableTemplate} from 'angular2/src/render/dom/util';
+import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
 
@@ -90,23 +91,23 @@ export function main() {
              ['<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"></a></root>']));
 
       it('should project static text',
-         runAndAssert(
-             'root', ['<a>b</a>', 'A(<ng-content></ng-content>)'],
-             ['<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(b)</a></root>']));
+         runAndAssert('root', ['<a>b</a>', 'A(<ng-content></ng-content>)'], [
+           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<!--[-->b<!--]-->)</a></root>'
+         ]));
 
       it('should project text interpolation',
-         runAndAssert(
-             'root', ['<a>{{b}}</a>', 'A(<ng-content></ng-content>)'],
-             ['<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A({0})</a></root>']));
+         runAndAssert('root', ['<a>{{b}}</a>', 'A(<ng-content></ng-content>)'], [
+           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<!--[-->{0}<!--]-->)</a></root>'
+         ]));
 
       it('should project text interpolation to elements without bindings',
          runAndAssert('root', ['<a>{{b}}</a>', '<div><ng-content></ng-content></div>'], [
-           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><div class="ng-binding">{0}</div></a></root>'
+           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><div class="ng-binding"><!--[-->{0}<!--]--></div></a></root>'
          ]));
 
       it('should project elements',
          runAndAssert('root', ['<a><div></div></a>', 'A(<ng-content></ng-content>)'], [
-           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<div></div>)</a></root>'
+           '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<!--[--><div></div><!--]-->)</a></root>'
          ]));
 
       it('should project elements using the selector',
@@ -117,14 +118,26 @@ export function main() {
                'A(<ng-content select=".x"></ng-content>)'
              ],
              [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<div class="x">a</div><div class="x">b</div>)</a></root>'
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<!--[--><div class="x">a</div><div class="x">b</div><!--]-->)</a></root>'
              ]));
 
       it('should reproject',
          runAndAssert(
              'root',
              ['<a>x</a>', 'A(<b><ng-content></ng-content></b>)', 'B(<ng-content></ng-content>)'], [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<b class="ng-binding" idx="2">B(x)</b>)</a></root>'
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<b class="ng-binding" idx="2">B(<!--[--><!--[-->x<!--]--><!--]-->)</b>)</a></root>'
+             ]));
+
+      it('should reproject text interpolation to sibling text nodes',
+         runAndAssert(
+             'root',
+             [
+               '<a>{{x}}</a>',
+               '<b>A(<ng-content></ng-content>)</b>)',
+               'B(<ng-content></ng-content>)'
+             ],
+             [
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><b class="ng-binding" idx="2">B(<!--[-->A(<!--[-->{0}<!--]-->)<!--]-->)</b>)</a></root>'
              ]));
 
       it('should reproject by combining selectors',
@@ -136,7 +149,7 @@ export function main() {
                'B(<ng-content select=".y"></ng-content>)'
              ],
              [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<b class="ng-binding" idx="2">B(<div class="x y"></div>)</b>)</a></root>'
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<b class="ng-binding" idx="2">B(<!--[--><div class="x y"></div><!--]-->)</b>)</a></root>'
              ]));
 
       it('should keep non projected embedded views as fragments (so that they can be moved manually)',
@@ -147,14 +160,14 @@ export function main() {
       it('should project embedded views and match the template element',
          runAndAssert(
              'root', ['<a><template class="x">b</template></a>', 'A(<ng-content></ng-content>)'], [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<template class="x ng-binding" idx="2"></template>)</a></root>',
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<!--[--><template class="x ng-binding" idx="2"></template><!--]-->)</a></root>',
                'b'
              ]));
 
       it('should project nodes using the ng-content in embedded views',
          runAndAssert('root', ['<a>b</a>', 'A(<ng-content *ng-if></ng-content>)'], [
            '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<template class="ng-binding" idx="2" ng-if=""></template>)</a></root>',
-           'b'
+           '<!--[-->b<!--]-->'
          ]));
 
       it('should allow to use wildcard selector after embedded view with non wildcard selector',
@@ -165,8 +178,8 @@ export function main() {
                'A(<ng-content select=".x" *ng-if></ng-content>, <ng-content></ng-content>)'
              ],
              [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<template class="ng-binding" idx="2" ng-if=""></template>, b)</a></root>',
-               '<div class="x">a</div>'
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1">A(<template class="ng-binding" idx="2" ng-if=""></template>, <!--[-->b<!--]-->)</a></root>',
+               '<!--[--><div class="x">a</div><!--]-->'
              ]));
 
     });
@@ -208,7 +221,7 @@ export function main() {
                '<ng-content select="c"></ng-content><ng-content select="b"></ng-content>'
              ],
              [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><c class="ng-binding" idx="3"></c><b class="ng-binding" idx="2"></b></a></root>'
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><!--[--><c class="ng-binding" idx="3"></c><!--]--><!--[--><b class="ng-binding" idx="2"></b><!--]--></a></root>'
              ]));
 
     });
@@ -227,7 +240,7 @@ export function main() {
                '<ng-content select="[y]"></ng-content><ng-content select="[x]"></ng-content>'
              ],
              [
-               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><div class="ng-binding" idx="3" y="">{1}</div><div class="ng-binding" idx="2" x="">{0}</div></a></root>'
+               '<root class="ng-binding" idx="0"><a class="ng-binding" idx="1"><!--[--><div class="ng-binding" idx="3" y="">{1}</div><!--]--><!--[--><div class="ng-binding" idx="2" x="">{0}</div><!--]--></a></root>'
              ]));
 
     });
@@ -252,7 +265,7 @@ export function main() {
                  tb.merge([rootProtoViewDto, componentProtoViewDto])
                      .then(mergeMappings => {
                        var domPv = resolveInternalDomProtoView(mergeMappings.mergedProtoViewRef);
-                       expect(DOM.getInnerHTML(domPv.rootElement))
+                       expect(DOM.getInnerHTML(templateRoot(domPv)))
                            .toEqual('<root class="ng-binding" a="b"></root>');
                        async.done();
                      });
@@ -262,6 +275,10 @@ export function main() {
     });
 
   });
+}
+
+function templateRoot(pv: DomProtoView) {
+  return (<ReferenceCloneableTemplate>pv.cloneableTemplate).templateRoot;
 }
 
 function runAndAssert(hostElementName: string, componentTemplates: string[],

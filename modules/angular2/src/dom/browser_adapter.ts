@@ -153,6 +153,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setValue(el, value: string) { el.value = value; }
   getChecked(el): boolean { return el.checked; }
   setChecked(el, value: boolean) { el.checked = value; }
+  createComment(text: string): Comment { return document.createComment(text); }
   createTemplate(html): HTMLElement {
     var t = document.createElement('template');
     t.innerHTML = html;
@@ -238,6 +239,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return document.importNode(toImport, true);
   }
+  adoptNode(node: Node): any { return document.adoptNode(node); }
   isPageRule(rule): boolean { return rule.type === CSSRule.PAGE_RULE; }
   isStyleRule(rule): boolean { return rule.type === CSSRule.STYLE_RULE; }
   isMediaRule(rule): boolean { return rule.type === CSSRule.MEDIA_RULE; }

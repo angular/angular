@@ -251,6 +251,7 @@ function appendComponentNodesToHost(hostProtoView: ClonedProtoView, binderIdx: n
 
 function projectMatchingNodes(selector: string, contentElement: Element, nodes: Node[]): Node[] {
   var remaining = [];
+  DOM.insertBefore(contentElement, DOM.createComment('['));
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i];
     var matches = false;
@@ -265,6 +266,7 @@ function projectMatchingNodes(selector: string, contentElement: Element, nodes: 
       remaining.push(node);
     }
   }
+  DOM.insertBefore(contentElement, DOM.createComment(']'));
   DOM.remove(contentElement);
   return remaining;
 }

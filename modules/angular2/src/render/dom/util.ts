@@ -12,6 +12,8 @@ export const EVENT_TARGET_SEPARATOR = ':';
 export const NG_CONTENT_ELEMENT_NAME = 'ng-content';
 export const NG_SHADOW_ROOT_ELEMENT_NAME = 'shadow-root';
 
+const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE = 20;
+
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
 
@@ -57,8 +59,7 @@ export class ClonedProtoView {
 
 export function cloneAndQueryProtoView(pv: DomProtoView, importIntoDocument: boolean):
     ClonedProtoView {
-  var templateContent = importIntoDocument ? DOM.importIntoDoc(DOM.content(pv.rootElement)) :
-                                             DOM.clone(DOM.content(pv.rootElement));
+  var templateContent = pv.cloneableTemplate.clone(importIntoDocument);
 
   var boundElements = queryBoundElements(templateContent, pv.isSingleElementFragment);
   var boundTextNodes = queryBoundTextNodes(templateContent, pv.rootTextNodeIndices, boundElements,
@@ -139,4 +140,46 @@ export function prependAll(parentNode: Node, nodes: Node[]) {
     }
     lastInsertedNode = node;
   });
+}
+
+export interface CloneableTemplate { clone(importIntoDoc: boolean): Node; }
+
+export class SerializedCloneableTemplate implements CloneableTemplate {
+  templateString: string;
+  constructor(templateRoot: Element) { this.templateString = DOM.getInnerHTML(templateRoot); }
+  clone(importIntoDoc: boolean): Node {
+    var result = DOM.content(DOM.createTemplate(this.templateString));
+    if (importIntoDoc) {
+      result = DOM.adoptNode(result);
+    }
+    return result;
+  }
+}
+
+export class ReferenceCloneableTemplate implements CloneableTemplate {
+  constructor(public templateRoot: Element) {}
+  clone(importIntoDoc: boolean): Node {
+    if (importIntoDoc) {
+      return DOM.importIntoDoc(DOM.content(this.templateRoot));
+    } else {
+      return DOM.clone(DOM.content(this.templateRoot));
+    }
+  }
+}
+
+export function prepareTemplateForClone(templateRoot: Element): CloneableTemplate {
+  var root = DOM.content(templateRoot);
+  var elementCount = DOM.querySelectorAll(root, '*').length;
+  var firstChild = DOM.firstChild(root);
+  var forceSerialize =
+      isPresent(firstChild) && DOM.isCommentNode(firstChild) ? DOM.nodeValue(firstChild) : null;
+  if (forceSerialize == 'nocache') {
+    return new SerializedCloneableTemplate(templateRoot);
+  } else if (forceSerialize == 'cache') {
+    return new ReferenceCloneableTemplate(templateRoot);
+  } else if (elementCount > MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE) {
+    return new SerializedCloneableTemplate(templateRoot);
+  } else {
+    return new ReferenceCloneableTemplate(templateRoot);
+  }
 }

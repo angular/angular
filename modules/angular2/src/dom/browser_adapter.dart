@@ -238,6 +238,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   void setChecked(InputElement el, bool isChecked) {
     el.checked = isChecked;
   }
+  Comment createComment(String text) {
+    return new Comment(text);
+  }
   TemplateElement createTemplate(String html) {
     var t = new TemplateElement();
     // We do not sanitize because templates are part of the application code
@@ -340,6 +343,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   Node importIntoDoc(Node node) {
     return document.importNode(node, true);
+  }
+  Node adoptNode(Node node) {
+    return document.adoptNode(node);
   }
   bool isPageRule(CssRule rule) => rule is CssPageRule;
   bool isStyleRule(CssRule rule) => rule is CssStyleRule;

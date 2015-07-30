@@ -34,6 +34,8 @@ import {SharedStylesHost} from 'angular2/src/render/dom/view/shared_styles_host'
 
 import {MockStep} from './pipeline_spec';
 
+import {ReferenceCloneableTemplate} from 'angular2/src/render/dom/util';
+
 export function runCompilerCommonTests() {
   describe('DomCompiler', function() {
     var mockStepFactory: MockStepFactory;
@@ -78,8 +80,7 @@ export function runCompilerCommonTests() {
                {id: 'id', selector: 'custom', type: DirectiveMetadata.COMPONENT_TYPE});
            compiler.compileHost(dirMetadata)
                .then((protoView) => {
-                 expect(DOM.tagName(DOM.firstChild(DOM.content(
-                                        resolveInternalDomProtoView(protoView.render).rootElement)))
+                 expect(DOM.tagName(DOM.firstChild(DOM.content(templateRoot(protoView))))
                             .toLowerCase())
                      .toEqual('custom');
                  expect(mockStepFactory.viewDef.directives).toEqual([dirMetadata]);
@@ -95,8 +96,7 @@ export function runCompilerCommonTests() {
            compiler.compile(
                        new ViewDefinition({componentId: 'someId', template: 'inline component'}))
                .then((protoView) => {
-                 expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).rootElement))
-                     .toEqual('inline component');
+                 expect(DOM.getInnerHTML(templateRoot(protoView))).toEqual('inline component');
                  async.done();
                });
          }));
@@ -106,8 +106,7 @@ export function runCompilerCommonTests() {
            var compiler = createCompiler(EMPTY_STEP, null, urlData);
            compiler.compile(new ViewDefinition({componentId: 'someId', templateAbsUrl: 'someUrl'}))
                .then((protoView) => {
-                 expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).rootElement))
-                     .toEqual('url component');
+                 expect(DOM.getInnerHTML(templateRoot(protoView))).toEqual('url component');
                  async.done();
                });
          }));
@@ -173,8 +172,7 @@ export function runCompilerCommonTests() {
                      encapsulation: ViewEncapsulation.NONE
                    }))
                .then((protoViewDto) => {
-                 var domProtoView = resolveInternalDomProtoView(protoViewDto.render);
-                 expect(DOM.getInnerHTML(domProtoView.rootElement)).toEqual('');
+                 expect(DOM.getInnerHTML(templateRoot(protoViewDto))).toEqual('');
                  expect(sharedStylesHost.getAllStyles()).toEqual(['a {};']);
                  async.done();
                });
@@ -190,8 +188,7 @@ export function runCompilerCommonTests() {
                      encapsulation: ViewEncapsulation.EMULATED
                    }))
                .then((protoViewDto) => {
-                 var domProtoView = resolveInternalDomProtoView(protoViewDto.render);
-                 expect(DOM.getInnerHTML(domProtoView.rootElement)).toEqual('');
+                 expect(DOM.getInnerHTML(templateRoot(protoViewDto))).toEqual('');
                  expect(sharedStylesHost.getAllStyles()).toEqual(['a {};']);
                  async.done();
                });
@@ -208,8 +205,7 @@ export function runCompilerCommonTests() {
                        encapsulation: ViewEncapsulation.NATIVE
                      }))
                  .then((protoViewDto) => {
-                   var domProtoView = resolveInternalDomProtoView(protoViewDto.render);
-                   expect(DOM.getInnerHTML(domProtoView.rootElement))
+                   expect(DOM.getInnerHTML(templateRoot(protoViewDto)))
                        .toEqual('<style>a {};</style>');
                    expect(sharedStylesHost.getAllStyles()).toEqual([]);
                    async.done();
@@ -257,6 +253,11 @@ export function runCompilerCommonTests() {
     });
 
   });
+}
+
+function templateRoot(protoViewDto: ProtoViewDto) {
+  var pv = resolveInternalDomProtoView(protoViewDto.render);
+  return (<ReferenceCloneableTemplate>pv.cloneableTemplate).templateRoot;
 }
 
 class MockStepFactory extends CompileStepFactory {

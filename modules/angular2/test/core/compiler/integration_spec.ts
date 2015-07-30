@@ -1390,6 +1390,28 @@ export function main() {
       });
     }
 
+    describe('different proto view storages', () => {
+      function runWithMode(mode: string) {
+        return inject(
+            [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+              tcb.overrideView(MyComp,
+                               new viewAnn.View({template: `<!--${mode}--><div>{{ctxProp}}</div>`}))
+                  .createAsync(MyComp)
+                  .then((rootTC) => {
+                    rootTC.componentInstance.ctxProp = 'Hello World!';
+
+                    rootTC.detectChanges();
+                    expect(rootTC.nativeElement).toHaveText('Hello World!');
+                    async.done();
+                  });
+            });
+      }
+
+      it('should work with storing DOM nodes', runWithMode('cache'));
+
+      it('should work with serializing the DOM nodes', runWithMode('nocache'));
+    });
+
     // Disabled until a solution is found, refs:
     // - https://github.com/angular/angular/issues/776
     // - https://github.com/angular/angular/commit/81f3f32

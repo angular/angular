@@ -77,6 +77,8 @@ export function stringifyElement(el): string {
     if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
       result += `</${tagName}>`;
     }
+  } else if (DOM.isCommentNode(el)) {
+    result += `<!--${DOM.nodeValue(el)}-->`;
   } else {
     result += DOM.getText(el);
   }

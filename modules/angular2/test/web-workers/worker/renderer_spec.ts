@@ -34,11 +34,12 @@ import {
   RenderViewWithFragmentsStore,
   WorkerRenderViewRef
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
-import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
+import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
 import {WebWorkerMain} from 'angular2/src/web-workers/ui/impl';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {MockMessageBus, MockMessageBusSink, MockMessageBusSource} from './worker_test_util';
+import {ReferenceCloneableTemplate} from 'angular2/src/render/dom/util';
 
 export function main() {
   function createBroker(workerSerializer: Serializer, uiSerializer: Serializer, tb: DomTestbed,
@@ -103,7 +104,7 @@ export function main() {
          compiler.compileHost(dirMetadata)
              .then((protoView) => {
                expect(DOM.tagName(DOM.firstChild(DOM.content(
-                                      resolveWebWorkerRef(protoView.render).rootElement)))
+                                      templateRoot(resolveWebWorkerRef(protoView.render)))))
                           .toLowerCase())
                    .toEqual('custom');
                expect(protoView).not.toBeNull();
@@ -295,6 +296,10 @@ class WorkerTestRootView extends TestRootView {
         ListWrapper.map(workerViewWithFragments.fragmentRefs,
                         (val) => { return uiRenderViewStore.retreive(val.refNumber); })));
   }
+}
+
+function templateRoot(pv: DomProtoView) {
+  return (<ReferenceCloneableTemplate>pv.cloneableTemplate).templateRoot;
 }
 
 function createSerializer(protoViewRefStore: RenderProtoViewRefStore,

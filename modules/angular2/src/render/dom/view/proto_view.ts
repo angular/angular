@@ -5,6 +5,8 @@ import {RenderProtoViewRef, ViewType, ViewEncapsulation} from '../../api';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
+import {prepareTemplateForClone, CloneableTemplate} from '../util';
+
 export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef): DomProtoView {
   return (<DomProtoViewRef>protoViewRef)._protoView;
 }
@@ -25,12 +27,12 @@ export class DomProtoView {
     var isSingleElementFragment = fragmentsRootNodeCount.length === 1 &&
                                   fragmentsRootNodeCount[0] === 1 &&
                                   DOM.isElementNode(DOM.firstChild(DOM.content(rootElement)));
-    return new DomProtoView(type, rootElement, viewEncapsulation, elementBinders, hostAttributes,
-                            rootTextNodeIndices, boundTextNodeCount, fragmentsRootNodeCount,
-                            isSingleElementFragment);
+    return new DomProtoView(type, prepareTemplateForClone(rootElement), viewEncapsulation,
+                            elementBinders, hostAttributes, rootTextNodeIndices, boundTextNodeCount,
+                            fragmentsRootNodeCount, isSingleElementFragment);
   }
 
-  constructor(public type: ViewType, public rootElement: Element,
+  constructor(public type: ViewType, public cloneableTemplate: CloneableTemplate,
               public encapsulation: ViewEncapsulation,
               public elementBinders: List<DomElementBinder>,
               public hostAttributes: Map<string, string>, public rootTextNodeIndices: number[],
