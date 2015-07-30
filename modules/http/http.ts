@@ -62,19 +62,26 @@ export {URLSearchParams} from './src/url_search_params';
  *
  */
 export const HTTP_BINDINGS: List<any> = [
-  bind(ConnectionBackend)
-      .toClass(XHRBackend),
+  // TODO(pascal): use factory type annotations once supported in DI
+  // issue: https://github.com/angular/angular/issues/3183
+  bind(Http)
+      .toFactory((xhrBackend, requestOptions) => { return new Http(xhrBackend, requestOptions);},
+                 [XHRBackend, RequestOptions]),
   BrowserXhr,
   bind(RequestOptions).toClass(BaseRequestOptions),
   bind(ResponseOptions).toClass(BaseResponseOptions),
-  Http
+  XHRBackend
 ];
 
 export const JSONP_BINDINGS: List<any> = [
-  bind(ConnectionBackend)
-      .toClass(JSONPBackend),
+  // TODO(pascal): use factory type annotations once supported in DI
+  // issue: https://github.com/angular/angular/issues/3183
+  bind(Jsonp)
+      .toFactory(
+          (jsonpBackend, requestOptions) => { return new Jsonp(jsonpBackend, requestOptions);},
+          [JSONPBackend, RequestOptions]),
   BrowserJsonp,
   bind(RequestOptions).toClass(BaseRequestOptions),
   bind(ResponseOptions).toClass(BaseResponseOptions),
-  Jsonp
+  JSONPBackend
 ];
