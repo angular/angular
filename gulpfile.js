@@ -556,7 +556,7 @@ function getBrowsersFromCLI() {
   return {
     browsersToRun: outputList.filter(function(item, pos, self) {return self.indexOf(item) == pos;}),
     isSauce: isSauce
-  }
+  };
 }
 
 gulp.task('test.unit.js', ['build.js.dev'], function (done) {
@@ -574,8 +574,13 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
   var browserConf = getBrowsersFromCLI();
   if (browserConf.isSauce) {
-    karma.server.start({configFile: __dirname + '/karma-js.conf.js',
-      singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000, reporters: ['dots'], browsers: browserConf.browsersToRun}, 
+    karma.server.start({
+        configFile: __dirname + '/karma-js.conf.js',
+        singleRun: true,
+        browserNoActivityTimeout: 240000,
+        captureTimeout: 120000,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun},
       function(err) {done(); process.exit(err ? 1 : 0)});
   } else {
     throw new Error('ERROR: no Saucelabs browsers provided, add them with the --browsers option');
@@ -727,14 +732,20 @@ gulp.task('test.transpiler.unittest', function(done) {
 });
 
 // -----------------
-// Pre/Post-test checks
+// Pre-test checks
 
 gulp.task('pre-test-checks', function(done) {
   runSequence('build/checkCircularDependencies', sequenceComplete(done));
 });
 
-gulp.task('post-test-checks', function(done) {
-  runSequence('lint', 'enforce-format', sequenceComplete(done));
+// -----------------
+// Checks which should fail the build, but should not block us running the tests.
+// This task is run in a separate travis worker, so these checks provide faster
+// feedback while allowing tests to execute.
+gulp.task('static-checks', ['!build.tools'], function(done) {
+  runSequence(
+    ['enforce-format', 'lint', 'test.typings'],
+    sequenceComplete(done));
 });
 
 

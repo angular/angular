@@ -15,4 +15,3 @@ fi
 ./node_modules/.bin/gulp pre-test-checks
 ./node_modules/.bin/gulp test.js --browsers=${KARMA_BROWSERS:-ChromeCanary}
 ${SCRIPT_DIR}/test_e2e_js.sh
-./node_modules/.bin/gulp post-test-checks

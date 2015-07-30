@@ -30,13 +30,14 @@ env:
   # GITHUB_TOKEN_ANGULAR
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
-    # Make slowest build on top, so that we don't hog VMs while waiting for others to complete.
+    # Order: slowest build on top, so that we don't hog VMs while waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable
     - MODE=dart DART_CHANNEL=dev
+    # Disabled until we can make it pass.
+    # - MODE=saucelabs DART_CHANNEL=dev
     - MODE=dart_experimental DART_CHANNEL=dev
     - MODE=js DART_CHANNEL=dev
-    # Dissabled until we can make it pass.
-    # - MODE=saucelabs DART_CHANNEL=dev
+    - MODE=lint DART_CHANNEL=dev
 
 matrix:
   allow_failures:
