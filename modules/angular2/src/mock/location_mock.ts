@@ -6,7 +6,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Location} from 'angular2/src/router/location';
 
 
-@proxy
+@proxy()
 @IMPLEMENTS(Location)
 export class SpyLocation extends SpyObject {
   urlChanges: List<string>;

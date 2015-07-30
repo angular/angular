@@ -161,7 +161,7 @@ export function main() {
   });
 }
 
-@proxy
+@proxy()
 @IMPLEMENTS(RouterOutlet)
 class DummyOutlet extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }

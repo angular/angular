@@ -117,7 +117,7 @@ export function main() {
   });
 }
 
-@proxy
+@proxy()
 @IMPLEMENTS(ChangeDetectorRef)
 class SpyChangeDetectorRef extends SpyObject {
   constructor() { super(ChangeDetectorRef); }

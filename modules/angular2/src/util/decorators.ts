@@ -49,6 +49,12 @@ export interface TypeDecorator {
    */
   <T extends Type>(type: T): T;
 
+  // Make TypeDecorator assignable to built-in ParameterDecorator type.
+  // ParameterDecorator is declared in lib.d.ts as a `declare type`
+  // so we cannot declare this interface as a subtype.
+  // see https://github.com/angular/angular/issues/3379#issuecomment-126169417
+  (target: Object, propertyKey: string | symbol, parameterIndex: number): void;
+
   /**
    * Storage for the accumulated annotations so far used by the DSL syntax.
    *
@@ -60,17 +66,6 @@ export interface TypeDecorator {
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
    */
   Class(obj: ClassDefinition): Type;
-}
-
-/**
- * An interface implemented by all Angular parameter decorators, which allows them to be used as ES7
- * decorators.
- */
-export interface ParameterDecorator {
-  /**
-   * Invoke as ES7 decorator.
-   */
-  (cls: Type, unusedKey: any, index: number): void;
 }
 
 function extractAnnotation(annotation: any): any {

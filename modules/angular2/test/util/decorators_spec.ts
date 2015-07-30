@@ -69,8 +69,8 @@ export function main() {
         var i0, i1;
         var MyClass =
             (<any>TestDecorator('test-works'))
-                .Class({
-                  extends: Class({
+                .Class(<any>{
+                  extends: Class(<any>{
                     constructor: function() {},
                     extendWorks: function() { return 'extend ' + this.arg; }
                   }),
@@ -121,7 +121,7 @@ export function main() {
         });
 
         it('should ensure that only Function|Arrays are supported', () => {
-          expect(() => { Class({constructor: function() {}, method: 'non_function'}); })
+          expect(() => { Class(<any>{constructor: function() {}, method: 'non_function'}); })
               .toThrowError(
                   "Only Function or Array is supported in Class definition for key 'method' is 'non_function'");
         });

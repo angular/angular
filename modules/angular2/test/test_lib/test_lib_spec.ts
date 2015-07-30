@@ -21,7 +21,7 @@ class TestObj {
   someComplexFunc(a) { return a; }
 }
 
-@proxy
+@proxy()
 @IMPLEMENTS(TestObj)
 class SpyTestObj extends SpyObject {
   constructor() { super(TestObj); }
