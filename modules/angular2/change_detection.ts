@@ -15,6 +15,8 @@ export {
   ExpressionChangedAfterItHasBeenCheckedException,
   ChangeDetectionError,
 
+  ChangeDetector,
+  Locals,
   ChangeDetectorRef,
 
   WrappedValue,
