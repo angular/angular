@@ -34,7 +34,7 @@ p.location-badge.
     {% if doc.constructorDoc.parameters %}
     pre.prettyprint
       code.
-        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.parameters) | indent(4, true) | trim $}
+        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.parameters) | indent(8, false) | trim $}
     {% endif %}
     :markdown
 {$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') | trimBlankLines $}
@@ -49,7 +49,7 @@ p.location-badge.
     {% if member.parameters %}
     pre.prettyprint
       code.
-        {$ member.name $}{$ paramList(member.parameters) | indent(4, true) | trim $}{$ returnType(doc.returnType) $}
+        {$ member.name $}{$ paramList(member.parameters) | indent(8, false) | trim $}{$ returnType(doc.returnType) $}
     {% endif %}
     :markdown
 {$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') | trimBlankLines $}
