@@ -52,6 +52,26 @@ var _clearValues: {(m: Map<any, any>)} = (function() {
     };
   }
 })();
+// Safari doesn't implement MapIterator.next(), which is used is Traceur's polyfill of Array.from
+// TODO(mlaval): remove the work around once we have a working polyfill of Array.from
+var _arrayFromMap: {(m: Map<any, any>, getValues: boolean): List<any>} = (function() {
+  try {
+    if ((<any>(new Map()).values()).next) {
+      return function createArrayFromMap(m: Map<any, any>, getValues: boolean): List<any> {
+        return getValues ? (<any>Array).from(m.values()) : (<any>Array).from(m.keys());
+      };
+    }
+  } catch (e) {
+  }
+  return function createArrayFromMapWithForeach(m: Map<any, any>, getValues: boolean): List<any> {
+    var res = ListWrapper.createFixedSize(m.size), i = 0;
+    m.forEach((v, k) => {
+      ListWrapper.set(res, i, getValues ? v : k);
+      i++;
+    });
+    return res;
+  };
+})();
 
 export class MapWrapper {
   static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
@@ -74,8 +94,8 @@ export class MapWrapper {
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
   static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable<T>(m: T): T { return m; }
-  static keys<K>(m: Map<K, any>): List<K> { return (<any>Array).from(m.keys()); }
-  static values<V>(m: Map<any, V>): List<V> { return (<any>Array).from(m.values()); }
+  static keys<K>(m: Map<K, any>): List<K> { return _arrayFromMap(m, false); }
+  static values<V>(m: Map<any, V>): List<V> { return _arrayFromMap(m, true); }
 }
 
 /**
