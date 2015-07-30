@@ -31,10 +31,10 @@ void changeDetectorTests() {
   // TODO(tbosch): This is just a temporary test that makes sure that the dart server and
   // dart browser is in sync. Change this to "not contains notifyBinding"
   // when https://github.com/angular/angular/issues/3019 is solved.
-  it('shouldn always notifyBinding for template variables', () async {
+  it('shouldn always notifyDispatcher for template variables', () async {
     var inputPath = 'template_compiler/ng_for_files/hello.ng_deps.dart';
     var output = await (process(new AssetId('a', inputPath)));
-    expect(output).toContain('notifyOnBinding');
+    expect(output).toContain('notifyDispatcher');
   });
 
   it('should include directives mentioned in directive aliases.', () async {

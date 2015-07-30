@@ -1,11 +1,16 @@
-import {isPresent, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {DirectiveRecord} from './directive_record';
 import {ChangeDetector, ChangeDispatcher} from './interfaces';
-import {ChangeDetectionError} from './exceptions';
+import {
+  ChangeDetectionError,
+  ExpressionChangedAfterItHasBeenCheckedException,
+  DehydratedException
+} from './exceptions';
 import {ProtoRecord} from './proto_record';
+import {BindingRecord} from './binding_record';
 import {Locals} from './parser/locals';
 import {Pipes} from './pipes/pipes';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
@@ -26,12 +31,12 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // change detection will fail.
   alreadyChecked: any = false;
   context: T;
-  currentProto: ProtoRecord = null;
   directiveRecords: List<DirectiveRecord>;
   dispatcher: ChangeDispatcher;
   locals: Locals = null;
   mode: string = null;
   pipes: Pipes = null;
+  firstProtoInCurrentBinding: number;
   protos: List<ProtoRecord>;
 
   constructor(public id: string, dispatcher: ChangeDispatcher, protos: List<ProtoRecord>,
@@ -80,24 +85,25 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // implementation of `detectChangesInRecordsInternal` which does the work of detecting changes
   // and which this method will call.
   // This method expects that `detectChangesInRecordsInternal` will set the property
-  // `this.currentProto` to whichever [ProtoRecord] is currently being processed. This is to
+  // `this.firstProtoInCurrentBinding` to the selfIndex of the first proto record. This is to
   // facilitate error reporting.
   detectChangesInRecords(throwOnChange: boolean): void {
     if (!this.hydrated()) {
-      ChangeDetectionUtil.throwDehydrated();
+      this.throwDehydratedError();
     }
     try {
       this.detectChangesInRecordsInternal(throwOnChange);
     } catch (e) {
-      this.throwError(this.currentProto, e, e.stack);
+      this._throwError(e, e.stack);
     }
   }
 
   // Subclasses should override this method to perform any work necessary to detect and report
   // changes. For example, changes should be reported via `ChangeDetectionUtil.addChange`, lifecycle
   // methods should be called, etc.
-  // This implementation should also set `this.currentProto` to whichever [ProtoRecord] is
-  // currently being processed to facilitate error reporting. See {@link #detectChangesInRecords}.
+  // This implementation should also set `this.firstProtoInCurrentBinding` to the selfIndex of the
+  // first proto record
+  // to facilitate error reporting. See {@link #detectChangesInRecords}.
   detectChangesInRecordsInternal(throwOnChange: boolean): void {}
 
   // This method is not intended to be overridden. Subclasses should instead provide an
@@ -155,11 +161,40 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
-  throwError(proto: ProtoRecord, exception: any, stack: any): void {
+  protected notifyDispatcher(value: any): void {
+    this.dispatcher.notifyOnBinding(this._currentBinding(), value);
+  }
+
+  protected addChange(changes: StringMap<string, any>, oldValue: any,
+                      newValue: any): StringMap<string, any> {
+    if (isBlank(changes)) {
+      changes = {};
+    }
+    changes[this._currentBinding().propertyName] =
+        ChangeDetectionUtil.simpleChange(oldValue, newValue);
+    return changes;
+  }
+
+  private _throwError(exception: any, stack: any): void {
+    var proto = this._currentBindingProto();
     var c = this.dispatcher.getDebugContext(proto.bindingRecord.elementIndex, proto.directiveIndex);
     var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.directive, c.context,
                                               c.locals, c.injector, proto.expressionAsString) :
                                  null;
     throw new ChangeDetectionError(proto, exception, stack, context);
+  }
+
+  protected throwOnChangeError(oldValue: any, newValue: any): void {
+    var change = ChangeDetectionUtil.simpleChange(oldValue, newValue);
+    throw new ExpressionChangedAfterItHasBeenCheckedException(this._currentBindingProto(), change,
+                                                              null);
+  }
+
+  protected throwDehydratedError(): void { throw new DehydratedException(); }
+
+  private _currentBinding(): BindingRecord { return this._currentBindingProto().bindingRecord; }
+
+  private _currentBindingProto(): ProtoRecord {
+    return ChangeDetectionUtil.protoByIndex(this.protos, this.firstProtoInCurrentBinding);
   }
 }

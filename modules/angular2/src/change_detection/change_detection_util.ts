@@ -1,7 +1,6 @@
 import {CONST_EXPR, isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
-import {DehydratedException, ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 import {WrappedValue} from './pipes/pipe';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
@@ -126,12 +125,6 @@ export class ChangeDetectionUtil {
     }
   }
 
-  static throwOnChange(proto: ProtoRecord, change) {
-    throw new ExpressionChangedAfterItHasBeenCheckedException(proto, change, null);
-  }
-
-  static throwDehydrated() { throw new DehydratedException(); }
-
   static changeDetectionMode(strategy: string): string {
     return strategy == ON_PUSH ? CHECK_ONCE : CHECK_ALWAYS;
   }
@@ -140,15 +133,13 @@ export class ChangeDetectionUtil {
     return _simpleChange(previousValue, currentValue);
   }
 
-  static addChange(changes, propertyName: string, change): Map<any, any> {
-    if (isBlank(changes)) {
-      changes = {};
-    }
-    changes[propertyName] = change;
-    return changes;
-  }
-
   static isValueBlank(value: any): boolean { return isBlank(value); }
 
   static s(value: any): string { return isPresent(value) ? `${value}` : ''; }
+
+  static protoByIndex(protos: ProtoRecord[], selfIndex: number): ProtoRecord {
+    return selfIndex < 1 ?
+               null :
+               protos[selfIndex - 1];  // self index is shifted by one because of context
+  }
 }
