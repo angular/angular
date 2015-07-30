@@ -124,9 +124,29 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   _rewriteBootstrapCallToStatic(MethodInvocation node) {
     if (_rewriter._writeStaticInit) {
       buf.write(_rewriter._code.substring(_currentIndex, node.offset));
-      _writeStaticReflectorInitOnce();
+
+      var args = node.argumentList.arguments;
+      int numArgs = node.argumentList.arguments.length;
+      if (numArgs < 1 || numArgs > 2) {
+        logger.warning('`bootstrap` does not support $numArgs arguments. Found bootstrap${node.argumentList}. Transform may not succeed.');
+      }
+
+      var reflectorInit = _setupAdded
+          ? ''
+          : ', () { ${_getStaticReflectorInitBlock()} }';
+
       // rewrite `bootstrap(...)` to `bootstrapStatic(...)`
-      buf.write('bootstrapStatic${node.argumentList}');
+      buf.write('bootstrapStatic(');
+      buf.write(args[0]);
+      if (numArgs == 1) {
+        if (reflectorInit.isNotEmpty) {
+          buf.write(', null');
+        }
+      } else {
+        buf.write(', ${args[1]}');
+      }
+      buf.write(reflectorInit);
+      buf.write(')');
     } else {
       // leave it as is
       buf.write(_rewriter._code.substring(_currentIndex, node.end));
@@ -134,11 +154,8 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
     _currentIndex = node.end;
   }
 
-  _writeStaticReflectorInitOnce() {
-    if (!_setupAdded) {
-      buf.write(_rewriter._codegen.codegenSetupReflectionCall());
-      _setupAdded = true;
-    }
+  String _getStaticReflectorInitBlock() {
+    return _rewriter._codegen.codegenSetupReflectionCall();
   }
 
   _rewriteReflectionCapabilitiesImport(ImportDirective node) {
@@ -162,8 +179,9 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
       node = node.parent;
     }
     buf.write(_rewriter._code.substring(_currentIndex, node.offset));
-    if (_rewriter._writeStaticInit) {
-      _writeStaticReflectorInitOnce();
+    if (_rewriter._writeStaticInit && !_setupAdded) {
+      buf.write(_getStaticReflectorInitBlock());
+      _setupAdded = true;
     }
     switch (_rewriter._mirrorMode) {
       case MirrorMode.debug:
