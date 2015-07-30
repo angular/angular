@@ -26,6 +26,7 @@ interface BrowserNodeGlobal {
   Reflect: any;
   zone: Zone;
   getAngularTestability: Function;
+  getAllAngularTestabilities: Function;
   setTimeout: Function;
   clearTimeout: Function;
   setInterval: Function;

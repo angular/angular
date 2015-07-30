@@ -23,5 +23,9 @@ export class GetTestability {
       }
       return new PublicTestability(testability);
     };
+    global.getAllAngularTestabilities = function(): List<PublicTestability> {
+      var testabilities = registry.getAllTestabilities();
+      return testabilities.map((testability) => { return new PublicTestability(testability); });
+    };
   }
 }
