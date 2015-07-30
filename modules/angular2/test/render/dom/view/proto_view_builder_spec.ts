@@ -44,6 +44,15 @@ export function main() {
           expect(() => builder.build(new DomElementSchemaRegistry())).not.toThrow();
         });
 
+        it('should throw for unknown host properties even if another directive uses it', () => {
+          var binder = builder.bindElement(el('<div/>'));
+          binder.bindDirective(0).bindProperty('someDirProperty', emptyExpr(), 'someDirProperty');
+          binder.bindDirective(1).bindHostProperty('someDirProperty', emptyExpr());
+          expect(() => builder.build(new DomElementSchemaRegistry()))
+              .toThrowError(
+                  `Can't bind to 'someDirProperty' since it isn't a known property of the '<div>' element`);
+        });
+
         it('should allow unknown properties on custom elements', () => {
           var binder = builder.bindElement(el('<some-custom/>'));
           binder.bindProperty('unknownProperty', emptyExpr());

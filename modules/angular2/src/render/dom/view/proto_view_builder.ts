@@ -93,7 +93,7 @@ export class ProtoViewBuilder {
           propertyBindings: dbb.propertyBindings,
           eventBindings: dbb.eventBindings,
           hostPropertyBindings: buildElementPropertyBindings(schemaRegistry, ebb.element, true,
-                                                             dbb.hostPropertyBindings, new Set())
+                                                             dbb.hostPropertyBindings, null)
         });
       });
       var nestedProtoView =
@@ -336,9 +336,15 @@ function buildElementPropertyBindings(
     if (isValidElementPropertyBinding(schemaRegistry, protoElement, isNgComponent,
                                       propertyBinding)) {
       propertyBindings.push(propertyBinding);
-    } else if (!SetWrapper.has(directiveTempaltePropertyNames, propertyNameInTemplate)) {
-      throw new BaseException(
-          `Can't bind to '${propertyNameInTemplate}' since it isn't a known property of the '<${DOM.tagName(protoElement).toLowerCase()}>' element and there are no matching directives with a corresponding property`);
+    } else if (!isPresent(directiveTempaltePropertyNames) ||
+               !SetWrapper.has(directiveTempaltePropertyNames, propertyNameInTemplate)) {
+      // directiveTempaltePropertyNames is null for host property bindings
+      var exMsg =
+          `Can't bind to '${propertyNameInTemplate}' since it isn't a known property of the '<${DOM.tagName(protoElement).toLowerCase()}>' element`;
+      if (isPresent(directiveTempaltePropertyNames)) {
+        exMsg += ' and there are no matching directives with a corresponding property';
+      }
+      throw new BaseException(exMsg);
     }
   });
   return propertyBindings;
