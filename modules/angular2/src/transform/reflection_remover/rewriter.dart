@@ -128,7 +128,8 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
       var args = node.argumentList.arguments;
       int numArgs = node.argumentList.arguments.length;
       if (numArgs < 1 || numArgs > 2) {
-        logger.warning('`bootstrap` does not support $numArgs arguments. Found bootstrap${node.argumentList}. Transform may not succeed.');
+        logger.warning('`bootstrap` does not support $numArgs arguments. '
+            'Found bootstrap${node.argumentList}. Transform may not succeed.');
       }
 
       var reflectorInit = _setupAdded
@@ -136,17 +137,20 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
           : ', () { ${_getStaticReflectorInitBlock()} }';
 
       // rewrite `bootstrap(...)` to `bootstrapStatic(...)`
-      buf.write('bootstrapStatic(');
-      buf.write(args[0]);
+      buf.write('bootstrapStatic(${args[0]}');
       if (numArgs == 1) {
+        // bootstrap args are positional, so before we pass reflectorInit code
+        // we need to pass `null` for DI bindings.
         if (reflectorInit.isNotEmpty) {
           buf.write(', null');
         }
       } else {
+        // pass DI bindings
         buf.write(', ${args[1]}');
       }
       buf.write(reflectorInit);
       buf.write(')');
+      _setupAdded = true;
     } else {
       // leave it as is
       buf.write(_rewriter._code.substring(_currentIndex, node.end));
