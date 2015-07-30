@@ -1,12 +1,6 @@
 import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 import {Promise} from 'angular2/src/facade/async';
 
-// returns a promise that resolves in the given number of milliseconds
-function wait(time) {
-  var promise = new Promise((resolve, reject) => { setTimeout(resolve, time); });
-  return promise;
-}
-
 describe('WebWorkers', function() {
   afterEach(verifyNoBrowserErrors);
   var selector = "hello-app .greeting";
@@ -23,9 +17,10 @@ describe('WebWorkers', function() {
     browser.get(URL);
 
     browser.wait(protractor.until.elementLocated(by.css(selector)), 5000);
-    element.all(by.css(".changeButton")).first().click();
-    browser.wait(wait(500), 600);
-    expect(element.all(by.css(selector)).first().getText()).toEqual("howdy world!");
+    element(by.css("hello-app .changeButton")).click();
+    var elem = element(by.css(selector));
+    browser.wait(protractor.until.elementTextIs(elem, "howdy world!"), 5000);
+    expect(elem.getText()).toEqual("howdy world!");
   });
 
   it("should display correct key names", () => {
@@ -34,9 +29,9 @@ describe('WebWorkers', function() {
 
     var area = element.all(by.css(".sample-area")).first();
     expect(area.getText()).toEqual('(none)');
-    browser.wait(wait(500), 600);
 
     area.sendKeys('u');
+    browser.wait(protractor.until.elementTextIs(area, "U"), 5000);
     expect(area.getText()).toEqual("U");
   });
 });
