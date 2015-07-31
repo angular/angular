@@ -2,6 +2,7 @@ import {Injectable} from 'angular2/di';
 import {ChangeDetector} from 'angular2/src/change_detection/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
+import {wtfLeave, wtfCreateScope, ScopeEventFactory} from 'angular2/src/core/wtf';
 
 /**
  * Provides access to explicitly trigger change detection in an application.
@@ -31,6 +32,8 @@ import {isPresent, BaseException} from 'angular2/src/facade/lang';
  */
 @Injectable()
 export class LifeCycle {
+  static _scope_tick: ScopeEventFactory = wtfCreateScope('LifeCycle#tick()');
+
   _changeDetector: ChangeDetector;
   _enforceNoNewChanges: boolean;
   _runningTick: boolean = false;
@@ -71,6 +74,7 @@ export class LifeCycle {
       throw new BaseException("LifeCycle.tick is called recursively");
     }
 
+    var s = LifeCycle._scope_tick();
     try {
       this._runningTick = true;
       this._changeDetector.detectChanges();
@@ -79,6 +83,7 @@ export class LifeCycle {
       }
     } finally {
       this._runningTick = false;
+      wtfLeave(s);
     }
   }
 }
