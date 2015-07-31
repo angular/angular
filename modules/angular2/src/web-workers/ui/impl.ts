@@ -35,7 +35,9 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {
   serializeMouseEvent,
-  serializeKeyboardEvent
+  serializeKeyboardEvent,
+  serializeGenericEvent,
+  serializeEventWithValue
 } from 'angular2/src/web-workers/ui/event_serializer';
 
 /**
@@ -236,7 +238,8 @@ class EventDispatcher implements RenderEventDispatcher {
   dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
     var e = locals.get('$event');
     var serializedEvent;
-    switch (eventName) {
+    // TODO (jteplitz602): support custom events #3350
+    switch (e.type) {
       case "click":
       case "mouseup":
       case "mousedown":
@@ -254,6 +257,60 @@ class EventDispatcher implements RenderEventDispatcher {
       case "keypress":
       case "keyup":
         serializedEvent = serializeKeyboardEvent(e);
+        break;
+      case "input":
+      case "change":
+      case "blur":
+        serializedEvent = serializeEventWithValue(e);
+        break;
+      case "abort":
+      case "afterprint":
+      case "beforeprint":
+      case "cached":
+      case "canplay":
+      case "canplaythrough":
+      case "chargingchange":
+      case "chargingtimechange":
+      case "close":
+      case "dischargingtimechange":
+      case "DOMContentLoaded":
+      case "downloading":
+      case "durationchange":
+      case "emptied":
+      case "ended":
+      case "error":
+      case "fullscreenchange":
+      case "fullscreenerror":
+      case "invalid":
+      case "languagechange":
+      case "levelfchange":
+      case "loadeddata":
+      case "loadedmetadata":
+      case "obsolete":
+      case "offline":
+      case "online":
+      case "open":
+      case "orientatoinchange":
+      case "pause":
+      case "pointerlockchange":
+      case "pointerlockerror":
+      case "play":
+      case "playing":
+      case "ratechange":
+      case "readystatechange":
+      case "reset":
+      case "seeked":
+      case "seeking":
+      case "stalled":
+      case "submit":
+      case "success":
+      case "suspend":
+      case "timeupdate":
+      case "updateready":
+      case "visibilitychange":
+      case "volumechange":
+      case "waiting":
+        serializedEvent = serializeGenericEvent(e);
         break;
       default:
         throw new BaseException(eventName + " not supported on WebWorkers");
