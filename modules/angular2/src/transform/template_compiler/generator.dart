@@ -13,6 +13,7 @@ import 'package:angular2/src/render/dom/compiler/style_url_resolver.dart';
 import 'package:angular2/src/render/dom/compiler/view_loader.dart';
 import 'package:angular2/src/render/dom/schema/element_schema_registry.dart';
 import 'package:angular2/src/render/dom/schema/dom_element_schema_registry.dart';
+import 'package:angular2/src/render/dom/template_cloner.dart';
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
@@ -35,8 +36,11 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
     {bool generateRegistrations: true,
     bool generateChangeDetectors: true}) async {
   var viewDefResults = await createViewDefinitions(reader, entryPoint);
+  // Note: TemplateCloner(-1) never serializes Nodes into strings.
+  // we might want to change this to TemplateCloner(0) to force the serialization
+  // later when the transformer also stores the proto view template.
   var extractor = new _TemplateExtractor(
-      new DomElementSchemaRegistry(), new XhrImpl(reader, entryPoint));
+      new DomElementSchemaRegistry(), new TemplateCloner(-1), new XhrImpl(reader, entryPoint));
 
   var registrations = new reg.Codegen();
   var changeDetectorClasses = new change.Codegen();
@@ -87,8 +91,9 @@ class _TemplateExtractor {
   final CompileStepFactory _factory;
   ViewLoader _loader;
   ElementSchemaRegistry _schemaRegistry;
+  TemplateCloner _templateCloner;
 
-  _TemplateExtractor(ElementSchemaRegistry schemaRegistry, XHR xhr)
+  _TemplateExtractor(ElementSchemaRegistry schemaRegistry, TemplateCloner templateCloner, XHR xhr)
       : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
@@ -96,6 +101,7 @@ class _TemplateExtractor {
 
     _loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
     _schemaRegistry = schemaRegistry;
+    _templateCloner = templateCloner;
   }
 
   Future<_ExtractResult> extractTemplates(ViewDefinition viewDef) async {
@@ -117,7 +123,7 @@ class _TemplateExtractor {
         DOM.createTemplate(templateAndStyles.template), ViewType.COMPONENT,
         viewDef);
     var protoViewDto =
-        compileElements[0].inheritedProtoView.build(_schemaRegistry);
+        compileElements[0].inheritedProtoView.build(_schemaRegistry, _templateCloner);
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 

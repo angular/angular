@@ -22,6 +22,7 @@ import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {DomElementBinder} from 'angular2/src/render/dom/view/element_binder';
 import {DomView} from 'angular2/src/render/dom/view/view';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
 
 export function main() {
   describe('DomView', () => {
@@ -30,7 +31,8 @@ export function main() {
         binders = [];
       }
       var rootEl = DOM.createTemplate('<div></div>');
-      return DomProtoView.create(null, <Element>rootEl, null, [1], [], binders, null);
+      return DomProtoView.create(new TemplateCloner(-1), null, <Element>rootEl, null, [1], [],
+                                 binders, null);
     }
 
     function createElementBinder() { return new DomElementBinder({textNodeIndices: []}); }

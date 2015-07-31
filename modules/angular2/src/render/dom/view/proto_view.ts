@@ -5,7 +5,7 @@ import {RenderProtoViewRef, ViewType, ViewEncapsulation} from '../../api';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {prepareTemplateForClone, CloneableTemplate} from '../util';
+import {TemplateCloner} from '../template_cloner';
 
 export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef): DomProtoView {
   return (<DomProtoViewRef>protoViewRef)._protoView;
@@ -16,9 +16,9 @@ export class DomProtoViewRef extends RenderProtoViewRef {
 }
 
 export class DomProtoView {
-  static create(type: ViewType, rootElement: Element, viewEncapsulation: ViewEncapsulation,
-                fragmentsRootNodeCount: number[], rootTextNodeIndices: number[],
-                elementBinders: List<DomElementBinder>,
+  static create(templateCloner: TemplateCloner, type: ViewType, rootElement: Element,
+                viewEncapsulation: ViewEncapsulation, fragmentsRootNodeCount: number[],
+                rootTextNodeIndices: number[], elementBinders: List<DomElementBinder>,
                 hostAttributes: Map<string, string>): DomProtoView {
     var boundTextNodeCount = rootTextNodeIndices.length;
     for (var i = 0; i < elementBinders.length; i++) {
@@ -27,12 +27,12 @@ export class DomProtoView {
     var isSingleElementFragment = fragmentsRootNodeCount.length === 1 &&
                                   fragmentsRootNodeCount[0] === 1 &&
                                   DOM.isElementNode(DOM.firstChild(DOM.content(rootElement)));
-    return new DomProtoView(type, prepareTemplateForClone(rootElement), viewEncapsulation,
+    return new DomProtoView(type, templateCloner.prepareForClone(rootElement), viewEncapsulation,
                             elementBinders, hostAttributes, rootTextNodeIndices, boundTextNodeCount,
                             fragmentsRootNodeCount, isSingleElementFragment);
   }
-
-  constructor(public type: ViewType, public cloneableTemplate: CloneableTemplate,
+  // Note: fragments are separated by a comment node that is not counted in fragmentsRootNodeCount!
+  constructor(public type: ViewType, public cloneableTemplate: Element | string,
               public encapsulation: ViewEncapsulation,
               public elementBinders: List<DomElementBinder>,
               public hostAttributes: Map<string, string>, public rootTextNodeIndices: number[],

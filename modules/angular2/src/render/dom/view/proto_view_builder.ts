@@ -21,6 +21,7 @@ import {
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder, Event, HostAction} from './element_binder';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
+import {TemplateCloner} from '../template_cloner';
 
 import * as api from '../../api';
 
@@ -69,7 +70,7 @@ export class ProtoViewBuilder {
 
   setHostAttribute(name: string, value: string) { this.hostAttributes.set(name, value); }
 
-  build(schemaRegistry: ElementSchemaRegistry): api.ProtoViewDto {
+  build(schemaRegistry: ElementSchemaRegistry, templateCloner: TemplateCloner): api.ProtoViewDto {
     var domElementBinders = [];
 
     var apiElementBinders = [];
@@ -96,8 +97,9 @@ export class ProtoViewBuilder {
                                                              dbb.hostPropertyBindings, null)
         });
       });
-      var nestedProtoView =
-          isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build(schemaRegistry) : null;
+      var nestedProtoView = isPresent(ebb.nestedProtoView) ?
+                                ebb.nestedProtoView.build(schemaRegistry, templateCloner) :
+                                null;
       if (isPresent(nestedProtoView)) {
         transitiveNgContentCount += nestedProtoView.transitiveNgContentCount;
       }
@@ -131,9 +133,9 @@ export class ProtoViewBuilder {
     });
     var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
     return new api.ProtoViewDto({
-      render: new DomProtoViewRef(
-          DomProtoView.create(this.type, this.rootElement, this.viewEncapsulation, [rootNodeCount],
-                              rootTextNodeIndices, domElementBinders, this.hostAttributes)),
+      render: new DomProtoViewRef(DomProtoView.create(
+          templateCloner, this.type, this.rootElement, this.viewEncapsulation, [rootNodeCount],
+          rootTextNodeIndices, domElementBinders, this.hostAttributes)),
       type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings,
