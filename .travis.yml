@@ -106,7 +106,6 @@ deploy:
     # create a "subdirectory" for each commit
     upload-dir: $TRAVIS_COMMIT/dart_stable
     on:
-      branch: master
       repo: angular/angular
       condition: "$MODE = dart && $DART_CHANNEL = stable"
   - provider: gcs
@@ -119,6 +118,5 @@ deploy:
     local-dir: deploy
     upload-dir: $TRAVIS_COMMIT/js
     on:
-      branch: master
       repo: angular/angular
       condition: "$MODE = js"
