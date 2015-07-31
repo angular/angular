@@ -24,7 +24,12 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {ViewLoader, DefaultDomCompiler, SharedStylesHost} from 'angular2/src/render/render';
+import {
+  ViewLoader,
+  DefaultDomCompiler,
+  SharedStylesHost,
+  TemplateCloner
+} from 'angular2/src/render/render';
 import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
 
 export function main() {
@@ -38,9 +43,9 @@ export function main() {
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
   var urlResolver = new UrlResolver();
   var appRootUrl = new AppRootUrl("");
-  var renderCompiler =
-      new DefaultDomCompiler(new DomElementSchemaRegistry(), new Parser(new Lexer()),
-                             new ViewLoader(null, null, null), new SharedStylesHost(), 'a');
+  var renderCompiler = new DefaultDomCompiler(
+      new DomElementSchemaRegistry(), new TemplateCloner(-1), new Parser(new Lexer()),
+      new ViewLoader(null, null, null), new SharedStylesHost(), 'a');
   var compiler =
       new Compiler(reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver,
                    renderCompiler, new ProtoViewFactory(new DynamicChangeDetection()), appRootUrl);

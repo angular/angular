@@ -18,6 +18,12 @@ export const APP_ID_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
 export var APP_ID_RANDOM_BINDING: Binding =
     bind(APP_ID_TOKEN).toFactory(() => `${randomChar()}${randomChar()}${randomChar()}`, []);
 
+/**
+ * Defines when a compiled template should be stored as a string
+ * rather than keeping its Nodes to preserve memory.
+ */
+export const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN: OpaqueToken =
+    CONST_EXPR(new OpaqueToken('MaxInMemoryElementsPerTemplate'));
 
 function randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));

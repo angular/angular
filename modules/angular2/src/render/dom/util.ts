@@ -3,6 +3,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {DomProtoView} from './view/proto_view';
 import {DomElementBinder} from './view/element_binder';
+import {TemplateCloner} from './template_cloner';
 
 export const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
 export const NG_BINDING_CLASS = 'ng-binding';
@@ -57,9 +58,9 @@ export class ClonedProtoView {
               public boundElements: Element[], public boundTextNodes: Node[]) {}
 }
 
-export function cloneAndQueryProtoView(pv: DomProtoView, importIntoDocument: boolean):
-    ClonedProtoView {
-  var templateContent = pv.cloneableTemplate.clone(importIntoDocument);
+export function cloneAndQueryProtoView(templateCloner: TemplateCloner, pv: DomProtoView,
+                                       importIntoDocument: boolean): ClonedProtoView {
+  var templateContent = templateCloner.cloneContent(pv.cloneableTemplate, importIntoDocument);
 
   var boundElements = queryBoundElements(templateContent, pv.isSingleElementFragment);
   var boundTextNodes = queryBoundTextNodes(templateContent, pv.rootTextNodeIndices, boundElements,
@@ -77,6 +78,10 @@ function queryFragments(templateContent: Node, fragmentsRootNodeCount: number[])
   for (var fragmentIndex = 0; fragmentIndex < fragments.length; fragmentIndex++) {
     var fragment = ListWrapper.createFixedSize(fragmentsRootNodeCount[fragmentIndex]);
     fragments[fragmentIndex] = fragment;
+    // Note: the 2nd, 3rd, ... fragments are separated by each other via a '|'
+    if (fragmentIndex >= 1) {
+      childNode = DOM.nextSibling(childNode);
+    }
     for (var i = 0; i < fragment.length; i++) {
       fragment[i] = childNode;
       childNode = DOM.nextSibling(childNode);
@@ -140,46 +145,4 @@ export function prependAll(parentNode: Node, nodes: Node[]) {
     }
     lastInsertedNode = node;
   });
-}
-
-export interface CloneableTemplate { clone(importIntoDoc: boolean): Node; }
-
-export class SerializedCloneableTemplate implements CloneableTemplate {
-  templateString: string;
-  constructor(templateRoot: Element) { this.templateString = DOM.getInnerHTML(templateRoot); }
-  clone(importIntoDoc: boolean): Node {
-    var result = DOM.content(DOM.createTemplate(this.templateString));
-    if (importIntoDoc) {
-      result = DOM.adoptNode(result);
-    }
-    return result;
-  }
-}
-
-export class ReferenceCloneableTemplate implements CloneableTemplate {
-  constructor(public templateRoot: Element) {}
-  clone(importIntoDoc: boolean): Node {
-    if (importIntoDoc) {
-      return DOM.importIntoDoc(DOM.content(this.templateRoot));
-    } else {
-      return DOM.clone(DOM.content(this.templateRoot));
-    }
-  }
-}
-
-export function prepareTemplateForClone(templateRoot: Element): CloneableTemplate {
-  var root = DOM.content(templateRoot);
-  var elementCount = DOM.querySelectorAll(root, '*').length;
-  var firstChild = DOM.firstChild(root);
-  var forceSerialize =
-      isPresent(firstChild) && DOM.isCommentNode(firstChild) ? DOM.nodeValue(firstChild) : null;
-  if (forceSerialize == 'nocache') {
-    return new SerializedCloneableTemplate(templateRoot);
-  } else if (forceSerialize == 'cache') {
-    return new ReferenceCloneableTemplate(templateRoot);
-  } else if (elementCount > MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE) {
-    return new SerializedCloneableTemplate(templateRoot);
-  } else {
-    return new ReferenceCloneableTemplate(templateRoot);
-  }
 }

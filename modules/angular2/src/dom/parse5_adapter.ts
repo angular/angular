@@ -77,7 +77,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return res;
   }
   elementMatches(node, selector: string, matcher = null): boolean {
-    if (!selector || selector === '*') {
+    if (this.isElementNode(node) && selector === '*') {
       return true;
     }
     var result = false;

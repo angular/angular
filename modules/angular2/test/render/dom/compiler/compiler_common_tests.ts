@@ -31,10 +31,9 @@ import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/vi
 
 import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {SharedStylesHost} from 'angular2/src/render/dom/view/shared_styles_host';
+import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
 
 import {MockStep} from './pipeline_spec';
-
-import {ReferenceCloneableTemplate} from 'angular2/src/render/dom/util';
 
 export function runCompilerCommonTests() {
   describe('DomCompiler', function() {
@@ -51,8 +50,8 @@ export function runCompilerCommonTests() {
       var tplLoader = new FakeViewLoader(urlData);
       mockStepFactory =
           new MockStepFactory([new MockStep(processElementClosure, processStyleClosure)]);
-      return new DomCompiler(new ElementSchemaRegistry(), mockStepFactory, tplLoader,
-                             sharedStylesHost);
+      return new DomCompiler(new ElementSchemaRegistry(), new TemplateCloner(-1), mockStepFactory,
+                             tplLoader, sharedStylesHost);
     }
 
     describe('compile', () => {
@@ -255,9 +254,9 @@ export function runCompilerCommonTests() {
   });
 }
 
-function templateRoot(protoViewDto: ProtoViewDto) {
+function templateRoot(protoViewDto: ProtoViewDto): Element {
   var pv = resolveInternalDomProtoView(protoViewDto.render);
-  return (<ReferenceCloneableTemplate>pv.cloneableTemplate).templateRoot;
+  return (<Element>pv.cloneableTemplate);
 }
 
 class MockStepFactory extends CompileStepFactory {
