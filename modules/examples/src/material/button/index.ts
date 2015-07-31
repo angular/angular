@@ -4,8 +4,6 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
 
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-
 @Component({selector: 'demo-app'})
 @View({templateUrl: './demo_app.html', directives: [MdButton, MdAnchor, NgFor]})
 class DemoApp {

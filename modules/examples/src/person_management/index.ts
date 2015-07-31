@@ -16,7 +16,7 @@ import {Injectable} from 'angular2/di';
 
 import {formDirectives} from 'angular2/forms';
 
-import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 
 /**

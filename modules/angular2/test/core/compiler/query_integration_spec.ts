@@ -19,7 +19,6 @@ import {QueryList} from 'angular2/core';
 import {Query, ViewQuery, Component, Directive, View} from 'angular2/annotations';
 
 import {NgIf, NgFor} from 'angular2/angular2';
-import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 

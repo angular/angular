@@ -18,7 +18,7 @@ import {
   By
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS, print} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {bind, Component, View} from 'angular2/angular2';
 

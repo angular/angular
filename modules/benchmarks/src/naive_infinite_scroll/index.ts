@@ -1,5 +1,3 @@
-import {MapWrapper} from 'angular2/src/facade/collection';
-
 import {bootstrap} from 'angular2/bootstrap';
 
 import {App} from './app';
