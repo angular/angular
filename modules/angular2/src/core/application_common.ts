@@ -22,7 +22,11 @@ import {
   JitChangeDetection,
   PreGeneratedChangeDetection,
   Pipes,
-  defaultPipes
+  defaultPipes,
+  IterableDiffers,
+  defaultIterableDiffers,
+  KeyValueDiffers,
+  defaultKeyValueDiffers
 } from 'angular2/src/change_detection/change_detection';
 import {ExceptionHandler} from './exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
@@ -134,6 +138,8 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     CompilerCache,
     ViewResolver,
     bind(Pipes).toValue(defaultPipes),
+    bind(IterableDiffers).toValue(defaultIterableDiffers),
+    bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(bestChangeDetection),
     ViewLoader,
     DirectiveResolver,

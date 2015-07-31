@@ -6,64 +6,64 @@ import 'package:angular2/src/directives/observable_list_diff.dart';
 
 main() {
   describe('ObservableListDiff', () {
-    var pipeFactory, changeDetectorRef;
+    var factory, changeDetectorRef;
 
     beforeEach(() {
-      pipeFactory = const ObservableListDiffFactory();
+      factory = const ObservableListDiffFactory();
       changeDetectorRef = new SpyChangeDetectorRef();
     });
 
     describe("supports", () {
       it("should be true for ObservableList", () {
-        expect(pipeFactory.supports(new ObservableList())).toBe(true);
+        expect(factory.supports(new ObservableList())).toBe(true);
       });
 
       it("should be false otherwise", () {
-        expect(pipeFactory.supports([1, 2, 3])).toBe(false);
+        expect(factory.supports([1, 2, 3])).toBe(false);
       });
     });
 
-    it("should return the wrapped value to trigger change detection on first invocation of transform",
+    it("should return itself when called the first time",
         () {
-      final pipe = pipeFactory.create(changeDetectorRef);
+      final d = factory.create(changeDetectorRef);
       final c = new ObservableList.from([1, 2]);
-      expect(pipe.transform(c, []).wrapped).toBe(pipe);
+      expect(d.diff(c)).toBe(d);
     });
 
     it("should return itself when no changes between the calls", () {
-      final pipe = pipeFactory.create(changeDetectorRef);
+      final d = factory.create(changeDetectorRef);
 
       final c = new ObservableList.from([1, 2]);
 
-      pipe.transform(c, []);
+      d.diff(c);
 
-      expect(pipe.transform(c, [])).toBe(pipe);
+      expect(d.diff(c)).toBe(d);
     });
 
-    it("should return the wrapped value once a change has been trigger",
+    it("should return the wrapped value once a change has been triggered",
         fakeAsync(() {
-      final pipe = pipeFactory.create(changeDetectorRef);
+      final d = factory.create(changeDetectorRef);
 
       final c = new ObservableList.from([1, 2]);
 
-      pipe.transform(c, []);
+      d.diff(c);
 
       c.add(3);
 
       // same value, because we have not detected the change yet
-      expect(pipe.transform(c, [])).toBe(pipe);
+      expect(d.diff(c)).toBe(d);
 
       // now we detect the change
       flushMicrotasks();
-      expect(pipe.transform(c, []).wrapped).toBe(pipe);
+      expect(d.diff(c)).toBe(d);
     }));
 
     it("should request a change detection check upon receiving a change",
         fakeAsync(() {
-      final pipe = pipeFactory.create(changeDetectorRef);
+      final d = factory.create(changeDetectorRef);
 
       final c = new ObservableList.from([1, 2]);
-      pipe.transform(c, []);
+      d.diff(c);
 
       c.add(3);
       flushMicrotasks();
@@ -72,28 +72,28 @@ main() {
     }));
 
     it("should return the wrapped value after changing a collection", () {
-      final pipe = pipeFactory.create(changeDetectorRef);
+      final d = factory.create(changeDetectorRef);
 
       final c1 = new ObservableList.from([1, 2]);
       final c2 = new ObservableList.from([3, 4]);
 
-      expect(pipe.transform(c1, []).wrapped).toBe(pipe);
-      expect(pipe.transform(c2, []).wrapped).toBe(pipe);
+      expect(d.diff(c1)).toBe(d);
+      expect(d.diff(c2)).toBe(d);
     });
 
     it("should not unbsubscribe from the stream of chagnes after changing a collection",
         () {
-      final pipe = pipeFactory.create(changeDetectorRef);
+      final d = factory.create(changeDetectorRef);
 
       final c1 = new ObservableList.from([1, 2]);
-      expect(pipe.transform(c1, []).wrapped).toBe(pipe);
+      expect(d.diff(c1)).toBe(d);
 
       final c2 = new ObservableList.from([3, 4]);
-      expect(pipe.transform(c2, []).wrapped).toBe(pipe);
+      expect(d.diff(c2)).toBe(d);
 
       // pushing into the first collection has no effect, and we do not see the change
       c1.add(3);
-      expect(pipe.transform(c2, [])).toBe(pipe);
+      expect(d.diff(c2)).toBe(d);
     });
   });
 }

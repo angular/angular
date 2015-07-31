@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST, BaseException} from 'angular2/src/facade/lang';
 import {
   isListLikeIterable,
   iterateListLike,
@@ -15,17 +15,16 @@ import {
   isArray
 } from 'angular2/src/facade/lang';
 
-import {WrappedValue, Pipe, BasePipe, PipeFactory} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
+import {IterableDiffer, IterableDifferFactory} from '../differs/iterable_differs';
 
 @CONST()
-export class IterableChangesFactory implements PipeFactory {
-  supports(obj: any): boolean { return IterableChanges.supportsObj(obj); }
-
-  create(cdRef: ChangeDetectorRef): Pipe { return new IterableChanges(); }
+export class DefaultIterableDifferFactory implements IterableDifferFactory {
+  supports(obj: Object): boolean { return isListLikeIterable(obj); }
+  create(cdRef: ChangeDetectorRef): any { return new DefaultIterableDiffer(); }
 }
 
-export class IterableChanges extends BasePipe {
+export class DefaultIterableDiffer implements IterableDiffer {
   private _collection = null;
   private _length: int = null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
@@ -41,12 +40,6 @@ export class IterableChanges extends BasePipe {
   private _movesTail: CollectionChangeRecord = null;
   private _removalsHead: CollectionChangeRecord = null;
   private _removalsTail: CollectionChangeRecord = null;
-
-  constructor() { super(); }
-
-  static supportsObj(obj: Object): boolean { return isListLikeIterable(obj); }
-
-  supports(obj: Object): boolean { return IterableChanges.supportsObj(obj); }
 
   get collection() { return this._collection; }
 
@@ -87,13 +80,20 @@ export class IterableChanges extends BasePipe {
     }
   }
 
-  transform(collection: any, args: List<any> = null): any {
+  diff(collection: any): DefaultIterableDiffer {
+    if (isBlank(collection)) collection = [];
+    if (!isListLikeIterable(collection)) {
+      throw new BaseException(`Error trying to diff '${collection}'`);
+    }
+
     if (this.check(collection)) {
-      return WrappedValue.wrap(this);
+      return this;
     } else {
       return null;
     }
   }
+
+  onDestroy() {}
 
   // todo(vicb): optim for UnmodifiableListView (frozen arrays)
   check(collection: any): boolean {

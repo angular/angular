@@ -6,7 +6,7 @@ import 'package:angular2/di.dart';
 import 'package:angular2/test_lib.dart';
 import 'package:observe/observe.dart';
 import 'package:angular2/src/directives/observable_list_diff.dart';
-import 'package:angular2/src/change_detection/pipes/iterable_changes.dart';
+import 'package:angular2/src/change_detection/differs/default_iterable_differ.dart';
 
 class MockException implements Error {
   var message;
@@ -269,14 +269,12 @@ class OnChangeComponent implements OnChange {
     changeDetection: ON_PUSH,
     properties: const ['list'],
     bindings: const [
-  const Binding(Pipes,
-      toValue: const Pipes(const {
-    "iterableDiff": const [
+  const Binding(IterableDiffers,
+      toValue: const IterableDiffers(const [
       const ObservableListDiffFactory(),
-      const IterableChangesFactory(),
-      const NullPipeFactory()
+      const DefaultIterableDifferFactory()
     ]
-  }))
+  ))
 ])
 @View(
     template: '<span *ng-for="#item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',

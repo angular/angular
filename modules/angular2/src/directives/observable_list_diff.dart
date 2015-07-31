@@ -2,21 +2,16 @@ library angular2.directives.observable_list_iterable_diff;
 
 import 'package:observe/observe.dart' show ObservableList;
 import 'package:angular2/change_detection.dart';
-import 'package:angular2/src/change_detection/pipes/iterable_changes.dart';
+import 'package:angular2/src/change_detection/differs/default_iterable_differ.dart';
 import 'dart:async';
 
-class ObservableListDiff extends IterableChanges {
+class ObservableListDiff extends DefaultIterableDiffer {
   ChangeDetectorRef _ref;
   ObservableListDiff(this._ref);
 
   bool _updated = true;
   ObservableList _collection;
   StreamSubscription _subscription;
-
-  bool supports(obj) {
-    if (obj is ObservableList) return true;
-    throw "Cannot change the type of a collection";
-  }
 
   onDestroy() {
     if (this._subscription != null) {
@@ -26,10 +21,14 @@ class ObservableListDiff extends IterableChanges {
     }
   }
 
-  dynamic transform(ObservableList collection, [List args]) {
+  dynamic diff(ObservableList collection) {
+    if (collection is! ObservableList) {
+      throw "Cannot change the type of a collection";
+    }
+
     // A new collection instance is passed in.
     // - We need to set up a listener.
-    // - We need to transform collection.
+    // - We need to diff collection.
     if (!identical(_collection, collection)) {
       _collection = collection;
 
@@ -39,14 +38,14 @@ class ObservableListDiff extends IterableChanges {
         _ref.requestCheck();
       });
       _updated = false;
-      return super.transform(collection, args);
+      return super.diff(collection);
 
       // An update has been registered since the last change detection check.
       // - We reset the flag.
       // - We diff the collection.
     } else if (_updated) {
       _updated = false;
-      return super.transform(collection, args);
+      return super.diff(collection);
 
       // No updates has been registered.
       // Returning this tells change detection that object has not change,
@@ -57,10 +56,10 @@ class ObservableListDiff extends IterableChanges {
   }
 }
 
-class ObservableListDiffFactory implements PipeFactory {
+class ObservableListDiffFactory implements IterableDifferFactory {
   const ObservableListDiffFactory();
   bool supports(obj) => obj is ObservableList;
-  Pipe create(ChangeDetectorRef cdRef) {
+  IterableDiffer create(ChangeDetectorRef cdRef) {
     return new ObservableListDiff(cdRef);
   }
 }

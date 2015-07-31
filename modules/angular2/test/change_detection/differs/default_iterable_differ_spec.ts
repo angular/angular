@@ -1,5 +1,8 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
-import {IterableChanges} from 'angular2/src/change_detection/pipes/iterable_changes';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  DefaultIterableDiffer,
+  DefaultIterableDifferFactory
+} from 'angular2/src/change_detection/differs/default_iterable_differ';
 
 import {NumberWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -9,36 +12,35 @@ import {iterableChangesAsString} from '../util';
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
 export function main() {
-  describe('collection_changes', function() {
-    describe('CollectionChanges', function() {
-      var changes;
+  describe('iterable differ', function() {
+    describe('DefaultIterableDiffer', function() {
+      var differ;
 
-      beforeEach(() => { changes = new IterableChanges(); });
-
-      afterEach(() => { changes = null; });
+      beforeEach(() => { differ = new DefaultIterableDiffer(); });
 
       it('should support list and iterables', () => {
-        expect(IterableChanges.supportsObj([])).toBeTruthy();
-        expect(IterableChanges.supportsObj(new TestIterable())).toBeTruthy();
-        expect(IterableChanges.supportsObj(new Map())).toBeFalsy();
-        expect(IterableChanges.supportsObj(null)).toBeFalsy();
+        var f = new DefaultIterableDifferFactory();
+        expect(f.supports([])).toBeTruthy();
+        expect(f.supports(new TestIterable())).toBeTruthy();
+        expect(f.supports(new Map())).toBeFalsy();
+        expect(f.supports(null)).toBeFalsy();
       });
 
       it('should support iterables', () => {
         let l = new TestIterable();
 
-        changes.check(l);
-        expect(changes.toString()).toEqual(iterableChangesAsString({collection: []}));
+        differ.check(l);
+        expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
 
         l.list = [1];
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(
                 iterableChangesAsString({collection: ['1[null->0]'], additions: ['1[null->0]']}));
 
         l.list = [2, 1];
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['2[null->0]', '1[0->1]'],
               previous: ['1[0->1]'],
@@ -49,29 +51,29 @@ export function main() {
 
       it('should detect additions', () => {
         let l = [];
-        changes.check(l);
-        expect(changes.toString()).toEqual(iterableChangesAsString({collection: []}));
+        differ.check(l);
+        expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
 
         l.push('a');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(
                 iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
         l.push('b');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString(
                 {collection: ['a', 'b[null->1]'], previous: ['a'], additions: ['b[null->1]']}));
       });
 
       it('should support changing the reference', () => {
         let l = [0];
-        changes.check(l);
+        differ.check(l);
 
         l = [1, 0];
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['1[null->0]', '0[0->1]'],
               previous: ['0[0->1]'],
@@ -80,8 +82,8 @@ export function main() {
             }));
 
         l = [2, 1, 0];
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['2[null->0]', '1[0->1]', '0[1->2]'],
               previous: ['1[0->1]', '0[1->2]'],
@@ -92,13 +94,13 @@ export function main() {
 
       it('should handle swapping element', () => {
         let l = [1, 2];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.clear(l);
         l.push(2);
         l.push(1);
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['2[1->0]', '1[0->1]'],
               previous: ['1[0->1]', '2[1->0]'],
@@ -108,12 +110,12 @@ export function main() {
 
       it('should handle swapping element', () => {
         let l = ['a', 'b', 'c'];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.removeAt(l, 1);
         ListWrapper.insert(l, 0, 'b');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['b[1->0]', 'a[0->1]', 'c'],
               previous: ['a[0->1]', 'b[1->0]', 'c'],
@@ -122,8 +124,8 @@ export function main() {
 
         ListWrapper.removeAt(l, 1);
         l.push('a');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['b', 'c[2->1]', 'a[1->2]'],
               previous: ['b', 'a[1->2]', 'c[2->1]'],
@@ -133,24 +135,24 @@ export function main() {
 
       it('should detect changes in list', () => {
         let l = [];
-        changes.check(l);
+        differ.check(l);
 
         l.push('a');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(
                 iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
         l.push('b');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString(
                 {collection: ['a', 'b[null->1]'], previous: ['a'], additions: ['b[null->1]']}));
 
         l.push('c');
         l.push('d');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['a', 'b', 'c[null->2]', 'd[null->3]'],
               previous: ['a', 'b'],
@@ -158,8 +160,8 @@ export function main() {
             }));
 
         ListWrapper.removeAt(l, 2);
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['a', 'b', 'd[3->2]'],
               previous: ['a', 'b', 'c[2->null]', 'd[3->2]'],
@@ -172,8 +174,8 @@ export function main() {
         l.push('c');
         l.push('b');
         l.push('a');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['d[2->0]', 'c[null->1]', 'b[1->2]', 'a[0->3]'],
               previous: ['a[0->3]', 'b[1->2]', 'd[2->0]'],
@@ -184,32 +186,32 @@ export function main() {
 
       it('should test string by value rather than by reference (Dart)', () => {
         let l = ['a', 'boo'];
-        changes.check(l);
+        differ.check(l);
 
         var b = 'b';
         var oo = 'oo';
         ListWrapper.set(l, 1, b + oo);
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({collection: ['a', 'boo'], previous: ['a', 'boo']}));
       });
 
       it('should ignore [NaN] != [NaN] (JS)', () => {
         let l = [NumberWrapper.NaN];
-        changes.check(l);
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString(
                 {collection: [NumberWrapper.NaN], previous: [NumberWrapper.NaN]}));
       });
 
       it('should detect [NaN] moves', () => {
         let l = [NumberWrapper.NaN, NumberWrapper.NaN];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.insert<any>(l, 0, 'foo');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['foo[null->0]', 'NaN[0->1]', 'NaN[1->2]'],
               previous: ['NaN[0->1]', 'NaN[1->2]'],
@@ -220,11 +222,11 @@ export function main() {
 
       it('should remove and add same item', () => {
         let l = ['a', 'b', 'c'];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.removeAt(l, 1);
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['a', 'c[2->1]'],
               previous: ['a', 'b[1->null]', 'c[2->1]'],
@@ -233,8 +235,8 @@ export function main() {
             }));
 
         ListWrapper.insert(l, 1, 'b');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['a', 'b[null->1]', 'c[1->2]'],
               previous: ['a', 'c[1->2]'],
@@ -245,11 +247,11 @@ export function main() {
 
       it('should support duplicates', () => {
         let l = ['a', 'a', 'a', 'b', 'b'];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.removeAt(l, 0);
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['a', 'a', 'b[3->2]', 'b[4->3]'],
               previous: ['a', 'a', 'a[2->null]', 'b[3->2]', 'b[4->3]'],
@@ -260,11 +262,11 @@ export function main() {
 
       it('should support insertions/moves', () => {
         let l = ['a', 'a', 'b', 'b'];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.insert(l, 0, 'b');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['b[2->0]', 'a[0->1]', 'a[1->2]', 'b', 'b[null->4]'],
               previous: ['a[0->1]', 'a[1->2]', 'b[2->0]', 'b'],
@@ -275,19 +277,42 @@ export function main() {
 
       it('should not report unnecessary moves', () => {
         let l = ['a', 'b', 'c'];
-        changes.check(l);
+        differ.check(l);
 
         ListWrapper.clear(l);
         l.push('b');
         l.push('a');
         l.push('c');
-        changes.check(l);
-        expect(changes.toString())
+        differ.check(l);
+        expect(differ.toString())
             .toEqual(iterableChangesAsString({
               collection: ['b[1->0]', 'a[0->1]', 'c'],
               previous: ['a[0->1]', 'b[1->0]', 'c'],
               moves: ['b[1->0]', 'a[0->1]']
             }));
+      });
+
+      describe('diff', () => {
+        it('should return self when there is a change',
+           () => { expect(differ.diff(['a', 'b'])).toBe(differ); });
+
+        it('should return null when there is no change', () => {
+          differ.diff(['a', 'b']);
+          expect(differ.diff(['a', 'b'])).toEqual(null);
+        });
+
+        it('should treat null as an empty list', () => {
+          differ.diff(['a', 'b']);
+          expect(differ.diff(null).toString())
+              .toEqual(iterableChangesAsString({
+                previous: ['a[0->null]', 'b[1->null]'],
+                removals: ['a[0->null]', 'b[1->null]']
+              }));
+        });
+
+        it('should throw when given an invalid collection', () => {
+          expect(() => differ.diff("invalid")).toThrowErrorWith("Error trying to diff 'invalid'");
+        });
       });
     });
   });

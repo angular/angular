@@ -3,8 +3,10 @@ import {PregenProtoChangeDetector} from './pregen_proto_change_detector';
 import {DynamicProtoChangeDetector} from './proto_change_detector';
 import {PipeFactory, Pipe} from './pipes/pipe';
 import {Pipes} from './pipes/pipes';
-import {IterableChangesFactory} from './pipes/iterable_changes';
-import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
+import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs';
+import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
+import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
+import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
 import {ObservablePipeFactory} from './pipes/observable_pipe';
 import {PromisePipeFactory} from './pipes/promise_pipe';
 import {UpperCasePipe} from './pipes/uppercase_pipe';
@@ -52,6 +54,8 @@ export {DirectiveIndex, DirectiveRecord} from './directive_record';
 export {DynamicChangeDetector} from './dynamic_change_detector';
 export {ChangeDetectorRef} from './change_detector_ref';
 export {Pipes} from './pipes/pipes';
+export {IterableDiffers, IterableDiffer, IterableDifferFactory} from './differs/iterable_differs';
+export {KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory} from './differs/keyvalue_differs';
 export {WrappedValue, Pipe, PipeFactory, BasePipe} from './pipes/pipe';
 export {NullPipe, NullPipeFactory} from './pipes/null_pipe';
 
@@ -59,14 +63,14 @@ export {NullPipe, NullPipeFactory} from './pipes/null_pipe';
 /**
  * Structural diffing for `Object`s and `Map`s.
  */
-export const keyValDiff: List<PipeFactory> =
-    CONST_EXPR([CONST_EXPR(new KeyValueChangesFactory()), CONST_EXPR(new NullPipeFactory())]);
+export const keyValDiff: KeyValueDifferFactory[] =
+    CONST_EXPR([CONST_EXPR(new DefaultKeyValueDifferFactory())]);
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  */
-export const iterableDiff: List<PipeFactory> =
-    CONST_EXPR([CONST_EXPR(new IterableChangesFactory()), CONST_EXPR(new NullPipeFactory())]);
+export const iterableDiff: IterableDifferFactory[] =
+    CONST_EXPR([CONST_EXPR(new DefaultIterableDifferFactory())]);
 
 /**
  * Async binding to such types as Observable.
@@ -127,8 +131,6 @@ export const date: List<PipeFactory> =
 
 
 export const defaultPipes: Pipes = CONST_EXPR(new Pipes({
-  "iterableDiff": iterableDiff,
-  "keyValDiff": keyValDiff,
   "async": async,
   "uppercase": uppercase,
   "lowercase": lowercase,
@@ -139,6 +141,10 @@ export const defaultPipes: Pipes = CONST_EXPR(new Pipes({
   "currency": currency,
   "date": date
 }));
+
+export const defaultIterableDiffers = CONST_EXPR(new IterableDiffers(iterableDiff));
+
+export const defaultKeyValueDiffers = CONST_EXPR(new KeyValueDiffers(keyValDiff));
 
 /**
  * Map from {@link ChangeDetectorDefinition#id} to a factory method which takes a

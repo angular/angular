@@ -1,6 +1,6 @@
 import {Directive, LifecycleEvent} from 'angular2/annotations';
 import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
-import {ChangeDetectorRef, Pipe, Pipes} from 'angular2/change_detection';
+import {ChangeDetectorRef, IterableDiffer, IterableDiffers} from 'angular2/change_detection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -37,27 +37,26 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
     {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.onCheck]})
 export class NgFor {
   _ngForOf: any;
-  _pipe: Pipe;
+  private _differ: IterableDiffer;
 
   constructor(private viewContainer: ViewContainerRef, private templateRef: TemplateRef,
-              private pipes: Pipes, private cdr: ChangeDetectorRef) {}
+              private iterableDiffers: IterableDiffers, private cdr: ChangeDetectorRef) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;
-    this._pipe = this.pipes.get("iterableDiff", value, this.cdr, this._pipe);
+    if (isBlank(this._differ) && isPresent(value)) {
+      this._differ = this.iterableDiffers.find(value).create(this.cdr);
+    }
   }
 
   onCheck() {
-    var diff = this._pipe.transform(this._ngForOf, null);
-    if (isPresent(diff)) this._applyChanges(diff.wrapped);
+    if (isPresent(this._differ)) {
+      var changes = this._differ.diff(this._ngForOf);
+      if (isPresent(changes)) this._applyChanges(changes);
+    }
   }
 
   private _applyChanges(changes) {
-    if (isBlank(changes)) {
-      this.viewContainer.clear();
-      return;
-    }
-
     // TODO(rado): check if change detection can produce a change record that is
     // easier to consume than current.
     var recordViewTuples = [];

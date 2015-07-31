@@ -33,3 +33,8 @@ class SpyDependencyProvider extends SpyObject implements DependencyProvider {
 class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
+
+@proxy
+class SpyIterableDifferFactory extends SpyObject implements IterableDifferFactory {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}

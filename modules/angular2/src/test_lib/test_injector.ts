@@ -8,7 +8,11 @@ import {
   ChangeDetection,
   DynamicChangeDetection,
   Pipes,
-  defaultPipes
+  defaultPipes,
+  IterableDiffers,
+  defaultIterableDiffers,
+  KeyValueDiffers,
+  defaultKeyValueDiffers
 } from 'angular2/src/change_detection/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
@@ -119,8 +123,10 @@ function _getAppBindings() {
     CompilerCache,
     bind(ViewResolver).toClass(MockViewResolver),
     bind(Pipes).toValue(defaultPipes),
-    Log,
+    bind(IterableDiffers).toValue(defaultIterableDiffers),
+    bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(DynamicChangeDetection),
+    Log,
     ViewLoader,
     DynamicComponentLoader,
     DirectiveResolver,

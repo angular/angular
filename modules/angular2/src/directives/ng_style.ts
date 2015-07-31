@@ -1,9 +1,7 @@
 import {Directive, LifecycleEvent} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
-import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
-import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
-import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
-import {isPresent, print} from 'angular2/src/facade/lang';
+import {KeyValueDiffer, KeyValueDiffers} from 'angular2/change_detection';
+import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
 import {Renderer} from 'angular2/src/render/api';
 
 /**
@@ -33,27 +31,32 @@ import {Renderer} from 'angular2/src/render/api';
   properties: ['rawStyle: ng-style']
 })
 export class NgStyle {
-  _pipe: Pipe;
   _rawStyle;
+  _differ: KeyValueDiffer;
 
-  constructor(private _pipes: Pipes, private _ngEl: ElementRef, private _renderer: Renderer) {}
+  constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,
+              private _renderer: Renderer) {}
 
   set rawStyle(v) {
     this._rawStyle = v;
-    this._pipe = this._pipes.get('keyValDiff', this._rawStyle);
-  }
-
-  onCheck() {
-    var diff = this._pipe.transform(this._rawStyle, null);
-    if (isPresent(diff) && isPresent(diff.wrapped)) {
-      this._applyChanges(diff.wrapped);
+    if (isBlank(this._differ) && isPresent(v)) {
+      this._differ = this._differs.find(this._rawStyle).create(null);
     }
   }
 
-  private _applyChanges(diff: KeyValueChanges): void {
-    diff.forEachAddedItem((record) => { this._setStyle(record.key, record.currentValue); });
-    diff.forEachChangedItem((record) => { this._setStyle(record.key, record.currentValue); });
-    diff.forEachRemovedItem((record) => { this._setStyle(record.key, null); });
+  onCheck() {
+    if (isPresent(this._differ)) {
+      var changes = this._differ.diff(this._rawStyle);
+      if (isPresent(changes)) {
+        this._applyChanges(changes);
+      }
+    }
+  }
+
+  private _applyChanges(changes: any): void {
+    changes.forEachAddedItem((record) => { this._setStyle(record.key, record.currentValue); });
+    changes.forEachChangedItem((record) => { this._setStyle(record.key, record.currentValue); });
+    changes.forEachRemovedItem((record) => { this._setStyle(record.key, null); });
   }
 
   private _setStyle(name: string, val: string): void {

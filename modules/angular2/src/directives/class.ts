@@ -1,11 +1,13 @@
+import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/facade/lang';
 import {Directive, LifecycleEvent} from 'angular2/annotations';
 import {ElementRef} from 'angular2/core';
-import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
-import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
 import {Renderer} from 'angular2/src/render/api';
-import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
-import {IterableChanges} from 'angular2/src/change_detection/pipes/iterable_changes';
-import {isPresent, isString, StringWrapper} from 'angular2/src/facade/lang';
+import {
+  KeyValueDiffer,
+  IterableDiffer,
+  IterableDiffers,
+  KeyValueDiffers
+} from 'angular2/change_detection';
 import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
 /**
@@ -34,10 +36,12 @@ import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/fa
   properties: ['rawClass: class']
 })
 export class CSSClass {
-  _pipe: Pipe;
+  private _differ: any;
+  private _mode: string;
   _rawClass;
 
-  constructor(private _pipes: Pipes, private _ngEl: ElementRef, private _renderer: Renderer) {}
+  constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
+              private _ngEl: ElementRef, private _renderer: Renderer) {}
 
   set rawClass(v) {
     this._cleanupClasses(this._rawClass);
@@ -47,16 +51,26 @@ export class CSSClass {
     }
 
     this._rawClass = v;
-    this._pipe = this._pipes.get(isListLikeIterable(v) ? 'iterableDiff' : 'keyValDiff', v);
+    if (isPresent(v)) {
+      if (isListLikeIterable(v)) {
+        this._differ = this._iterableDiffers.find(v).create(null);
+        this._mode = 'iterable';
+      } else {
+        this._differ = this._keyValueDiffers.find(v).create(null);
+        this._mode = 'keyValue';
+      }
+    }
   }
 
   onCheck(): void {
-    var diff = this._pipe.transform(this._rawClass, null);
-    if (isPresent(diff) && isPresent(diff.wrapped)) {
-      if (diff.wrapped instanceof IterableChanges) {
-        this._applyArrayChanges(diff.wrapped);
-      } else {
-        this._applyObjectChanges(diff.wrapped);
+    if (isPresent(this._differ)) {
+      var changes = this._differ.diff(this._rawClass);
+      if (isPresent(changes)) {
+        if (this._mode == 'iterable') {
+          this._applyIterableChanges(changes);
+        } else {
+          this._applyKeyValueChanges(changes);
+        }
       }
     }
   }
@@ -75,19 +89,19 @@ export class CSSClass {
     }
   }
 
-  private _applyObjectChanges(diff: KeyValueChanges): void {
-    diff.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-    diff.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-    diff.forEachRemovedItem((record) => {
+  private _applyKeyValueChanges(changes: any): void {
+    changes.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
+    changes.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
+    changes.forEachRemovedItem((record) => {
       if (record.previousValue) {
         this._toggleClass(record.key, false);
       }
     });
   }
 
-  private _applyArrayChanges(diff: IterableChanges): void {
-    diff.forEachAddedItem((record) => { this._toggleClass(record.item, true); });
-    diff.forEachRemovedItem((record) => { this._toggleClass(record.item, false); });
+  private _applyIterableChanges(changes: any): void {
+    changes.forEachAddedItem((record) => { this._toggleClass(record.item, true); });
+    changes.forEachRemovedItem((record) => { this._toggleClass(record.item, false); });
   }
 
   private _toggleClass(className: string, enabled): void {

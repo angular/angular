@@ -1,16 +1,23 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {stringify, looseIdentical, isJsObject, CONST} from 'angular2/src/facade/lang';
+import {
+  stringify,
+  looseIdentical,
+  isJsObject,
+  CONST,
+  isBlank,
+  BaseException
+} from 'angular2/src/facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
-import {WrappedValue, BasePipe, Pipe, PipeFactory} from './pipe';
+import {KeyValueDiffer, KeyValueDifferFactory} from '../differs/keyvalue_differs';
 
 @CONST()
-export class KeyValueChangesFactory implements PipeFactory {
-  supports(obj: any): boolean { return KeyValueChanges.supportsObj(obj); }
+export class DefaultKeyValueDifferFactory implements KeyValueDifferFactory {
+  supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
-  create(cdRef: ChangeDetectorRef): Pipe { return new KeyValueChanges(); }
+  create(cdRef: ChangeDetectorRef): KeyValueDiffer { return new DefaultKeyValueDiffer(); }
 }
 
-export class KeyValueChanges extends BasePipe {
+export class DefaultKeyValueDiffer implements KeyValueDiffer {
   private _records: Map<any, any> = new Map();
   private _mapHead: KVChangeRecord = null;
   private _previousMapHead: KVChangeRecord = null;
@@ -20,18 +27,6 @@ export class KeyValueChanges extends BasePipe {
   private _additionsTail: KVChangeRecord = null;
   private _removalsHead: KVChangeRecord = null;
   private _removalsTail: KVChangeRecord = null;
-
-  static supportsObj(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
-
-  supports(obj: any): boolean { return KeyValueChanges.supportsObj(obj); }
-
-  transform(map: Map<any, any>, args: List<any> = null): any {
-    if (this.check(map)) {
-      return WrappedValue.wrap(this);
-    } else {
-      return null;
-    }
-  }
 
   get isDirty(): boolean {
     return this._additionsHead !== null || this._changesHead !== null ||
@@ -72,6 +67,21 @@ export class KeyValueChanges extends BasePipe {
       fn(record);
     }
   }
+
+  diff(map: Map<any, any>): any {
+    if (isBlank(map)) map = MapWrapper.createFromPairs([]);
+    if (!(map instanceof Map || isJsObject(map))) {
+      throw new BaseException(`Error trying to diff '${map}'`);
+    }
+
+    if (this.check(map)) {
+      return this;
+    } else {
+      return null;
+    }
+  }
+
+  onDestroy() {}
 
   check(map: Map<any, any>): boolean {
     this._reset();
