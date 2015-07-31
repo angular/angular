@@ -4,6 +4,10 @@
 // TODO(jelbourn): This goes away.
 @import "../../core/style/default-theme";
 
+// TODO(jelbourn): Move variables and mixins into a partial file.
+// TODO(jelbourn): Measure perf benefits for translate3d and will-change.
+// TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
+
 
 // Standard button sizing.
 $md-button-padding: 0 rem(0.600) !default;
@@ -19,7 +23,7 @@ $md-fab-padding: rem(1.60) !default;
 $md-fab-mini-size: rem(4.00) !default;
 $md-fab-mini-line-height: rem(4.00) !default;
 
-/** Mixin to create distinct classes for fab positions, e.g. ".md-fab-bottom-right". */
+/** Mixin to create distinct classes for fab positions, e.g. ".md-fab-position-bottom-right". */
 @mixin md-fab-position($spot, $top: auto, $right: auto, $bottom: auto, $left: auto) {
   .md-fab-position-#{$spot} {
     top: $top;
@@ -30,14 +34,17 @@ $md-fab-mini-line-height: rem(4.00) !default;
   }
 }
 
-// Base styles for all buttons.
+/** Styles for all disabled buttons. */
+@mixin md-button-disabled() {
+  color: md-color($md-foreground, disabled);
+  background-color: transparent;
+  cursor: default;
+}
+
+/** Base styles for all buttons. */
 @mixin md-button-base() {
   box-sizing: border-box;
   position: relative;
-  display: inline-block;
-
-  font-size: $md-body-font-size-base;
-  font-weight: 500;
 
   // Reset browser <button> styles.
   background: transparent;
@@ -48,9 +55,15 @@ $md-fab-mini-line-height: rem(4.00) !default;
   outline: none;
   border: none;
 
-  // Apply nowrap and remove underline for anchor md-buttons.
+  // Make anchors render like buttons.
+  display: inline-block;
   white-space: nowrap;
   text-decoration: none;
+  vertical-align: middle;
+
+  // Typography.
+  font-size: $md-body-font-size-base;
+  font-weight: 500;
 
   // Sizing.
   padding: $md-button-padding;
@@ -60,10 +73,10 @@ $md-fab-mini-line-height: rem(4.00) !default;
   border-radius: $md-button-border-radius;
 
   // Animation.
-  // TODO(jelbourn): figure out where will-change would be beneficial.
-  transition: background $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
+              box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
 
-  // Hide the default browser focus indicator.
+  // Hide the browser focus indicator, instead applying our own focus style on background-color.
   &:focus {
     outline: none;
   }
@@ -71,7 +84,11 @@ $md-fab-mini-line-height: rem(4.00) !default;
   &:hover, &:focus {
     // Remove anchor underline again for more specific modifiers.
     text-decoration: none;
+  }
 
+  // Use a CSS class for focus style because we only want to render the focus style when
+  // the focus originated from a keyboard event (see JS source for more details).
+  &:hover, &.md-button-focus {
     background: md-color($md-background, 500, 0.2);
   }
 
@@ -83,10 +100,10 @@ $md-fab-mini-line-height: rem(4.00) !default;
     color: md-color($md-accent);
   }
 
-  &:disabled {
-    color: md-color($md-foreground, disabled);
-    background-color: transparent;
-    cursor: default;
+  // Use the [disabled] attribute instead of the :disabled pseudo-class because anchors
+  // cannot technically be :disabled.
+  &[disabled] {
+    @include md-button-disabled();
   }
 }
 
@@ -95,29 +112,40 @@ $md-fab-mini-line-height: rem(4.00) !default;
   @include md-button-base();
 
   // Force hardware acceleration.
-  // TODO(jelbourn): determine if this actually has an impact.
   transform: translate3d(0, 0, 0);
-  box-shadow: $md-shadow-bottom-z-1;
 
-  transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
-              box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
+  box-shadow: $md-shadow-bottom-z-1;
 
   &:active {
     box-shadow: $md-shadow-bottom-z-2;
   }
 
-  &:disabled {
+  &[disabled] {
     box-shadow: none;
   }
 
   &.md-primary {
     color: md-color($md-primary, default-contrast);
     background-color: md-color($md-primary);
+
+    &:hover, &.md-button-focus {
+      background-color: md-color($md-primary, 600);
+    }
   }
 
   &.md-accent {
     color: md-color($md-accent, default-contrast);
     background-color: md-color($md-accent);
+
+    &:hover, &.md-button-focus {
+      background-color: md-color($md-accent, A700);
+    }
+  }
+
+  &.md-primary, &.md-accent {
+    &[disabled] {
+      @include md-button-disabled();
+    }
   }
 }
 
@@ -144,8 +172,6 @@ $md-fab-mini-line-height: rem(4.00) !default;
   height: $md-fab-size;
   line-height: $md-fab-line-height;
   vertical-align: middle;
-
-  // TODO(jelbourn): May need `background-clip: padding-box;` depending on ripple implementation.
 
   &.md-mini {
     line-height: $md-fab-mini-line-height;
