@@ -13,9 +13,10 @@ import 'package:angular2/src/web-workers/ui/impl.dart' show bootstrapUICommon;
  * You instantiate a WebWorker application by calling bootstrap with the URI of your worker's index script
  * Note: The WebWorker script must call bootstrapWebworker once it is set up to complete the bootstrapping process
  */
-void bootstrap(String uri) {
-  spawnWorker(Uri.parse(uri)).then((bus) {
+Future<MessageBus> bootstrap(String uri) {
+  return spawnWorker(Uri.parse(uri)).then((bus) {
     bootstrapUICommon(bus);
+    return bus;
   });
 }
 

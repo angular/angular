@@ -1,4 +1,5 @@
 import {StringMap, Set} from 'angular2/src/facade/collection';
+import {isPresent} from 'angular2/src/facade/lang';
 
 const MOUSE_EVENT_PROPERTIES = [
   "altKey",
@@ -41,10 +42,10 @@ export function serializeGenericEvent(e: Event): StringMap<string, any> {
 }
 
 // TODO(jteplitz602): Allow users to specify the properties they need rather than always
-// adding value #3374
-export function serializeEventWithValue(e: Event): StringMap<string, any> {
+// adding value and files #3374
+export function serializeEventWithTarget(e: Event): StringMap<string, any> {
   var serializedEvent = serializeEvent(e, EVENT_PROPERTIES);
-  return addValue(e, serializedEvent);
+  return addTarget(e, serializedEvent);
 }
 
 export function serializeMouseEvent(e: MouseEvent): StringMap<string, any> {
@@ -53,13 +54,17 @@ export function serializeMouseEvent(e: MouseEvent): StringMap<string, any> {
 
 export function serializeKeyboardEvent(e: KeyboardEvent): StringMap<string, any> {
   var serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
-  return addValue(e, serializedEvent);
+  return addTarget(e, serializedEvent);
 }
 
 // TODO(jteplitz602): #3374. See above.
-function addValue(e: Event, serializedEvent: StringMap<string, any>): StringMap<string, any> {
+function addTarget(e: Event, serializedEvent: StringMap<string, any>): StringMap<string, any> {
   if (NODES_WITH_VALUE.has((<HTMLElement>e.target).tagName.toLowerCase())) {
-    serializedEvent['target'] = {'value': (<HTMLInputElement>e.target).value};
+    var target = <HTMLInputElement>e.target;
+    serializedEvent['target'] = {'value': target.value};
+    if (isPresent(target.files)) {
+      serializedEvent['target']['files'] = target.files;
+    }
   }
   return serializedEvent;
 }

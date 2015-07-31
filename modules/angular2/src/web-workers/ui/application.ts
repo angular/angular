@@ -15,9 +15,10 @@ import {bootstrapUICommon} from "angular2/src/web-workers/ui/impl";
  * Note: The WebWorker script must call bootstrapWebworker once it is set up to complete the
  * bootstrapping process
  */
-export function bootstrap(uri: string): void {
+export function bootstrap(uri: string): MessageBus {
   var messageBus = spawnWorker(uri);
   bootstrapUICommon(messageBus);
+  return messageBus;
 }
 
 export function spawnWorker(uri: string): MessageBus {

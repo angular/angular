@@ -17,9 +17,13 @@ import {
   ChangeDetection,
   DynamicChangeDetection,
   JitChangeDetection,
+  PreGeneratedChangeDetection,
   Pipes,
   defaultPipes,
-  PreGeneratedChangeDetection
+  IterableDiffers,
+  defaultIterableDiffers,
+  KeyValueDiffers,
+  defaultKeyValueDiffers
 } from 'angular2/src/change_detection/change_detection';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
@@ -119,6 +123,8 @@ function _injectorBindings(appComponentType, bus: WorkerMessageBus,
     CompilerCache,
     ViewResolver,
     defaultPipes,
+    bind(IterableDiffers).toValue(defaultIterableDiffers),
+    bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(bestChangeDetection),
     DirectiveResolver,
     Parser,

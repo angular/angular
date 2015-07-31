@@ -80,9 +80,9 @@ Map<String, dynamic> serializeGenericEvent(dynamic e) {
 
 // TODO(jteplitz602): Allow users to specify the properties they need rather than always
 // adding value #3374
-Map<String, dynamic> serializeEventWithValue(dynamic e) {
+Map<String, dynamic> serializeEventWithTarget(dynamic e) {
   var serializedEvent = serializeEvent(e, EVENT_PROPERTIES);
-  return addValue(e, serializedEvent);
+  return addTarget(e, serializedEvent);
 }
 
 Map<String, dynamic> serializeMouseEvent(dynamic e) {
@@ -91,13 +91,16 @@ Map<String, dynamic> serializeMouseEvent(dynamic e) {
 
 Map<String, dynamic> serializeKeyboardEvent(dynamic e) {
   var serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
-  return addValue(e, serializedEvent);
+  return addTarget(e, serializedEvent);
 }
 
 // TODO(jteplitz602): #3374. See above.
-Map<String, dynamic> addValue(dynamic e, Map<String, dynamic> serializedEvent) {
+Map<String, dynamic> addTarget(dynamic e, Map<String, dynamic> serializedEvent) {
   if (NODES_WITH_VALUE.contains(e.target.tagName.toLowerCase())) {
     serializedEvent['target'] = {'value': e.target.value};
+    if (e.target is InputElement) {
+      serializedEvent['target']['files'] = e.target.files;
+    }
   }
   return serializedEvent;
 }

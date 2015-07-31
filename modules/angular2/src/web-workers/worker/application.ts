@@ -11,6 +11,9 @@ import {bootstrapWebworkerCommon} from "angular2/src/web-workers/worker/applicat
 import {ApplicationRef} from "angular2/src/core/application";
 import {Injectable} from "angular2/di";
 
+// TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
+var _postMessage: (message: any, transferrables?:[ArrayBuffer]) => void = <any>postMessage;
+
 /**
  * Bootstrapping a Webworker Application
  *
@@ -41,7 +44,7 @@ export class WorkerMessageBus implements MessageBus {
 }
 
 export class WorkerMessageBusSink implements MessageBusSink {
-  public send(message: Object) { postMessage(message, null); }
+  public send(message: Object) { _postMessage(message); }
 }
 
 export class WorkerMessageBusSource implements MessageBusSource {

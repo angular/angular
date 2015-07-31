@@ -217,9 +217,10 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
    * not worth the potential issues with stale cache records.
    */
   getScriptSnapshot(tsFilePath: string): ts.IScriptSnapshot {
-    let absoluteTsFilePath = (tsFilePath == this.defaultLibFilePath) ?
-                                 tsFilePath :
-                                 path.join(this.treeInputPath, tsFilePath);
+    let absoluteTsFilePath =
+        (tsFilePath == this.defaultLibFilePath || path.isAbsolute(tsFilePath)) ?
+            tsFilePath :
+            path.join(this.treeInputPath, tsFilePath);
 
     if (!fs.existsSync(absoluteTsFilePath)) {
       // TypeScript seems to request lots of bogus paths during import path lookup and resolution,

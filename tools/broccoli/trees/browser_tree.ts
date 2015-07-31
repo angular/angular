@@ -65,7 +65,8 @@ const kServedPaths = [
   'examples/src/material/switcher',
   'examples/src/message_broker',
   'examples/src/web_workers/kitchen_sink',
-  'examples/src/web_workers/todo'
+  'examples/src/web_workers/todo',
+  'examples/src/web_workers/images'
 ];
 
 
@@ -129,6 +130,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.js',
+      'node_modules/base64-js/lib/b64.js',
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/snippets/runtime_paths.js',
       path.relative(projectRootDir, TRACEUR_RUNTIME_PATH)
