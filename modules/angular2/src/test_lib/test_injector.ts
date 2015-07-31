@@ -54,7 +54,9 @@ import {
   DefaultDomCompiler,
   APP_ID_TOKEN,
   SharedStylesHost,
-  DomSharedStylesHost
+  DomSharedStylesHost,
+  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN,
+  TemplateCloner
 } from 'angular2/src/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
@@ -98,6 +100,8 @@ function _getAppBindings() {
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     bind(APP_ID_TOKEN).toValue('a'),
+    TemplateCloner,
+    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(-1),
     DefaultDomCompiler,
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),

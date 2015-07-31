@@ -39,7 +39,6 @@ import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
 import {WebWorkerMain} from 'angular2/src/web-workers/ui/impl';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {MockMessageBus, MockMessageBusSink, MockMessageBusSource} from './worker_test_util';
-import {ReferenceCloneableTemplate} from 'angular2/src/render/dom/util';
 
 export function main() {
   function createBroker(workerSerializer: Serializer, uiSerializer: Serializer, tb: DomTestbed,
@@ -299,7 +298,7 @@ class WorkerTestRootView extends TestRootView {
 }
 
 function templateRoot(pv: DomProtoView) {
-  return (<ReferenceCloneableTemplate>pv.cloneableTemplate).templateRoot;
+  return <Element>pv.cloneableTemplate;
 }
 
 function createSerializer(protoViewRefStore: RenderProtoViewRefStore,

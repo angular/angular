@@ -27,7 +27,9 @@ import {
   DOCUMENT_TOKEN,
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
   DefaultDomCompiler,
-  APP_ID_RANDOM_BINDING
+  APP_ID_RANDOM_BINDING,
+  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN,
+  TemplateCloner
 } from 'angular2/src/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
@@ -92,6 +94,8 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
+    TemplateCloner,
+    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(20),
     DefaultDomCompiler,
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
     DomSharedStylesHost,

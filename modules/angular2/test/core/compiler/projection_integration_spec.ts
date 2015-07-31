@@ -38,6 +38,8 @@ import {
   ViewEncapsulation
 } from 'angular2/angular2';
 
+import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN} from 'angular2/src/render/render';
+
 export function main() {
   describe('projection', () => {
     it('should support simple components',
@@ -416,6 +418,44 @@ export function main() {
          }));
     }
 
+    describe('different proto view storages', () => {
+      function runTests() {
+        it('should support nested conditionals that contain ng-contents',
+           inject(
+               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+                 tcb.overrideView(MainComp, new viewAnn.View({
+                      template: `<conditional-text>a</conditional-text>`,
+                      directives: [ConditionalTextComponent]
+                    }))
+                     .createAsync(MainComp)
+                     .then((main) => {
+                       expect(main.nativeElement).toHaveText('MAIN()');
+
+                       var viewportElement = main.componentViewChildren[0].componentViewChildren[0];
+                       viewportElement.inject(ManualViewportDirective).show();
+                       expect(main.nativeElement).toHaveText('MAIN(FIRST())');
+
+                       viewportElement = main.componentViewChildren[0].componentViewChildren[1];
+                       viewportElement.inject(ManualViewportDirective).show();
+                       expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
+
+                       async.done();
+                     });
+               }));
+      }
+
+      describe('serialize templates', () => {
+        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(0)]);
+        runTests();
+      });
+
+      describe("don't serialize templates", () => {
+        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(-1)]);
+        runTests();
+      });
+
+    });
+
   });
 }
 
@@ -506,6 +546,15 @@ class InnerInnerComponent {
   directives: [ManualViewportDirective]
 })
 class ConditionalContentComponent {
+}
+
+@Component({selector: 'conditional-text'})
+@View({
+  template:
+      'MAIN(<template manual>FIRST(<template manual>SECOND(<ng-content></ng-content>)</template>)</template>)',
+  directives: [ManualViewportDirective]
+})
+class ConditionalTextComponent {
 }
 
 @Component({selector: 'tab'})

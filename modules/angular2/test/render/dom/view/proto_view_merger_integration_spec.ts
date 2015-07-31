@@ -28,7 +28,8 @@ import {
 } from 'angular2/src/render/api';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {cloneAndQueryProtoView, ReferenceCloneableTemplate} from 'angular2/src/render/dom/util';
+import {cloneAndQueryProtoView} from 'angular2/src/render/dom/util';
+import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
 import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
@@ -255,13 +256,14 @@ export function main() {
 
     describe('host attributes', () => {
       it('should set host attributes while merging',
-         inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
+         inject([AsyncTestCompleter, DomTestbed, TemplateCloner], (async, tb: DomTestbed,
+                                                                   cloner: TemplateCloner) => {
            tb.compiler.compileHost(rootDirective('root'))
                .then((rootProtoViewDto) => {
                  var builder = new ProtoViewBuilder(DOM.createTemplate(''), ViewType.COMPONENT,
                                                     ViewEncapsulation.NONE);
                  builder.setHostAttribute('a', 'b');
-                 var componentProtoViewDto = builder.build(new ElementSchemaRegistry());
+                 var componentProtoViewDto = builder.build(new ElementSchemaRegistry(), cloner);
                  tb.merge([rootProtoViewDto, componentProtoViewDto])
                      .then(mergeMappings => {
                        var domPv = resolveInternalDomProtoView(mergeMappings.mergedProtoViewRef);
@@ -278,20 +280,21 @@ export function main() {
 }
 
 function templateRoot(pv: DomProtoView) {
-  return (<ReferenceCloneableTemplate>pv.cloneableTemplate).templateRoot;
+  return <Element>pv.cloneableTemplate;
 }
 
 function runAndAssert(hostElementName: string, componentTemplates: string[],
                       expectedFragments: string[]) {
   var useNativeEncapsulation = hostElementName.startsWith('native-');
   var rootComp = rootDirective(hostElementName);
-  return inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
+  return inject([AsyncTestCompleter, DomTestbed, TemplateCloner], (async, tb: DomTestbed,
+                                                                   cloner: TemplateCloner) => {
     tb.compileAndMerge(rootComp, componentTemplates.map(template => componentView(
                                                             template, useNativeEncapsulation ?
                                                                           ViewEncapsulation.NATIVE :
                                                                           ViewEncapsulation.NONE)))
         .then((mergeMappings) => {
-          expect(stringify(mergeMappings)).toEqual(expectedFragments);
+          expect(stringify(cloner, mergeMappings)).toEqual(expectedFragments);
           async.done();
         });
   });
@@ -312,9 +315,10 @@ function componentView(template: string,
   });
 }
 
-function stringify(protoViewMergeMapping: RenderProtoViewMergeMapping): string[] {
+function stringify(cloner: TemplateCloner, protoViewMergeMapping: RenderProtoViewMergeMapping):
+    string[] {
   var testView = cloneAndQueryProtoView(
-      resolveInternalDomProtoView(protoViewMergeMapping.mergedProtoViewRef), false);
+      cloner, resolveInternalDomProtoView(protoViewMergeMapping.mergedProtoViewRef), false);
   for (var i = 0; i < protoViewMergeMapping.mappedElementIndices.length; i++) {
     var renderElIdx = protoViewMergeMapping.mappedElementIndices[i];
     if (isPresent(renderElIdx)) {

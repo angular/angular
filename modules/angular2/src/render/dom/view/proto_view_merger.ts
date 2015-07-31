@@ -22,12 +22,15 @@ import {
   prependAll
 } from '../util';
 
-export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRef | List<any>>):
+import {TemplateCloner} from '../template_cloner';
+
+export function mergeProtoViewsRecursively(templateCloner: TemplateCloner,
+                                           protoViewRefs: List<RenderProtoViewRef | List<any>>):
     RenderProtoViewMergeMapping {
   // clone
   var clonedProtoViews = [];
   var hostViewAndBinderIndices: number[][] = [];
-  cloneProtoViews(protoViewRefs, clonedProtoViews, hostViewAndBinderIndices);
+  cloneProtoViews(templateCloner, protoViewRefs, clonedProtoViews, hostViewAndBinderIndices);
   var mainProtoView: ClonedProtoView = clonedProtoViews[0];
 
   // modify the DOM
@@ -41,8 +44,8 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   markBoundTextNodeParentsAsBoundElements(clonedProtoViews);
 
   // create a new root element with the changed fragments and elements
-  var rootElement = createRootElementFromFragments(fragments);
   var fragmentsRootNodeCount = fragments.map(fragment => fragment.length);
+  var rootElement = createRootElementFromFragments(fragments);
   var rootNode = DOM.content(rootElement);
 
   // read out the new element / text node / ElementBinder order
@@ -63,21 +66,22 @@ export function mergeProtoViewsRecursively(protoViewRefs: List<RenderProtoViewRe
   var hostElementIndicesByViewIndex =
       calcHostElementIndicesByViewIndex(clonedProtoViews, hostViewAndBinderIndices);
   var nestedViewCounts = calcNestedViewCounts(hostViewAndBinderIndices);
-  var mergedProtoView = DomProtoView.create(
-      mainProtoView.original.type, rootElement, mainProtoView.original.encapsulation,
-      fragmentsRootNodeCount, rootTextNodeIndices, mergedElementBinders, new Map());
+  var mergedProtoView =
+      DomProtoView.create(templateCloner, mainProtoView.original.type, rootElement,
+                          mainProtoView.original.encapsulation, fragmentsRootNodeCount,
+                          rootTextNodeIndices, mergedElementBinders, new Map());
   return new RenderProtoViewMergeMapping(new DomProtoViewRef(mergedProtoView),
                                          fragmentsRootNodeCount.length, mappedElementIndices,
                                          mergedBoundElements.length, mappedTextIndices,
                                          hostElementIndicesByViewIndex, nestedViewCounts);
 }
 
-function cloneProtoViews(protoViewRefs: List<RenderProtoViewRef | List<any>>,
-                         targetClonedProtoViews: ClonedProtoView[],
-                         targetHostViewAndBinderIndices: number[][]) {
+function cloneProtoViews(
+    templateCloner: TemplateCloner, protoViewRefs: List<RenderProtoViewRef | List<any>>,
+    targetClonedProtoViews: ClonedProtoView[], targetHostViewAndBinderIndices: number[][]) {
   var hostProtoView = resolveInternalDomProtoView(protoViewRefs[0]);
   var hostPvIdx = targetClonedProtoViews.length;
-  targetClonedProtoViews.push(cloneAndQueryProtoView(hostProtoView, false));
+  targetClonedProtoViews.push(cloneAndQueryProtoView(templateCloner, hostProtoView, false));
   if (targetHostViewAndBinderIndices.length === 0) {
     targetHostViewAndBinderIndices.push([null, null]);
   }
@@ -89,11 +93,11 @@ function cloneProtoViews(protoViewRefs: List<RenderProtoViewRef | List<any>>,
       if (isPresent(nestedEntry)) {
         targetHostViewAndBinderIndices.push([hostPvIdx, i]);
         if (isArray(nestedEntry)) {
-          cloneProtoViews(<any[]>nestedEntry, targetClonedProtoViews,
+          cloneProtoViews(templateCloner, <any[]>nestedEntry, targetClonedProtoViews,
                           targetHostViewAndBinderIndices);
         } else {
-          targetClonedProtoViews.push(
-              cloneAndQueryProtoView(resolveInternalDomProtoView(nestedEntry), false));
+          targetClonedProtoViews.push(cloneAndQueryProtoView(
+              templateCloner, resolveInternalDomProtoView(nestedEntry), false));
         }
       }
     }
@@ -302,8 +306,16 @@ function sortContentElements(contentElements: Element[]): Element[] {
 function createRootElementFromFragments(fragments: Node[][]): Element {
   var rootElement = DOM.createTemplate('');
   var rootNode = DOM.content(rootElement);
-  fragments.forEach(
-      (fragment) => { fragment.forEach((node) => { DOM.appendChild(rootNode, node); }); });
+  for (var i = 0; i < fragments.length; i++) {
+    var fragment = fragments[i];
+    if (i >= 1) {
+      // Note: We need to seprate fragments by a comment so that sibling
+      // text nodes don't get merged when we serialize the DomProtoView into a string
+      // and parse it back again.
+      DOM.appendChild(rootNode, DOM.createComment('|'));
+    }
+    fragment.forEach((node) => { DOM.appendChild(rootNode, node); });
+  }
   return rootElement;
 }
 

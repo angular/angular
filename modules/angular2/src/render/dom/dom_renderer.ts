@@ -32,6 +32,8 @@ import {
   RenderViewWithFragments
 } from '../api';
 
+import {TemplateCloner} from './template_cloner';
+
 import {DOCUMENT_TOKEN, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
@@ -41,8 +43,9 @@ export class DomRenderer extends Renderer {
   _document;
   _reflectPropertiesAsAttributes: boolean;
 
-  constructor(public _eventManager: EventManager, private _domSharedStylesHost: DomSharedStylesHost,
-              @Inject(DOCUMENT_TOKEN) document,
+  constructor(private _eventManager: EventManager,
+              private _domSharedStylesHost: DomSharedStylesHost,
+              private _templateCloner: TemplateCloner, @Inject(DOCUMENT_TOKEN) document,
               @Inject(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES) reflectPropertiesAsAttributes:
                   boolean) {
     super();
@@ -206,7 +209,7 @@ export class DomRenderer extends Renderer {
   }
 
   _createView(protoView: DomProtoView, inplaceElement: HTMLElement): RenderViewWithFragments {
-    var clonedProtoView = cloneAndQueryProtoView(protoView, true);
+    var clonedProtoView = cloneAndQueryProtoView(this._templateCloner, protoView, true);
 
     var boundElements = clonedProtoView.boundElements;
 

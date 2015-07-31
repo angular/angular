@@ -24,6 +24,7 @@ import {DOCUMENT_TOKEN, APP_ID_TOKEN} from '../dom_tokens';
 import {Inject} from 'angular2/di';
 import {SharedStylesHost} from '../view/shared_styles_host';
 import {prependAll} from '../util';
+import {TemplateCloner} from '../template_cloner';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -32,8 +33,8 @@ import {prependAll} from '../util';
  */
 export class DomCompiler extends RenderCompiler {
   constructor(private _schemaRegistry: ElementSchemaRegistry,
-              private _stepFactory: CompileStepFactory, private _viewLoader: ViewLoader,
-              private _sharedStylesHost: SharedStylesHost) {
+              private _templateCloner: TemplateCloner, private _stepFactory: CompileStepFactory,
+              private _viewLoader: ViewLoader, private _sharedStylesHost: SharedStylesHost) {
     super();
   }
 
@@ -65,7 +66,8 @@ export class DomCompiler extends RenderCompiler {
 
   mergeProtoViewsRecursively(
       protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping> {
-    return PromiseWrapper.resolve(pvm.mergeProtoViewsRecursively(protoViewRefs));
+    return PromiseWrapper.resolve(
+        pvm.mergeProtoViewsRecursively(this._templateCloner, protoViewRefs));
   }
 
   _compileView(viewDef: ViewDefinition, templateAndStyles: TemplateAndStyles,
@@ -87,7 +89,7 @@ export class DomCompiler extends RenderCompiler {
     }
 
     return PromiseWrapper.resolve(
-        compileElements[0].inheritedProtoView.build(this._schemaRegistry));
+        compileElements[0].inheritedProtoView.build(this._schemaRegistry, this._templateCloner));
   }
 
   _normalizeViewEncapsulationIfThereAreNoStyles(viewDef: ViewDefinition): ViewDefinition {
@@ -108,8 +110,10 @@ export class DomCompiler extends RenderCompiler {
 
 @Injectable()
 export class DefaultDomCompiler extends DomCompiler {
-  constructor(schemaRegistry: ElementSchemaRegistry, parser: Parser, viewLoader: ViewLoader,
-              sharedStylesHost: SharedStylesHost, @Inject(APP_ID_TOKEN) appId: any) {
-    super(schemaRegistry, new DefaultStepFactory(parser, appId), viewLoader, sharedStylesHost);
+  constructor(schemaRegistry: ElementSchemaRegistry, templateCloner: TemplateCloner, parser: Parser,
+              viewLoader: ViewLoader, sharedStylesHost: SharedStylesHost,
+              @Inject(APP_ID_TOKEN) appId: any) {
+    super(schemaRegistry, templateCloner, new DefaultStepFactory(parser, appId), viewLoader,
+          sharedStylesHost);
   }
 }
