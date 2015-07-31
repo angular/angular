@@ -120,9 +120,7 @@ class _CodegenState {
 
         ${_genCheckNoChanges()}
 
-        void callOnAllChangesDone() {
-          ${_getCallOnAllChangesDoneBody()}
-        }
+        ${_maybeGenCallOnAllChangesDone()}
 
         ${_maybeGenHydrateDirectives()}
 
@@ -190,17 +188,23 @@ class _CodegenState {
 
   /// Generates calls to `onAllChangesDone` for all `Directive`s that request
   /// them.
-  String _getCallOnAllChangesDoneBody() {
+  String _maybeGenCallOnAllChangesDone() {
     // NOTE(kegluneq): Order is important!
     var directiveNotifications = _directiveRecords.reversed
         .where((rec) => rec.callOnAllChangesDone)
         .map((rec) =>
-            '${_names.getDirectiveName(rec.directiveIndex)}.onAllChangesDone();')
-        .join('');
-    return '''
-      ${_names.getDispatcherName()}.notifyOnAllChangesDone();
-      ${directiveNotifications}
-    ''';
+            '${_names.getDirectiveName(rec.directiveIndex)}.onAllChangesDone();');
+
+    if (directiveNotifications.isNotEmpty) {
+      return '''
+        void callOnAllChangesDone() {
+          ${_names.getDispatcherName()}.notifyOnAllChangesDone();
+          ${directiveNotifications.join('')}
+        }
+      ''';
+    } else {
+      return '';
+    }
   }
 
   String _genDeclareFields() {

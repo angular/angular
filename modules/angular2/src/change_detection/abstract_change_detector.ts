@@ -135,7 +135,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   hydrated(): boolean { return this.context !== null; }
 
-  callOnAllChangesDone(): void {}
+  callOnAllChangesDone(): void { this.dispatcher.notifyOnAllChangesDone(); }
 
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;
