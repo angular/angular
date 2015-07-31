@@ -330,20 +330,27 @@ const STYLE_PREFIX = 'style';
 
 function buildElementPropertyBindings(
     schemaRegistry: ElementSchemaRegistry, protoElement: /*element*/ any, isNgComponent: boolean,
-    bindingsInTemplate: Map<string, ASTWithSource>, directiveTempaltePropertyNames: Set<string>):
+    bindingsInTemplate: Map<string, ASTWithSource>, directiveTemplatePropertyNames: Set<string>):
     List<api.ElementPropertyBinding> {
   var propertyBindings = [];
+
   MapWrapper.forEach(bindingsInTemplate, (ast, propertyNameInTemplate) => {
     var propertyBinding = createElementPropertyBinding(schemaRegistry, ast, propertyNameInTemplate);
-    if (isValidElementPropertyBinding(schemaRegistry, protoElement, isNgComponent,
-                                      propertyBinding)) {
+
+    if (isPresent(directiveTemplatePropertyNames) &&
+        SetWrapper.has(directiveTemplatePropertyNames, propertyNameInTemplate)) {
+      // We do nothing because directives shadow native elements properties.
+
+    } else if (isValidElementPropertyBinding(schemaRegistry, protoElement, isNgComponent,
+                                             propertyBinding)) {
       propertyBindings.push(propertyBinding);
-    } else if (!isPresent(directiveTempaltePropertyNames) ||
-               !SetWrapper.has(directiveTempaltePropertyNames, propertyNameInTemplate)) {
-      // directiveTempaltePropertyNames is null for host property bindings
+
+    } else {
       var exMsg =
           `Can't bind to '${propertyNameInTemplate}' since it isn't a known property of the '<${DOM.tagName(protoElement).toLowerCase()}>' element`;
-      if (isPresent(directiveTempaltePropertyNames)) {
+
+      // directiveTemplatePropertyNames is null for host property bindings
+      if (isPresent(directiveTemplatePropertyNames)) {
         exMsg += ' and there are no matching directives with a corresponding property';
       }
       throw new BaseException(exMsg);

@@ -31,6 +31,7 @@ import {
   isJsObject,
   global,
   stringify,
+  isBlank,
   CONST,
   CONST_EXPR
 } from 'angular2/src/facade/lang';
@@ -1359,8 +1360,8 @@ export function main() {
                     });
               }));
 
-    if (!IS_DARTIUM) {
-      describe('Missing property bindings', () => {
+    describe('Property bindings', () => {
+      if (!IS_DARTIUM) {
         it('should throw on bindings to unknown properties',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
                                                                async) => {
@@ -1386,8 +1387,47 @@ export function main() {
                  .createAsync(MyComp)
                  .then((val) => { async.done(); });
            }));
-      });
-    }
+      }
+
+      it('should not be created when there is a directive with the same property',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: '<span [title]="ctxProp"></span>',
+                directives: [DirectiveWithTitle]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.componentInstance.ctxProp = "TITLE";
+                 rootTC.detectChanges();
+
+                 var el = DOM.querySelector(rootTC.nativeElement, "span");
+                 expect(isBlank(el.title) || el.title == '').toBeTruthy();
+
+                 async.done();
+
+               });
+         }));
+
+      it('should work when a directive uses hostProperty to update the DOM element',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: '<span [title]="ctxProp"></span>',
+                directives: [DirectiveWithTitleAndHostProperty]
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.componentInstance.ctxProp = "TITLE";
+                 rootTC.detectChanges();
+
+                 var el = DOM.querySelector(rootTC.nativeElement, "span");
+                 expect(el.title).toEqual("TITLE");
+
+                 async.done();
+
+               });
+         }));
+    });
+
 
     describe('different proto view storages', () => {
       function runWithMode(mode: string) {
@@ -1503,6 +1543,16 @@ class DynamicViewport {
 class MyDir {
   dirProp: string;
   constructor() { this.dirProp = ''; }
+}
+
+@Directive({selector: '[title]', properties: ['title']})
+class DirectiveWithTitle {
+  title: string;
+}
+
+@Directive({selector: '[title]', properties: ['title'], host: {'[title]': 'title'}})
+class DirectiveWithTitleAndHostProperty {
+  title: string;
 }
 
 @Component({selector: 'push-cmp', properties: ['prop'], changeDetection: ON_PUSH})
