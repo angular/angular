@@ -171,7 +171,7 @@ export class WorkerRenderer implements Renderer {
    */
   dehydrateView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("renderer", "dehydrateView", fnArgs);
+    var args = new UiArguments("renderer", "deyhdrateView", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 

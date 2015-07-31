@@ -28,8 +28,7 @@ import {
   RenderFragmentRef,
   RenderElementRef,
   ViewType,
-  ViewEncapsulation,
-  PropertyBindingType
+  ViewEncapsulation
 } from "angular2/src/render/api";
 import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AST, ASTWithSource} from 'angular2/src/change_detection/change_detection';
@@ -58,13 +57,6 @@ export class Serializer {
     viewEncapsulationMap[1] = ViewEncapsulation.NATIVE;
     viewEncapsulationMap[2] = ViewEncapsulation.NONE;
     this._enumRegistry.set(ViewEncapsulation, viewEncapsulationMap);
-
-    var propertyBindingTypeMap = new Map<int, any>();
-    propertyBindingTypeMap[0] = PropertyBindingType.PROPERTY;
-    propertyBindingTypeMap[1] = PropertyBindingType.ATTRIBUTE;
-    propertyBindingTypeMap[2] = PropertyBindingType.CLASS;
-    propertyBindingTypeMap[3] = PropertyBindingType.STYLE;
-    this._enumRegistry.set(PropertyBindingType, propertyBindingTypeMap);
   }
 
   serialize(obj: any, type: Type): Object {
@@ -101,8 +93,6 @@ export class Serializer {
       return this._renderViewStore.serializeRenderFragmentRef(obj);
     } else if (type == WorkerElementRef) {
       return this._serializeWorkerElementRef(obj);
-    } else if (type == ElementPropertyBinding) {
-      return this._serializeElementPropertyBinding(obj);
     } else if (type == EventBinding) {
       return this._serializeEventBinding(obj);
     } else {
@@ -147,8 +137,6 @@ export class Serializer {
       return this._deserializeWorkerElementRef(map);
     } else if (type == EventBinding) {
       return this._deserializeEventBinding(map);
-    } else if (type == ElementPropertyBinding) {
-      return this._deserializeElementPropertyBinding(map);
     } else {
       throw new BaseException("No deserializer for " + type.toString());
     }
@@ -177,7 +165,7 @@ export class Serializer {
     if (isPresent(type)) {
       var map: Map<string, any> = new Map();
       StringMapWrapper.forEach(obj,
-                               (val, key) => { map.set(key, this.deserialize(val, type, data)); });
+                               (key, val) => { map.set(key, this.deserialize(val, type, data)); });
       return map;
     } else {
       return MapWrapper.createFromStringMap(obj);
@@ -186,29 +174,13 @@ export class Serializer {
 
   allocateRenderViews(fragmentCount: number) { this._renderViewStore.allocate(fragmentCount); }
 
-  private _serializeElementPropertyBinding(binding:
-                                               ElementPropertyBinding): StringMap<string, any> {
-    return {
-      'type': serializeEnum(binding.type),
-      'astWithSource': this.serialize(binding.astWithSource, ASTWithSource),
-      'property': binding.property,
-      'unit': binding.unit
-    };
-  }
-
-  private _deserializeElementPropertyBinding(map: StringMap<string, any>): ElementPropertyBinding {
-    var type = deserializeEnum(map['type'], this._enumRegistry.get(PropertyBindingType));
-    var ast = this.deserialize(map['astWithSource'], ASTWithSource, "binding");
-    return new ElementPropertyBinding(type, ast, map['property'], map['unit']);
-  }
-
   private _serializeEventBinding(binding: EventBinding): StringMap<string, any> {
     return {'fullName': binding.fullName, 'source': this.serialize(binding.source, ASTWithSource)};
   }
 
   private _deserializeEventBinding(map: StringMap<string, any>): EventBinding {
     return new EventBinding(map['fullName'],
-                            this.deserialize(map['source'], ASTWithSource, "action"));
+                            this.deserialize(map['source'], ASTWithSource, "binding"));
   }
 
   private _serializeWorkerElementRef(elementRef: RenderElementRef): StringMap<string, any> {
@@ -251,11 +223,14 @@ export class Serializer {
     // TODO: make ASTs serializable
     var ast: AST;
     switch (data) {
-      case "action":
-        ast = this._parser.parseAction(obj['input'], obj['location']);
+      case "interpolation":
+        ast = this._parser.parseInterpolation(obj['input'], obj['location']);
         break;
       case "binding":
         ast = this._parser.parseBinding(obj['input'], obj['location']);
+        break;
+      case "simpleBinding":
+        ast = this._parser.parseSimpleBinding(obj['input'], obj['location']);
         break;
       case "interpolation":
         ast = this._parser.parseInterpolation(obj['input'], obj['location']);

@@ -1,10 +1,10 @@
 import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 import {Promise} from 'angular2/src/facade/async';
 
-describe('WebWorkers Kitchen Sink', function() {
+describe('WebWorkers', function() {
   afterEach(verifyNoBrowserErrors);
   var selector = "hello-app .greeting";
-  var URL = "examples/src/web_workers/kitchen_sink/index.html";
+  var URL = "examples/src/web_workers/index.html";
 
   it('should greet', () => {
     browser.get(URL);

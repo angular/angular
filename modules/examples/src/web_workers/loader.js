@@ -11,7 +11,7 @@ $SCRIPTS$ window = {
 };
 assert = function() {};
 
-System.import("examples/src/web_workers/kitchen_sink/background_index")
+System.import("examples/src/web_workers/background_index")
     .then(
         function(m) {
           console.log("running main");

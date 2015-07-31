@@ -53,8 +53,7 @@ export function main() {
              'value': {
                'viewRef': viewRef.serialize(),
                'elementIndex': elementIndex,
-               'eventName': eventName,
-               'locals': {'$event': {'target': {value: null}}}
+               'eventName': eventName
              }
            }
          });

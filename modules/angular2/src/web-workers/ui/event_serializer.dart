@@ -52,45 +52,12 @@ final Map KEYBOARD_EVENT_PROPERTIES = {
   #type: String
 };
 
-final Map EVENT_PROPERTIES = {
-  #bubbles: bool,
-  #cancelable: bool,
-  #defaultPrevented: bool,
-  #eventPhase: int,
-  #timeStamp: int,
-  #type: String
-};
-
-// List of all elements with HTML value attribute.
-// Taken from: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
-final Set<String> NODES_WITH_VALUE =
-  new Set<String>.from(["input", "select", "option", "button", "li", "meter", "progress", "param"]);
-
-Map<String, dynamic> serializeGenericEvent(dynamic e) {
-  return serializeEvent(e, EVENT_PROPERTIES);
-}
-
-// TODO(jteplitz602): Allow users to specify the properties they need rather than always
-// adding value #3374
-Map<String, dynamic> serializeEventWithValue(dynamic e) {
-  var serializedEvent = serializeEvent(e, EVENT_PROPERTIES);
-  return addValue(e, serializedEvent);
-}
 Map<String, dynamic> serializeMouseEvent(dynamic e) {
   return serializeEvent(e, MOUSE_EVENT_PROPERTIES);
 }
 
 Map<String, dynamic> serializeKeyboardEvent(dynamic e) {
-  var serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
-  return addValue(e, serializedEvent);
-}
-
-// TODO(jteplitz602): #3374. See above.
-Map<String, dynamic> addValue(dynamic e, Map<String, dynamic> serializedEvent) {
-  if (NODES_WITH_VALUE.contains(e.target.tagName.toLowerCase())){
-    serializedEvent['target'] = {'value': e.target.value};
-  }
-  return serializedEvent;
+  return serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
 }
 
 Map<String, dynamic> serializeEvent(dynamic e, Map<Symbol, Type> PROPERTIES) {
