@@ -104,42 +104,53 @@ export function main() {
         var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
         expect(pv.elementBinders[0].propertyBindings[0].property).toEqual('readOnly');
       });
-
     });
 
-    describe('property binding types', () => {
-      it('should detect property names', () => {
-        builder.bindElement(el('<div/>')).bindProperty('tabindex', emptyExpr());
-        var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
-        expect(pv.elementBinders[0].propertyBindings[0].type).toEqual(PropertyBindingType.PROPERTY);
+    describe('property binding', () => {
+      describe('types', () => {
+        it('should detect property names', () => {
+          builder.bindElement(el('<div/>')).bindProperty('tabindex', emptyExpr());
+          var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+          expect(pv.elementBinders[0].propertyBindings[0].type)
+              .toEqual(PropertyBindingType.PROPERTY);
+        });
+
+        it('should detect attribute names', () => {
+          builder.bindElement(el('<div/>')).bindProperty('attr.someName', emptyExpr());
+          var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+          expect(pv.elementBinders[0].propertyBindings[0].type)
+              .toEqual(PropertyBindingType.ATTRIBUTE);
+        });
+
+        it('should detect class names', () => {
+          builder.bindElement(el('<div/>')).bindProperty('class.someName', emptyExpr());
+          var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+          expect(pv.elementBinders[0].propertyBindings[0].type).toEqual(PropertyBindingType.CLASS);
+        });
+
+        it('should detect style names', () => {
+          builder.bindElement(el('<div/>')).bindProperty('style.someName', emptyExpr());
+          var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+          expect(pv.elementBinders[0].propertyBindings[0].type).toEqual(PropertyBindingType.STYLE);
+        });
+
+        it('should detect style units', () => {
+          builder.bindElement(el('<div/>')).bindProperty('style.someName.someUnit', emptyExpr());
+          var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+          expect(pv.elementBinders[0].propertyBindings[0].unit).toEqual('someUnit');
+        });
       });
 
-      it('should detect attribute names', () => {
-        builder.bindElement(el('<div/>')).bindProperty('attr.someName', emptyExpr());
-        var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
-        expect(pv.elementBinders[0].propertyBindings[0].type)
-            .toEqual(PropertyBindingType.ATTRIBUTE);
-      });
+      it('should not create a property binding when there is already same directive property binding',
+         () => {
+           var binder = builder.bindElement(el('<div/>'));
 
-      it('should detect class names', () => {
-        builder.bindElement(el('<div/>')).bindProperty('class.someName', emptyExpr());
-        var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
-        expect(pv.elementBinders[0].propertyBindings[0].type).toEqual(PropertyBindingType.CLASS);
-      });
+           binder.bindProperty('tabindex', emptyExpr());
+           binder.bindDirective(0).bindProperty('tabindex', emptyExpr(), 'tabindex');
 
-      it('should detect style names', () => {
-        builder.bindElement(el('<div/>')).bindProperty('style.someName', emptyExpr());
-        var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
-        expect(pv.elementBinders[0].propertyBindings[0].type).toEqual(PropertyBindingType.STYLE);
-      });
-
-      it('should detect style units', () => {
-        builder.bindElement(el('<div/>')).bindProperty('style.someName.someUnit', emptyExpr());
-        var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
-        expect(pv.elementBinders[0].propertyBindings[0].unit).toEqual('someUnit');
-      });
+           var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+           expect(pv.elementBinders[0].propertyBindings.length).toEqual(0);
+         });
     });
-
-
   });
 }
