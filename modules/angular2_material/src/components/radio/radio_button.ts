@@ -3,7 +3,8 @@ import {
   View,
   ViewEncapsulation,
   LifecycleEvent,
-  Ancestor,
+  Host,
+  SkipSelf,
   Attribute,
   Optional
 } from 'angular2/angular2';
@@ -232,7 +233,7 @@ export class MdRadioButton {
 
   role: string;
 
-  constructor(@Optional() @Ancestor() radioGroup: MdRadioGroup, @Attribute('id') id: string,
+  constructor(@Optional() @SkipSelf() @Host() radioGroup: MdRadioGroup, @Attribute('id') id: string,
               @Attribute('tabindex') tabindex: string, radioDispatcher: MdRadioDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.

@@ -6,7 +6,7 @@ import {
   Component,
   Directive,
   View,
-  Ancestor
+  Host
 } from 'angular2/bootstrap';
 import {formDirectives, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
@@ -50,7 +50,7 @@ class ShowError {
   controlPath: string;
   errorTypes: List<string>;
 
-  constructor(@Ancestor() formDir: NgFormModel) { this.formDir = formDir; }
+  constructor(@Host() formDir: NgFormModel) { this.formDir = formDir; }
 
   get errorMessage() {
     var c = this.formDir.form.find(this.controlPath);

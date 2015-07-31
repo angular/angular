@@ -4,7 +4,7 @@ import {List, StringMap} from 'angular2/src/facade/collection';
 
 import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/annotations';
-import {forwardRef, Ancestor, Binding, Inject} from 'angular2/di';
+import {forwardRef, Host, SkipSelf, Binding, Inject} from 'angular2/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
@@ -88,7 +88,7 @@ export class NgControlName extends NgControl {
   _added = false;
 
   // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
-  constructor(@Ancestor() parent: ControlContainer,
+  constructor(@Host() @SkipSelf() parent: ControlContainer,
               @Query(NgValidator) ngValidators: QueryList<NgValidator>) {
     super();
     this._parent = parent;
