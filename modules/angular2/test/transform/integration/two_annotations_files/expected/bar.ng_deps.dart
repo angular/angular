@@ -73,10 +73,6 @@ class _MyComponent_ChangeDetector0
     runDetectChanges(true);
   }
 
-  void callOnAllChangesDone() {
-    this.dispatcher.notifyOnAllChangesDone();
-  }
-
   void dehydrateDirectives(destroyPipes) {
     this.myNum0 = this.interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }

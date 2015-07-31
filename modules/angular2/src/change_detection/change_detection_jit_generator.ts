@@ -57,9 +57,7 @@ export class ChangeDetectorJITGenerator {
 
       ${this._genCheckNoChanges()}
 
-      ${this._typeName}.prototype.callOnAllChangesDone = function() {
-        ${this._genCallOnAllChangesDoneBody()}
-      }
+      ${this._maybeGenCallOnAllChangesDone()}
 
       ${this._maybeGenHydrateDirectives()}
 
@@ -117,7 +115,7 @@ export class ChangeDetectorJITGenerator {
     return lines.join('\n');
   }
 
-  _genCallOnAllChangesDoneBody(): string {
+  _maybeGenCallOnAllChangesDone(): string {
     var notifications = [];
     var dirs = this.directiveRecords;
 
@@ -129,13 +127,17 @@ export class ChangeDetectorJITGenerator {
             `${this._names.getDirectiveName(dir.directiveIndex)}.onAllChangesDone();`);
       }
     }
-
-    var directiveNotifications = notifications.join("\n");
-
-    return `
-      ${this._names.getDispatcherName()}.notifyOnAllChangesDone();
-      ${directiveNotifications}
-    `;
+    if (notifications.length > 0) {
+      var directiveNotifications = notifications.join("\n");
+      return `
+        ${this._typeName}.prototype.callOnAllChangesDone = function() {
+          ${ABSTRACT_CHANGE_DETECTOR}.prototype.callOnAllChangesDone.call(this);
+          ${directiveNotifications}
+        }
+      `;
+    } else {
+      return '';
+    }
   }
 
   _genRecord(r: ProtoRecord): string {
