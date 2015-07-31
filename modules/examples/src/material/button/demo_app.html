@@ -7,21 +7,13 @@
     position: relative !important;
     padding-bottom: 10px;
   }
-  section [md-button]:not(.md-fab) {
-    min-width: 10em;
+  .label {
+    position: absolute;
+    bottom: 5px;
+    left: 7px;
+    color: #ccc;
+    font-size: 14px;
   }
-  section [md-button] {
-    display: inline-block;
-    margin: 1em;
-    line-height: 25px;
-  }
-.label {
-  position: absolute;
-  bottom: 5px;
-  left: 7px;
-  color: #ccc;
-  font-size: 14px;
-}
 </style>
 
 <h1>Button demo</h1>
@@ -52,25 +44,25 @@
 
 <section>
   <span class="label">Raised button</span>
-  <button md-button class="md-raised" (^click)="click('raised')">BUTTON</button>
-  <button md-button class="md-raised md-primary" (^click)="click('raised primary')">PRIMARY</button>
-  <button md-button class="md-raised" disabled="disabled" (^click)="click('raised disabled')">DISABLED</button>
-  <button md-button class="md-raised md-accent" (^click)="click('raised accent')">ACCENT</button>
-  <button md-button class="md-raised md-warn" (^click)="click('raised warn')">WARN</button>
+  <button md-raised-button (^click)="click('raised')">BUTTON</button>
+  <button md-raised-button class="md-primary" (^click)="click('raised primary')">PRIMARY</button>
+  <button md-raised-button disabled="disabled" (^click)="click('raised disabled')">DISABLED</button>
+  <button md-raised-button class="md-accent" (^click)="click('raised accent')">ACCENT</button>
+  <button md-raised-button class="md-warn" (^click)="click('raised warn')">WARN</button>
 </section>
 <section>
   <span class="label">Fab button</span>
-  <button md-button class="md-fab" (^click)="click('fab')">BTN</button>
-  <button md-button class="md-fab md-primary" (^click)="click('fab primary')">PRMY</button>
-  <button md-button class="md-fab" disabled="disabled" (^click)="click('fab disabled')">DIS</button>
-  <button md-button class="md-fab md-accent" (^click)="click('fab accent')">ACC</button>
-  <button md-button class="md-fab md-warn" (^click)="click('fab warn')">WRN</button>
+  <button md-fab (^click)="click('fab')">BTN</button>
+  <button md-fab class="md-primary" (^click)="click('fab primary')">PRMY</button>
+  <button md-fab disabled="disabled" (^click)="click('fab disabled')">DIS</button>
+  <button md-fab class="md-accent" (^click)="click('fab accent')">ACC</button>
+  <button md-fab class="md-warn" (^click)="click('fab warn')">WRN</button>
 </section>
 <section>
   <span class="label">Anchor / hyperlink</span>
   <a md-button href="http://google.com" target="_blank">HREF</a>
   <a md-button href="http://google.com" disabled>DISABLED HREF</a>
-  <a md-button class="md-raised" target="_blank" href="http://google.com">RAISED HREF</a>
+  <a md-raised-button target="_blank" href="http://google.com">RAISED HREF</a>
 </section>
 
 

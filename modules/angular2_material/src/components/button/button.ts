@@ -2,7 +2,7 @@ import {Component, View, LifecycleEvent, ViewEncapsulation} from 'angular2/angul
 import {isPresent} from 'angular2/src/facade/lang';
 
 
-@Component({selector: '[md-button]:not([href])'})
+@Component({selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)'})
 @View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
   encapsulation: ViewEncapsulation.NONE

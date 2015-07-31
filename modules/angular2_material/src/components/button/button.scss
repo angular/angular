@@ -4,23 +4,24 @@
 // TODO(jelbourn): This goes away.
 @import "../../core/style/default-theme";
 
-$button-line-height: 25px !default;
-$button-padding: 2px 6px 3px !default;
 
-// Fab buttons
-$button-fab-width: 56px !default;
-$button-fab-height: 56px !default;
-$button-fab-padding: 16px !default;
-$button-fab-mini-width: 40px !default;
-$button-fab-mini-height: 40px !default;
+// Standard button sizing.
+$md-button-padding: 0 rem(0.600) !default;
+$md-button-min-width: rem(8.800) !default;
+$md-button-margin: rem(0.600) rem(0.800) !default;
+$md-button-line-height: rem(3.60) !default;
+$md-button-border-radius: 3px !default;
 
-$button-fab-toast-offset: $button-fab-height * 0.75;
+// FAB sizing.
+$md-fab-size: rem(5.600) !default;
+$md-fab-line-height: rem(5.600) !default;
+$md-fab-padding: rem(1.60) !default;
+$md-fab-mini-size: rem(4.00) !default;
+$md-fab-mini-line-height: rem(4.00) !default;
 
-/**
- * Mixin to create distinct classes for fab positions, e.g. ".md-fab-bottom-right".
- */
-@mixin fab-position($spot, $top: auto, $right: auto, $bottom: auto, $left: auto) {
-  &.md-fab-#{$spot} {
+/** Mixin to create distinct classes for fab positions, e.g. ".md-fab-bottom-right". */
+@mixin md-fab-position($spot, $top: auto, $right: auto, $bottom: auto, $left: auto) {
+  .md-fab-position-#{$spot} {
     top: $top;
     right: $right;
     bottom: $bottom;
@@ -29,321 +30,140 @@ $button-fab-toast-offset: $button-fab-height * 0.75;
   }
 }
 
-[md-button] {
-  user-select: none;
+// Base styles for all buttons.
+@mixin md-button-base() {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
 
-  // TODO(jelbourn): What canvas?
-  position: relative; //for child absolute-positioned <canvas>
-
-  outline: none;
-  border: 0;
-  padding: 6px;
-  margin: 0;
-  background: transparent;
-  white-space: nowrap;
-
-  text-align: center;
-
-  // TODO(jelbourn): wat?
+  font-size: $md-body-font-size-base;
   font-weight: 500;
-  font-style: inherit;
-  font-variant: inherit;
-  font-size: inherit;
-  font-family: inherit;
-  line-height: inherit;
+
+  // Reset browser <button> styles.
+  background: transparent;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+
+  // Apply nowrap and remove underline for anchor md-buttons.
+  white-space: nowrap;
   text-decoration: none;
 
-  cursor: pointer;
-  overflow: hidden; // for ink containment
+  // Sizing.
+  padding: $md-button-padding;
+  margin: $md-button-margin;
+  min-width: $md-button-min-width;
+  line-height: $md-button-line-height;
+  border-radius: $md-button-border-radius;
 
-  transition: box-shadow $swift-ease-out-duration $swift-ease-out-timing-function,
-  background-color $swift-ease-out-duration $swift-ease-out-timing-function,
-  transform $swift-ease-out-duration $swift-ease-out-timing-function;
+  // Animation.
+  // TODO(jelbourn): figure out where will-change would be beneficial.
+  transition: background $swift-ease-out-duration $swift-ease-out-timing-function;
 
+  // Hide the default browser focus indicator.
   &:focus {
     outline: none;
   }
 
-  &:hover {
+  &:hover, &:focus {
+    // Remove anchor underline again for more specific modifiers.
     text-decoration: none;
+
+    background: md-color($md-background, 500, 0.2);
   }
 
-  &.md-cornered {
-    border-radius: 0;
-  }
-
-  &.md-icon {
-    padding: 0;
-    background: none;
-  }
-
-  &.md-raised {
-    transform: translate3d(0, 0, 0);
-
-
-    &:not([disabled]) {
-      @extend .md-shadow-bottom-z-1;
-    }
-  }
-
-  &.md-fab {
-    // .md-fab-bottom-right
-    @include fab-position(
-        bottom-right,
-        auto,
-        ($button-fab-width - $button-fab-padding) / 2,
-        ($button-fab-height - $button-fab-padding) / 2,
-        auto);
-
-    // .md-fab-bottom-left
-    @include fab-position(
-        bottom-left,
-        auto,
-        auto,
-        ($button-fab-height - $button-fab-padding) / 2,
-        ($button-fab-width - $button-fab-padding) / 2);
-
-    // .md-fab-top-right
-    @include fab-position(
-        top-right,
-        ($button-fab-height - $button-fab-padding) / 2,
-        ($button-fab-width - $button-fab-padding) / 2,
-        auto,
-        auto);
-
-    // .md-fab-top-left
-    @include fab-position(
-        top-left,
-        ($button-fab-height - $button-fab-padding) / 2,
-        auto,
-        auto,
-        ($button-fab-width - $button-fab-padding) / 2);
-
-
-    z-index: $z-index-fab;
-
-    width: $button-fab-width;
-    height: $button-fab-height;
-
-    border-radius: 50%;
-
-    @extend .md-shadow-bottom-z-1;
-    overflow: hidden;
-
-    transform: translate3d(0, 0, 0);
-
-    transition: 0.2s linear;
-    transition-property: transform, box-shadow;
-
-
-    // When there is an md-icon inside of an [md-button].
-    & md-icon {
-      line-height: $button-fab-height;
-      margin-top: 0;
-    }
-
-    &.md-mini {
-      width: $button-fab-mini-width;
-      height: $button-fab-mini-height;
-      md-icon {
-        line-height: $button-fab-mini-height;
-      }
-    }
-
-  }
-
-  &:not([disabled]) {
-    &.md-raised,
-    &.md-fab {
-      &:focus,
-      &:hover {
-        transform: translate3d(0, -1px, 0);
-        @extend .md-shadow-bottom-z-2;
-      }
-    }
-  }
-}
-
-// TODO
-.md-toast-open-top {
-  [md-button].md-fab-top-left,
-  [md-button].md-fab-top-right {
-    transform: translate3d(0, $button-fab-toast-offset, 0);
-    &:not([disabled]) {
-      &:focus,
-      &:hover {
-        transform: translate3d(0, $button-fab-toast-offset - 1, 0);
-      }
-    }
-  }
-}
-
-// TODO
-.md-toast-open-bottom {
-  [md-button].md-fab-bottom-left,
-  [md-button].md-fab-bottom-right {
-    transform: translate3d(0, -$button-fab-toast-offset, 0);
-    &:not([disabled]) {
-      &:focus,
-      &:hover {
-        transform: translate3d(0, -$button-fab-toast-offset - 1, 0);
-      }
-    }
-  }
-}
-
-// TODO
-.md-button-group {
-  display: flex;
-  flex: 1;
-  width: 100%;
-}
-
-// TODO
-.md-button-group > [md-button] {
-  flex: 1;
-
-  display: block;
-
-  overflow: hidden;
-
-  width: 0;
-
-  border-width: 1px 0 1px 1px;
-  border-radius: 0;
-
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &:first-child {
-    border-radius: 2px 0 0 2px;
-  }
-  &:last-child {
-    border-right-width: 1px;
-    border-radius: 0 2px 2px 0;
-  }
-}
-
-
-// ------------------------ Button theme ----------------------------------------------------------
-
-$button-border-radius: 3px !default;
-$button-fab-border-radius: 50% !default;
-
-// The ELEMENT '[md-button]' is the host.
-// The CLASS '[md-button]' is the shadow root.
-
-md-toolbar [md-button].md-fab {
-  background-color: white;
-}
-
-
-// Because of Shadow DOM emulation, the modifier classes are applied to the [md-button]
-// element (host), but the style needs to be changed for the shadow content (.[md-button]).
-[md-button] {
-  border-radius: $button-border-radius;
-
-  // When the user explictly applies the primary color.
   &.md-primary {
     color: md-color($md-primary);
   }
 
-  &.md-primary.md-fab,
-  &.md-primary.md-raised {
-    color: md-color($md-primary, default-contrast);
-    background-color: md-color($md-primary);
-  }
-
-  // When the user explictly applies the accent color.
   &.md-accent {
     color: md-color($md-accent);
   }
 
-  &.md-accent.md-fab,
-  &.md-accent.md-raised {
+  &:disabled {
+    color: md-color($md-foreground, disabled);
+    background-color: transparent;
+    cursor: default;
+  }
+}
+
+/** Base styles for raised buttons, including FABs. */
+@mixin md-raised-button() {
+  @include md-button-base();
+
+  // Force hardware acceleration.
+  // TODO(jelbourn): determine if this actually has an impact.
+  transform: translate3d(0, 0, 0);
+  box-shadow: $md-shadow-bottom-z-1;
+
+  transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
+              box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
+
+  &:active {
+    box-shadow: $md-shadow-bottom-z-2;
+  }
+
+  &:disabled {
+    box-shadow: none;
+  }
+
+  &.md-primary {
+    color: md-color($md-primary, default-contrast);
+    background-color: md-color($md-primary);
+  }
+
+  &.md-accent {
     color: md-color($md-accent, default-contrast);
     background-color: md-color($md-accent);
   }
+}
 
-  // When the user explictly applies the warn color.
-  &.md-warn {
-    color: md-color($md-warn);
-  }
 
-  &.md-warn.md-fab,
-  &.md-warn.md-raised {
-    color: md-color($md-warn, default-contrast);
-    background-color: md-color($md-warn);
-  }
+[md-button] {
+  @include md-button-base();
+}
 
-  // When the button is a fab without an explicit color applied.
-  &.md-fab {
-    border-radius: $button-fab-border-radius;
-    background-color: md-color($md-accent);
-    color: md-color($md-accent, default-contrast);
-  }
+[md-raised-button] {
+  @include md-raised-button();
 
-  // When the button is raised without an explicit color applied.
-  &.md-raised {
-    color: md-color($md-background, default-contrast);
-    background-color: md-color($md-background, 50);
+  color: md-color($md-background, default-contrast);
+  background-color: md-color($md-background, 50);
+}
+
+[md-fab] {
+  @include md-raised-button();
+
+  z-index: $z-index-fab;
+
+  border-radius: 50%;
+  min-width: 0;
+  width: $md-fab-size;
+  height: $md-fab-size;
+  line-height: $md-fab-line-height;
+  vertical-align: middle;
+
+  // TODO(jelbourn): May need `background-clip: padding-box;` depending on ripple implementation.
+
+  &.md-mini {
+    line-height: $md-fab-mini-line-height;
+    width: $md-fab-mini-size;
+    height: $md-fab-mini-size;
   }
 }
 
-// Hover and focus styles (only applied when the button is not disabled).
-// The modifiers for :focus and :hover actually apply to the element in the
-// shadow DOM (the .[md-button]).
-[md-button]:not([disabled])  {
-  // Default hover/focus background.
-  &:focus,
-  &:hover {
-    background-color: md-color($md-background, 500, 0.2);
-  }
-
-  &.md-primary.md-fab,
-  &.md-primary.md-raised {
-    &:hover,
-    &:focus {
-      background-color: md-color($md-primary, 600);
-    }
-  }
-
-  &.md-accent.md-fab,
-  &.md-accent.md-raised {
-    &:hover,
-    &:focus {
-      background-color: md-color($md-accent, 700);
-    }
-  }
-
-  &.md-warn.md-fab,
-  &.md-warn.md-raised {
-    &:hover,
-    &:focus {
-      background-color: md-color($md-warn, 700);
-    }
-  }
-
-  &.md-fab {
-    &:hover,
-    &:focus {
-      background-color: md-color($md-accent, A700);
-    }
-  }
-
-  &.md-raised {
-    &:hover,
-    &:focus {
-      background-color: md-color($md-background, 200);
-    }
+// Styles for high contrast mode.
+@media screen and (-ms-high-contrast: active) {
+  [md-raised],
+  [md-fab] {
+    border: 1px solid #fff;
   }
 }
 
-[md-button][disabled],
-[md-button][disabled].md-fab,
-[md-button][disabled].md-raised, {
-  color: md-color($md-foreground, disabled);
-  background-color: transparent;
-  cursor: not-allowed;
-}
+$md-fab-pos-offset: ($md-fab-size - $md-fab-padding) / 2;
+@include md-fab-position(bottom-right, auto, $md-fab-pos-offset, $md-fab-pos-offset, auto);
+@include md-fab-position(bottom-left, auto, auto, $md-fab-pos-offset, $md-fab-pos-offset);
+@include md-fab-position(top-right, $md-fab-pos-offset, $md-fab-pos-offset, auto, auto);
+@include md-fab-position(top-left, $md-fab-pos-offset, auto, auto, $md-fab-pos-offset);

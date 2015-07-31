@@ -1,3 +1,5 @@
+@import 'theme-functions';
+
 // Font
 $font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif !default;
 
@@ -8,6 +10,9 @@ $layout-breakpoint-sm:     600px !default;
 $layout-breakpoint-md:     960px !default;
 $layout-breakpoint-lg:     1200px !default;
 $layout-gutter-width:      ($baseline-grid * 2) !default;
+
+// Typography
+$md-body-font-size-base: rem(1.400) !default;
 
 
 // App bar variables
