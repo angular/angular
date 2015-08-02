@@ -37,14 +37,14 @@ export {ViewEncapsulation} from 'angular2/src/render/api';
 @CONST()
 export class View {
   /**
-   * Specifies an inline template for an angular component.
+   * Specifies a template URL for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
   templateUrl: string;
 
   /**
-   * Specifies a template URL for an angular component.
+   * Specifies an inline template for an angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
