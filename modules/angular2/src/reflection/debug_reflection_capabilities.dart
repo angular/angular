@@ -1,5 +1,6 @@
 library reflection.debug_reflection_capabilities;
 
+import 'dart:mirrors';
 import 'package:logging/logging.dart' as log;
 import 'package:stack_trace/stack_trace.dart';
 import 'types.dart';
@@ -25,7 +26,8 @@ class ReflectionCapabilities extends standard.ReflectionCapabilities {
   }
 
   Function factory(Type type) {
-    _notify('factory', type);
+    ClassMirror classMirror = reflectType(type);
+    _notify('factory', '${classMirror.qualifiedName}');
     return super.factory(type);
   }
 
