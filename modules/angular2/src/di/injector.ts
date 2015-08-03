@@ -15,9 +15,6 @@ import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
 
-const _constructing = CONST_EXPR(new Object());
-const _notFound = CONST_EXPR(new Object());
-
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
 
