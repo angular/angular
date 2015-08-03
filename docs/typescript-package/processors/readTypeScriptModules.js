@@ -63,11 +63,10 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
           var exportDoc = createExportDoc(exportSymbol.name, resolvedExport, moduleDoc, basePath, parseInfo.typeChecker);
           log.debug('>>>> EXPORT: ' + exportDoc.name + ' (' + exportDoc.docType + ') from ' + moduleDoc.id);
 
-          exportDoc.members = [];
-
           // Generate docs for each of the export's members
           if (resolvedExport.flags & ts.SymbolFlags.HasMembers) {
 
+            exportDoc.members = [];
             for(var memberName in resolvedExport.members) {
               // FIXME(alexeagle): why do generic type params appear in members?
               if (memberName === 'T') {
@@ -92,24 +91,21 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
                 exportDoc.newMember = memberDoc;
               }
             }
-          }
 
-          if (exportDoc.docType === 'enum') {
-            for(var memberName in resolvedExport.exports) {
-              log.silly('>>>>>> member: ' + memberName + ' from ' + exportDoc.id + ' in ' + moduleDoc.id);
-              var memberSymbol = resolvedExport.exports[memberName];
-              var memberDoc = createMemberDoc(memberSymbol, exportDoc, basePath, parseInfo.typeChecker);
-              docs.push(memberDoc);
-              exportDoc.members.push(memberDoc);
+            if (sortClassMembers) {
+              exportDoc.members.sort(function(a, b) {
+                if (a.name > b.name) return 1;
+                if (a.name < b.name) return -1;
+                return 0;
+              });
             }
           }
 
-          if (sortClassMembers) {
-            exportDoc.members.sort(function(a, b) {
-              if (a.name > b.name) return 1;
-              if (a.name < b.name) return -1;
-              return 0;
-            });
+          if (exportDoc.docType == 'enum') {
+            exportDoc.members = [];
+            for (var etype in resolvedExport.exports) {
+              exportDoc.members.push(etype);
+            }
           }
 
           // Add this export doc to its module doc
