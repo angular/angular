@@ -624,6 +624,16 @@ export function main() {
         var ast = parseInterpolation(originalExp).ast;
         expect(new Unparser().unparse(ast)).toEqual(originalExp);
       });
+
+      it("should throw on empty interpolation expressions", () => {
+        expect(() => parseInterpolation("{{}}"))
+            .toThrowError(new RegExp(
+                "Parser Error: Blank expressions are not allowed in interpolated strings"));
+
+        expect(() => parseInterpolation("foo {{  }}"))
+            .toThrowError(new RegExp(
+                "Parser Error: Blank expressions are not allowed in interpolated strings"));
+      });
     });
 
     describe("parseSimpleBinding", () => {
