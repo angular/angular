@@ -89,8 +89,9 @@ export class View {
 
   /**
    * Specify how the template and the styles should be encapsulated.
-   * The default is {@link ViewEncapsulation#EMULATED} if the view has styles,
-   * otherwise {@link ViewEncapsulation#NONE}.
+   * The default is {@link ViewEncapsulation#EMULATED `ViewEncapsulation.EMULATED`} if the view
+   * has styles,
+   * otherwise {@link ViewEncapsulation#NONE `ViewEncapsulation.NONE`}.
    */
   encapsulation: ViewEncapsulation;
 
