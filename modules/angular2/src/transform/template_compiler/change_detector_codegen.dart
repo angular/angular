@@ -1,8 +1,9 @@
 library angular2.transform.template_compiler.change_detector_codegen;
 
-import 'dart:convert' show JSON;
 import 'package:angular2/src/change_detection/change_detection_util.dart';
 import 'package:angular2/src/change_detection/coalesce.dart';
+import 'package:angular2/src/change_detection/codegen_facade.dart';
+import 'package:angular2/src/change_detection/codegen_logic_util.dart';
 import 'package:angular2/src/change_detection/codegen_name_util.dart';
 import 'package:angular2/src/change_detection/directive_record.dart';
 import 'package:angular2/src/change_detection/interfaces.dart';
@@ -73,27 +74,26 @@ class _CodegenState {
   final String _changeDetectionMode;
   final List<ProtoRecord> _records;
   final List<DirectiveRecord> _directiveRecords;
+  final CodegenLogicUtil _logic;
   final CodegenNameUtil _names;
   final bool _generateCheckNoChanges;
 
   _CodegenState._(this._changeDetectorDefId, this._contextTypeName,
       this._changeDetectorTypeName, String changeDetectionStrategy,
-      List<ProtoRecord> records, List<DirectiveRecord> directiveRecords,
+      this._records, this._directiveRecords, this._logic, this._names,
       this._generateCheckNoChanges)
-      : _records = records,
-        _directiveRecords = directiveRecords,
-        _names = new CodegenNameUtil(records, directiveRecords, _UTIL),
-        _changeDetectionMode = ChangeDetectionUtil
-            .changeDetectionMode(changeDetectionStrategy);
+      : _changeDetectionMode = ChangeDetectionUtil
+          .changeDetectionMode(changeDetectionStrategy);
 
   factory _CodegenState(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
-    var protoRecords = new ProtoRecordBuilder();
-    def.bindingRecords
-        .forEach((rec) => protoRecords.add(rec, def.variableNames));
-    var records = coalesce(protoRecords.records);
+    var recBuilder = new ProtoRecordBuilder();
+    def.bindingRecords.forEach((rec) => recBuilder.add(rec, def.variableNames));
+    var protoRecords = coalesce(recBuilder.records);
+    var names = new CodegenNameUtil(protoRecords, def.directiveRecords, _UTIL);
+    var logic = new CodegenLogicUtil(names, _UTIL);
     return new _CodegenState._(def.id, typeName, changeDetectorTypeName,
-        def.strategy, records, def.directiveRecords,
+        def.strategy, protoRecords, def.directiveRecords, logic, names,
         def.generateCheckNoChanges);
   }
 
@@ -103,7 +103,7 @@ class _CodegenState {
         ${_genDeclareFields()}
 
         $_changeDetectorTypeName(dispatcher, protos, directiveRecords)
-          : super(${_encodeValue(_changeDetectorDefId)},
+          : super(${codify(_changeDetectorDefId)},
               dispatcher, protos, directiveRecords, '$_changeDetectionMode') {
           dehydrateDirectives(false);
         }
@@ -284,7 +284,7 @@ class _CodegenState {
     var oldValue = _names.getFieldName(r.selfIndex);
     var newValue = _names.getLocalName(r.selfIndex);
     var read = '''
-      ${_genUpdateCurrentValue(r)}
+      ${_logic.genUpdateCurrentValue(r)}
     ''';
 
     var check = '''
@@ -303,7 +303,7 @@ class _CodegenState {
       var condition = r.args.map((a) => _names.getChangeName(a)).join(' || ');
       if (r.isUsedByOtherRecord()) {
         return 'if ($condition) { $genCode } else { $newValue = $oldValue; }';
-      } else  {
+      } else {
         return 'if ($condition) { $genCode }';
       }
     } else {
@@ -311,85 +311,10 @@ class _CodegenState {
     }
   }
 
-  String _genUpdateCurrentValue(ProtoRecord r) {
-    var context = r.contextIndex == -1
-        ? _names.getDirectiveName(r.directiveIndex)
-        : _names.getLocalName(r.contextIndex);
-
-    var newValue = _names.getLocalName(r.selfIndex);
-    var argString = r.args.map((arg) => _names.getLocalName(arg)).join(', ');
-
-    var rhs;
-    switch (r.mode) {
-      case RecordType.SELF:
-        rhs = context;
-        break;
-
-      case RecordType.CONST:
-        rhs = _encodeValue(r.funcOrValue);
-        break;
-
-      case RecordType.PROPERTY:
-        rhs = '$context.${r.name}';
-        break;
-
-      case RecordType.SAFE_PROPERTY:
-        rhs = '${_UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}';
-        break;
-
-      case RecordType.LOCAL:
-        rhs = '${_names.getLocalsAccessorName()}.get("${r.name}")';
-        break;
-
-      case RecordType.INVOKE_METHOD:
-        rhs = '$context.${r.name}($argString)';
-        break;
-
-      case RecordType.SAFE_INVOKE_METHOD:
-        rhs = '${_UTIL}.isValueBlank(${context}) '
-            '? null : ${context}.${r.name}(${argString})';
-        break;
-
-      case RecordType.INVOKE_CLOSURE:
-        rhs = '$context($argString)';
-        break;
-
-      case RecordType.PRIMITIVE_OP:
-        rhs = '$_UTIL.${r.name}($argString)';
-        break;
-
-      case RecordType.COLLECTION_LITERAL:
-        rhs = '$_UTIL.${r.name}($argString)';
-        break;
-
-      case RecordType.INTERPOLATE:
-        rhs = _genInterpolation(r);
-        break;
-
-      case RecordType.KEYED_ACCESS:
-        rhs = '$context[${_names.getLocalName(r.args[0])}]';
-        break;
-
-      default:
-        throw new FormatException(
-            'Unknown operation ${r.mode}', r.expressionAsString);
-    }
-    return '$newValue = $rhs;';
-  }
-
-  String _genInterpolation(ProtoRecord r) {
-    var res = new StringBuffer();
-    for (var i = 0; i < r.args.length; ++i) {
-      var name = _names.getLocalName(r.args[i]);
-      res.write(
-          '${_encodeValue(r.fixedArgs[i])} "\$\{$name == null ? "" : $name\}" ');
-    }
-    res.write(_encodeValue(r.fixedArgs[r.args.length]));
-    return '$res';
-  }
-
   String _genChangeMarker(ProtoRecord r) {
-    return r.argumentToPureFunction ? "${this._names.getChangeName(r.selfIndex)} = true;" : "";
+    return r.argumentToPureFunction
+        ? "${this._names.getChangeName(r.selfIndex)} = true;"
+        : "";
   }
 
   String _genUpdateDirectiveOrElement(ProtoRecord r) {
@@ -438,7 +363,9 @@ class _CodegenState {
   String _maybeFirstInBinding(ProtoRecord r) {
     var prev = ChangeDetectionUtil.protoByIndex(_records, r.selfIndex - 1);
     var firstInBindng = prev == null || prev.bindingRecord != r.bindingRecord;
-    return firstInBindng ? "${_names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};" : '';
+    return firstInBindng
+        ? "${_names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};"
+        : '';
   }
 
   String _genAddToChanges(ProtoRecord r) {
@@ -485,9 +412,6 @@ class _CodegenState {
       }
     ''';
   }
-
-  String _encodeValue(funcOrValue) =>
-      JSON.encode(funcOrValue).replaceAll(r'$', r'\$');
 }
 
 const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';
