@@ -923,7 +923,6 @@ export enum LifecycleEvent {
    *   }
    * }
    * ```
-   * @exportedAs angular2/annotations
    */
   onDestroy,
 
@@ -961,7 +960,6 @@ export enum LifecycleEvent {
    *   }
    * }
    *  ```
-   * @exportedAs angular2/annotations
    */
   onChange,
 
@@ -973,7 +971,7 @@ export enum LifecycleEvent {
    *
    * It is invoked every time even when none of the directive's bindings has changed.
    *
-   * ## Example:
+   * ## Example
    *
    * ```
    * @Directive({
@@ -985,7 +983,6 @@ export enum LifecycleEvent {
    *   }
    * }
    *  ```
-   * @exportedAs angular2/annotations
    */
   onCheck,
 
@@ -997,7 +994,7 @@ export enum LifecycleEvent {
    *
    * It is invoked only once.
    *
-   * ## Example:
+   * ## Example
    *
    * ```
    * @Directive({
@@ -1009,7 +1006,6 @@ export enum LifecycleEvent {
    *   }
    * }
    *  ```
-   * @exportedAs angular2/annotations
    */
   onInit,
 
@@ -1017,7 +1013,7 @@ export enum LifecycleEvent {
    * Notify a directive when the bindings of all its children have been checked (whether they have
    * changed or not).
    *
-   * ## Example:
+   * ## Example
    *
    * ```
    * @Directive({
@@ -1031,7 +1027,6 @@ export enum LifecycleEvent {
    *
    * }
    *  ```
-   * @exportedAs angular2/annotations
    */
   onAllChangesDone
 }

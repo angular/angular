@@ -159,7 +159,6 @@ export class SkipSelfMetadata {
  * var nd = grandChild.get(NeedsDependency);
  * expect(nd.dependency).toBeAnInstanceOf(HostDependency);
  * ```
- * ```
  */
 @CONST()
 export class HostMetadata {
