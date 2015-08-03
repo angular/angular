@@ -48,6 +48,13 @@ var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 var INTERPOLATION_REGEXP = /\{\{(.*?)\}\}/g;
 
+class ParseException extends BaseException {
+  constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
+    super(`Parser Error: ${message} ${errLocation} [${input}] in ${ctxLocation}`, null, null,
+          ctxLocation);
+  }
+}
+
 @Injectable()
 export class Parser {
   _reflector: Reflector;
@@ -88,14 +95,21 @@ export class Parser {
     var expressions = [];
 
     for (var i = 0; i < parts.length; i++) {
-      var part = parts[i];
+      var part: string = parts[i];
       if (i % 2 === 0) {
         // fixed string
         strings.push(part);
-      } else {
+      } else if (part.trim().length > 0) {
         var tokens = this._lexer.tokenize(part);
         var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
         expressions.push(ast);
+      } else {
+        var errLocation = '';
+        for (var j = 0; j < i; j++) {
+          errLocation += j % 2 === 0 ? parts[j] : `{{${parts[j]}}}`;
+        }
+        throw new ParseException('Blank expressions are not allowed in interpolated strings', input,
+                                 `at column ${errLocation.length} in`, location);
       }
     }
     return new ASTWithSource(new Interpolation(strings, expressions), input, location);
@@ -596,8 +610,7 @@ export class _ParseAST {
     var location = (index < this.tokens.length) ? `at column ${this.tokens[index].index + 1} in` :
                                                   `at the end of the expression`;
 
-    throw new BaseException(
-        `Parser Error: ${message} ${location} [${this.input}] in ${this.location}`);
+    throw new ParseException(message, this.input, location, this.location);
   }
 }
 
