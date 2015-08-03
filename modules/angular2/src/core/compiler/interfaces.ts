@@ -6,28 +6,32 @@ import {global} from 'angular2/src/facade/lang';
 // https://github.com/systemjs/systemjs/issues/487 gets closed.
 var __ignore_me = global;
 /**
- * Defines lifecycle method [onChange] called after all of component's bound
- * properties are updated.
+ * Defines lifecycle method {@link annotations/LifeCycleEvent#onChange `LifeCycleEvent.onChange`}
+ * called after all of component's bound properties are updated.
  */
 export interface OnChange { onChange(changes: StringMap<string, any>): void; }
 
 /**
- * Defines lifecycle method [onDestroy] called when a directive is being destroyed.
+ * Defines lifecycle method {@link annotations/LifeCycleEvent#onDestroy `LifeCycleEvent.onDestroy`}
+ * called when a directive is being destroyed.
  */
 export interface OnDestroy { onDestroy(): void; }
 
 /**
- * Defines lifecycle method [onCheck] called when a directive is being checked.
+ * Defines lifecycle method {@link annotations/LifeCycleEvent#onCheck `LifeCycleEvent.onCheck`}
+ * called when a directive is being checked.
  */
 export interface OnCheck { onCheck(): void; }
 
 /**
- * Defines lifecycle method [onInit] called when a directive is being checked the first time.
+ * Defines lifecycle method {@link annotations/LifeCycleEvent#onInit `LifeCycleEvent.onInit`}
+ * called when a directive is being checked the first time.
  */
 export interface OnInit { onInit(): void; }
 
 /**
- * Defines lifecycle method [onAllChangesDone ] called when the bindings of all its children have
- * been changed.
+ * Defines lifecycle method
+ * {@link annotations/LifeCycleEvent#onAllChangesDone `LifeCycleEvent.onAllChangesDone`}
+ * called when the bindings of all its children have been changed.
  */
 export interface OnAllChangesDone { onAllChangesDone(): void; }
