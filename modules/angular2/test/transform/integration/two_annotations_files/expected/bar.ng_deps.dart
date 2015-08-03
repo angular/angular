@@ -51,7 +51,7 @@ class _MyComponent_ChangeDetector0
     }
     if (c_myNum0) {
       l_interpolate1 =
-          "Salad: " "${l_myNum0 == null ? "" : l_myNum0}" " is awesome";
+          "${"Salad: "}${_gen.ChangeDetectionUtil.s(l_myNum0)}${" is awesome"}";
       if (_gen.looseNotIdentical(l_interpolate1, this.interpolate1)) {
         if (throwOnChange) {
           this.throwOnChangeError(this.interpolate1, l_interpolate1);

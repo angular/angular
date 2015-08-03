@@ -7,6 +7,7 @@ import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 import {ProtoRecord, RecordType} from './proto_record';
 import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
+import {CodegenLogicUtil} from './codegen_logic_util';
 
 
 /**
@@ -24,6 +25,7 @@ var IS_CHANGED_LOCAL = "isChanged";
 var CHANGES_LOCAL = "changes";
 
 export class ChangeDetectorJITGenerator {
+  _logic: CodegenLogicUtil;
   _names: CodegenNameUtil;
   _typeName: string;
 
@@ -31,6 +33,7 @@ export class ChangeDetectorJITGenerator {
               public records: List<ProtoRecord>, public directiveRecords: List<any>,
               private generateCheckNoChanges: boolean) {
     this._names = new CodegenNameUtil(this.records, this.directiveRecords, UTIL);
+    this._logic = new CodegenLogicUtil(this._names, UTIL);
     this._typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
@@ -206,7 +209,7 @@ export class ChangeDetectorJITGenerator {
     var oldValue = this._names.getFieldName(r.selfIndex);
     var newValue = this._names.getLocalName(r.selfIndex);
     var read = `
-      ${this._genUpdateCurrentValue(r)}
+      ${this._logic.genUpdateCurrentValue(r)}
     `;
 
     var check = `
@@ -230,80 +233,6 @@ export class ChangeDetectorJITGenerator {
     } else {
       return genCode;
     }
-  }
-
-  _genUpdateCurrentValue(r: ProtoRecord): string {
-    var context = (r.contextIndex == -1) ? this._names.getDirectiveName(r.directiveIndex) :
-                                           this._names.getLocalName(r.contextIndex);
-    var newValue = this._names.getLocalName(r.selfIndex);
-    var argString = r.args.map((arg) => this._names.getLocalName(arg)).join(", ");
-
-    var rhs;
-    switch (r.mode) {
-      case RecordType.SELF:
-        rhs = context;
-        break;
-
-      case RecordType.CONST:
-        rhs = JSON.stringify(r.funcOrValue);
-        break;
-
-      case RecordType.PROPERTY:
-        rhs = `${context}.${r.name}`;
-        break;
-
-      case RecordType.SAFE_PROPERTY:
-        rhs = `${UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}`;
-        break;
-
-      case RecordType.LOCAL:
-        rhs = `${this._names.getLocalsAccessorName()}.get('${r.name}')`;
-        break;
-
-      case RecordType.INVOKE_METHOD:
-        rhs = `${context}.${r.name}(${argString})`;
-        break;
-
-      case RecordType.SAFE_INVOKE_METHOD:
-        rhs = `${UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}(${argString})`;
-        break;
-
-      case RecordType.INVOKE_CLOSURE:
-        rhs = `${context}(${argString})`;
-        break;
-
-      case RecordType.PRIMITIVE_OP:
-        rhs = `${UTIL}.${r.name}(${argString})`;
-        break;
-
-      case RecordType.COLLECTION_LITERAL:
-        rhs = `${UTIL}.${r.name}(${argString})`;
-        break;
-
-      case RecordType.INTERPOLATE:
-        rhs = this._genInterpolation(r);
-        break;
-
-      case RecordType.KEYED_ACCESS:
-        rhs = `${context}[${this._names.getLocalName(r.args[0])}]`;
-        break;
-
-      default:
-        throw new BaseException(`Unknown operation ${r.mode}`);
-    }
-    return `${newValue} = ${rhs}`;
-  }
-
-  _genInterpolation(r: ProtoRecord): string {
-    var res = "";
-    for (var i = 0; i < r.args.length; ++i) {
-      res += JSON.stringify(r.fixedArgs[i]);
-      res += " + ";
-      res += `${UTIL}.s(${this._names.getLocalName(r.args[i])})`;
-      res += " + ";
-    }
-    res += JSON.stringify(r.fixedArgs[r.args.length]);
-    return res;
   }
 
   _genChangeMarker(r: ProtoRecord): string {
