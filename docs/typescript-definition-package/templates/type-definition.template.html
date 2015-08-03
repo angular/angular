@@ -52,7 +52,8 @@ declare module ng {
 
   {%- elif export.docType == 'enum' %} {
     {%- for member in export.members %}
-    {$ member $}{% if not loop.last %},
+    {$ commentBlock(member, 5) $}
+     {$ member.name $}{% if not loop.last %},
     {%- endif -%}
     {%- endfor %}
   }
