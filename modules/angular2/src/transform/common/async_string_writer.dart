@@ -16,7 +16,7 @@ class AsyncStringWriter extends PrintWriter {
       : _curr = curr,
         _bufs = <StringBuffer>[curr];
 
-  AsyncStringWriter() : this._(new StringBuffer());
+  AsyncStringWriter([Object content = ""]) : this._(new StringBuffer(content));
 
   void print(x) {
     _curr.write(x);

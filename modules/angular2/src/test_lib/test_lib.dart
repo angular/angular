@@ -100,7 +100,8 @@ class Expect extends gns.Expect {
   void toThrowError([message = ""]) => toThrowWith(message: message);
   void toThrowErrorWith(message) => expectException(this.actual, message);
   void toBePromise() => gns.guinness.matchers.toBeTrue(actual is Future);
-  void toHaveCssClass(className) => gns.guinness.matchers.toBeTrue(DOM.hasClass(actual, className));
+  void toHaveCssClass(className) =>
+      gns.guinness.matchers.toBeTrue(DOM.hasClass(actual, className));
   void toImplement(expected) => toBeA(expected);
   void toBeNaN() =>
       gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);
@@ -139,7 +140,8 @@ class NotExpect extends gns.NotExpect {
 
   void toEqual(expected) => toHaveSameProps(expected);
   void toBePromise() => gns.guinness.matchers.toBeFalse(actual is Future);
-  void toHaveCssClass(className) => gns.guinness.matchers.toBeFalse(DOM.hasClass(actual, className));
+  void toHaveCssClass(className) =>
+      gns.guinness.matchers.toBeFalse(DOM.hasClass(actual, className));
   void toBeNull() => gns.guinness.matchers.toBeFalse(actual == null);
   Function get _expect => gns.guinness.matchers.expect;
 }

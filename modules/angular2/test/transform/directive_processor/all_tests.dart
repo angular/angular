@@ -24,6 +24,14 @@ void allTests() {
   _testProcessor('should preserve parameter annotations as const instances.',
       'parameter_metadata/soup.dart');
 
+  _testProcessor('should handle `part` directives.', 'part_files/main.dart');
+
+  _testProcessor('should handle multiple `part` directives.',
+      'multiple_part_files/main.dart');
+
+  _testProcessor('should not generate .ng_deps.dart for `part` files.',
+      'part_files/part.dart');
+
   _testProcessor('should recognize custom annotations with package: imports',
       'custom_metadata/package_soup.dart',
       customDescriptors: [
@@ -166,8 +174,9 @@ void _testProcessor(String name, String inputPath,
       if (output == null) {
         expect(await reader.hasInput(expectedNgDepsId)).toBeFalse();
       } else {
-        var input = await reader.readAsString(expectedNgDepsId);
-        expect(formatter.format(output)).toEqual(formatter.format(input));
+        var expectedOutput = await reader.readAsString(expectedNgDepsId);
+        expect(formatter.format(output))
+            .toEqual(formatter.format(expectedOutput));
       }
       if (ngMeta.isEmpty) {
         expect(await reader.hasInput(expectedAliasesId)).toBeFalse();
