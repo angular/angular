@@ -761,7 +761,7 @@ gulp.task('!pre.test.typings', ['docs/typings'], function() {
 
 // -----------------
 gulp.task('test.typings', ['!pre.test.typings'], function() {
-  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/angular2.d.ts'])
+  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/*.d.ts'])
       .pipe(tsc({target: 'ES5', module: 'commonjs',
                  experimentalDecorators: true,
                  noImplicitAny: true,
