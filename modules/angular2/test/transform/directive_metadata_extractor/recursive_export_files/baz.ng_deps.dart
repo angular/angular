@@ -8,7 +8,8 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(BazComponent, new ReflectionInfo(
-        const [const Component(selector: '[baz]')], const [],
-        () => new BazComponent()));
+    ..registerType(
+        BazComponent,
+        new ReflectionInfo(const [const Component(selector: '[baz]')], const [],
+            () => new BazComponent()));
 }

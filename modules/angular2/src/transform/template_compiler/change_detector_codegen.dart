@@ -18,8 +18,10 @@ import 'package:angular2/src/facade/lang.dart' show BaseException;
 class Codegen {
   /// Stores the generated class definitions.
   final StringBuffer _buf = new StringBuffer();
+
   /// Stores all generated initialization code.
   final StringBuffer _initBuf = new StringBuffer();
+
   /// The names of already generated classes.
   final Set<String> _names = new Set<String>();
 
@@ -78,12 +80,18 @@ class _CodegenState {
   final CodegenNameUtil _names;
   final bool _generateCheckNoChanges;
 
-  _CodegenState._(this._changeDetectorDefId, this._contextTypeName,
-      this._changeDetectorTypeName, String changeDetectionStrategy,
-      this._records, this._directiveRecords, this._logic, this._names,
+  _CodegenState._(
+      this._changeDetectorDefId,
+      this._contextTypeName,
+      this._changeDetectorTypeName,
+      String changeDetectionStrategy,
+      this._records,
+      this._directiveRecords,
+      this._logic,
+      this._names,
       this._generateCheckNoChanges)
-      : _changeDetectionMode = ChangeDetectionUtil
-          .changeDetectionMode(changeDetectionStrategy);
+      : _changeDetectionMode =
+            ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy);
 
   factory _CodegenState(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
@@ -92,8 +100,15 @@ class _CodegenState {
     var protoRecords = coalesce(recBuilder.records);
     var names = new CodegenNameUtil(protoRecords, def.directiveRecords, _UTIL);
     var logic = new CodegenLogicUtil(names, _UTIL);
-    return new _CodegenState._(def.id, typeName, changeDetectorTypeName,
-        def.strategy, protoRecords, def.directiveRecords, logic, names,
+    return new _CodegenState._(
+        def.id,
+        typeName,
+        changeDetectorTypeName,
+        def.strategy,
+        protoRecords,
+        def.directiveRecords,
+        logic,
+        names,
         def.generateCheckNoChanges);
   }
 

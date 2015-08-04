@@ -9,10 +9,14 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, new ReflectionInfo(const [
-      const Component(selector: 'hello-app'),
-      const View(template: '<div [a]="b">{{greeting}}</div>')
-    ], const [const []], () => new HelloCmp()))
+    ..registerType(
+        HelloCmp,
+        new ReflectionInfo(const [
+          const Component(selector: 'hello-app'),
+          const View(template: '<div [a]="b">{{greeting}}</div>')
+        ], const [
+          const []
+        ], () => new HelloCmp()))
     ..registerGetters({'b': (o) => o.b, 'greeting': (o) => o.greeting})
     ..registerSetters(
         {'b': (o, v) => o.b = v, 'greeting': (o, v) => o.greeting = v});

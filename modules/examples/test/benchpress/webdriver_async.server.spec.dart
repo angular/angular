@@ -16,8 +16,8 @@ main() {
           .get('http://localhost:8002/examples/src/benchpress/index.html');
 
       var bindings = [
-        bind(WebDriverAdapter).toFactory(
-            () => new AsyncWebDriverAdapter(driver), [])
+        bind(WebDriverAdapter)
+            .toFactory(() => new AsyncWebDriverAdapter(driver), [])
       ];
       runner = new Runner(bindings);
     });
@@ -39,8 +39,7 @@ main() {
 
 Future<WebDriver> createTestDriver() {
   Map env = Platform.environment;
-  return WebDriver.createDriver(
-      desiredCapabilities: {
+  return WebDriver.createDriver(desiredCapabilities: {
     'name': 'Dartium',
     'browserName': 'chrome',
     'chromeOptions': {

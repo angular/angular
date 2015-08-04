@@ -11,14 +11,16 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(HelloCmp, new _ngRef.ReflectionInfo(const [
-      const Component(selector: 'hello-app'),
-      const View(
-          template: r'''{{greeting}}''',
-          templateUrl: r'template.html',
-          styles: const [
-        r'''.greeting { .color: blue; }''',
-        r'''.hello { .color: red; }''',
-      ])
-    ], const [], () => new HelloCmp()));
+    ..registerType(
+        HelloCmp,
+        new _ngRef.ReflectionInfo(const [
+          const Component(selector: 'hello-app'),
+          const View(
+              template: r'''{{greeting}}''',
+              templateUrl: r'template.html',
+              styles: const [
+                r'''.greeting { .color: blue; }''',
+                r'''.hello { .color: red; }''',
+              ])
+        ], const [], () => new HelloCmp()));
 }

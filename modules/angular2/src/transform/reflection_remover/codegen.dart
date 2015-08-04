@@ -9,6 +9,7 @@ class Codegen {
 
   /// The prefix used to import our generated file.
   final String prefix;
+
   /// The import uris
   final Iterable<String> importUris;
 

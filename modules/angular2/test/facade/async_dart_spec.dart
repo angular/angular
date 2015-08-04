@@ -8,6 +8,7 @@ class MockException implements Error {
   var message;
   var stackTrace;
 }
+
 class NonError {
   var message;
 }
@@ -46,54 +47,58 @@ void expectFunctionThatThrowsWithStackTrace(
 main() {
   describe('async facade', () {
     describe('Completer', () {
-      it('should preserve Error stack traces', inject([AsyncTestCompleter],
-          (async) {
-        var c = PromiseWrapper.completer();
+      it(
+          'should preserve Error stack traces',
+          inject([AsyncTestCompleter], (async) {
+            var c = PromiseWrapper.completer();
 
-        expectFunctionThatThrowsWithStackTrace(c.promise, async);
+            expectFunctionThatThrowsWithStackTrace(c.promise, async);
 
-        try {
-          functionThatThrows();
-        } catch (e) {
-          c.reject(e, null);
-        }
-      }));
+            try {
+              functionThatThrows();
+            } catch (e) {
+              c.reject(e, null);
+            }
+          }));
 
-      it('should preserve error stack traces for non-Errors', inject(
-          [AsyncTestCompleter], (async) {
-        var c = PromiseWrapper.completer();
+      it(
+          'should preserve error stack traces for non-Errors',
+          inject([AsyncTestCompleter], (async) {
+            var c = PromiseWrapper.completer();
 
-        expectFunctionThatThrowsWithStackTrace(c.promise, async);
+            expectFunctionThatThrowsWithStackTrace(c.promise, async);
 
-        try {
-          functionThatThrowsNonError();
-        } catch (e, s) {
-          c.reject(e, s);
-        }
-      }));
+            try {
+              functionThatThrowsNonError();
+            } catch (e, s) {
+              c.reject(e, s);
+            }
+          }));
     });
 
     describe('PromiseWrapper', () {
       describe('reject', () {
-        it('should preserve Error stack traces', inject([AsyncTestCompleter],
-            (async) {
-          try {
-            functionThatThrows();
-          } catch (e) {
-            var rejectedFuture = PromiseWrapper.reject(e, null);
-            expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
-          }
-        }));
+        it(
+            'should preserve Error stack traces',
+            inject([AsyncTestCompleter], (async) {
+              try {
+                functionThatThrows();
+              } catch (e) {
+                var rejectedFuture = PromiseWrapper.reject(e, null);
+                expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
+              }
+            }));
 
-        it('should preserve stack traces for non-Errors', inject(
-            [AsyncTestCompleter], (async) {
-          try {
-            functionThatThrowsNonError();
-          } catch (e, s) {
-            var rejectedFuture = PromiseWrapper.reject(e, s);
-            expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
-          }
-        }));
+        it(
+            'should preserve stack traces for non-Errors',
+            inject([AsyncTestCompleter], (async) {
+              try {
+                functionThatThrowsNonError();
+              } catch (e, s) {
+                var rejectedFuture = PromiseWrapper.reject(e, s);
+                expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
+              }
+            }));
       });
     });
   });

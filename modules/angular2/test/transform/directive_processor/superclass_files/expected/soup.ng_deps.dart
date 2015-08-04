@@ -10,7 +10,8 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(ChangingSoupComponent, new _ngRef.ReflectionInfo(
-        const [const Component(selector: '[soup]')], const [],
-        () => new ChangingSoupComponent()));
+    ..registerType(
+        ChangingSoupComponent,
+        new _ngRef.ReflectionInfo(const [const Component(selector: '[soup]')],
+            const [], () => new ChangingSoupComponent()));
 }

@@ -39,8 +39,8 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
   // Note: TemplateCloner(-1) never serializes Nodes into strings.
   // we might want to change this to TemplateCloner(0) to force the serialization
   // later when the transformer also stores the proto view template.
-  var extractor = new _TemplateExtractor(
-      new DomElementSchemaRegistry(), new TemplateCloner(-1), new XhrImpl(reader, entryPoint));
+  var extractor = new _TemplateExtractor(new DomElementSchemaRegistry(),
+      new TemplateCloner(-1), new XhrImpl(reader, entryPoint));
 
   var registrations = new reg.Codegen();
   var changeDetectorClasses = new change.Codegen();
@@ -93,7 +93,8 @@ class _TemplateExtractor {
   ElementSchemaRegistry _schemaRegistry;
   TemplateCloner _templateCloner;
 
-  _TemplateExtractor(ElementSchemaRegistry schemaRegistry, TemplateCloner templateCloner, XHR xhr)
+  _TemplateExtractor(ElementSchemaRegistry schemaRegistry,
+      TemplateCloner templateCloner, XHR xhr)
       : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
@@ -120,10 +121,12 @@ class _TemplateExtractor {
     var pipeline = new CompilePipeline(_factory.createSteps(viewDef));
 
     var compileElements = pipeline.processElements(
-        DOM.createTemplate(templateAndStyles.template), ViewType.COMPONENT,
+        DOM.createTemplate(templateAndStyles.template),
+        ViewType.COMPONENT,
         viewDef);
-    var protoViewDto =
-        compileElements[0].inheritedProtoView.build(_schemaRegistry, _templateCloner);
+    var protoViewDto = compileElements[0]
+        .inheritedProtoView
+        .build(_schemaRegistry, _templateCloner);
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 

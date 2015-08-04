@@ -18,23 +18,27 @@ main() => allTests();
 void allTests() {
   var codegen = new Codegen('web/index.dart', ['web/index.ng_deps.dart']);
   var code = readFile('reflection_remover/index.dart').replaceAll('\r\n', '\n');
-  var bootstrapCode = readFile('reflection_remover/bootstrap_files/index.dart').replaceAll('\r\n', '\n');
+  var bootstrapCode = readFile('reflection_remover/bootstrap_files/index.dart')
+      .replaceAll('\r\n', '\n');
 
-  it('should remove uses of mirrors & '
+  it(
+      'should remove uses of mirrors & '
       'insert calls to generated code by default.', () {
     var output =
         new Rewriter(code, codegen).rewrite(parseCompilationUnit(code));
     expect(output).toEqual(expected.code);
   });
 
-  it('should replace uses of mirrors with the debug implementation & '
+  it(
+      'should replace uses of mirrors with the debug implementation & '
       'insert calls to generated code in `MirrorMode.debug`.', () {
     var output = new Rewriter(code, codegen, mirrorMode: MirrorMode.debug)
         .rewrite(parseCompilationUnit(code));
     expect(output).toEqual(debug_mirrors.code);
   });
 
-  it('should replace uses of mirrors with the verbose implementation '
+  it(
+      'should replace uses of mirrors with the verbose implementation '
       'in `MirrorMode.verbose`.', () {
     var output = new Rewriter(code, codegen, mirrorMode: MirrorMode.verbose)
         .rewrite(parseCompilationUnit(code));

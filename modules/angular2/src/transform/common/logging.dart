@@ -40,6 +40,7 @@ class PrintLogger implements BuildLogger {
   void error(msg, {AssetId asset, SourceSpan span}) {
     throw new PrintLoggerError(msg, asset, span);
   }
+
   Future writeOutput() => null;
   Future addLogFilesFromAsset(AssetId id, [int nextNumber = 1]) => null;
 }

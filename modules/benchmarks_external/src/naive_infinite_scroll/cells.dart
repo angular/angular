@@ -3,25 +3,34 @@ library cells;
 import 'package:angular/angular.dart';
 import 'common.dart';
 
-@Component(selector: 'company-name', template: '''
+@Component(
+    selector: 'company-name',
+    template: '''
     <div style="width: {{width}}">{{company.name}}</div>
-    ''', map: const {'company': '=>company', 'cell-width': '=>width',})
+    ''',
+    map: const {'company': '=>company', 'cell-width': '=>width',})
 class CompanyNameComponent {
   String width;
   Company company;
 }
 
-@Component(selector: 'opportunity-name', template: '''
+@Component(
+    selector: 'opportunity-name',
+    template: '''
     <div style="width: {{width}}">{{opportunity.name}}</div>
-    ''', map: const {'opportunity': '=>opportunity', 'cell-width': '=>width',})
+    ''',
+    map: const {'opportunity': '=>opportunity', 'cell-width': '=>width',})
 class OpportunityNameComponent {
   String width;
   Opportunity opportunity;
 }
 
-@Component(selector: 'offering-name', template: '''
+@Component(
+    selector: 'offering-name',
+    template: '''
     <div style="width: {{width}}">{{offering.name}}</div>
-    ''', map: const {'offering': '=>offering', 'cell-width': '=>width',})
+    ''',
+    map: const {'offering': '=>offering', 'cell-width': '=>width',})
 class OfferingNameComponent {
   String width;
   Offering offering;
@@ -38,7 +47,9 @@ class Stage {
       : '';
 }
 
-@Component(selector: 'stage-buttons', template: '''
+@Component(
+    selector: 'stage-buttons',
+    template: '''
     <div style="width: {{width}}">
         <button ng-repeat="stage in stages"
                 ng-disabled="stage.isDisabled"
@@ -47,7 +58,8 @@ class Stage {
           {{stage.name}}
         </button>
     </div>
-    ''', map: const {'offering': '=>offering', 'cell-width': '=>width',})
+    ''',
+    map: const {'offering': '=>offering', 'cell-width': '=>width',})
 class StageButtonsComponent {
   Offering _offering;
   List<Stage> stages;
@@ -83,13 +95,16 @@ class StageButtonsComponent {
   }
 }
 
-@Component(selector: 'account-cell', template: '''
+@Component(
+    selector: 'account-cell',
+    template: '''
     <div style="width: {{width}}">
       <a href="/account/{{account.accountId}}">
         {{account.accountId}}
       </a>
     </div>
-    ''', map: const {'account': '=>account', 'cell-width': '=>width',})
+    ''',
+    map: const {'account': '=>account', 'cell-width': '=>width',})
 class AccountCellComponent {
   Account account;
   String width;

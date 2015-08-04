@@ -8,8 +8,10 @@ enum NumberFormatStyle { DECIMAL, PERCENT, CURRENCY }
 
 class NumberFormatter {
   static String format(num number, String locale, NumberFormatStyle style,
-      {int minimumIntegerDigits: 1, int minimumFractionDigits: 0,
-      int maximumFractionDigits: 3, String currency,
+      {int minimumIntegerDigits: 1,
+      int minimumFractionDigits: 0,
+      int maximumFractionDigits: 3,
+      String currency,
       bool currencyAsSymbol: false}) {
     locale = _normalizeLocale(locale);
     NumberFormat formatter;

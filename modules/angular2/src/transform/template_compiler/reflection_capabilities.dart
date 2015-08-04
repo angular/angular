@@ -39,8 +39,10 @@ _nullMethod(Object p, List a) => null;
 class RecordingReflectionCapabilities extends NullReflectionCapabilities {
   /// The names of all requested `getter`s.
   final Set<String> getterNames = new Set<String>();
+
   /// The names of all requested `setter`s.
   final Set<String> setterNames = new Set<String>();
+
   /// The names of all requested `method`s.
   final Set<String> methodNames = new Set<String>();
 

@@ -94,8 +94,8 @@ class NgZone {
     } else {
       _innerZone = _createInnerZone(Zone.current,
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone,
-              error,
-              StackTrace trace) => _onErrorWithoutLongStackTrace(error, trace));
+                  error, StackTrace trace) =>
+              _onErrorWithoutLongStackTrace(error, trace));
     }
   }
 
@@ -231,7 +231,8 @@ class NgZone {
       _run(self, parent, zone, () => fn(arg));
 
   dynamic _runBinary(Zone self, ZoneDelegate parent, Zone zone, fn(arg1, arg2),
-      arg1, arg2) => _run(self, parent, zone, () => fn(arg1, arg2));
+          arg1, arg2) =>
+      _run(self, parent, zone, () => fn(arg1, arg2));
 
   void _scheduleMicrotask(Zone self, ZoneDelegate parent, Zone zone, fn) {
     _pendingMicrotasks++;

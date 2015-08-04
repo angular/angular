@@ -65,8 +65,8 @@ class UIMessageBusSource extends MessageBusSource {
         rawDataStream = port.asBroadcastStream();
 
   Future<SendPort> get sink => rawDataStream.firstWhere((message) {
-    return message is SendPort;
-  });
+        return message is SendPort;
+      });
 
   int addListener(Function fn) {
     var subscription = rawDataStream.listen((message) {

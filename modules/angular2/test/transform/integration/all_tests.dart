@@ -13,7 +13,8 @@ main() {
 
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
-    ['web/index.dart'], reflectionEntryPoints: ['web/index.dart']));
+    ['web/index.dart'],
+    reflectionEntryPoints: ['web/index.dart']));
 
 class IntegrationTestConfig {
   final String name;
@@ -92,14 +93,12 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart': 'synthetic_ctor_files/expected/bar.ng_deps.dart'
     }),
-    new IntegrationTestConfig('should preserve multiple annotations.',
-        inputs: {
+    new IntegrationTestConfig('should preserve multiple annotations.', inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
       'angular2|lib/src/core/annotations_impl/view.dart':
           '../../../lib/src/core/annotations_impl/view.dart'
-    },
-        outputs: {
+    }, outputs: {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'
     })
@@ -108,7 +107,6 @@ void allTests() {
   var cache = {};
 
   for (var config in tests) {
-
     // Read in input & output files.
     config.assetPathToInputPath
       ..addAll(commonInputs)
@@ -122,8 +120,14 @@ void allTests() {
         return value.endsWith('dart') ? formatter.format(code) : code;
       });
     });
-    testPhases(config.name, [[transform]], config.assetPathToInputPath,
-        config.assetPathToExpectedOutputPath, [],
+    testPhases(
+        config.name,
+        [
+          [transform]
+        ],
+        config.assetPathToInputPath,
+        config.assetPathToExpectedOutputPath,
+        [],
         StringFormatter.noNewlinesOrSurroundingWhitespace);
   }
 }

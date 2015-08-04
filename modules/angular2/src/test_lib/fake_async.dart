@@ -23,25 +23,25 @@ Function fakeAsync(Function fn) {
     throw 'fakeAsync() calls can not be nested';
   }
 
-  return ([a0 = _u, a1 = _u, a2 = _u, a3 = _u, a4 = _u, a5 = _u, a6 = _u,
-      a7 = _u, a8 = _u, a9 = _u]) {
+  return (
+      [a0 = _u,
+      a1 = _u,
+      a2 = _u,
+      a3 = _u,
+      a4 = _u,
+      a5 = _u,
+      a6 = _u,
+      a7 = _u,
+      a8 = _u,
+      a9 = _u]) {
     // runZoned() to install a custom exception handler that re-throws
     return runZoned(() {
       return new quiver.FakeAsync().run((quiver.FakeAsync async) {
         try {
           _fakeAsync = async;
-          List args = [
-            a0,
-            a1,
-            a2,
-            a3,
-            a4,
-            a5,
-            a6,
-            a7,
-            a8,
-            a9
-          ].takeWhile((a) => a != _u).toList();
+          List args = [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9]
+              .takeWhile((a) => a != _u)
+              .toList();
           var res = Function.apply(fn, args);
           _fakeAsync.flushMicrotasks();
 
@@ -84,8 +84,7 @@ void tick([int millis = 0]) {
  * This is not needed in Dart. Because quiver correctly removes a timer when
  * it throws an exception.
  */
-void clearPendingTimers() {
-}
+void clearPendingTimers() {}
 
 /**
  * Flush any pending microtasks.

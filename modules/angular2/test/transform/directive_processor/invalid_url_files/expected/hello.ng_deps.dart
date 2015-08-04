@@ -11,11 +11,13 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(HelloCmp, new _ngRef.ReflectionInfo(const [
-      const Component(selector: 'hello-app'),
-      const View(
-          template: r'''''',
-          templateUrl: r'/bad/absolute/url.html',
-          styles: const [r'''''', r'''''',])
-    ], const [], () => new HelloCmp()));
+    ..registerType(
+        HelloCmp,
+        new _ngRef.ReflectionInfo(const [
+          const Component(selector: 'hello-app'),
+          const View(
+              template: r'''''',
+              templateUrl: r'/bad/absolute/url.html',
+              styles: const [r'''''', r'''''',])
+        ], const [], () => new HelloCmp()));
 }

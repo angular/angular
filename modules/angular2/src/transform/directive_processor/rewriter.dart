@@ -30,9 +30,14 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new AsyncStringWriter();
-  var visitor = new CreateNgDepsVisitor(writer, assetId,
-      new XhrImpl(reader, assetId), annotationMatcher, _interfaceMatcher,
-      ngMeta, inlineViews: inlineViews);
+  var visitor = new CreateNgDepsVisitor(
+      writer,
+      assetId,
+      new XhrImpl(reader, assetId),
+      annotationMatcher,
+      _interfaceMatcher,
+      ngMeta,
+      inlineViews: inlineViews);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
 
@@ -76,9 +81,14 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(AsyncStringWriter writer, AssetId assetId, XHR xhr,
-      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher,
-      this.ngMeta, {bool inlineViews})
+  CreateNgDepsVisitor(
+      AsyncStringWriter writer,
+      AssetId assetId,
+      XHR xhr,
+      AnnotationMatcher annotationMatcher,
+      InterfaceMatcher interfaceMatcher,
+      this.ngMeta,
+      {bool inlineViews})
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),

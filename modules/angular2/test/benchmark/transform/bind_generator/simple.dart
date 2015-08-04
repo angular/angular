@@ -16,8 +16,9 @@ allTests() {
 Future<double> runBenchmark() async {
   var options = new TransformerOptions(['this_is_ignored.dart']);
   var files = {new AssetId('a', 'a.ng_deps.dart'): aContents};
-  return new TransformerBenchmark([[new BindGenerator(options)]], files)
-      .measure();
+  return new TransformerBenchmark([
+    [new BindGenerator(options)]
+  ], files).measure();
 }
 
 const aContents = '''

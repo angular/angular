@@ -8,11 +8,16 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(SoupComponent, new ReflectionInfo(const [
-      const Component(
-          componentServices: const [SaladComponent], properties: const ['menu'])
-    ], const [], () => new SoupComponent()))
-    ..registerType(SaladComponent, new ReflectionInfo(
-        const [const Component(properties: const ['menu'])], const [],
-        () => new SaladComponent()));
+    ..registerType(
+        SoupComponent,
+        new ReflectionInfo(const [
+          const Component(
+              componentServices: const [SaladComponent],
+              properties: const ['menu'])
+        ], const [], () => new SoupComponent()))
+    ..registerType(
+        SaladComponent,
+        new ReflectionInfo(const [
+          const Component(properties: const ['menu'])
+        ], const [], () => new SaladComponent()));
 }

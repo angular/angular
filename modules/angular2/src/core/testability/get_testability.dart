@@ -10,8 +10,17 @@ import 'dart:js' as js;
 // Proxies a Dart function that accepts up to 10 parameters.
 js.JsFunction _jsFunction(Function fn) {
   const Object X = __varargSentinel;
-  return new js.JsFunction.withThis((thisArg, [o1 = X, o2 = X, o3 = X, o4 = X,
-      o5 = X, o6 = X, o7 = X, o8 = X, o9 = X, o10 = X]) {
+  return new js.JsFunction.withThis((thisArg,
+      [o1 = X,
+      o2 = X,
+      o3 = X,
+      o4 = X,
+      o5 = X,
+      o6 = X,
+      o7 = X,
+      o8 = X,
+      o9 = X,
+      o10 = X]) {
     return __invokeFn(fn, o1, o2, o3, o4, o5, o6, o7, o8, o9, o10);
   });
 }
@@ -88,8 +97,8 @@ class GetTestability {
     });
     js.context['getAllAngularTestabilities'] = _jsify(() {
       List<Testability> testabilities = registry.getAllTestabilities();
-      List<PublicTestability> publicTestabilities = 
-        testabilities.map((testability) => new PublicTestability(testability));
+      List<PublicTestability> publicTestabilities = testabilities
+          .map((testability) => new PublicTestability(testability));
       return _jsify(publicTestabilities);
     });
   }

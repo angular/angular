@@ -11,7 +11,11 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(MyComponent, new _ngRef.ReflectionInfo(
-        const [const Component(componentServices: const [MyContext])],
-        const [const [MyContext]], (MyContext c) => new MyComponent(c)));
+    ..registerType(
+        MyComponent,
+        new _ngRef.ReflectionInfo(const [
+          const Component(componentServices: const [MyContext])
+        ], const [
+          const [MyContext]
+        ], (MyContext c) => new MyComponent(c)));
 }

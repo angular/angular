@@ -8,7 +8,8 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(FooComponent, new ReflectionInfo(
-        const [const Component(selector: '[fo' 'o]')], const [],
-        () => new FooComponent()));
+    ..registerType(
+        FooComponent,
+        new ReflectionInfo(const [const Component(selector: '[fo' 'o]')],
+            const [], () => new FooComponent()));
 }

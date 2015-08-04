@@ -12,8 +12,9 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(MyComponent, new _ngRef.ReflectionInfo(
-        const [const Component(selector: '[soup]')], const [],
-        () => new MyComponent()));
+    ..registerType(
+        MyComponent,
+        new _ngRef.ReflectionInfo(const [const Component(selector: '[soup]')],
+            const [], () => new MyComponent()));
   i0.initReflector();
 }

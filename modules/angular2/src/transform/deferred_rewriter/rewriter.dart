@@ -44,8 +44,8 @@ class Rewriter {
     visitor.loadLibraryInvocations.sort(compare);
 
     var buf = new StringBuffer();
-    var idx = visitor.deferredImports.fold(0,
-        (int lastIdx, ImportDirective node) {
+    var idx =
+        visitor.deferredImports.fold(0, (int lastIdx, ImportDirective node) {
       buf.write(code.substring(lastIdx, node.offset));
 
       var import = code.substring(node.offset, node.end);
@@ -120,8 +120,7 @@ class _FindDeferredLibraries extends Object with RecursiveAstVisitor<Object> {
         .map((asset) => _reader.hasInput(asset)));
 
     // Filter out any deferred imports that do not have ng_deps.
-    deferredImports = it
-        .zip([deferredImports, hasInputs])
+    deferredImports = it.zip([deferredImports, hasInputs])
         .where((importHasInput) => importHasInput[1])
         .map((importHasInput) => importHasInput[0])
         .toList();

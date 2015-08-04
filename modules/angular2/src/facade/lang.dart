@@ -20,9 +20,11 @@ int ENUM_INDEX(value) => value.index;
 class CONST {
   const CONST();
 }
+
 class ABSTRACT {
   const ABSTRACT();
 }
+
 class IMPLEMENTS {
   final interfaceClass;
   const IMPLEMENTS(this.interfaceClass);
@@ -161,12 +163,15 @@ class RegExpWrapper {
     return new RegExp(regExpStr,
         multiLine: multiLine, caseSensitive: caseSensitive);
   }
+
   static Match firstMatch(RegExp regExp, String input) {
     return regExp.firstMatch(input);
   }
+
   static bool test(RegExp regExp, String input) {
     return regExp.hasMatch(input);
   }
+
   static Iterator<Match> matcher(RegExp regExp, String input) {
     return regExp.allMatches(input).iterator;
   }
@@ -263,19 +268,28 @@ class Json {
 }
 
 class DateWrapper {
-  static DateTime create(int year, [int month = 1, int day = 1, int hour = 0,
-      int minutes = 0, int seconds = 0, int milliseconds = 0]) {
+  static DateTime create(int year,
+      [int month = 1,
+      int day = 1,
+      int hour = 0,
+      int minutes = 0,
+      int seconds = 0,
+      int milliseconds = 0]) {
     return new DateTime(year, month, day, hour, minutes, seconds, milliseconds);
   }
+
   static DateTime fromMillis(int ms) {
     return new DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
   }
+
   static int toMillis(DateTime date) {
     return date.millisecondsSinceEpoch;
   }
+
   static DateTime now() {
     return new DateTime.now();
   }
+
   static String toJson(DateTime date) {
     return date.toUtc().toIso8601String();
   }

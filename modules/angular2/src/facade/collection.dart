@@ -42,22 +42,25 @@ class MapWrapper {
   static Map toStringMap(Map m) => m;
 
   static Map createFromPairs(List pairs) => pairs.fold({}, (m, p) {
-    m[p[0]] = p[1];
-    return m;
-  });
+        m[p[0]] = p[1];
+        return m;
+      });
   static forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }
+
   static get(Map map, key) => map[key];
   static int size(Map m) => m.length;
   static void delete(Map m, k) {
     m.remove(k);
   }
+
   static void clearValues(Map m) {
     for (var k in m.keys) {
       m[k] = null;
     }
   }
+
   static Iterable iterable(Map m) => new IterableMap(m);
   static List keys(Map m) => m.keys.toList();
   static List values(Map m) => m.values.toList();
@@ -70,12 +73,15 @@ class StringMapWrapper {
   static void set(Map map, key, value) {
     map[key] = value;
   }
+
   static void delete(Map m, k) {
     m.remove(k);
   }
+
   static void forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }
+
   static Map merge(Map a, Map b) {
     var m = new Map.from(a);
     if (b != null) {
@@ -83,9 +89,11 @@ class StringMapWrapper {
     }
     return m;
   }
+
   static List<String> keys(Map<String, dynamic> a) {
     return a.keys.toList();
   }
+
   static bool isEmpty(Map m) => m.isEmpty;
   static bool equals(Map m1, Map m2) {
     if (m1.length != m2.length) {
@@ -111,6 +119,7 @@ class ListWrapper {
   static void set(List m, int k, v) {
     m[k] = v;
   }
+
   static bool contains(List m, k) => m.contains(k);
   static List map(list, fn(item)) => list.map(fn).toList();
   static List filter(List list, bool fn(item)) => list.where(fn).toList();
@@ -124,9 +133,11 @@ class ListWrapper {
   static void forEach(Iterable list, fn(item)) {
     list.forEach(fn);
   }
+
   static reduce(List list, fn(a, b), init) {
     return list.fold(init, fn);
   }
+
   static first(List list) => list.isEmpty ? null : list.first;
   static last(List list) => list.isEmpty ? null : list.last;
   static List reversed(List list) => list.reversed.toList();
@@ -136,25 +147,30 @@ class ListWrapper {
       ..setRange(0, a.length, a)
       ..setRange(a.length, a.length + b.length, b);
   }
+
   static void insert(List l, int index, value) {
     l.insert(index, value);
   }
+
   static removeAt(List l, int index) => l.removeAt(index);
   static void removeAll(List list, List items) {
     for (var i = 0; i < items.length; ++i) {
       list.remove(items[i]);
     }
   }
+
   static removeLast(List list) => list.removeLast();
   static bool remove(List list, item) => list.remove(item);
   static void clear(List l) {
     l.clear();
   }
+
   static String join(List l, String s) => l.join(s);
   static bool isEmpty(Iterable list) => list.isEmpty;
   static void fill(List l, value, [int start = 0, int end]) {
     l.fillRange(_startOffset(l, start), _endOffset(l, end), value);
   }
+
   static bool equals(List a, List b) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; ++i) {
@@ -162,9 +178,11 @@ class ListWrapper {
     }
     return true;
   }
+
   static List slice(List l, [int from = 0, int to]) {
     return l.sublist(_startOffset(l, from), _endOffset(l, to));
   }
+
   static List splice(List l, int from, int length) {
     from = _startOffset(l, from);
     var to = from + length;
@@ -172,6 +190,7 @@ class ListWrapper {
     l.removeRange(from, to);
     return sub;
   }
+
   static void sort(List l, [compareFn(a, b) = null]) {
     if (compareFn == null) {
       l.sort();

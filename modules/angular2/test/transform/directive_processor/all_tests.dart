@@ -35,9 +35,9 @@ void allTests() {
       'custom_metadata/relative_soup.dart',
       assetId: new AssetId('soup', 'lib/relative_soup.dart'),
       customDescriptors: [
-    const ClassDescriptor('Soup', 'package:soup/annotations/soup.dart',
-        superClass: 'Component'),
-  ]);
+        const ClassDescriptor('Soup', 'package:soup/annotations/soup.dart',
+            superClass: 'Component'),
+      ]);
 
   _testProcessor(
       'Requires the specified import.', 'custom_metadata/bad_soup.dart',
@@ -50,14 +50,18 @@ void allTests() {
       'should inline `templateUrl` values.', 'url_expression_files/hello.dart');
 
   var absoluteReader = new TestAssetReader();
-  absoluteReader.addAsset(new AssetId('other_package', 'lib/template.html'),
+  absoluteReader.addAsset(
+      new AssetId('other_package', 'lib/template.html'),
       readFile(
           'directive_processor/absolute_url_expression_files/template.html'));
-  absoluteReader.addAsset(new AssetId('other_package', 'lib/template.css'),
+  absoluteReader.addAsset(
+      new AssetId('other_package', 'lib/template.css'),
       readFile(
           'directive_processor/absolute_url_expression_files/template.css'));
-  _testProcessor('should inline `templateUrl` and `styleUrls` values expressed'
-      ' as absolute urls.', 'absolute_url_expression_files/hello.dart',
+  _testProcessor(
+      'should inline `templateUrl` and `styleUrls` values expressed'
+      ' as absolute urls.',
+      'absolute_url_expression_files/hello.dart',
       reader: absoluteReader);
 
   _testProcessor(
@@ -68,12 +72,16 @@ void allTests() {
       readFile('directive_processor/multiple_style_urls_files/template.html'));
   absoluteReader.addAsset(new AssetId('a', 'lib/template.css'),
       readFile('directive_processor/multiple_style_urls_files/template.css'));
-  absoluteReader.addAsset(new AssetId('a', 'lib/template_other.css'), readFile(
-      'directive_processor/multiple_style_urls_files/template_other.css'));
+  absoluteReader.addAsset(
+      new AssetId('a', 'lib/template_other.css'),
+      readFile(
+          'directive_processor/multiple_style_urls_files/template_other.css'));
   _testProcessor(
       'shouldn\'t inline multiple `styleUrls` values expressed as absolute '
-      'urls.', 'multiple_style_urls_not_inlined_files/hello.dart',
-      inlineViews: false, reader: absoluteReader);
+      'urls.',
+      'multiple_style_urls_not_inlined_files/hello.dart',
+      inlineViews: false,
+      reader: absoluteReader);
 
   _testProcessor('should inline `templateUrl`s expressed as adjacent strings.',
       'split_url_expression_files/hello.dart');
@@ -118,12 +126,16 @@ void allTests() {
       'static_function_files/hello.dart');
 
   _testProcessor('should find direcive aliases patterns.',
-      'directive_aliases_files/hello.dart', reader: absoluteReader);
+      'directive_aliases_files/hello.dart',
+      reader: absoluteReader);
 }
 
 void _testProcessor(String name, String inputPath,
-    {List<AnnotationDescriptor> customDescriptors: const [], AssetId assetId,
-    AssetReader reader, List<String> expectedLogs, bool inlineViews: true,
+    {List<AnnotationDescriptor> customDescriptors: const [],
+    AssetId assetId,
+    AssetReader reader,
+    List<String> expectedLogs,
+    bool inlineViews: true,
     bool isolate: false}) {
   var testFn = isolate ? iit : it;
   testFn(name, () async {
@@ -149,7 +161,8 @@ void _testProcessor(String name, String inputPath,
         ..addAll(customDescriptors);
       var ngMeta = new NgMeta.empty();
       var output = await createNgDeps(
-          reader, inputId, annotationMatcher, ngMeta, inlineViews: inlineViews);
+          reader, inputId, annotationMatcher, ngMeta,
+          inlineViews: inlineViews);
       if (output == null) {
         expect(await reader.hasInput(expectedNgDepsId)).toBeFalse();
       } else {

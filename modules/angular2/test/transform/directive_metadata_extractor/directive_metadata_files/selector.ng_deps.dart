@@ -9,7 +9,8 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, new ReflectionInfo(
-        const [const Component(selector: 'hello-app')], const [const []],
-        () => new HelloCmp()));
+    ..registerType(
+        HelloCmp,
+        new ReflectionInfo(const [const Component(selector: 'hello-app')],
+            const [const []], () => new HelloCmp()));
 }

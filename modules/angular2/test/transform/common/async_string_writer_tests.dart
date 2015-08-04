@@ -79,7 +79,8 @@ void allTests() {
     return Future.wait([f1, f2]);
   });
 
-  it('should handle calls to async methods that complete in reverse '
+  it(
+      'should handle calls to async methods that complete in reverse '
       'order while waiting.', () {
     var completer1 = new Completer<String>();
     var completer2 = new Completer<String>();

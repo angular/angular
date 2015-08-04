@@ -30,9 +30,13 @@ class HammerGesturesPlugin extends HammerGesturesPluginCommon {
       var mc = new js.JsObject(js.context['Hammer'], [element]);
 
       var jsObj = mc.callMethod('get', ['pinch']);
-      jsObj.callMethod('set', [new js.JsObject.jsify({'enable': true})]);
+      jsObj.callMethod('set', [
+        new js.JsObject.jsify({'enable': true})
+      ]);
       jsObj = mc.callMethod('get', ['rotate']);
-      jsObj.callMethod('set', [new js.JsObject.jsify({'enable': true})]);
+      jsObj.callMethod('set', [
+        new js.JsObject.jsify({'enable': true})
+      ]);
 
       mc.callMethod('on', [
         eventName,

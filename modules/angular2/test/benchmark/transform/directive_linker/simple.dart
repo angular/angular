@@ -19,7 +19,9 @@ Future<double> runBenchmark() async {
     new AssetId('a', 'b.ng_deps.dart'): bContents,
     new AssetId('a', 'c.ng_deps.dart'): cContents,
   };
-  return new TransformerBenchmark([[new DirectiveLinker()]], files).measure();
+  return new TransformerBenchmark([
+    [new DirectiveLinker()]
+  ], files).measure();
 }
 
 const aContents = '''

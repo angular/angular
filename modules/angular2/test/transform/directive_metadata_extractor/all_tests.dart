@@ -39,9 +39,12 @@ void allTests() {
     });
 
     it('should parse compile children values', () async {
-      var ngDeps = await NgDeps.parse(reader, new AssetId('a',
-          'directive_metadata_extractor/'
-          'directive_metadata_files/compile_children.ng_deps.dart'));
+      var ngDeps = await NgDeps.parse(
+          reader,
+          new AssetId(
+              'a',
+              'directive_metadata_extractor/'
+              'directive_metadata_files/compile_children.ng_deps.dart'));
       var it = ngDeps.registeredTypes.iterator;
 
       // Unset value defaults to `true`.
@@ -124,30 +127,39 @@ void allTests() {
 
     it('should fail when a class is annotated with multiple Directives.',
         () async {
-      var ngDeps = await NgDeps.parse(reader, new AssetId('a',
-          'directive_metadata_extractor/'
-          'directive_metadata_files/too_many_directives.ng_deps.dart'));
-      expect(() => ngDeps.registeredTypes.first.directiveMetadata).toThrowWith(
-          anInstanceOf: PrintLoggerError);
+      var ngDeps = await NgDeps.parse(
+          reader,
+          new AssetId(
+              'a',
+              'directive_metadata_extractor/'
+              'directive_metadata_files/too_many_directives.ng_deps.dart'));
+      expect(() => ngDeps.registeredTypes.first.directiveMetadata)
+          .toThrowWith(anInstanceOf: PrintLoggerError);
     });
   });
 
   describe('extractMetadata', () {
     it('should generate `DirectiveMetadata` from .ng_deps.dart files.',
         () async {
-      var extracted = await extractDirectiveMetadata(reader, new AssetId(
-          'a', 'directive_metadata_extractor/simple_files/foo.ng_deps.dart'));
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId('a',
+              'directive_metadata_extractor/simple_files/foo.ng_deps.dart'));
       expect(extracted.types).toContain('FooComponent');
 
       var extractedMeta = extracted.types['FooComponent'];
       expect(extractedMeta.selector).toEqual('[foo]');
     });
 
-    it('should generate `DirectiveMetadata` from .ng_deps.dart files that use '
+    it(
+        'should generate `DirectiveMetadata` from .ng_deps.dart files that use '
         'automatic adjacent string concatenation.', () async {
-      var extracted = await extractDirectiveMetadata(reader, new AssetId('a',
-          'directive_metadata_extractor/adjacent_strings_files/'
-          'foo.ng_deps.dart'));
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId(
+              'a',
+              'directive_metadata_extractor/adjacent_strings_files/'
+              'foo.ng_deps.dart'));
       expect(extracted.types).toContain('FooComponent');
 
       var extractedMeta = extracted.types['FooComponent'];
@@ -155,8 +167,10 @@ void allTests() {
     });
 
     it('should include `DirectiveMetadata` from exported files.', () async {
-      var extracted = await extractDirectiveMetadata(reader, new AssetId(
-          'a', 'directive_metadata_extractor/export_files/foo.ng_deps.dart'));
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId('a',
+              'directive_metadata_extractor/export_files/foo.ng_deps.dart'));
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
 
@@ -166,8 +180,10 @@ void allTests() {
 
     it('should include `DirectiveMetadata` recursively from exported files.',
         () async {
-      var extracted = await extractDirectiveMetadata(reader, new AssetId('a',
-          'directive_metadata_extractor/recursive_export_files/foo.ng_deps.dart'));
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId('a',
+              'directive_metadata_extractor/recursive_export_files/foo.ng_deps.dart'));
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
       expect(extracted.types).toContain('BazComponent');
@@ -177,13 +193,18 @@ void allTests() {
       expect(extracted.types['BazComponent'].selector).toEqual('[baz]');
     });
 
-    it('should include `DirectiveMetadata` from exported files '
+    it(
+        'should include `DirectiveMetadata` from exported files '
         'expressed as absolute uris', () async {
-      reader.addAsset(new AssetId('bar', 'lib/bar.ng_deps.dart'), readFile(
-          'directive_metadata_extractor/absolute_export_files/bar.ng_deps.dart'));
+      reader.addAsset(
+          new AssetId('bar', 'lib/bar.ng_deps.dart'),
+          readFile(
+              'directive_metadata_extractor/absolute_export_files/bar.ng_deps.dart'));
 
-      var extracted = await extractDirectiveMetadata(reader, new AssetId('a',
-          'directive_metadata_extractor/absolute_export_files/foo.ng_deps.dart'));
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId('a',
+              'directive_metadata_extractor/absolute_export_files/foo.ng_deps.dart'));
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
 
@@ -192,11 +213,15 @@ void allTests() {
     });
 
     it('should include directive aliases', () async {
-      reader.addAsset(new AssetId('bar', 'lib/bar.ng_deps.dart'), readFile(
-          'directive_metadata_extractor/directive_aliases_files/bar.ng_deps.dart'));
+      reader.addAsset(
+          new AssetId('bar', 'lib/bar.ng_deps.dart'),
+          readFile(
+              'directive_metadata_extractor/directive_aliases_files/bar.ng_deps.dart'));
 
-      var extracted = await extractDirectiveMetadata(reader, new AssetId('a',
-          'directive_metadata_extractor/directive_aliases_files/foo.ng_deps.dart'));
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId('a',
+              'directive_metadata_extractor/directive_aliases_files/foo.ng_deps.dart'));
       expect(extracted.aliases).toContain('alias1');
       expect(extracted.aliases).toContain('alias2');
       expect(extracted.aliases['alias1']).toContain('BarComponent');

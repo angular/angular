@@ -16,8 +16,10 @@ class Rewriter {
   final MirrorMode _mirrorMode;
   final bool _writeStaticInit;
 
-  Rewriter(this._code, this._codegen, {AstTester tester,
-      MirrorMode mirrorMode: MirrorMode.none, bool writeStaticInit: true})
+  Rewriter(this._code, this._codegen,
+      {AstTester tester,
+      MirrorMode mirrorMode: MirrorMode.none,
+      bool writeStaticInit: true})
       : _mirrorMode = mirrorMode,
         _writeStaticInit = writeStaticInit,
         _tester = tester == null ? const AstTester() : tester;
@@ -132,9 +134,8 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
             'Found bootstrap${node.argumentList}. Transform may not succeed.');
       }
 
-      var reflectorInit = _setupAdded
-          ? ''
-          : ', () { ${_getStaticReflectorInitBlock()} }';
+      var reflectorInit =
+          _setupAdded ? '' : ', () { ${_getStaticReflectorInitBlock()} }';
 
       // rewrite `bootstrap(...)` to `bootstrapStatic(...)`
       buf.write('bootstrapStatic(${args[0]}');

@@ -49,188 +49,183 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) =>
             create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10]).reflectee;
       case 11:
-        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) => create(
-            name, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11]).reflectee;
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) =>
+            create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11])
+                .reflectee;
       case 12:
-        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) => create(
-            name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12
-        ]).reflectee;
+        return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) =>
+            create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12])
+                .reflectee;
       case 13:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) =>
             create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13
-        ]).reflectee;
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13
+            ]).reflectee;
       case 14:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) =>
             create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14
-        ]).reflectee;
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14
+            ]).reflectee;
       case 15:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14,
-            a15) => create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14,
-          a15
-        ]).reflectee;
+                a15) =>
+            create(name, [
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14,
+              a15
+            ]).reflectee;
       case 16:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14,
-            a15, a16) => create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14,
-          a15,
-          a16
-        ]).reflectee;
+                a15, a16) =>
+            create(name, [
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14,
+              a15,
+              a16
+            ]).reflectee;
       case 17:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14,
-            a15, a16, a17) => create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14,
-          a15,
-          a16,
-          a17
-        ]).reflectee;
+                a15, a16, a17) =>
+            create(name, [
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14,
+              a15,
+              a16,
+              a17
+            ]).reflectee;
       case 18:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14,
-            a15, a16, a17, a18) => create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14,
-          a15,
-          a16,
-          a17,
-          a18
-        ]).reflectee;
+                a15, a16, a17, a18) =>
+            create(name, [
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14,
+              a15,
+              a16,
+              a17,
+              a18
+            ]).reflectee;
       case 19:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14,
-            a15, a16, a17, a18, a19) => create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14,
-          a15,
-          a16,
-          a17,
-          a18,
-          a19
-        ]).reflectee;
+                a15, a16, a17, a18, a19) =>
+            create(name, [
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14,
+              a15,
+              a16,
+              a17,
+              a18,
+              a19
+            ]).reflectee;
       case 20:
         return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14,
-            a15, a16, a17, a18, a19, a20) => create(name, [
-          a1,
-          a2,
-          a3,
-          a4,
-          a5,
-          a6,
-          a7,
-          a8,
-          a9,
-          a10,
-          a11,
-          a12,
-          a13,
-          a14,
-          a15,
-          a16,
-          a17,
-          a18,
-          a19,
-          a20
-        ]).reflectee;
+                a15, a16, a17, a18, a19, a20) =>
+            create(name, [
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12,
+              a13,
+              a14,
+              a15,
+              a16,
+              a17,
+              a18,
+              a19,
+              a20
+            ]).reflectee;
     }
 
     throw "Cannot create a factory for '${stringify(type)}' because its constructor has more than 20 arguments";

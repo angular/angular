@@ -48,8 +48,8 @@ abstract class ClassMatcherBase {
     if (descriptor == null) return false;
     if (interfaces.contains(descriptor)) return true;
     if (descriptor.superClass == null) return false;
-    var superClass = _classDescriptors.firstWhere(
-        (a) => a.name == descriptor.superClass, orElse: () => null);
+    var superClass = _classDescriptors
+        .firstWhere((a) => a.name == descriptor.superClass, orElse: () => null);
     if (superClass == null) {
       if (missingSuperClassWarning != null &&
           missingSuperClassWarning.isNotEmpty) {
@@ -74,7 +74,8 @@ ImportDirective _getMatchingImport(
     name = className.name;
   }
   if (name != descriptor.name) return null;
-  return (className.root as CompilationUnit).directives
+  return (className.root as CompilationUnit)
+      .directives
       .where((d) => d is ImportDirective)
       .firstWhere((ImportDirective i) {
     var importMatch = false;
@@ -106,8 +107,10 @@ bool isMatch(
 class ClassDescriptor {
   /// The name of the class.
   final String name;
+
   /// A `package:` style import path to the file where the class is defined.
   final String import;
+
   /// The class that this class extends or implements. This is the only optional
   /// field.
   final String superClass;

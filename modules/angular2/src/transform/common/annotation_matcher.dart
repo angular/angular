@@ -86,7 +86,8 @@ class AnnotationMatcher extends ClassMatcherBase {
     ClassDescriptor descriptor = firstMatch(annotation.name, assetId);
     if (descriptor == null) return false;
     return implements(descriptor, interfaces,
-        missingSuperClassWarning: 'Missing `custom_annotation` entry for `${descriptor.superClass}`.');
+        missingSuperClassWarning:
+            'Missing `custom_annotation` entry for `${descriptor.superClass}`.');
   }
 
   /// Checks if an [Annotation] node implements [Injectable].

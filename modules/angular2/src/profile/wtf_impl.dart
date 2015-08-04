@@ -12,7 +12,7 @@ var context = null;
 var _trace;
 var _events;
 var _createScope;
-var   _leaveScope;
+var _leaveScope;
 var _beginTimeRange;
 var _endTimeRange;
 final List _arg1 = [null];
@@ -39,14 +39,14 @@ int getArgSize(String signature) {
   int end = signature.indexOf(')', start);
   bool found = false;
   int count = 0;
-  for(var i = start; i < end; i++) {
+  for (var i = start; i < end; i++) {
     var ch = signature[i];
     if (identical(ch, ',')) {
       found = false;
     }
     if (!found) {
       found = true;
-      count ++;
+      count++;
     }
   }
   return count;
@@ -56,24 +56,24 @@ dynamic createScope(String signature, [flags]) {
   _arg2[0] = signature;
   _arg2[1] = flags;
   var jsScope = _createScope.apply(_arg2, thisArg: _events);
-  switch(getArgSize(signature)) {
+  switch (getArgSize(signature)) {
     case 0:
-        return ([arg0, arg1]) {
-            return jsScope.apply(const []);
-        };
+      return ([arg0, arg1]) {
+        return jsScope.apply(const []);
+      };
     case 1:
-        return ([arg0, arg1]) {
-          _arg1[0] = arg0;
-          return jsScope.apply(_arg1);
-        };
+      return ([arg0, arg1]) {
+        _arg1[0] = arg0;
+        return jsScope.apply(_arg1);
+      };
     case 2:
-        return ([arg0, arg1]) {
-          _arg2[0] = arg0;
-          _arg2[1] = arg1;
-          return jsScope.apply(_arg1);
-        };
+      return ([arg0, arg1]) {
+        _arg2[0] = arg0;
+        _arg2[1] = arg1;
+        return jsScope.apply(_arg1);
+      };
     default:
-        throw "Max 2 arguments are supported.";
+      throw "Max 2 arguments are supported.";
   }
 }
 

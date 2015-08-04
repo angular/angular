@@ -24,6 +24,7 @@ class ScrollItemComponent implements ShadowRootAware {
       'justify-content': 'space-between',
     });
   }
+
   get companyNameWidth => '${COMPANY_NAME_WIDTH}px';
   get opportunityNameWidth => '${OPPORTUNITY_NAME_WIDTH}px';
   get offeringNameWidth => '${OFFERING_NAME_WIDTH}px';

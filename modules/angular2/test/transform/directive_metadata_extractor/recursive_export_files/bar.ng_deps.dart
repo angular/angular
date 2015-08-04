@@ -11,8 +11,9 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(BarComponent, new ReflectionInfo(
-        const [const Component(selector: '[bar]')], const [],
-        () => new BarComponent()));
+    ..registerType(
+        BarComponent,
+        new ReflectionInfo(const [const Component(selector: '[bar]')], const [],
+            () => new BarComponent()));
   i0.initReflector(reflector);
 }

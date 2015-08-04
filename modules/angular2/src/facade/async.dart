@@ -46,6 +46,7 @@ class TimerWrapper {
       fn();
     });
   }
+
   static void clearInterval(Timer timer) {
     timer.cancel();
   }

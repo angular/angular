@@ -10,12 +10,16 @@ import 'package:angular2/src/transform/common/names.dart';
 class RegisteredType {
   /// The type registered by this call.
   final Identifier typeName;
+
   /// The actual call to `Reflector#registerType`.
   final MethodInvocation registerMethod;
+
   /// The factory method registered.
   final Expression factoryFn;
+
   /// The parameters registered.
   final Expression parameters;
+
   /// The annotations registered.
   final Expression annotations;
 

@@ -108,7 +108,8 @@ class _DirectiveMetadataVisitor extends Object
     var directiveType = _getDirectiveType('${node.name}', node.element);
     if (directiveType >= 0) {
       if (_hasMeta) {
-        throw new FormatException('Only one Directive is allowed per class. '
+        throw new FormatException(
+            'Only one Directive is allowed per class. '
             'Found "$node" but already processed "$meta".',
             '$node' /* source */);
       }
@@ -125,7 +126,8 @@ class _DirectiveMetadataVisitor extends Object
         '${node.constructorName.type.name}', node.staticElement);
     if (directiveType >= 0) {
       if (_hasMeta) {
-        throw new FormatException('Only one Directive is allowed per class. '
+        throw new FormatException(
+            'Only one Directive is allowed per class. '
             'Found "$node" but already processed "$meta".',
             '$node' /* source */);
       }
@@ -177,8 +179,10 @@ class _DirectiveMetadataVisitor extends Object
   String _expressionToString(Expression node, String nodeDescription) {
     var value = node.accept(_evaluator);
     if (value is! String) {
-      throw new FormatException('Angular 2 could not understand the value '
-          'in $nodeDescription.', '$node' /* source */);
+      throw new FormatException(
+          'Angular 2 could not understand the value '
+          'in $nodeDescription.',
+          '$node' /* source */);
     }
     return value;
   }
@@ -203,7 +207,8 @@ class _DirectiveMetadataVisitor extends Object
     if (evaluated is! bool) {
       throw new FormatException(
           'Angular 2 expects a bool but could not understand the value for '
-          'Directive#compileChildren.', '$compileChildrenValue' /* source */);
+          'Directive#compileChildren.',
+          '$compileChildrenValue' /* source */);
     }
     _compileChildren = evaluated;
   }
@@ -216,7 +221,8 @@ class _DirectiveMetadataVisitor extends Object
     if (evaluated is! Map) {
       throw new FormatException(
           'Angular 2 expects a Map but could not understand the value for '
-          '$propertyName.', '$expression' /* source */);
+          '$propertyName.',
+          '$expression' /* source */);
     }
     evaluated.forEach((key, value) {
       if (value != null) {
@@ -233,7 +239,8 @@ class _DirectiveMetadataVisitor extends Object
     if (evaluated is! List) {
       throw new FormatException(
           'Angular 2 expects a List but could not understand the value for '
-          '$propertyName.', '$expression' /* source */);
+          '$propertyName.',
+          '$expression' /* source */);
     }
     list.addAll(evaluated);
   }

@@ -8,8 +8,10 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(ToolTip, new ReflectionInfo(const [
-      const Directive(
-          selector: '[tool-tip]', properties: const ['text: tool-tip'])
-    ], const [], () => new ToolTip()));
+    ..registerType(
+        ToolTip,
+        new ReflectionInfo(const [
+          const Directive(
+              selector: '[tool-tip]', properties: const ['text: tool-tip'])
+        ], const [], () => new ToolTip()));
 }

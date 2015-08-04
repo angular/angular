@@ -16,8 +16,9 @@ allTests() {
 Future runBenchmark() async {
   var options = new TransformerOptions(['index.dart']);
   var files = {new AssetId('a', 'web/a.ng_deps.dart'): aContents,};
-  return new TransformerBenchmark([[new TemplateCompiler(options)]], files)
-      .measure();
+  return new TransformerBenchmark([
+    [new TemplateCompiler(options)]
+  ], files).measure();
 }
 
 const aContents = '''

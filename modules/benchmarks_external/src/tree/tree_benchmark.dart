@@ -50,16 +50,17 @@ main() {
     selector: 'tree',
     map: const {'data': '=>data'},
     template: '<span> {{data.value}}'
-    '<span ng-if="data.right != null"><tree data=data.right></span>'
-    '<span ng-if="data.left != null"><tree data=data.left></span>'
-    '</span>')
+        '<span ng-if="data.right != null"><tree data=data.right></span>'
+        '<span ng-if="data.left != null"><tree data=data.left></span>'
+        '</span>')
 class TreeComponent {
   var data;
 }
 
 buildTree(maxDepth, values, curDepth) {
   if (maxDepth == curDepth) return new TreeNode('');
-  return new TreeNode(values[curDepth],
+  return new TreeNode(
+      values[curDepth],
       buildTree(maxDepth, values, curDepth + 1),
       buildTree(maxDepth, values, curDepth + 1));
 }

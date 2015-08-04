@@ -51,25 +51,41 @@ class TransformerOptions {
   /// The "correct" number of phases varies with the structure of the app.
   final int optimizationPhases;
 
-  TransformerOptions._internal(this.entryPoints, this.reflectionEntryPoints,
-      this.modeName, this.mirrorMode, this.initReflector,
-      this.annotationMatcher, this.optimizationPhases,
-      this.generateChangeDetectors, this.inlineViews);
+  TransformerOptions._internal(
+      this.entryPoints,
+      this.reflectionEntryPoints,
+      this.modeName,
+      this.mirrorMode,
+      this.initReflector,
+      this.annotationMatcher,
+      this.optimizationPhases,
+      this.generateChangeDetectors,
+      this.inlineViews);
 
   factory TransformerOptions(List<String> entryPoints,
-      {List<String> reflectionEntryPoints, String modeName: 'release',
-      MirrorMode mirrorMode: MirrorMode.none, bool initReflector: true,
+      {List<String> reflectionEntryPoints,
+      String modeName: 'release',
+      MirrorMode mirrorMode: MirrorMode.none,
+      bool initReflector: true,
       List<ClassDescriptor> customAnnotationDescriptors: const [],
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
-      bool inlineViews: true, bool generateChangeDetectors: true}) {
+      bool inlineViews: true,
+      bool generateChangeDetectors: true}) {
     if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {
       reflectionEntryPoints = entryPoints;
     }
     var annotationMatcher = new AnnotationMatcher()
       ..addAll(customAnnotationDescriptors);
     optimizationPhases = optimizationPhases.isNegative ? 0 : optimizationPhases;
-    return new TransformerOptions._internal(entryPoints, reflectionEntryPoints,
-        modeName, mirrorMode, initReflector, annotationMatcher,
-        optimizationPhases, generateChangeDetectors, inlineViews);
+    return new TransformerOptions._internal(
+        entryPoints,
+        reflectionEntryPoints,
+        modeName,
+        mirrorMode,
+        initReflector,
+        annotationMatcher,
+        optimizationPhases,
+        generateChangeDetectors,
+        inlineViews);
   }
 }

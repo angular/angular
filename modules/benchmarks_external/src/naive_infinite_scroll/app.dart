@@ -5,7 +5,9 @@ import 'dart:html';
 import 'package:angular/angular.dart';
 import 'package:angular2/src/test_lib/benchmark_util.dart';
 
-@Component(selector: 'scroll-app', template: '''
+@Component(
+    selector: 'scroll-app',
+    template: '''
     <div>
         <div style="display: flex">
           <scroll-area scroll-top="scrollTop"></scroll-area>

@@ -25,7 +25,8 @@ void allTests() {
     expect(output).toEqual(expected);
   });
 
-  it('should generate a single setter when multiple annotations bind to the '
+  it(
+      'should generate a single setter when multiple annotations bind to the '
       'same property.', () async {
     var inputPath =
         'bind_generator/duplicate_bind_name_files/soup.ng_deps.dart';

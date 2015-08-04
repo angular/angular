@@ -5,7 +5,9 @@ import "package:angular2/http.dart" show Jsonp;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 
 @Component(selector: "jsonp-app")
-@View(directives: const [NgFor], template: '''
+@View(
+    directives: const [NgFor],
+    template: '''
     <h1>people</h1>
     <ul class="people">
       <li *ng-for="#person of people">

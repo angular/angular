@@ -11,9 +11,14 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, new ReflectionInfo(const [
-      const Component(selector: 'hello-app'),
-      const View(template: 'goodbye-app', directives: const [prefix.GoodbyeCmp])
-    ], const [const []], () => new HelloCmp()));
+    ..registerType(
+        HelloCmp,
+        new ReflectionInfo(const [
+          const Component(selector: 'hello-app'),
+          const View(
+              template: 'goodbye-app', directives: const [prefix.GoodbyeCmp])
+        ], const [
+          const []
+        ], () => new HelloCmp()));
   i0.initReflector(reflector);
 }

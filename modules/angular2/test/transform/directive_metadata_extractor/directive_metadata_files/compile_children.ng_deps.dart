@@ -8,12 +8,16 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(UnsetComp, new ReflectionInfo(
-        const [const Directive()], const [const []], () => new UnsetComp()))
-    ..registerType(FalseComp, new ReflectionInfo(
-        const [const Directive(compileChildren: false)], const [const []],
-        () => new FalseComp()))
-    ..registerType(TrueComp, new ReflectionInfo(
-        const [const Directive(compileChildren: true)], const [const []],
-        () => new TrueComp()));
+    ..registerType(
+        UnsetComp,
+        new ReflectionInfo(
+            const [const Directive()], const [const []], () => new UnsetComp()))
+    ..registerType(
+        FalseComp,
+        new ReflectionInfo(const [const Directive(compileChildren: false)],
+            const [const []], () => new FalseComp()))
+    ..registerType(
+        TrueComp,
+        new ReflectionInfo(const [const Directive(compileChildren: true)],
+            const [const []], () => new TrueComp()));
 }

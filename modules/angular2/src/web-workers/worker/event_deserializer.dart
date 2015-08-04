@@ -31,10 +31,10 @@ class GenericEvent {
   Point get page => _getPoint('page');
   Point get screen => _getPoint('screen');
 
-  EventTarget get target{
-    if (_target != null){
+  EventTarget get target {
+    if (_target != null) {
       return _target;
-    } else if (properties.containsKey("target")){
+    } else if (properties.containsKey("target")) {
       _target = new EventTarget(properties['target']);
       return _target;
     } else {

@@ -9,13 +9,16 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, new ReflectionInfo(const [
-      const Component(
-          host: const {
-        '(change)': 'onChange(\$event)',
-        '[value]': 'value',
-        '@actionName': 'actionValue',
-        'attName': 'attValue'
-      })
-    ], const [const []], () => new HelloCmp()));
+    ..registerType(
+        HelloCmp,
+        new ReflectionInfo(const [
+          const Component(host: const {
+            '(change)': 'onChange(\$event)',
+            '[value]': 'value',
+            '@actionName': 'actionValue',
+            'attName': 'attValue'
+          })
+        ], const [
+          const []
+        ], () => new HelloCmp()));
 }

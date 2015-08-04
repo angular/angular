@@ -16,8 +16,9 @@ allTests() {
 Future runBenchmark() async {
   var options = new TransformerOptions(['web/index.dart']);
   var files = {new AssetId('a', 'web/index.dart'): indexContents,};
-  return new TransformerBenchmark([[new ReflectionRemover(options)]], files)
-      .measure();
+  return new TransformerBenchmark([
+    [new ReflectionRemover(options)]
+  ], files).measure();
 }
 
 const indexContents = '''

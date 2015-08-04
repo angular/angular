@@ -23,8 +23,7 @@ main() {
       });
     });
 
-    it("should return itself when called the first time",
-        () {
+    it("should return itself when called the first time", () {
       final d = factory.create(changeDetectorRef);
       final c = new ObservableList.from([1, 2]);
       expect(d.diff(c)).toBe(d);

@@ -10,9 +10,12 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(SoupComponent, new _ngRef.ReflectionInfo(
-        const [const Component(selector: '[soup]')], const [
-      const [String, Tasty],
-      const [const Inject(Salt)]
-    ], (String description, salt) => new SoupComponent(description, salt)));
+    ..registerType(
+        SoupComponent,
+        new _ngRef.ReflectionInfo(const [
+          const Component(selector: '[soup]')
+        ], const [
+          const [String, Tasty],
+          const [const Inject(Salt)]
+        ], (String description, salt) => new SoupComponent(description, salt)));
 }

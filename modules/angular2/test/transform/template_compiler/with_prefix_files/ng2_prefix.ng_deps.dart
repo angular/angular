@@ -9,8 +9,12 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(MyApp, new ReflectionInfo(const [
-      const ng2.Component(selector: 'my-app'),
-      const ng2.View(template: 'MyApp {{name}}')
-    ], const [const []], () => new MyApp()));
+    ..registerType(
+        MyApp,
+        new ReflectionInfo(const [
+          const ng2.Component(selector: 'my-app'),
+          const ng2.View(template: 'MyApp {{name}}')
+        ], const [
+          const []
+        ], () => new MyApp()));
 }

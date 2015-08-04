@@ -62,12 +62,8 @@ DateTime randomDate(int seed, {DateTime minDate}) {
 }
 
 String randomString(int seed) {
-  return new String.fromCharCodes(new List.generate(const [
-    5,
-    7,
-    9,
-    11,
-    13
-  ][seed % 5], (i) =>
-      'a'.codeUnitAt(0) + const [0, 1, 2, 3, 4, 5, 6, 7, 8][seed % 9] + i));
+  return new String.fromCharCodes(new List.generate(
+      const [5, 7, 9, 11, 13][seed % 5],
+      (i) =>
+          'a'.codeUnitAt(0) + const [0, 1, 2, 3, 4, 5, 6, 7, 8][seed % 9] + i));
 }

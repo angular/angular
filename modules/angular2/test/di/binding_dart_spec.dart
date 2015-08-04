@@ -40,7 +40,9 @@ main() {
 }
 
 class Foo {}
+
 class Bar extends Foo {}
+
 fn() => null;
 
 class Annotation {

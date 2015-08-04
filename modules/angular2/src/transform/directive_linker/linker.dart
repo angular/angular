@@ -116,5 +116,6 @@ Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
         retVal[directive] = ngDepsUri;
       }
     }, onError: (_) => null);
-  })).then((_) => retVal);
+  }))
+      .then((_) => retVal);
 }

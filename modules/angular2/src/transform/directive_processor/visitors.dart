@@ -124,6 +124,7 @@ class _CtorTransformVisitor extends ToSourceVisitor {
   }
 
   @override
+
   /// Overridden to avoid outputting grouping operators for default parameters.
   Object visitFormalParameterList(FormalParameterList node) {
     writer.print('(');

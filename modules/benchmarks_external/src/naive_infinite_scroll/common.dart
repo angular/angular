@@ -40,7 +40,8 @@ const AAT_STATUS_LIST = const ['Active', 'Passive', 'Abandoned'];
 
 // Imitate Streamy entities.
 
-class RawEntity extends Object with MapMixin<String, dynamic>
+class RawEntity extends Object
+    with MapMixin<String, dynamic>
     implements ObservableMap<String, dynamic> {
   ObservableMap _data = new ObservableMap();
 
@@ -113,10 +114,12 @@ class RawEntity extends Object with MapMixin<String, dynamic>
   void notifyChange(ChangeRecord record) {
     _data.notifyChange(record);
   }
+
   @override
   void observed() {
     _data.observed();
   }
+
   @override
   void unobserved() {
     _data.observed();
