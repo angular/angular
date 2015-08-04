@@ -15,7 +15,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {Event, KeyboardEvent} from 'angular2/src/facade/browser';
 
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
-import {KEY_UP, KEY_DOWN, KEY_SPACE} from 'angular2_material/src/core/constants';
+import {KeyCodes} from 'angular2_material/src/core/key_codes';
 
 // TODO(jelbourn): Behaviors to test
 // Disabled radio don't select
@@ -37,12 +37,12 @@ var _uniqueIdCounter: number = 0;
   events: ['change'],
   properties: ['disabled', 'value'],
   host: {
+    'role': 'radiogroup',
+    '[attr.aria-disabled]': 'disabled',
+    '[attr.aria-activedescendant]': 'activedescendant',
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
     '(^keydown)': 'onKeydown($event)',
     '[tabindex]': 'tabindex',
-    '[attr.role]': '"radiogroup"',
-    '[attr.aria-disabled]': 'disabled',
-    '[attr.aria-activedescendant]': 'activedescendant'
   }
 })
 @View({
@@ -141,11 +141,11 @@ export class MdRadioGroup {
     }
 
     switch (event.keyCode) {
-      case KEY_UP:
+      case KeyCodes.UP:
         this.stepSelectedRadio(-1);
         event.preventDefault();
         break;
-      case KEY_DOWN:
+      case KeyCodes.DOWN:
         this.stepSelectedRadio(1);
         event.preventDefault();
         break;
@@ -154,7 +154,7 @@ export class MdRadioGroup {
 
   // TODO(jelbourn): Replace this with a findIndex method in the collections facade.
   getSelectedRadioIndex(): number {
-    for (var i = 0; i < this.radios_.length; i++) {
+    for (let i = 0; i < this.radios_.length; i++) {
       if (this.radios_[i].id == this.selectedRadioId) {
         return i;
       }
@@ -165,12 +165,12 @@ export class MdRadioGroup {
 
   /** Steps the selected radio based on the given step value (usually either +1 or -1). */
   stepSelectedRadio(step) {
-    var index = this.getSelectedRadioIndex() + step;
+    let index = this.getSelectedRadioIndex() + step;
     if (index < 0 || index >= this.radios_.length) {
       return;
     }
 
-    var radio = this.radios_[index];
+    let radio = this.radios_[index];
 
     // If the next radio is line is disabled, skip it (maintaining direction).
     if (radio.disabled) {
@@ -191,15 +191,15 @@ export class MdRadioGroup {
 
 @Component({
   selector: 'md-radio-button',
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.onInit],
   properties: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
-    '(keydown)': 'onKeydown($event)',
+    'role': 'radio',
     '[id]': 'id',
     '[tabindex]': 'tabindex',
-    '[attr.role]': 'role',
     '[attr.aria-checked]': 'checked',
-    '[attr.aria-disabled]': 'disabled'
+    '[attr.aria-disabled]': 'disabled',
+    '(keydown)': 'onKeydown($event)',
   }
 })
 @View({
@@ -231,8 +231,6 @@ export class MdRadioButton {
 
   tabindex: number;
 
-  role: string;
-
   constructor(@Optional() @SkipSelf() @Host() radioGroup: MdRadioGroup, @Attribute('id') id: string,
               @Attribute('tabindex') tabindex: string, radioDispatcher: MdRadioDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
@@ -241,8 +239,6 @@ export class MdRadioButton {
     this.radioGroup = radioGroup;
     this.radioDispatcher = radioDispatcher;
     this.value = null;
-
-    this.role = 'radio';
     this.checked = false;
 
     this.id = isPresent(id) ? id : `md-radio-${_uniqueIdCounter++}`;
@@ -269,7 +265,7 @@ export class MdRadioButton {
   }
 
   /** Change handler invoked when bindings are resolved or when bindings have changed. */
-  onChange(_) {
+  onInit() {
     if (isPresent(this.radioGroup)) {
       this.name = this.radioGroup.getName();
     }
@@ -311,7 +307,7 @@ export class MdRadioButton {
 
   /** Handles pressing the space key to select this focused radio button. */
   onKeydown(event: KeyboardEvent) {
-    if (event.keyCode == KEY_SPACE) {
+    if (event.keyCode == KeyCodes.SPACE) {
       event.preventDefault();
       this.select(event);
     }

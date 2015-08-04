@@ -1169,7 +1169,7 @@ gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs']
     BENCHPRESS_BUNDLE_CONFIG.dest,
     cb
   );
-})
+});
 
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)

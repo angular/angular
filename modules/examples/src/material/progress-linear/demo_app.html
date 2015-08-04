@@ -1,36 +1,34 @@
-<link>
-
 <div style="width: 500px;">
   <h2>Progress-linear demo</h2>
 
   <p>
     Determinate: primary
-    <md-progress-linear md-mode="determinate" [value]="progress" class="md-accent">
+    <md-progress-linear mode="determinate" [value]="progress" class="md-accent">
     </md-progress-linear>
   </p>
 
   <p>
     Determinate: accent
-    <md-progress-linear md-mode="determinate" [value]="progress" class="md-primary">
+    <md-progress-linear mode="determinate" [value]="progress" class="md-primary">
     </md-progress-linear>
   </p>
 
   <p>
     Buffer
-    <md-progress-linear md-mode="buffer"
+    <md-progress-linear mode="buffer"
         [value]="progress" [buffer-value]="progress + (200 / progress)" class="md-warn">
     </md-progress-linear>
   </p>
 
   <p>
     Indeterminate
-    <md-progress-linear md-mode="indeterminate" class="md-primary">
+    <md-progress-linear mode="indeterminate" class="md-primary">
     </md-progress-linear>
   </p>
 
   <p>
     Query
-    <md-progress-linear md-mode="query" class="md-accent">
+    <md-progress-linear mode="query" class="md-accent">
     </md-progress-linear>
   </p>
 

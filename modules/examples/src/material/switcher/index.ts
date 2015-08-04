@@ -1,11 +1,17 @@
-import {bootstrap, Component, View} from 'angular2/bootstrap';
+import {bootstrap, Component, View, ViewEncapsulation} from 'angular2/bootstrap';
 import {MdSwitch} from 'angular2_material/src/components/switcher/switch';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
 
-@Component({selector: 'demo-app'})
-@View({templateUrl: './demo_app.html', directives: [MdSwitch]})
+@Component({
+  selector: 'demo-app',
+})
+@View({
+  templateUrl: './demo_app.html',
+  directives: [MdSwitch],
+  encapsulation: ViewEncapsulation.NONE,
+})
 class DemoApp {
   toggleCount: number;
 

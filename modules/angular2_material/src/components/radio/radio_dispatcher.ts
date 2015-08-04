@@ -14,7 +14,7 @@ export class MdRadioDispatcher {
 
   /** Notify other nadio buttons that selection for the given name has been set. */
   notify(name: string) {
-    ListWrapper.forEach(this.listeners_, (f) => f(name));
+    this.listeners_.forEach(listener => listener(name));
   }
 
   /** Listen for future changes to radio button selection. */

@@ -16,7 +16,14 @@ import {Math} from 'angular2/src/facade/math';
 // TODO(jelbourn): Conditional (responsive) column count / row size.
 // TODO(jelbourn): Re-layout on window resize / media change (debounced).
 // TODO(jelbourn): gridTileHeader and gridTileFooter.
-// TODO(jelbourn): rowHeightMode enum (after TS conversion).
+
+/** Row hieght mode options. Use a static class b/c TypeScript enums are strictly number-based. */
+class RowHeightMode {
+  static FIT = 'fit';
+  static FIXED = 'fixed';
+  static RATIO = 'ratio';
+}
+
 
 @Component({
   selector: 'md-grid-list',
@@ -64,19 +71,19 @@ export class MdGridList {
 
   /** Set internal representation of row height from the user-provided value. */
   set rowHeight(value) {
-    if (value === 'fit') {
-      this.rowHeightMode = 'fit';
+    if (value === RowHeightMode.FIT) {
+      this.rowHeightMode = RowHeightMode.FIT;
     } else if (StringWrapper.contains(value, ':')) {
-      var ratioParts = value.split(':');
+      let ratioParts = value.split(':');
       if (ratioParts.length !== 2) {
         throw `md-grid-list: invalid ratio given for row-height: "${value}"`;
       }
 
-      this.rowHeightMode = 'ratio';
+      this.rowHeightMode = RowHeightMode.RATIO;
       this.rowHeightRatio =
           NumberWrapper.parseFloat(ratioParts[0]) / NumberWrapper.parseFloat(ratioParts[1]);
     } else {
-      this.rowHeightMode = 'fixed';
+      this.rowHeightMode = RowHeightMode.FIXED;
       this.fixedRowHeight = value;
     }
   }
@@ -87,20 +94,13 @@ export class MdGridList {
 
   /** Computes and applies the size and position for all children grid tiles. */
   layoutTiles() {
-    var tracker = new TileCoordinator(this.cols, this.tiles);
+    let tracker = new TileCoordinator(this.cols, this.tiles);
     this.rows = tracker.rowCount;
 
-    for (var i = 0; i < this.tiles.length; i++) {
-      var pos = tracker.positions[i];
-      var tile = this.tiles[i];
-      var style = this.getTileStyle(tile, pos.row, pos.col);
-
-      tile.styleWidth = style.width;
-      tile.styleHeight = style.height;
-      tile.styleTop = style.top;
-      tile.styleLeft = style.left;
-      tile.styleMarginTop = style.marginTop;
-      tile.stylePaddingTop = style.paddingTop;
+    for (let i = 0; i < this.tiles.length; i++) {
+      let pos = tracker.positions[i];
+      let tile = this.tiles[i];
+      tile.style = this.getTileStyle(tile, pos.row, pos.col);
     }
   }
 
@@ -164,55 +164,50 @@ export class MdGridList {
   /** Gets the style properties to be applied to a tile for the given row and column index. */
   getTileStyle(tile: MdGridTile, rowIndex: number, colIndex: number): TileStyle {
     // Percent of the available horizontal space that one column takes up.
-    var percentWidthPerTile = 100 / this.cols;
+    let percentWidthPerTile = 100 / this.cols;
 
     // Fraction of the vertical gutter size that each column takes up.
     // For example, if there are 5 columns, each column uses 4/5 = 0.8 times the gutter width.
-    var gutterWidthFractionPerTile = (this.cols - 1) / this.cols;
+    let gutterWidthFractionPerTile = (this.cols - 1) / this.cols;
 
     // Base horizontal size of a column.
-    var baseTileWidth = this.getBaseTileSize(percentWidthPerTile, gutterWidthFractionPerTile);
+    let baseTileWidth = this.getBaseTileSize(percentWidthPerTile, gutterWidthFractionPerTile);
 
     // The width and horizontal position of each tile is always calculated the same way, but the
     // height and vertical position depends on the rowMode.
-    var tileStyle = new TileStyle();
+    let tileStyle = new TileStyle();
     tileStyle.left = this.getTilePosition(baseTileWidth, colIndex);
     tileStyle.width = this.getTileSize(baseTileWidth, tile.colspan);
 
-    // TODO: make cases enums when we support enums
-    switch (this.rowHeightMode) {
-      case 'fixed':
-        // In fixed mode, simply use the given row height.
-        tileStyle.top = this.getTilePosition(this.fixedRowHeight, rowIndex);
-        tileStyle.height = this.getTileSize(this.fixedRowHeight, tile.rowspan);
-        break;
+    if (this.rowHeightMode == RowHeightMode.FIXED) {
+      // In fixed mode, simply use the given row height.
+      tileStyle.top = this.getTilePosition(this.fixedRowHeight, rowIndex);
+      tileStyle.height = this.getTileSize(this.fixedRowHeight, tile.rowspan);
+    }
 
-      case 'ratio':
-        var percentHeightPerTile = percentWidthPerTile / this.rowHeightRatio;
-        var baseTileHeight = this.getBaseTileSize(percentHeightPerTile, gutterWidthFractionPerTile);
+    if (this.rowHeightMode == RowHeightMode.RATIO) {
+      let percentHeightPerTile = percentWidthPerTile / this.rowHeightRatio;
+      let baseTileHeight = this.getBaseTileSize(percentHeightPerTile, gutterWidthFractionPerTile);
 
-        // Use paddingTop and marginTop to maintain the given aspect ratio, as
-        // a percentage-based value for these properties is applied versus the *width* of the
-        // containing block. See http://www.w3.org/TR/CSS2/box.html#margin-properties
-        tileStyle.marginTop = this.getTilePosition(baseTileHeight, rowIndex);
-        tileStyle.paddingTop = this.getTileSize(baseTileHeight, tile.rowspan);
-        break;
+      // Use paddingTop and marginTop to maintain the given aspect ratio, as
+      // a percentage-based value for these properties is applied versus the *width* of the
+      // containing block. See http://www.w3.org/TR/CSS2/box.html#margin-properties
+      tileStyle.marginTop = this.getTilePosition(baseTileHeight, rowIndex);
+      tileStyle.paddingTop = this.getTileSize(baseTileHeight, tile.rowspan);
+    }
 
-      case 'fit':
-        // Percent of the available vertical space that one row takes up.
-        var percentHeightPerTile = 100 / this.cols;
+    if (this.rowHeightMode == RowHeightMode.FIT) {
+      // Percent of the available vertical space that one row takes up.
+      let percentHeightPerTile = 100 / this.cols;
 
-        // Fraction of the horizontal gutter size that each column takes up.
-        var gutterHeightFractionPerTile = (this.rows - 1) / this.rows;
+      // Fraction of the horizontal gutter size that each column takes up.
+      let gutterHeightFractionPerTile = (this.rows - 1) / this.rows;
 
-        // Base vertical size of a column.
-        var baseTileHeight =
-            this.getBaseTileSize(percentHeightPerTile, gutterHeightFractionPerTile);
+      // Base vertical size of a column.
+      let baseTileHeight = this.getBaseTileSize(percentHeightPerTile, gutterHeightFractionPerTile);
 
-        tileStyle.top = this.getTilePosition(baseTileHeight, rowIndex);
-        tileStyle.height = this.getTileSize(baseTileHeight, tile.rowspan);
-
-        break;
+      tileStyle.top = this.getTilePosition(baseTileHeight, rowIndex);
+      tileStyle.height = this.getTileSize(baseTileHeight, tile.rowspan);
     }
 
     return tileStyle;
@@ -223,13 +218,13 @@ export class MdGridList {
   selector: 'md-grid-tile',
   properties: ['rowspan', 'colspan'],
   host: {
-    '[style.height]': 'styleHeight',
-    '[style.width]': 'styleWidth',
-    '[style.top]': 'styleTop',
-    '[style.left]': 'styleLeft',
-    '[style.marginTop]': 'styleMarginTop',
-    '[style.paddingTop]': 'stylePaddingTop',
-    '[attr.role]': '"listitem"'
+    'role': 'listitem',
+    '[style.height]': 'style.height',
+    '[style.width]': 'style.width',
+    '[style.top]': 'style.top',
+    '[style.left]': 'style.left',
+    '[style.marginTop]': 'style.marginTop',
+    '[style.paddingTop]': 'style.paddingTop',
   },
   lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange]
 })
@@ -242,13 +237,7 @@ export class MdGridTile {
   _rowspan: number;
   _colspan: number;
 
-  styleHeight: string;
-  styleWidth: string;
-  styleTop: string;
-  styleLeft: string;
-  styleMarginTop: string;
-  stylePaddingTop: string;
-
+  style: TileStyle;
   isRegisteredWithGridList: boolean;
 
   constructor(@SkipSelf() @Host() gridList: MdGridList) {
@@ -257,6 +246,7 @@ export class MdGridTile {
     // Tiles default to 1x1, but rowspan and colspan can be changed via binding.
     this.rowspan = 1;
     this.colspan = 1;
+    this.style = new TileStyle();
   }
 
   set rowspan(value) {
@@ -330,7 +320,7 @@ class TileCoordinator {
     this.tracker = ListWrapper.createFixedSize(numColumns);
     ListWrapper.fill(this.tracker, 0);
 
-    this.positions = ListWrapper.map(tiles, tile => this._trackTile(tile));
+    this.positions = tiles.map(tile => this._trackTile(tile));
   }
 
   /** Gets the number of rows occupied by tiles. */
@@ -345,8 +335,8 @@ class TileCoordinator {
     }
 
     // Start index is inclusive, end index is exclusive.
-    var gapStartIndex = -1;
-    var gapEndIndex = -1;
+    let gapStartIndex = -1;
+    let gapEndIndex = -1;
 
     // Look for a gap large enough to fit the given tile. Empty spaces are marked with a zero.
     do {
@@ -389,7 +379,7 @@ class TileCoordinator {
     this.rowIndex++;
 
     // Decrement all spaces by one to reflect moving down one row.
-    for (var i = 0; i < this.tracker.length; i++) {
+    for (let i = 0; i < this.tracker.length; i++) {
       this.tracker[i] = Math.max(0, this.tracker[i] - 1);
     }
   }
@@ -399,7 +389,7 @@ class TileCoordinator {
    * The gap ends when a non-zero value is found.
    */
   _findGapEndIndex(gapStartIndex: number): number {
-    for (var i = gapStartIndex + 1; i < this.tracker.length; i++) {
+    for (let i = gapStartIndex + 1; i < this.tracker.length; i++) {
       if (this.tracker[i] != 0) {
         return i;
       }
@@ -411,7 +401,7 @@ class TileCoordinator {
 
   /** Update the tile tracker to account for the given tile in the given space. */
   _markTilePosition(start, tile) {
-    for (var i = 0; i < tile.colspan; i++) {
+    for (let i = 0; i < tile.colspan; i++) {
       this.tracker[start + i] = tile.rowspan;
     }
   }

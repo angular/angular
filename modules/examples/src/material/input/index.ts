@@ -1,11 +1,15 @@
-import {bootstrap, Component, View} from 'angular2/bootstrap';
+import {bootstrap, Component, View, ViewEncapsulation} from 'angular2/bootstrap';
 import {MdInputContainer, MdInput} from 'angular2_material/src/components/input/input';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
 
 @Component({selector: 'demo-app'})
-@View({templateUrl: './demo_app.html', directives: [MdInputContainer, MdInput]})
+@View({
+  templateUrl: './demo_app.html',
+  directives: [MdInputContainer, MdInput],
+  encapsulation: ViewEncapsulation.NONE
+})
 class DemoApp {
   constructor() {}
 }

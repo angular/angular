@@ -1,6 +1,6 @@
 import {Component, View, Attribute, ViewEncapsulation} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
-import {KEY_SPACE} from 'angular2_material/src/core/constants';
+import {KeyCodes} from 'angular2_material/src/core/key_codes';
 import {KeyboardEvent} from 'angular2/src/facade/browser';
 import {NumberWrapper} from 'angular2/src/facade/lang';
 
@@ -8,11 +8,11 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
   selector: 'md-checkbox',
   properties: ['checked', 'disabled'],
   host: {
-    '(keydown)': 'onKeydown($event)',
-    '[tabindex]': 'tabindex',
-    '[attr.role]': '"checkbox"',
+    'role': 'checkbox',
     '[attr.aria-checked]': 'checked',
-    '[attr.aria-disabled]': 'disabled'
+    '[attr.aria-disabled]': 'disabled',
+    '[tabindex]': 'tabindex',
+    '(keydown)': 'onKeydown($event)',
   }
 })
 @View({
@@ -25,7 +25,7 @@ export class MdCheckbox {
   checked: boolean;
 
   /** Whether this checkbox is disabled. */
-  _disabled: boolean;
+  disabled_: boolean;
 
   /** Setter for tabindex */
   tabindex: number;
@@ -33,19 +33,19 @@ export class MdCheckbox {
   constructor(@Attribute('tabindex') tabindex: string) {
     this.checked = false;
     this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
-    this._disabled = false;
+    this.disabled_ = false;
   }
 
   get disabled() {
-    return this._disabled;
+    return this.disabled_;
   }
 
   set disabled(value) {
-    this._disabled = isPresent(value) && value !== false;
+    this.disabled_ = isPresent(value) && value !== false;
   }
 
   onKeydown(event: KeyboardEvent) {
-    if (event.keyCode == KEY_SPACE) {
+    if (event.keyCode == KeyCodes.SPACE) {
       event.preventDefault();
       this.toggle(event);
     }

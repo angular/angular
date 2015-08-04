@@ -1,4 +1,11 @@
-import {bootstrap, ElementRef, ComponentRef, Component, View} from 'angular2/bootstrap';
+import {
+  bootstrap,
+  ElementRef,
+  ComponentRef,
+  Component,
+  View,
+  ViewEncapsulation
+} from 'angular2/bootstrap';
 import {
   MdDialog,
   MdDialogRef,
@@ -17,6 +24,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 @View({
   templateUrl: './demo_app.html',
   directives: [],
+  encapsulation: ViewEncapsulation.NONE,
 })
 class DemoApp {
   dialog: MdDialog;
@@ -62,6 +70,7 @@ class DemoApp {
   properties: ['numCoconuts'],
 })
 @View({
+  encapsulation: ViewEncapsulation.NONE,
   template: `
     <h2>This is the dialog content</h2>
     <p>There are {{numCoconuts}} coconuts.</p>
