@@ -1,5 +1,6 @@
 import {
   ChangeDetector,
+  ChangeDetectorRef,
   ProtoChangeDetector,
   DynamicChangeDetector
 } from 'angular2/src/change_detection/change_detection';
@@ -26,3 +27,7 @@ export class SpyPipeFactory extends SpyObject {}
 export class SpyDependencyProvider extends SpyObject {}
 
 export class SpyIterableDifferFactory extends SpyObject {}
+
+export class SpyChangeDetectorRef extends SpyObject {
+  constructor() { super(ChangeDetectorRef); }
+}
