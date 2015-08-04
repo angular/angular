@@ -7,8 +7,7 @@ import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
 import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-import {ObservablePipeFactory} from './pipes/observable_pipe';
-import {PromisePipeFactory} from './pipes/promise_pipe';
+import {AsyncPipeFactory} from './pipes/async_pipe';
 import {UpperCasePipe} from './pipes/uppercase_pipe';
 import {LowerCasePipe} from './pipes/lowercase_pipe';
 import {JsonPipe} from './pipes/json_pipe';
@@ -75,11 +74,8 @@ export const iterableDiff: IterableDifferFactory[] =
 /**
  * Async binding to such types as Observable.
  */
-export const async: List<PipeFactory> = CONST_EXPR([
-  CONST_EXPR(new ObservablePipeFactory()),
-  CONST_EXPR(new PromisePipeFactory()),
-  CONST_EXPR(new NullPipeFactory())
-]);
+export const async: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new AsyncPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 /**
  * Uppercase text transform.
