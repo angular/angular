@@ -1,10 +1,11 @@
-import {Json} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 
 /**
  * Converts `funcOrValue` to a string which can be used in generated code.
  */
-export const codify = Json.stringify;
+export function codify(obj: any): string {
+  return JSON.stringify(obj);
+}
 
 /**
  * Combine the strings of generated code into a single interpolated string.
