@@ -1,5 +1,5 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {stringify, BaseException, isBlank} from 'angular2/src/facade/lang';
+import {stringify, BaseException, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {Injector} from './injector';
 
@@ -105,7 +105,11 @@ export class InstantiationError extends AbstractBindingError {
   constructor(injector: Injector, originalException, originalStack, key: Key) {
     super(injector, key, function(keys: List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
+      var msg = `Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
+      if (isPresent(originalException)) {
+        msg += ` Caused by: ${originalException}.`;
+      }
+      return msg;
     }, originalException, originalStack);
 
     this.causeKey = key;

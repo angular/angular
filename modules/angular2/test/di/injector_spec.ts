@@ -303,8 +303,8 @@ export function main() {
           injector.get(Car);
           throw "Must throw";
         } catch (e) {
-          expect(e.message)
-              .toContain(`Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
+          expect(e.message).toContain(
+              `Error during instantiation of Engine! (${stringify(Car)} -> Engine). Caused by: Broken Engine`);
           expect(e.originalException instanceof BaseException).toBeTruthy();
           expect(e.causeKey.token).toEqual(Engine);
         }
