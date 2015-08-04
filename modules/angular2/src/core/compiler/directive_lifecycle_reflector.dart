@@ -1,3 +1,5 @@
+library angular2.src.core.compiler.directive_lifecycle_reflector;
+
 import 'package:angular2/src/core/annotations_impl/annotations.dart';
 import 'package:angular2/src/core/compiler/interfaces.dart';
 import 'package:angular2/src/reflection/reflection.dart';

@@ -95,7 +95,8 @@ Map<String, dynamic> serializeKeyboardEvent(dynamic e) {
 }
 
 // TODO(jteplitz602): #3374. See above.
-Map<String, dynamic> addTarget(dynamic e, Map<String, dynamic> serializedEvent) {
+Map<String, dynamic> addTarget(
+    dynamic e, Map<String, dynamic> serializedEvent) {
   if (NODES_WITH_VALUE.contains(e.target.tagName.toLowerCase())) {
     serializedEvent['target'] = {'value': e.target.value};
     if (e.target is InputElement) {
