@@ -5,6 +5,8 @@
 
 import {makeDecorator} from 'angular2/src/util/decorators';
 import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
+import {Promise} from 'angular2/src/facade/async';
+import {Instruction} from 'angular2/src/router/instruction';
 
 export {
   canReuse,
@@ -14,4 +16,6 @@ export {
   onDeactivate
 } from './lifecycle_annotations_impl';
 
-export var CanActivate = makeDecorator(CanActivateAnnotation);
+export var CanActivate:
+    (hook: (next: Instruction, prev: Instruction) => Promise<boolean>| boolean) => ClassDecorator =
+        makeDecorator(CanActivateAnnotation);

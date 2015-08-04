@@ -9,6 +9,6 @@ export class LocationStrategy {
   pushState(ctx: any, title: string, url: string): void { throw _abstract(); }
   forward(): void { throw _abstract(); }
   back(): void { throw _abstract(); }
-  onPopState(fn: (_) => any): void { throw _abstract(); }
+  onPopState(fn: (_: any) => any): void { throw _abstract(); }
   getBaseHref(): string { throw _abstract(); }
 }

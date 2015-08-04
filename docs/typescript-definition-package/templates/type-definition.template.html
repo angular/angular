@@ -65,8 +65,8 @@ declare module ng {
   {% endfor %}
 }
 
-{% endfor %}
-
-declare module "angular2/angular2" {
+declare module "{$ alias $}" {
   export = ng;
 }
+
+{% endfor %}
