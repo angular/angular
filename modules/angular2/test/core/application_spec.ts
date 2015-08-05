@@ -92,11 +92,16 @@ export function main() {
 
     it('should throw if bootstrapped Directive is not a Component',
        inject([AsyncTestCompleter], (async) => {
-         var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, [testBindings]);
+         var logger = new _ArrayLogger();
+         var exceptionHandler = new ExceptionHandler(logger, false);
+         var refPromise =
+             bootstrap(HelloRootDirectiveIsNotCmp,
+                       [testBindings, bind(ExceptionHandler).toValue(exceptionHandler)]);
 
          PromiseWrapper.then(refPromise, null, (exception) => {
            expect(exception).toContainError(
                `Could not load '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
+           expect(logger.res.join("")).toContain("Could not load");
            async.done();
            return null;
          });

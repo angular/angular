@@ -139,7 +139,7 @@ export function bootstrapWebworkerCommon(
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
-  var zone = createNgZone(new ExceptionHandler(new PrintLogger()));
+  var zone = createNgZone();
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.

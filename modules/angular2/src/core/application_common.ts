@@ -158,13 +158,8 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
   ];
 }
 
-export function createNgZone(handler: ExceptionHandler): NgZone {
-  // bootstrapErrorReporter is needed because we cannot use custom exception handler
-  // configured via DI until the root Injector has been created.
-  var bootstrapErrorReporter = (exception, stackTrace) => handler.call(exception, stackTrace);
-  var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
-  zone.overrideOnErrorHandler(bootstrapErrorReporter);
-  return zone;
+export function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: assertionsEnabled()});
 }
 
 /**
@@ -299,16 +294,16 @@ export function commonBootstrap(
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   var bootstrapProcess = PromiseWrapper.completer();
-  var zone = createNgZone(new ExceptionHandler(DOM, isDart ? false : true));
-  zone.run(() => {
-    // TODO(rado): prepopulate template cache, so applications with only
-    // index.html and main.js are possible.
+  var zone = createNgZone();
 
-    var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
-    var exceptionHandler = appInjector.get(ExceptionHandler);
-    zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+  zone.run(() => {
+    var exceptionHandler;
 
     try {
+      var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
+      exceptionHandler = appInjector.get(ExceptionHandler);
+      zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+
       var compRefToken: Promise<any> = appInjector.get(appComponentRefPromiseToken);
       var tick = (componentRef) => {
         var appChangeDetector = internalView(componentRef.hostView).changeDetector;
@@ -327,10 +322,17 @@ export function commonBootstrap(
       PromiseWrapper.then(tickResult, null,
                           (err, stackTrace) => { bootstrapProcess.reject(err, stackTrace); });
     } catch (e) {
+      if (isPresent(exceptionHandler)) {
+        exceptionHandler.call(e, e.stack);
+      } else {
+        // The error happened during the creation of an injector, most likely because of a bug in
+        // DI.
+        // We cannot use the provided exception handler, so we default to writing to the DOM.
+        DOM.logError(e);
+      }
       bootstrapProcess.reject(e, e.stack);
     }
   });
-
   return bootstrapProcess.promise;
 }
 

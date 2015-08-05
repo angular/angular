@@ -29,10 +29,8 @@ import {
 import {createNgZone} from 'angular2/src/core/application_common';
 import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
-import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Injectable} from 'angular2/di';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 import {
   serializeMouseEvent,
   serializeKeyboardEvent,
@@ -46,7 +44,7 @@ import {
  */
 export function bootstrapUICommon(bus: MessageBus) {
   BrowserDomAdapter.makeCurrent();
-  var zone = createNgZone(new ExceptionHandler(DOM));
+  var zone = createNgZone();
   zone.run(() => {
     var injector = createInjector(zone);
     var webWorkerMain = injector.get(WebWorkerMain);
