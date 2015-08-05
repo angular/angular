@@ -72,7 +72,7 @@ export class AbstractControl {
 
   get untouched(): boolean { return !this._touched; }
 
-  get valueChanges(): Observable { return this._valueChanges; }
+  get valueChanges(): EventEmitter { return this._valueChanges; }
 
   markAsTouched(): void { this._touched = true; }
 
