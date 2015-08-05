@@ -20,7 +20,8 @@ var global_excludes = [
   'examples/src/http/**/*',
   'examples/test/http/**/*',
   'examples/src/jsonp/**/*',
-  'examples/test/jsonp/**/*'
+  'examples/test/jsonp/**/*',
+  'upgrade/**/*'
 ];
 
 
