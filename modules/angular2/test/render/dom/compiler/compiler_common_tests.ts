@@ -131,6 +131,16 @@ export function runCompilerCommonTests() {
                });
          }));
 
+      it('should remove script tags from templates', inject([AsyncTestCompleter], (async) => {
+           var compiler = createCompiler(EMPTY_STEP);
+           compiler.compile(new ViewDefinition(
+                                {componentId: 'someId', template: '<div></div><script></script>'}))
+               .then((protoView) => {
+                 expect(DOM.getInnerHTML(templateRoot(protoView))).toEqual('<div></div>');
+                 async.done();
+               });
+         }));
+
       it('should report loading errors', inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler(EMPTY_STEP, null, new Map());
            PromiseWrapper.catchError(
