@@ -15,7 +15,8 @@ System.config({
     'angular2/*': 'dist/js/dev/es5/angular2/*.js',
     'angular2_material/*': 'dist/js/dev/es5/angular2_material/*.js',
     'rtts_assert/*': 'dist/js/dev/es5/rtts_assert/*.js',
-    '@reactivex/rxjs/*': 'node_modules/@reactivex/rxjs/*.js'
+    '@reactivex/rxjs/*': 'node_modules/@reactivex/rxjs/*.js',
+    'upgrade/*': 'dist/js/dev/es5/upgrade/*.js'
   }
 });
 
