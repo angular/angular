@@ -167,12 +167,17 @@ export class StringMapWrapper {
 }
 
 export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean; }
+export interface CompareFn<T> { (me: T, other: T): int; }
 
 export class ListWrapper {
   // JS has no way to express a staticly fixed size list, but dart does so we
   // keep both methods.
   static createFixedSize(size: number): List<any> { return new List(size); }
   static createGrowableSize(size: number): List<any> { return new List(size); }
+  static from(iterable: any): List<any> {
+    // Array.from(iterable) is not properly supported.
+    return [...iterable];
+  }
   static get<T>(m: List<T>, k: number): T { return m[k]; }
   static set<T>(m: List<T>, k: number, v: T) { m[k] = v; }
   static clone<T>(array: List<T>): T[] { return array.slice(0); }
@@ -257,7 +262,7 @@ export class ListWrapper {
   static splice<T>(l: List<T>, from: number, length: number): List<T> {
     return l.splice(from, length);
   }
-  static sort<T>(l: List<T>, compareFn?: (a: T, b: T) => number) {
+  static sort<T>(l: List<T>, compareFn?: CompareFn<T>) {
     if (isPresent(compareFn)) {
       l.sort(compareFn);
     } else {

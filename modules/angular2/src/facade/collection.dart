@@ -101,12 +101,14 @@ class StringMapWrapper {
 }
 
 typedef bool Predicate<T>(T item);
+typedef int CompareFn<T>(T me, T other);
 
 class ListWrapper {
   static List clone(Iterable l) => new List.from(l);
   static List createFixedSize(int size) => new List(size);
   static List createGrowableSize(int size) =>
       new List.generate(size, (_) => null, growable: true);
+  static List from(iterable) => new List.from(iterable);
   static get(List m, int k) => m[k];
   static void set(List m, int k, v) {
     m[k] = v;
@@ -172,7 +174,7 @@ class ListWrapper {
     l.removeRange(from, to);
     return sub;
   }
-  static void sort(List l, [compareFn(a, b) = null]) {
+  static void sort(List l, [CompareFn compareFn = null]) {
     if (compareFn == null) {
       l.sort();
     } else {

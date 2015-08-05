@@ -15,6 +15,7 @@ import {JsonPipe} from './pipes/json_pipe';
 import {LimitToPipeFactory} from './pipes/limit_to_pipe';
 import {DatePipe} from './pipes/date_pipe';
 import {DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
+import {OrderByPipeFactory} from './pipes/order_by_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Inject, Injectable, OpaqueToken, Optional} from 'angular2/di';
@@ -129,6 +130,13 @@ export const currency: List<PipeFactory> =
 export const date: List<PipeFactory> =
     CONST_EXPR([CONST_EXPR(new DatePipe()), CONST_EXPR(new NullPipeFactory())]);
 
+/**
+ * Sorts an iterable.
+ *
+ * @exportedAs angular2/pipes
+ */
+export const orderBy: List<PipeFactory> =
+    CONST_EXPR([CONST_EXPR(new OrderByPipeFactory()), CONST_EXPR(new NullPipeFactory())]);
 
 export const defaultPipes: Pipes = CONST_EXPR(new Pipes({
   "async": async,
@@ -139,7 +147,8 @@ export const defaultPipes: Pipes = CONST_EXPR(new Pipes({
   "number": decimal,
   "percent": percent,
   "currency": currency,
-  "date": date
+  "date": date,
+  "orderBy": orderBy
 }));
 
 export const defaultIterableDiffers = CONST_EXPR(new IterableDiffers(iterableDiff));
