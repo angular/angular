@@ -1130,6 +1130,22 @@ export function main() {
          }));
     });
 
+    describe("corner cases", () => {
+      it('should remove script tags from templates',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new viewAnn.View({
+                template: `
+            <script>alert("Ooops");</script>
+            <div>before<script>alert("Ooops");</script><span>inside</span>after</div>`
+              }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'script').length).toEqual(0);
+                 async.done();
+               });
+         }));
+    });
+
     describe("error handling", () => {
       it('should report a meaningful error when a directive is missing annotation',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

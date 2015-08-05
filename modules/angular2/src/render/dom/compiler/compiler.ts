@@ -82,8 +82,8 @@ export class DomCompiler extends RenderCompiler {
     var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef));
 
     var compiledStyles = pipeline.processStyles(templateAndStyles.styles);
-    var compileElements = pipeline.processElements(DOM.createTemplate(templateAndStyles.template),
-                                                   protoViewType, viewDef);
+    var compileElements = pipeline.processElements(
+        this._createTemplateElm(templateAndStyles.template), protoViewType, viewDef);
     if (viewDef.encapsulation === ViewEncapsulation.NATIVE) {
       prependAll(DOM.content(compileElements[0].element),
                  compiledStyles.map(style => DOM.createStyleElement(style)));
@@ -93,6 +93,17 @@ export class DomCompiler extends RenderCompiler {
 
     return PromiseWrapper.resolve(
         compileElements[0].inheritedProtoView.build(this._schemaRegistry, this._templateCloner));
+  }
+
+  _createTemplateElm(template: string) {
+    var templateElm = DOM.createTemplate(template);
+    var scriptTags = DOM.querySelectorAll(DOM.templateAwareRoot(templateElm), 'script');
+
+    for (var i = 0; i < scriptTags.length; i++) {
+      DOM.remove(scriptTags[i]);
+    }
+
+    return templateElm;
   }
 
   _normalizeViewEncapsulationIfThereAreNoStyles(viewDef: ViewDefinition): ViewDefinition {
