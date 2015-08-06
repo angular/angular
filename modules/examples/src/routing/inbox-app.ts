@@ -8,7 +8,7 @@ import {
   Location,
   RouteParams
 } from 'angular2/router';
-import {Http} from 'angular2/http';
+import {Http, Response} from 'angular2/http';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -63,7 +63,8 @@ class DbService {
 
   getData() {
     var p = PromiseWrapper.completer();
-    ObservableWrapper.subscribe(this.http.get('./db.json'), (resp) => { p.resolve(resp.json()); });
+    ObservableWrapper.subscribe<Response>(this.http.get('./db.json'),
+                                          (resp) => { p.resolve(resp.json()); });
     return p.promise;
   }
 

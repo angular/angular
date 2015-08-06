@@ -1,6 +1,6 @@
 // tree benchmark in AngularJS 1.x
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import angular = require("angular");
+declare var angular: any;
 
 export function main() {
   angular.bootstrap(document.querySelector('tree'), ['app']);

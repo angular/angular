@@ -49,7 +49,8 @@ export class MdInputContainer {
     // classes based on the input state.
     ObservableWrapper.subscribe(input.mdChange, value => { this.inputHasValue = value != ''; });
 
-    ObservableWrapper.subscribe(input.mdFocusChange, hasFocus => {this.inputHasFocus = hasFocus});
+    ObservableWrapper.subscribe<boolean>(input.mdFocusChange,
+                                         hasFocus => this.inputHasFocus = hasFocus);
   }
 }
 

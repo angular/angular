@@ -70,9 +70,17 @@ const kServedPaths = [
 
 
 module.exports = function makeBrowserTree(options, destinationPath) {
-  var modulesTree = new Funnel(
-      'modules',
-      {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
+  var modulesTree = new Funnel('modules', {
+    include: ['**/**'],
+    exclude: [
+      '**/*.cjs',
+      'benchmarks/e2e_test/**',
+      // Exclude ES6 polyfill typings when tsc target=ES6
+      'angular2/traceur-runtime.d.ts',
+      'angular2/typings/es6-promise/**'
+    ],
+    destDir: '/'
+  });
 
   var scriptPathPatternReplacement = {
     match: '@@FILENAME_NO_EXT',
@@ -87,21 +95,19 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   });
 
   // Use TypeScript to transpile the *.ts files to ES6
-  // We don't care about errors: we let the TypeScript compilation to ES5
-  // in node_tree.ts do the type-checking.
   var es6Tree = compileWithTypescript(modulesTree, {
     allowNonTsExtensions: false,
     declaration: true,
     emitDecoratorMetadata: true,
-    mapRoot: '',           // force sourcemaps to use relative path
-    noEmitOnError: false,  // temporarily ignore errors, we type-check only via cjs build
+    mapRoot: '',  // force sourcemaps to use relative path
+    noEmitOnError: true,
     rootDir: '.',
     sourceMap: true,
     sourceRoot: '.',
     target: 'ES6'
   });
 
-  // Call Traceur again to lower the ES6 build tree to ES5
+  // Call Traceur to lower the ES6 build tree to ES5
   var es5Tree = transpileWithTraceur(es6Tree, {
     destExtension: '.js',
     destSourceMapExtension: '.js.map',

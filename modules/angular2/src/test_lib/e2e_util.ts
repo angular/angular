@@ -2,7 +2,7 @@
 /// <reference path="../../typings/angular-protractor/angular-protractor.d.ts" />
 /// <reference path="../../typings/jasmine/jasmine"/>
 
-import webdriver = require('selenium-webdriver');
+import * as webdriver from 'selenium-webdriver';
 
 export var browser: protractor.IBrowser = global['browser'];
 export var $: cssSelectorHelper = global['$'];

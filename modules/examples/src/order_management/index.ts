@@ -1,6 +1,5 @@
 import {
   bootstrap,
-  onChange,
   NgIf,
   NgFor,
   Component,

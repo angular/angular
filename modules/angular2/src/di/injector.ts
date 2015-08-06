@@ -1,5 +1,3 @@
-/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
-
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ResolvedBinding, Binding, Dependency, BindingBuilder, bind} from './binding';
 import {

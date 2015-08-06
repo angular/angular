@@ -1,5 +1,5 @@
 import {Component, View, NgFor} from 'angular2/angular2';
-import {Http} from 'angular2/http';
+import {Http, Response} from 'angular2/http';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 
 @Component({selector: 'http-app'})
@@ -17,6 +17,7 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
 export class HttpCmp {
   people: Object;
   constructor(http: Http) {
-    ObservableWrapper.subscribe(http.get('./people.json'), res => this.people = res.json());
+    ObservableWrapper.subscribe<Response>(http.get('./people.json'),
+                                          res => this.people = res.json());
   }
 }

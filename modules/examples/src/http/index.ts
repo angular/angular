@@ -1,4 +1,4 @@
-/// <reference path="../../../angular2/typings/rx/rx.all.d.ts" />
+/// <reference path="../../../angular2/typings/rx/rx.d.ts" />
 
 import {bootstrap} from 'angular2/bootstrap';
 import {httpInjectables} from 'angular2/http';

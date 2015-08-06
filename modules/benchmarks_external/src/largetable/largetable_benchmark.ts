@@ -3,7 +3,7 @@ import {
   getStringParameter,
   bindAction
 } from 'angular2/src/test_lib/benchmark_util';
-import angular = require("angular");
+declare var angular: any;
 
 var totalRows = getIntParameter('rows');
 var totalColumns = getIntParameter('columns');

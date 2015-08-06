@@ -2,7 +2,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Binding} from 'angular2/di';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
-import webdriver = require('selenium-webdriver');
+import * as webdriver from 'selenium-webdriver';
 
 /**
  * Adapter for the selenium-webdriver.
@@ -56,5 +56,7 @@ function convertToLocalProcess(data): Object {
   return JSON.parse(serialized);
 }
 
-var _PROTRACTOR_BINDINGS =
-    [bind(WebDriverAdapter).toFactory(() => new SeleniumWebDriverAdapter(global.browser), [])];
+var _PROTRACTOR_BINDINGS = [
+  bind(WebDriverAdapter)
+      .toFactory(() => new SeleniumWebDriverAdapter((<any>global).browser), [])
+];
