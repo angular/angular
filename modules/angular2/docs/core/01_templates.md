@@ -94,7 +94,7 @@ Example:
 
 <pre>
 ```
-<div [class]="stringify(selected)">
+<div [title]="stringify(selected)">
 ```
 </pre>
       </td>

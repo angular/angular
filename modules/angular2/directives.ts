@@ -10,7 +10,7 @@ import {NgIf} from './src/directives/ng_if';
 import {NgNonBindable} from './src/directives/ng_non_bindable';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './src/directives/ng_switch';
 
-export * from './src/directives/class';
+export * from './src/directives/ng_class';
 export * from './src/directives/ng_for';
 export * from './src/directives/ng_if';
 export * from './src/directives/ng_non_bindable';

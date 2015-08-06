@@ -25,17 +25,17 @@ import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/fa
  * # Example:
  *
  * ```
- * <div class="message" [class]="{error: errorCount > 0}">
+ * <div class="message" [ng-class]="{error: errorCount > 0}">
  *     Please check errors.
  * </div>
  * ```
  */
 @Directive({
-  selector: '[class]',
+  selector: '[ng-class]',
   lifecycle: [LifecycleEvent.onCheck, LifecycleEvent.onDestroy],
-  properties: ['rawClass: class']
+  properties: ['rawClass: ng-class']
 })
-export class CSSClass {
+export class NgClass {
   private _differ: any;
   private _mode: string;
   _rawClass;
