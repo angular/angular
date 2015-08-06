@@ -736,11 +736,6 @@ export function main() {
                   rootTC.componentInstance.form = form;
                   rootTC.detectChanges();
 
-                  // In IE, the element needs to be appended to the real DOM,
-                  // otherwise setting .selectionStart fails with "unspecified error"
-                  var isIE = DOM.getUserAgent().indexOf("Trident") > -1;
-                  if (isIE) DOM.appendChild(DOM.defaultDoc().body, rootTC.nativeElement);
-
                   var input = rootTC.query(By.css("input")).nativeElement;
                   input.value = "aa";
                   input.selectionStart = 1;
@@ -751,7 +746,6 @@ export function main() {
 
                   // selection start has not changed because we did not reset the value
                   expect(input.selectionStart).toEqual(1);
-                  if (isIE) DOM.removeChild(DOM.defaultDoc().body, rootTC.nativeElement);
                 })));
     });
   });
