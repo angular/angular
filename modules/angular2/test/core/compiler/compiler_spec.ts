@@ -658,14 +658,14 @@ class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr: String) {}
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(RenderCompiler)
 class SpyRenderCompiler extends SpyObject {
   constructor() { super(RenderCompiler); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(DirectiveResolver)
 class SpyDirectiveResolver extends SpyObject {
   constructor() { super(DirectiveResolver); }

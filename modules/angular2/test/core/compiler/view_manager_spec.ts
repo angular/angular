@@ -507,21 +507,21 @@ export function main() {
   });
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(Renderer)
 class SpyRenderer extends SpyObject {
   constructor() { super(Renderer); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(AppViewPool)
 class SpyAppViewPool extends SpyObject {
   constructor() { super(AppViewPool); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(AppViewListener)
 class SpyAppViewListener extends SpyObject {
   constructor() { super(AppViewListener); }

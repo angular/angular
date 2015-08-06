@@ -353,7 +353,7 @@ export function createEmbeddedPv(binders: ElementBinder[] = null) {
 class SomeComponent {
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(ProtoElementInjector)
 class SpyProtoElementInjector extends SpyObject {
   index: number;
@@ -361,21 +361,21 @@ class SpyProtoElementInjector extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(ElementInjector)
 class SpyElementInjector extends SpyObject {
   constructor(public parent: ElementInjector) { super(ElementInjector); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(PreBuiltObjects)
 class SpyPreBuiltObjects extends SpyObject {
   constructor() { super(PreBuiltObjects); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(Injector)
 class SpyInjector extends SpyObject {
   constructor() { super(Injector); }

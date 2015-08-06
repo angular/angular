@@ -199,7 +199,7 @@ function createRenderViewportElementBinder(nestedProtoView) {
   return new renderApi.ElementBinder({nestedProtoView: nestedProtoView});
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(ChangeDetection)
 class ChangeDetectionSpy extends SpyObject {
   constructor() { super(ChangeDetection); }

@@ -58,7 +58,7 @@ export function main() {
   });
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(ElementRef)
 class SpyElementRef extends SpyObject {
   nativeElement;
@@ -66,7 +66,7 @@ class SpyElementRef extends SpyObject {
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
-@proxy()
+@proxy
 @IMPLEMENTS(DomAdapter)
 class SpyDomAdapter extends SpyObject {
   constructor() { super(DomAdapter); }
