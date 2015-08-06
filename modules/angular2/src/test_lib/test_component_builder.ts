@@ -138,6 +138,10 @@ export class TestComponentBuilder {
     var doc = this._injector.get(DOCUMENT_TOKEN);
 
     // TODO(juliemr): can/should this be optional?
+    var oldRoots = DOM.querySelectorAll(doc, '[id^=root]');
+    for (var i = 0; i < oldRoots.length; i++) {
+      DOM.remove(oldRoots[i]);
+    }
     DOM.appendChild(doc.body, rootEl);
 
 
