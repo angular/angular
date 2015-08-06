@@ -25,6 +25,7 @@ var pubget = require('./tools/build/pubget');
 var linknodemodules = require('./tools/build/linknodemodules');
 var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
+var dartapidocs = require('./tools/build/dartapidocs');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var karma = require('karma');
@@ -248,6 +249,11 @@ gulp.task('build/analyze.ddc.dart', dartanalyzer(gulp, gulpPlugins, {
   dest: CONFIG.dest.dart,
   command: DART_SDK.ANALYZER,
   use_ddc: true
+}));
+
+gulp.task('build/check.apidocs.dart', dartapidocs(gulp, gulpPlugins, {
+  dest: CONFIG.dest.dart,
+  command: DART_SDK.DARTDOCGEN
 }));
 
 // ------------
@@ -843,6 +849,7 @@ gulp.task('build.dart', function(done) {
     'build/packages.dart',
     'build/pubspec.dart',
     'build/analyze.dart',
+    'build/check.apidocs.dart',
     'build.dart.material.css',
     sequenceComplete(done)
   );
