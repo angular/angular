@@ -18,8 +18,10 @@ export 'common/options.dart';
 
 /// Replaces Angular 2 mirror use with generated code.
 class AngularTransformerGroup extends TransformerGroup {
-  AngularTransformerGroup._(phases) : super(phases) {
-    formatter.init(new DartFormatter());
+  AngularTransformerGroup._(phases, {bool formatCode: false}) : super(phases) {
+    if (formatCode) {
+      formatter.init(new DartFormatter());
+    }
   }
 
   factory AngularTransformerGroup(TransformerOptions options) {
@@ -38,7 +40,8 @@ class AngularTransformerGroup extends TransformerGroup {
       [new BindGenerator(options)],
       [new TemplateCompiler(options)]
     ]);
-    return new AngularTransformerGroup._(phases);
+    return new AngularTransformerGroup._(phases,
+        formatCode: options.formatCode);
   }
 
   factory AngularTransformerGroup.asPlugin(BarbackSettings settings) {

@@ -2,18 +2,31 @@ library angular2.transform.common.formatter;
 
 import 'package:dart_style/dart_style.dart';
 
-import 'logging.dart';
-
-DartFormatter _formatter = null;
+AngularDartFormatter _formatter = null;
 
 void init(DartFormatter formatter) {
-  _formatter = formatter;
+  _formatter = new _RealFormatter(formatter);
 }
 
-DartFormatter get formatter {
+AngularDartFormatter get formatter {
   if (_formatter == null) {
-    logger.info('Formatter never initialized, using default formatter.');
-    _formatter = new DartFormatter();
+    _formatter = new _PassThroughFormatter();
   }
   return _formatter;
+}
+
+abstract class AngularDartFormatter {
+  String format(String source, {uri});
+}
+
+class _PassThroughFormatter implements AngularDartFormatter {
+  String format(String source, {uri}) => source;
+}
+
+class _RealFormatter implements AngularDartFormatter {
+  final DartFormatter _formatter;
+
+  _RealFormatter(this._formatter);
+
+  String format(source, {uri}) => _formatter.format(source, uri: uri);
 }
