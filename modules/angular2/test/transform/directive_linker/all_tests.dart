@@ -25,7 +25,7 @@ void allTests() {
       inputPath = 'directive_linker/simple_files/$inputPath';
       var actual = formatter
           .format(await linkNgDeps(reader, new AssetId('a', inputPath)));
-      expect(actual).toEqual(expected);
+      expect(actual).toEqual(formatter.format(expected));
     }
   });
 
@@ -41,7 +41,7 @@ void allTests() {
       inputPath = 'directive_linker/simple_export_files/$inputPath';
       var actual = formatter
           .format(await linkNgDeps(reader, new AssetId('a', inputPath)));
-      expect(actual).toEqual(expected);
+      expect(actual).toEqual(formatter.format(expected));
     }
   });
 }

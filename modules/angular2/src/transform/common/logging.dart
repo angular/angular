@@ -1,6 +1,8 @@
 library angular2.transform.common.logging;
 
 import 'dart:async';
+
+import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:source_span/source_span.dart';
@@ -11,11 +13,36 @@ typedef _SimpleCallback();
 final _key = #loggingZonedLoggerKey;
 
 /// Executes {@link fn} inside a new {@link Zone} with its own logger.
-dynamic initZoned(Transform t, _SimpleCallback fn) =>
+Future<dynamic> initZoned(Transform t, _SimpleCallback fn) =>
     setZoned(new BuildLogger(t), fn);
 
-dynamic setZoned(BuildLogger logger, _SimpleCallback fn) {
-  return runZoned(fn, zoneValues: {_key: logger});
+Future<dynamic> setZoned(BuildLogger logger, _SimpleCallback fn) async {
+  return runZoned(() async {
+    try {
+      await fn();
+    } on AnalyzerError catch (e) {
+      // Do not worry about printing the stack trace, barback will handle that
+      // on its own when it catches the rethrown exception.
+      logger
+          .error('  Failed with ${e.runtimeType}\n${_friendlyError(e.error)}');
+      rethrow;
+    } on AnalyzerErrorGroup catch (eGroup) {
+      // See above re: stack trace.
+      var numErrors = eGroup.errors.length;
+      if (numErrors == 1) {
+        logger.error(_friendlyError(eGroup.errors[0].error));
+      } else {
+        var buf = new StringBuffer();
+        buf.writeln('  Failed with ${numErrors} errors');
+        for (var i = 0; i < numErrors; ++i) {
+          buf.writeln(
+              'Error ${i + 1}: ${_friendlyError(eGroup.errors[i].error)}');
+        }
+        logger.error('$buf');
+      }
+      rethrow;
+    }
+  }, zoneValues: {_key: logger});
 }
 
 /// The logger for the current {@link Zone}.
@@ -57,5 +84,19 @@ class PrintLoggerError extends Error {
     return 'Message: ${Error.safeToString(message)}, '
         'Asset: ${Error.safeToString(asset)}, '
         'Span: ${Error.safeToString(span)}.';
+  }
+}
+
+/// Generate a human-readable error message from `error`.
+String _friendlyError(AnalysisError error) {
+  if (error.source != null) {
+    var file =
+        new SourceFile(error.source.contents.data, url: error.source.fullName);
+
+    return file
+        .span(error.offset, error.offset + error.length)
+        .message(error.message, color: false);
+  } else {
+    return '<unknown location>: ${error.message}';
   }
 }
