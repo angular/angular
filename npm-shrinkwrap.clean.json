@@ -10213,10 +10213,6 @@
               }
             }
           }
-        },
-        "typescript": {
-          "version": "1.5.3",
-          "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
     },
@@ -10789,7 +10785,7 @@
     },
     "typescript": {
       "version": "1.5.3",
-      "resolved": "git://github.com/alexeagle/TypeScript.git#076bca017732cc9c44000ca0866199be64e21810"
+      "resolved": "git://github.com/alexeagle/TypeScript.git#90373cd85a87bd5d6d20dac58ba0df046da01b1d"
     },
     "vinyl": {
       "version": "0.4.6",

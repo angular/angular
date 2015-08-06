@@ -207,7 +207,7 @@ class BaseLineIf {
         this.component = null;
       }
       if (this.condition) {
-        var element = DOM.firstChild(DOM.clone(BASELINE_IF_TEMPLATE).content);
+        var element = DOM.firstChild((<any>DOM.clone(BASELINE_IF_TEMPLATE)).content);
         this.anchor.parentNode.insertBefore(element, DOM.nextSibling(this.anchor));
         this.component = new BaseLineTreeComponent(DOM.firstChild(element));
       }

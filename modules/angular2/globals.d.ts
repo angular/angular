@@ -3,7 +3,6 @@
  */
 
 /// <reference path="typings/zone/zone.d.ts"/>
-/// <reference path="traceur-runtime.d.ts" />
 declare var assert: any;
 declare type int = number;
 
@@ -32,5 +31,3 @@ interface BrowserNodeGlobal {
   setInterval: Function;
   clearInterval: Function;
 }
-
-declare var global: any;

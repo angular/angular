@@ -66,7 +66,7 @@ export class RawEntity {
     var pieces = key.split('.');
     var last = ListWrapper.last(pieces);
     pieces.length = pieces.length - 1;
-    var target = _resolve(pieces, this);
+    var target = this._resolve(pieces, this);
     if (target == null) {
       return null;
     }
@@ -81,7 +81,7 @@ export class RawEntity {
     var pieces = key.split('.');
     var last = ListWrapper.last(pieces);
     pieces.length = pieces.length - 1;
-    var target = _resolve(pieces, this);
+    var target = this._resolve(pieces, this);
     target[last] = value;
   }
 
@@ -92,7 +92,7 @@ export class RawEntity {
     var pieces = key.split('.');
     var last = ListWrapper.last(pieces);
     pieces.length = pieces.length - 1;
-    var target = _resolve(pieces, this);
+    var target = this._resolve(pieces, this);
     return target.remove(last);
   }
 

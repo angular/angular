@@ -1,4 +1,3 @@
-/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
 /// <reference path="../../typings/rx/rx.d.ts" />
 
 import {global, isPresent} from 'angular2/src/facade/lang';
@@ -9,7 +8,7 @@ export {Promise};
 
 export interface PromiseCompleter<R> {
   promise: Promise<R>;
-  resolve: (value?: R | Thenable<R>) => void;
+  resolve: (value?: R | PromiseLike<R>) => void;
   reject: (error?: any, stackTrace?: string) => void;
 }
 
@@ -20,7 +19,8 @@ export class PromiseWrapper {
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
-  static catchError<T>(promise: Promise<T>, onError: (error: any) => T | Thenable<T>): Promise<T> {
+  static catchError<T>(promise: Promise<T>,
+                       onError: (error: any) => T | PromiseLike<T>): Promise<T> {
     return promise.catch(onError);
   }
 
@@ -29,8 +29,8 @@ export class PromiseWrapper {
     return Promise.all(promises);
   }
 
-  static then<T, U>(promise: Promise<T>, success: (value: T) => U | Thenable<U>,
-                    rejection?: (error: any, stack?: any) => U | Thenable<U>): Promise<U> {
+  static then<T, U>(promise: Promise<T>, success: (value: T) => U | PromiseLike<U>,
+                    rejection?: (error: any, stack?: any) => U | PromiseLike<U>): Promise<U> {
     return promise.then(success, rejection);
   }
 
@@ -66,6 +66,7 @@ export class TimerWrapper {
 }
 
 export class ObservableWrapper {
+  // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
   static subscribe<T>(emitter: Observable, onNext: (value: T) => void,
                       onThrow: (exception: any) => void = null,
                       onReturn: () => void = null): Object {

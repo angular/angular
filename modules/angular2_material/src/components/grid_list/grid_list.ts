@@ -260,7 +260,7 @@ export class MdGridTile {
   }
 
   set rowspan(value) {
-    this._rowspan = isString(value) ? NumberWrapper.parseInt(value, 10) : <number>value;
+    this._rowspan = isString(value) ? NumberWrapper.parseInt(<any>value, 10) : <number>value;
   }
 
   get rowspan() {
@@ -268,7 +268,7 @@ export class MdGridTile {
   }
 
   set colspan(value) {
-    this._colspan = isString(value) ? NumberWrapper.parseInt(value, 10) : <number>value;
+    this._colspan = isString(value) ? NumberWrapper.parseInt(<any>value, 10) : <number>value;
   }
 
   get colspan() {

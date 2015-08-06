@@ -56,5 +56,5 @@ export class TodoApp {
     this.todoStore.list.forEach((todo: Todo) => { todo.completed = this.isComplete; });
   }
 
-  clearCompleted(): void { this.todoStore.removeBy((todo) => todo.completed); }
+  clearCompleted(): void { this.todoStore.removeBy((todo: Todo) => todo.completed); }
 }
