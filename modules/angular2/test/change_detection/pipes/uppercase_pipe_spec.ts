@@ -4,25 +4,14 @@ import {UpperCasePipe} from 'angular2/src/change_detection/pipes/uppercase_pipe'
 
 export function main() {
   describe("UpperCasePipe", () => {
-    var str;
     var upper;
     var lower;
     var pipe;
 
     beforeEach(() => {
-      str = 'something';
       lower = 'something';
       upper = 'SOMETHING';
       pipe = new UpperCasePipe();
-    });
-
-    describe("supports", () => {
-      it("should support strings", () => { expect(pipe.supports(str)).toBe(true); });
-
-      it("should not support other objects", () => {
-        expect(pipe.supports(new Object())).toBe(false);
-        expect(pipe.supports(null)).toBe(false);
-      });
     });
 
     describe("transform", () => {
@@ -39,6 +28,8 @@ export function main() {
         expect(val2).toEqual('WAT');
       });
 
+      it("should not support other objects",
+         () => { expect(() => pipe.transform(new Object())).toThrowError(); });
     });
 
   });

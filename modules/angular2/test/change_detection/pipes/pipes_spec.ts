@@ -1,157 +1,87 @@
 import {
   ddescribe,
+  xdescribe,
   describe,
   it,
   iit,
   xit,
   expect,
   beforeEach,
-  afterEach,
-  SpyPipe,
-  SpyPipeFactory
+  afterEach
 } from 'angular2/test_lib';
 
 import {Injector, bind} from 'angular2/di';
 import {Pipes} from 'angular2/src/change_detection/pipes/pipes';
-import {PipeFactory} from 'angular2/src/change_detection/pipes/pipe';
+import {Pipe} from 'angular2/src/change_detection/pipes/pipe';
+
+class APipe implements Pipe {
+  transform(a, b) {}
+  onDestroy() {}
+}
+
+class AnotherPipe implements Pipe {
+  transform(a, b) {}
+  onDestroy() {}
+}
 
 export function main() {
   describe("pipe registry", () => {
-    var firstPipe;
-    var secondPipe;
+    var injector;
 
-    var firstPipeFactory;
-    var secondPipeFactory;
+    beforeEach(() => { injector = Injector.resolveAndCreate([]); });
 
-    beforeEach(() => {
-      firstPipe = <any>new SpyPipe();
-      secondPipe = <any>new SpyPipe();
-
-      firstPipeFactory = <any>new SpyPipeFactory();
-      secondPipeFactory = <any>new SpyPipeFactory();
+    it("should instantiate a pipe", () => {
+      var r = new Pipes({"type": APipe}, injector);
+      expect(r.get("type", null)).toBeAnInstanceOf(APipe);
     });
 
-    it("should return an existing pipe if it can support the passed in object", () => {
-      var r = new Pipes({"type": []});
-
-      firstPipe.spy("supports").andReturn(true);
-
-      expect(r.get("type", "some object", null, firstPipe)).toEqual(firstPipe);
-    });
-
-    it("should call onDestroy on the provided pipe if it cannot support the provided object",
-       () => {
-         firstPipe.spy("supports").andReturn(false);
-         firstPipeFactory.spy("supports").andReturn(true);
-         firstPipeFactory.spy("create").andReturn(secondPipe);
-
-         var r = new Pipes({"type": [firstPipeFactory]});
-
-         expect(r.get("type", "some object", null, firstPipe)).toEqual(secondPipe);
-         expect(firstPipe.spy("onDestroy")).toHaveBeenCalled();
-       });
-
-    it("should return the first pipe supporting the data type", () => {
-      firstPipeFactory.spy("supports").andReturn(false);
-      firstPipeFactory.spy("create").andReturn(firstPipe);
-
-      secondPipeFactory.spy("supports").andReturn(true);
-      secondPipeFactory.spy("create").andReturn(secondPipe);
-
-      var r = new Pipes({"type": [firstPipeFactory, secondPipeFactory]});
-
-      expect(r.get("type", "some object")).toBe(secondPipe);
+    it("should instantiate a new pipe every time", () => {
+      var r = new Pipes({"type": APipe}, injector);
+      var p1 = r.get("type", null);
+      var p2 = r.get("type", null);
+      expect(p1).not.toBe(p2);
     });
 
     it("should throw when no matching type", () => {
-      var r = new Pipes({});
-      expect(() => r.get("unknown", "some object"))
-          .toThrowError(`Cannot find 'unknown' pipe supporting object 'some object'`);
-    });
-
-    it("should throw when no matching pipe", () => {
-      var r = new Pipes({"type": []});
-
-      expect(() => r.get("type", "some object"))
-          .toThrowError(`Cannot find 'type' pipe supporting object 'some object'`);
+      var r = new Pipes({}, null);
+      expect(() => r.get("unknown", null)).toThrowError(`Cannot find pipe 'unknown'.`);
     });
 
     describe('.create()', () => {
       it("should create a new Pipes object", () => {
-        firstPipeFactory.spy("supports").andReturn(true);
-        firstPipeFactory.spy("create").andReturn(firstPipe);
-
-        var pipes = Pipes.create({'async': [firstPipeFactory]});
-        expect(pipes.get("async", "first")).toBe(firstPipe);
+        var pipes = Pipes.create({'pipe': APipe}, null);
+        expect(pipes.config).toEqual({'pipe': APipe});
       });
 
-      it("should prepend passed it config in existing registry", () => {
-        firstPipeFactory.spy("supports").andReturn(true);
-        secondPipeFactory.spy("supports").andReturn(true);
-        secondPipeFactory.spy("create").andReturn(secondPipe);
+      it("should merge pipes config", () => {
+        var pipes1 = Pipes.create({'pipe': APipe, 'pipe1': APipe}, null);
+        var pipes2 = Pipes.create({'pipe': AnotherPipe, 'pipe2': AnotherPipe}, null, pipes1);
 
-        var pipes1 = Pipes.create({'async': [firstPipeFactory]});
-        var pipes2 = Pipes.create({'async': [secondPipeFactory]}, pipes1);
-
-        expect(pipes2.get("async", "first")).toBe(secondPipe);
+        expect(pipes2.config).toEqual({'pipe': AnotherPipe, 'pipe1': APipe, 'pipe2': AnotherPipe});
       });
 
-      it("should use inherited pipes when no overrides support the provided object", () => {
-        firstPipeFactory.spy("supports").andReturn(true);
-        firstPipeFactory.spy("create").andReturn(firstPipe);
-        secondPipeFactory.spy("supports").andReturn(false);
+      it("should not change parent's config", () => {
+        var pipes1 = Pipes.create({'pipe': APipe, 'pipe1': APipe}, null);
+        Pipes.create({'pipe': AnotherPipe, 'pipe2': AnotherPipe}, null, pipes1);
 
-        var pipes1 = Pipes.create({'async': [firstPipeFactory], 'date': [firstPipeFactory]});
-        var pipes2 = Pipes.create({'async': [secondPipeFactory]}, pipes1);
-
-        expect(pipes2.get("async", "first")).toBe(firstPipe);
-        expect(pipes2.get("date", "first")).toBe(firstPipe);
+        expect(pipes1.config).toEqual({'pipe': APipe, 'pipe1': APipe});
       });
     });
 
     describe(".extend()", () => {
       it('should create a factory that prepend new pipes to old', () => {
-        firstPipeFactory.spy("supports").andReturn(true);
-        secondPipeFactory.spy("supports").andReturn(true);
-        secondPipeFactory.spy("create").andReturn(secondPipe);
+        var pipes1 = Pipes.create({'pipe': APipe, 'pipe1': APipe}, null);
+        var binding = Pipes.extend({'pipe': AnotherPipe, 'pipe2': AnotherPipe});
+        var pipes: Pipes = binding.toFactory(pipes1, injector);
 
-        var originalPipes = new Pipes({'async': [firstPipeFactory]});
-        var binding = Pipes.extend({'async':<PipeFactory[]>[secondPipeFactory]});
-        var pipes: Pipes = binding.toFactory(originalPipes);
-
-        expect(pipes.config['async'].length).toBe(2);
-        expect(originalPipes.config['async'].length).toBe(1);
-        expect(pipes.get('async', 'second plz')).toBe(secondPipe);
+        expect(pipes.config).toEqual({'pipe': AnotherPipe, 'pipe1': APipe, 'pipe2': AnotherPipe});
       });
 
       it('should throw if calling extend when creating root injector', () => {
-        secondPipeFactory.spy("supports").andReturn(true);
-        secondPipeFactory.spy("create").andReturn(secondPipe);
-
-        var injector: Injector =
-            Injector.resolveAndCreate([Pipes.extend({'async': [secondPipeFactory]})]);
+        var injector = Injector.resolveAndCreate([Pipes.extend({'pipe': APipe})]);
 
         expect(() => injector.get(Pipes))
             .toThrowErrorWith("Cannot extend Pipes without a parent injector");
-      });
-
-      it('should extend di-inherited pipes', () => {
-        firstPipeFactory.spy("supports").andReturn(true);
-        firstPipeFactory.spy("create").andReturn(firstPipe);
-
-        secondPipeFactory.spy("supports").andReturn(false);
-
-        var originalPipes: Pipes = new Pipes({'async': [firstPipeFactory]});
-        var injector: Injector = Injector.resolveAndCreate([bind(Pipes).toValue(originalPipes)]);
-        var childInjector: Injector =
-            injector.resolveAndCreateChild([Pipes.extend({'async': [secondPipeFactory]})]);
-
-        var parentPipes: Pipes = injector.get(Pipes);
-        var childPipes: Pipes = childInjector.get(Pipes);
-
-        expect(childPipes.config['async'].length).toBe(2);
-        expect(parentPipes.config['async'].length).toBe(1);
-        expect(childPipes.get('async', 'second plz')).toBe(firstPipe);
       });
     });
   });

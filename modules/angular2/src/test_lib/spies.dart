@@ -20,11 +20,6 @@ class SpyPipe extends SpyObject implements Pipe {
 }
 
 @proxy()
-class SpyPipeFactory extends SpyObject implements PipeFactory {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy()
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
@@ -37,5 +32,10 @@ class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
 @proxy
 class SpyIterableDifferFactory extends SpyObject
     implements IterableDifferFactory {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyInjector extends SpyObject implements Injector {
   noSuchMethod(m) => super.noSuchMethod(m);
 }

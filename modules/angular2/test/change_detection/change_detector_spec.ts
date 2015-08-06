@@ -768,7 +768,7 @@ export function main() {
         });
 
         it('should destroy all active pipes during dehyration', () => {
-          var pipe = new OncePipe();
+          var pipe = new PipeWithOnDestroy();
           var registry = new FakePipes('pipe', () => pipe);
           var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
 
@@ -808,36 +808,6 @@ export function main() {
           val.changeDetector.detectChanges();
 
           expect(val.dispatcher.log).toEqual(['propName=Megatron state:1']);
-        });
-
-        it('should lookup pipes in the registry when the context is not supported', () => {
-          var registry = new FakePipes('pipe', () => new OncePipe());
-          var ctx = new Person('Megatron');
-
-          var cd = _createChangeDetector('name | pipe', ctx, registry).changeDetector;
-
-          cd.detectChanges();
-
-          expect(registry.numberOfLookups).toEqual(1);
-
-          ctx.name = 'Optimus Prime';
-          cd.detectChanges();
-
-          expect(registry.numberOfLookups).toEqual(2);
-        });
-
-        it('should invoke onDestroy on a pipe before switching to another one', () => {
-          var pipe = new OncePipe();
-          var registry = new FakePipes('pipe', () => pipe);
-          var ctx = new Person('Megatron');
-
-          var cd = _createChangeDetector('name | pipe', ctx, registry).changeDetector;
-
-          cd.detectChanges();
-          ctx.name = 'Optimus Prime';
-          cd.detectChanges();
-
-          expect(pipe.destroyCalled).toEqual(true);
         });
 
         it('should inject the ChangeDetectorRef ' +
@@ -886,41 +856,24 @@ export function main() {
 
 class CountingPipe implements Pipe {
   state: number = 0;
-
   onDestroy() {}
-
-  supports(newValue) { return true; }
-
   transform(value, args = null) { return `${value} state:${this.state ++}`; }
 }
 
-class OncePipe implements Pipe {
-  called: boolean = false;
+class PipeWithOnDestroy implements Pipe {
   destroyCalled: boolean = false;
-
-  supports(newValue) { return !this.called; }
-
   onDestroy() { this.destroyCalled = true; }
 
-  transform(value, args = null) {
-    this.called = true;
-    return value;
-  }
+  transform(value, args = null) { return null; }
 }
 
 class IdentityPipe implements Pipe {
-  supports(obj): boolean { return true; }
-
   onDestroy() {}
-
   transform(value, args = null) { return value; }
 }
 
 class WrappedPipe implements Pipe {
-  supports(obj): boolean { return true; }
-
   onDestroy() {}
-
   transform(value, args = null) { return WrappedValue.wrap(value); }
 }
 
@@ -931,24 +884,16 @@ class MultiArgPipe implements Pipe {
     var arg3 = args.length > 2 ? args[2] : 'default';
     return `${value} ${arg1} ${arg2} ${arg3}`;
   }
-  supports(obj): boolean { return true; }
   onDestroy(): void {}
 }
 
 class FakePipes extends Pipes {
-  numberOfLookups: number;
-  pipeType: string;
-  factory: Function;
+  numberOfLookups = 0;
   cdRef: any;
 
-  constructor(pipeType, factory) {
-    super({});
-    this.pipeType = pipeType;
-    this.factory = factory;
-    this.numberOfLookups = 0;
-  }
+  constructor(public pipeType: string, public factory: Function) { super(null, null); }
 
-  get(type: string, obj, cdRef?, existingPipe?) {
+  get(type: string, cdRef?) {
     if (type != this.pipeType) return null;
     this.numberOfLookups++;
     this.cdRef = cdRef;

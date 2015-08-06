@@ -122,7 +122,7 @@ function _getAppBindings() {
     Compiler,
     CompilerCache,
     bind(ViewResolver).toClass(MockViewResolver),
-    bind(Pipes).toValue(defaultPipes),
+    defaultPipes,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(DynamicChangeDetection),

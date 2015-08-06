@@ -22,11 +22,11 @@ export class SpyPipe extends SpyObject {
   constructor() { super(BasePipe); }
 }
 
-export class SpyPipeFactory extends SpyObject {}
-
 export class SpyDependencyProvider extends SpyObject {}
 
 export class SpyIterableDifferFactory extends SpyObject {}
+
+export class SpyInjector extends SpyObject {}
 
 export class SpyChangeDetectorRef extends SpyObject {
   constructor() { super(ChangeDetectorRef); }

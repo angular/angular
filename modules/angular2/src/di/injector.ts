@@ -558,7 +558,7 @@ export class Injector {
    * @param `binding`: either a type or a binding.
    * @returns an object created using binding.
    */
-  resolveAndInstantiate(binding: Type | Binding) {
+  resolveAndInstantiate(binding: Type | Binding): any {
     return this.instantiateResolved(Injector.resolve([binding])[0]);
   }
 

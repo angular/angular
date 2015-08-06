@@ -137,7 +137,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     Compiler,
     CompilerCache,
     ViewResolver,
-    bind(Pipes).toValue(defaultPipes),
+    defaultPipes,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(bestChangeDetection),

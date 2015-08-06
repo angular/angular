@@ -1,6 +1,6 @@
-import {isString, StringWrapper, CONST} from 'angular2/src/facade/lang';
-import {Pipe, BasePipe, PipeFactory} from './pipe';
-import {ChangeDetectorRef} from '../change_detector_ref';
+import {isString, StringWrapper, CONST, isBlank} from 'angular2/src/facade/lang';
+import {Injectable} from 'angular2/di';
+import {Pipe, BasePipe, InvalidPipeArgumentException} from './pipe';
 
 /**
  * Implements lowercase transforms to text.
@@ -23,12 +23,13 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * ```
  */
 @CONST()
-export class LowerCasePipe extends BasePipe implements PipeFactory {
-  supports(str: any): boolean { return isString(str); }
-
+@Injectable()
+export class LowerCasePipe extends BasePipe {
   transform(value: string, args: List<any> = null): string {
+    if (isBlank(value)) return value;
+    if (!isString(value)) {
+      throw new InvalidPipeArgumentException(LowerCasePipe, value);
+    }
     return StringWrapper.toLowerCase(value);
   }
-
-  create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }

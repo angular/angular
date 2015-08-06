@@ -274,10 +274,7 @@ class _CodegenState {
 
     var read = '''
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
-        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
-      } else if (!$pipe.supports($context)) {
-        $pipe.onDestroy();
-        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $context, $cdRef);
+        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $cdRef);
       }
       $newValue = $pipe.transform($context, [$argString]);
     ''';

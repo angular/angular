@@ -184,10 +184,7 @@ export class ChangeDetectorJITGenerator {
 
     var read = `
       if (${pipe} === ${UTIL}.uninitialized) {
-        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
-      } else if (!${pipe}.supports(${context})) {
-        ${pipe}.onDestroy();
-        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${context}, ${cdRef});
+        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${cdRef});
       }
       ${newValue} = ${pipe}.transform(${context}, [${argString}]);
     `;

@@ -10,17 +10,22 @@ import {
   FunctionWrapper
 } from 'angular2/src/facade/lang';
 import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
+import {Injectable} from 'angular2/di';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {Pipe, BasePipe, PipeFactory} from './pipe';
-import {ChangeDetectorRef} from '../change_detector_ref';
+import {Pipe, BasePipe, InvalidPipeArgumentException} from './pipe';
 
 var defaultLocale: string = 'en-US';
 var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 
 @CONST()
-export class NumberPipe extends BasePipe implements PipeFactory {
+@Injectable()
+export class NumberPipe extends BasePipe {
   static _format(value: number, style: NumberFormatStyle, digits: string, currency: string = null,
                  currencyAsSymbol: boolean = false): string {
+    if (isBlank(value)) return null;
+    if (!isNumber(value)) {
+      throw new InvalidPipeArgumentException(NumberPipe, value);
+    }
     var minInt = 1, minFraction = 0, maxFraction = 3;
     if (isPresent(digits)) {
       var parts = RegExpWrapper.firstMatch(_re, digits);
@@ -45,10 +50,6 @@ export class NumberPipe extends BasePipe implements PipeFactory {
       currencyAsSymbol: currencyAsSymbol
     });
   }
-
-  supports(obj: any): boolean { return isNumber(obj); }
-
-  create(cdRef: ChangeDetectorRef): Pipe { return this; }
 }
 
 /**

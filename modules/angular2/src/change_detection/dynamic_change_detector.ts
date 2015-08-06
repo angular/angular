@@ -267,13 +267,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _pipeFor(proto: ProtoRecord, context) {
     var storedPipe = this._readPipe(proto);
-    if (isPresent(storedPipe) && storedPipe.supports(context)) {
-      return storedPipe;
-    }
-    if (isPresent(storedPipe)) {
-      storedPipe.onDestroy();
-    }
-    var pipe = this.pipes.get(proto.name, context, this.ref);
+    if (isPresent(storedPipe)) return storedPipe;
+
+    var pipe = this.pipes.get(proto.name, this.ref);
     this._writePipe(proto, pipe);
     return pipe;
   }

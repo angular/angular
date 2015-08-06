@@ -1,5 +1,4 @@
-import {ABSTRACT, BaseException, CONST} from 'angular2/src/facade/lang';
-import {ChangeDetectorRef} from '../change_detector_ref';
+import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/facade/lang';
 
 /**
  * Indicates that the result of a {@link Pipe} transformation has changed even though the reference
@@ -50,8 +49,6 @@ export interface Pipe {
   /**
    * Query if a pipe supports a particular object instance.
    */
-  supports(obj): boolean;
-
   onDestroy(): void;
 
   transform(value: any, args: List<any>): any;
@@ -72,17 +69,14 @@ export interface Pipe {
  */
 @CONST()
 export class BasePipe implements Pipe {
-  supports(obj: any): boolean { return true; }
   onDestroy(): void {}
   transform(value: any, args: List<any>): any { return _abstract(); }
 }
 
-/**
- *
- */
-export interface PipeFactory {
-  supports(obs): boolean;
-  create(cdRef: ChangeDetectorRef): Pipe;
+export class InvalidPipeArgumentException extends BaseException {
+  constructor(type: Type, value: Object) {
+    super(`Invalid argument '${value}' for pipe '${type}'`);
+  }
 }
 
 function _abstract() {
