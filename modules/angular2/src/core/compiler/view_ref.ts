@@ -1,6 +1,7 @@
 import {isPresent} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
 import {RenderViewRef, RenderFragmentRef} from 'angular2/src/core/render/api';
+import {ChangeDetectorRef} from "../change_detection/change_detector_ref";
 
 // This is a workaround for privacy in Dart as we don't have library parts
 export function internalView(viewRef: ViewRef): viewModule.AppView {
@@ -12,7 +13,7 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
   return isPresent(protoViewRef) ? protoViewRef._protoView : null;
 }
 
-export interface HostViewRef {}
+export interface HostViewRef { changeDetectorRef: ChangeDetectorRef; }
 
 /**
  * A reference to an Angular View.
@@ -66,6 +67,8 @@ export interface HostViewRef {}
  * ```
  */
 export class ViewRef implements HostViewRef {
+  private _changeDetectorRef: ChangeDetectorRef = null;
+
   /**
    * @private
    */
@@ -80,6 +83,19 @@ export class ViewRef implements HostViewRef {
    * Return `RenderFragmentRef`
    */
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
+
+  /**
+   * Return `ChangeDetectorRef`
+   */
+  get changeDetectorRef(): ChangeDetectorRef {
+    if (this._changeDetectorRef === null) {
+      this._changeDetectorRef = new ChangeDetectorRef(this._view.changeDetector);
+    }
+    return this._changeDetectorRef;
+  }
+  set changeDetectorRef(value: ChangeDetectorRef) {
+    throw "readonly";  // TODO: https://github.com/Microsoft/TypeScript/issues/12
+  }
 
   /**
    * Set local variable in a view.

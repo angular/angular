@@ -970,6 +970,7 @@ const NG_API = [
   'ViewQueryMetadata.varBindings',
 
   'ViewRef',
+  'ViewRef.changeDetectorRef',
   'ViewRef.render',
   'ViewRef.renderFragment',
   'ViewRef.setLocal',
