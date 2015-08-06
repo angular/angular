@@ -19,7 +19,7 @@ export class CompileElement {
   // inherited down to children if they don't have an own elementBinder
   inheritedElementBinder: ElementBinderBuilder = null;
   compileChildren: boolean = true;
-  elementDescription: string;  // e.g. '<div [class]="foo">' : used to provide context in case of
+  elementDescription: string;  // e.g. '<div [title]="foo">' : used to provide context in case of
                                // error
 
   constructor(public element, compilationUnit: string = '') {

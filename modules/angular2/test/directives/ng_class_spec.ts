@@ -15,8 +15,7 @@ import {
 } from 'angular2/test_lib';
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Component, View, NgFor, bind} from 'angular2/angular2';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {CSSClass} from 'angular2/src/directives/class';
+import {NgClass} from 'angular2/src/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
 export function main() {
@@ -27,7 +26,7 @@ export function main() {
 
       it('should clean up when the directive is destroyed',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div *ng-for="var item of items" [class]="item"></div>';
+           var template = '<div *ng-for="var item of items" [ng-class]="item"></div>';
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
@@ -48,7 +47,7 @@ export function main() {
 
       it('should add classes specified in an object literal',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="{foo: true, bar: false}"></div>';
+           var template = '<div [ng-class]="{foo: true, bar: false}"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -64,7 +63,7 @@ export function main() {
 
       it('should add classes specified in an object literal without change in class names',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = `<div [class]="{'foo-bar': true, 'fooBar': true}"></div>`;
+           var template = `<div [ng-class]="{'foo-bar': true, 'fooBar': true}"></div>`;
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -79,7 +78,7 @@ export function main() {
 
       it('should add and remove classes based on changes in object literal values',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="{foo: condition, bar: !condition}"></div>';
+           var template = '<div [ng-class]="{foo: condition, bar: !condition}"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -99,7 +98,7 @@ export function main() {
 
       it('should add and remove classes based on changes to the expression object',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="objExpr"></div>';
+           var template = '<div [ng-class]="objExpr"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -129,7 +128,7 @@ export function main() {
 
       it('should add and remove classes based on reference changes to the expression object',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="objExpr"></div>';
+           var template = '<div [ng-class]="objExpr"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -157,7 +156,7 @@ export function main() {
 
       it('should add classes specified in a list literal',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = `<div [class]="['foo', 'bar', 'foo-bar', 'fooBar']"></div>`;
+           var template = `<div [ng-class]="['foo', 'bar', 'foo-bar', 'fooBar']"></div>`;
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -172,7 +171,7 @@ export function main() {
 
       it('should add and remove classes based on changes to the expression',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="arrExpr"></div>';
+           var template = '<div [ng-class]="arrExpr"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -205,7 +204,7 @@ export function main() {
 
       it('should add and remove classes when a reference changes',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="arrExpr"></div>';
+           var template = '<div [ng-class]="arrExpr"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -228,7 +227,7 @@ export function main() {
 
       it('should add classes specified in a string literal',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = `<div [class]="'foo bar foo-bar fooBar'"></div>`;
+           var template = `<div [ng-class]="'foo bar foo-bar fooBar'"></div>`;
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -243,7 +242,7 @@ export function main() {
 
       it('should add and remove classes based on changes to the expression',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div [class]="strExpr"></div>';
+           var template = '<div [ng-class]="strExpr"></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -269,7 +268,7 @@ export function main() {
 
       it('should remove active classes when switching from string to null',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = `<div [class]="strExpr"></div>`;
+           var template = `<div [ng-class]="strExpr"></div>`;
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -290,7 +289,7 @@ export function main() {
 
     it('should remove active classes when expression evaluates to null',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div [class]="objExpr"></div>';
+         var template = '<div [ng-class]="objExpr"></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -313,25 +312,9 @@ export function main() {
              });
        }));
 
-    it('should have no effect when activated by a static class attribute',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div class="init foo"></div>';
-
-         tcb.overrideTemplate(TestComponent, template)
-             .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               // TODO(pk): in CJS className isn't initialized properly if we don't mutate classes
-               expect(ListWrapper.join(DOM.classList(rootTC.componentViewChildren[0].nativeElement),
-                                       ' '))
-                   .toEqual('init foo ng-binding');
-               async.done();
-             });
-       }));
-
     it('should co-operate with the class attribute',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div [class]="objExpr" class="init foo"></div>';
+         var template = '<div [ng-class]="objExpr" class="init foo"></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -352,7 +335,7 @@ export function main() {
 
     it('should co-operate with the class attribute and class.name binding',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div class="init foo" [class]="objExpr" [class.baz]="condition"></div>';
+         var template = '<div class="init foo" [ng-class]="objExpr" [class.baz]="condition"></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -383,7 +366,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [CSSClass, NgFor]})
+@View({directives: [NgClass, NgFor]})
 class TestComponent {
   condition: boolean = true;
   items: any[];
