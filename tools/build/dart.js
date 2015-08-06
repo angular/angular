@@ -8,6 +8,7 @@ module.exports.detect = function(gulp) {
     if (process.platform === 'win32') {
       DART_SDK = {
         ANALYZER: 'dartanalyzer.bat',
+        DARTDOCGEN: 'dartdocgen.bat',
         DARTFMT: 'dartfmt.bat',
         PUB: 'pub.bat',
         VM: 'dart.exe'
@@ -15,6 +16,7 @@ module.exports.detect = function(gulp) {
     } else {
       DART_SDK = {
         ANALYZER: 'dartanalyzer',
+        DARTDOCGEN: 'dartdocgen',
         DARTFMT: 'dartfmt',
         PUB: 'pub',
         VM: 'dart'
