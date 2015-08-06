@@ -50,16 +50,12 @@ export class CompileElement {
     return this.inheritedElementBinder;
   }
 
-  refreshAttrs() { this._attrs = null; }
-
   attrs(): Map<string, string> {
     if (isBlank(this._attrs)) {
       this._attrs = DOM.attributeMap(this.element);
     }
     return this._attrs;
   }
-
-  refreshClassList() { this._classList = null; }
 
   classList(): List<string> {
     if (isBlank(this._classList)) {
