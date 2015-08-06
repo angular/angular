@@ -400,9 +400,7 @@ function _extractToken(typeOrFunc, metadata /*List<any> | any*/, params: List<Li
   }
 
   var lowerBoundVisibility = null;
-  ;
   var upperBoundVisibility = null;
-  ;
 
   for (var i = 0; i < metadata.length; ++i) {
     var paramMetadata = metadata[i];

@@ -395,6 +395,29 @@ export function main() {
       });
     });
 
+    describe('resolveAndInstantiate', () => {
+      it('should instantiate an object in the context of the injector', () => {
+        var inj = Injector.resolveAndCreate([Engine]);
+        var car = inj.resolveAndInstantiate(Car);
+        expect(car).toBeAnInstanceOf(Car);
+        expect(car.engine).toBe(inj.get(Engine));
+      });
+
+      it('should not store the instantiated object in the injector', () => {
+        var inj = Injector.resolveAndCreate([Engine]);
+        inj.resolveAndInstantiate(Car);
+        expect(() => inj.get(Car)).toThrowError();
+      });
+    });
+
+    describe('instantiate', () => {
+      it('should instantiate an object in the context of the injector', () => {
+        var inj = Injector.resolveAndCreate([Engine]);
+        var car = inj.instantiateResolved(Injector.resolve([Car])[0]);
+        expect(car).toBeAnInstanceOf(Car);
+        expect(car.engine).toBe(inj.get(Engine));
+      });
+    });
 
     describe("depedency resolution", () => {
       describe("@Self()", () => {

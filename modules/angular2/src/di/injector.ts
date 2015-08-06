@@ -552,11 +552,34 @@ export class Injector {
     return inj;
   }
 
+  /**
+   * Resolves a binding and instantiates an object in the context of the injector.
+   *
+   * @param `binding`: either a type or a binding.
+   * @returns an object created using binding.
+   */
+  resolveAndInstantiate(binding: Type | Binding) {
+    return this.instantiateResolved(Injector.resolve([binding])[0]);
+  }
+
+  /**
+   * Instantiates an object using a resolved bindin in the context of the injector.
+   *
+   * @param `binding`: a resolved binding
+   * @returns an object created using binding.
+   */
+  instantiateResolved(binding: ResolvedBinding): any {
+    return this._instantiate(binding, PUBLIC_AND_PRIVATE);
+  }
+
   _new(binding: ResolvedBinding, visibility: number): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
       throw new CyclicDependencyError(this, binding.key);
     }
+    return this._instantiate(binding, visibility);
+  }
 
+  private _instantiate(binding: ResolvedBinding, visibility: number): any {
     var factory = binding.factory;
     var deps = binding.dependencies;
     var length = deps.length;
