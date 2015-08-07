@@ -24,6 +24,7 @@ export interface NgMatchers extends jasmine.Matchers {
   toBePromise(): boolean;
   toBeAnInstanceOf(expected: any): boolean;
   toHaveText(expected: any): boolean;
+  toHaveCssClass(expected: any): boolean;
   toImplement(expected: any): boolean;
   toContainError(expected: any): boolean;
   toThrowErrorWith(expectedMessage: any): boolean;
@@ -242,6 +243,24 @@ _global.beforeEach(function() {
           };
         }
       };
+    },
+
+    toHaveCssClass: function() {
+      return {
+        compare: buildError(false),
+        negativeCompare: buildError(true)
+      };
+
+      function buildError(isNot) {
+        return function(actual, className) {
+          return {
+            pass: DOM.hasClass(actual, className) == !isNot,
+            get message() {
+              return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
+            }
+          };
+        };
+      }
     },
 
     toContainError: function() {
