@@ -42,20 +42,23 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
     'angular2/router.ts'
   ];
   readTypeScriptModules.basePath = path.resolve(path.resolve(__dirname, '../../modules'));
-  
+
   createTypeDefinitionFile.typeDefinitions = [
       {
         id: 'angular2/angular2',
+        references: ['../es6-promise/es6-promise.d.ts', '../rx/rx.d.ts'],
         modules: {
           'angular2/angular2': 'angular2/angular2',
         }
       },
       {
         id: 'angular2/router',
+        //Right now the typings live in the same directory, but eventually will not. See #3458
+        references: ['../angular2/angular2.d.ts'],
         modules: {
           'angular2/router': 'angular2/router'
         }
-      }    
+      }
   ];
 })
 

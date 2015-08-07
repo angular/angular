@@ -28,6 +28,14 @@
 // Please do not create manual edits or send pull requests
 // modifying this file.
 // ***********************************************************
+{% for alias, module in doc.moduleDocs %}
+{%- if module.references.length %}
+// Angular depends transitively on these libraries.
+// If you don't have them installed you can install them using TSD
+// https://github.com/DefinitelyTyped/tsd
+{%- endif %}
+{% for reference in module.references %}
+///<reference path="{$ reference $}"/>{% endfor %}{% endfor %}
 {% block staticDeclarations %}{% endblock %}
 {% for alias, module in doc.moduleDocs %}
 {$ commentBlock(module.doc, 1) $}

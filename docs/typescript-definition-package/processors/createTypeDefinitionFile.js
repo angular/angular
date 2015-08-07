@@ -33,7 +33,7 @@ module.exports = function createTypeDefinitionFile(log) {
           // A type definition may include a number of top level modules
           // And those modules could be aliased (such as 'angular2/angular2.api' -> 'angular2/angular2')
           moduleDocs: _.transform(def.modules, function(moduleDocs, id, alias) {
-            moduleDocs[id] = { id: alias, doc: null };
+            moduleDocs[id] = { id: alias, doc: null, references: def.references };
           })
         };
       });
@@ -63,7 +63,7 @@ module.exports = function createTypeDefinitionFile(log) {
               // Convert this class to an interface with no constructor
               exportDoc.docType = 'interface';
               exportDoc.constructorDoc = null;
-              
+
               if (exportDoc.heritage) {
                 // convert the heritage since interfaces use `extends` not `implements`
                 exportDoc.heritage = exportDoc.heritage.replace('implements', 'extends');
