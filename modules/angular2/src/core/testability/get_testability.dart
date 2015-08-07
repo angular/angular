@@ -97,7 +97,7 @@ class GetTestability {
     });
     js.context['getAllAngularTestabilities'] = _jsify(() {
       List<Testability> testabilities = registry.getAllTestabilities();
-      List<PublicTestability> publicTestabilities = testabilities
+      var publicTestabilities = testabilities
           .map((testability) => new PublicTestability(testability));
       return _jsify(publicTestabilities);
     });
