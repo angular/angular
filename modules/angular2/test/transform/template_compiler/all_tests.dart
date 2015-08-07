@@ -7,6 +7,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
 
 import '../common/read_file.dart';
@@ -142,6 +143,15 @@ void noChangeDetectorTests() {
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
     output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  it('should generate all expected getters, setters, & methods.', () async {
+    var base = 'template_compiler/registrations_files';
+    var inputPath = path.join(base, 'registrations.ng_deps.dart');
+    var expected =
+        readFile(path.join(base, 'expected/registrations.ng_deps.dart'));
+    var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
 }

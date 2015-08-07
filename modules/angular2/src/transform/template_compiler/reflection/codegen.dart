@@ -1,30 +1,46 @@
-library angular2.transform.template_compiler.reflector_register_codegen;
+library angular2.transform.template_compiler.reflection.codegen;
 
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/property_utils.dart' as prop;
-import 'reflection_capabilities.dart';
+
+import 'model.dart';
 
 class Codegen {
   final StringBuffer _buf = new StringBuffer();
 
-  void generate(RecordingReflectionCapabilities recording) {
-    if (recording != null) {
-      var calls = _generateGetters(recording.getterNames);
+  /// Whether we are pre-generating change detectors.
+  /// If we have pre-generated change detectors, we need
+  final bool generateChangeDetectors;
+
+  Codegen({this.generateChangeDetectors});
+
+  void generate(CodegenModel model) {
+    if (model != null) {
+      var calls = _generateGetters(_extractNames(model.getterNames));
       if (calls.isNotEmpty) {
         _buf.write('..${REGISTER_GETTERS_METHOD_NAME}'
             '({${calls.join(', ')}})');
       }
-      calls = _generateSetters(recording.setterNames);
+      calls = _generateSetters(_extractNames(model.setterNames));
       if (calls.isNotEmpty) {
         _buf.write('..${REGISTER_SETTERS_METHOD_NAME}'
             '({${calls.join(', ')}})');
       }
-      calls = _generateMethods(recording.methodNames);
+      calls = _generateMethods(_extractNames(model.methodNames));
       if (calls.isNotEmpty) {
         _buf.write('..${REGISTER_METHODS_METHOD_NAME}'
             '({${calls.join(', ')}})');
       }
     }
+  }
+
+  Iterable<String> _extractNames(Iterable<ReflectiveAccessor> accessors) {
+    var names = accessors.where((accessor) {
+      return accessor.isStaticallyNecessary || !generateChangeDetectors;
+    }).map((accessor) => accessor.sanitizedName);
+    var nameList = names.toList();
+    nameList.sort();
+    return nameList;
   }
 
   bool get isEmpty => _buf.isEmpty;

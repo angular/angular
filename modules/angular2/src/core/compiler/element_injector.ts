@@ -44,6 +44,7 @@ import {ChangeDetector, ChangeDetectorRef} from 'angular2/src/change_detection/c
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {RenderDirectiveMetadata} from 'angular2/src/render/api';
+import {EventConfig} from 'angular2/src/render/dom/util';
 import {PipeBinding} from '../pipes/pipe_binding';
 
 var _staticKeys;
@@ -303,18 +304,8 @@ function _createEventEmitterAccessors(bwv: BindingWithVisibility): EventEmitterA
   if (!(binding instanceof DirectiveBinding)) return [];
   var db = <DirectiveBinding>binding;
   return ListWrapper.map(db.eventEmitters, eventConfig => {
-    let fieldName;
-    let eventName;
-    var colonIdx = eventConfig.indexOf(':');
-    if (colonIdx > -1) {
-      // long format: 'fieldName: eventName'
-      fieldName = StringWrapper.substring(eventConfig, 0, colonIdx).trim();
-      eventName = StringWrapper.substring(eventConfig, colonIdx + 1).trim();
-    } else {
-      // short format: 'name' when fieldName and eventName are the same
-      fieldName = eventName = eventConfig;
-    }
-    return new EventEmitterAccessor(eventName, reflector.getter(fieldName));
+    var parsedEvent = EventConfig.parse(eventConfig);
+    return new EventEmitterAccessor(parsedEvent.eventName, reflector.getter(parsedEvent.fieldName));
   });
 }
 
