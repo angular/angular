@@ -7,6 +7,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
 
 import '../common/read_file.dart';
@@ -31,7 +32,7 @@ void changeDetectorTests() {
   // TODO(tbosch): This is just a temporary test that makes sure that the dart server and
   // dart browser is in sync. Change this to "not contains notifyBinding"
   // when https://github.com/angular/angular/issues/3019 is solved.
-  it('shouldn always notifyDispatcher for template variables', () async {
+  it('should not always notifyDispatcher for template variables', () async {
     var inputPath = 'template_compiler/ng_for_files/hello.ng_deps.dart';
     var output = await (process(new AssetId('a', inputPath)));
     expect(output).toContain('notifyDispatcher');
@@ -90,7 +91,7 @@ void noChangeDetectorTests() {
     _formatThenExpectEquals(output, expected);
   });
 
-  it('should not generated duplicate getters/setters', () async {
+  it('should not generate duplicate getters/setters', () async {
     var inputPath = 'template_compiler/duplicate_files/hello.ng_deps.dart';
     var expected = readFile(
         'template_compiler/duplicate_files/expected/hello.ng_deps.dart');
@@ -142,6 +143,15 @@ void noChangeDetectorTests() {
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
     output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  it('should generate all expected getters, setters, & methods.', () async {
+    var base = 'template_compiler/registrations_files';
+    var inputPath = path.join(base, 'registrations.ng_deps.dart');
+    var expected =
+        readFile(path.join(base, 'expected/registrations.ng_deps.dart'));
+    var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
 }

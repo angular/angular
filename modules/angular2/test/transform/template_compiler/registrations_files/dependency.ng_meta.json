@@ -1,0 +1,98 @@
+{
+  "DependencyCmp": {
+    "kind": "type",
+    "value": {
+      "id": "DependencyCmp",
+      "selector": "dependency",
+      "compileChildren": true,
+      "hostProperties": {},
+      "hostListeners": {},
+      "hostActions": {},
+      "hostAttributes": {},
+      "properties": null,
+      "readAttributes": null,
+      "type": null,
+      "exportAs": null,
+      "callOnDestroy": null,
+      "callOnCheck": null,
+      "callOnInit": null,
+      "callOnChange": null,
+      "callOnAllChangesDone": null,
+      "events": ["dependencyEventName"],
+      "changeDetection": null,
+      "version": 1
+    }
+  },
+  "DirectiveProps": {
+    "kind": "type",
+    "value": {
+      "id": "DirectiveProps",
+      "selector": "[dir-props]",
+      "compileChildren": true,
+      "hostProperties": {"hprop": "hprop"},
+      "hostListeners": {},
+      "hostActions": {},
+      "hostAttributes": {},
+      "properties": ["prop"],
+      "readAttributes": null,
+      "type": null,
+      "exportAs": null,
+      "callOnDestroy": null,
+      "callOnCheck": null,
+      "callOnInit": null,
+      "callOnChange": null,
+      "callOnAllChangesDone": null,
+      "events": null,
+      "changeDetection": null,
+      "version": 1
+    }
+  },
+  "DirectiveEvents": {
+    "kind": "type",
+    "value": {
+      "id": "DirectiveEvents",
+      "selector": "[dir-events]",
+      "compileChildren": true,
+      "hostProperties": {},
+      "hostListeners": {"subevent": "doAThing()"},
+      "hostActions": {},
+      "hostAttributes": {},
+      "properties": [],
+      "readAttributes": null,
+      "type": null,
+      "exportAs": null,
+      "callOnDestroy": null,
+      "callOnCheck": null,
+      "callOnInit": null,
+      "callOnChange": null,
+      "callOnAllChangesDone": null,
+      "events": null,
+      "changeDetection": null,
+      "version": 1
+    }
+  },
+  "NgFor": {
+    "kind": "type",
+    "value": {
+      "id": "NgFor",
+      "selector": "[ng-for][ng-for-of]",
+      "compileChildren": true,
+      "hostProperties": {},
+      "hostListeners": {},
+      "hostActions": {},
+      "hostAttributes": {},
+      "properties": ["ngForOf"],
+      "readAttributes": null,
+      "type": null,
+      "exportAs": null,
+      "callOnDestroy": null,
+      "callOnCheck": true,
+      "callOnInit": null,
+      "callOnChange": null,
+      "callOnAllChangesDone": null,
+      "events": null,
+      "changeDetection": null,
+      "version": 1
+    }
+  }
+}

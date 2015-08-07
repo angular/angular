@@ -490,14 +490,11 @@ export class _ParseAST {
                       new MethodCall(receiver, id, fn, args);
 
     } else {
-      let getter = this.reflector.getter(id);
-      let setter = this.reflector.setter(id);
-
       if (isSafe) {
         if (this.optionalOperator("=")) {
           this.error("The '?.' operator cannot be used in the assignment");
         } else {
-          return new SafePropertyRead(receiver, id, getter);
+          return new SafePropertyRead(receiver, id, this.reflector.getter(id));
         }
       } else {
         if (this.optionalOperator("=")) {
@@ -506,9 +503,9 @@ export class _ParseAST {
           }
 
           let value = this.parseConditional();
-          return new PropertyWrite(receiver, id, setter, value);
+          return new PropertyWrite(receiver, id, this.reflector.setter(id), value);
         } else {
-          return new PropertyRead(receiver, id, getter);
+          return new PropertyRead(receiver, id, this.reflector.getter(id));
         }
       }
     }

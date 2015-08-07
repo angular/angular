@@ -10,7 +10,7 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 import {RenderDirectiveMetadata} from '../../api';
-import {dashCaseToCamelCase, camelCaseToDashCase, EVENT_TARGET_SEPARATOR} from '../util';
+import {EventConfig, dashCaseToCamelCase, camelCaseToDashCase} from '../util';
 import {DirectiveBuilder, ElementBinderBuilder} from '../view/proto_view_builder';
 
 /**
@@ -146,12 +146,9 @@ export class DirectiveParser implements CompileStep {
 
   _bindDirectiveEvent(eventName, action, compileElement, directiveBinderBuilder) {
     var ast = this._parser.parseAction(action, compileElement.elementDescription);
-    if (StringWrapper.contains(eventName, EVENT_TARGET_SEPARATOR)) {
-      var parts = eventName.split(EVENT_TARGET_SEPARATOR);
-      directiveBinderBuilder.bindEvent(parts[1], ast, parts[0]);
-    } else {
-      directiveBinderBuilder.bindEvent(eventName, ast);
-    }
+    var parsedEvent = EventConfig.parse(eventName);
+    var targetName = parsedEvent.isLongForm ? parsedEvent.fieldName : null;
+    directiveBinderBuilder.bindEvent(parsedEvent.eventName, ast, targetName);
   }
 
   _bindHostProperty(hostPropertyName, expression, compileElement, directiveBinderBuilder) {

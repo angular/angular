@@ -17,6 +17,5 @@ void initReflector(reflector) {
         ], const [
           const []
         ], () => new MyApp()))
-    ..registerGetters({'name': (o) => o.name})
-    ..registerSetters({'name': (o, v) => o.name = v});
+    ..registerGetters({'name': (o) => o.name});
 }

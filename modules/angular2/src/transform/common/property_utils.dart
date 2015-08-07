@@ -3,7 +3,10 @@ library angular2.transform.common.property_utils;
 import 'package:analyzer/src/generated/scanner.dart' show Keyword;
 
 /// Whether `name` is a valid property name.
-bool isValid(String name) => !Keyword.keywords.containsKey(name);
+bool isValid(String name) {
+  var keyword = Keyword.keywords[name];
+  return keyword == null || keyword.isPseudoKeyword;
+}
 
 /// Prepares `name` to be emitted inside a string.
 String sanitize(String name) => name.replaceAll('\$', '\\\$');

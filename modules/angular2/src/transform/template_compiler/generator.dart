@@ -23,8 +23,9 @@ import 'package:barback/barback.dart';
 
 import 'change_detector_codegen.dart' as change;
 import 'compile_step_factory.dart';
-import 'reflection_capabilities.dart';
-import 'reflector_register_codegen.dart' as reg;
+import 'reflection/codegen.dart' as reg;
+import 'reflection/processor.dart' as reg;
+import 'reflection/reflection_capabilities.dart';
 import 'view_definition_creator.dart';
 
 /// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
@@ -42,23 +43,22 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
   var extractor = new _TemplateExtractor(new DomElementSchemaRegistry(),
       new TemplateCloner(-1), new XhrImpl(reader, entryPoint));
 
-  var registrations = new reg.Codegen();
+  final processor = new reg.Processor();
+
   var changeDetectorClasses = new change.Codegen();
   for (var rType in viewDefResults.viewDefinitions.keys) {
     var viewDefEntry = viewDefResults.viewDefinitions[rType];
-    var result = await extractor.extractTemplates(viewDefEntry.viewDef);
-    if (result == null) continue;
+    var protoView = await extractor.extractTemplates(viewDefEntry.viewDef);
+    if (protoView == null) continue;
 
     if (generateRegistrations) {
-      // TODO(kegluneq): Generate these getters & setters based on the
-      // `ProtoViewDto` rather than querying the `ReflectionCapabilities`.
-      registrations.generate(result.recording);
+      processor.process(viewDefEntry, protoView);
     }
-    if (result.protoView != null && generateChangeDetectors) {
+    if (generateChangeDetectors) {
       var saved = reflector.reflectionCapabilities;
       reflector.reflectionCapabilities = const NullReflectionCapabilities();
       var defs = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
-          result.protoView, viewDefEntry.viewDef.directives);
+          protoView, viewDefEntry.viewDef.directives);
       for (var i = 0; i < defs.length; ++i) {
         changeDetectorClasses.generate('${rType.typeName}',
             '_${rType.typeName}_ChangeDetector$i', defs[i]);
@@ -66,6 +66,10 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
       reflector.reflectionCapabilities = saved;
     }
   }
+
+  // TODO(kegluneq): Do not hard-code `false` here once i/3436 is fixed.
+  final registrations = new reg.Codegen(generateChangeDetectors: false);
+  registrations.generate(processor);
 
   var code = viewDefResults.ngDeps.code;
   if (registrations.isEmpty && changeDetectorClasses.isEmpty) return code;
@@ -93,19 +97,16 @@ class _TemplateExtractor {
   ElementSchemaRegistry _schemaRegistry;
   TemplateCloner _templateCloner;
 
-  _TemplateExtractor(ElementSchemaRegistry schemaRegistry,
-      TemplateCloner templateCloner, XHR xhr)
+  _TemplateExtractor(this._schemaRegistry, this._templateCloner, XHR xhr)
       : _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer())) {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
 
     _loader = new ViewLoader(xhr, styleInliner, styleUrlResolver);
-    _schemaRegistry = schemaRegistry;
-    _templateCloner = templateCloner;
   }
 
-  Future<_ExtractResult> extractTemplates(ViewDefinition viewDef) async {
+  Future<ProtoViewDto> extractTemplates(ViewDefinition viewDef) async {
     // Check for "imperative views".
     if (viewDef.template == null && viewDef.templateAbsUrl == null) return null;
 
@@ -115,8 +116,7 @@ class _TemplateExtractor {
     // operations between saving and restoring it, otherwise we can get into
     // a bad state. See issue #2359 for additional context.
     var savedReflectionCapabilities = reflector.reflectionCapabilities;
-    var recordingCapabilities = new RecordingReflectionCapabilities();
-    reflector.reflectionCapabilities = recordingCapabilities;
+    reflector.reflectionCapabilities = const NullReflectionCapabilities();
 
     var pipeline = new CompilePipeline(_factory.createSteps(viewDef));
 
@@ -130,13 +130,6 @@ class _TemplateExtractor {
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
 
-    return new _ExtractResult(recordingCapabilities, protoViewDto);
+    return protoViewDto;
   }
-}
-
-class _ExtractResult {
-  final RecordingReflectionCapabilities recording;
-  final ProtoViewDto protoView;
-
-  _ExtractResult(this.recording, this.protoView);
 }
