@@ -5,6 +5,7 @@
  */
 
 import {CONST_EXPR, Type} from './src/facade/lang';
+import {NgClass} from './src/directives/ng_class';
 import {NgFor} from './src/directives/ng_for';
 import {NgIf} from './src/directives/ng_if';
 import {NgNonBindable} from './src/directives/ng_non_bindable';
@@ -60,4 +61,4 @@ export * from './src/directives/ng_switch';
  *
  */
 export const coreDirectives: List<Type> =
-    CONST_EXPR([NgFor, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
+    CONST_EXPR([NgClass, NgFor, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
