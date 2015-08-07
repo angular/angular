@@ -131,14 +131,11 @@ export class TemplateBinding {
 }
 
 export interface AstVisitor {
-  visitPropertyRead(ast: PropertyRead): any;
-  visitPropertyWrite(ast: PropertyWrite): any;
   visitBinary(ast: Binary): any;
   visitChain(ast: Chain): any;
   visitConditional(ast: Conditional): any;
-  visitIf(ast: If): any;
-  visitPipe(ast: BindingPipe): any;
   visitFunctionCall(ast: FunctionCall): any;
+  visitIf(ast: If): any;
   visitImplicitReceiver(ast: ImplicitReceiver): any;
   visitInterpolation(ast: Interpolation): any;
   visitKeyedRead(ast: KeyedRead): any;
@@ -147,9 +144,88 @@ export interface AstVisitor {
   visitLiteralMap(ast: LiteralMap): any;
   visitLiteralPrimitive(ast: LiteralPrimitive): any;
   visitMethodCall(ast: MethodCall): any;
+  visitPipe(ast: BindingPipe): any;
   visitPrefixNot(ast: PrefixNot): any;
-  visitSafePropertyRead(ast: SafePropertyRead): any;
+  visitPropertyRead(ast: PropertyRead): any;
+  visitPropertyWrite(ast: PropertyWrite): any;
   visitSafeMethodCall(ast: SafeMethodCall): any;
+  visitSafePropertyRead(ast: SafePropertyRead): any;
+}
+
+export class RecursiveAstVisitor implements AstVisitor {
+  visitBinary(ast: Binary): any {
+    ast.left.visit(this);
+    ast.right.visit(this);
+    return null;
+  }
+  visitChain(ast: Chain): any { return this.visitAll(ast.expressions); }
+  visitConditional(ast: Conditional): any {
+    ast.condition.visit(this);
+    ast.trueExp.visit(this);
+    ast.falseExp.visit(this);
+    return null;
+  }
+  visitIf(ast: If): any {
+    ast.condition.visit(this);
+    ast.trueExp.visit(this);
+    ast.falseExp.visit(this);
+    return null;
+  }
+  visitPipe(ast: BindingPipe): any {
+    ast.exp.visit(this);
+    this.visitAll(ast.args);
+    return null;
+  }
+  visitFunctionCall(ast: FunctionCall): any {
+    ast.target.visit(this);
+    this.visitAll(ast.args);
+    return null;
+  }
+  visitImplicitReceiver(ast: ImplicitReceiver): any { return null; }
+  visitInterpolation(ast: Interpolation): any { return this.visitAll(ast.expressions); }
+  visitKeyedRead(ast: KeyedRead): any {
+    ast.obj.visit(this);
+    ast.key.visit(this);
+    return null;
+  }
+  visitKeyedWrite(ast: KeyedWrite): any {
+    ast.obj.visit(this);
+    ast.key.visit(this);
+    ast.value.visit(this);
+    return null;
+  }
+  visitLiteralArray(ast: LiteralArray): any { return this.visitAll(ast.expressions); }
+  visitLiteralMap(ast: LiteralMap): any { return this.visitAll(ast.values); }
+  visitLiteralPrimitive(ast: LiteralPrimitive): any { return null; }
+  visitMethodCall(ast: MethodCall): any {
+    ast.receiver.visit(this);
+    return this.visitAll(ast.args);
+  }
+  visitPrefixNot(ast: PrefixNot): any {
+    ast.expression.visit(this);
+    return null;
+  }
+  visitPropertyRead(ast: PropertyRead): any {
+    ast.receiver.visit(this);
+    return null;
+  }
+  visitPropertyWrite(ast: PropertyWrite): any {
+    ast.receiver.visit(this);
+    ast.value.visit(this);
+    return null;
+  }
+  visitSafePropertyRead(ast: SafePropertyRead): any {
+    ast.receiver.visit(this);
+    return null;
+  }
+  visitSafeMethodCall(ast: SafeMethodCall): any {
+    ast.receiver.visit(this);
+    return this.visitAll(ast.args);
+  }
+  visitAll(asts: List<AST>): any {
+    ListWrapper.forEach(asts, (ast) => { ast.visit(this); });
+    return null;
+  }
 }
 
 export class AstTransformer implements AstVisitor {
