@@ -13,11 +13,12 @@ class AstTester {
       '${node.constructorName.type.name}' == REFLECTION_CAPABILITIES_NAME;
 
   bool isReflectionCapabilitiesImport(ImportDirective node) {
-    return node.uri.stringValue.endsWith("reflection_capabilities.dart");
+    return node.uri.stringValue ==
+        "package:angular2/src/reflection/reflection_capabilities.dart";
   }
 
   bool isBootstrapImport(ImportDirective node) {
-    return node.uri.stringValue.endsWith("/bootstrap.dart");
+    return node.uri.stringValue == "package:angular2/bootstrap.dart";
   }
 }
 
