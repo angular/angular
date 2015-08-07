@@ -1,4 +1,9 @@
-import {ComponentAnnotation, DirectiveAnnotation, LifecycleEvent} from './annotations';
+import {
+  ComponentAnnotation,
+  DirectiveAnnotation,
+  PipeAnnotation,
+  LifecycleEvent
+} from './annotations';
 import {ViewAnnotation} from './view';
 import {AttributeAnnotation, QueryAnnotation, ViewQueryAnnotation} from './di';
 import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
@@ -25,6 +30,7 @@ export interface ComponentDecorator extends TypeDecorator {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
+    pipes?: List<Type | any | List<any>>,
     renderer?: string,
     styles?: List<string>,
     styleUrls?: List<string>,
@@ -44,6 +50,7 @@ export interface ViewDecorator extends TypeDecorator {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
+    pipes?: List<Type | any | List<any>>,
     renderer?: string,
     styles?: List<string>,
     styleUrls?: List<string>,
@@ -337,6 +344,30 @@ export interface QueryFactory {
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryAnnotation;
 }
 
+/**
+ * {@link Pipe} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * import {Pipe} from "angular2/angular2";
+ *
+ * @Pipe({...})
+ * class MyPipe {
+ *   constructor() {
+ *     ...
+ *   }
+ *
+ *   transform(v, args) {}
+ * }
+ * ```
+ */
+export interface PipeFactory {
+  (obj: {name: string}): any;
+  new (obj: {
+    name: string,
+  }): any;
+}
 
 /**
  * {@link Component} factory function.
@@ -369,3 +400,8 @@ export var Query: QueryFactory = makeParamDecorator(QueryAnnotation);
  * {@link ViewQuery} factory function.
  */
 export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryAnnotation);
+
+/**
+ * {@link Pipe} factory function.
+ */
+export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeAnnotation);

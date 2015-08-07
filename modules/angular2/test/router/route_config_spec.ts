@@ -26,8 +26,16 @@ import {
   routerDirectives
 } from 'angular2/router';
 
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+
+class _ArrayLogger {
+  res: any[] = [];
+  log(s: any): void { this.res.push(s); }
+  logGroup(s: any): void { this.res.push(s); }
+  logGroupEnd(){};
+}
 
 export function main() {
   describe('RouteConfig with POJO arguments', () => {
@@ -36,10 +44,13 @@ export function main() {
       fakeDoc = DOM.createHtmlDocument();
       el = DOM.createElement('app-cmp', fakeDoc);
       DOM.appendChild(fakeDoc.body, el);
+      var logger = new _ArrayLogger();
+      var exceptionHandler = new ExceptionHandler(logger, true);
       testBindings = [
         routerInjectables,
         bind(LocationStrategy).toClass(MockLocationStrategy),
-        bind(DOCUMENT_TOKEN).toValue(fakeDoc)
+        bind(DOCUMENT_TOKEN).toValue(fakeDoc),
+        bind(ExceptionHandler).toValue(exceptionHandler)
       ];
     });
 

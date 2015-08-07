@@ -10,10 +10,9 @@ import {
   ChangeDetection,
   DynamicChangeDetection,
   JitChangeDetection,
-  PreGeneratedChangeDetection,
-  Pipes,
-  defaultPipes
+  PreGeneratedChangeDetection
 } from 'angular2/src/change_detection/change_detection';
+import {DEFAULT_PIPES} from 'angular2/pipes';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
@@ -114,7 +113,7 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     Compiler,
     CompilerCache,
     ViewResolver,
-    bind(Pipes).toValue(defaultPipes),
+    DEFAULT_PIPES,
     bind(ChangeDetection).toClass(bestChangeDetection),
     ViewLoader,
     DirectiveResolver,

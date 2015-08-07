@@ -7,17 +7,17 @@ import {
   Lexer,
   ChangeDetection,
   DynamicChangeDetection,
-  Pipes,
-  defaultPipes,
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/change_detection/change_detection';
+import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {XHR} from 'angular2/src/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
@@ -122,7 +122,7 @@ function _getAppBindings() {
     Compiler,
     CompilerCache,
     bind(ViewResolver).toClass(MockViewResolver),
-    defaultPipes,
+    DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(DynamicChangeDetection),
@@ -130,6 +130,7 @@ function _getAppBindings() {
     ViewLoader,
     DynamicComponentLoader,
     DirectiveResolver,
+    PipeResolver,
     Parser,
     Lexer,
     bind(ExceptionHandler).toValue(new ExceptionHandler(DOM)),

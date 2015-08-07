@@ -1030,3 +1030,27 @@ export enum LifecycleEvent {
    */
   onAllChangesDone
 }
+
+/**
+ * Declare reusable pipe function.
+ *
+ * ## Example
+ *
+ * ```
+ * @Pipe({
+ *   name: 'lowercase'
+ * })
+ * class Lowercase {
+ *   transform(v, args) { return v.toLowerCase(); }
+ * }
+ * ```
+ */
+@CONST()
+export class Pipe extends InjectableMetadata {
+  name: string;
+
+  constructor({name}: {name: string}) {
+    super();
+    this.name = name;
+  }
+}

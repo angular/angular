@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {LowerCasePipe} from 'angular2/src/change_detection/pipes/lowercase_pipe';
+import {LowerCasePipe} from 'angular2/pipes';
 
 export function main() {
   describe("LowerCasePipe", () => {

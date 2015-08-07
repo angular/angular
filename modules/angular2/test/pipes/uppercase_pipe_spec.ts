@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {UpperCasePipe} from 'angular2/src/change_detection/pipes/uppercase_pipe';
+import {UpperCasePipe} from 'angular2/pipes';
 
 export function main() {
   describe("UpperCasePipe", () => {

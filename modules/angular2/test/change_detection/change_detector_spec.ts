@@ -1,4 +1,4 @@
-///<reference path="../../src/change_detection/pipes/pipe.ts"/>
+///<reference path="../../src/change_detection/pipe_transform.ts"/>
 import {
   ddescribe,
   describe,
@@ -29,8 +29,7 @@ import {
   BindingRecord,
   DirectiveRecord,
   DirectiveIndex,
-  Pipes,
-  Pipe,
+  PipeTransform,
   CHECK_ALWAYS,
   CHECK_ONCE,
   CHECKED,
@@ -45,6 +44,8 @@ import {
   Locals,
   ProtoChangeDetector
 } from 'angular2/src/change_detection/change_detection';
+
+import {Pipes} from 'angular2/src/change_detection/pipes';
 import {JitProtoChangeDetector} from 'angular2/src/change_detection/jit_proto_change_detector';
 
 import {getDefinition} from './change_detector_config';
@@ -809,19 +810,6 @@ export function main() {
 
           expect(val.dispatcher.log).toEqual(['propName=Megatron state:1']);
         });
-
-        it('should inject the ChangeDetectorRef ' +
-               'of the encompassing component into a pipe',
-           () => {
-
-             var registry = new FakePipes('pipe', () => new IdentityPipe());
-             var cd =
-                 _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
-
-             cd.detectChanges();
-
-             expect(registry.cdRef).toBe(cd.ref);
-           });
       });
 
       it('should do nothing when no change', () => {
@@ -854,30 +842,30 @@ export function main() {
   });
 }
 
-class CountingPipe implements Pipe {
+class CountingPipe implements PipeTransform {
   state: number = 0;
   onDestroy() {}
   transform(value, args = null) { return `${value} state:${this.state ++}`; }
 }
 
-class PipeWithOnDestroy implements Pipe {
+class PipeWithOnDestroy implements PipeTransform {
   destroyCalled: boolean = false;
   onDestroy() { this.destroyCalled = true; }
 
   transform(value, args = null) { return null; }
 }
 
-class IdentityPipe implements Pipe {
+class IdentityPipe implements PipeTransform {
   onDestroy() {}
   transform(value, args = null) { return value; }
 }
 
-class WrappedPipe implements Pipe {
+class WrappedPipe implements PipeTransform {
   onDestroy() {}
   transform(value, args = null) { return WrappedValue.wrap(value); }
 }
 
-class MultiArgPipe implements Pipe {
+class MultiArgPipe implements PipeTransform {
   transform(value, args = null) {
     var arg1 = args[0];
     var arg2 = args[1];
@@ -887,16 +875,14 @@ class MultiArgPipe implements Pipe {
   onDestroy(): void {}
 }
 
-class FakePipes extends Pipes {
+class FakePipes implements Pipes {
   numberOfLookups = 0;
-  cdRef: any;
 
-  constructor(public pipeType: string, public factory: Function) { super(null, null); }
+  constructor(public pipeType: string, public factory: Function) {}
 
-  get(type: string, cdRef?) {
+  get(type: string) {
     if (type != this.pipeType) return null;
     this.numberOfLookups++;
-    this.cdRef = cdRef;
     return this.factory();
   }
 }

@@ -1,8 +1,46 @@
 import {CONST_EXPR, isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
-import {WrappedValue} from './pipes/pipe';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
+
+
+/**
+ * Indicates that the result of a {@link Pipe} transformation has changed even though the reference
+ * has not changed.
+ *
+ * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.
+ *
+ * Example:
+ *
+ * ```
+ * if (this._latestValue === this._latestReturnedValue) {
+ *    return this._latestReturnedValue;
+ *  } else {
+ *    this._latestReturnedValue = this._latestValue;
+ *    return WrappedValue.wrap(this._latestValue); // this will force update
+ *  }
+ * ```
+ */
+export class WrappedValue {
+  constructor(public wrapped: any) {}
+
+  static wrap(value: any): WrappedValue {
+    var w = _wrappedValues[_wrappedIndex++ % 5];
+    w.wrapped = value;
+    return w;
+  }
+}
+
+var _wrappedValues = [
+  new WrappedValue(null),
+  new WrappedValue(null),
+  new WrappedValue(null),
+  new WrappedValue(null),
+  new WrappedValue(null)
+];
+
+var _wrappedIndex = 0;
+
 
 export class SimpleChange {
   constructor(public previousValue: any, public currentValue: any) {}

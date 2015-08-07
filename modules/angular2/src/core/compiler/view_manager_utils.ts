@@ -9,6 +9,7 @@ import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
 import {Renderer, RenderViewWithFragments} from 'angular2/src/render/api';
 import {Locals} from 'angular2/src/change_detection/change_detection';
+import {Pipes} from 'angular2/src/core/pipes/pipes';
 import {RenderViewRef, RenderFragmentRef, ViewType} from 'angular2/src/render/api';
 
 @Injectable()
@@ -206,19 +207,13 @@ export class AppViewManagerUtils {
             this._setUpHostActions(currView, elementInjector, boundElementIndex);
           }
         }
-        var pipes = this._getPipes(imperativelyCreatedInjector, hostElementInjector);
+        var pipes = isPresent(hostElementInjector) ?
+                        new Pipes(currView.proto.pipes, hostElementInjector.getInjector()) :
+                        null;
         currView.changeDetector.hydrate(currView.context, currView.locals, currView, pipes);
         viewIdx++;
       }
     }
-  }
-
-  _getPipes(imperativelyCreatedInjector: Injector, hostElementInjector: eli.ElementInjector) {
-    var pipesKey = eli.StaticKeys.instance().pipesKey;
-    if (isPresent(imperativelyCreatedInjector))
-      return imperativelyCreatedInjector.getOptional(pipesKey);
-    if (isPresent(hostElementInjector)) return hostElementInjector.getPipes();
-    return null;
   }
 
   _populateViewLocals(view: viewModule.AppView, elementInjector: eli.ElementInjector,

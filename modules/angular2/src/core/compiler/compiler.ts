@@ -1,4 +1,4 @@
-import {Binding, resolveForwardRef, Injectable} from 'angular2/di';
+import {Binding, resolveForwardRef, Injectable, Inject} from 'angular2/di';
 import {
   Type,
   isBlank,
@@ -19,6 +19,7 @@ import {AppProtoView, AppProtoViewMergeMapping} from './view';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {ViewResolver} from './view_resolver';
+import {PipeResolver} from './pipe_resolver';
 import {View} from '../annotations_impl/view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
@@ -26,6 +27,8 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {ElementBinder} from './element_binder';
 import {wtfStartTimeRange, wtfEndTimeRange} from '../../profile/profile';
+import {PipeBinding} from '../pipes/pipe_binding';
+import {DEFAULT_PIPES_TOKEN} from 'angular2/pipes';
 
 import * as renderApi from 'angular2/src/render/api';
 
@@ -83,44 +86,38 @@ export class CompilerCache {
  */
 @Injectable()
 export class Compiler {
-  private _reader: DirectiveResolver;
-  private _compilerCache: CompilerCache;
-  private _compiling: Map<Type, Promise<AppProtoView>>;
-  private _viewResolver: ViewResolver;
-  private _componentUrlMapper: ComponentUrlMapper;
-  private _urlResolver: UrlResolver;
+  private _compiling: Map<Type, Promise<AppProtoView>> = new Map();
   private _appUrl: string;
-  private _render: renderApi.RenderCompiler;
-  private _protoViewFactory: ProtoViewFactory;
+  private _defaultPipes: Type[];
 
   /**
    * @private
    */
-  constructor(reader: DirectiveResolver, cache: CompilerCache, viewResolver: ViewResolver,
-              componentUrlMapper: ComponentUrlMapper, urlResolver: UrlResolver,
-              render: renderApi.RenderCompiler, protoViewFactory: ProtoViewFactory,
-              appUrl: AppRootUrl) {
-    this._reader = reader;
-    this._compilerCache = cache;
-    this._compiling = new Map();
-    this._viewResolver = viewResolver;
-    this._componentUrlMapper = componentUrlMapper;
-    this._urlResolver = urlResolver;
+  constructor(private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
+              @Inject(DEFAULT_PIPES_TOKEN) _defaultPipes: Type[],
+              private _compilerCache: CompilerCache, private _viewResolver: ViewResolver,
+              private _componentUrlMapper: ComponentUrlMapper, private _urlResolver: UrlResolver,
+              private _render: renderApi.RenderCompiler,
+              private _protoViewFactory: ProtoViewFactory, appUrl: AppRootUrl) {
+    this._defaultPipes = _defaultPipes;
     this._appUrl = appUrl.value;
-    this._render = render;
-    this._protoViewFactory = protoViewFactory;
   }
 
   private _bindDirective(directiveTypeOrBinding): DirectiveBinding {
     if (directiveTypeOrBinding instanceof DirectiveBinding) {
       return directiveTypeOrBinding;
     } else if (directiveTypeOrBinding instanceof Binding) {
-      let annotation = this._reader.resolve(directiveTypeOrBinding.token);
+      let annotation = this._directiveResolver.resolve(directiveTypeOrBinding.token);
       return DirectiveBinding.createFromBinding(directiveTypeOrBinding, annotation);
     } else {
-      let annotation = this._reader.resolve(directiveTypeOrBinding);
+      let annotation = this._directiveResolver.resolve(directiveTypeOrBinding);
       return DirectiveBinding.createFromType(directiveTypeOrBinding, annotation);
     }
+  }
+
+  private _bindPipe(typeOrBinding): PipeBinding {
+    let meta = this._pipeResolver.resolve(typeOrBinding);
+    return PipeBinding.createFromType(typeOrBinding, meta);
   }
 
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
@@ -143,7 +140,7 @@ export class Compiler {
           this._render.compileHost(directiveMetadata)
               .then((hostRenderPv) => {
                 var protoViews = this._protoViewFactory.createAppProtoViews(
-                    componentBinding, hostRenderPv, [componentBinding]);
+                    componentBinding, hostRenderPv, [componentBinding], []);
                 return this._compileNestedProtoViews(protoViews, componentType, new Map());
               })
               .then((appProtoView) => {
@@ -186,14 +183,17 @@ export class Compiler {
     }
 
     var boundDirectives = this._removeDuplicatedDirectives(
-        ListWrapper.map(directives, (directive) => this._bindDirective(directive)));
+        directives.map(directive => this._bindDirective(directive)));
+
+    var pipes = this._flattenPipes(view);
+    var boundPipes = pipes.map(pipe => this._bindPipe(pipe));
 
     var renderTemplate = this._buildRenderTemplate(component, view, boundDirectives);
     resultPromise =
         this._render.compile(renderTemplate)
             .then((renderPv) => {
               var protoViews = this._protoViewFactory.createAppProtoViews(
-                  componentBinding, renderPv, boundDirectives);
+                  componentBinding, renderPv, boundDirectives, boundPipes);
               return this._compileNestedProtoViews(protoViews, component, componentPath);
             })
             .then((appProtoView) => {
@@ -317,12 +317,17 @@ export class Compiler {
     });
   }
 
-  private _flattenDirectives(template: View): List<Type> {
-    if (isBlank(template.directives)) return [];
+  private _flattenPipes(view: View): any[] {
+    if (isBlank(view.pipes)) return this._defaultPipes;
+    var pipes = ListWrapper.clone(this._defaultPipes);
+    this._flattenList(view.pipes, pipes);
+    return pipes;
+  }
 
+  private _flattenDirectives(view: View): List<Type> {
+    if (isBlank(view.directives)) return [];
     var directives = [];
-    this._flattenList(template.directives, directives);
-
+    this._flattenList(view.directives, directives);
     return directives;
   }
 

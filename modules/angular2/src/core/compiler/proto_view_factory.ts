@@ -15,6 +15,9 @@ import {
   ASTWithSource
 } from 'angular2/src/change_detection/change_detection';
 
+import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
+import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
+
 import * as renderApi from 'angular2/src/render/api';
 import {AppProtoView} from './view';
 import {ElementBinder} from './element_binder';
@@ -160,7 +163,7 @@ export class ProtoViewFactory {
 
   createAppProtoViews(hostComponentBinding: DirectiveBinding,
                       rootRenderProtoView: renderApi.ProtoViewDto,
-                      allDirectives: List<DirectiveBinding>): AppProtoView[] {
+                      allDirectives: List<DirectiveBinding>, pipes: PipeBinding[]): AppProtoView[] {
     var allRenderDirectiveMetadata =
         ListWrapper.map(allDirectives, directiveBinding => directiveBinding.metadata);
     var nestedPvsWithIndex = _collectNestedProtoViews(rootRenderProtoView);
@@ -177,7 +180,7 @@ export class ProtoViewFactory {
     ListWrapper.forEach(nestedPvsWithIndex, (pvWithIndex: RenderProtoViewWithIndex) => {
       var appProtoView =
           _createAppProtoView(pvWithIndex.renderProtoView, protoChangeDetectors[pvWithIndex.index],
-                              nestedPvVariableBindings[pvWithIndex.index], allDirectives);
+                              nestedPvVariableBindings[pvWithIndex.index], allDirectives, pipes);
       if (isPresent(pvWithIndex.parentIndex)) {
         var parentView = appProtoViews[pvWithIndex.parentIndex];
         parentView.elementBinders[pvWithIndex.boundElementIndex].nestedProtoView = appProtoView;
@@ -252,14 +255,16 @@ function _getChangeDetectorDefinitions(
 
 function _createAppProtoView(
     renderProtoView: renderApi.ProtoViewDto, protoChangeDetector: ProtoChangeDetector,
-    variableBindings: Map<string, string>, allDirectives: List<DirectiveBinding>): AppProtoView {
+    variableBindings: Map<string, string>, allDirectives: List<DirectiveBinding>,
+    pipes: PipeBinding[]): AppProtoView {
   var elementBinders = renderProtoView.elementBinders;
   // Embedded ProtoViews that contain `<ng-content>` will be merged into their parents and use
   // a RenderFragmentRef. I.e. renderProtoView.transitiveNgContentCount > 0.
+  var protoPipes = new ProtoPipes(pipes);
   var protoView = new AppProtoView(
       renderProtoView.type, renderProtoView.transitiveNgContentCount > 0, renderProtoView.render,
       protoChangeDetector, variableBindings, createVariableLocations(elementBinders),
-      renderProtoView.textBindings.length);
+      renderProtoView.textBindings.length, protoPipes);
   _createElementBinders(protoView, elementBinders, allDirectives);
   _bindDirectiveEvents(protoView, elementBinders);
 

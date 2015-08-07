@@ -31,6 +31,7 @@ import * as renderApi from 'angular2/src/render/api';
 import {RenderEventDispatcher} from 'angular2/src/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
+import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 
 export {DebugContext} from 'angular2/src/change_detection/interfaces';
 
@@ -335,7 +336,8 @@ export class AppProtoView {
               public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>,
-              public variableLocations: Map<string, number>, public textBindingCount: number) {
+              public variableLocations: Map<string, number>, public textBindingCount: number,
+              public pipes: ProtoPipes) {
     this.ref = new ProtoViewRef(this);
     if (isPresent(variableBindings)) {
       MapWrapper.forEach(variableBindings,

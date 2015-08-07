@@ -14,8 +14,8 @@ import {
 } from 'angular2/test_lib';
 
 import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
-import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
-import {AsyncPipe} from 'angular2/src/change_detection/pipes/async_pipe';
+import {WrappedValue} from 'angular2/change_detection';
+import {AsyncPipe} from 'angular2/pipes';
 import {
   EventEmitter,
   ObservableWrapper,

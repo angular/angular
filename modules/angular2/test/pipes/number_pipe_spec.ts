@@ -1,10 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {
-  DecimalPipe,
-  PercentPipe,
-  CurrencyPipe
-} from 'angular2/src/change_detection/pipes/number_pipe';
+import {DecimalPipe, PercentPipe, CurrencyPipe} from 'angular2/pipes';
 
 export function main() {
   describe("DecimalPipe", () => {
@@ -18,6 +14,7 @@ export function main() {
         expect(pipe.transform(123, ['.2'])).toEqual('123.00');
         expect(pipe.transform(1, ['3.'])).toEqual('001');
         expect(pipe.transform(1.1, ['3.4-5'])).toEqual('001.1000');
+
         expect(pipe.transform(1.123456, ['3.4-5'])).toEqual('001.12346');
         expect(pipe.transform(1.1234, [])).toEqual('1.123');
       });

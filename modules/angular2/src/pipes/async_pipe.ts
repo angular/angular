@@ -1,8 +1,12 @@
 import {isBlank, isPresent, isPromise, CONST, BaseException} from 'angular2/src/facade/lang';
 import {Observable, Promise, ObservableWrapper} from 'angular2/src/facade/async';
 import {Injectable} from 'angular2/di';
-import {Pipe, WrappedValue, InvalidPipeArgumentException} from './pipe';
-import {ChangeDetectorRef} from '../change_detector_ref';
+
+import {PipeTransform, WrappedValue} from 'angular2/change_detection';
+import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {ChangeDetectorRef} from 'angular2/change_detection';
+
+import {Pipe} from 'angular2/src/core/annotations/decorators';
 
 
 class ObservableStrategy {
@@ -53,8 +57,9 @@ var _observableStrategy = new ObservableStrategy();
  *
  * ```
  */
+@Pipe({name: 'async'})
 @Injectable()
-export class AsyncPipe implements Pipe {
+export class AsyncPipe implements PipeTransform {
   _latestValue: Object = null;
   _latestReturnedValue: Object = null;
 

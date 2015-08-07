@@ -55,15 +55,14 @@ import {
   SkipSelf,
   SkipSelfMetadata
 } from 'angular2/di';
+
 import {
-  Pipes,
-  defaultPipes,
-  Pipe,
+  PipeTransform,
   ChangeDetectorRef,
   ON_PUSH
 } from 'angular2/src/change_detection/change_detection';
 
-import {Directive, Component, View, Attribute, Query} from 'angular2/annotations';
+import {Directive, Component, View, Attribute, Query, Pipe} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
@@ -98,6 +97,7 @@ export function main() {
                  rootTC.detectChanges();
                  expect(rootTC.nativeElement).toHaveText('Hello World!');
                  async.done();
+
                });
          }));
 
@@ -242,12 +242,13 @@ export function main() {
         it("should support pipes in bindings",
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyCompWithPipes, new viewAnn.View({
+                    tcb.overrideView(MyComp, new viewAnn.View({
                          template: '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>',
-                         directives: [MyDir]
+                         directives: [MyDir],
+                         pipes: [DoublePipe]
                        }))
 
-                        .createAsync(MyCompWithPipes)
+                        .createAsync(MyComp)
                         .then((rootTC) => {
                           rootTC.componentInstance.ctxProp = 'a';
                           rootTC.detectChanges();
@@ -1661,21 +1662,6 @@ class PushCmpWithAsyncPipe {
   resolve(value) { this.completer.resolve(value); }
 }
 
-@Injectable()
-class PipesWithDouble extends Pipes {
-  constructor(injector: Injector) { super({"double": DoublePipe}, injector); }
-}
-
-@Component({
-  selector: 'my-comp-with-pipes',
-  viewBindings: [new Binding(Pipes, {toClass: PipesWithDouble})]
-})
-@View({directives: []})
-@Injectable()
-class MyCompWithPipes {
-  ctxProp: string = "initial value";
-}
-
 @Component({selector: 'my-comp'})
 @View({directives: []})
 @Injectable()
@@ -1754,8 +1740,8 @@ class SomeViewport {
   }
 }
 
-@Injectable()
-class DoublePipe implements Pipe {
+@Pipe({name: 'double'})
+class DoublePipe implements PipeTransform {
   onDestroy() {}
   transform(value, args = null) { return `${value}${value}`; }
 }

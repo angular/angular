@@ -179,12 +179,10 @@ export class ChangeDetectorJITGenerator {
     var newValue = this._names.getLocalName(r.selfIndex);
 
     var pipe = this._names.getPipeName(r.selfIndex);
-    var cdRef = "this.ref";
     var pipeType = r.name;
-
     var read = `
       if (${pipe} === ${UTIL}.uninitialized) {
-        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}', ${cdRef});
+        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}');
       }
       ${newValue} = ${pipe}.transform(${context}, [${argString}]);
     `;
