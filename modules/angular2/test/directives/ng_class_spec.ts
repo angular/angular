@@ -18,6 +18,11 @@ import {Component, View, NgFor, bind} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
+function detectChangesAndCheck(rootTC, classes: string, elIndex: number = 0) {
+  rootTC.detectChanges();
+  expect(rootTC.componentViewChildren[elIndex].nativeElement.className).toEqual(classes);
+}
+
 export function main() {
   describe('binding to CSS class list', () => {
 
@@ -33,9 +38,8 @@ export function main() {
                  rootTC.componentInstance.items = [['0']];
                  rootTC.detectChanges();
                  rootTC.componentInstance.items = [['1']];
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[1].nativeElement.className)
-                     .toEqual('ng-binding 1');
+
+                 detectChangesAndCheck(rootTC, 'ng-binding 1', 1);
 
                  async.done();
                });
@@ -52,10 +56,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
-
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
                  async.done();
                });
          }));
@@ -68,10 +69,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo-bar fooBar');
-
+                 detectChangesAndCheck(rootTC, 'ng-binding foo-bar fooBar');
                  async.done();
                });
          }));
@@ -83,14 +81,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  rootTC.componentInstance.condition = false;
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'ng-binding bar');
 
                  async.done();
                });
@@ -103,24 +97,16 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  StringMapWrapper.set(rootTC.componentInstance.objExpr, 'bar', true);
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
 
                  StringMapWrapper.set(rootTC.componentInstance.objExpr, 'baz', true);
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar baz');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar baz');
 
                  StringMapWrapper.delete(rootTC.componentInstance.objExpr, 'bar');
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo baz');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo baz');
 
                  async.done();
                });
@@ -133,19 +119,13 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  rootTC.componentInstance.objExpr = {foo: true, bar: true};
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
 
                  rootTC.componentInstance.objExpr = {baz: true};
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding baz');
+                 detectChangesAndCheck(rootTC, 'ng-binding baz');
 
                  async.done();
                });
@@ -161,10 +141,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar foo-bar fooBar');
-
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar foo-bar fooBar');
                  async.done();
                });
          }));
@@ -176,27 +153,17 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-
                  var arrExpr: List<string> = rootTC.componentInstance.arrExpr;
-
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  arrExpr.push('bar');
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
 
                  arrExpr[1] = 'baz';
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo baz');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo baz');
 
                  ListWrapper.remove(rootTC.componentInstance.arrExpr, 'baz');
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  async.done();
                });
@@ -209,14 +176,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  rootTC.componentInstance.arrExpr = ['bar'];
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'ng-binding bar');
 
                  async.done();
                });
@@ -232,10 +195,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar foo-bar fooBar');
-
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar foo-bar fooBar');
                  async.done();
                });
          }));
@@ -247,19 +207,14 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  rootTC.componentInstance.strExpr = 'foo bar';
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
+
 
                  rootTC.componentInstance.strExpr = 'baz';
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding baz');
+                 detectChangesAndCheck(rootTC, 'ng-binding baz');
 
                  async.done();
                });
@@ -273,14 +228,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  rootTC.componentInstance.strExpr = null;
-                 rootTC.detectChanges();
-                 expect(rootTC.componentViewChildren[0].nativeElement.className)
-                     .toEqual('ng-binding');
+                 detectChangesAndCheck(rootTC, 'ng-binding');
 
                  async.done();
                });
@@ -294,19 +245,13 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('ng-binding foo');
+               detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                rootTC.componentInstance.objExpr = null;
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('ng-binding');
+               detectChangesAndCheck(rootTC, 'ng-binding');
 
                rootTC.componentInstance.objExpr = {'foo': false, 'bar': true};
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('ng-binding bar');
+               detectChangesAndCheck(rootTC, 'ng-binding bar');
 
                async.done();
              });
@@ -320,14 +265,10 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                StringMapWrapper.set(rootTC.componentInstance.objExpr, 'bar', true);
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('init foo ng-binding bar');
+               detectChangesAndCheck(rootTC, 'init foo ng-binding bar');
 
                StringMapWrapper.set(rootTC.componentInstance.objExpr, 'foo', false);
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('init ng-binding bar');
+               detectChangesAndCheck(rootTC, 'init ng-binding bar');
 
                async.done();
              });
@@ -340,24 +281,16 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('init foo ng-binding baz');
+               detectChangesAndCheck(rootTC, 'init foo ng-binding baz');
 
                StringMapWrapper.set(rootTC.componentInstance.objExpr, 'bar', true);
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('init foo ng-binding baz bar');
+               detectChangesAndCheck(rootTC, 'init foo ng-binding baz bar');
 
                StringMapWrapper.set(rootTC.componentInstance.objExpr, 'foo', false);
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('init ng-binding baz bar');
+               detectChangesAndCheck(rootTC, 'init ng-binding baz bar');
 
                rootTC.componentInstance.condition = false;
-               rootTC.detectChanges();
-               expect(rootTC.componentViewChildren[0].nativeElement.className)
-                   .toEqual('init ng-binding bar');
+               detectChangesAndCheck(rootTC, 'init ng-binding bar');
 
                async.done();
              });
