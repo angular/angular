@@ -21,19 +21,19 @@ import {
   DynamicChangeDetection,
   JitChangeDetection,
   PreGeneratedChangeDetection,
-  Pipes,
-  defaultPipes,
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/change_detection/change_detection';
+import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from './exception_handler';
 import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
 import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
+import {PipeResolver} from './compiler/pipe_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -137,12 +137,13 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     Compiler,
     CompilerCache,
     ViewResolver,
-    defaultPipes,
+    DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(bestChangeDetection),
     ViewLoader,
     DirectiveResolver,
+    PipeResolver,
     Parser,
     Lexer,
     bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM, isDart ? false : true), []),

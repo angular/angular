@@ -20,14 +20,12 @@ export {
   ChangeDetectorRef,
 
   WrappedValue,
-  defaultPipes,
-  Pipe,
-  Pipes,
+  PipeTransform,
   IterableDiffers,
   IterableDiffer,
   IterableDifferFactory,
   KeyValueDiffers,
   KeyValueDiffer,
   KeyValueDifferFactory,
-  BasePipe
+  BasePipeTransform
 } from 'angular2/src/change_detection/change_detection';

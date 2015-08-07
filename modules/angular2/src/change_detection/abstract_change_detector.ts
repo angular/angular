@@ -4,6 +4,7 @@ import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {DirectiveRecord} from './directive_record';
 import {ChangeDetector, ChangeDispatcher} from './interfaces';
+import {Pipes} from './pipes';
 import {
   ChangeDetectionError,
   ExpressionChangedAfterItHasBeenCheckedException,
@@ -12,7 +13,6 @@ import {
 import {ProtoRecord} from './proto_record';
 import {BindingRecord} from './binding_record';
 import {Locals} from './parser/locals';
-import {Pipes} from './pipes/pipes';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 

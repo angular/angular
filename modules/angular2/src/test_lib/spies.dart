@@ -15,11 +15,6 @@ class SpyProtoChangeDetector extends SpyObject implements ProtoChangeDetector {
 }
 
 @proxy
-class SpyPipe extends SpyObject implements Pipe {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {
   noSuchMethod(m) => super.noSuchMethod(m);
 }

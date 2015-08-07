@@ -22,7 +22,8 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {Attribute, View, Component, Directive} from 'angular2/annotations';
+import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
+import {Attribute, View, Component, Directive, Pipe} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
@@ -38,11 +39,14 @@ import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import * as renderApi from 'angular2/src/render/api';
 // TODO(tbosch): Spys don't support named modules...
 import {RenderCompiler} from 'angular2/src/render/api';
+import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
+
+
 
 export function main() {
   describe('compiler', function() {
-    var directiveResolver, tplResolver, renderCompiler, protoViewFactory, cmpUrlMapper,
-        rootProtoView;
+    var directiveResolver, pipeResolver, tplResolver, renderCompiler, protoViewFactory,
+        cmpUrlMapper, rootProtoView;
     var renderCompileRequests: any[];
 
     function createCompiler(renderCompileResults:
@@ -57,13 +61,14 @@ export function main() {
       });
 
       protoViewFactory = new FakeProtoViewFactory(protoViewFactoryResults);
-      return new Compiler(directiveResolver, new CompilerCache(), tplResolver, cmpUrlMapper,
-                          urlResolver, renderCompiler, protoViewFactory,
+      return new Compiler(directiveResolver, pipeResolver, [SomeDefaultPipe], new CompilerCache(),
+                          tplResolver, cmpUrlMapper, urlResolver, renderCompiler, protoViewFactory,
                           new AppRootUrl("http://www.app.com"));
     }
 
     beforeEach(() => {
       directiveResolver = new DirectiveResolver();
+      pipeResolver = new PipeResolver();
       tplResolver = new FakeViewResolver();
       cmpUrlMapper = new RuntimeComponentUrlMapper();
       renderCompiler = new SpyRenderCompiler();
@@ -304,6 +309,20 @@ export function main() {
                });
          }));
 
+      it('should pass the pipe bindings', inject([AsyncTestCompleter], (async) => {
+           tplResolver.setView(MainComponent,
+                               new viewAnn.View({template: '<div></div>', pipes: [SomePipe]}));
+           var compiler =
+               createCompiler([createRenderProtoView()], [rootProtoView, createProtoView()]);
+           compiler.compileInHost(MainComponent)
+               .then((_) => {
+                 var request = protoViewFactory.requests[1];
+                 expect(request[3][0].key.token).toBe(SomeDefaultPipe);
+                 expect(request[3][1].key.token).toBe(SomePipe);
+                 async.done();
+               });
+         }));
+
       it('should use the protoView of the ProtoViewFactory',
          inject([AsyncTestCompleter], (async) => {
            tplResolver.setView(MainComponent, new viewAnn.View({template: '<div></div>'}));
@@ -399,9 +418,9 @@ export function main() {
          var reader: any = new SpyDirectiveResolver();
 
          // create the compiler
-         var compiler =
-             new Compiler(reader, cache, tplResolver, cmpUrlMapper, new UrlResolver(),
-                          renderCompiler, protoViewFactory, new AppRootUrl("http://www.app.com"));
+         var compiler = new Compiler(reader, pipeResolver, [], cache, tplResolver, cmpUrlMapper,
+                                     new UrlResolver(), renderCompiler, protoViewFactory,
+                                     new AppRootUrl("http://www.app.com"));
          compiler.compileInHost(MainComponent)
              .then((protoViewRef) => {
                // the test should have failed if the resolver was called, so we're good
@@ -570,7 +589,7 @@ function createProtoView(elementBinders = null, type: renderApi.ViewType = null,
     type = renderApi.ViewType.COMPONENT;
   }
   var pv = new AppProtoView(type, isEmbeddedFragment, new renderApi.RenderProtoViewRef(), null,
-                            null, new Map(), null);
+                            null, new Map(), null, null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
@@ -653,6 +672,14 @@ class DirectiveWithProperties {
 class DirectiveWithBind {
 }
 
+@Pipe({name: 'some-default-pipe'})
+class SomeDefaultPipe {
+}
+
+@Pipe({name: 'some-pipe'})
+class SomePipe {
+}
+
 @Directive({selector: 'directive-with-accts'})
 class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr: String) {}
@@ -694,8 +721,8 @@ class FakeProtoViewFactory extends ProtoViewFactory {
   }
 
   createAppProtoViews(componentBinding: DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
-                      directives: List<DirectiveBinding>): AppProtoView[] {
-    this.requests.push([componentBinding, renderProtoView, directives]);
+                      directives: List<DirectiveBinding>, pipes: PipeBinding[]): AppProtoView[] {
+    this.requests.push([componentBinding, renderProtoView, directives, pipes]);
     return collectEmbeddedPvs(ListWrapper.removeAt(this.results, 0));
   }
 }

@@ -25,7 +25,7 @@ export function main() {
     function createViewPool({capacity}): AppViewPool { return new AppViewPool(capacity); }
 
     function createProtoView() {
-      return new AppProtoView(null, null, null, null, null, null, null);
+      return new AppProtoView(null, null, null, null, null, null, null, null);
     }
 
     function createView(pv) {

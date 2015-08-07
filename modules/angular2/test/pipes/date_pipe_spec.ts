@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {DatePipe} from 'angular2/src/change_detection/pipes/date_pipe';
+import {DatePipe} from 'angular2/pipes';
 import {DateWrapper} from 'angular2/src/facade/lang';
 
 export function main() {

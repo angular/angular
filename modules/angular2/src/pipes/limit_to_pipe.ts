@@ -9,7 +9,11 @@ import {
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Math} from 'angular2/src/facade/math';
 import {Injectable} from 'angular2/di';
-import {WrappedValue, Pipe, InvalidPipeArgumentException} from './pipe';
+
+import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+
+import {Pipe} from 'angular2/src/core/annotations/decorators';
 
 /**
  * Creates a new List or String containing only a prefix/suffix of the
@@ -50,8 +54,9 @@ import {WrappedValue, Pipe, InvalidPipeArgumentException} from './pipe';
  *     {{ 'abcdefghij' | limitTo: -4 }}      // output is 'ghij'
  *     {{ 'abcdefghij' | limitTo: -100 }}    // output is 'abcdefghij'
  */
+@Pipe({name: 'limitTo'})
 @Injectable()
-export class LimitToPipe implements Pipe {
+export class LimitToPipe implements PipeTransform {
   supports(obj: any): boolean { return isString(obj) || isArray(obj); }
 
   transform(value: any, args: List<any> = null): any {

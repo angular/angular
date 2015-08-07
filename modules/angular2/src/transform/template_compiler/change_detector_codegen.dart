@@ -269,12 +269,11 @@ class _CodegenState {
     var newValue = _names.getLocalName(r.selfIndex);
 
     var pipe = _names.getPipeName(r.selfIndex);
-    var cdRef = 'this.ref';
     var pipeType = r.name;
 
     var read = '''
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
-        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType', $cdRef);
+        $pipe = ${_names.getPipesAccessorName()}.get('$pipeType');
       }
       $newValue = $pipe.transform($context, [$argString]);
     ''';

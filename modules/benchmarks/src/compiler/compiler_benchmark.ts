@@ -11,6 +11,7 @@ import {
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 
 import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
@@ -38,6 +39,7 @@ export function main() {
 
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var reader = new DirectiveResolver();
+  var pipeResolver = new PipeResolver();
   var cache = new CompilerCache();
   var viewResolver = new MultipleViewResolver(
       count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
@@ -46,9 +48,9 @@ export function main() {
   var renderCompiler = new DefaultDomCompiler(
       new DomElementSchemaRegistry(), new TemplateCloner(-1), new Parser(new Lexer()),
       new ViewLoader(null, null, null), new SharedStylesHost(), 'a');
-  var compiler =
-      new Compiler(reader, cache, viewResolver, new ComponentUrlMapper(), urlResolver,
-                   renderCompiler, new ProtoViewFactory(new DynamicChangeDetection()), appRootUrl);
+  var compiler = new Compiler(reader, pipeResolver, [], cache, viewResolver,
+                              new ComponentUrlMapper(), urlResolver, renderCompiler,
+                              new ProtoViewFactory(new DynamicChangeDetection()), appRootUrl);
 
   function measureWrapper(func, desc) {
     return function() {

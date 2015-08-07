@@ -42,14 +42,11 @@ import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
 import {Directive, Component, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {
-  ChangeDetector,
-  ChangeDetectorRef,
-  Pipes
-} from 'angular2/src/change_detection/change_detection';
+import {ChangeDetector, ChangeDetectorRef} from 'angular2/src/change_detection/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DirectiveMetadata} from 'angular2/src/render/api';
+import {PipeBinding} from '../pipes/pipe_binding';
 
 var _staticKeys;
 
@@ -59,7 +56,6 @@ export class StaticKeys {
   viewContainerId: number;
   changeDetectorRefId: number;
   elementRefId: number;
-  pipesKey: Key;
 
   constructor() {
     this.viewManagerId = Key.get(avmModule.AppViewManager).id;
@@ -67,8 +63,6 @@ export class StaticKeys {
     this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
-    // not an id because the public API of injector works only with keys and tokens
-    this.pipesKey = Key.get(Pipes);
   }
 
   static instance(): StaticKeys {
@@ -541,11 +535,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     injector.internalStrategy.attach(parentInjector, isBoundary);
   }
 
-  getPipes(): Pipes {
-    var pipesKey = StaticKeys.instance().pipesKey;
-    return this._injector.getOptional(pipesKey);
-  }
-
   hasVariableBinding(name: string): boolean {
     var vb = this._proto.directiveVariableBindings;
     return isPresent(vb) && vb.has(name);
@@ -589,49 +578,55 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getDependency(injector: Injector, binding: ResolvedBinding, dep: Dependency): any {
     var key: Key = dep.key;
 
-    if (!(dep instanceof DirectiveDependency)) return undefinedValue;
-    if (!(binding instanceof DirectiveBinding)) return undefinedValue;
-
-    var dirDep = <DirectiveDependency>dep;
-    var dirBin = <DirectiveBinding>binding;
-    var staticKeys = StaticKeys.instance();
+    if (binding instanceof DirectiveBinding) {
+      var dirDep = <DirectiveDependency>dep;
+      var dirBin = binding;
+      var staticKeys = StaticKeys.instance();
 
 
-    if (key.id === staticKeys.viewManagerId) return this._preBuiltObjects.viewManager;
+      if (key.id === staticKeys.viewManagerId) return this._preBuiltObjects.viewManager;
 
-    if (isPresent(dirDep.attributeName)) return this._buildAttribute(dirDep);
+      if (isPresent(dirDep.attributeName)) return this._buildAttribute(dirDep);
 
-    if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
+      if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
 
-    if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
-      // We provide the component's view change detector to components and
-      // the surrounding component's change detector to directives.
-      if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
+      if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
+        // We provide the component's view change detector to components and
+        // the surrounding component's change detector to directives.
+        if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
+          var componentView = this._preBuiltObjects.view.getNestedView(
+              this._preBuiltObjects.elementRef.boundElementIndex);
+          return componentView.changeDetector.ref;
+        } else {
+          return this._preBuiltObjects.view.changeDetector.ref;
+        }
+      }
+
+      if (dirDep.key.id === StaticKeys.instance().elementRefId) {
+        return this.getElementRef();
+      }
+
+      if (dirDep.key.id === StaticKeys.instance().viewContainerId) {
+        return this.getViewContainerRef();
+      }
+
+      if (dirDep.key.id === StaticKeys.instance().templateRefId) {
+        if (isBlank(this._preBuiltObjects.templateRef)) {
+          if (dirDep.optional) {
+            return null;
+          }
+
+          throw new NoBindingError(null, dirDep.key);
+        }
+        return this._preBuiltObjects.templateRef;
+      }
+
+    } else if (binding instanceof PipeBinding) {
+      if (dep.key.id === StaticKeys.instance().changeDetectorRefId) {
         var componentView = this._preBuiltObjects.view.getNestedView(
             this._preBuiltObjects.elementRef.boundElementIndex);
         return componentView.changeDetector.ref;
-      } else {
-        return this._preBuiltObjects.view.changeDetector.ref;
       }
-    }
-
-    if (dirDep.key.id === StaticKeys.instance().elementRefId) {
-      return this.getElementRef();
-    }
-
-    if (dirDep.key.id === StaticKeys.instance().viewContainerId) {
-      return this.getViewContainerRef();
-    }
-
-    if (dirDep.key.id === StaticKeys.instance().templateRefId) {
-      if (isBlank(this._preBuiltObjects.templateRef)) {
-        if (dirDep.optional) {
-          return null;
-        }
-
-        throw new NoBindingError(null, dirDep.key);
-      }
-      return this._preBuiltObjects.templateRef;
     }
 
     return undefinedValue;

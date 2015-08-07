@@ -18,16 +18,16 @@ import {
   DynamicChangeDetection,
   JitChangeDetection,
   PreGeneratedChangeDetection,
-  Pipes,
-  defaultPipes,
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/change_detection/change_detection';
+import {DEFAULT_PIPES} from 'angular2/pipes';
 import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
@@ -123,11 +123,12 @@ function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
     Compiler,
     CompilerCache,
     ViewResolver,
-    defaultPipes,
+    DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toClass(bestChangeDetection),
     DirectiveResolver,
+    PipeResolver,
     Parser,
     Lexer,
     bind(ExceptionHandler).toFactory(() => new ExceptionHandler(new PrintLogger()), []),

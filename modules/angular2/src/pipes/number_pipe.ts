@@ -12,14 +12,18 @@ import {
 import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
 import {Injectable} from 'angular2/di';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {Pipe, BasePipe, InvalidPipeArgumentException} from './pipe';
+
+import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+
+import {Pipe} from 'angular2/src/core/annotations/decorators';
 
 var defaultLocale: string = 'en-US';
 var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 
 @CONST()
 @Injectable()
-export class NumberPipe extends BasePipe {
+export class NumberPipe extends BasePipeTransform {
   static _format(value: number, style: NumberFormatStyle, digits: string, currency: string = null,
                  currencyAsSymbol: boolean = false): string {
     if (isBlank(value)) return null;
@@ -78,6 +82,8 @@ export class NumberPipe extends BasePipe {
  *     {{ 1 | number: '2.2' }}         // output is 01.00
  */
 @CONST()
+@Pipe({name: 'number'})
+@Injectable()
 export class DecimalPipe extends NumberPipe {
   transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
@@ -95,6 +101,8 @@ export class DecimalPipe extends NumberPipe {
  * For more information about `digitInfo` see {@link DecimalPipe}
  */
 @CONST()
+@Pipe({name: 'percent'})
+@Injectable()
 export class PercentPipe extends NumberPipe {
   transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
@@ -116,6 +124,8 @@ export class PercentPipe extends NumberPipe {
  * For more information about `digitInfo` see {@link DecimalPipe}
  */
 @CONST()
+@Pipe({name: 'currency'})
+@Injectable()
 export class CurrencyPipe extends NumberPipe {
   transform(value: any, args: any[]): string {
     var currencyCode: string = isPresent(args) && args.length > 0 ? args[0] : 'USD';

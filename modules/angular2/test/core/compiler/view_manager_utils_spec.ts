@@ -318,7 +318,7 @@ function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
   }
   var protoChangeDetector = <any>new SpyProtoChangeDetector();
   protoChangeDetector.spy('instantiate').andReturn(new SpyChangeDetector());
-  var res = new AppProtoView(type, null, null, protoChangeDetector, null, null, 0);
+  var res = new AppProtoView(type, null, null, protoChangeDetector, null, null, 0, null);
   res.elementBinders = binders;
   var mappedElementIndices = ListWrapper.createFixedSize(countNestedElementBinders(res));
   for (var i = 0; i < binders.length; i++) {

@@ -269,7 +269,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     var storedPipe = this._readPipe(proto);
     if (isPresent(storedPipe)) return storedPipe;
 
-    var pipe = this.pipes.get(proto.name, this.ref);
+    var pipe = this.pipes.get(proto.name);
     this._writePipe(proto, pipe);
     return pipe;
   }

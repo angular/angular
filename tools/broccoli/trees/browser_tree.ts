@@ -101,7 +101,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     declaration: true,
     emitDecoratorMetadata: true,
     mapRoot: '',  // force sourcemaps to use relative path
-    noEmitOnError: true,
+    noEmitOnError: false,
     rootDir: '.',
     sourceMap: true,
     sourceRoot: '.',

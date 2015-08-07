@@ -268,6 +268,7 @@ export function makeParamDecorator(annotationCls): any {
       return ParamDecorator;
     }
 
+
     function ParamDecorator(cls, unusedKey, index): any {
       var parameters: Array<Array<any>> = Reflect.getMetadata('parameters', cls);
       parameters = parameters || [];

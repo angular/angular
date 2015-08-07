@@ -11,7 +11,11 @@ import {
 import {DateFormatter} from 'angular2/src/facade/intl';
 import {Injectable} from 'angular2/di';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Pipe, BasePipe, InvalidPipeArgumentException} from './pipe';
+
+import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+
+import {Pipe} from 'angular2/src/core/annotations/decorators';
 
 // TODO: move to a global configable location along with other i18n components.
 var defaultLocale: string = 'en-US';
@@ -71,8 +75,9 @@ var defaultLocale: string = 'en-US';
  *     {{ dateObj | date:'mmss' }}        // output is '43:11'
  */
 @CONST()
+@Pipe({name: 'date'})
 @Injectable()
-export class DatePipe extends BasePipe {
+export class DatePipe extends BasePipeTransform {
   static _ALIASES = {
     'medium': 'yMMMdjms',
     'short': 'yMdjm',
@@ -102,5 +107,5 @@ export class DatePipe extends BasePipe {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  private supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
 }

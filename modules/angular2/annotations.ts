@@ -12,6 +12,7 @@
 export {
   ComponentAnnotation,
   DirectiveAnnotation,
+  PipeAnnotation,
   LifecycleEvent
 } from './src/core/annotations/annotations';
 
@@ -43,5 +44,7 @@ export {
   ViewFactory,
   Query,
   QueryFactory,
-  ViewQuery
+  ViewQuery,
+  Pipe,
+  PipeFactory
 } from 'angular2/src/core/annotations/decorators';

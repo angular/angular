@@ -1,18 +1,10 @@
 import {JitProtoChangeDetector} from './jit_proto_change_detector';
 import {PregenProtoChangeDetector} from './pregen_proto_change_detector';
 import {DynamicProtoChangeDetector} from './proto_change_detector';
-import {Pipes} from './pipes/pipes';
 import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs';
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
 import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-import {AsyncPipe} from './pipes/async_pipe';
-import {UpperCasePipe} from './pipes/uppercase_pipe';
-import {LowerCasePipe} from './pipes/lowercase_pipe';
-import {JsonPipe} from './pipes/json_pipe';
-import {LimitToPipe} from './pipes/limit_to_pipe';
-import {DatePipe} from './pipes/date_pipe';
-import {DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/di';
 import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -50,30 +42,10 @@ export {BindingRecord} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';
 export {DynamicChangeDetector} from './dynamic_change_detector';
 export {ChangeDetectorRef} from './change_detector_ref';
-export {Pipes} from './pipes/pipes';
 export {IterableDiffers, IterableDiffer, IterableDifferFactory} from './differs/iterable_differs';
 export {KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory} from './differs/keyvalue_differs';
-export {WrappedValue, Pipe, BasePipe} from './pipes/pipe';
-
-
-function createPipes(inj: Injector): Pipes {
-  return new Pipes(
-      {
-        "async": AsyncPipe,
-        "uppercase": UpperCasePipe,
-        "lowercase": LowerCasePipe,
-        "json": JsonPipe,
-        "limitTo": LimitToPipe,
-        "number": DecimalPipe,
-        "percent": PercentPipe,
-        "currency": CurrencyPipe,
-        "date": DatePipe
-      },
-      inj);
-}
-
-export const defaultPipes: Binding =
-    CONST_EXPR(new Binding(Pipes, {toFactory: createPipes, deps: [Injector]}));
+export {PipeTransform, BasePipeTransform} from './pipe_transform';
+export {WrappedValue} from './change_detection_util';
 
 /**
  * Structural diffing for `Object`s and `Map`s.

@@ -192,14 +192,17 @@ class OptionallyInjectsTemplateRef {
 
 @Injectable()
 class DirectiveNeedsChangeDetectorRef {
-  changeDetectorRef;
-  constructor(cdr: ChangeDetectorRef) { this.changeDetectorRef = cdr; }
+  constructor(public changeDetectorRef: ChangeDetectorRef) {}
 }
 
 @Injectable()
 class ComponentNeedsChangeDetectorRef {
-  changeDetectorRef;
-  constructor(cdr: ChangeDetectorRef) { this.changeDetectorRef = cdr; }
+  constructor(public changeDetectorRef: ChangeDetectorRef) {}
+}
+
+@Injectable()
+class PipeNeedsChangeDetectorRef {
+  constructor(public changeDetectorRef: ChangeDetectorRef) {}
 }
 
 class A_Needs_B {
