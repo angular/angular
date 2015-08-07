@@ -18,12 +18,12 @@ import {isPresent, print, BaseException} from "angular2/src/facade/lang";
 import {Injectable} from "angular2/di";
 import {
   RenderViewWithFragmentsStore,
-  WorkerRenderViewRef
+  WebWorkerRenderViewRef
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
-import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
+import {WebWorkerElementRef} from 'angular2/src/web-workers/shared/api';
 
 @Injectable()
-export class WorkerCompiler implements RenderCompiler {
+export class WebWorkerCompiler implements RenderCompiler {
   constructor(private _messageBroker: MessageBroker) {}
   /**
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
@@ -64,7 +64,7 @@ export class WorkerCompiler implements RenderCompiler {
 
 
 @Injectable()
-export class WorkerRenderer implements Renderer {
+export class WebWorkerRenderer implements Renderer {
   constructor(private _messageBroker: MessageBroker,
               private _renderViewStore: RenderViewWithFragmentsStore) {}
   /**
@@ -96,7 +96,7 @@ export class WorkerRenderer implements Renderer {
                             hostElementSelector?: string): RenderViewWithFragments {
     var renderViewWithFragments = this._renderViewStore.allocate(fragmentCount);
 
-    var startIndex = (<WorkerRenderViewRef>(renderViewWithFragments.viewRef)).refNumber;
+    var startIndex = (<WebWorkerRenderViewRef>(renderViewWithFragments.viewRef)).refNumber;
     var fnArgs: List<FnArg> = [
       new FnArg(protoViewRef, RenderProtoViewRef),
       new FnArg(fragmentCount, null),
@@ -141,7 +141,7 @@ export class WorkerRenderer implements Renderer {
    */
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {
     var fnArgs =
-        [new FnArg(elementRef, WorkerElementRef), new FnArg(fragmentRef, RenderFragmentRef)];
+        [new FnArg(elementRef, WebWorkerElementRef), new FnArg(fragmentRef, RenderFragmentRef)];
     var args = new UiArguments("renderer", "attachFragmentAfterElement", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
@@ -186,7 +186,7 @@ export class WorkerRenderer implements Renderer {
    */
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any) {
     var fnArgs = [
-      new FnArg(location, WorkerElementRef),
+      new FnArg(location, WebWorkerElementRef),
       new FnArg(propertyName, null),
       new FnArg(propertyValue, null)
     ];
@@ -199,7 +199,7 @@ export class WorkerRenderer implements Renderer {
    */
   setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string) {
     var fnArgs = [
-      new FnArg(location, WorkerElementRef),
+      new FnArg(location, WebWorkerElementRef),
       new FnArg(attributeName, null),
       new FnArg(attributeValue, null)
     ];
@@ -211,8 +211,11 @@ export class WorkerRenderer implements Renderer {
    * Sets a class on an element.
    */
   setElementClass(location: RenderElementRef, className: string, isAdd: boolean) {
-    var fnArgs =
-        [new FnArg(location, WorkerElementRef), new FnArg(className, null), new FnArg(isAdd, null)];
+    var fnArgs = [
+      new FnArg(location, WebWorkerElementRef),
+      new FnArg(className, null),
+      new FnArg(isAdd, null)
+    ];
     var args = new UiArguments("renderer", "setElementClass", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
@@ -222,7 +225,7 @@ export class WorkerRenderer implements Renderer {
    */
   setElementStyle(location: RenderElementRef, styleName: string, styleValue: string) {
     var fnArgs = [
-      new FnArg(location, WorkerElementRef),
+      new FnArg(location, WebWorkerElementRef),
       new FnArg(styleName, null),
       new FnArg(styleValue, null)
     ];
@@ -235,8 +238,11 @@ export class WorkerRenderer implements Renderer {
    * Note: For now we're assuming that everything in the args list are primitive
    */
   invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>) {
-    var fnArgs =
-        [new FnArg(location, WorkerElementRef), new FnArg(methodName, null), new FnArg(args, null)];
+    var fnArgs = [
+      new FnArg(location, WebWorkerElementRef),
+      new FnArg(methodName, null),
+      new FnArg(args, null)
+    ];
     var uiArgs = new UiArguments("renderer", "invokeElementMethod", fnArgs);
     this._messageBroker.runOnUiThread(uiArgs, null);
   }

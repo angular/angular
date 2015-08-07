@@ -3,7 +3,7 @@ library angular2.src.web_workers.worker;
 import "package:angular2/src/web-workers/shared/message_bus.dart"
     show MessageBus, MessageBusSource, MessageBusSink;
 import "package:angular2/src/web-workers/worker/application_common.dart"
-    show bootstrapWebworkerCommon;
+    show bootstrapWebWorkerCommon;
 import "package:angular2/src/facade/async.dart" show Future;
 import "package:angular2/src/core/application.dart" show ApplicationRef;
 import "package:angular2/src/facade/lang.dart" show Type, BaseException;
@@ -22,30 +22,30 @@ import 'dart:core';
  * bootstrap() in a regular Angular application
  * See the bootstrap() docs for more details.
  */
-Future<ApplicationRef> bootstrapWebworker(
+Future<ApplicationRef> bootstrapWebWorker(
     SendPort replyTo, Type appComponentType,
     [List<dynamic> componentInjectableBindings = null]) {
   ReceivePort rPort = new ReceivePort();
-  WorkerMessageBus bus = new WorkerMessageBus.fromPorts(replyTo, rPort);
-  return bootstrapWebworkerCommon(
+  WebWorkerMessageBus bus = new WebWorkerMessageBus.fromPorts(replyTo, rPort);
+  return bootstrapWebWorkerCommon(
       appComponentType, bus, componentInjectableBindings);
 }
 
-class WorkerMessageBus extends MessageBus {
-  final WorkerMessageBusSink sink;
-  final WorkerMessageBusSource source;
+class WebWorkerMessageBus extends MessageBus {
+  final WebWorkerMessageBusSink sink;
+  final WebWorkerMessageBusSource source;
 
-  WorkerMessageBus(this.sink, this.source);
+  WebWorkerMessageBus(this.sink, this.source);
 
-  WorkerMessageBus.fromPorts(SendPort sPort, ReceivePort rPort)
-      : sink = new WorkerMessageBusSink(sPort, rPort),
-        source = new WorkerMessageBusSource(rPort);
+  WebWorkerMessageBus.fromPorts(SendPort sPort, ReceivePort rPort)
+      : sink = new WebWorkerMessageBusSink(sPort, rPort),
+        source = new WebWorkerMessageBusSource(rPort);
 }
 
-class WorkerMessageBusSink extends MessageBusSink {
+class WebWorkerMessageBusSink extends MessageBusSink {
   final SendPort _port;
 
-  WorkerMessageBusSink(SendPort sPort, ReceivePort rPort) : _port = sPort {
+  WebWorkerMessageBusSink(SendPort sPort, ReceivePort rPort) : _port = sPort {
     this.send(rPort.sendPort);
   }
 
@@ -54,14 +54,14 @@ class WorkerMessageBusSink extends MessageBusSink {
   }
 }
 
-class WorkerMessageBusSource extends MessageBusSource {
+class WebWorkerMessageBusSource extends MessageBusSource {
   final ReceivePort _port;
   final Stream rawDataStream;
   Map<int, StreamSubscription> _listenerStore =
       new Map<int, StreamSubscription>();
   int _numListeners = 0;
 
-  WorkerMessageBusSource(ReceivePort rPort)
+  WebWorkerMessageBusSource(ReceivePort rPort)
       : _port = rPort,
         rawDataStream = rPort.asBroadcastStream();
 

@@ -48,12 +48,12 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {WorkerRenderer, WorkerCompiler} from './renderer';
+import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {MessageBroker} from 'angular2/src/web-workers/worker/broker';
-import {WorkerMessageBus} from 'angular2/src/web-workers/worker/application';
+import {WebWorkerMessageBus} from 'angular2/src/web-workers/worker/application';
 import {
   appComponentRefPromiseToken,
   appComponentTypeToken
@@ -61,7 +61,7 @@ import {
 import {ApplicationRef} from 'angular2/src/core/application';
 import {createNgZone} from 'angular2/src/core/application_common';
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
-import {ON_WEBWORKER} from "angular2/src/web-workers/shared/api";
+import {ON_WEB_WORKER} from "angular2/src/web-workers/shared/api";
 import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
@@ -78,7 +78,7 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-function _injectorBindings(appComponentType, bus: WorkerMessageBus,
+function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
                            initData: StringMap<string, any>): List<Type | Binding | List<any>> {
   var bestChangeDetection: Type = DynamicChangeDetection;
   if (PreGeneratedChangeDetection.isSupported()) {
@@ -103,14 +103,15 @@ function _injectorBindings(appComponentType, bus: WorkerMessageBus,
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
                               [ExceptionHandler]),
     Serializer,
-    bind(WorkerMessageBus).toValue(bus),
+    bind(WebWorkerMessageBus).toValue(bus),
     bind(MessageBroker)
-        .toFactory((a, b, c) => new MessageBroker(a, b, c), [WorkerMessageBus, Serializer, NgZone]),
-    WorkerRenderer,
-    bind(Renderer).toAlias(WorkerRenderer),
-    WorkerCompiler,
-    bind(RenderCompiler).toAlias(WorkerCompiler),
-    bind(ON_WEBWORKER).toValue(true),
+        .toFactory((a, b, c) => new MessageBroker(a, b, c),
+                   [WebWorkerMessageBus, Serializer, NgZone]),
+    WebWorkerRenderer,
+    bind(Renderer).toAlias(WebWorkerRenderer),
+    WebWorkerCompiler,
+    bind(RenderCompiler).toAlias(WebWorkerCompiler),
+    bind(ON_WEB_WORKER).toValue(true),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
     ProtoViewFactory,
@@ -140,8 +141,8 @@ function _injectorBindings(appComponentType, bus: WorkerMessageBus,
   ];
 }
 
-export function bootstrapWebworkerCommon(
-    appComponentType: Type, bus: WorkerMessageBus,
+export function bootstrapWebWorkerCommon(
+    appComponentType: Type, bus: WebWorkerMessageBus,
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
@@ -188,8 +189,8 @@ export function bootstrapWebworkerCommon(
 }
 
 function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,
-                            zone: NgZone, bus: WorkerMessageBus, initData: StringMap<string, any>):
-    Injector {
+                            zone: NgZone, bus: WebWorkerMessageBus,
+                            initData: StringMap<string, any>): Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);
   var mergedBindings: any[] =
       isPresent(bindings) ?

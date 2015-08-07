@@ -56,7 +56,7 @@ import {Testability} from 'angular2/src/core/testability/testability';
 import {XHR} from 'angular2/src/render/xhr';
 import {XHRImpl} from 'angular2/src/render/xhr_impl';
 import {Serializer} from 'angular2/src/web-workers/shared/serializer';
-import {ON_WEBWORKER} from 'angular2/src/web-workers/shared/api';
+import {ON_WEB_WORKER} from 'angular2/src/web-workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
@@ -101,7 +101,7 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
     Serializer,
-    bind(ON_WEBWORKER).toValue(false),
+    bind(ON_WEB_WORKER).toValue(false),
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,

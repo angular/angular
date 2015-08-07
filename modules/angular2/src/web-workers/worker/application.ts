@@ -7,7 +7,7 @@ import {
 import {Type, BaseException} from "angular2/src/facade/lang";
 import {Binding} from "angular2/di";
 
-import {bootstrapWebworkerCommon} from "angular2/src/web-workers/worker/application_common";
+import {bootstrapWebWorkerCommon} from "angular2/src/web-workers/worker/application_common";
 import {ApplicationRef} from "angular2/src/core/application";
 import {Injectable} from "angular2/di";
 
@@ -23,31 +23,31 @@ var _postMessage: (message: any, transferrables?:[ArrayBuffer]) => void = <any>p
  * application
  * See the bootstrap() docs for more details.
  */
-export function bootstrapWebworker(
+export function bootstrapWebWorker(
     appComponentType: Type, componentInjectableBindings: List<Type | Binding | List<any>> = null):
     Promise<ApplicationRef> {
-  var bus: WorkerMessageBus =
-      new WorkerMessageBus(new WorkerMessageBusSink(), new WorkerMessageBusSource());
+  var bus: WebWorkerMessageBus =
+      new WebWorkerMessageBus(new WebWorkerMessageBusSink(), new WebWorkerMessageBusSource());
 
-  return bootstrapWebworkerCommon(appComponentType, bus, componentInjectableBindings);
+  return bootstrapWebWorkerCommon(appComponentType, bus, componentInjectableBindings);
 }
 
 @Injectable()
-export class WorkerMessageBus implements MessageBus {
-  sink: WorkerMessageBusSink;
-  source: WorkerMessageBusSource;
+export class WebWorkerMessageBus implements MessageBus {
+  sink: WebWorkerMessageBusSink;
+  source: WebWorkerMessageBusSource;
 
-  constructor(sink: WorkerMessageBusSink, source: WorkerMessageBusSource) {
+  constructor(sink: WebWorkerMessageBusSink, source: WebWorkerMessageBusSource) {
     this.sink = sink;
     this.source = source;
   }
 }
 
-export class WorkerMessageBusSink implements MessageBusSink {
+export class WebWorkerMessageBusSink implements MessageBusSink {
   public send(message: Object) { _postMessage(message); }
 }
 
-export class WorkerMessageBusSource implements MessageBusSource {
+export class WebWorkerMessageBusSource implements MessageBusSource {
   private listenerStore: Map<int, SourceListener>;
   private numListeners: int;
 

@@ -14,7 +14,7 @@ import 'package:angular2/src/web-workers/ui/impl.dart' show bootstrapUICommon;
  * Note: The WebWorker script must call bootstrapWebworker once it is set up to complete the bootstrapping process
  */
 Future<MessageBus> bootstrap(String uri) {
-  return spawnWorker(Uri.parse(uri)).then((bus) {
+  return spawnWebWorker(Uri.parse(uri)).then((bus) {
     bootstrapUICommon(bus);
     return bus;
   });
@@ -23,7 +23,7 @@ Future<MessageBus> bootstrap(String uri) {
 /**
  * To be called from the main thread to spawn and communicate with the worker thread
  */
-Future<UIMessageBus> spawnWorker(Uri uri) {
+Future<UIMessageBus> spawnWebWorker(Uri uri) {
   var receivePort = new ReceivePort();
   var isolateEndSendPort = receivePort.sendPort;
   return Isolate.spawnUri(uri, const [], isolateEndSendPort).then((_) {

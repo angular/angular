@@ -27,7 +27,7 @@ import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
 import {createNgZone} from 'angular2/src/core/application_common';
-import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
+import {WebWorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {Injectable} from 'angular2/di';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
@@ -50,7 +50,7 @@ export function bootstrapUICommon(bus: MessageBus) {
   zone.run(() => {
     var injector = createInjector(zone);
     var webWorkerMain = injector.get(WebWorkerMain);
-    webWorkerMain.attachToWorker(bus);
+    webWorkerMain.attachToWebWorker(bus);
   });
 }
 
@@ -70,21 +70,21 @@ export class WebWorkerMain {
    * This instance will now listen for all messages from the worker and handle them appropriately
    * Note: Don't attach more than one WebWorkerMain instance to the same MessageBus.
    */
-  attachToWorker(bus: MessageBus) {
+  attachToWebWorker(bus: MessageBus) {
     this._bus = bus;
-    this._bus.source.addListener((message) => { this._handleWorkerMessage(message); });
+    this._bus.source.addListener((message) => { this._handleWebWorkerMessage(message); });
   }
 
-  private _sendInitMessage() { this._sendWorkerMessage("init", {"rootUrl": this._rootUrl}); }
+  private _sendInitMessage() { this._sendWebWorkerMessage("init", {"rootUrl": this._rootUrl}); }
 
   /*
    * Sends an error back to the worker thread in response to an opeartion on the UI thread
    */
-  private _sendWorkerError(id: string, error: any) {
-    this._sendWorkerMessage("error", {"error": error}, id);
+  private _sendWebWorkerError(id: string, error: any) {
+    this._sendWebWorkerMessage("error", {"error": error}, id);
   }
 
-  private _sendWorkerMessage(type: string, value: StringMap<string, any>, id?: string) {
+  private _sendWebWorkerMessage(type: string, value: StringMap<string, any>, id?: string) {
     this._bus.sink.send({'type': type, 'id': id, 'value': value});
   }
 
@@ -95,17 +95,17 @@ export class WebWorkerMain {
       case "compileHost":
         var directiveMetadata = this._serializer.deserialize(data.args[0], DirectiveMetadata);
         promise = this._renderCompiler.compileHost(directiveMetadata);
-        this._wrapWorkerPromise(data.id, promise, ProtoViewDto);
+        this._wrapWebWorkerPromise(data.id, promise, ProtoViewDto);
         break;
       case "compile":
         var view = this._serializer.deserialize(data.args[0], ViewDefinition);
         promise = this._renderCompiler.compile(view);
-        this._wrapWorkerPromise(data.id, promise, ProtoViewDto);
+        this._wrapWebWorkerPromise(data.id, promise, ProtoViewDto);
         break;
       case "mergeProtoViewsRecursively":
         var views = this._serializer.deserialize(data.args[0], RenderProtoViewRef);
         promise = this._renderCompiler.mergeProtoViewsRecursively(views);
-        this._wrapWorkerPromise(data.id, promise, RenderProtoViewMergeMapping);
+        this._wrapWebWorkerPromise(data.id, promise, RenderProtoViewMergeMapping);
         break;
       default:
         throw new BaseException("not implemented");
@@ -145,7 +145,7 @@ export class WebWorkerMain {
         this._renderer.attachFragmentAfterFragment(previousFragment, fragment);
         break;
       case "attachFragmentAfterElement":
-        var element = this._serializer.deserialize(args[0], WorkerElementRef);
+        var element = this._serializer.deserialize(args[0], WebWorkerElementRef);
         var fragment = this._serializer.deserialize(args[1], RenderFragmentRef);
         this._renderer.attachFragmentAfterElement(element, fragment);
         break;
@@ -168,31 +168,31 @@ export class WebWorkerMain {
         this._renderer.setText(viewRef, textNodeIndex, text);
         break;
       case "setElementProperty":
-        var elementRef = this._serializer.deserialize(args[0], WorkerElementRef);
+        var elementRef = this._serializer.deserialize(args[0], WebWorkerElementRef);
         var propName = args[1];
         var propValue = args[2];
         this._renderer.setElementProperty(elementRef, propName, propValue);
         break;
       case "setElementAttribute":
-        var elementRef = this._serializer.deserialize(args[0], WorkerElementRef);
+        var elementRef = this._serializer.deserialize(args[0], WebWorkerElementRef);
         var attributeName = args[1];
         var attributeValue = args[2];
         this._renderer.setElementAttribute(elementRef, attributeName, attributeValue);
         break;
       case "setElementClass":
-        var elementRef = this._serializer.deserialize(args[0], WorkerElementRef);
+        var elementRef = this._serializer.deserialize(args[0], WebWorkerElementRef);
         var className = args[1];
         var isAdd = args[2];
         this._renderer.setElementClass(elementRef, className, isAdd);
         break;
       case "setElementStyle":
-        var elementRef = this._serializer.deserialize(args[0], WorkerElementRef);
+        var elementRef = this._serializer.deserialize(args[0], WebWorkerElementRef);
         var styleName = args[1];
         var styleValue = args[2];
         this._renderer.setElementStyle(elementRef, styleName, styleValue);
         break;
       case "invokeElementMethod":
-        var elementRef = this._serializer.deserialize(args[0], WorkerElementRef);
+        var elementRef = this._serializer.deserialize(args[0], WebWorkerElementRef);
         var methodName = args[1];
         var methodArgs = args[2];
         this._renderer.invokeElementMethod(elementRef, methodName, methodArgs);
@@ -208,7 +208,7 @@ export class WebWorkerMain {
   }
 
   // TODO(jteplitz602): Create message type enum #3044
-  private _handleWorkerMessage(message: StringMap<string, any>) {
+  private _handleWebWorkerMessage(message: StringMap<string, any>) {
     var data: ReceivedMessage = new ReceivedMessage(message['data']);
     switch (data.type) {
       case "ready":
@@ -220,14 +220,14 @@ export class WebWorkerMain {
     }
   }
 
-  private _wrapWorkerPromise(id: string, promise: Promise<any>, type: Type): void {
+  private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type): void {
     PromiseWrapper.then(promise, (result: any) => {
       try {
-        this._sendWorkerMessage("result", this._serializer.serialize(result, type), id);
+        this._sendWebWorkerMessage("result", this._serializer.serialize(result, type), id);
       } catch (e) {
         print(e);
       }
-    }, (error: any) => { this._sendWorkerError(id, error); });
+    }, (error: any) => { this._sendWebWorkerError(id, error); });
   }
 }
 

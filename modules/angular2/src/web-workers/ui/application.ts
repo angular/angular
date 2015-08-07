@@ -16,14 +16,14 @@ import {bootstrapUICommon} from "angular2/src/web-workers/ui/impl";
  * bootstrapping process
  */
 export function bootstrap(uri: string): MessageBus {
-  var messageBus = spawnWorker(uri);
+  var messageBus = spawnWebWorker(uri);
   bootstrapUICommon(messageBus);
   return messageBus;
 }
 
-export function spawnWorker(uri: string): MessageBus {
-  var worker: Worker = new Worker(uri);
-  return new UIMessageBus(new UIMessageBusSink(worker), new UIMessageBusSource(worker));
+export function spawnWebWorker(uri: string): MessageBus {
+  var webWorker: Worker = new Worker(uri);
+  return new UIMessageBus(new UIMessageBusSink(webWorker), new UIMessageBusSource(webWorker));
 }
 
 export class UIMessageBus implements MessageBus {
@@ -31,19 +31,19 @@ export class UIMessageBus implements MessageBus {
 }
 
 export class UIMessageBusSink implements MessageBusSink {
-  constructor(private _worker: Worker) {}
+  constructor(private _webWorker: Worker) {}
 
-  send(message: Object): void { this._worker.postMessage(message); }
+  send(message: Object): void { this._webWorker.postMessage(message); }
 }
 
 export class UIMessageBusSource implements MessageBusSource {
   private _listenerStore: Map<int, SourceListener> = new Map<int, SourceListener>();
   private _numListeners: int = 0;
 
-  constructor(private _worker: Worker) {}
+  constructor(private _webWorker: Worker) {}
 
   public addListener(fn: SourceListener): int {
-    this._worker.addEventListener("message", fn);
+    this._webWorker.addEventListener("message", fn);
     this._listenerStore[++this._numListeners] = fn;
     return this._numListeners;
   }

@@ -17,7 +17,7 @@ export interface MessageBusSource {
   /**
    * Attaches the SourceListener to this source.
    * The SourceListener will get called whenever the bus receives a message
-   * Returns a listener id that can be passed to {@link removeListener}
+   * Returns a listener id that can be passed to {removeListener}
    */
   addListener(fn: SourceListener): number;
   removeListener(index: number);

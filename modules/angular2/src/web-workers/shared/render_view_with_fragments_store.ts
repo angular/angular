@@ -1,6 +1,6 @@
 import {Injectable, Inject} from "angular2/di";
 import {RenderViewRef, RenderFragmentRef, RenderViewWithFragments} from "angular2/src/render/api";
-import {ON_WEBWORKER} from "angular2/src/web-workers/shared/api";
+import {ON_WEB_WORKER} from "angular2/src/web-workers/shared/api";
 import {List, ListWrapper} from "angular2/src/facade/collection";
 
 @Injectable()
@@ -10,7 +10,7 @@ export class RenderViewWithFragmentsStore {
   private _lookupByIndex: Map<number, RenderViewRef | RenderFragmentRef>;
   private _lookupByView: Map<RenderViewRef | RenderFragmentRef, number>;
 
-  constructor(@Inject(ON_WEBWORKER) onWebWorker) {
+  constructor(@Inject(ON_WEB_WORKER) onWebWorker) {
     this._onWebWorker = onWebWorker;
     this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
     this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
@@ -19,11 +19,11 @@ export class RenderViewWithFragmentsStore {
   allocate(fragmentCount: number): RenderViewWithFragments {
     var initialIndex = this._nextIndex;
 
-    var viewRef = new WorkerRenderViewRef(this._nextIndex++);
+    var viewRef = new WebWorkerRenderViewRef(this._nextIndex++);
     var fragmentRefs = ListWrapper.createGrowableSize(fragmentCount);
 
     for (var i = 0; i < fragmentCount; i++) {
-      fragmentRefs[i] = new WorkerRenderFragmentRef(this._nextIndex++);
+      fragmentRefs[i] = new WebWorkerRenderFragmentRef(this._nextIndex++);
     }
     var renderViewWithFragments = new RenderViewWithFragments(viewRef, fragmentRefs);
     this.store(renderViewWithFragments, initialIndex);
@@ -79,7 +79,7 @@ export class RenderViewWithFragmentsStore {
     }
 
     if (this._onWebWorker) {
-      return (<WorkerRenderFragmentRef | WorkerRenderViewRef>ref).serialize();
+      return (<WebWorkerRenderFragmentRef | WebWorkerRenderViewRef>ref).serialize();
     } else {
       return this._lookupByView.get(ref);
     }
@@ -92,7 +92,7 @@ export class RenderViewWithFragmentsStore {
 
     if (this._onWebWorker) {
       return {
-        'viewRef': (<WorkerRenderViewRef>view.viewRef).serialize(),
+        'viewRef': (<WebWorkerRenderViewRef>view.viewRef).serialize(),
         'fragmentRefs': ListWrapper.map(view.fragmentRefs, (val) => val.serialize())
       };
     } else {
@@ -116,19 +116,21 @@ export class RenderViewWithFragmentsStore {
   }
 }
 
-export class WorkerRenderViewRef extends RenderViewRef {
+export class WebWorkerRenderViewRef extends RenderViewRef {
   constructor(public refNumber: number) { super(); }
   serialize(): number { return this.refNumber; }
 
-  static deserialize(ref: number): WorkerRenderViewRef { return new WorkerRenderViewRef(ref); }
+  static deserialize(ref: number): WebWorkerRenderViewRef {
+    return new WebWorkerRenderViewRef(ref);
+  }
 }
 
-export class WorkerRenderFragmentRef extends RenderFragmentRef {
+export class WebWorkerRenderFragmentRef extends RenderFragmentRef {
   constructor(public refNumber: number) { super(); }
 
   serialize(): number { return this.refNumber; }
 
-  static deserialize(ref: number): WorkerRenderFragmentRef {
-    return new WorkerRenderFragmentRef(ref);
+  static deserialize(ref: number): WebWorkerRenderFragmentRef {
+    return new WebWorkerRenderFragmentRef(ref);
   }
 }

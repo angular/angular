@@ -11,7 +11,7 @@ import {
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DomTestbed, TestRootView, elRef} from '../../render/dom/dom_testbed';
 import {bind} from 'angular2/di';
-import {WorkerCompiler, WorkerRenderer} from "angular2/src/web-workers/worker/renderer";
+import {WebWorkerCompiler, WebWorkerRenderer} from "angular2/src/web-workers/worker/renderer";
 import {MessageBroker, UiArguments, FnArg} from "angular2/src/web-workers/worker/broker";
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
 import {isPresent, isBlank, BaseException, Type} from "angular2/src/facade/lang";
@@ -28,11 +28,11 @@ import {
 } from "angular2/src/render/api";
 import {
   RenderProtoViewRefStore,
-  WebworkerRenderProtoViewRef
+  WebWorkerRenderProtoViewRef
 } from "angular2/src/web-workers/shared/render_proto_view_ref_store";
 import {
   RenderViewWithFragmentsStore,
-  WorkerRenderViewRef
+  WebWorkerRenderViewRef
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
 import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
@@ -56,23 +56,23 @@ export function main() {
     // set up the ui side
     var webWorkerMain = new WebWorkerMain(tb.compiler, tb.renderer, uiRenderViewStore, uiSerializer,
                                           new AnchorBasedAppRootUrl());
-    webWorkerMain.attachToWorker(uiMessageBus);
+    webWorkerMain.attachToWebWorker(uiMessageBus);
     return broker;
   }
 
   function createWorkerRenderer(workerSerializer: Serializer, uiSerializer: Serializer,
                                 tb: DomTestbed, uiRenderViewStore: RenderViewWithFragmentsStore,
                                 workerRenderViewStore: RenderViewWithFragmentsStore):
-      WorkerRenderer {
+      WebWorkerRenderer {
     var broker =
         createBroker(workerSerializer, uiSerializer, tb, uiRenderViewStore, workerRenderViewStore);
-    return new WorkerRenderer(broker, workerRenderViewStore);
+    return new WebWorkerRenderer(broker, workerRenderViewStore);
   }
 
   function createWorkerCompiler(workerSerializer: Serializer, uiSerializer: Serializer,
-                                tb: DomTestbed): WorkerCompiler {
+                                tb: DomTestbed): WebWorkerCompiler {
     var broker = createBroker(workerSerializer, uiSerializer, tb, null, null);
-    return new WorkerCompiler(broker);
+    return new WebWorkerCompiler(broker);
   }
 
   describe("Web Worker Compiler", function() {
@@ -91,12 +91,12 @@ export function main() {
     });
 
     function resolveWebWorkerRef(ref: RenderProtoViewRef) {
-      var refNumber = (<WebworkerRenderProtoViewRef>ref).refNumber;
+      var refNumber = (<WebWorkerRenderProtoViewRef>ref).refNumber;
       return resolveInternalDomProtoView(uiRenderProtoViewRefStore.deserialize(refNumber));
     }
 
     it('should build the proto view', inject([AsyncTestCompleter], (async) => {
-         var compiler: WorkerCompiler = createWorkerCompiler(workerSerializer, uiSerializer, tb);
+         var compiler: WebWorkerCompiler = createWorkerCompiler(workerSerializer, uiSerializer, tb);
 
          var dirMetadata = DirectiveMetadata.create(
              {id: 'id', selector: 'custom', type: DirectiveMetadata.COMPONENT_TYPE});
@@ -113,7 +113,7 @@ export function main() {
   });
 
   describe("Web Worker Renderer", () => {
-    var renderer: WorkerRenderer;
+    var renderer: WebWorkerRenderer;
     var workerSerializer: Serializer;
     var workerRenderViewStore: RenderViewWithFragmentsStore;
     var uiRenderViewStore: RenderViewWithFragmentsStore;
@@ -291,7 +291,7 @@ class WorkerTestRootView extends TestRootView {
   constructor(workerViewWithFragments: RenderViewWithFragments, uiRenderViewStore) {
     super(new RenderViewWithFragments(
         uiRenderViewStore.retreive(
-            (<WorkerRenderViewRef>workerViewWithFragments.viewRef).refNumber),
+            (<WebWorkerRenderViewRef>workerViewWithFragments.viewRef).refNumber),
         ListWrapper.map(workerViewWithFragments.fragmentRefs,
                         (val) => { return uiRenderViewStore.retreive(val.refNumber); })));
   }

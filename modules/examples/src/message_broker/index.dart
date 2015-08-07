@@ -1,13 +1,13 @@
 library angular2.examples.message_broker.index;
 
 import "package:angular2/src/web-workers/ui/application.dart"
-    show spawnWorker, UIMessageBus, UIMessageBusSink, UIMessageBusSource;
+    show spawnWebWorker, UIMessageBus, UIMessageBusSink, UIMessageBusSource;
 
 import "dart:html";
 
 main() {
   var VALUE = 5;
-  spawnWorker(Uri.parse("background_index.dart")).then((bus) {
+  spawnWebWorker(Uri.parse("background_index.dart")).then((bus) {
     querySelector("#send_echo").addEventListener("click", (e) {
       var val = (querySelector("#echo_input") as InputElement).value;
       bus.sink.send({'type': 'echo', 'value': val});

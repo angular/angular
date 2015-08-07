@@ -2,8 +2,8 @@ import {AsyncTestCompleter, beforeEach, inject, describe, it, expect} from "angu
 import {RenderViewWithFragments, RenderViewRef, RenderFragmentRef} from "angular2/src/render/api";
 import {
   RenderViewWithFragmentsStore,
-  WorkerRenderViewRef,
-  WorkerRenderFragmentRef
+  WebWorkerRenderViewRef,
+  WebWorkerRenderFragmentRef
 } from "angular2/src/web-workers/shared/render_view_with_fragments_store";
 import {List, ListWrapper} from "angular2/src/facade/collection";
 
@@ -16,11 +16,11 @@ export function main() {
       it("should allocate fragmentCount + 1 refs", () => {
         var view: RenderViewWithFragments = store.allocate(10);
 
-        var viewRef: WorkerRenderViewRef = <WorkerRenderViewRef>view.viewRef;
+        var viewRef: WebWorkerRenderViewRef = <WebWorkerRenderViewRef>view.viewRef;
         expect(viewRef.refNumber).toEqual(0);
 
-        var fragmentRefs: List<WorkerRenderFragmentRef> =
-            <List<WorkerRenderFragmentRef>>view.fragmentRefs;
+        var fragmentRefs: List<WebWorkerRenderFragmentRef> =
+            <List<WebWorkerRenderFragmentRef>>view.fragmentRefs;
         expect(fragmentRefs.length).toEqual(10);
 
         for (var i = 0; i < fragmentRefs.length; i++) {
@@ -31,7 +31,7 @@ export function main() {
       it("should not reuse a reference", () => {
         store.allocate(10);
         var view = store.allocate(0);
-        var viewRef = <WorkerRenderViewRef>view.viewRef;
+        var viewRef = <WebWorkerRenderViewRef>view.viewRef;
         expect(viewRef.refNumber).toEqual(11);
       });
 

@@ -31,7 +31,7 @@ import {
   ViewEncapsulation,
   PropertyBindingType
 } from "angular2/src/render/api";
-import {WorkerElementRef} from 'angular2/src/web-workers/shared/api';
+import {WebWorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AST, ASTWithSource} from 'angular2/src/change_detection/change_detection';
 import {Parser} from "angular2/src/change_detection/parser/parser";
 import {Injectable} from "angular2/di";
@@ -99,7 +99,7 @@ export class Serializer {
       return this._renderViewStore.serializeRenderViewRef(obj);
     } else if (type == RenderFragmentRef) {
       return this._renderViewStore.serializeRenderFragmentRef(obj);
-    } else if (type == WorkerElementRef) {
+    } else if (type == WebWorkerElementRef) {
       return this._serializeWorkerElementRef(obj);
     } else if (type == ElementPropertyBinding) {
       return this._serializeElementPropertyBinding(obj);
@@ -143,7 +143,7 @@ export class Serializer {
       return this._renderViewStore.deserializeRenderViewRef(map);
     } else if (type == RenderFragmentRef) {
       return this._renderViewStore.deserializeRenderFragmentRef(map);
-    } else if (type == WorkerElementRef) {
+    } else if (type == WebWorkerElementRef) {
       return this._deserializeWorkerElementRef(map);
     } else if (type == EventBinding) {
       return this._deserializeEventBinding(map);
@@ -219,8 +219,8 @@ export class Serializer {
   }
 
   private _deserializeWorkerElementRef(map: StringMap<string, any>): RenderElementRef {
-    return new WorkerElementRef(this.deserialize(map['renderView'], RenderViewRef),
-                                map['renderBoundElementIndex']);
+    return new WebWorkerElementRef(this.deserialize(map['renderView'], RenderViewRef),
+                                   map['renderBoundElementIndex']);
   }
 
   private _serializeRenderProtoViewMergeMapping(mapping: RenderProtoViewMergeMapping): Object {

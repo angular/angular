@@ -1,6 +1,6 @@
 import {Injectable, Inject} from "angular2/di";
 import {RenderProtoViewRef} from "angular2/src/render/api";
-import {ON_WEBWORKER} from "angular2/src/web-workers/shared/api";
+import {ON_WEB_WORKER} from "angular2/src/web-workers/shared/api";
 
 @Injectable()
 export class RenderProtoViewRefStore {
@@ -10,7 +10,7 @@ export class RenderProtoViewRefStore {
   private _nextIndex: number = 0;
   private _onWebworker: boolean;
 
-  constructor(@Inject(ON_WEBWORKER) onWebworker) { this._onWebworker = onWebworker; }
+  constructor(@Inject(ON_WEB_WORKER) onWebworker) { this._onWebworker = onWebworker; }
 
   storeRenderProtoViewRef(ref: RenderProtoViewRef): number {
     if (this._lookupByProtoView.has(ref)) {
@@ -32,7 +32,7 @@ export class RenderProtoViewRefStore {
     }
 
     if (this._onWebworker) {
-      return new WebworkerRenderProtoViewRef(index);
+      return new WebWorkerRenderProtoViewRef(index);
     } else {
       return this.retreiveRenderProtoViewRef(index);
     }
@@ -44,13 +44,13 @@ export class RenderProtoViewRefStore {
     }
 
     if (this._onWebworker) {
-      return (<WebworkerRenderProtoViewRef>ref).refNumber;
+      return (<WebWorkerRenderProtoViewRef>ref).refNumber;
     } else {
       return this.storeRenderProtoViewRef(ref);
     }
   }
 }
 
-export class WebworkerRenderProtoViewRef extends RenderProtoViewRef {
+export class WebWorkerRenderProtoViewRef extends RenderProtoViewRef {
   constructor(public refNumber: number) { super(); }
 }
