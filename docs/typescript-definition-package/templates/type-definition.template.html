@@ -30,7 +30,7 @@
 // ***********************************************************
 {% for alias, module in doc.moduleDocs %}
 {%- if module.references.length %}
-// Angular depends transitively on these libraries.
+// {$ alias $} depends transitively on these libraries.
 // If you don't have them installed you can install them using TSD
 // https://github.com/DefinitelyTyped/tsd
 {%- endif %}
@@ -39,7 +39,7 @@
 {% block staticDeclarations %}{% endblock %}
 {% for alias, module in doc.moduleDocs %}
 {$ commentBlock(module.doc, 1) $}
-declare module ng {
+declare module {$ module.namespace $} {
 
   {%- for export in module.doc.exports -%}
   {%- if export.content -%}
@@ -75,7 +75,7 @@ declare module ng {
 }
 
 declare module "{$ alias $}" {
-  export = ng;
+  export = {$ module.namespace $};
 }
 
 {% endfor %}

@@ -9,7 +9,7 @@ var _prevNg = (<any>window).ng;
 (<any>window).ng = ng;
 
 
-(<any>ng).router = router;
+(<any>window).ngRouter = router;
 /**
  * Calling noConflict will restore window.angular to its pre-angular loading state
  * and return the angular module object.
