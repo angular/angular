@@ -272,7 +272,7 @@ function _joinAndCanonicalizePath(parts: List<any>): string {
  * @return {string}
  */
 function _resolveUrl(base: string, url: string): string {
-  var parts = _split(url);
+  var parts = _split(encodeURI(url));
   var baseParts = _split(base);
 
   if (isPresent(parts[_ComponentIndex.SCHEME])) {

@@ -70,5 +70,13 @@ export function main() {
         expect(resolver.resolve('foo/baz/', '/bar')).toEqual('/bar');
       });
     });
+
+    describe('corner and error cases', () => {
+      it('should encode URLs before resolving', () => {
+        expect(resolver.resolve('foo/baz', `<p #p>Hello
+        </p>`))
+            .toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
+      });
+    });
   });
 }
