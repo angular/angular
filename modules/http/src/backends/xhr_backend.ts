@@ -1,5 +1,5 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyStates, RequestMethods, RequestMethodsMap} from '../enums';
+import {ReadyStates, RequestMethods, RequestMethodsMap, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
@@ -58,6 +58,14 @@ export class XHRConnection implements Connection {
       ObservableWrapper.callNext(this.response, new Response(responseOptions));
       // TODO(gdi2290): defer complete if array buffer until done
       ObservableWrapper.callReturn(this.response);
+    });
+
+    this._xhr.addEventListener('error', (err) => {
+      var responseOptions = new ResponseOptions({body: err, type: ResponseTypes.Error});
+      if (isPresent(baseResponseOptions)) {
+        responseOptions = baseResponseOptions.merge(responseOptions);
+      }
+      ObservableWrapper.callThrow(this.response, new Response(responseOptions))
     });
     // TODO(jeffbcross): make this more dynamic based on body type
 
