@@ -47,14 +47,15 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
       {
         id: 'angular2/angular2',
         references: ['../es6-promise/es6-promise.d.ts', '../rx/rx.d.ts'],
+        namespace: 'ng',
         modules: {
           'angular2/angular2': 'angular2/angular2',
         }
       },
       {
         id: 'angular2/router',
-        //Right now the typings live in the same directory, but eventually will not. See #3458
-        references: ['../angular2/angular2.d.ts'],
+        namespace: 'ngRouter',
+        references: ['../es6-promise/es6-promise.d.ts'],
         modules: {
           'angular2/router': 'angular2/router'
         }

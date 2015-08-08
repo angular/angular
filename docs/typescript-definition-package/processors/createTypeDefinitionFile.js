@@ -33,7 +33,12 @@ module.exports = function createTypeDefinitionFile(log) {
           // A type definition may include a number of top level modules
           // And those modules could be aliased (such as 'angular2/angular2.api' -> 'angular2/angular2')
           moduleDocs: _.transform(def.modules, function(moduleDocs, id, alias) {
-            moduleDocs[id] = { id: alias, doc: null, references: def.references };
+            moduleDocs[id] = {
+              id: alias,
+              doc: null,
+              namespace: def.namespace,
+              references: def.references
+            };
           })
         };
       });
