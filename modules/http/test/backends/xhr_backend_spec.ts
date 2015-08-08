@@ -118,6 +118,15 @@ export function main() {
         expect(abortSpy).toHaveBeenCalled();
       });
 
+      it('should create an error Response on error', inject([AsyncTestCompleter], async => {
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({type: ResponseTypes.Error}));
+           ObservableWrapper.subscribe(connection.response, null, res => {
+             expect(res.type).toBe(ResponseTypes.Error);
+             async.done();
+           });
+           existingXHRs[0].dispatchEvent('error');
+         }));
 
       it('should automatically call open with method and url', () => {
         new XHRConnection(sampleRequest, new MockBrowserXHR());
