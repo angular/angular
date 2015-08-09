@@ -24,7 +24,7 @@ if [ "$TRAVIS_REPO_SLUG" = "angular/angular" ]; then
     git rebase upstream/master
 
     if [[ $TRAVIS_BRANCH == *"-pr-"* ]]; then
-      PR_NO=`echo presubmit-mhevery-pr-1234 | sed -e 's/^.*-pr-//'`
+      PR_NO=`echo $TRAVIS_BRANCH | sed -e 's/^.*-pr-//'`
       if echo $PR_NO | egrep -q '^[0-9]+$'; then
         echo "Adding Closes #$PR_NO"
         git filter-branch -f --msg-filter "cat /dev/stdin && echo && echo Closes \#$PR_NO" HEAD~1..HEAD
