@@ -33,15 +33,23 @@ import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/fa
 @Directive({
   selector: '[ng-class]',
   lifecycle: [LifecycleEvent.onCheck, LifecycleEvent.onDestroy],
-  properties: ['rawClass: ng-class']
+  properties: ['rawClass: ng-class', 'initialClasses: class']
 })
 export class NgClass {
   private _differ: any;
   private _mode: string;
-  _rawClass;
+  private _initialClasses = [];
+  private _rawClass;
 
   constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
               private _ngEl: ElementRef, private _renderer: Renderer) {}
+
+  set initialClasses(v) {
+    this._applyInitialClasses(true);
+    this._initialClasses = isPresent(v) && isString(v) ? v.split(' ') : [];
+    this._applyInitialClasses(false);
+    this._applyClasses(this._rawClass, false);
+  }
 
   set rawClass(v) {
     this._cleanupClasses(this._rawClass);
@@ -59,6 +67,8 @@ export class NgClass {
         this._differ = this._keyValueDiffers.find(v).create(null);
         this._mode = 'keyValue';
       }
+    } else {
+      this._differ = null;
     }
   }
 
@@ -78,15 +88,8 @@ export class NgClass {
   onDestroy(): void { this._cleanupClasses(this._rawClass); }
 
   private _cleanupClasses(rawClassVal): void {
-    if (isPresent(rawClassVal)) {
-      if (isListLikeIterable(rawClassVal)) {
-        ListWrapper.forEach(rawClassVal, (className) => { this._toggleClass(className, false); });
-      } else {
-        StringMapWrapper.forEach(rawClassVal, (expVal, className) => {
-          if (expVal) this._toggleClass(className, false);
-        });
-      }
-    }
+    this._applyClasses(rawClassVal, true);
+    this._applyInitialClasses(false);
   }
 
   private _applyKeyValueChanges(changes: any): void {
@@ -102,6 +105,23 @@ export class NgClass {
   private _applyIterableChanges(changes: any): void {
     changes.forEachAddedItem((record) => { this._toggleClass(record.item, true); });
     changes.forEachRemovedItem((record) => { this._toggleClass(record.item, false); });
+  }
+
+  private _applyInitialClasses(isCleanup: boolean) {
+    ListWrapper.forEach(this._initialClasses,
+                        (className) => { this._toggleClass(className, !isCleanup); });
+  }
+
+  private _applyClasses(rawClassVal, isCleanup: boolean) {
+    if (isPresent(rawClassVal)) {
+      if (isListLikeIterable(rawClassVal)) {
+        ListWrapper.forEach(rawClassVal, (className) => this._toggleClass(className, !isCleanup));
+      } else {
+        StringMapWrapper.forEach(rawClassVal, (expVal, className) => {
+          if (expVal) this._toggleClass(className, !isCleanup);
+        });
+      }
+    }
   }
 
   private _toggleClass(className: string, enabled): void {
