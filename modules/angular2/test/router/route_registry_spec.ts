@@ -7,13 +7,15 @@ import {
   expect,
   inject,
   beforeEach,
-  SpyObject
+  SpyObject,
+  IS_DARTIUM
 } from 'angular2/test_lib';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Type} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {RouteConfig, Route, AsyncRoute} from 'angular2/src/router/route_config_decorator';
+import {RouteConfig, Route, AuxRoute, AsyncRoute} from 'angular2/src/router/route_config_decorator';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
 
 export function main() {
@@ -183,6 +185,20 @@ export function main() {
       expect(() => registry.config(RootHostCmp,
                                    new Route({path: '/home/.../fun/', component: DummyParentCmp})))
           .toThrowError('Unexpected "..." before the end of the path for "home/.../fun/".');
+    });
+
+
+    it('should throw if a config has a component that is not defined', () => {
+      expect(() => registry.config(RootHostCmp, new Route({path: '/', component: null})))
+          .toThrowError('Component for route "/" is not defined, or is not a class.');
+      expect(() => registry.config(RootHostCmp, new AuxRoute({path: '/', component: null})))
+          .toThrowError('Component for route "/" is not defined, or is not a class.');
+
+      // This would never happen in Dart
+      if (!IS_DARTIUM) {
+        expect(() => registry.config(RootHostCmp, new Route({path: '/', component:<Type>(<any>4)})))
+            .toThrowError('Component for route "/" is not defined, or is not a class.');
+      }
     });
 
     it('should match matrix params on child components and query params on the root component',

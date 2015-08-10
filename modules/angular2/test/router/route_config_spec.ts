@@ -16,6 +16,7 @@ import {Component, Directive, View} from 'angular2/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';
 import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
+import {Type} from 'angular2/src/facade/lang';
 
 import {
   routerInjectables,

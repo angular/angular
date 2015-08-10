@@ -19,9 +19,17 @@ import {
   isFunction,
   StringWrapper,
   BaseException,
+  Type,
   getTypeNameForDebugging
 } from 'angular2/src/facade/lang';
-import {RouteConfig, AsyncRoute, Route, Redirect, RouteDefinition} from './route_config_impl';
+import {
+  RouteConfig,
+  AsyncRoute,
+  Route,
+  AuxRoute,
+  Redirect,
+  RouteDefinition
+} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Injectable} from 'angular2/di';
 import {normalizeRouteConfig} from './route_config_nomalizer';
@@ -43,6 +51,13 @@ export class RouteRegistry {
    */
   config(parentComponent: any, config: RouteDefinition): void {
     config = normalizeRouteConfig(config);
+
+    // this is here because Dart type guard reasons
+    if (config instanceof Route) {
+      assertComponentExists(config.component, config.path);
+    } else if (config instanceof AuxRoute) {
+      assertComponentExists(config.component, config.path);
+    }
 
     var recognizer: RouteRecognizer = this._rules.get(parentComponent);
 
@@ -267,5 +282,11 @@ function assertTerminalComponent(component, path) {
             `Child routes are not allowed for "${path}". Use "..." on the parent's route path.`);
       }
     }
+  }
+}
+
+function assertComponentExists(component: Type, path: string): void {
+  if (!isType(component)) {
+    throw new BaseException(`Component for route "${path}" is not defined, or is not a class.`);
   }
 }
