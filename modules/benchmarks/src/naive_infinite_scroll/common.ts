@@ -1,5 +1,5 @@
 import {Math} from 'angular2/src/facade/math';
-
+import {StringWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 
 export var ITEMS = 1000;
@@ -86,7 +86,7 @@ export class RawEntity {
   }
 
   remove(key: string) {
-    if (!key.contains('.')) {
+    if (!StringWrapper.contains(key, '.')) {
       return MapWrapper.delete(this._data, key);
     }
     var pieces = key.split('.');
