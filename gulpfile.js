@@ -941,9 +941,12 @@ var bundleConfig = {
   meta: {
     // auto-detection fails to detect properly here - https://github.com/systemjs/builder/issues/123
     'rx': {
-        format: 'cjs'
-      }
+      format: 'cjs'
+    },
+    'angular2/src/router/route_definition': {
+      format: 'es6'
     }
+  }
 };
 
 // production build
