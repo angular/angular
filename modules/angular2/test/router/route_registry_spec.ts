@@ -14,6 +14,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig, Route, AsyncRoute} from 'angular2/src/router/route_config_decorator';
+import {stringifyInstruction} from 'angular2/src/router/instruction';
 
 export function main() {
   describe('RouteRegistry', () => {
@@ -27,7 +28,7 @@ export function main() {
 
          registry.recognize('/test', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyCmpB);
+               expect(instruction.component.componentType).toBe(DummyCmpB);
                async.done();
              });
        }));
@@ -36,8 +37,10 @@ export function main() {
       registry.config(RootHostCmp,
                       new Route({path: '/first/...', component: DummyParentCmp, as: 'firstCmp'}));
 
-      expect(registry.generate(['firstCmp', 'secondCmp'], RootHostCmp)).toEqual('first/second');
-      expect(registry.generate(['secondCmp'], DummyParentCmp)).toEqual('second');
+      expect(stringifyInstruction(registry.generate(['firstCmp', 'secondCmp'], RootHostCmp)))
+          .toEqual('first/second');
+      expect(stringifyInstruction(registry.generate(['secondCmp'], DummyParentCmp)))
+          .toEqual('second');
     });
 
     it('should generate URLs with params', () => {
@@ -45,8 +48,8 @@ export function main() {
           RootHostCmp,
           new Route({path: '/first/:param/...', component: DummyParentParamCmp, as: 'firstCmp'}));
 
-      var url =
-          registry.generate(['firstCmp', {param: 'one'}, 'secondCmp', {param: 'two'}], RootHostCmp);
+      var url = stringifyInstruction(registry.generate(
+          ['firstCmp', {param: 'one'}, 'secondCmp', {param: 'two'}], RootHostCmp));
       expect(url).toEqual('first/one/second/two');
     });
 
@@ -61,7 +64,8 @@ export function main() {
 
          registry.recognize('/first/second', RootHostCmp)
              .then((_) => {
-               expect(registry.generate(['firstCmp', 'secondCmp'], RootHostCmp))
+               expect(
+                   stringifyInstruction(registry.generate(['firstCmp', 'secondCmp'], RootHostCmp)))
                    .toEqual('first/second');
                async.done();
              });
@@ -73,14 +77,13 @@ export function main() {
           .toThrowError('Component "RootHostCmp" has no route config.');
     });
 
-
     it('should prefer static segments to dynamic', inject([AsyncTestCompleter], (async) => {
          registry.config(RootHostCmp, new Route({path: '/:site', component: DummyCmpB}));
          registry.config(RootHostCmp, new Route({path: '/home', component: DummyCmpA}));
 
          registry.recognize('/home', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyCmpA);
+               expect(instruction.component.componentType).toBe(DummyCmpA);
                async.done();
              });
        }));
@@ -91,7 +94,7 @@ export function main() {
 
          registry.recognize('/home', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyCmpA);
+               expect(instruction.component.componentType).toBe(DummyCmpA);
                async.done();
              });
        }));
@@ -102,7 +105,7 @@ export function main() {
 
          registry.recognize('/some/path', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyCmpA);
+               expect(instruction.component.componentType).toBe(DummyCmpA);
                async.done();
              });
        }));
@@ -113,7 +116,7 @@ export function main() {
 
          registry.recognize('/first/second', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyCmpA);
+               expect(instruction.component.componentType).toBe(DummyCmpA);
                async.done();
              });
        }));
@@ -127,7 +130,7 @@ export function main() {
 
          registry.recognize('/first/second/third', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyCmpB);
+               expect(instruction.component.componentType).toBe(DummyCmpB);
                async.done();
              });
        }));
@@ -137,8 +140,8 @@ export function main() {
 
          registry.recognize('/first/second', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyParentCmp);
-               expect(instruction.child.component).toBe(DummyCmpB);
+               expect(instruction.component.componentType).toBe(DummyParentCmp);
+               expect(instruction.child.component.componentType).toBe(DummyCmpB);
                async.done();
              });
        }));
@@ -149,8 +152,8 @@ export function main() {
 
          registry.recognize('/first/second', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyAsyncCmp);
-               expect(instruction.child.component).toBe(DummyCmpB);
+               expect(instruction.component.componentType).toBe(DummyAsyncCmp);
+               expect(instruction.child.component.componentType).toBe(DummyCmpB);
                async.done();
              });
        }));
@@ -162,27 +165,11 @@ export function main() {
 
          registry.recognize('/first/second', RootHostCmp)
              .then((instruction) => {
-               expect(instruction.component).toBe(DummyParentCmp);
-               expect(instruction.child.component).toBe(DummyCmpB);
+               expect(instruction.component.componentType).toBe(DummyParentCmp);
+               expect(instruction.child.component.componentType).toBe(DummyCmpB);
                async.done();
              });
        }));
-
-    // TODO: not sure what to do with these tests
-    // it('should throw when a config does not have a component or redirectTo property', () => {
-    //  expect(() => registry.config(rootHostComponent, {'path': '/some/path'}))
-    //      .toThrowError(
-    //          'Route config should contain exactly one \'component\', or \'redirectTo\'
-    //          property');
-    //});
-    //
-    // it('should throw when a config has an invalid component type', () => {
-    //  expect(() => registry.config(
-    //             rootHostComponent,
-    //             {'path': '/some/path', 'component': {'type':
-    //             'intentionallyWrongComponentType'}}))
-    //      .toThrowError('Invalid component type \'intentionallyWrongComponentType\'');
-    //});
 
     it('should throw when a parent config is missing the `...` suffix any of its children add routes',
        () => {
@@ -196,6 +183,40 @@ export function main() {
       expect(() => registry.config(RootHostCmp,
                                    new Route({path: '/home/.../fun/', component: DummyParentCmp})))
           .toThrowError('Unexpected "..." before the end of the path for "home/.../fun/".');
+    });
+
+    it('should match matrix params on child components and query params on the root component',
+       inject([AsyncTestCompleter], (async) => {
+         registry.config(RootHostCmp, new Route({path: '/first/...', component: DummyParentCmp}));
+
+         registry.recognize('/first/second;filter=odd?comments=all', RootHostCmp)
+             .then((instruction) => {
+               expect(instruction.component.componentType).toBe(DummyParentCmp);
+               expect(instruction.component.params).toEqual({'comments': 'all'});
+
+               expect(instruction.child.component.componentType).toBe(DummyCmpB);
+               expect(instruction.child.component.params).toEqual({'filter': 'odd'});
+               async.done();
+             });
+       }));
+
+    it('should generate URLs with matrix and query params', () => {
+      registry.config(
+          RootHostCmp,
+          new Route({path: '/first/:param/...', component: DummyParentParamCmp, as: 'firstCmp'}));
+
+      var url = stringifyInstruction(registry.generate(
+          [
+            'firstCmp',
+            {param: 'one', query: 'cats'},
+            'secondCmp',
+            {
+              param: 'two',
+              sort: 'asc',
+            }
+          ],
+          RootHostCmp));
+      expect(url).toEqual('first/one/second/two;sort=asc?query=cats');
     });
 
   });

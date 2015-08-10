@@ -20,6 +20,7 @@ import {Pipeline} from 'angular2/src/router/pipeline';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
+import {stringifyInstruction} from 'angular2/src/router/instruction';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig, Route} from 'angular2/src/router/route_config_decorator';
@@ -125,52 +126,54 @@ export function main() {
     it('should generate URLs from the root component when the path starts with /', () => {
       router.config([new Route({path: '/first/...', component: DummyParentComp, as: 'firstCmp'})]);
 
-      expect(router.generate(['/firstCmp', 'secondCmp'])).toEqual('/first/second');
-      expect(router.generate(['/firstCmp', 'secondCmp'])).toEqual('/first/second');
-      expect(router.generate(['/firstCmp/secondCmp'])).toEqual('/first/second');
+      var instruction = router.generate(['/firstCmp', 'secondCmp']);
+      expect(stringifyInstruction(instruction)).toEqual('first/second');
+
+      instruction = router.generate(['/firstCmp/secondCmp']);
+      expect(stringifyInstruction(instruction)).toEqual('first/second');
     });
 
-    describe('querstring params', () => {
-      it('should only apply querystring params if the given URL is on the root router and is terminal',
-         () => {
-           router.config([
-             new Route({path: '/hi/how/are/you', component: DummyComponent, as: 'greeting-url'})
-           ]);
+    describe('query string params', () => {
+      it('should use query string params for the root route', () => {
+        router.config(
+            [new Route({path: '/hi/how/are/you', component: DummyComponent, as: 'greeting-url'})]);
 
-           var path = router.generate(['/greeting-url', {'name': 'brad'}]);
-           expect(path).toEqual('/hi/how/are/you?name=brad');
-         });
+        var instruction = router.generate(['/greeting-url', {'name': 'brad'}]);
+        var path = stringifyInstruction(instruction);
+        expect(path).toEqual('hi/how/are/you?name=brad');
+      });
 
-      it('should use parameters that are not apart of the route definition as querystring params',
+      it('should serialize parameters that are not part of the route definition as query string params',
          () => {
            router.config(
                [new Route({path: '/one/two/:three', component: DummyComponent, as: 'number-url'})]);
 
-           var path = router.generate(['/number-url', {'three': 'three', 'four': 'four'}]);
-           expect(path).toEqual('/one/two/three?four=four');
+           var instruction = router.generate(['/number-url', {'three': 'three', 'four': 'four'}]);
+           var path = stringifyInstruction(instruction);
+           expect(path).toEqual('one/two/three?four=four');
          });
     });
 
     describe('matrix params', () => {
-      it('should apply inline matrix params for each router path within the generated URL', () => {
+      it('should generate matrix params for each non-root component', () => {
         router.config(
             [new Route({path: '/first/...', component: DummyParentComp, as: 'firstCmp'})]);
 
-        var path =
+        var instruction =
             router.generate(['/firstCmp', {'key': 'value'}, 'secondCmp', {'project': 'angular'}]);
-        expect(path).toEqual('/first;key=value/second;project=angular');
+        var path = stringifyInstruction(instruction);
+        expect(path).toEqual('first/second;project=angular?key=value');
       });
 
-      it('should apply inline matrix params for each router path within the generated URL and also include named params',
-         () => {
-           router.config([
-             new Route({path: '/first/:token/...', component: DummyParentComp, as: 'firstCmp'})
-           ]);
+      it('should work with named params', () => {
+        router.config(
+            [new Route({path: '/first/:token/...', component: DummyParentComp, as: 'firstCmp'})]);
 
-           var path =
-               router.generate(['/firstCmp', {'token': 'min'}, 'secondCmp', {'author': 'max'}]);
-           expect(path).toEqual('/first/min/second;author=max');
-         });
+        var instruction =
+            router.generate(['/firstCmp', {'token': 'min'}, 'secondCmp', {'author': 'max'}]);
+        var path = stringifyInstruction(instruction);
+        expect(path).toEqual('first/min/second;author=max');
+      });
     });
   });
 }

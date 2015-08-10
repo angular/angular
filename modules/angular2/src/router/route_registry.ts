@@ -1,5 +1,6 @@
-import {RouteRecognizer, RouteMatch} from './route_recognizer';
-import {Instruction} from './instruction';
+import {PathMatch} from './path_recognizer';
+import {RouteRecognizer} from './route_recognizer';
+import {Instruction, ComponentInstruction, PrimaryInstruction} from './instruction';
 import {
   List,
   ListWrapper,
@@ -24,6 +25,9 @@ import {RouteConfig, AsyncRoute, Route, Redirect, RouteDefinition} from './route
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Injectable} from 'angular2/di';
 import {normalizeRouteConfig} from './route_config_nomalizer';
+import {parser, Url} from './url_parser';
+
+var _resolveToNull = PromiseWrapper.resolve(null);
 
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
@@ -37,13 +41,13 @@ export class RouteRegistry {
   /**
    * Given a component and a configuration object, add the route to this registry
    */
-  config(parentComponent: any, config: RouteDefinition, isRootLevelRoute: boolean = false): void {
+  config(parentComponent: any, config: RouteDefinition): void {
     config = normalizeRouteConfig(config);
 
     var recognizer: RouteRecognizer = this._rules.get(parentComponent);
 
     if (isBlank(recognizer)) {
-      recognizer = new RouteRecognizer(isRootLevelRoute);
+      recognizer = new RouteRecognizer();
       this._rules.set(parentComponent, recognizer);
     }
 
@@ -61,7 +65,7 @@ export class RouteRegistry {
   /**
    * Reads the annotations of a component and configures the registry based on them
    */
-  configFromComponent(component: any, isRootComponent: boolean = false): void {
+  configFromComponent(component: any): void {
     if (!isType(component)) {
       return;
     }
@@ -77,8 +81,7 @@ export class RouteRegistry {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
-          ListWrapper.forEach(annotation.configs,
-                              (config) => this.config(component, config, isRootComponent));
+          ListWrapper.forEach(annotation.configs, (config) => this.config(component, config));
         }
       }
     }
@@ -90,52 +93,88 @@ export class RouteRegistry {
    * the application into the state specified by the url
    */
   recognize(url: string, parentComponent: any): Promise<Instruction> {
+    var parsedUrl = parser.parse(url);
+    return this._recognize(parsedUrl, parentComponent);
+  }
+
+  private _recognize(parsedUrl: Url, parentComponent): Promise<Instruction> {
+    return this._recognizePrimaryRoute(parsedUrl, parentComponent)
+        .then((instruction: PrimaryInstruction) =>
+                  this._completeAuxiliaryRouteMatches(instruction, parentComponent));
+  }
+
+  private _recognizePrimaryRoute(parsedUrl: Url, parentComponent): Promise<PrimaryInstruction> {
     var componentRecognizer = this._rules.get(parentComponent);
     if (isBlank(componentRecognizer)) {
       return PromiseWrapper.resolve(null);
     }
 
     // Matches some beginning part of the given URL
-    var possibleMatches = componentRecognizer.recognize(url);
+    var possibleMatches = componentRecognizer.recognize(parsedUrl);
+
     var matchPromises =
-        ListWrapper.map(possibleMatches, (candidate) => this._completeRouteMatch(candidate));
+        ListWrapper.map(possibleMatches, (candidate) => this._completePrimaryRouteMatch(candidate));
 
-    return PromiseWrapper.all(matchPromises)
-        .then((solutions: List<Instruction>) => {
-          // remove nulls
-          var fullSolutions = ListWrapper.filter(solutions, (solution) => isPresent(solution));
-
-          if (fullSolutions.length > 0) {
-            return mostSpecific(fullSolutions);
-          }
-          return null;
-        });
+    return PromiseWrapper.all(matchPromises).then(mostSpecific);
   }
 
-
-  _completeRouteMatch(partialMatch: RouteMatch): Promise<Instruction> {
-    var recognizer = partialMatch.recognizer;
-    var handler = recognizer.handler;
-    return handler.resolveComponentType().then((componentType) => {
+  private _completePrimaryRouteMatch(partialMatch: PathMatch): Promise<PrimaryInstruction> {
+    var instruction = partialMatch.instruction;
+    return instruction.resolveComponentType().then((componentType) => {
       this.configFromComponent(componentType);
 
-      if (partialMatch.unmatchedUrl.length == 0) {
-        if (recognizer.terminal) {
-          return new Instruction(componentType, partialMatch.matchedUrl, recognizer, null,
-                                 partialMatch.params());
+      if (isBlank(partialMatch.remaining)) {
+        if (instruction.terminal) {
+          return new PrimaryInstruction(instruction, null, partialMatch.remainingAux);
         } else {
           return null;
         }
       }
 
-      return this.recognize(partialMatch.unmatchedUrl, componentType)
-          .then(childInstruction => {
+      return this._recognizePrimaryRoute(partialMatch.remaining, componentType)
+          .then((childInstruction) => {
             if (isBlank(childInstruction)) {
               return null;
             } else {
-              return new Instruction(componentType, partialMatch.matchedUrl, recognizer,
-                                     childInstruction);
+              return new PrimaryInstruction(instruction, childInstruction,
+                                            partialMatch.remainingAux);
             }
+          });
+    });
+  }
+
+
+  private _completeAuxiliaryRouteMatches(instruction: PrimaryInstruction,
+                                         parentComponent: any): Promise<Instruction> {
+    if (isBlank(instruction)) {
+      return _resolveToNull;
+    }
+
+    var componentRecognizer = this._rules.get(parentComponent);
+    var auxInstructions = {};
+
+    var promises = instruction.auxUrls.map((auxSegment: Url) => {
+      var match = componentRecognizer.recognizeAuxiliary(auxSegment);
+      if (isBlank(match)) {
+        return _resolveToNull;
+      }
+      return this._completePrimaryRouteMatch(match).then((auxInstruction: PrimaryInstruction) => {
+        if (isPresent(auxInstruction)) {
+          return this._completeAuxiliaryRouteMatches(auxInstruction, parentComponent)
+              .then((finishedAuxRoute: Instruction) => {
+                auxInstructions[auxSegment.path] = finishedAuxRoute;
+              });
+        }
+      });
+    });
+    return PromiseWrapper.all(promises).then((_) => {
+      if (isBlank(instruction.child)) {
+        return new Instruction(instruction.component, null, auxInstructions);
+      }
+      return this._completeAuxiliaryRouteMatches(instruction.child,
+                                                 instruction.component.componentType)
+          .then((completeChild) => {
+            return new Instruction(instruction.component, completeChild, auxInstructions);
           });
     });
   }
@@ -144,9 +183,10 @@ export class RouteRegistry {
    * Given a normalized list with component names and params like: `['user', {id: 3 }]`
    * generates a url with a leading slash relative to the provided `parentComponent`.
    */
-  generate(linkParams: List<any>, parentComponent: any): string {
-    let url = '';
+  generate(linkParams: List<any>, parentComponent: any): Instruction {
+    let segments = [];
     let componentCursor = parentComponent;
+
     for (let i = 0; i < linkParams.length; i += 1) {
       let segment = linkParams[i];
       if (isBlank(componentCursor)) {
@@ -172,15 +212,22 @@ export class RouteRegistry {
             `Component "${getTypeNameForDebugging(componentCursor)}" has no route config.`);
       }
       var response = componentRecognizer.generate(segment, params);
+
       if (isBlank(response)) {
         throw new BaseException(
             `Component "${getTypeNameForDebugging(componentCursor)}" has no route named "${segment}".`);
       }
-      url += response['url'];
-      componentCursor = response['nextComponent'];
+      segments.push(response);
+      componentCursor = response.componentType;
     }
 
-    return url;
+    var instruction = null;
+
+    while (segments.length > 0) {
+      instruction = new Instruction(segments.pop(), instruction, {});
+    }
+
+    return instruction;
   }
 }
 
@@ -188,11 +235,17 @@ export class RouteRegistry {
 /*
  * Given a list of instructions, returns the most specific instruction
  */
-function mostSpecific(instructions: List<Instruction>): Instruction {
+function mostSpecific(instructions: List<PrimaryInstruction>): PrimaryInstruction {
+  if (instructions.length == 0) {
+    return null;
+  }
   var mostSpecificSolution = instructions[0];
   for (var solutionIndex = 1; solutionIndex < instructions.length; solutionIndex++) {
-    var solution = instructions[solutionIndex];
-    if (solution.specificity > mostSpecificSolution.specificity) {
+    var solution: PrimaryInstruction = instructions[solutionIndex];
+    if (isBlank(solution)) {
+      continue;
+    }
+    if (solution.component.specificity > mostSpecificSolution.component.specificity) {
       mostSpecificSolution = solution;
     }
   }

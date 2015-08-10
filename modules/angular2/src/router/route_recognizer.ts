@@ -6,7 +6,8 @@ import {
   isPresent,
   isType,
   isStringMap,
-  BaseException
+  BaseException,
+  Type
 } from 'angular2/src/facade/lang';
 import {
   Map,
@@ -17,12 +18,13 @@ import {
   StringMapWrapper
 } from 'angular2/src/facade/collection';
 
-import {PathRecognizer} from './path_recognizer';
-import {RouteHandler} from './route_handler';
-import {Route, AsyncRoute, Redirect, RouteDefinition} from './route_config_impl';
+import {PathRecognizer, PathMatch} from './path_recognizer';
+import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';
 import {AsyncRouteHandler} from './async_route_handler';
 import {SyncRouteHandler} from './sync_route_handler';
-import {parseAndAssignParamString} from 'angular2/src/router/helpers';
+import {Url} from './url_parser';
+import {ComponentInstruction} from './instruction';
+
 
 /**
  * `RouteRecognizer` is responsible for recognizing routes for a single component.
@@ -31,30 +33,45 @@ import {parseAndAssignParamString} from 'angular2/src/router/helpers';
  */
 export class RouteRecognizer {
   names: Map<string, PathRecognizer> = new Map();
-  redirects: Map<string, string> = new Map();
-  matchers: Map<RegExp, PathRecognizer> = new Map();
 
-  constructor(public isRoot: boolean = false) {}
+  auxRoutes: Map<string, PathRecognizer> = new Map();
+
+  // TODO: optimize this into a trie
+  matchers: List<PathRecognizer> = [];
+
+  // TODO: optimize this into a trie
+  redirects: List<Redirector> = [];
 
   config(config: RouteDefinition): boolean {
     var handler;
+
+    if (config instanceof AuxRoute) {
+      handler = new SyncRouteHandler(config.component);
+      let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
+      var recognizer = new PathRecognizer(config.path, handler);
+      this.auxRoutes.set(path, recognizer);
+      return recognizer.terminal;
+    }
     if (config instanceof Redirect) {
-      let path = config.path == '/' ? '' : config.path;
-      this.redirects.set(path, config.redirectTo);
+      this.redirects.push(new Redirector(config.path, config.redirectTo));
       return true;
-    } else if (config instanceof Route) {
+    }
+
+    if (config instanceof Route) {
       handler = new SyncRouteHandler(config.component);
     } else if (config instanceof AsyncRoute) {
       handler = new AsyncRouteHandler(config.loader);
     }
-    var recognizer = new PathRecognizer(config.path, handler, this.isRoot);
-    MapWrapper.forEach(this.matchers, (matcher, _) => {
-      if (recognizer.regex.toString() == matcher.regex.toString()) {
+    var recognizer = new PathRecognizer(config.path, handler);
+
+    this.matchers.forEach((matcher) => {
+      if (recognizer.hash == matcher.hash) {
         throw new BaseException(
             `Configuration '${config.path}' conflicts with existing route '${matcher.path}'`);
       }
     });
-    this.matchers.set(recognizer.regex, recognizer);
+
+    this.matchers.push(recognizer);
     if (isPresent(config.as)) {
       this.names.set(config.as, recognizer);
     }
@@ -66,102 +83,87 @@ export class RouteRecognizer {
    * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
    *
    */
-  recognize(url: string): List<RouteMatch> {
+  recognize(urlParse: Url): List<PathMatch> {
     var solutions = [];
-    if (url.length > 0 && url[url.length - 1] == '/') {
-      url = url.substring(0, url.length - 1);
-    }
 
-    MapWrapper.forEach(this.redirects, (target, path) => {
-      // "/" redirect case
-      if (path == '/' || path == '') {
-        if (path == url) {
-          url = target;
-        }
-      } else if (url.startsWith(path)) {
-        url = target + url.substring(path.length);
-      }
-    });
+    urlParse = this._redirect(urlParse);
 
-    var queryParams = StringMapWrapper.create();
-    var queryString = '';
-    var queryIndex = url.indexOf('?');
-    if (queryIndex >= 0) {
-      queryString = url.substring(queryIndex + 1);
-      url = url.substring(0, queryIndex);
-    }
-    if (this.isRoot && queryString.length > 0) {
-      parseAndAssignParamString('&', queryString, queryParams);
-    }
+    this.matchers.forEach((pathRecognizer: PathRecognizer) => {
+      var pathMatch = pathRecognizer.recognize(urlParse);
 
-    MapWrapper.forEach(this.matchers, (pathRecognizer, regex) => {
-      var match;
-      if (isPresent(match = RegExpWrapper.firstMatch(regex, url))) {
-        var matchedUrl = '/';
-        var unmatchedUrl = '';
-        if (url != '/') {
-          matchedUrl = match[0];
-          unmatchedUrl = url.substring(match[0].length);
-        }
-        var params = null;
-        if (pathRecognizer.terminal && !StringMapWrapper.isEmpty(queryParams)) {
-          params = queryParams;
-          matchedUrl += '?' + queryString;
-        }
-        solutions.push(new RouteMatch(pathRecognizer, matchedUrl, unmatchedUrl, params));
+      if (isPresent(pathMatch)) {
+        solutions.push(pathMatch);
       }
     });
 
     return solutions;
   }
 
+  _redirect(urlParse: Url): Url {
+    for (var i = 0; i < this.redirects.length; i += 1) {
+      let redirector = this.redirects[i];
+      var redirectedUrl = redirector.redirect(urlParse);
+      if (isPresent(redirectedUrl)) {
+        return redirectedUrl;
+      }
+    }
+
+    return urlParse;
+  }
+
+  recognizeAuxiliary(urlParse: Url): PathMatch {
+    var pathRecognizer = this.auxRoutes.get(urlParse.path);
+    if (isBlank(pathRecognizer)) {
+      return null;
+    }
+    return pathRecognizer.recognize(urlParse);
+  }
+
   hasRoute(name: string): boolean { return this.names.has(name); }
 
-  generate(name: string, params: any): StringMap<string, any> {
+  generate(name: string, params: any): ComponentInstruction {
     var pathRecognizer: PathRecognizer = this.names.get(name);
     if (isBlank(pathRecognizer)) {
       return null;
     }
-    var url = pathRecognizer.generate(params);
-    return {url, 'nextComponent': pathRecognizer.handler.componentType};
+    return pathRecognizer.generate(params);
   }
 }
 
-export class RouteMatch {
-  private _params: StringMap<string, any>;
-  private _paramsParsed: boolean = false;
+export class Redirector {
+  segments: List<string> = [];
+  toSegments: List<string> = [];
 
-  constructor(public recognizer: PathRecognizer, public matchedUrl: string,
-              public unmatchedUrl: string, p: StringMap<string, any> = null) {
-    this._params = isPresent(p) ? p : StringMapWrapper.create();
+  constructor(path: string, redirectTo: string) {
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+    this.segments = path.split('/');
+    if (redirectTo.startsWith('/')) {
+      redirectTo = redirectTo.substring(1);
+    }
+    this.toSegments = redirectTo.split('/');
   }
 
-  params(): StringMap<string, any> {
-    if (!this._paramsParsed) {
-      this._paramsParsed = true;
-      StringMapWrapper.forEach(this.recognizer.parseParams(this.matchedUrl),
-                               (value, key) => { StringMapWrapper.set(this._params, key, value); });
+  /**
+   * Returns `null` or a `ParsedUrl` representing the new path to match
+   */
+  redirect(urlParse: Url): Url {
+    for (var i = 0; i < this.segments.length; i += 1) {
+      if (isBlank(urlParse)) {
+        return null;
+      }
+      let segment = this.segments[i];
+      if (segment != urlParse.path) {
+        return null;
+      }
+      urlParse = urlParse.child;
     }
-    return this._params;
-  }
-}
 
-function configObjToHandler(config: any): RouteHandler {
-  if (isType(config)) {
-    return new SyncRouteHandler(config);
-  } else if (isStringMap(config)) {
-    if (isBlank(config['type'])) {
-      throw new BaseException(
-          `Component declaration when provided as a map should include a 'type' property`);
+    for (var i = this.toSegments.length - 1; i >= 0; i -= 1) {
+      let segment = this.toSegments[i];
+      urlParse = new Url(segment, urlParse);
     }
-    var componentType = config['type'];
-    if (componentType == 'constructor') {
-      return new SyncRouteHandler(config['constructor']);
-    } else if (componentType == 'loader') {
-      return new AsyncRouteHandler(config['loader']);
-    } else {
-      throw new BaseException(`oops`);
-    }
+    return urlParse;
   }
-  throw new BaseException(`Unexpected component "${config}".`);
 }

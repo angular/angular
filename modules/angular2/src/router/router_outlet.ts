@@ -7,7 +7,7 @@ import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
 import {Injector, bind, Dependency, undefinedValue} from 'angular2/di';
 
 import * as routerMod from './router';
-import {Instruction, RouteParams} from './instruction';
+import {Instruction, ComponentInstruction, RouteParams} from './instruction';
 import * as hookMod from './lifecycle_annotations';
 import {hasLifecycleHook} from './route_lifecycle_reflector';
 
@@ -23,16 +23,16 @@ import {hasLifecycleHook} from './route_lifecycle_reflector';
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
   childRouter: routerMod.Router = null;
+  name: string = null;
 
   private _componentRef: ComponentRef = null;
-  private _currentInstruction: Instruction = null;
+  private _currentInstruction: ComponentInstruction = null;
 
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
-    // TODO: reintroduce with new // sibling routes
-    // if (isBlank(nameAttr)) {
-    //  nameAttr = 'default';
-    //}
+    if (isPresent(nameAttr)) {
+      this.name = nameAttr;
+    }
     this._parentRouter.registerOutlet(this);
   }
 
@@ -40,13 +40,26 @@ export class RouterOutlet {
    * Given an instruction, update the contents of this outlet.
    */
   commit(instruction: Instruction): Promise<any> {
+    instruction = this._getInstruction(instruction);
+    var componentInstruction = instruction.component;
+    if (isBlank(componentInstruction)) {
+      return PromiseWrapper.resolve(true);
+    }
     var next;
-    if (instruction.reuse) {
-      next = this._reuse(instruction);
+    if (componentInstruction.reuse) {
+      next = this._reuse(componentInstruction);
     } else {
-      next = this.deactivate(instruction).then((_) => this._activate(instruction));
+      next = this.deactivate(instruction).then((_) => this._activate(componentInstruction));
     }
     return next.then((_) => this._commitChild(instruction));
+  }
+
+  private _getInstruction(instruction: Instruction): Instruction {
+    if (isPresent(this.name)) {
+      return instruction.auxInstruction[this.name];
+    } else {
+      return instruction;
+    }
   }
 
   private _commitChild(instruction: Instruction): Promise<any> {
@@ -57,20 +70,21 @@ export class RouterOutlet {
     }
   }
 
-  private _activate(instruction: Instruction): Promise<any> {
+  private _activate(instruction: ComponentInstruction): Promise<any> {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = instruction;
-    this.childRouter = this._parentRouter.childRouter(instruction.component);
+    var componentType = instruction.componentType;
+    this.childRouter = this._parentRouter.childRouter(componentType);
 
     var bindings = Injector.resolve([
       bind(RouteParams)
-          .toValue(new RouteParams(instruction.params())),
+          .toValue(new RouteParams(instruction.params)),
       bind(routerMod.Router).toValue(this.childRouter)
     ]);
-    return this._loader.loadNextToLocation(instruction.component, this._elementRef, bindings)
+    return this._loader.loadNextToLocation(componentType, this._elementRef, bindings)
         .then((componentRef) => {
           this._componentRef = componentRef;
-          if (hasLifecycleHook(hookMod.onActivate, instruction.component)) {
+          if (hasLifecycleHook(hookMod.onActivate, componentType)) {
             return this._componentRef.instance.onActivate(instruction, previousInstruction);
           }
         });
@@ -84,9 +98,11 @@ export class RouterOutlet {
     if (isBlank(this._currentInstruction)) {
       return PromiseWrapper.resolve(true);
     }
-    if (hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.component)) {
-      return PromiseWrapper.resolve(
-          this._componentRef.instance.canDeactivate(nextInstruction, this._currentInstruction));
+    var outletInstruction = this._getInstruction(nextInstruction);
+    if (hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.componentType)) {
+      return PromiseWrapper.resolve(this._componentRef.instance.canDeactivate(
+          isPresent(outletInstruction) ? outletInstruction.component : null,
+          this._currentInstruction));
     }
     return PromiseWrapper.resolve(true);
   }
@@ -97,24 +113,34 @@ export class RouterOutlet {
    */
   canReuse(nextInstruction: Instruction): Promise<boolean> {
     var result;
+
+    var outletInstruction = this._getInstruction(nextInstruction);
+    var componentInstruction = outletInstruction.component;
+
     if (isBlank(this._currentInstruction) ||
-        this._currentInstruction.component != nextInstruction.component) {
+        this._currentInstruction.componentType != componentInstruction.componentType) {
       result = false;
-    } else if (hasLifecycleHook(hookMod.canReuse, this._currentInstruction.component)) {
-      result = this._componentRef.instance.canReuse(nextInstruction, this._currentInstruction);
+    } else if (hasLifecycleHook(hookMod.canReuse, this._currentInstruction.componentType)) {
+      result = this._componentRef.instance.canReuse(componentInstruction, this._currentInstruction);
     } else {
-      result = nextInstruction == this._currentInstruction ||
-               StringMapWrapper.equals(nextInstruction.params(), this._currentInstruction.params());
+      result =
+          componentInstruction == this._currentInstruction ||
+          (isPresent(componentInstruction.params) && isPresent(this._currentInstruction.params) &&
+           StringMapWrapper.equals(componentInstruction.params, this._currentInstruction.params));
     }
-    return PromiseWrapper.resolve(result);
+    return PromiseWrapper.resolve(result).then((result) => {
+      // TODO: this is a hack
+      componentInstruction.reuse = result;
+      return result;
+    });
   }
 
 
-  private _reuse(instruction): Promise<any> {
+  private _reuse(instruction: ComponentInstruction): Promise<any> {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = instruction;
     return PromiseWrapper.resolve(
-        hasLifecycleHook(hookMod.onReuse, this._currentInstruction.component) ?
+        hasLifecycleHook(hookMod.onReuse, this._currentInstruction.componentType) ?
             this._componentRef.instance.onReuse(instruction, previousInstruction) :
             true);
   }
@@ -122,14 +148,16 @@ export class RouterOutlet {
 
 
   deactivate(nextInstruction: Instruction): Promise<any> {
+    var outletInstruction = this._getInstruction(nextInstruction);
+    var componentInstruction = isPresent(outletInstruction) ? outletInstruction.component : null;
     return (isPresent(this.childRouter) ?
-                this.childRouter.deactivate(isPresent(nextInstruction) ? nextInstruction.child :
-                                                                         null) :
+                this.childRouter.deactivate(isPresent(outletInstruction) ? outletInstruction.child :
+                                                                           null) :
                 PromiseWrapper.resolve(true))
         .then((_) => {
           if (isPresent(this._componentRef) && isPresent(this._currentInstruction) &&
-              hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.component)) {
-            return this._componentRef.instance.onDeactivate(nextInstruction,
+              hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
+            return this._componentRef.instance.onDeactivate(componentInstruction,
                                                             this._currentInstruction);
           }
         })
