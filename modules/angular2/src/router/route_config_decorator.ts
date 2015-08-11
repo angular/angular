@@ -2,6 +2,13 @@ import {RouteConfig as RouteConfigAnnotation, RouteDefinition} from './route_con
 import {makeDecorator} from 'angular2/src/util/decorators';
 import {List} from 'angular2/src/facade/collection';
 
-export {Route, Redirect, AuxRoute, AsyncRoute, RouteDefinition} from './route_config_impl';
+export {
+  Route,
+  Redirect,
+  AuxRoute,
+  AsyncRoute,
+  RouteDefinition,
+  ROUTE_DATA
+} from './route_config_impl';
 export var RouteConfig: (configs: List<RouteDefinition>) => ClassDecorator =
     makeDecorator(RouteConfigAnnotation);

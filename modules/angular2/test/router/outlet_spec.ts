@@ -15,9 +15,9 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {Injector, bind} from 'angular2/di';
+import {Injector, Inject, bind} from 'angular2/di';
 import {Component, View} from 'angular2/metadata';
-import {CONST, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
+import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/facade/lang';
 import {
   Promise,
   PromiseWrapper,
@@ -28,7 +28,7 @@ import {
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
-import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams, ROUTE_DATA} from 'angular2/router';
 import {
   RouteConfig,
   Route,
@@ -253,6 +253,91 @@ export function main() {
              });
        }));
 
+    it('should inject RouteData into component', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new Route({path: '/route-data', component: RouteDataCmp, data: {'isAdmin': true}})
+             ]))
+             .then((_) => rtr.navigate('/route-data'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
+               async.done();
+             });
+       }));
+
+    it('should inject RouteData into component with AsyncRoute',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new AsyncRoute(
+                   {path: '/route-data', loader: AsyncRouteDataCmp, data: {isAdmin: true}})
+             ]))
+             .then((_) => rtr.navigate('/route-data'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
+               async.done();
+             });
+       }));
+
+    it('should inject nested RouteData into component', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new Route({
+                 path: '/route-data-nested',
+                 component: RouteDataCmp,
+                 data: {'isAdmin': true, 'test': {'moreData': 'testing'}}
+               })
+             ]))
+             .then((_) => rtr.navigate('/route-data-nested'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement)
+                   .toHaveText(Json.stringify({'isAdmin': true, 'test': {'moreData': 'testing'}}));
+               async.done();
+             });
+       }));
+
+    it('should inject null if the route has no data property',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config(
+                       [new Route({path: '/route-data-default', component: RouteDataCmp})]))
+             .then((_) => rtr.navigate('/route-data-default'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('null');
+               async.done();
+             });
+       }));
+
+    it('should allow an array as the route data', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new Route({path: '/route-data-array', component: RouteDataCmp, data: [1, 2, 3]})
+             ]))
+             .then((_) => rtr.navigate('/route-data-array'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
+               async.done();
+             });
+       }));
+
+    it('should allow a string as the route data', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new Route(
+                   {path: '/route-data-string', component: RouteDataCmp, data: 'hello world'})
+             ]))
+             .then((_) => rtr.navigate('/route-data-string'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText(Json.stringify('hello world'));
+               async.done();
+             });
+       }));
 
     describe('lifecycle hooks', () => {
       it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
@@ -632,6 +717,19 @@ class A {
 class B {
 }
 
+
+function AsyncRouteDataCmp() {
+  return PromiseWrapper.resolve(RouteDataCmp);
+}
+
+@Component({selector: 'data-cmp'})
+@View({template: "{{myData}}"})
+class RouteDataCmp {
+  myData: string;
+  constructor(@Inject(ROUTE_DATA) data: any) {
+    this.myData = isPresent(data) ? Json.stringify(data) : 'null';
+  }
+}
 
 @Component({selector: 'user-cmp'})
 @View({template: "hello {{user}}"})
