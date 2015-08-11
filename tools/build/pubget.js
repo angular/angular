@@ -9,7 +9,7 @@ module.exports = {
 
 function pubGetDir(gulp, plugins, config) {
   return function() {
-    return util.processToPromise(spawn(config.command, ['get'], {
+    return util.processToPromise(spawn(config.command, ['upgrade'], {
       stdio: 'inherit',
       cwd: config.dir
     }));
@@ -21,7 +21,7 @@ function pubGetSubDir(gulp, plugins, config) {
     // We need to execute pubspec serially as otherwise we can get into trouble
     // with the pub cache...
     return util.forEachSubDirSequential(config.dir, function(subDir) {
-      return util.processToPromise(spawn(config.command, ['get'], {
+      return util.processToPromise(spawn(config.command, ['upgrade'], {
         stdio: 'inherit',
         cwd: subDir
       }));
