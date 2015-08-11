@@ -31,7 +31,7 @@ module.exports = function makeNodeTree(destinationPath) {
     allowNonTsExtensions: false,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
-    declaration: true,
+    declaration: false,
     mapRoot: '', /* force sourcemaps to use relative path */
     module: 'commonjs',
     noEmitOnError: true,
