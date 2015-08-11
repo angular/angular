@@ -7,7 +7,7 @@ import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
 import {Injector, bind, Dependency, undefinedValue} from 'angular2/di';
 
 import * as routerMod from './router';
-import {Instruction, ComponentInstruction, RouteParams} from './instruction';
+import {Instruction, ComponentInstruction, RouteParams, RouteData} from './instruction';
 import * as hookMod from './lifecycle_annotations';
 import {hasLifecycleHook} from './route_lifecycle_reflector';
 
@@ -77,8 +77,9 @@ export class RouterOutlet {
     this.childRouter = this._parentRouter.childRouter(componentType);
 
     var bindings = Injector.resolve([
-      bind(RouteParams)
-          .toValue(new RouteParams(instruction.params)),
+      bind(RouteData)
+          .toValue(instruction.routeData()),
+      bind(RouteParams).toValue(new RouteParams(instruction.params)),
       bind(routerMod.Router).toValue(this.childRouter)
     ]);
     return this._loader.loadNextToLocation(componentType, this._elementRef, bindings)

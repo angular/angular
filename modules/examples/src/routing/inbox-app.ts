@@ -6,7 +6,8 @@ import {
   Route,
   RouterOutlet,
   Location,
-  RouteParams
+  RouteParams,
+  RouteData
 } from 'angular2/router';
 import {Http, Response} from 'http/http';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
@@ -98,10 +99,12 @@ class DbService {
 class InboxDetailCmp {
   record: InboxRecord = new InboxRecord();
   ready: boolean = false;
+  routeData: string;
 
-  constructor(db: DbService, params: RouteParams) {
+  constructor(db: DbService, params: RouteParams, data: RouteData) {
     var id = params.get('id');
     PromiseWrapper.then(db.email(id), (data) => { this.record.setData(data); });
+    this.routeData = (<any>data).dummyText;
   }
 }
 
@@ -139,7 +142,12 @@ class DraftsCmp {
 @RouteConfig([
   new Route({path: '/', component: InboxCmp, as: 'inbox'}),
   new Route({path: '/drafts', component: DraftsCmp, as: 'drafts'}),
-  new Route({path: '/detail/:id', component: InboxDetailCmp, as: 'detailPage'})
+  new Route({
+    path: '/detail/:id',
+    component: InboxDetailCmp,
+    as: 'detailPage',
+    data: {dummyText: "This text is custom metadata defined in the route defintion."}
+  })
 ])
 export class InboxApp {
   router: Router;
