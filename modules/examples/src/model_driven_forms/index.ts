@@ -1,5 +1,5 @@
 import {bootstrap, NgIf, NgFor, Component, Directive, View, Host} from 'angular2/bootstrap';
-import {formDirectives, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
+import {FORM_DIRECTIVES, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
@@ -117,7 +117,7 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [formDirectives, NgFor, ShowError]
+  directives: [FORM_DIRECTIVES, NgFor, ShowError]
 })
 class ModelDrivenForms {
   form;

@@ -1,7 +1,7 @@
-import {OpaqueToken, bind, Binding} from 'angular2/di';
+import {OpaqueToken, Binding} from 'angular2/di';
 import {CONST_EXPR, StringWrapper, Math} from 'angular2/src/facade/lang';
 
-export const DOCUMENT_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
+export const DOCUMENT: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
 
 export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES: OpaqueToken =
     CONST_EXPR(new OpaqueToken('DomReflectPropertiesAsAttributes'));
@@ -10,19 +10,23 @@ export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES: OpaqueToken =
 /**
  * A unique id (string) for an angular application.
  */
-export const APP_ID_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
+export const APP_ID: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
+
+function _appIdRandomBindingFactory() {
+  return `${randomChar()}${randomChar()}${randomChar()}`;
+}
 
 /**
  * Bindings that will generate a random APP_ID_TOKEN.
  */
-export var APP_ID_RANDOM_BINDING: Binding =
-    bind(APP_ID_TOKEN).toFactory(() => `${randomChar()}${randomChar()}${randomChar()}`, []);
+export const APP_ID_RANDOM_BINDING: Binding =
+    CONST_EXPR(new Binding(APP_ID, {toFactory: _appIdRandomBindingFactory, deps: []}));
 
 /**
  * Defines when a compiled template should be stored as a string
  * rather than keeping its Nodes to preserve memory.
  */
-export const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN: OpaqueToken =
+export const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE: OpaqueToken =
     CONST_EXPR(new OpaqueToken('MaxInMemoryElementsPerTemplate'));
 
 function randomChar(): string {

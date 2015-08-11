@@ -16,7 +16,7 @@ import {
 
 import {el} from './utils';
 
-import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
+import {DOCUMENT} from 'angular2/src/render/render';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DebugElement} from 'angular2/src/debug/debug_element';
@@ -135,7 +135,7 @@ export class TestComponentBuilder {
 
     var rootElId = `root${_nextRootElementId++}`;
     var rootEl = el(`<div id="${rootElId}"></div>`);
-    var doc = this._injector.get(DOCUMENT_TOKEN);
+    var doc = this._injector.get(DOCUMENT);
 
     // TODO(juliemr): can/should this be optional?
     var oldRoots = DOM.querySelectorAll(doc, '[id^=root]');

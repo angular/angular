@@ -38,7 +38,7 @@ import {
   ViewEncapsulation
 } from 'angular2/angular2';
 
-import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN} from 'angular2/src/render/render';
+import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/render/render';
 
 export function main() {
   describe('projection', () => {
@@ -445,12 +445,12 @@ export function main() {
       }
 
       describe('serialize templates', () => {
-        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(0)]);
+        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(0)]);
         runTests();
       });
 
       describe("don't serialize templates", () => {
-        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(-1)]);
+        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(-1)]);
         runTests();
       });
 

@@ -4,7 +4,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {BaseException, isBlank} from 'angular2/src/facade/lang';
 import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/di';
 
-export const appBaseHrefToken: OpaqueToken = CONST_EXPR(new OpaqueToken('locationHrefToken'));
+export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHref'));
 
 /**
  * This is the service that an application developer will directly interact with.
@@ -22,7 +22,7 @@ export class Location {
   private _baseHref: string;
 
   constructor(public _platformStrategy: LocationStrategy,
-              @Optional() @Inject(appBaseHrefToken) href?: string) {
+              @Optional() @Inject(APP_BASE_HREF) href?: string) {
     var browserBaseHref = isPresent(href) ? href : this._platformStrategy.getBaseHref();
 
     if (isBlank(browserBaseHref)) {

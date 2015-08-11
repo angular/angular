@@ -24,7 +24,7 @@ import {Component, View, LifecycleEvent} from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
+import {DOCUMENT} from 'angular2/src/render/render';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -218,7 +218,7 @@ export function main() {
 
     describe('loadAsRoot', () => {
       it('should allow to create, update and destroy components',
-         inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT_TOKEN, Injector],
+         inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
                 (async, loader, doc, injector) => {
                   var rootEl = el('<child-cmp></child-cmp>');
                   DOM.appendChild(doc.body, rootEl);

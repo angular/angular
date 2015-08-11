@@ -14,7 +14,7 @@ import {
 
 import {Injector, bind} from 'angular2/di';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {Location, appBaseHrefToken} from 'angular2/src/router/location';
+import {Location, APP_BASE_HREF} from 'angular2/src/router/location';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
@@ -71,7 +71,7 @@ export function main() {
     });
 
     it('should use optional base href param', () => {
-      let location = makeLocation('/', bind(appBaseHrefToken).toValue('/my/custom/href'));
+      let location = makeLocation('/', bind(APP_BASE_HREF).toValue('/my/custom/href'));
       location.go('user/btford');
       expect(locationStrategy.path()).toEqual('/my/custom/href/user/btford');
     });

@@ -16,7 +16,7 @@ import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
 
-export const undefinedValue: Object = CONST_EXPR(new Object());
+export const UNDEFINED: Object = CONST_EXPR(new Object());
 
 export const PUBLIC: number = 1;
 export const PRIVATE: number = 2;
@@ -193,16 +193,16 @@ export interface InjectorStrategy {
 }
 
 export class InjectorInlineStrategy implements InjectorStrategy {
-  obj0: any = undefinedValue;
-  obj1: any = undefinedValue;
-  obj2: any = undefinedValue;
-  obj3: any = undefinedValue;
-  obj4: any = undefinedValue;
-  obj5: any = undefinedValue;
-  obj6: any = undefinedValue;
-  obj7: any = undefinedValue;
-  obj8: any = undefinedValue;
-  obj9: any = undefinedValue;
+  obj0: any = UNDEFINED;
+  obj1: any = UNDEFINED;
+  obj2: any = UNDEFINED;
+  obj3: any = UNDEFINED;
+  obj4: any = UNDEFINED;
+  obj5: any = UNDEFINED;
+  obj6: any = UNDEFINED;
+  obj7: any = UNDEFINED;
+  obj8: any = UNDEFINED;
+  obj9: any = UNDEFINED;
 
   constructor(public injector: Injector, public protoStrategy: ProtoInjectorInlineStrategy) {}
 
@@ -223,67 +223,67 @@ export class InjectorInlineStrategy implements InjectorStrategy {
     var inj = this.injector;
 
     if (p.keyId0 === keyId && (p.visibility0 & visibility) > 0) {
-      if (this.obj0 === undefinedValue) {
+      if (this.obj0 === UNDEFINED) {
         this.obj0 = inj._new(p.binding0, p.visibility0);
       }
       return this.obj0;
     }
     if (p.keyId1 === keyId && (p.visibility1 & visibility) > 0) {
-      if (this.obj1 === undefinedValue) {
+      if (this.obj1 === UNDEFINED) {
         this.obj1 = inj._new(p.binding1, p.visibility1);
       }
       return this.obj1;
     }
     if (p.keyId2 === keyId && (p.visibility2 & visibility) > 0) {
-      if (this.obj2 === undefinedValue) {
+      if (this.obj2 === UNDEFINED) {
         this.obj2 = inj._new(p.binding2, p.visibility2);
       }
       return this.obj2;
     }
     if (p.keyId3 === keyId && (p.visibility3 & visibility) > 0) {
-      if (this.obj3 === undefinedValue) {
+      if (this.obj3 === UNDEFINED) {
         this.obj3 = inj._new(p.binding3, p.visibility3);
       }
       return this.obj3;
     }
     if (p.keyId4 === keyId && (p.visibility4 & visibility) > 0) {
-      if (this.obj4 === undefinedValue) {
+      if (this.obj4 === UNDEFINED) {
         this.obj4 = inj._new(p.binding4, p.visibility4);
       }
       return this.obj4;
     }
     if (p.keyId5 === keyId && (p.visibility5 & visibility) > 0) {
-      if (this.obj5 === undefinedValue) {
+      if (this.obj5 === UNDEFINED) {
         this.obj5 = inj._new(p.binding5, p.visibility5);
       }
       return this.obj5;
     }
     if (p.keyId6 === keyId && (p.visibility6 & visibility) > 0) {
-      if (this.obj6 === undefinedValue) {
+      if (this.obj6 === UNDEFINED) {
         this.obj6 = inj._new(p.binding6, p.visibility6);
       }
       return this.obj6;
     }
     if (p.keyId7 === keyId && (p.visibility7 & visibility) > 0) {
-      if (this.obj7 === undefinedValue) {
+      if (this.obj7 === UNDEFINED) {
         this.obj7 = inj._new(p.binding7, p.visibility7);
       }
       return this.obj7;
     }
     if (p.keyId8 === keyId && (p.visibility8 & visibility) > 0) {
-      if (this.obj8 === undefinedValue) {
+      if (this.obj8 === UNDEFINED) {
         this.obj8 = inj._new(p.binding8, p.visibility8);
       }
       return this.obj8;
     }
     if (p.keyId9 === keyId && (p.visibility9 & visibility) > 0) {
-      if (this.obj9 === undefinedValue) {
+      if (this.obj9 === UNDEFINED) {
         this.obj9 = inj._new(p.binding9, p.visibility9);
       }
       return this.obj9;
     }
 
-    return undefinedValue;
+    return UNDEFINED;
   }
 
   getObjAtIndex(index: number): any {
@@ -309,7 +309,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
 
   constructor(public protoStrategy: ProtoInjectorDynamicStrategy, public injector: Injector) {
     this.objs = ListWrapper.createFixedSize(protoStrategy.bindings.length);
-    ListWrapper.fill(this.objs, undefinedValue);
+    ListWrapper.fill(this.objs, UNDEFINED);
   }
 
   resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
@@ -329,7 +329,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
 
     for (var i = 0; i < p.keyIds.length; i++) {
       if (p.keyIds[i] === keyId && (p.visibilities[i] & visibility) > 0) {
-        if (this.objs[i] === undefinedValue) {
+        if (this.objs[i] === UNDEFINED) {
           this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
         }
 
@@ -337,7 +337,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
       }
     }
 
-    return undefinedValue;
+    return UNDEFINED;
   }
 
   getObjAtIndex(index: number): any {
@@ -693,8 +693,8 @@ export class Injector {
                            bindingVisibility: number): any {
     var special = isPresent(this._depProvider) ?
                       this._depProvider.getDependency(this, binding, dep) :
-                      undefinedValue;
-    if (special !== undefinedValue) {
+                      UNDEFINED;
+    if (special !== UNDEFINED) {
       return special;
     } else {
       return this._getByKey(dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
@@ -729,7 +729,7 @@ export class Injector {
 
   _getByKeySelf(key: Key, optional: boolean, bindingVisibility: number): any {
     var obj = this._strategy.getObjByKeyId(key.id, bindingVisibility);
-    return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
+    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
   }
 
   _getByKeyHost(key: Key, optional: boolean, bindingVisibility: number,
@@ -746,7 +746,7 @@ export class Injector {
 
     while (inj != null) {
       var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
-      if (obj !== undefinedValue) return obj;
+      if (obj !== UNDEFINED) return obj;
 
       if (isPresent(inj._parent) && inj._isHost) {
         return this._getPrivateDependency(key, optional, inj);
@@ -760,7 +760,7 @@ export class Injector {
 
   _getPrivateDependency(key: Key, optional: boolean, inj: Injector): any {
     var obj = inj._parent._strategy.getObjByKeyId(key.id, PRIVATE);
-    return (obj !== undefinedValue) ? obj : this._throwOrNull(key, optional);
+    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
   }
 
   _getByKeyDefault(key: Key, optional: boolean, bindingVisibility: number,
@@ -774,7 +774,7 @@ export class Injector {
 
     while (inj != null) {
       var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
-      if (obj !== undefinedValue) return obj;
+      if (obj !== UNDEFINED) return obj;
 
       bindingVisibility = inj._isHost ? PUBLIC_AND_PRIVATE : PUBLIC;
       inj = inj._parent;

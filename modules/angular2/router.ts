@@ -13,7 +13,7 @@ export {RouteRegistry} from './src/router/route_registry';
 export {LocationStrategy} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';
 export {HTML5LocationStrategy} from './src/router/html5_location_strategy';
-export {Location, appBaseHrefToken} from './src/router/location';
+export {Location, APP_BASE_HREF} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
 export * from './src/router/route_definition';
@@ -31,7 +31,7 @@ import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
 import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
-import {appComponentTypeToken} from './src/core/application_tokens';
+import {APP_COMPONENT} from './src/core/application_tokens';
 import {bind} from './di';
 import {CONST_EXPR} from './src/facade/lang';
 import {List} from './src/facade/collection';
@@ -46,5 +46,5 @@ export var routerInjectables: List<any> = [
   bind(Router)
       .toFactory((registry, pipeline, location,
                   appRoot) => { return new RootRouter(registry, pipeline, location, appRoot);},
-                 [RouteRegistry, Pipeline, Location, appComponentTypeToken])
+                 [RouteRegistry, Pipeline, Location, APP_COMPONENT])
 ];

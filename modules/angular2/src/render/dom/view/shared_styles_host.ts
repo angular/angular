@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Inject, Injectable} from 'angular2/di';
 import {SetWrapper} from 'angular2/src/facade/collection';
-import {DOCUMENT_TOKEN} from '../dom_tokens';
+import {DOCUMENT} from '../dom_tokens';
 
 @Injectable()
 export class SharedStylesHost {
@@ -30,7 +30,7 @@ export class SharedStylesHost {
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost {
   private _hostNodes: Set<Node> = new Set();
-  constructor(@Inject(DOCUMENT_TOKEN) doc: any) {
+  constructor(@Inject(DOCUMENT) doc: any) {
     super();
     this._hostNodes.add(doc.head);
   }
