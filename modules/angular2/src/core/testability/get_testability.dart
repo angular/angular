@@ -91,15 +91,42 @@ class PublicTestability implements _JsObjectProxyable {
 
 class GetTestability {
   static addToWindow(TestabilityRegistry registry) {
-    js.context['getAngularTestability'] = _jsify((Element elem) {
+    var jsRegistry = js.context['ngTestabilityRegistries'];
+    if (jsRegistry == null) {
+      js.context['ngTestabilityRegistries'] = jsRegistry = new js.JsArray();
+      js.context['getAngularTestability'] = _jsify((Element elem) {
+        var registry = js.context['ngTestabilityRegistries'];
+        for (int i = 0; i < registry.length; i++) {
+          var result = registry[i]['getAngularTestability'](elem);
+          if (result != null) return result;
+        }
+        return null;
+      });
+      js.context['getAllAngularTestabilities'] = _jsify(() {
+        var registry = js.context['ngTestabilityRegistries'];
+        var result = [];
+        for (int i = 0; i < registry.length; i++) {
+          var testabilities = registry[i]['getAllAngularTestabilities']();
+          if (testabilities != null) result.addAll(testabilities);
+        }
+        return result;
+      });
+    }
+    jsRegistry.add(_createRegistry(registry));
+  }
+
+  static js.JsObject _createRegistry(TestabilityRegistry registry) {
+    var object = new js.JsObject(js.context['Object']);
+    object['getAngularTestability'] = _jsify((Element elem) {
       Testability testability = registry.findTestabilityInTree(elem);
       return _jsify(new PublicTestability(testability));
     });
-    js.context['getAllAngularTestabilities'] = _jsify(() {
+    object['getAllAngularTestabilities'] = _jsify(() {
       List<Testability> testabilities = registry.getAllTestabilities();
       List<PublicTestability> publicTestabilities = testabilities
-          .map((testability) => new PublicTestability(testability));
+      .map((testability) => new PublicTestability(testability));
       return _jsify(publicTestabilities);
     });
+    return object;
   }
 }
