@@ -6,7 +6,7 @@ export class AsyncRouteHandler implements RouteHandler {
   _resolvedComponent: Promise<any> = null;
   componentType: Type;
 
-  constructor(private _loader: Function) {}
+  constructor(private _loader: Function, public data?: Object) {}
 
   resolveComponentType(): Promise<any> {
     if (isPresent(this._resolvedComponent)) {

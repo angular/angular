@@ -18,7 +18,6 @@ export class RouteParams {
   get(param: string): string { return normalizeBlank(StringMapWrapper.get(this.params, param)); }
 }
 
-
 /**
  * `Instruction` is a tree of `ComponentInstructions`, with all the information needed
  * to transition each component in the app to a given route, including all auxiliary routes.
@@ -98,4 +97,6 @@ export class ComponentInstruction {
   get specificity() { return this._recognizer.specificity; }
 
   get terminal() { return this._recognizer.terminal; }
+
+  routeData(): Object { return this._recognizer.handler.data; }
 }

@@ -1,7 +1,10 @@
-import {CONST, Type} from 'angular2/src/facade/lang';
+import {CONST, CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import {RouteDefinition} from './route_definition';
 export {RouteDefinition} from './route_definition';
+import {OpaqueToken} from 'angular2/di';
+
+export const ROUTE_DATA: OpaqueToken = CONST_EXPR(new OpaqueToken('routeData'));
 
 /**
  * You use the RouteConfig annotation to add routes to a component.
@@ -19,23 +22,29 @@ export class RouteConfig {
 
 @CONST()
 export class Route implements RouteDefinition {
+  data: any;
   path: string;
   component: Type;
   as: string;
   // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function;
   redirectTo: string;
-  constructor({path, component, as}: {path: string, component: Type, as?: string}) {
+  constructor({path, component, as, data}:
+                  {path: string, component: Type, as?: string, data?: any}) {
     this.path = path;
     this.component = component;
     this.as = as;
     this.loader = null;
     this.redirectTo = null;
+    this.data = data;
   }
 }
 
+
+
 @CONST()
 export class AuxRoute implements RouteDefinition {
+  data: any = null;
   path: string;
   component: Type;
   as: string;
@@ -51,13 +60,15 @@ export class AuxRoute implements RouteDefinition {
 
 @CONST()
 export class AsyncRoute implements RouteDefinition {
+  data: any;
   path: string;
   loader: Function;
   as: string;
-  constructor({path, loader, as}: {path: string, loader: Function, as?: string}) {
+  constructor({path, loader, as, data}: {path: string, loader: Function, as?: string, data?: any}) {
     this.path = path;
     this.loader = loader;
     this.as = as;
+    this.data = data;
   }
 }
 
@@ -68,6 +79,7 @@ export class Redirect implements RouteDefinition {
   as: string = null;
   // added next property to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;
+  data: any = null;
   constructor({path, redirectTo}: {path: string, redirectTo: string}) {
     this.path = path;
     this.redirectTo = redirectTo;

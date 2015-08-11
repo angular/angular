@@ -5,7 +5,7 @@ import {Type} from 'angular2/src/facade/lang';
 export class SyncRouteHandler implements RouteHandler {
   _resolvedComponent: Promise<any> = null;
 
-  constructor(public componentType: Type) {
+  constructor(public componentType: Type, public data?: Object) {
     this._resolvedComponent = PromiseWrapper.resolve(componentType);
   }
 
