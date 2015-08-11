@@ -16,7 +16,6 @@ export {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 export {Compiler} from 'angular2/src/core/compiler/compiler';
 
 export {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-export {IQueryList} from 'angular2/src/core/compiler/interface_query';
 export {QueryList} from 'angular2/src/core/compiler/query_list';
 export {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 export {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
