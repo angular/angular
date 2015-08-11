@@ -23,9 +23,7 @@ export {
   ProtoInjector,
   BindingWithVisibility,
   DependencyProvider,
-  PUBLIC_AND_PRIVATE,
-  PUBLIC,
-  PRIVATE,
+  Visibility,
   UNDEFINED
 } from './src/di/injector';
 export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/di/binding';

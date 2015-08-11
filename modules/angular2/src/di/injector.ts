@@ -18,9 +18,17 @@ const _MAX_CONSTRUCTION_COUNTER = 10;
 
 export const UNDEFINED: Object = CONST_EXPR(new Object());
 
-export const PUBLIC: number = 1;
-export const PRIVATE: number = 2;
-export const PUBLIC_AND_PRIVATE: number = 3;
+export enum Visibility {
+  Public,
+  Private,
+  PublicAndPrivate
+}
+
+function canSee(src: Visibility, dst: Visibility): boolean {
+  return (src === dst) ||
+         (dst === Visibility.PublicAndPrivate || src === Visibility.PublicAndPrivate);
+}
+
 
 export interface ProtoInjectorStrategy {
   getBindingAtIndex(index: number): ResolvedBinding;
@@ -50,16 +58,16 @@ export class ProtoInjectorInlineStrategy implements ProtoInjectorStrategy {
   keyId8: number = null;
   keyId9: number = null;
 
-  visibility0: number = null;
-  visibility1: number = null;
-  visibility2: number = null;
-  visibility3: number = null;
-  visibility4: number = null;
-  visibility5: number = null;
-  visibility6: number = null;
-  visibility7: number = null;
-  visibility8: number = null;
-  visibility9: number = null;
+  visibility0: Visibility = null;
+  visibility1: Visibility = null;
+  visibility2: Visibility = null;
+  visibility3: Visibility = null;
+  visibility4: Visibility = null;
+  visibility5: Visibility = null;
+  visibility6: Visibility = null;
+  visibility7: Visibility = null;
+  visibility8: Visibility = null;
+  visibility9: Visibility = null;
 
   constructor(protoEI: ProtoInjector, bwv: BindingWithVisibility[]) {
     var length = bwv.length;
@@ -138,7 +146,7 @@ export class ProtoInjectorInlineStrategy implements ProtoInjectorStrategy {
 export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
   bindings: ResolvedBinding[];
   keyIds: number[];
-  visibilities: number[];
+  visibilities: Visibility[];
 
   constructor(protoInj: ProtoInjector, bwv: BindingWithVisibility[]) {
     var len = bwv.length;
@@ -183,13 +191,13 @@ export class ProtoInjector {
 
 
 export interface InjectorStrategy {
-  getObjByKeyId(keyId: number, visibility: number): any;
+  getObjByKeyId(keyId: number, visibility: Visibility): any;
   getObjAtIndex(index: number): any;
   getMaxNumberOfObjects(): number;
 
   attach(parent: Injector, isHost: boolean): void;
   resetConstructionCounter(): void;
-  instantiateBinding(binding: ResolvedBinding, visibility: number): any;
+  instantiateBinding(binding: ResolvedBinding, visibility: Visibility): any;
 }
 
 export class InjectorInlineStrategy implements InjectorStrategy {
@@ -208,7 +216,7 @@ export class InjectorInlineStrategy implements InjectorStrategy {
 
   resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
 
-  instantiateBinding(binding: ResolvedBinding, visibility: number): any {
+  instantiateBinding(binding: ResolvedBinding, visibility: Visibility): any {
     return this.injector._new(binding, visibility);
   }
 
@@ -218,65 +226,65 @@ export class InjectorInlineStrategy implements InjectorStrategy {
     inj._isHost = isHost;
   }
 
-  getObjByKeyId(keyId: number, visibility: number): any {
+  getObjByKeyId(keyId: number, visibility: Visibility): any {
     var p = this.protoStrategy;
     var inj = this.injector;
 
-    if (p.keyId0 === keyId && (p.visibility0 & visibility) > 0) {
+    if (p.keyId0 === keyId && canSee(p.visibility0, visibility)) {
       if (this.obj0 === UNDEFINED) {
         this.obj0 = inj._new(p.binding0, p.visibility0);
       }
       return this.obj0;
     }
-    if (p.keyId1 === keyId && (p.visibility1 & visibility) > 0) {
+    if (p.keyId1 === keyId && canSee(p.visibility1, visibility)) {
       if (this.obj1 === UNDEFINED) {
         this.obj1 = inj._new(p.binding1, p.visibility1);
       }
       return this.obj1;
     }
-    if (p.keyId2 === keyId && (p.visibility2 & visibility) > 0) {
+    if (p.keyId2 === keyId && canSee(p.visibility2, visibility)) {
       if (this.obj2 === UNDEFINED) {
         this.obj2 = inj._new(p.binding2, p.visibility2);
       }
       return this.obj2;
     }
-    if (p.keyId3 === keyId && (p.visibility3 & visibility) > 0) {
+    if (p.keyId3 === keyId && canSee(p.visibility3, visibility)) {
       if (this.obj3 === UNDEFINED) {
         this.obj3 = inj._new(p.binding3, p.visibility3);
       }
       return this.obj3;
     }
-    if (p.keyId4 === keyId && (p.visibility4 & visibility) > 0) {
+    if (p.keyId4 === keyId && canSee(p.visibility4, visibility)) {
       if (this.obj4 === UNDEFINED) {
         this.obj4 = inj._new(p.binding4, p.visibility4);
       }
       return this.obj4;
     }
-    if (p.keyId5 === keyId && (p.visibility5 & visibility) > 0) {
+    if (p.keyId5 === keyId && canSee(p.visibility5, visibility)) {
       if (this.obj5 === UNDEFINED) {
         this.obj5 = inj._new(p.binding5, p.visibility5);
       }
       return this.obj5;
     }
-    if (p.keyId6 === keyId && (p.visibility6 & visibility) > 0) {
+    if (p.keyId6 === keyId && canSee(p.visibility6, visibility)) {
       if (this.obj6 === UNDEFINED) {
         this.obj6 = inj._new(p.binding6, p.visibility6);
       }
       return this.obj6;
     }
-    if (p.keyId7 === keyId && (p.visibility7 & visibility) > 0) {
+    if (p.keyId7 === keyId && canSee(p.visibility7, visibility)) {
       if (this.obj7 === UNDEFINED) {
         this.obj7 = inj._new(p.binding7, p.visibility7);
       }
       return this.obj7;
     }
-    if (p.keyId8 === keyId && (p.visibility8 & visibility) > 0) {
+    if (p.keyId8 === keyId && canSee(p.visibility8, visibility)) {
       if (this.obj8 === UNDEFINED) {
         this.obj8 = inj._new(p.binding8, p.visibility8);
       }
       return this.obj8;
     }
-    if (p.keyId9 === keyId && (p.visibility9 & visibility) > 0) {
+    if (p.keyId9 === keyId && canSee(p.visibility9, visibility)) {
       if (this.obj9 === UNDEFINED) {
         this.obj9 = inj._new(p.binding9, p.visibility9);
       }
@@ -314,7 +322,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
 
   resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
 
-  instantiateBinding(binding: ResolvedBinding, visibility: number): any {
+  instantiateBinding(binding: ResolvedBinding, visibility: Visibility): any {
     return this.injector._new(binding, visibility);
   }
 
@@ -324,11 +332,11 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
     inj._isHost = isHost;
   }
 
-  getObjByKeyId(keyId: number, visibility: number): any {
+  getObjByKeyId(keyId: number, visibility: Visibility): any {
     var p = this.protoStrategy;
 
     for (var i = 0; i < p.keyIds.length; i++) {
-      if (p.keyIds[i] === keyId && (p.visibilities[i] & visibility) > 0) {
+      if (p.keyIds[i] === keyId && canSee(p.visibilities[i], visibility)) {
         if (this.objs[i] === UNDEFINED) {
           this.objs[i] = this.injector._new(p.bindings[i], p.visibilities[i]);
         }
@@ -352,7 +360,7 @@ export class InjectorDynamicStrategy implements InjectorStrategy {
 }
 
 export class BindingWithVisibility {
-  constructor(public binding: ResolvedBinding, public visibility: number){};
+  constructor(public binding: ResolvedBinding, public visibility: Visibility){};
 
   getKeyId(): number { return this.binding.key.id; }
 }
@@ -454,7 +462,7 @@ export class Injector {
    */
   static fromResolvedBindings(bindings: List<ResolvedBinding>,
                               depProvider: DependencyProvider = null): Injector {
-    var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
+    var bd = bindings.map(b => new BindingWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
     var inj = new Injector(proto, null, depProvider);
     return inj;
@@ -485,7 +493,7 @@ export class Injector {
    * @returns an instance represented by the token. Throws if not found.
    */
   get(token: any): any {
-    return this._getByKey(Key.get(token), null, null, false, PUBLIC_AND_PRIVATE);
+    return this._getByKey(Key.get(token), null, null, false, Visibility.PublicAndPrivate);
   }
 
   /**
@@ -495,7 +503,7 @@ export class Injector {
    * @returns an instance represented by the token. Returns `null` if not found.
    */
   getOptional(token: any): any {
-    return this._getByKey(Key.get(token), null, null, true, PUBLIC_AND_PRIVATE);
+    return this._getByKey(Key.get(token), null, null, true, Visibility.PublicAndPrivate);
   }
 
   /**
@@ -545,7 +553,7 @@ export class Injector {
    */
   createChildFromResolved(bindings: List<ResolvedBinding>,
                           depProvider: DependencyProvider = null): Injector {
-    var bd = bindings.map(b => new BindingWithVisibility(b, PUBLIC));
+    var bd = bindings.map(b => new BindingWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
     var inj = new Injector(proto, null, depProvider);
     inj._parent = this;
@@ -569,17 +577,17 @@ export class Injector {
    * @returns an object created using binding.
    */
   instantiateResolved(binding: ResolvedBinding): any {
-    return this._instantiate(binding, PUBLIC_AND_PRIVATE);
+    return this._instantiate(binding, Visibility.PublicAndPrivate);
   }
 
-  _new(binding: ResolvedBinding, visibility: number): any {
+  _new(binding: ResolvedBinding, visibility: Visibility): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
       throw new CyclicDependencyError(this, binding.key);
     }
     return this._instantiate(binding, visibility);
   }
 
-  private _instantiate(binding: ResolvedBinding, visibility: number): any {
+  private _instantiate(binding: ResolvedBinding, visibility: Visibility): any {
     var factory = binding.factory;
     var deps = binding.dependencies;
     var length = deps.length;
@@ -690,7 +698,7 @@ export class Injector {
   }
 
   private _getByDependency(binding: ResolvedBinding, dep: Dependency,
-                           bindingVisibility: number): any {
+                           bindingVisibility: Visibility): any {
     var special = isPresent(this._depProvider) ?
                       this._depProvider.getDependency(this, binding, dep) :
                       UNDEFINED;
@@ -703,7 +711,7 @@ export class Injector {
   }
 
   private _getByKey(key: Key, lowerBoundVisibility: Object, upperBoundVisibility: Object,
-                    optional: boolean, bindingVisibility: number): any {
+                    optional: boolean, bindingVisibility: Visibility): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
@@ -727,12 +735,12 @@ export class Injector {
     }
   }
 
-  _getByKeySelf(key: Key, optional: boolean, bindingVisibility: number): any {
+  _getByKeySelf(key: Key, optional: boolean, bindingVisibility: Visibility): any {
     var obj = this._strategy.getObjByKeyId(key.id, bindingVisibility);
     return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
   }
 
-  _getByKeyHost(key: Key, optional: boolean, bindingVisibility: number,
+  _getByKeyHost(key: Key, optional: boolean, bindingVisibility: Visibility,
                 lowerBoundVisibility: Object): any {
     var inj = this;
 
@@ -759,16 +767,16 @@ export class Injector {
   }
 
   _getPrivateDependency(key: Key, optional: boolean, inj: Injector): any {
-    var obj = inj._parent._strategy.getObjByKeyId(key.id, PRIVATE);
+    var obj = inj._parent._strategy.getObjByKeyId(key.id, Visibility.Private);
     return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
   }
 
-  _getByKeyDefault(key: Key, optional: boolean, bindingVisibility: number,
+  _getByKeyDefault(key: Key, optional: boolean, bindingVisibility: Visibility,
                    lowerBoundVisibility: Object): any {
     var inj = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
-      bindingVisibility = inj._isHost ? PUBLIC_AND_PRIVATE : PUBLIC;
+      bindingVisibility = inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;
       inj = inj._parent;
     }
 
@@ -776,7 +784,7 @@ export class Injector {
       var obj = inj._strategy.getObjByKeyId(key.id, bindingVisibility);
       if (obj !== UNDEFINED) return obj;
 
-      bindingVisibility = inj._isHost ? PUBLIC_AND_PRIVATE : PUBLIC;
+      bindingVisibility = inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;
       inj = inj._parent;
     }
 

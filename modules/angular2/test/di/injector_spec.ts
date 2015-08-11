@@ -24,9 +24,7 @@ import {
   Optional,
   Inject,
   BindingWithVisibility,
-  PUBLIC,
-  PRIVATE,
-  PUBLIC_AND_PRIVATE
+  Visibility
 } from 'angular2/di';
 
 import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/di/injector';
@@ -289,8 +287,8 @@ export function main() {
       it('should show the full path when error happens in a constructor', () => {
         var bindings = Injector.resolve([Car, bind(Engine).toClass(BrokenEngine)]);
         var proto = new ProtoInjector([
-          new BindingWithVisibility(bindings[0], PUBLIC),
-          new BindingWithVisibility(bindings[1], PUBLIC)
+          new BindingWithVisibility(bindings[0], Visibility.Public),
+          new BindingWithVisibility(bindings[1], Visibility.Public)
         ]);
         var injector = new Injector(proto, null, null);
 
@@ -307,10 +305,12 @@ export function main() {
 
       it('should provide context when throwing an exception ', () => {
         var engineBinding = Injector.resolve([bind(Engine).toClass(BrokenEngine)])[0];
-        var protoParent = new ProtoInjector([new BindingWithVisibility(engineBinding, PUBLIC)]);
+        var protoParent =
+            new ProtoInjector([new BindingWithVisibility(engineBinding, Visibility.Public)]);
 
         var carBinding = Injector.resolve([Car])[0];
-        var protoChild = new ProtoInjector([new BindingWithVisibility(carBinding, PUBLIC)]);
+        var protoChild =
+            new ProtoInjector([new BindingWithVisibility(carBinding, Visibility.Public)]);
 
         var parent = new Injector(protoParent, null, null, () => "parentContext");
         var child = new Injector(protoChild, parent, null, () => "childContext");
@@ -449,7 +449,8 @@ export function main() {
 
         it("should return a private dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
-          var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PRIVATE)]);
+          var protoParent =
+              new ProtoInjector([new BindingWithVisibility(engine, Visibility.Private)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate(
@@ -462,7 +463,8 @@ export function main() {
 
         it("should not return a public dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
-          var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PUBLIC)]);
+          var protoParent =
+              new ProtoInjector([new BindingWithVisibility(engine, Visibility.Public)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate(
@@ -489,7 +491,8 @@ export function main() {
       describe("default", () => {
         it("should return a private dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
-          var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PRIVATE)]);
+          var protoParent =
+              new ProtoInjector([new BindingWithVisibility(engine, Visibility.Private)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate([
@@ -504,7 +507,8 @@ export function main() {
 
         it("should return a public dependency declared at the host", () => {
           var engine = Injector.resolve([Engine])[0];
-          var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PUBLIC)]);
+          var protoParent =
+              new ProtoInjector([new BindingWithVisibility(engine, Visibility.Public)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate([
@@ -519,7 +523,8 @@ export function main() {
 
         it("should not return a private dependency declared NOT at the host", () => {
           var engine = Injector.resolve([Engine])[0];
-          var protoParent = new ProtoInjector([new BindingWithVisibility(engine, PRIVATE)]);
+          var protoParent =
+              new ProtoInjector([new BindingWithVisibility(engine, Visibility.Private)]);
           var parent = new Injector(protoParent);
 
           var child = Injector.resolveAndCreate([

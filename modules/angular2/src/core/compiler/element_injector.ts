@@ -12,9 +12,7 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {
   Injector,
   ProtoInjector,
-  PUBLIC_AND_PRIVATE,
-  PUBLIC,
-  PRIVATE,
+  Visibility,
   UNDEFINED,
   Key,
   Dependency,
@@ -376,14 +374,15 @@ export class ProtoElementInjector {
   private static _createBindingWithVisibility(firstBindingIsComponent, dirBinding, dirBindings,
                                               binding) {
     var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
-    return new BindingWithVisibility(binding, isComponent ? PUBLIC_AND_PRIVATE : PUBLIC);
+    return new BindingWithVisibility(binding,
+                                     isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
   }
 
   private static _createViewBindingsWithVisibility(bindings: List<ResolvedBinding>,
                                                    bd: BindingWithVisibility[]) {
     var db = <DirectiveBinding>bindings[0];
     ListWrapper.forEach(db.resolvedViewBindings,
-                        b => bd.push(new BindingWithVisibility(b, PRIVATE)));
+                        b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
   }
 
 
