@@ -7,7 +7,6 @@ import {
   expect,
   iit,
   inject,
-  IS_DARTIUM,
   it,
 } from 'angular2/test_lib';
 import {MockXHR} from 'angular2/src/render/xhr_mock';

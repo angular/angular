@@ -9,7 +9,6 @@ import {
   it,
   xdescribe,
   xit,
-  IS_DARTIUM,
   Log
 } from 'angular2/test_lib';
 import {BaseException} from 'angular2/src/facade/lang';

@@ -15,8 +15,6 @@ export function getTypeNameForDebugging(type: Type): string {
   return type['name'];
 }
 
-export var isDart = false;
-
 export class BaseException extends Error {
   stack;
   constructor(public message?: string, private _originalException?, private _originalStack?,

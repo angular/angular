@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, xit, iit, expect, beforeEach, IS_DARTIUM} from 'angular2/test_lib';
+import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
 import {BaseException, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
@@ -7,6 +7,7 @@ import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
 import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/change_detection/parser/ast';
+import {IS_DART} from '../../platform';
 
 class TestData {
   constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
@@ -224,7 +225,7 @@ export function main() {
           expect(() => { expectEval('null?.a.a', td()).toEqual(null); }).toThrowError();
         });
 
-        if (!IS_DARTIUM) {
+        if (!IS_DART) {
           it('should return null when accessing a field on undefined', () => {
             expect(() => { expectEval('_undefined?.a', td()).toEqual(null); }).not.toThrow();
           });

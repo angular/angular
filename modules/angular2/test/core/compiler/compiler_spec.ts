@@ -8,7 +8,6 @@ import {
   expect,
   iit,
   inject,
-  IS_DARTIUM,
   it,
   SpyObject,
   proxy

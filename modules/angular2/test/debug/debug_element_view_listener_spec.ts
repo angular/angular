@@ -8,7 +8,6 @@ import {
   expect,
   iit,
   inject,
-  IS_DARTIUM,
   beforeEachBindings,
   it,
   xit,
@@ -17,17 +16,15 @@ import {
   Scope,
   inspectNativeElement
 } from 'angular2/test_lib';
-
 import {global} from 'angular2/src/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-
 import {Injectable, bind} from 'angular2/di';
-
 import {
   Directive,
   Component,
   View,
 } from 'angular2/annotations';
+import {IS_DART} from '../platform';
 
 @Component({selector: 'my-comp'})
 @View({directives: []})
@@ -65,7 +62,7 @@ export function main() {
 
        }));
 
-    if (!IS_DARTIUM) {
+    if (!IS_DART) {
       it('should provide a global function to inspect elements',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
            tcb.overrideTemplate(MyComp, '')

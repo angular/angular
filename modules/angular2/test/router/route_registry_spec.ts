@@ -7,8 +7,7 @@ import {
   expect,
   inject,
   beforeEach,
-  SpyObject,
-  IS_DARTIUM
+  SpyObject
 } from 'angular2/test_lib';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -17,6 +16,7 @@ import {Type} from 'angular2/src/facade/lang';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig, Route, AuxRoute, AsyncRoute} from 'angular2/src/router/route_config_decorator';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
+import {IS_DART} from '../platform';
 
 export function main() {
   describe('RouteRegistry', () => {
@@ -195,7 +195,7 @@ export function main() {
           .toThrowError('Component for route "/" is not defined, or is not a class.');
 
       // This would never happen in Dart
-      if (!IS_DARTIUM) {
+      if (!IS_DART) {
         expect(() => registry.config(RootHostCmp, new Route({path: '/', component:<Type>(<any>4)})))
             .toThrowError('Component for route "/" is not defined, or is not a class.');
       }

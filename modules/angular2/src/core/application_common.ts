@@ -7,8 +7,7 @@ import {
   BaseException,
   assertionsEnabled,
   print,
-  stringify,
-  isDart
+  stringify
 } from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -76,6 +75,7 @@ import {
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from './application_tokens';
 import {wtfInit} from '../profile/wtf_init';
+import {EXCEPTION_BINDING} from './platform_bindings';
 
 var _rootInjector: Injector;
 
@@ -146,7 +146,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     PipeResolver,
     Parser,
     Lexer,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM, isDart ? false : true), []),
+    EXCEPTION_BINDING,
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
