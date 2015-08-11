@@ -42,7 +42,7 @@ export class Connection {
  * Interface for options to construct a Request, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  */
-export interface IRequestOptions {
+export type RequestOptionsArgs = {
   url?: string;
   method?: RequestMethods;
   search?: string | URLSearchParams;
@@ -58,7 +58,7 @@ export interface IRequestOptions {
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  */
-export interface IResponseOptions {
+export type ResponseOptionsArgs = {
   // TODO: Support Blob, ArrayBuffer, JSON
   body?: string | Object | FormData;
   status?: number;

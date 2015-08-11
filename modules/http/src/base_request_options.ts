@@ -1,7 +1,7 @@
 import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 import {RequestModesOpts, RequestMethods, RequestCacheOpts, RequestCredentialsOpts} from './enums';
-import {IRequestOptions} from './interfaces';
+import {RequestOptionsArgs} from './interfaces';
 import {Injectable} from 'angular2/di';
 import {URLSearchParams} from './url_search_params';
 
@@ -13,7 +13,7 @@ import {URLSearchParams} from './url_search_params';
  *
  * All values are null by default.
  */
-export class RequestOptions implements IRequestOptions {
+export class RequestOptions {
   /**
    * Http method with which to execute the request.
    *
@@ -36,7 +36,7 @@ export class RequestOptions implements IRequestOptions {
   url: string;
   search: URLSearchParams;
   constructor({method, headers, body, mode, credentials, cache, url, search}:
-                  IRequestOptions = {}) {
+                  RequestOptionsArgs = {}) {
     this.method = isPresent(method) ? method : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
@@ -53,7 +53,7 @@ export class RequestOptions implements IRequestOptions {
    * Creates a copy of the `RequestOptions` instance, using the optional input as values to override
    * existing values.
    */
-  merge(options?: IRequestOptions): RequestOptions {
+  merge(options?: RequestOptionsArgs): RequestOptions {
     return new RequestOptions({
       method: isPresent(options) && isPresent(options.method) ? options.method : this.method,
       headers: isPresent(options) && isPresent(options.headers) ? options.headers : this.headers,
