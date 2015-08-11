@@ -19,8 +19,8 @@ export {Request} from 'http/src/static_request';
 export {Response} from 'http/src/static_response';
 
 export {
-  IRequestOptions,
-  IResponseOptions,
+  RequestOptionsArgs,
+  ResponseOptionsArgs,
   Connection,
   ConnectionBackend
 } from 'http/src/interfaces';
