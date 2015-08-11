@@ -10,17 +10,8 @@ import 'dart:js' as js;
 // Proxies a Dart function that accepts up to 10 parameters.
 js.JsFunction _jsFunction(Function fn) {
   const Object X = __varargSentinel;
-  return new js.JsFunction.withThis((thisArg,
-      [o1 = X,
-      o2 = X,
-      o3 = X,
-      o4 = X,
-      o5 = X,
-      o6 = X,
-      o7 = X,
-      o8 = X,
-      o9 = X,
-      o10 = X]) {
+  return new js.JsFunction.withThis((thisArg, [o1 = X, o2 = X, o3 = X, o4 = X,
+      o5 = X, o6 = X, o7 = X, o8 = X, o9 = X, o10 = X]) {
     return __invokeFn(fn, o1, o2, o3, o4, o5, o6, o7, o8, o9, o10);
   });
 }
@@ -91,19 +82,46 @@ class PublicTestability implements _JsObjectProxyable {
 
 class GetTestability {
   static addToWindow(TestabilityRegistry registry) {
-    js.context['getAngularTestability'] = _jsify((Element elem,
-        [bool findInAncestors = true]) {
-      Testability testability = registry.findTestabilityInTree(elem, findInAncestors);
-      if (testability == null) {
+    var jsRegistry = js.context['ngTestabilityRegistries'];
+    if (jsRegistry == null) {
+      js.context['ngTestabilityRegistries'] = jsRegistry = new js.JsArray();
+      js.context['getAngularTestability'] = _jsify((Element elem,
+          [bool findInAncestors = true]) {
+        var registry = js.context['ngTestabilityRegistries'];
+        for (int i = 0; i < registry.length; i++) {
+          var result = registry[i].callMethod(
+              'getAngularTestability', [elem, findInAncestors]);
+          if (result != null) return result;
+        }
         throw 'Could not find testability for element.';
-      }
+      });
+      js.context['getAllAngularTestabilities'] = _jsify(() {
+        var registry = js.context['ngTestabilityRegistries'];
+        var result = [];
+        for (int i = 0; i < registry.length; i++) {
+          var testabilities =
+              registry[i].callMethod('getAllAngularTestabilities');
+          if (testabilities != null) result.addAll(testabilities);
+        }
+        return _jsify(result);
+      });
+    }
+    jsRegistry.add(_createRegistry(registry));
+  }
+
+  static js.JsObject _createRegistry(TestabilityRegistry registry) {
+    var object = new js.JsObject(js.context['Object']);
+    object['getAngularTestability'] = _jsify((Element elem,
+        bool findInAncestors) {
+      var testability = registry.findTestabilityInTree(elem, findInAncestors);
       return _jsify(new PublicTestability(testability));
     });
-    js.context['getAllAngularTestabilities'] = _jsify(() {
-      List<Testability> testabilities = registry.getAllTestabilities();
-      var publicTestabilities = testabilities
+    object['getAllAngularTestabilities'] = _jsify(() {
+      var publicTestabilities = registry
+          .getAllTestabilities()
           .map((testability) => new PublicTestability(testability));
       return _jsify(publicTestabilities);
     });
+    return object;
   }
 }
