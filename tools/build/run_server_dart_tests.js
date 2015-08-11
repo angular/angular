@@ -16,10 +16,6 @@ module.exports = function(gulp, plugins, config) {
   };
 
   function run(dir) {
-    if (dir == 'dist/dart/analyzer_plugin') {
-      // TODO: reenable after migration from unittest to test
-      return Q.resolve();
-    }
     var testDir = path.join(dir, 'test');
     var relativeMasterTestFile = 'test/_all_tests.dart';
     var testFiles = [].slice.call(glob.sync('**/*.server.spec.dart', {
