@@ -10,8 +10,7 @@ import {
   AsyncTestCompleter,
   inject,
   proxy,
-  SpyObject,
-  IS_DARTIUM
+  SpyObject
 } from 'angular2/test_lib';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
 

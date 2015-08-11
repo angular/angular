@@ -9,7 +9,6 @@ import {
   expect,
   iit,
   inject,
-  IS_DARTIUM,
   beforeEachBindings,
   it,
   xit,
@@ -78,6 +77,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
+import {IS_DART} from '../../platform';
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
@@ -1330,7 +1330,7 @@ export function main() {
                   })));
       }
 
-      if (!IS_DARTIUM) {
+      if (!IS_DART) {
         it('should report a meaningful error when a directive is undefined',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
                                                                async) => {
@@ -1431,7 +1431,7 @@ export function main() {
               }));
 
     describe('Property bindings', () => {
-      if (!IS_DARTIUM) {
+      if (!IS_DART) {
         it('should throw on bindings to unknown properties',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
                                                                async) => {

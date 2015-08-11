@@ -33,9 +33,6 @@ export interface NgMatchers extends jasmine.Matchers {
 
 export var expect: (actual: any) => NgMatchers = <any>_global.expect;
 
-// TODO vsavkin: remove it and use lang/isDart instead
-export var IS_DARTIUM = false;
-
 export class AsyncTestCompleter {
   _done: Function;
 

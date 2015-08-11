@@ -7,8 +7,7 @@ import {
   xdescribe,
   expect,
   beforeEach,
-  el,
-  IS_DARTIUM
+  el
 } from 'angular2/test_lib';
 
 import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
@@ -17,6 +16,7 @@ import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder'
 import {ASTWithSource, AST} from 'angular2/src/change_detection/change_detection';
 import {PropertyBindingType, ViewType, ViewEncapsulation} from 'angular2/src/render/api';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {IS_DART} from '../../../platform';
 
 export function main() {
   function emptyExpr() { return new ASTWithSource(new AST(), 'empty', 'empty'); }
@@ -30,7 +30,7 @@ export function main() {
           new ProtoViewBuilder(DOM.createTemplate(''), ViewType.EMBEDDED, ViewEncapsulation.NONE);
     });
 
-    if (!IS_DARTIUM) {
+    if (!IS_DART) {
       describe('verification of properties', () => {
 
         it('should throw for unknown properties', () => {

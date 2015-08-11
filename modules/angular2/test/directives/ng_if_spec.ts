@@ -9,7 +9,6 @@ import {
   expect,
   iit,
   inject,
-  IS_DARTIUM,
   it,
   xit,
 } from 'angular2/test_lib';
@@ -19,6 +18,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Component, View} from 'angular2/angular2';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
+import {IS_DART} from '../platform';
 
 export function main() {
   describe('ng-if directive', () => {
@@ -146,7 +146,7 @@ export function main() {
        }));
 
 
-    if (!IS_DARTIUM) {
+    if (!IS_DART) {
       it('should not add the element twice if the condition goes from true to true (JS)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
@@ -187,7 +187,7 @@ export function main() {
          }));
     }
 
-    if (IS_DARTIUM) {
+    if (IS_DART) {
       it('should not create the element if the condition is not a boolean (DART)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
