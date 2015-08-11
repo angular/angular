@@ -473,37 +473,13 @@ export class Directive extends InjectableMetadata {
    * Whenever the `someExpression` expression changes, the `properties` declaration instructs
    * Angular to update the `Tooltip`'s `text` property.
    *
-   * ## Bindings With Pipes
+   * ### Bindings With Pipes
    *
-   * You can also use pipes when writing binding definitions for a directive.
-   *
-   * For example, we could write a binding that updates the directive on structural changes, rather
-   * than on reference changes, as normally occurs in change detection.
-   *
-   * See {@link Pipe} and {@link KeyValueChanges} documentation for more details.
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   properties: [
-   *     'classChanges: classSet | keyValDiff'
-   *   ]
-   * })
-   * class ClassSet {
-   *   set classChanges(changes: KeyValueChanges) {
-   *     // This will get called every time the `class-set` expressions changes its structure.
-   *   }
-   * }
-   * ```
-   *
-   * The template that this directive is used in may also contain its own pipes. For example:
+   * You can use pipes in bindings, as follows:
    *
    * ```html
    * <div [class-set]="someExpression | somePipe">
    * ```
-   *
-   * In this case, the two pipes compose as if they were inlined: `someExpression | somePipe |
-   * keyValDiff`.
    *
    */
   properties: List<string>;
