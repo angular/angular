@@ -2,14 +2,14 @@ name: angular2_analyzer_plugin
 version: 0.0.0
 description: Dart analyzer plugin for Angular 2
 environment:
-  sdk: '>=1.9.0-dev.8.0'
+  sdk: '>=1.9.0 <2.0.0'
 dependencies:
   angular2: '0.0.0'
   analyzer: '^0.24.4'
 dev_dependencies:
-  unittest: any
-  typed_mock: any
-  test_reflective_loader: any
+  test_reflective_loader: '^0.0.3'
+  typed_mock: '^0.0.4'
+  unittest: '^0.11.0'
 dependency_overrides:
   angular2:
     path: ../../dist/dart/angular2
