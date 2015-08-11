@@ -20,7 +20,7 @@ import {bind, Inject, Injector} from 'angular2/di';
 import {LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
+import {DOCUMENT} from 'angular2/src/render/render';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -87,7 +87,7 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, 'loading');
-      testBindings = [bind(DOCUMENT_TOKEN).toValue(fakeDoc)];
+      testBindings = [bind(DOCUMENT).toValue(fakeDoc)];
     });
 
     it('should throw if bootstrapped Directive is not a Component',

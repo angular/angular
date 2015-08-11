@@ -52,8 +52,8 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * #Example
  *
  * ```
- * import {Http, httpInjectables} from 'angular2/http';
- * @Component({selector: 'http-app', viewBindings: [httpInjectables]})
+ * import {Http, HTTP_BINDINGS} from 'angular2/http';
+ * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
  * @View({templateUrl: 'people.html'})
  * class PeopleComponent {
  *   constructor(http: Http) {

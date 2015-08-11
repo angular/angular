@@ -29,7 +29,7 @@ const controlNameBinding =
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [formDirectives],
+ *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form #f="form" (submit)='onLogIn(f.value)'>
  *                Login <input type='text' ng-control='login' #l="form">
@@ -52,7 +52,7 @@ const controlNameBinding =
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [formDirectives],
+ *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form (submit)='onLogIn()'>
  *                Login <input type='text' ng-control='login' [(ng-model)]="credentials.login">

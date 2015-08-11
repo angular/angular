@@ -35,7 +35,7 @@ import {
 
 import {TemplateCloner} from './template_cloner';
 
-import {DOCUMENT_TOKEN, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens';
+import {DOCUMENT, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
@@ -47,7 +47,7 @@ export class DomRenderer extends Renderer {
 
   constructor(private _eventManager: EventManager,
               private _domSharedStylesHost: DomSharedStylesHost,
-              private _templateCloner: TemplateCloner, @Inject(DOCUMENT_TOKEN) document,
+              private _templateCloner: TemplateCloner, @Inject(DOCUMENT) document,
               @Inject(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES) reflectPropertiesAsAttributes:
                   boolean) {
     super();

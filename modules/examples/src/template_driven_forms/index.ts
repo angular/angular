@@ -10,7 +10,7 @@ import {
   forwardRef,
   Binding
 } from 'angular2/bootstrap';
-import {formDirectives, NgControl, Validators, NgForm} from 'angular2/forms';
+import {FORM_DIRECTIVES, NgControl, Validators, NgForm} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -151,7 +151,7 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [formDirectives, NgFor, CreditCardValidator, ShowError]
+  directives: [FORM_DIRECTIVES, NgFor, CreditCardValidator, ShowError]
 })
 class TemplateDrivenForms {
   model = new CheckoutModel();

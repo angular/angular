@@ -31,7 +31,7 @@ export {
   NgSelectOption,
   SelectControlValueAccessor
 } from './src/forms/directives/select_control_value_accessor';
-export {formDirectives} from './src/forms/directives';
+export {FORM_DIRECTIVES} from './src/forms/directives';
 export {Validators} from './src/forms/validators';
 export {NgValidator, NgRequiredValidator} from './src/forms/directives/validators';
 export {FormBuilder} from './src/forms/form_builder';
@@ -39,4 +39,4 @@ export {FormBuilder} from './src/forms/form_builder';
 import {FormBuilder} from './src/forms/form_builder';
 import {CONST_EXPR, Type} from './src/facade/lang';
 
-export const formInjectables: List<Type> = CONST_EXPR([FormBuilder]);
+export const FORM_BINDINGS: List<Type> = CONST_EXPR([FormBuilder]);

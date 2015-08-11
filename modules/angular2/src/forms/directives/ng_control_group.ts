@@ -24,7 +24,7 @@ const controlGroupBinding =
  *  ```
  * @Component({selector: "signup-comp"})
  * @View({
- *      directives: [formDirectives],
+ *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form #f="form" (submit)='onSignUp(f.value)'>
  *                <div ng-control-group='credentials' #credentials="form">

@@ -1,13 +1,13 @@
 import {isString} from 'angular2/src/facade/lang';
 import {Injectable, Inject} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN} from './dom_tokens';
+import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from './dom_tokens';
 
 @Injectable()
 export class TemplateCloner {
   maxInMemoryElementsPerTemplate: number;
 
-  constructor(@Inject(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN) maxInMemoryElementsPerTemplate) {
+  constructor(@Inject(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE) maxInMemoryElementsPerTemplate) {
     this.maxInMemoryElementsPerTemplate = maxInMemoryElementsPerTemplate;
   }
 

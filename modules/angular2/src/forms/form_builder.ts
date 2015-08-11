@@ -11,7 +11,7 @@ import * as modelModule from './model';
  *
  * ```
  * import {Component, View, bootstrap} from 'angular2/angular2';
- * import {FormBuilder, Validators, formDirectives, ControlGroup} from 'angular2/forms';
+ * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/forms';
  *
  * @Component({
  *   selector: 'login-comp',
@@ -31,7 +31,7 @@ import * as modelModule from './model';
  *     </form>
  *   `,
  *   directives: [
- *     formDirectives
+ *     FORM_DIRECTIVES
  *   ]
  * })
  * class LoginComp {

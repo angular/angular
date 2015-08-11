@@ -24,7 +24,7 @@ import {
   Control,
   ControlGroup,
   NgForm,
-  formDirectives,
+  FORM_DIRECTIVES,
   Validators,
   NgControl,
   ControlValueAccessor
@@ -770,7 +770,7 @@ class WrappedValue implements ControlValueAccessor {
 }
 
 @Component({selector: "my-comp"})
-@View({directives: [formDirectives, WrappedValue, NgIf, NgFor]})
+@View({directives: [FORM_DIRECTIVES, WrappedValue, NgIf, NgFor]})
 class MyComp {
   form: any;
   name: string;

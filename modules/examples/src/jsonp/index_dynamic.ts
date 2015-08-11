@@ -1,7 +1,7 @@
 import {JsonpCmp} from './jsonp_comp';
 import {bootstrap} from 'angular2/bootstrap';
-import {jsonpInjectables} from 'http/http';
+import {JSONP_BINDINGS} from 'http/http';
 
 export function main() {
-  bootstrap(JsonpCmp, [jsonpInjectables]);
+  bootstrap(JsonpCmp, [JSONP_BINDINGS]);
 }

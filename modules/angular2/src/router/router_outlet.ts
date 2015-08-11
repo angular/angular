@@ -4,7 +4,7 @@ import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {Directive, Attribute} from 'angular2/src/core/annotations/decorators';
 import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
-import {Injector, bind, Dependency, undefinedValue} from 'angular2/di';
+import {Injector, bind, Dependency, UNDEFINED} from 'angular2/di';
 
 import * as routerMod from './router';
 import {Instruction, ComponentInstruction, RouteParams} from './instruction';
