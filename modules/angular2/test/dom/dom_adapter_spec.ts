@@ -49,5 +49,42 @@ export function main() {
       expect(DOM.isElementNode(secondChild)).toBe(true);
 
     });
+
+    if (DOM.supportsDOMEvents()) {
+      describe('getBaseHref', () => {
+        beforeEach(() => DOM.resetBaseElement());
+
+        it('should return null if base element is absent',
+           () => { expect(DOM.getBaseHref()).toBeNull(); });
+
+        it('should return the value of the base element', () => {
+          var baseEl = DOM.createElement('base');
+          DOM.setAttribute(baseEl, 'href', '/drop/bass/connon/');
+          var headEl = DOM.defaultDoc().head;
+          DOM.appendChild(headEl, baseEl);
+
+          var baseHref = DOM.getBaseHref();
+          DOM.removeChild(headEl, baseEl);
+          DOM.resetBaseElement();
+
+          expect(baseHref).toEqual('/drop/bass/connon/');
+        });
+
+        it('should return a relative url', () => {
+          var baseEl = DOM.createElement('base');
+          DOM.setAttribute(baseEl, 'href', 'base');
+          var headEl = DOM.defaultDoc().head;
+          DOM.appendChild(headEl, baseEl);
+
+          var baseHref = DOM.getBaseHref();
+          DOM.removeChild(headEl, baseEl);
+          DOM.resetBaseElement();
+
+          expect(baseHref).toEqual('/base');
+        });
+      });
+    }
+
+
   });
 }

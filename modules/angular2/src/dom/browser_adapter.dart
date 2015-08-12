@@ -423,7 +423,11 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return null;
     }
     var baseUri = Uri.parse(href);
-    return baseUri.path;
+    return baseUri.path[0] == '/' ? baseUri.path : ('/' + baseUri.path);
+  }
+
+  resetBaseElement() {
+    baseElement = null;
   }
 
   String getUserAgent() {

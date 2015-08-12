@@ -127,6 +127,7 @@ export class DomAdapter {
   getHistory(): History { throw _abstract(); }
   getLocation(): Location { throw _abstract(); }
   getBaseHref(): string { throw _abstract(); }
+  resetBaseElement(): void { throw _abstract(); }
   getUserAgent(): string { throw _abstract(); }
   setData(element, name: string, value: string) { throw _abstract(); }
   getData(element, name: string): string { throw _abstract(); }
