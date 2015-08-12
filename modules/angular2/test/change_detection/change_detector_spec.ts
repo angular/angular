@@ -839,6 +839,67 @@ export function main() {
 
         expect(val.dispatcher.log).toEqual(['propName=Megatron']);
       });
+
+      describe('handleEvent', () => {
+        var locals;
+        var d: TestDirective;
+
+        beforeEach(() => {
+          locals = new Locals(null, MapWrapper.createFromStringMap({"$event": "EVENT"}));
+          d = new TestDirective();
+        });
+
+        it('should execute events', () => {
+          var val = _createChangeDetector('(event)="onEvent($event)"', d, null);
+          val.changeDetector.handleEvent("event", 0, locals);
+          expect(d.event).toEqual("EVENT");
+        });
+
+        it('should execute host events', () => {
+          var val = _createWithoutHydrate('(host-event)="onEvent($event)"');
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([d], []), null);
+          val.changeDetector.handleEvent("host-event", 0, locals);
+          expect(d.event).toEqual("EVENT");
+        });
+
+        it('should support field assignments', () => {
+          var val = _createChangeDetector('(event)="b=a=$event"', d, null);
+          val.changeDetector.handleEvent("event", 0, locals);
+          expect(d.a).toEqual("EVENT");
+          expect(d.b).toEqual("EVENT");
+        });
+
+        it('should support keyed assignments', () => {
+          d.a = ["OLD"];
+          var val = _createChangeDetector('(event)="a[0]=$event"', d, null);
+          val.changeDetector.handleEvent("event", 0, locals);
+          expect(d.a).toEqual(["EVENT"]);
+        });
+
+        it('should support chains', () => {
+          d.a = 0;
+          var val = _createChangeDetector('(event)="a=a+1; a=a+1;"', d, null);
+          val.changeDetector.handleEvent("event", 0, locals);
+          expect(d.a).toEqual(2);
+        });
+
+        // TODO: enable after chaning dart infrastructure for generating tests
+        // it('should throw when trying to assign to a local', () => {
+        //   expect(() => {
+        //     _createChangeDetector('(event)="$event=1"', d, null)
+        //   }).toThrowError(new RegExp("Cannot reassign a variable binding"));
+        // });
+
+        it('should return the prevent default value', () => {
+          var val = _createChangeDetector('(event)="false"', d, null);
+          var res = val.changeDetector.handleEvent("event", 0, locals);
+          expect(res).toBe(true);
+
+          val = _createChangeDetector('(event)="true"', d, null);
+          res = val.changeDetector.handleEvent("event", 0, locals);
+          expect(res).toBe(false);
+        });
+      });
     });
   });
 }
@@ -892,6 +953,7 @@ class TestDirective {
   onChangesDoneSpy;
   onCheckCalled;
   onInitCalled;
+  event;
 
   constructor(onChangesDoneSpy = null) {
     this.onChangesDoneCalled = false;
@@ -902,6 +964,8 @@ class TestDirective {
     this.b = null;
     this.changes = null;
   }
+
+  onEvent(event) { this.event = event; }
 
   onCheck() { this.onCheckCalled = true; }
 

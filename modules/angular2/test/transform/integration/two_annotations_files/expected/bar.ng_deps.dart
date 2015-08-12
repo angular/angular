@@ -36,6 +36,11 @@ class _MyComponent_ChangeDetector0
     dehydrateDirectives(false);
   }
 
+  bool handleEvent(eventName, elIndex, locals) {
+    var preventDefault = false;
+    return preventDefault;
+  }
+
   void detectChangesInRecordsInternal(throwOnChange) {
     var l_context = this.context, l_myNum0, c_myNum0, l_interpolate1;
     c_myNum0 = false;

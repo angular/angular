@@ -62,6 +62,7 @@ export interface ChangeDetector {
   dehydrate(): void;
   markPathToRootAsCheckOnce(): void;
 
+  handleEvent(eventName: string, elIndex: number, locals: Locals);
   detectChanges(): void;
   checkNoChanges(): void;
 }
@@ -70,7 +71,6 @@ export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher)
 
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: string, public variableNames: List<string>,
-              public bindingRecords: List<BindingRecord>,
-              public directiveRecords: List<DirectiveRecord>,
-              public generateCheckNoChanges: boolean) {}
+              public bindingRecords: BindingRecord[], public eventRecords: BindingRecord[],
+              public directiveRecords: DirectiveRecord[], public generateCheckNoChanges: boolean) {}
 }

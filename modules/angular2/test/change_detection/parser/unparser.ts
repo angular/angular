@@ -1,8 +1,8 @@
 import {
   AST,
   AstVisitor,
-  AccessMember,
-  Assignment,
+  PropertyRead,
+  PropertyWrite,
   Binary,
   Chain,
   Conditional,
@@ -12,13 +12,14 @@ import {
   FunctionCall,
   ImplicitReceiver,
   Interpolation,
-  KeyedAccess,
+  KeyedRead,
+  KeyedWrite,
   LiteralArray,
   LiteralMap,
   LiteralPrimitive,
   MethodCall,
   PrefixNot,
-  SafeAccessMember,
+  SafePropertyRead,
   SafeMethodCall
 } from 'angular2/src/change_detection/parser/ast';
 
@@ -35,15 +36,15 @@ export class Unparser implements AstVisitor {
     return this._expression;
   }
 
-  visitAccessMember(ast: AccessMember) {
+  visitPropertyRead(ast: PropertyRead) {
     this._visit(ast.receiver);
-
     this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}` : `.${ast.name}`;
   }
 
-  visitAssignment(ast: Assignment) {
-    this._visit(ast.target);
-    this._expression += ' = ';
+  visitPropertyWrite(ast: PropertyWrite) {
+    this._visit(ast.receiver);
+    this._expression +=
+        ast.receiver instanceof ImplicitReceiver ? `${ast.name} = ` : `.${ast.name} = `;
     this._visit(ast.value);
   }
 
@@ -116,11 +117,19 @@ export class Unparser implements AstVisitor {
     }
   }
 
-  visitKeyedAccess(ast: KeyedAccess) {
+  visitKeyedRead(ast: KeyedRead) {
     this._visit(ast.obj);
     this._expression += '[';
     this._visit(ast.key);
     this._expression += ']';
+  }
+
+  visitKeyedWrite(ast: KeyedWrite) {
+    this._visit(ast.obj);
+    this._expression += '[';
+    this._visit(ast.key);
+    this._expression += '] = ';
+    this._visit(ast.value);
   }
 
   visitLiteralArray(ast: LiteralArray) {
@@ -173,7 +182,7 @@ export class Unparser implements AstVisitor {
     this._visit(ast.expression);
   }
 
-  visitSafeAccessMember(ast: SafeAccessMember) {
+  visitSafePropertyRead(ast: SafePropertyRead) {
     this._visit(ast.receiver);
     this._expression += `?.${ast.name}`;
   }

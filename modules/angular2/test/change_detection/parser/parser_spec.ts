@@ -5,9 +5,7 @@ import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
-import {Locals} from 'angular2/src/change_detection/parser/locals';
 import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/change_detection/parser/ast';
-import {IS_DART} from '../../platform';
 
 class TestData {
   constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
@@ -18,10 +16,6 @@ class TestData {
 }
 
 export function main() {
-  function td(a: any = 0, b: any = 0, fnReturnValue: any = "constant") {
-    return new TestData(a, b, fnReturnValue);
-  }
-
   function createParser() { return new Parser(new Lexer(), reflector); }
 
   function parseAction(text, location = null): any {
@@ -46,364 +40,164 @@ export function main() {
 
   function unparse(ast: AST): string { return new Unparser().unparse(ast); }
 
-  function emptyLocals() { return new Locals(null, new Map()); }
-
-  function evalAction(text, passedInContext = null, passedInLocals = null) {
-    var c = isBlank(passedInContext) ? td() : passedInContext;
-    var l = isBlank(passedInLocals) ? emptyLocals() : passedInLocals;
-    return parseAction(text).eval(c, l);
+  function checkBinding(exp: string, expected?: string) {
+    var ast = parseBinding(exp);
+    if (isBlank(expected)) expected = exp;
+    expect(unparse(ast)).toEqual(expected);
   }
 
-  function expectEval(text, passedInContext = null, passedInLocals = null) {
-    return expect(evalAction(text, passedInContext, passedInLocals));
+  function checkAction(exp: string, expected?: string) {
+    var ast = parseAction(exp);
+    if (isBlank(expected)) expected = exp;
+    expect(unparse(ast)).toEqual(expected);
   }
 
-  function expectEvalError(text, passedInContext = null, passedInLocals = null) {
-    var c = isBlank(passedInContext) ? td() : passedInContext;
-    var l = isBlank(passedInLocals) ? emptyLocals() : passedInLocals;
-    return expect(() => parseAction(text).eval(c, l));
-  }
+  function expectActionError(text) { return expect(() => parseAction(text)); }
 
-  function evalAsts(asts, passedInContext = null) {
-    var c = isBlank(passedInContext) ? td() : passedInContext;
-    var res = [];
-    for (var i = 0; i < asts.length; i++) {
-      res.push(asts[i].eval(c, emptyLocals()));
-    }
-    return res;
-  }
+  function expectBindingError(text) { return expect(() => parseBinding(text)); }
 
   describe("parser", () => {
     describe("parseAction", () => {
-      describe("basic expressions", () => {
-        it('should parse numerical expressions', () => { expectEval("1").toEqual(1); });
+      it('should parse numbers', () => { checkAction("1"); });
 
-        it('should parse strings', () => {
-          expectEval("'1'").toEqual('1');
-          expectEval('"1"').toEqual('1');
-        });
-
-        it('should parse null', () => { expectEval("null").toBe(null); });
-
-        it('should parse unary - expressions', () => {
-          expectEval("-1").toEqual(-1);
-          expectEval("+1").toEqual(1);
-        });
-
-        it('should parse unary ! expressions', () => {
-          expectEval("!true").toEqual(!true);
-          expectEval("!!true").toEqual(!!true);
-          expectEval("!!!true").toEqual(!!!true);
-        });
-
-        it('should parse multiplicative expressions',
-           () => { expectEval("3*4/2%5").toEqual(3 * 4 / 2 % 5); });
-
-        it('should parse additive expressions', () => { expectEval("3+6-2").toEqual(3 + 6 - 2); });
-
-        it('should parse relational expressions', () => {
-          expectEval("2<3").toEqual(2 < 3);
-          expectEval("2>3").toEqual(2 > 3);
-          expectEval("2<=2").toEqual(2 <= 2);
-          expectEval("2>=2").toEqual(2 >= 2);
-        });
-
-        it('should parse equality expressions', () => {
-          expectEval("2==3").toEqual(2 == 3);
-          expectEval("2=='2'").toEqual(2 == <any>'2');
-          expectEval("2=='3'").toEqual(2 == <any>'3');
-          expectEval("2!=3").toEqual(2 != 3);
-          expectEval("2!='3'").toEqual(2 != <any>'3');
-          expectEval("2!='2'").toEqual(2 != <any>'2');
-          expectEval("2!=!false").toEqual(2 != <any>!false);
-        });
-
-        it('should parse strict equality expressions', () => {
-          expectEval("2===3").toEqual(2 === 3);
-          expectEval("2==='3'").toEqual(2 === <any>'3');
-          expectEval("2==='2'").toEqual(2 === <any>'2');
-          expectEval("2!==3").toEqual(2 !== 3);
-          expectEval("2!=='3'").toEqual(2 !== <any>'3');
-          expectEval("2!=='2'").toEqual(2 !== <any>'2');
-          expectEval("false===!true").toEqual(false === !true);
-          expectEval("false!==!!true").toEqual(false !== !!true);
-        });
-
-        it('should parse logicalAND expressions', () => {
-          expectEval("true&&true").toEqual(true && true);
-          expectEval("true&&false").toEqual(true && false);
-        });
-
-        it('should parse logicalOR expressions', () => {
-          expectEval("false||true").toEqual(false || true);
-          expectEval("false||false").toEqual(false || false);
-        });
-
-        it('should short-circuit AND operator',
-           () => { expectEval('false && a()', td(() => {throw "BOOM"})).toBe(false); });
-
-        it('should short-circuit OR operator',
-           () => { expectEval('true || a()', td(() => {throw "BOOM"})).toBe(true); });
-
-        it('should evaluate grouped expressions',
-           () => { expectEval("(1+2)*3").toEqual((1 + 2) * 3); });
-
-        it('should parse an empty string', () => { expectEval('').toBeNull(); });
+      it('should parse strings', () => {
+        checkAction("'1'", '"1"');
+        checkAction('"1"');
       });
 
+      it('should parse null', () => { checkAction("null"); });
+
+      it('should parse unary - expressions', () => {
+        checkAction("-1", "0 - 1");
+        checkAction("+1", "1");
+      });
+
+      it('should parse unary ! expressions', () => {
+        checkAction("!true");
+        checkAction("!!true");
+        checkAction("!!!true");
+      });
+
+      it('should parse multiplicative expressions',
+         () => { checkAction("3*4/2%5", "3 * 4 / 2 % 5"); });
+
+      it('should parse additive expressions', () => { checkAction("3 + 6 - 2"); });
+
+      it('should parse relational expressions', () => {
+        checkAction("2 < 3");
+        checkAction("2 > 3");
+        checkAction("2 <= 2");
+        checkAction("2 >= 2");
+      });
+
+      it('should parse equality expressions', () => {
+        checkAction("2 == 3");
+        checkAction("2 != 3");
+      });
+
+      it('should parse strict equality expressions', () => {
+        checkAction("2 === 3");
+        checkAction("2 !== 3");
+      });
+
+      it('should parse expressions', () => {
+        checkAction("true && true");
+        checkAction("true || false");
+      });
+
+      it('should parse grouped expressions', () => { checkAction("(1 + 2) * 3", "1 + 2 * 3"); });
+
+      it('should parse an empty string', () => { checkAction(''); });
+
       describe("literals", () => {
-        it('should evaluate array', () => {
-          expectEval("[1][0]").toEqual(1);
-          expectEval("[[1]][0][0]").toEqual(1);
-          expectEval("[]").toEqual([]);
-          expectEval("[].length").toEqual(0);
-          expectEval("[1, 2].length").toEqual(2);
+        it('should parse array', () => {
+          checkAction("[1][0]");
+          checkAction("[[1]][0][0]");
+          checkAction("[]");
+          checkAction("[].length");
+          checkAction("[1, 2].length");
         });
 
-        it('should evaluate map', () => {
-          expectEval("{}").toEqual({});
-          expectEval("{a:'b'}['a']").toEqual('b');
-          expectEval("{'a':'b'}['a']").toEqual('b');
-          expectEval("{\"a\":'b'}['a']").toEqual('b');
-          expectEval("{\"a\":'b'}['a']").toEqual("b");
-          expectEval("{}['a']").not.toBeDefined();
-          expectEval("{\"a\":'b'}['invalid']").not.toBeDefined();
+        it('should parse map', () => {
+          checkAction("{}");
+          checkAction("{a: 1}[2]");
+          checkAction("{}[\"a\"]");
         });
 
         it('should only allow identifier, string, or keyword as map key', () => {
-          expectEvalError('{(:0}')
+          expectActionError('{(:0}')
               .toThrowError(new RegExp('expected identifier, keyword, or string'));
-          expectEvalError('{1234:0}')
+          expectActionError('{1234:0}')
               .toThrowError(new RegExp('expected identifier, keyword, or string'));
         });
       });
 
       describe("member access", () => {
         it("should parse field access", () => {
-          expectEval("a", td(999)).toEqual(999);
-          expectEval("a.a", td(td(999))).toEqual(999);
+          checkAction("a");
+          checkAction("a.a");
         });
-
-        it('should throw when accessing a field on null',
-           () => { expectEvalError("a.a.a").toThrowError(); });
 
         it('should only allow identifier or keyword as member names', () => {
-          expectEvalError('x.(').toThrowError(new RegExp('identifier or keyword'));
-          expectEvalError('x. 1234').toThrowError(new RegExp('identifier or keyword'));
-          expectEvalError('x."foo"').toThrowError(new RegExp('identifier or keyword'));
+          expectActionError('x.(').toThrowError(new RegExp('identifier or keyword'));
+          expectActionError('x. 1234').toThrowError(new RegExp('identifier or keyword'));
+          expectActionError('x."foo"').toThrowError(new RegExp('identifier or keyword'));
         });
 
-        it("should read a field from Locals", () => {
-          var locals = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-          expectEval("key", null, locals).toEqual("value");
-        });
-
-        it("should handle nested Locals", () => {
-          var nested = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-          var locals = new Locals(nested, new Map());
-          expectEval("key", null, locals).toEqual("value");
-        });
-
-        it("should fall back to a regular field read when Locals " +
-               "does not have the requested field",
-           () => {
-             var locals = new Locals(null, new Map());
-             expectEval("a", td(999), locals).toEqual(999);
-           });
-      });
-
-      describe('safe navigation operator', () => {
-        it('should parse field access', () => {
-          expectEval('a?.a', td(td(999))).toEqual(999);
-          expectEval('a.a?.a', td(td(td(999)))).toEqual(999);
-        });
-
-        it('should return null when accessing a field on null',
-           () => { expect(() => { expectEval('null?.a', td()).toEqual(null); }).not.toThrow(); });
-
-        it('should have the same priority as .', () => {
-          expect(() => { expectEval('null?.a.a', td()).toEqual(null); }).toThrowError();
-        });
-
-        if (!IS_DART) {
-          it('should return null when accessing a field on undefined', () => {
-            expect(() => { expectEval('_undefined?.a', td()).toEqual(null); }).not.toThrow();
-          });
-        }
-
-        it('should evaluate method calls',
-           () => { expectEval('a?.add(1,2)', td(td())).toEqual(3); });
-
-        it('should return null when accessing a method on null', () => {
-          expect(() => { expectEval('null?.add(1, 2)', td()).toEqual(null); }).not.toThrow();
+        it('should parse safe field access', () => {
+          checkAction('a?.a');
+          checkAction('a.a?.a');
         });
       });
 
       describe("method calls", () => {
-        it("should evaluate method calls", () => {
-          expectEval("fn()", td(0, 0, "constant")).toEqual("constant");
-          expectEval("add(1,2)").toEqual(3);
-          expectEval("a.add(1,2)", td(td())).toEqual(3);
-          expectEval("fn().add(1,2)", td(0, 0, td())).toEqual(3);
+        it("should parse method calls", () => {
+          checkAction("fn()");
+          checkAction("add(1, 2)");
+          checkAction("a.add(1, 2)");
+          checkAction("fn().add(1, 2)");
         });
-
-        it('should throw when more than 10 arguments', () => {
-          expectEvalError("fn(1,2,3,4,5,6,7,8,9,10,11)").toThrowError(new RegExp('more than'));
-        });
-
-        it('should throw when no method', () => { expectEvalError("blah()").toThrowError(); });
-
-        it('should evaluate a method from Locals', () => {
-          var locals = new Locals(null, MapWrapper.createFromPairs([['fn', () => 'child']]));
-          expectEval("fn()", td(0, 0, 'parent'), locals).toEqual('child');
-        });
-
-        it('should fall back to the parent context when Locals does not ' +
-               'have the requested method',
-           () => {
-             var locals = new Locals(null, new Map());
-             expectEval("fn()", td(0, 0, 'parent'), locals).toEqual('parent');
-           });
       });
 
-      describe("functional calls", () => {
-        it("should evaluate function calls",
-           () => { expectEval("fn()(1,2)", td(0, 0, (a, b) => a + b)).toEqual(3); });
-
-        it('should throw on non-function function calls',
-           () => { expectEvalError("4()").toThrowError(new RegExp('4 is not a function')); });
-
-        it('should parse functions for object indices',
-           () => { expectEval('a[b()]()', td([() => 6], () => 0)).toEqual(6); });
-      });
+      describe("functional calls",
+               () => { it("should parse function calls", () => { checkAction("fn()(1, 2)"); }); });
 
       describe("conditional", () => {
         it('should parse ternary/conditional expressions', () => {
-          expectEval("7==3+4?10:20").toEqual(10);
-          expectEval("false?10:20").toEqual(20);
+          checkAction("7 == 3 + 4 ? 10 : 20");
+          checkAction("false ? 10 : 20");
         });
 
         it('should throw on incorrect ternary operator syntax', () => {
-          expectEvalError("true?1").toThrowError(new RegExp(
+          expectActionError("true?1").toThrowError(new RegExp(
               'Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
         });
       });
 
       describe("if", () => {
         it('should parse if statements', () => {
-
-          var fixtures = [
-            ['if (true) a = 0', 0, null],
-            ['if (false) a = 0', null, null],
-            ['if (a == null) b = 0', null, 0],
-            ['if (true) { a = 0; b = 0 }', 0, 0],
-            ['if (true) { a = 0; b = 0 } else { a = 1; b = 1; }', 0, 0],
-            ['if (false) { a = 0; b = 0 } else { a = 1; b = 1; }', 1, 1],
-            ['if (false) { } else { a = 1; b = 1; }', 1, 1],
-          ];
-
-          fixtures.forEach(fix => {
-            var testData = td(null, null);
-            evalAction(fix[0], testData);
-            expect(testData.a).toEqual(fix[1]);
-            expect(testData.b).toEqual(fix[2]);
-          });
+          checkAction("if (true) a = 0");
+          checkAction("if (true) {a = 0;}", "if (true) a = 0");
         });
       });
 
       describe("assignment", () => {
         it("should support field assignments", () => {
-          var context = td();
-          expectEval("a=12", context).toEqual(12);
-          expect(context.a).toEqual(12);
+          checkAction("a = 12");
+          checkAction("a.a.a = 123");
+          checkAction("a = 123; b = 234;");
         });
 
-        it("should support nested field assignments", () => {
-          var context = td(td(td()));
-          expectEval("a.a.a=123;", context).toEqual(123);
-          expect(context.a.a.a).toEqual(123);
+        it("should throw on safe field assignments", () => {
+          expectActionError("a?.a = 123")
+              .toThrowError(new RegExp('cannot be used in the assignment'));
         });
 
-        it("should support multiple assignments", () => {
-          var context = td();
-          expectEval("a=123; b=234", context).toEqual(234);
-          expect(context.a).toEqual(123);
-          expect(context.b).toEqual(234);
-        });
-
-        it("should support array updates", () => {
-          var context = td([100]);
-          expectEval('a[0] = 200', context).toEqual(200);
-          expect(context.a[0]).toEqual(200);
-        });
-
-        it("should support map updates", () => {
-          var context = td({"key": 100});
-          expectEval('a["key"] = 200', context).toEqual(200);
-          expect(context.a["key"]).toEqual(200);
-        });
-
-        it("should support array/map updates", () => {
-          var context = td([{"key": 100}]);
-          expectEval('a[0]["key"] = 200', context).toEqual(200);
-          expect(context.a[0]["key"]).toEqual(200);
-        });
-
-        it('should allow assignment after array dereference', () => {
-          var context = td([td()]);
-          expectEval('a[0].a = 200', context).toEqual(200);
-          expect(context.a[0].a).toEqual(200);
-        });
-
-        it('should throw on bad assignment', () => {
-          expectEvalError("5=4").toThrowError(new RegExp("Expression 5 is not assignable"));
-        });
-
-        it('should reassign when no variable binding with the given name', () => {
-          var context = td();
-          var locals = new Locals(null, new Map());
-          expectEval('a = 200', context, locals).toEqual(200);
-          expect(context.a).toEqual(200);
-        });
-
-        it('should throw when reassigning a variable binding', () => {
-          var locals = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-          expectEvalError('key = 200', null, locals)
-              .toThrowError(new RegExp("Cannot reassign a variable binding"));
-        });
-      });
-
-      describe("general error handling", () => {
-        it("should throw on an unexpected token", () => {
-          expectEvalError("[1,2] trac").toThrowError(new RegExp('Unexpected token \'trac\''));
-        });
-
-        it('should throw a reasonable error for unconsumed tokens', () => {
-          expectEvalError(")")
-              .toThrowError(new RegExp("Unexpected token \\) at column 1 in \\[\\)\\]"));
-        });
-
-        it('should throw on missing expected token', () => {
-          expectEvalError("a(b").toThrowError(
-              new RegExp("Missing expected \\) at the end of the expression \\[a\\(b\\]"));
-        });
+        it("should support array updates", () => { checkAction("a[0] = 200"); });
       });
 
       it("should error when using pipes",
-         () => { expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a pipe')); });
-
-      it('should pass exceptions', () => {
-        expect(() => {
-          parseAction('a()').eval(td(() => {throw new BaseException("boo to you")}), emptyLocals());
-        }).toThrowError('boo to you');
-      });
-
-      describe("multiple statements", () => {
-        it("should return the last non-blank value", () => {
-          expectEval("a=1;b=3;a+b").toEqual(4);
-          expectEval("1;;").toEqual(1);
-        });
-      });
+         () => { expectActionError('x|blah').toThrowError(new RegExp('Cannot have a pipe')); });
 
       it('should store the source in the result',
          () => { expect(parseAction('someExpr').source).toBe('someExpr'); });
@@ -412,51 +206,40 @@ export function main() {
          () => { expect(parseAction('someExpr', 'location').location).toBe('location'); });
     });
 
+    describe("general error handling", () => {
+      it("should throw on an unexpected token", () => {
+        expectActionError("[1,2] trac").toThrowError(new RegExp('Unexpected token \'trac\''));
+      });
+
+      it('should throw a reasonable error for unconsumed tokens', () => {
+        expectActionError(")")
+            .toThrowError(new RegExp("Unexpected token \\) at column 1 in \\[\\)\\]"));
+      });
+
+      it('should throw on missing expected token', () => {
+        expectActionError("a(b").toThrowError(
+            new RegExp("Missing expected \\) at the end of the expression \\[a\\(b\\]"));
+      });
+    });
+
     describe("parseBinding", () => {
       describe("pipes", () => {
         it("should parse pipes", () => {
-          var originalExp = '"Foo" | uppercase';
-          var ast = parseBinding(originalExp).ast;
-          expect(ast).toBeAnInstanceOf(BindingPipe);
-          expect(new Unparser().unparse(ast)).toEqual(`(${originalExp})`);
-        });
-
-        it("should parse pipes in the middle of a binding", () => {
-          var ast = parseBinding('(user | a | b).name').ast;
-          expect(new Unparser().unparse(ast)).toEqual('((user | a) | b).name');
-        });
-
-        it("should parse pipes with args", () => {
-          var ast = parseBinding("(1|a:2)|b:3").ast;
-          expect(new Unparser().unparse(ast)).toEqual('((1 | a:2) | b:3)');
+          checkBinding('a(b | c)', 'a((b | c))');
+          checkBinding('a.b(c.d(e) | f)', 'a.b((c.d(e) | f))');
+          checkBinding('[1, 2, 3] | a', '([1, 2, 3] | a)');
+          checkBinding('{a: 1} | b', '({a: 1} | b)');
+          checkBinding('a[b] | c', '(a[b] | c)');
+          checkBinding('a?.b | c', '(a?.b | c)');
+          checkBinding('true | a', '(true | a)');
+          checkBinding('a | b:c | d', '(a | b:(c | d))');
+          checkBinding('(a | b:c) | d', '((a | b:c) | d)');
         });
 
         it('should only allow identifier or keyword as formatter names', () => {
-          expect(() => parseBinding('"Foo"|(')).toThrowError(new RegExp('identifier or keyword'));
-          expect(() => parseBinding('"Foo"|1234'))
-              .toThrowError(new RegExp('identifier or keyword'));
-          expect(() => parseBinding('"Foo"|"uppercase"'))
-              .toThrowError(new RegExp('identifier or keyword'));
-        });
-
-        it('should parse pipes', () => {
-          let unparser = new Unparser();
-          let exps = [
-            ['a(b | c)', 'a((b | c))'],
-            ['a.b(c.d(e) | f)', 'a.b((c.d(e) | f))'],
-            ['[1, 2, 3] | a', '([1, 2, 3] | a)'],
-            ['{a: 1} | b', '({a: 1} | b)'],
-            ['a[b] | c', '(a[b] | c)'],
-            ['a?.b | c', '(a?.b | c)'],
-            ['true | a', '(true | a)'],
-            ['a | b:c | d', '(a | b:(c | d))'],
-            ['(a | b:c) | d', '((a | b:c) | d)']
-          ];
-
-          ListWrapper.forEach(exps, e => {
-            var ast = parseBinding(e[0]).ast;
-            expect(unparser.unparse(ast)).toEqual(e[1]);
-          });
+          expectBindingError('"Foo"|(').toThrowError(new RegExp('identifier or keyword'));
+          expectBindingError('"Foo"|1234').toThrowError(new RegExp('identifier or keyword'));
+          expectBindingError('"Foo"|"uppercase"').toThrowError(new RegExp('identifier or keyword'));
         });
       });
 
@@ -471,7 +254,7 @@ export function main() {
       });
 
       it('should throw on assignment', () => {
-        expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
+        expect(() => parseBinding("a=2")).toThrowError(new RegExp("contain assignments"));
       });
     });
 
@@ -497,21 +280,10 @@ export function main() {
                                                                   null);
       }
 
-      function exprAsts(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => isPresent(binding.expression) ?
-                                                                  binding.expression :
-                                                                  null);
-      }
+      it('should parse an empty string', () => { expect(parseTemplateBindings('')).toEqual([]); });
 
-      it('should parse an empty string', () => {
-        var bindings = parseTemplateBindings('');
-        expect(bindings).toEqual([]);
-      });
-
-      it('should parse a string without a value', () => {
-        var bindings = parseTemplateBindings('a');
-        expect(keys(bindings)).toEqual(['a']);
-      });
+      it('should parse a string without a value',
+         () => { expect(keys(parseTemplateBindings('a'))).toEqual(['a']); });
 
       it('should only allow identifier, string, or keyword including dashes as keys', () => {
         var bindings = parseTemplateBindings("a:'b'");
@@ -536,11 +308,9 @@ export function main() {
       it('should detect expressions as value', () => {
         var bindings = parseTemplateBindings("a:b");
         expect(exprSources(bindings)).toEqual(['b']);
-        expect(evalAsts(exprAsts(bindings), td(0, 23))).toEqual([23]);
 
         bindings = parseTemplateBindings("a:1+1");
         expect(exprSources(bindings)).toEqual(['1+1']);
-        expect(evalAsts(exprAsts(bindings))).toEqual([2]);
       });
 
       it('should detect names as value', () => {
@@ -657,8 +427,7 @@ export function main() {
 
     describe('wrapLiteralPrimitive', () => {
       it('should wrap a literal primitive', () => {
-        expect(createParser().wrapLiteralPrimitive("foo", null).eval(null, emptyLocals()))
-            .toEqual("foo");
+        expect(unparse(createParser().wrapLiteralPrimitive("foo", null))).toEqual('"foo"');
       });
     });
   });

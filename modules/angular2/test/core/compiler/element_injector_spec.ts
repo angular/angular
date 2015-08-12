@@ -937,7 +937,7 @@ export function main() {
           });
 
           it("should inject ChangeDetectorRef of the component's view into the component", () => {
-            var cd = new DynamicChangeDetector(null, null, null, [], []);
+            var cd = new DynamicChangeDetector(null, null, null, [], [], []);
             var view = <any>new DummyView();
             var childView = new DummyView();
             childView.changeDetector = cd;
@@ -950,7 +950,7 @@ export function main() {
           });
 
           it("should inject ChangeDetectorRef of the containing component into directives", () => {
-            var cd = new DynamicChangeDetector(null, null, null, [], []);
+            var cd = new DynamicChangeDetector(null, null, null, [], [], []);
             var view = <any>new DummyView();
             view.changeDetector =cd;
             var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new dirAnn.Directive());

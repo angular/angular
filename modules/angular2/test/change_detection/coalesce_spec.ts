@@ -15,7 +15,7 @@ export function main() {
                argumentToPureFunction?: boolean
              } = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
-    if (isBlank(mode)) mode = RecordType.PROPERTY;
+    if (isBlank(mode)) mode = RecordType.PROPERTY_READ;
     if (isBlank(name)) name = "name";
     if (isBlank(directiveIndex)) directiveIndex = null;
     if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;

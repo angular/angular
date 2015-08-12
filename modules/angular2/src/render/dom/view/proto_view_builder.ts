@@ -13,7 +13,7 @@ import {
   ASTWithSource,
   AST,
   AstTransformer,
-  AccessMember,
+  PropertyRead,
   LiteralArray,
   ImplicitReceiver
 } from 'angular2/src/change_detection/change_detection';
@@ -278,11 +278,11 @@ export class EventBuilder extends AstTransformer {
     return result;
   }
 
-  visitAccessMember(ast: AccessMember): AccessMember {
+  visitPropertyRead(ast: PropertyRead): PropertyRead {
     var isEventAccess = false;
     var current: AST = ast;
-    while (!isEventAccess && (current instanceof AccessMember)) {
-      var am = <AccessMember>current;
+    while (!isEventAccess && (current instanceof PropertyRead)) {
+      var am = <PropertyRead>current;
       if (am.name == '$event') {
         isEventAccess = true;
       }
@@ -292,7 +292,7 @@ export class EventBuilder extends AstTransformer {
     if (isEventAccess) {
       this.locals.push(ast);
       var index = this.locals.length - 1;
-      return new AccessMember(this._implicitReceiver, `${index}`, (arr) => arr[index], null);
+      return new PropertyRead(this._implicitReceiver, `${index}`, (arr) => arr[index]);
     } else {
       return ast;
     }

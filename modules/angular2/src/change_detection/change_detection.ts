@@ -14,7 +14,7 @@ export {
   ASTWithSource,
   AST,
   AstTransformer,
-  AccessMember,
+  PropertyRead,
   LiteralArray,
   ImplicitReceiver
 } from './parser/ast';

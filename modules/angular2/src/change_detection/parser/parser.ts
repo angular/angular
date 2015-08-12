@@ -21,17 +21,18 @@ import {
   AST,
   EmptyExpr,
   ImplicitReceiver,
-  AccessMember,
-  SafeAccessMember,
+  PropertyRead,
+  PropertyWrite,
+  SafePropertyRead,
   LiteralPrimitive,
   Binary,
   PrefixNot,
   Conditional,
   If,
   BindingPipe,
-  Assignment,
   Chain,
-  KeyedAccess,
+  KeyedRead,
+  KeyedWrite,
   LiteralArray,
   LiteralMap,
   Interpolation,
@@ -245,27 +246,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseExpression(): AST {
-    var start = this.inputIndex;
-    var result = this.parseConditional();
-
-    while (this.next.isOperator('=')) {
-      if (!result.isAssignable) {
-        var end = this.inputIndex;
-        var expression = this.input.substring(start, end);
-        this.error(`Expression ${expression} is not assignable`);
-      }
-
-      if (!this.parseAction) {
-        this.error("Binding expression cannot contain assignments");
-      }
-
-      this.expectOperator('=');
-      result = new Assignment(result, this.parseConditional());
-    }
-
-    return result;
-  }
+  parseExpression(): AST { return this.parseConditional(); }
 
   parseConditional(): AST {
     var start = this.inputIndex;
@@ -393,7 +374,12 @@ export class _ParseAST {
       } else if (this.optionalCharacter($LBRACKET)) {
         var key = this.parsePipe();
         this.expectCharacter($RBRACKET);
-        result = new KeyedAccess(result, key);
+        if (this.optionalOperator("=")) {
+          var value = this.parseConditional();
+          result = new KeyedWrite(result, key, value);
+        } else {
+          result = new KeyedRead(result, key);
+        }
 
       } else if (this.optionalCharacter($LPAREN)) {
         var args = this.parseCallArguments();
@@ -506,9 +492,28 @@ export class _ParseAST {
     } else {
       let getter = this.reflector.getter(id);
       let setter = this.reflector.setter(id);
-      return isSafe ? new SafeAccessMember(receiver, id, getter, setter) :
-                      new AccessMember(receiver, id, getter, setter);
+
+      if (isSafe) {
+        if (this.optionalOperator("=")) {
+          this.error("The '?.' operator cannot be used in the assignment");
+        } else {
+          return new SafePropertyRead(receiver, id, getter);
+        }
+      } else {
+        if (this.optionalOperator("=")) {
+          if (!this.parseAction) {
+            this.error("Bindings cannot contain assignments");
+          }
+
+          let value = this.parseConditional();
+          return new PropertyWrite(receiver, id, setter, value);
+        } else {
+          return new PropertyRead(receiver, id, getter);
+        }
+      }
     }
+
+    return null;
   }
 
   parseCallArguments(): BindingPipe[] {
@@ -629,9 +634,11 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitLiteralPrimitive(ast: LiteralPrimitive) {}
 
-  visitAccessMember(ast: AccessMember) {}
+  visitPropertyRead(ast: PropertyRead) {}
 
-  visitSafeAccessMember(ast: SafeAccessMember) { this.simple = false; }
+  visitPropertyWrite(ast: PropertyWrite) { this.simple = false; }
+
+  visitSafePropertyRead(ast: SafePropertyRead) { this.simple = false; }
 
   visitMethodCall(ast: MethodCall) { this.simple = false; }
 
@@ -651,7 +658,9 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitPipe(ast: BindingPipe) { this.simple = false; }
 
-  visitKeyedAccess(ast: KeyedAccess) { this.simple = false; }
+  visitKeyedRead(ast: KeyedRead) { this.simple = false; }
+
+  visitKeyedWrite(ast: KeyedWrite) { this.simple = false; }
 
   visitAll(asts: List<any>): List<any> {
     var res = ListWrapper.createFixedSize(asts.length);
@@ -662,8 +671,6 @@ class SimpleExpressionChecker implements AstVisitor {
   }
 
   visitChain(ast: Chain) { this.simple = false; }
-
-  visitAssignment(ast: Assignment) { this.simple = false; }
 
   visitIf(ast: If) { this.simple = false; }
 }

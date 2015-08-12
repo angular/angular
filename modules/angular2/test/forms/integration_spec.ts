@@ -79,6 +79,7 @@ export function main() {
 
              tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
              tick();
+
              rootTC.componentInstance.form = new ControlGroup({});
              rootTC.componentInstance.name = 'old';
 

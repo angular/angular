@@ -262,29 +262,12 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   // returns false if preventDefault must be applied to the DOM event
   dispatchEvent(boundElementIndex: number, eventName: string, locals: Map<string, any>): boolean {
     try {
-      // Most of the time the event will be fired only when the view is in the live document.
-      // However, in a rare circumstance the view might get dehydrated, in between the event
-      // queuing up and firing.
-      var allowDefaultBehavior = true;
       if (this.hydrated()) {
-        var elBinder = this.proto.elementBinders[boundElementIndex - this.elementOffset];
-        if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
-        var eventMap = elBinder.hostListeners[eventName];
-        if (isBlank(eventMap)) return allowDefaultBehavior;
-        MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
-          var context;
-          if (directiveIndex === -1) {
-            context = this.context;
-          } else {
-            context = this.elementInjectors[boundElementIndex].getDirectiveAtIndex(directiveIndex);
-          }
-          var result = expr.eval(context, new Locals(this.locals, locals));
-          if (isPresent(result)) {
-            allowDefaultBehavior = allowDefaultBehavior && result == true;
-          }
-        });
+        return !this.changeDetector.handleEvent(eventName, boundElementIndex - this.elementOffset,
+                                                new Locals(this.locals, locals));
+      } else {
+        return true;
       }
-      return allowDefaultBehavior;
     } catch (e) {
       var c = this.getDebugContext(boundElementIndex - this.elementOffset, null);
       var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
@@ -353,38 +336,5 @@ export class AppProtoView {
 
     this.elementBinders.push(elBinder);
     return elBinder;
-  }
-
-  /**
-   * Adds an event binding for the last created ElementBinder via bindElement.
-   *
-   * If the directive index is a positive integer, the event is evaluated in the context of
-   * the given directive.
-   *
-   * If the directive index is -1, the event is evaluated in the context of the enclosing view.
-   *
-   * @param {string} eventName
-   * @param {AST} expression
-   * @param {int} directiveIndex The directive index in the binder or -1 when the event is not bound
-   *                             to a directive
-   */
-  bindEvent(eventBindings: List<renderApi.EventBinding>, boundElementIndex: number,
-            directiveIndex: int = -1): void {
-    var elBinder = this.elementBinders[boundElementIndex];
-    var events = elBinder.hostListeners;
-    if (isBlank(events)) {
-      events = StringMapWrapper.create();
-      elBinder.hostListeners = events;
-    }
-    for (var i = 0; i < eventBindings.length; i++) {
-      var eventBinding = eventBindings[i];
-      var eventName = eventBinding.fullName;
-      var event = StringMapWrapper.get(events, eventName);
-      if (isBlank(event)) {
-        event = new Map();
-        StringMapWrapper.set(events, eventName, event);
-      }
-      event.set(directiveIndex, eventBinding.source);
-    }
   }
 }
