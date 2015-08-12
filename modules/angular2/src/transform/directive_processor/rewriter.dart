@@ -103,7 +103,7 @@ Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
     asyncWriter.asyncPrint(reader.readAsString(partAssetId).then((partCode) {
       if (partCode == null || partCode.isEmpty) {
         logger.warning('Empty part at "${partDirective.uri}. Ignoring.',
-            assetId: partAssetId);
+            asset: partAssetId);
         return '';
       }
       // Remove any directives -- we just want declarations.
