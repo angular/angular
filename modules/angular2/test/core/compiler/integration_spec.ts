@@ -756,7 +756,7 @@ export function main() {
                });
          }));
 
-      it('should support events via EventEmitter',
+      iit('should support events via EventEmitter',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new viewAnn.View({
                 template: '<div emitter listener></div>',

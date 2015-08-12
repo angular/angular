@@ -38,7 +38,7 @@ export {
 } from './interfaces';
 export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
-export {BindingRecord} from './binding_record';
+export {PropertyBindingRecord, EventBindingRecord} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';
 export {DynamicChangeDetector} from './dynamic_change_detector';
 export {ChangeDetectorRef} from './change_detector_ref';

@@ -1,5 +1,5 @@
 import {List} from 'angular2/src/facade/collection';
-import {BindingRecord} from './binding_record';
+import {PropertyBindingRecord} from './binding_record';
 import {DirectiveIndex} from './directive_record';
 
 export enum RecordType {
@@ -23,7 +23,7 @@ export class ProtoRecord {
   constructor(public mode: RecordType, public name: string, public funcOrValue,
               public args: List<any>, public fixedArgs: List<any>, public contextIndex: number,
               public directiveIndex: DirectiveIndex, public selfIndex: number,
-              public bindingRecord: BindingRecord, public expressionAsString: string,
+              public bindingRecord: any, public expressionAsString: string,
               public lastInBinding: boolean, public lastInDirective: boolean,
               public argumentToPureFunction: boolean, public referencedBySelf: boolean) {}
 
