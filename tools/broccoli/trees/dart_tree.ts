@@ -13,11 +13,23 @@ import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
 import replace from '../broccoli-replace';
 
+var global_excludes = [
+  'rtts_assert/**/*',
+  'http/**/*',
+  'examples/src/http/**/*',
+  'examples/test/http/**/*',
+  'examples/src/jsonp/**/*',
+  'examples/test/jsonp/**/*'
+];
+
+
 /**
  * A funnel starting at modules, including the given filters, and moving into the root.
  * @param include Include glob filters.
  */
 function modulesFunnel(include: string[], exclude?: string[]) {
+  exclude = exclude || [];
+  exclude = exclude.concat(global_excludes);
   return new Funnel('modules', {include, destDir: '/', exclude});
 }
 
@@ -44,7 +56,7 @@ function stripModulePrefix(relativePath: string): string {
 
 function getSourceTree() {
   // Transpile everything in 'modules' except for rtts_assertions.
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*']);
+  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart']);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
@@ -135,7 +147,7 @@ function getDocsTree() {
   var licenses = new MultiCopy('', {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
-    exclude: ['*/rtts_assert'],  // Not in dart.
+    exclude: ['*/rtts_assert', '*/http', '*/upgrade'],  // Not in dart.
   });
   licenses = stew.rename(licenses, stripModulePrefix);
 

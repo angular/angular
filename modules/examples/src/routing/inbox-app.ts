@@ -8,7 +8,7 @@ import {
   Location,
   RouteParams
 } from 'angular2/router';
-import {Http, Response} from 'http/http';
+import * as db from './data';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -59,12 +59,9 @@ class InboxRecord {
 
 @Injectable()
 class DbService {
-  constructor(public http: Http) {}
-
   getData() {
     var p = PromiseWrapper.completer();
-    ObservableWrapper.subscribe<Response>(this.http.get('./db.json'),
-                                          (resp) => { p.resolve(resp.json()); });
+    p.resolve(db.data);
     return p.promise;
   }
 
