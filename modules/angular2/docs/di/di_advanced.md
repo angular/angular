@@ -33,8 +33,8 @@ Often there is a need to create multiple instances of essentially the same injec
 Doing the following would be very inefficient.
 
 ```
-function createComponetInjector(parent, bindings:Binding[]) {
-	return parentresolveAndCreateChild(bindings);
+function createComponetInjector(parent, bindings: Binding[]) {
+  return parent.resolveAndCreateChild(bindings);
 }
 ```
 
@@ -70,11 +70,11 @@ Imagine the following scenario:
 ```
     ParentInjector
        /   \
-	    /     \ host
+      /     \ host
    Child1    Child2
 ```
 
-Here both Child1 and Child2 are children of ParentInjector. Child2 marks this relationship as host. ParentInjector might want to expose two different sets of bindings for its "regular" children and its "host" children. Bindings visible to "regular" children are called PUBLIC, and bindings visible to "host" children are called PRIVATE. This is an advanced use case used by Angular, where components can provide different sets of bindings for their children and their view.
+Here both Child1 and Child2 are children of ParentInjector. Child2 marks this relationship as host. ParentInjector might want to expose two different sets of bindings for its "regular" children and its "host" children. Bindings visible to "regular" children are called "public" and bindings visible to "host" children are called "private". This is an advanced use case used by Angular, where components can provide different sets of bindings for their children and their view.
 
 Let's look at this example.
 
@@ -82,43 +82,41 @@ Let's look at this example.
 class Car {
   constructor(@Host() e: Engine) {}
 }
-var resolvedBindings = Injector.resolve([Car, Engine]);
 
 var parentProto = new ProtoInjector([
-  new BindingWithVisibility(Engine, PUBLIC),
-  new BindingWithVisibility(Car, PUBLIC)
+  new BindingWithVisibility(Engine, Visibility.Public),
+  new BindingWithVisibility(Car, Visibility.Public)
 ]);
 var parent = new Injector(parentProto);
 
-var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var hostChild = new Injector(hostChildProto, parent, true);
 
-var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var regularChild = new Injector(regularChildProto, parent, false);
 
-hostChild.get(Car); // will throw because PUBLIC dependencies declared at the host cannot be seen by child injectors
+hostChild.get(Car); // will throw because public dependencies declared at the host cannot be seen by child injectors
 parent.get(Car); // this works
 regularChild.get(Car); // this works
 ```
 
-Now, let's mark Engine as PRIVATE.
+Now, let's mark `Engine` as private:
 
 ```
 class Car {
   constructor(@Host() e: Engine) {}
 }
 
-var resolvedBindings = Injector.resolve([Car, Engine]);
 var parentProto = new ProtoInjector([
-  new BindingWithVisibility(Engine, PRIVATE),
-	new BindingWithVisibility(Car, PUBLIC)
+  new BindingWithVisibility(Engine, Visibility.Private),
+  new BindingWithVisibility(Car, Visibility.Public)
 ]);
 var parent = new Injector(parentProto);
 
-var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var hostChild = new Injector(hostChildProto, parent, true);
 
-var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var regularChild = new Injector(regularChildProto, parent, false);
 
 hostChild.get(Car); // this works
@@ -126,24 +124,23 @@ parent.get(Car); // this throws
 regularChild.get(Car); // this throws
 ```
 
-Now, let's mark Engine as both PUBLIC and PRIVATE.
+Now, let's mark `Engine` as both public and private:
 
 ```
 class Car {
   constructor(@Host() e: Engine) {}
 }
 
-var resolvedBindings = Injector.resolve([Car, Engine]);
 var parentProto = new ProtoInjector([
-  new BindingWithVisibility(Engine, PUBLIC_AND_PRIVATE),
-	new BindingWithVisibility(Car, PUBLIC)
+  new BindingWithVisibility(Engine, Visibility.PublicAndPrivate),
+  new BindingWithVisibility(Car, Visibility.Public)
 ]);
 var parent = new Injector(parentProto);
 
-var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var hostChild = new Injector(hostChildProto, parent, true);
 
-var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var regularChild = new Injector(regularChildProto, parent, false);
 
 hostChild.get(Car); // this works
@@ -168,21 +165,21 @@ Let's look at a complex example that shows how the injector tree gets created.
 
 ```
 <my-component my-directive>
-	<needs-service></needs-service>
+  <needs-service></needs-service>
 </my-component>
 ```
 
-Both MyComponent and MyDirective are created on the same element.
+Both `MyComponent` and `MyDirective` are created on the same element.
 
 ```
 @Component({
-  selector: 'my-component,
-	bindings: [
-	  bind("componentService").toValue("Host_MyComponentService")
-	],
-	viewBindings: [
-		bind("viewService").toValue("View_MyComponentService")
-	]
+  selector: 'my-component',
+  bindings: [
+    bind('componentService').toValue('Host_MyComponentService')
+  ],
+  viewBindings: [
+    bind('viewService').toValue('View_MyComponentService')
+  ]
 })
 @View({
   template: `<needs-view-service></needs-view-service>`,
@@ -193,14 +190,14 @@ class MyComponent {}
 @Directive({
   selector: '[my-directive]',
   bindings: [
-    bind("directiveService").toValue("MyDirectiveService")
+    bind('directiveService').toValue('MyDirectiveService')
   ]
 })
 class MyDirective {
 }
 ```
 
-NeedsService and NeedsViewService look like this:
+`NeedsService` and `NeedsViewService` look like this:
 
 ```
 @Directive({
@@ -222,18 +219,18 @@ class NeedsService {
 This will create the following injector tree.
 
 ```
-		  Injector1 [
-			  {binding: MyComponent,        visibility: PUBLIC_AND_PRIVATE},
-				{binding: "componentService", visibility: PUBLIC_AND_PRIVATE},
-				{binding: "viewService",      visibility: PRIVATE},
-			  {binding: MyDirective         visibility: PUBLIC},
-				{binding: "directiveService", visibility: PUBLIC}
-			]
+      Injector1 [
+        {binding: MyComponent,        visibility: Visibility.PublicAndPrivate},
+        {binding: 'componentService', visibility: Visibility.PublicAndPrivate},
+        {binding: 'viewService',      visibility: Visibility.Private},
+        {binding: MyDirective         visibility: Visibility.Public},
+        {binding: 'directiveService', visibility: Visibility.Public}
+      ]
   /                                                       \
   |                                                        \ host
-Injector2 [                                           Injector3 [
-  {binding: NeedsService, visibility: PUBLIC}           {binding: NeedsViewService, visibility: PUBLIC}
-]                                                     ]
+Injector2 [                                                 Injector3 [
+  {binding: NeedsService, visibility: Visibility.Public}           {binding: NeedsViewService, visibility: Visibility.Public}
+]                                                           ]
 ```
 
 As you can see the component and its bindings can be seen by its children and its view. The view bindings can be seen only by the view. And the bindings of other directives can be seen only their children.
