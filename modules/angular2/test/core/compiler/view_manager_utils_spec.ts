@@ -23,7 +23,7 @@ import {Injector, bind} from 'angular2/di';
 import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {AppProtoView, AppView, AppProtoViewMergeMapping} from 'angular2/src/core/compiler/view';
+import {AppProtoView, AppView, AppProtoViewMergeInfo} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {
   DirectiveBinding,
@@ -329,7 +329,7 @@ function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
   }
   var hostElementIndicesByViewIndex = calcHostElementIndicesByViewIndex(res);
   if (type === ViewType.EMBEDDED || type === ViewType.HOST) {
-    res.mergeMapping = new AppProtoViewMergeMapping(
+    res.mergeMapping = new AppProtoViewMergeInfo(
         new RenderProtoViewMergeMapping(null, hostElementIndicesByViewIndex.length,
                                         mappedElementIndices, mappedElementIndices.length, [],
                                         hostElementIndicesByViewIndex, countNestedProtoViews(res)));

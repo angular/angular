@@ -372,6 +372,52 @@ export class RenderCompiler {
   }
 }
 
+export enum RenderTemplateCmdType {
+  EMBEDDED_TEMPLATE,
+  BEGIN_BASIC_ELEMENT,
+  END_BASIC_ELEMENT,
+  BEGIN_COMPONENT,
+  END_COMPONENT,
+  TEXT,
+  NG_CONTENT
+}
+
+export interface RenderTemplateCmd {
+  type: RenderTemplateCmdType;
+}
+
+export interface RenderNgContentCmd extends RenderTemplateCmd {
+  index: number;
+  ngContentIndex: number;
+}
+
+export interface RenderCommonBeginElementCmd extends RenderTemplateCmd {
+  attrs: string[];
+  isBound: boolean;
+  ngContentIndex: number;
+}
+
+export interface RenderBeginElementCmd extends RenderCommonBeginElementCmd {
+	name: string;
+}
+
+export interface RenderBeginComponentCmd extends RenderBeginElementCmd {
+  templateId:string;
+  nativeShadow: boolean;
+}
+
+export interface RenderTextCmd extends RenderTemplateCmd {
+  value: string;
+  isBound: boolean;
+  ngContentIndex: number;
+}
+
+export interface RenderEmbeddedTemplateCmd extends RenderCommonBeginElementCmd {
+  templateId:string;
+  isMerged: boolean;
+  content:RenderTemplateCmd[];
+}
+
 export class RenderViewWithFragments {
   constructor(public viewRef: RenderViewRef, public fragmentRefs: RenderFragmentRef[]) {}
 }
@@ -395,6 +441,12 @@ export interface RenderElementRef {
 }
 
 export class Renderer {
+  addComponentTemplate(templateId:string, commands:RenderTemplateCmd[], styles: string[]) {}
+  
+  createProtoView(cmds:RenderTemplateCmd[]):RenderProtoViewRef {
+    return null;
+  }
+  
   /**
    * Creates a root host view that includes the given element.
    * Note that the fragmentCount needs to be passed in so that we can create a result

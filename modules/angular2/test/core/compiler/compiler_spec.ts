@@ -732,7 +732,7 @@ class MergedRenderProtoViewRef extends RenderProtoViewRef {
 }
 
 function originalRenderProtoViewRefs(appProtoView: AppProtoView) {
-  return (<MergedRenderProtoViewRef>appProtoView.mergeMapping.renderProtoViewRef).originals;
+  return (<MergedRenderProtoViewRef>appProtoView.mergeInfo.renderProtoViewRef).originals;
 }
 
 function collectEmbeddedPvs(pv: AppProtoView, target: AppProtoView[] = null): AppProtoView[] {

@@ -15,6 +15,7 @@ import {
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
+import {PostCompiler} from './post_compiler';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../../profile/profile';
 
 /**
@@ -28,7 +29,7 @@ export class AppViewManager {
    * @private
    */
   constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
-              private _utils: AppViewManagerUtils, private _renderer: Renderer) {}
+              private _utils: AppViewManagerUtils, private _renderer: Renderer, private _postCompiler:PostCompiler) {}
 
   /**
    * Returns a {@link ViewContainerRef} at the {@link ElementRef} location.
@@ -143,13 +144,14 @@ export class AppViewManager {
                      injector: Injector): HostViewRef {
     var s = this._scope_createRootHostView();
     var hostProtoView: viewModule.AppProtoView = internalProtoView(hostProtoViewRef);
+    this._mergeTemplateIfNeeded(hostProtoView);
     var hostElementSelector = overrideSelector;
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
     }
     var renderViewWithFragments = this._renderer.createRootHostView(
-        hostProtoView.mergeMapping.renderProtoViewRef,
-        hostProtoView.mergeMapping.renderFragmentCount, hostElementSelector);
+        hostProtoView.render,
+        hostProtoView.mergeInfo.embeddedViewCount+1, hostElementSelector);
     var hostView = this._createMainView(hostProtoView, renderViewWithFragments);
 
     this._renderer.hydrateView(hostView.render);
@@ -187,6 +189,7 @@ export class AppViewManager {
     if (protoView.type !== ViewType.EMBEDDED) {
       throw new BaseException('This method can only be called with embedded ProtoViews!');
     }
+    this._mergeTemplateIfNeeded(protoView);
     return wtfLeave(s, this._createViewInContainer(viewContainerLocation, atIndex, protoView,
                                                    templateRef.elementRef, null));
   }
@@ -205,9 +208,14 @@ export class AppViewManager {
     if (protoView.type !== ViewType.HOST) {
       throw new BaseException('This method can only be called with host ProtoViews!');
     }
+    this._mergeTemplateIfNeeded(protoView);
     return wtfLeave(
         s, this._createViewInContainer(viewContainerLocation, atIndex, protoView,
                                        viewContainerLocation, imperativelyCreatedInjector));
+  }
+  
+  _mergeTemplateIfNeeded(mainProtoView: viewModule.AppProtoView) {
+    this._postCompiler.initializeProtoViewIfNeeded(mainProtoView);
   }
 
   /**
@@ -319,8 +327,8 @@ export class AppViewManager {
     var view = this._viewPool.getView(protoView);
     if (isBlank(view)) {
       view = this._createMainView(
-          protoView, this._renderer.createView(protoView.mergeMapping.renderProtoViewRef,
-                                               protoView.mergeMapping.renderFragmentCount));
+          protoView, this._renderer.createView(protoView.render,
+                                               protoView.mergeInfo.embeddedViewCount+1));
     }
     return view;
   }
@@ -360,7 +368,7 @@ export class AppViewManager {
     var viewContainers = view.viewContainers;
     var startViewOffset = view.viewOffset;
     var endViewOffset =
-        view.viewOffset + view.mainMergeMapping.nestedViewCountByViewIndex[view.viewOffset];
+        view.viewOffset + view.proto.mergeInfo.viewCount - 1;
     var elementOffset = view.elementOffset;
     for (var viewIdx = startViewOffset; viewIdx <= endViewOffset; viewIdx++) {
       var currView = view.views[viewIdx];

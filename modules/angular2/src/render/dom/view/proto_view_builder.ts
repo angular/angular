@@ -81,7 +81,6 @@ export class ProtoViewBuilder {
 
   build(schemaRegistry: ElementSchemaRegistry, templateCloner: TemplateCloner): ProtoViewDto {
     var domElementBinders = [];
-
     var apiElementBinders = [];
     var textNodeExpressions = [];
     var rootTextNodeIndices = [];
@@ -131,20 +130,10 @@ export class ProtoViewBuilder {
         eventBindings: ebb.eventBindings,
         readAttributes: ebb.readAttributes
       }));
-      domElementBinders.push(new DomElementBinder({
-        textNodeIndices: textNodeIndices,
-        hasNestedProtoView: isPresent(nestedProtoView) || isPresent(ebb.componentId),
-        hasNativeShadowRoot: false,
-        eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
-        localEvents: ebb.eventBuilder.buildLocalEvents(),
-        globalEvents: ebb.eventBuilder.buildGlobalEvents()
-      }));
     });
     var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
     return new ProtoViewDto({
-      render: new DomProtoViewRef(DomProtoView.create(
-          templateCloner, this.type, this.rootElement, this.viewEncapsulation, [rootNodeCount],
-          rootTextNodeIndices, domElementBinders, this.hostAttributes)),
+      render: null,
       type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings,

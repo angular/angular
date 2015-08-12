@@ -11,6 +11,8 @@ export 'package:angular2/src/core/compiler/component_url_mapper.dart'
 export 'package:angular2/src/core/compiler/directive_resolver.dart'
     show DirectiveResolver;
 export 'package:angular2/src/core/compiler/compiler.dart' show Compiler;
+export 'package:angular2/src/core/compiler/compiler_cache.dart' show CompilerCache;
+export 'package:angular2/src/core/compiler/template_registry.dart' show TemplateRegistry;
 
 export 'package:angular2/src/core/compiler/view_manager.dart' show AppViewManager;
 export 'package:angular2/src/core/compiler/query_list.dart' show QueryList;

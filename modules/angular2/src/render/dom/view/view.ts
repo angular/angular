@@ -23,8 +23,8 @@ export class DomView {
   eventDispatcher: RenderEventDispatcher = null;
   eventHandlerRemovers: List<Function> = [];
 
-  constructor(public proto: DomProtoView, public boundTextNodes: List<Node>,
-              public boundElements: Element[]) {}
+  constructor(public proto: DomProtoView, public boundTextNodes: Node[],
+              public boundElements: Element[], public nativeShadowRoots:Node[]) {}
 
   setElementProperty(elementIndex: number, propertyName: string, value: any) {
     DOM.setProperty(this.boundElements[elementIndex], propertyName, value);

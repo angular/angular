@@ -35,39 +35,7 @@ import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 
 export {DebugContext} from 'angular2/src/change_detection/interfaces';
 
-export class AppProtoViewMergeMapping {
-  renderProtoViewRef: renderApi.RenderProtoViewRef;
-  renderFragmentCount: number;
-  renderElementIndices: number[];
-  renderInverseElementIndices: number[];
-  renderTextIndices: number[];
-  nestedViewIndicesByElementIndex: number[];
-  hostElementIndicesByViewIndex: number[];
-  nestedViewCountByViewIndex: number[];
-  constructor(renderProtoViewMergeMapping: renderApi.RenderProtoViewMergeMapping) {
-    this.renderProtoViewRef = renderProtoViewMergeMapping.mergedProtoViewRef;
-    this.renderFragmentCount = renderProtoViewMergeMapping.fragmentCount;
-    this.renderElementIndices = renderProtoViewMergeMapping.mappedElementIndices;
-    this.renderInverseElementIndices = inverseIndexMapping(
-        this.renderElementIndices, renderProtoViewMergeMapping.mappedElementCount);
-    this.renderTextIndices = renderProtoViewMergeMapping.mappedTextIndices;
-    this.hostElementIndicesByViewIndex = renderProtoViewMergeMapping.hostElementIndicesByViewIndex;
-    this.nestedViewIndicesByElementIndex =
-        inverseIndexMapping(this.hostElementIndicesByViewIndex, this.renderElementIndices.length);
-    this.nestedViewCountByViewIndex = renderProtoViewMergeMapping.nestedViewCountByViewIndex;
-  }
-}
-
-function inverseIndexMapping(input: number[], resultLength: number): number[] {
-  var result = ListWrapper.createGrowableSize(resultLength);
-  for (var i = 0; i < input.length; i++) {
-    var value = input[i];
-    if (isPresent(value)) {
-      result[input[i]] = i;
-    }
-  }
-  return result;
-}
+import {TemplateCmd} from './template_commands';
 
 export class AppViewContainer {
   // The order in this list matches the DOM order.
@@ -105,6 +73,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
   ref: ViewRef;
   changeDetector: ChangeDetector = null;
+  hostElementInjector: ElementInjector = null;
 
 
   /**
@@ -122,7 +91,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   locals: Locals;
 
   constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
-              public mainMergeMapping: AppProtoViewMergeMapping, public viewOffset: number,
+              public viewOffset: number,
               public elementOffset: number, public textOffset: number,
               protoLocals: Map<string, any>, public render: renderApi.RenderViewRef,
               public renderFragment: renderApi.RenderFragmentRef) {
@@ -146,10 +115,10 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
   setLocal(contextName: string, value: any): void {
     if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
-    if (!this.proto.variableBindings.has(contextName)) {
+    if (!this.proto.templateVariableBindings.has(contextName)) {
       return;
     }
-    var templateName = this.proto.variableBindings.get(contextName);
+    var templateName = this.proto.templateVariableBindings.get(contextName);
     this.locals.set(templateName, value);
   }
 
@@ -174,7 +143,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   notifyOnBinding(b: BindingRecord, currentValue: any): void {
     if (b.isTextNode()) {
       this.renderer.setText(
-          this.render, this.mainMergeMapping.renderTextIndices[b.elementIndex + this.textOffset],
+          this.render, b.elementIndex + this.textOffset,
           currentValue);
     } else {
       var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
@@ -207,13 +176,12 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   getNestedView(boundElementIndex: number): AppView {
-    var viewIndex = this.mainMergeMapping.nestedViewIndicesByElementIndex[boundElementIndex];
-    return isPresent(viewIndex) ? this.views[viewIndex] : null;
+    var eli = this.elementInjectors[boundElementIndex];
+    return eli.getNestedView();
   }
 
   getHostElement(): ElementRef {
-    var boundElementIndex = this.mainMergeMapping.hostElementIndicesByViewIndex[this.viewOffset];
-    return isPresent(boundElementIndex) ? this.elementRefs[boundElementIndex] : null;
+    return isPresent(this.hostElementInjector) ? this.hostElementInjector.getElementRef() : null;
   }
 
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
@@ -250,10 +218,10 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   // implementation of RenderEventDispatcher#dispatchRenderEvent
-  dispatchRenderEvent(renderElementIndex: number, eventName: string,
+  dispatchRenderEvent(boundElementIndex: number, eventName: string,
                       locals: Map<string, any>): boolean {
     var elementRef =
-        this.elementRefs[this.mainMergeMapping.renderInverseElementIndices[renderElementIndex]];
+        this.elementRefs[boundElementIndex];
     var view = internalView(elementRef.parentView);
     return view.dispatchEvent(elementRef.boundElementIndex, eventName, locals);
   }
@@ -305,36 +273,55 @@ class EventEvaluationError extends BaseException {
   }
 }
 
+export class AppProtoViewMergeInfo {
+  constructor(public embeddedViewCount: number,
+    public elementCount: number,
+    public viewCount: number) {}
+}
 
 /**
  *
  */
 export class AppProtoView {
-  elementBinders: List<ElementBinder> = [];
-  protoLocals: Map<string, any> = new Map();
-  mergeMapping: AppProtoViewMergeMapping;
   ref: ProtoViewRef;
-
-  constructor(public type: renderApi.ViewType, public isEmbeddedFragment: boolean,
-              public render: renderApi.RenderProtoViewRef,
+  protoLocals: Map<string, any>;
+  
+  elementBinders: List<ElementBinder> = null;
+  mergeInfo: AppProtoViewMergeInfo = null;
+  variableLocations:Map<string, number> = null;
+  textBindingCount = null;
+  render: renderApi.RenderProtoViewRef = null;
+  
+  constructor(public id: string, public templateCmds: TemplateCmd[], public type: renderApi.ViewType,
+              public isMergable: boolean,
               public protoChangeDetector: ProtoChangeDetector,
-              public variableBindings: Map<string, string>,
-              public variableLocations: Map<string, number>, public textBindingCount: number,
+              public templateVariableBindings: Map<string, string>,
               public pipes: ProtoPipes) {
     this.ref = new ProtoViewRef(this);
-    if (isPresent(variableBindings)) {
-      MapWrapper.forEach(variableBindings,
+  }
+  
+  init(render: renderApi.RenderProtoViewRef, elementBinders:ElementBinder[], textBindingCount: number, mergeInfo: AppProtoViewMergeInfo, variableLocations:Map<string, number>) {
+    this.render = render;
+    this.elementBinders = elementBinders;
+    this.textBindingCount = textBindingCount;
+    this.mergeInfo = mergeInfo; 
+    this.variableLocations = variableLocations;
+    this.protoLocals = new Map();
+    if (isPresent(this.templateVariableBindings)) {
+      MapWrapper.forEach(this.templateVariableBindings,
+                         (templateName, _) => { this.protoLocals.set(templateName, null); });
+    }
+    if (isPresent(variableLocations)) {
+      // The view's locals needs to have a full set of variable names at construction time
+      // in order to prevent new variables from being set later in the lifecycle. Since we don't want
+      // to actually create variable bindings for the $implicit bindings, add to the
+      // protoLocals manually.
+      MapWrapper.forEach(variableLocations,
                          (templateName, _) => { this.protoLocals.set(templateName, null); });
     }
   }
-
-  bindElement(parent: ElementBinder, distanceToParent: int,
-              protoElementInjector: ProtoElementInjector,
-              componentDirective: DirectiveBinding = null): ElementBinder {
-    var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,
-                                     protoElementInjector, componentDirective);
-
-    this.elementBinders.push(elBinder);
-    return elBinder;
+  
+  isInitialized() {
+    return isPresent(this.elementBinders);
   }
 }

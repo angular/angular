@@ -22,7 +22,7 @@ import {
   AppProtoView,
   AppView,
   AppViewContainer,
-  AppProtoViewMergeMapping
+  AppProtoViewMergeInfo
 } from 'angular2/src/core/compiler/view';
 import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -133,8 +133,8 @@ export function main() {
         var rootView =
             internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
         expect(renderer.spy('createRootHostView'))
-            .toHaveBeenCalledWith(hostProtoView.mergeMapping.renderProtoViewRef,
-                                  hostProtoView.mergeMapping.renderFragmentCount, 'someComponent');
+            .toHaveBeenCalledWith(hostProtoView.mergeInfo.renderProtoViewRef,
+                                  hostProtoView.mergeInfo.embeddedViewCount, 'someComponent');
         expect(rootView.render).toBe(createdRenderViews[0].viewRef);
         expect(rootView.renderFragment).toBe(createdRenderViews[0].fragmentRefs[0]);
       });
@@ -143,8 +143,8 @@ export function main() {
         var selector = 'someOtherSelector';
         internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), selector, null));
         expect(renderer.spy('createRootHostView'))
-            .toHaveBeenCalledWith(hostProtoView.mergeMapping.renderProtoViewRef,
-                                  hostProtoView.mergeMapping.renderFragmentCount, selector);
+            .toHaveBeenCalledWith(hostProtoView.mergeInfo.renderProtoViewRef,
+                                  hostProtoView.mergeInfo.embeddedViewCount, selector);
       });
 
       it('should set the event dispatcher', () => {
@@ -259,8 +259,8 @@ export function main() {
             expect(childView).not.toBe(firstChildView);
             expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(childView);
             expect(renderer.spy('createView'))
-                .toHaveBeenCalledWith(childProtoView.mergeMapping.renderProtoViewRef,
-                                      childProtoView.mergeMapping.renderFragmentCount);
+                .toHaveBeenCalledWith(childProtoView.mergeInfo.renderProtoViewRef,
+                                      childProtoView.mergeInfo.embeddedViewCount);
             expect(childView.render).toBe(createdRenderViews[1].viewRef);
             expect(childView.renderFragment).toBe(createdRenderViews[1].fragmentRefs[0]);
           });
@@ -319,7 +319,7 @@ export function main() {
             expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(newHostView);
             expect(renderer.spy('createView'))
                 .toHaveBeenCalledWith(newHostPv.mergeMapping.renderProtoViewRef,
-                                      newHostPv.mergeMapping.renderFragmentCount);
+                                      newHostPv.mergeMapping.fragmentCount);
           });
 
         });

@@ -80,7 +80,7 @@ export function main() {
         var renderPv = createRenderProtoView([], null, varBindings);
         var appPvs =
             protoViewFactory.createAppProtoViews(bindDirective(MainComponent), renderPv, [], []);
-        expect(appPvs[0].variableBindings.get('a')).toEqual('b');
+        expect(appPvs[0].templateVariableBindings.get('a')).toEqual('b');
         expect(appPvs.length).toBe(1);
       });
     });

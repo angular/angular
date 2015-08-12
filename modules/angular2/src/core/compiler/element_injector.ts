@@ -272,6 +272,7 @@ export class DirectiveBinding extends ResolvedBinding {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
+  nestedView: viewModule.AppView = null;
   constructor(public viewManager: avmModule.AppViewManager, public view: viewModule.AppView,
               public elementRef: ElementRef, public templateRef: TemplateRef) {}
 }
@@ -585,6 +586,14 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
   }
+  
+  getNestedView(): viewModule.AppView {
+    return this._preBuiltObjects.nestedView;
+  }
+
+  getView(): viewModule.AppView {
+    return this._preBuiltObjects.view;
+  }
 
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
@@ -609,8 +618,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
         // We provide the component's view change detector to components and
         // the surrounding component's change detector to directives.
         if (dirBin.metadata.type === RenderDirectiveMetadata.COMPONENT_TYPE) {
-          var componentView = this._preBuiltObjects.view.getNestedView(
-              this._preBuiltObjects.elementRef.boundElementIndex);
+          var componentView = this._preBuiltObjects.nestedView;
           return componentView.changeDetector.ref;
         } else {
           return this._preBuiltObjects.view.changeDetector.ref;
@@ -638,8 +646,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
     } else if (binding instanceof PipeBinding) {
       if (dep.key.id === StaticKeys.instance().changeDetectorRefId) {
-        var componentView = this._preBuiltObjects.view.getNestedView(
-            this._preBuiltObjects.elementRef.boundElementIndex);
+        var componentView = this._preBuiltObjects.nestedView;
         return componentView.changeDetector.ref;
       }
     }
@@ -859,11 +866,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   getHost(): ElementInjector { return this._host; }
 
-  getBoundElementIndex(): number { return this._proto.index; }
-
   getRootViewInjectors(): ElementInjector[] {
-    var view = this._preBuiltObjects.view;
-    var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
+    var nestedView = this._preBuiltObjects.nestedView;
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
 }

@@ -98,7 +98,7 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
     if (StringMapWrapper.contains(this._protoChangeDetectorFactories, id)) {
       return StringMapWrapper.get(this._protoChangeDetectorFactories, id)(definition);
     }
-    return this._dynamicChangeDetection.createProtoChangeDetector(definition);
+    return this._dynamicChangeDetection.createProtoChangeDetector(new ChangeDetectorDefinition(definition.id, null, [], [], [], [], false));
   }
 }
 

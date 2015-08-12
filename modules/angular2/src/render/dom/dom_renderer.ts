@@ -30,59 +30,76 @@ import {
   RenderViewRef,
   RenderElementRef,
   RenderFragmentRef,
-  RenderViewWithFragments
+  RenderViewWithFragments,
+  RenderTemplateCmd,
+  RenderTemplateCmdType,
+  RenderBeginElementCmd,
+  RenderTextCmd,
+  RenderNgContentCmd,
+  RenderBeginComponentCmd
 } from '../api';
 
-import {TemplateCloner} from './template_cloner';
+import {RenderViewBuilder, ComponentTemplateResolver} from '../view_builder';
 
 import {DOCUMENT, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
-
 @Injectable()
-export class DomRenderer extends Renderer {
+export class DomRenderer extends Renderer implements ComponentTemplateResolver {
   _document;
   _reflectPropertiesAsAttributes: boolean;
+  _componentTemplates:Map<string, RenderTemplateCmd[]> = new Map();
 
   constructor(private _eventManager: EventManager,
               private _domSharedStylesHost: DomSharedStylesHost,
-              private _templateCloner: TemplateCloner, @Inject(DOCUMENT) document,
+              @Inject(DOCUMENT) document,
               @Inject(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES) reflectPropertiesAsAttributes:
                   boolean) {
     super();
     this._reflectPropertiesAsAttributes = reflectPropertiesAsAttributes;
     this._document = document;
   }
+  
+  resolveComponentTemplate(templateId:string):RenderTemplateCmd[] {
+    return this._componentTemplates.get(templateId);    
+  }
+
+  addComponentTemplate(templateId:string, commands:RenderTemplateCmd[], styles: string[]) {
+    this._componentTemplates.set(templateId, commands);
+    this._domSharedStylesHost.addStyles(styles);
+  }
+  
+  createProtoView(cmds:RenderTemplateCmd[]):RenderProtoViewRef {
+    var s = this._scope_createRootHostView();    
+    return wtfLeave(s, new DomProtoViewRef(cmds));
+  }
 
   _scope_createRootHostView: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
     var s = this._scope_createRootHostView();
-    var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
+    var cmds = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
       wtfLeave(s);
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return wtfLeave(s, this._createView(hostProtoView, element));
+    return wtfLeave(s, this._createView(cmds, element));
   }
 
   _scope_createView = wtfCreateScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
     var s = this._scope_createView();
-    var protoView = resolveInternalDomProtoView(protoViewRef);
-    return wtfLeave(s, this._createView(protoView, null));
+    var cmds = resolveInternalDomProtoView(protoViewRef);
+    return wtfLeave(s, this._createView(cmds, null));
   }
 
   destroyView(viewRef: RenderViewRef) {
     var view = resolveInternalDomView(viewRef);
-    var elementBinders = view.proto.elementBinders;
-    for (var i = 0; i < elementBinders.length; i++) {
-      var binder = elementBinders[i];
-      if (binder.hasNativeShadowRoot) {
-        this._domSharedStylesHost.removeHost(DOM.getShadowRoot(view.boundElements[i]));
-      }
+    for (var i=0; i<view.nativeShadowRoots.length; i++) {
+      var sr = view.nativeShadowRoots[i];
+      this._domSharedStylesHost.removeHost(sr);
     }
   }
 
@@ -132,19 +149,20 @@ export class DomRenderer extends Renderer {
     view.hydrated = true;
 
     // add global events
-    view.eventHandlerRemovers = [];
-    var binders = view.proto.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      if (isPresent(binder.globalEvents)) {
-        for (var i = 0; i < binder.globalEvents.length; i++) {
-          var globalEvent = binder.globalEvents[i];
-          var remover = this._createGlobalEventListener(view, binderIdx, globalEvent.name,
-                                                        globalEvent.target, globalEvent.fullName);
-          view.eventHandlerRemovers.push(remover);
-        }
-      }
-    }
+    // TODO
+    // view.eventHandlerRemovers = [];
+    // var binders = view.proto.elementBinders;
+    // for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
+    //   var binder = binders[binderIdx];
+    //   if (isPresent(binder.globalEvents)) {
+    //     for (var i = 0; i < binder.globalEvents.length; i++) {
+    //       var globalEvent = binder.globalEvents[i];
+    //       var remover = this._createGlobalEventListener(view, binderIdx, globalEvent.name,
+    //                                                     globalEvent.target, globalEvent.fullName);
+    //       view.eventHandlerRemovers.push(remover);
+    //     }
+    //   }
+    // }
   }
 
   dehydrateView(viewRef: RenderViewRef) {
@@ -221,52 +239,19 @@ export class DomRenderer extends Renderer {
     wtfLeave(s);
   }
 
-  _createView(protoView: DomProtoView, inplaceElement: HTMLElement): RenderViewWithFragments {
-    var clonedProtoView = cloneAndQueryProtoView(this._templateCloner, protoView, true);
-
-    var boundElements = clonedProtoView.boundElements;
-
-    // adopt inplaceElement
-    if (isPresent(inplaceElement)) {
-      if (protoView.fragmentsRootNodeCount[0] !== 1) {
-        throw new BaseException('Root proto views can only contain one element!');
-      }
-      DOM.clearNodes(inplaceElement);
-      var tempRoot = clonedProtoView.fragments[0][0];
-      moveChildNodes(tempRoot, inplaceElement);
-      if (boundElements.length > 0 && boundElements[0] === tempRoot) {
-        boundElements[0] = inplaceElement;
-      }
-      clonedProtoView.fragments[0][0] = inplaceElement;
+  _createView(cmds: RenderTemplateCmd[], inplaceElement: HTMLElement): RenderViewWithFragments {
+    var builder = new DomViewBuilder(this);
+    var renderView = builder.build(cmds, inplaceElement);
+    var embeddedFragments = [];
+    for (var i=0; i<renderView.fragments.length; i++) {
+      embeddedFragments.push(new DomFragmentRef(renderView.fragments[i]));
     }
-
-    var view = new DomView(protoView, clonedProtoView.boundTextNodes, boundElements);
-
-    var binders = protoView.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      var element = boundElements[binderIdx];
-
-      // native shadow DOM
-      if (binder.hasNativeShadowRoot) {
-        var shadowRootWrapper = DOM.firstChild(element);
-        var shadowRoot = DOM.createShadowRoot(element);
-        this._domSharedStylesHost.addHost(shadowRoot);
-        moveChildNodes(shadowRootWrapper, shadowRoot);
-        DOM.remove(shadowRootWrapper);
-      }
-
-      // events
-      if (isPresent(binder.eventLocals) && isPresent(binder.localEvents)) {
-        for (var i = 0; i < binder.localEvents.length; i++) {
-          this._createEventListener(view, element, binderIdx, binder.localEvents[i].name,
-                                    binder.eventLocals);
-        }
-      }
+    for (var i=0; i<renderView.nativeShadowRoots.length; i++) {
+      var sr = renderView.nativeShadowRoots[i];
+      this._domSharedStylesHost.addHost(sr);
     }
-
-    return new RenderViewWithFragments(
-        new DomViewRef(view), clonedProtoView.fragments.map(nodes => new DomFragmentRef(nodes)));
+    return new RenderViewWithFragments(new DomViewRef(new DomView(null, renderView.boundTextNodes, <Element[]>renderView.boundElements, renderView.nativeShadowRoots)),
+      embeddedFragments);
   }
 
   _createEventListener(view, element, elementIndex, eventName, eventLocals) {
@@ -277,6 +262,45 @@ export class DomRenderer extends Renderer {
   _createGlobalEventListener(view, elementIndex, eventName, eventTarget, fullName): Function {
     return this._eventManager.addGlobalEventListener(
         eventTarget, eventName, (event) => { view.dispatchEvent(elementIndex, fullName, event); });
+  }
+}
+
+class DomViewBuilder extends RenderViewBuilder<Node> {
+  constructor(templateResolver:ComponentTemplateResolver) {
+    super(templateResolver);
+  }
+  protected createElement(name:string, attrs:string[]):Node {
+    var el = DOM.createElement(name);
+    for (var attrIdx = 0; attrIdx<attrs.length; attrIdx+=2) {
+      DOM.setAttribute(el, attrs[attrIdx], attrs[attrIdx+1]);
+    }
+    return el;    
+  }
+  
+  protected createTemplateAnchor(attrs:string[]):Node {
+    var el = DOM.createElement('template'); 
+    for (var attrIdx = 0; attrIdx<attrs.length; attrIdx+=2) {
+      DOM.setAttribute(el, attrs[attrIdx], attrs[attrIdx+1]);
+    }
+    return el;
+  }
+  
+  protected createShadowRoot(host:Node):Node {
+    return DOM.createShadowRoot(host);
+  }
+  
+  protected mergeElement(existing:Node, attrs:string[]) {
+    for (var attrIdx = 0; attrIdx<attrs.length; attrIdx+=2) {
+      DOM.setAttribute(existing, attrs[attrIdx], attrs[attrIdx+1]);
+    }
+  }
+  
+  protected createText(value:string): Node {
+    return DOM.createTextNode(value);
+  }
+  
+  protected appendChild(parent:Node, child:Node) {
+    DOM.appendChild(parent, child);
   }
 }
 
