@@ -3,7 +3,12 @@ import {isBlank, isPresent, global} from 'angular2/src/facade/lang';
 import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
-var _attrToPropMap = {'innerHtml': 'innerHTML', 'readonly': 'readOnly', 'tabindex': 'tabIndex'};
+var _attrToPropMap = {
+  'class': 'className',
+  'innerHtml': 'innerHTML',
+  'readonly': 'readOnly',
+  'tabindex': 'tabIndex'
+};
 
 const DOM_KEY_LOCATION_NUMPAD = 3;
 

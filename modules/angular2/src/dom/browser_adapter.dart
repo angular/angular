@@ -157,6 +157,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   @override
   Map<String, String> get attrToPropMap => const <String, String>{
+        'class': 'className',
         'innerHtml': 'innerHTML',
         'readonly': 'readOnly',
         'tabindex': 'tabIndex',
