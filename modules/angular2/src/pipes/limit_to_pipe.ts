@@ -10,7 +10,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {Math} from 'angular2/src/facade/math';
 import {Injectable} from 'angular2/di';
 
-import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 import {Pipe} from 'angular2/src/core/annotations/decorators';
@@ -78,6 +78,4 @@ export class LimitToPipe implements PipeTransform {
     }
     return ListWrapper.slice(value, left, right);
   }
-
-  onDestroy(): void {}
 }

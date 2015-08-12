@@ -1,7 +1,7 @@
 import {isString, StringWrapper, CONST, isBlank} from 'angular2/src/facade/lang';
 import {Injectable} from 'angular2/di';
 
-import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 import {Pipe} from 'angular2/src/core/annotations/decorators';
@@ -29,7 +29,7 @@ import {Pipe} from 'angular2/src/core/annotations/decorators';
 @CONST()
 @Pipe({name: 'uppercase'})
 @Injectable()
-export class UpperCasePipe extends BasePipeTransform {
+export class UpperCasePipe implements PipeTransform {
   transform(value: string, args: List<any> = null): string {
     if (isBlank(value)) return value;
     if (!isString(value)) {

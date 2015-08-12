@@ -13,7 +13,7 @@ import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
 import {Injectable} from 'angular2/di';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 import {Pipe} from 'angular2/src/core/annotations/decorators';
@@ -23,7 +23,7 @@ var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 
 @CONST()
 @Injectable()
-export class NumberPipe extends BasePipeTransform {
+export class NumberPipe {
   static _format(value: number, style: NumberFormatStyle, digits: string, currency: string = null,
                  currencyAsSymbol: boolean = false): string {
     if (isBlank(value)) return null;
@@ -84,7 +84,7 @@ export class NumberPipe extends BasePipeTransform {
 @CONST()
 @Pipe({name: 'number'})
 @Injectable()
-export class DecimalPipe extends NumberPipe {
+export class DecimalPipe extends NumberPipe implements PipeTransform {
   transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
     return NumberPipe._format(value, NumberFormatStyle.DECIMAL, digits);
@@ -103,7 +103,7 @@ export class DecimalPipe extends NumberPipe {
 @CONST()
 @Pipe({name: 'percent'})
 @Injectable()
-export class PercentPipe extends NumberPipe {
+export class PercentPipe extends NumberPipe implements PipeTransform {
   transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
     return NumberPipe._format(value, NumberFormatStyle.PERCENT, digits);
@@ -126,7 +126,7 @@ export class PercentPipe extends NumberPipe {
 @CONST()
 @Pipe({name: 'currency'})
 @Injectable()
-export class CurrencyPipe extends NumberPipe {
+export class CurrencyPipe extends NumberPipe implements PipeTransform {
   transform(value: any, args: any[]): string {
     var currencyCode: string = isPresent(args) && args.length > 0 ? args[0] : 'USD';
     var symbolDisplay: boolean = isPresent(args) && args.length > 1 ? args[1] : false;

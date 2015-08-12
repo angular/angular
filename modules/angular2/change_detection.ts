@@ -21,11 +21,11 @@ export {
 
   WrappedValue,
   PipeTransform,
+  PipeOnDestroy,
   IterableDiffers,
   IterableDiffer,
   IterableDifferFactory,
   KeyValueDiffers,
   KeyValueDiffer,
-  KeyValueDifferFactory,
-  BasePipeTransform
+  KeyValueDifferFactory
 } from 'angular2/src/change_detection/change_detection';
