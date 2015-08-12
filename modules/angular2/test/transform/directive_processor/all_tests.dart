@@ -12,6 +12,7 @@ import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 import 'package:path/path.dart' as path;
+import 'package:source_span/source_span.dart';
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();

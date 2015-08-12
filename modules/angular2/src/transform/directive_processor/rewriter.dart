@@ -16,6 +16,7 @@ import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
+import 'package:source_span/source_span.dart';
 
 import 'visitors.dart';
 
@@ -89,19 +90,36 @@ InterfaceMatcher _interfaceMatcher = new InterfaceMatcher();
 /// the contents of lib1.dart followed by the contents of lib2.dart.
 Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
     String code, _NgDepsDirectivesVisitor visitor) {
-  if (visitor._parts.isEmpty) return new Future<String>.value(code);
+  if (visitor.parts.isEmpty) return new Future<String>.value(code);
 
-  var asyncWriter = new AsyncStringWriter(code);
+  var partsStart = visitor.parts.first.offset,
+      partsEnd = visitor.parts.last.end;
+
+  var asyncWriter = new AsyncStringWriter(code.substring(0, partsStart));
   visitor.parts.forEach((partDirective) {
     var uri = stringLiteralToString(partDirective.uri);
     var partAssetId = uriToAssetId(assetId, uri, logger, null /* span */,
         errorOnAbsolute: false);
     asyncWriter.asyncPrint(reader.readAsString(partAssetId).then((partCode) {
+      if (partCode == null || partCode.isEmpty) {
+        logger.warning('Empty part at "${partDirective.uri}. Ignoring.',
+            assetId: partAssetId);
+        return '';
+      }
       // Remove any directives -- we just want declarations.
       var parsedDirectives = parseDirectives(partCode, name: uri).directives;
       return partCode.substring(parsedDirectives.last.end);
+    }).catchError((err, stackTrace) {
+      logger.warning(
+          'Failed while reading part at ${partDirective.uri}. Ignoring.\n'
+          'Error: $err\n'
+          'Stack Trace: $stackTrace',
+          asset: partAssetId,
+          span: new SourceFile(code, url: path.basename(assetId.path))
+              .span(partDirective.offset, partDirective.end));
     }));
   });
+  asyncWriter.print(code.substring(partsEnd));
 
   return asyncWriter.asyncToString();
 }
@@ -136,6 +154,8 @@ class _NgDepsDirectivesVisitor extends Object with SimpleAstVisitor<Object> {
 
   bool get usesNonLangLibs => _usesNonLangLibs;
   bool get isPart => _isPart;
+
+  /// In the order encountered in the source.
   Iterable<PartDirective> get parts => _parts;
 
   @override

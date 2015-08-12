@@ -11,11 +11,11 @@ void initReflector() {
   _visited = true;
   _ngRef.reflector
     ..registerType(
-        MainComponent,
-        new _ngRef.ReflectionInfo(const [const Component(selector: '[main]')],
-            const [], () => new MainComponent()))
-    ..registerType(
         PartComponent,
         new _ngRef.ReflectionInfo(const [const Component(selector: '[part]')],
-            const [], () => new PartComponent()));
+            const [], () => new PartComponent()))
+    ..registerType(
+        MainComponent,
+        new _ngRef.ReflectionInfo(const [const Component(selector: '[main]')],
+            const [], () => new MainComponent()));
 }

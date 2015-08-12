@@ -11,15 +11,15 @@ void initReflector() {
   _visited = true;
   _ngRef.reflector
     ..registerType(
-        MainComponent,
-        new _ngRef.ReflectionInfo(const [const Component(selector: '[main]')],
-            const [], () => new MainComponent()))
-    ..registerType(
         Part1Component,
         new _ngRef.ReflectionInfo(const [const Component(selector: '[part1]')],
             const [], () => new Part1Component()))
     ..registerType(
         Part2Component,
         new _ngRef.ReflectionInfo(const [const Component(selector: '[part2]')],
-            const [], () => new Part2Component()));
+            const [], () => new Part2Component()))
+    ..registerType(
+        MainComponent,
+        new _ngRef.ReflectionInfo(const [const Component(selector: '[main]')],
+            const [], () => new MainComponent()));
 }
