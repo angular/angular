@@ -1,7 +1,7 @@
 import {isBlank, isPresent, Json, CONST} from 'angular2/src/facade/lang';
 import {Injectable} from 'angular2/di';
 
-import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 
 import {Pipe} from 'angular2/src/core/annotations/decorators';
 
@@ -31,6 +31,6 @@ import {Pipe} from 'angular2/src/core/annotations/decorators';
 @CONST()
 @Pipe({name: 'json'})
 @Injectable()
-export class JsonPipe extends BasePipeTransform {
+export class JsonPipe implements PipeTransform {
   transform(value: any, args: List<any> = null): string { return Json.stringify(value); }
 }

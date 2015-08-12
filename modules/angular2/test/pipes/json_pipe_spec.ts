@@ -73,11 +73,5 @@ export function main() {
       });
 
     });
-
-    describe("onDestroy", () => {
-      it("should do nothing when no latest value",
-         () => { expect(() => pipe.onDestroy()).not.toThrow(); });
-    });
-
   });
 }

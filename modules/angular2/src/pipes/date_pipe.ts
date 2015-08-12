@@ -12,7 +12,7 @@ import {DateFormatter} from 'angular2/src/facade/intl';
 import {Injectable} from 'angular2/di';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
-import {PipeTransform, WrappedValue, BasePipeTransform} from 'angular2/change_detection';
+import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 import {Pipe} from 'angular2/src/core/annotations/decorators';
@@ -77,7 +77,7 @@ var defaultLocale: string = 'en-US';
 @CONST()
 @Pipe({name: 'date'})
 @Injectable()
-export class DatePipe extends BasePipeTransform {
+export class DatePipe implements PipeTransform {
   static _ALIASES = {
     'medium': 'yMMMdjms',
     'short': 'yMdjm',
