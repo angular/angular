@@ -30,6 +30,7 @@ import {
   DirectiveRecord,
   DirectiveIndex,
   PipeTransform,
+  PipeOnDestroy,
   CHECK_ALWAYS,
   CHECK_ONCE,
   CHECKED,
@@ -768,7 +769,7 @@ export function main() {
           expect(cd.hydrated()).toBe(true);
         });
 
-        it('should destroy all active pipes during dehyration', () => {
+        it('should destroy all active pipes implementing onDestroy during dehyration', () => {
           var pipe = new PipeWithOnDestroy();
           var registry = new FakePipes('pipe', () => pipe);
           var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
@@ -777,6 +778,15 @@ export function main() {
           cd.dehydrate();
 
           expect(pipe.destroyCalled).toBe(true);
+        });
+
+        it('should not call onDestroy all pipes that do not implement onDestroy', () => {
+          var pipe = new CountingPipe();
+          var registry = new FakePipes('pipe', () => pipe);
+          var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
+
+          cd.detectChanges();
+          expect(() => cd.dehydrate()).not.toThrow();
         });
 
         it('should throw when detectChanges is called on a dehydrated detector', () => {
@@ -844,11 +854,10 @@ export function main() {
 
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  onDestroy() {}
   transform(value, args = null) { return `${value} state:${this.state ++}`; }
 }
 
-class PipeWithOnDestroy implements PipeTransform {
+class PipeWithOnDestroy implements PipeTransform, PipeOnDestroy {
   destroyCalled: boolean = false;
   onDestroy() { this.destroyCalled = true; }
 
@@ -856,12 +865,10 @@ class PipeWithOnDestroy implements PipeTransform {
 }
 
 class IdentityPipe implements PipeTransform {
-  onDestroy() {}
   transform(value, args = null) { return value; }
 }
 
 class WrappedPipe implements PipeTransform {
-  onDestroy() {}
   transform(value, args = null) { return WrappedValue.wrap(value); }
 }
 
@@ -872,7 +879,6 @@ class MultiArgPipe implements PipeTransform {
     var arg3 = args.length > 2 ? args[2] : 'default';
     return `${value} ${arg1} ${arg2} ${arg3}`;
   }
-  onDestroy(): void {}
 }
 
 class FakePipes implements Pipes {
