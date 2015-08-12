@@ -355,7 +355,7 @@ export function main() {
 
                  view.detectChanges();
 
-                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["self", "1", "2", "3"]);
+                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "2", "3"]);
 
                  async.done();
                });
@@ -407,26 +407,29 @@ export function main() {
                });
          }));
 
-      /* TODO(rado): fix and reenable.
 
       it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
-        inject([TestComponentBuilder, AsyncTestCompleter], (tcb:TestComponentBuilder, async) => {
-          var template = '<needs-view-query-order #q text="self"></needs-view-query-order>';
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-query-order #q></needs-view-query-order>';
 
-          tcb.overrideTemplate(MyComp, template)
-            .createAsync(MyComp)
-            .then((view) => {
-              var q:NeedsViewQueryOrder = view.componentViewChildren[0].getLocal("q");
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsViewQueryOrder = view.componentViewChildren[0].getLocal("q");
 
-              view.detectChanges();
+                 view.detectChanges();
 
-              expect(q.query.length).toBe(4);
-              expect(q.query.first.text).toEqual("1");
-              expect(q.query.first.text).toEqual("4");
+                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "2", "3", "4"]);
 
-              async.done();
-            });
-        }));*/
+                 q.list = ["-3", "2"];
+                 view.detectChanges();
+
+
+                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "-3", "2", "4"]);
+
+                 async.done();
+               });
+         }));
     });
   });
 }
@@ -551,17 +554,23 @@ class NeedsViewQueryNestedIf {
 }
 
 
+// TODO(rado): once https://github.com/angular/angular/issues/3438 is resolved
+// duplicate the test without InertDirective.
 @Component({selector: 'needs-view-query-order'})
 @View({
-  directives: [NgFor, TextDirective],
-  template: '<div text="1">' +
-                '<div *ng-for="var i of [\'2\', \'3\']" [text]="i"></div>' +
-                '<div text="4">'
+  directives: [NgFor, TextDirective, InertDirective],
+  template: '<div dir><div text="1"></div>' +
+                '<div *ng-for="var i of list" [text]="i"></div>' +
+                '<div text="4"></div></div>'
 })
 @Injectable()
 class NeedsViewQueryOrder {
   query: QueryList<TextDirective>;
-  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
+  list: string[];
+  constructor(@ViewQuery(TextDirective, {descendants: true}) query: QueryList<TextDirective>) {
+    this.query = query;
+    this.list = ['2', '3'];
+  }
 }
 
 @Component({selector: 'needs-tpl'})

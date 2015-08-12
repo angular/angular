@@ -3,6 +3,7 @@ import {CONST} from 'angular2/src/facade/lang';
 import {Locals} from './parser/locals';
 import {BindingRecord} from './binding_record';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
+import {ChangeDetectorRef} from './change_detector_ref';
 
 /**
  * Interface used by Angular to control the change detection strategy for an application.
@@ -50,6 +51,7 @@ export interface ChangeDispatcher {
 export interface ChangeDetector {
   parent: ChangeDetector;
   mode: string;
+  ref: ChangeDetectorRef;
 
   addChild(cd: ChangeDetector): void;
   addShadowDomChild(cd: ChangeDetector): void;

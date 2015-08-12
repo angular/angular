@@ -421,7 +421,7 @@ class _Context {
 
 export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
   private _host: ElementInjector;
-  private _preBuiltObjects = null;
+  private _preBuiltObjects: PreBuiltObjects = null;
 
   // Queries are added during construction or linking with a new parent.
   // They are removed only through unlinking.
@@ -477,17 +477,33 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._host = host;
     this._preBuiltObjects = preBuiltObjects;
 
-    this._reattachInjectors(imperativelyCreatedInjector);
-    this._strategy.hydrate();
-
     if (isPresent(host)) {
       this._addViewQueries(host);
     }
 
+    this._reattachInjectors(imperativelyCreatedInjector);
+    this._strategy.hydrate();
+
     this._addDirectivesToQueries();
     this._addVarBindingsToQueries();
 
+    // TODO(rado): optimize this call, if view queries are not moved around,
+    // simply appending to the query list is faster than updating.
+    this._updateViewQueries();
+
     this.hydrated = true;
+  }
+
+  private _updateViewQueries() {
+    if (isPresent(this._query0) && this._query0.isViewQuery) {
+      this._query0.update();
+    }
+    if (isPresent(this._query1) && this._query1.isViewQuery) {
+      this._query1.update();
+    }
+    if (isPresent(this._query2) && this._query2.isViewQuery) {
+      this._query2.update();
+    }
   }
 
   private _debugContext(): any {
@@ -651,22 +667,19 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   }
 
   private _addViewQueries(host: ElementInjector): void {
-    if (isPresent(host._query0) && host._query0.originator == host &&
-        host._query0.query.isViewQuery)
-      this._addViewQuery(host._query0);
-    if (isPresent(host._query1) && host._query1.originator == host &&
-        host._query1.query.isViewQuery)
-      this._addViewQuery(host._query1);
-    if (isPresent(host._query2) && host._query2.originator == host &&
-        host._query2.query.isViewQuery)
-      this._addViewQuery(host._query2);
+    this._addViewQuery(host._query0, host);
+    this._addViewQuery(host._query1, host);
+    this._addViewQuery(host._query2, host);
   }
 
-  private _addViewQuery(queryRef: QueryRef): void {
-    // TODO(rado): Replace this.parent check with distanceToParent = 1 when
-    // https://github.com/angular/angular/issues/2707 is fixed.
-    if (!queryRef.query.descendants && isPresent(this.parent)) return;
-    this._assignQueryRef(queryRef);
+  private _addViewQuery(queryRef: QueryRef, host: ElementInjector): void {
+    if (isBlank(queryRef) || !queryRef.isViewQuery || this._hasQuery(queryRef)) return;
+    if (host._query0.originator == host) {
+      // TODO(rado): Replace this.parent check with distanceToParent = 1 when
+      // https://github.com/angular/angular/issues/2707 is fixed.
+      if (!queryRef.query.descendants && isPresent(this.parent)) return;
+      this._assignQueryRef(queryRef);
+    }
   }
 
   private _addVarBindingsToQueries(): void {
@@ -694,6 +707,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   private _addDirectivesToQuery(queryRef: QueryRef): void {
     if (isBlank(queryRef) || queryRef.query.isVarBindingQuery) return;
+    if (queryRef.isViewQuery && queryRef.originator == this) return;
 
     var matched = [];
     this.addDirectivesMatchingQuery(queryRef.query, matched);
@@ -754,42 +768,37 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._addParentQueries();
   }
 
+  unlink(): void {
+    var parent = this.parent;
+    this.remove();
+    this._removeParentQueries(parent);
+  }
+
   private _addParentQueries(): void {
     if (isBlank(this.parent)) return;
-    if (isPresent(this.parent._query0) && !this.parent._query0.query.isViewQuery) {
-      this._addQueryToTree(this.parent._query0);
-      if (this.hydrated) this.parent._query0.update();
-    }
-    if (isPresent(this.parent._query1) && !this.parent._query1.query.isViewQuery) {
-      this._addQueryToTree(this.parent._query1);
-      if (this.hydrated) this.parent._query1.update();
-    }
-    if (isPresent(this.parent._query2) && !this.parent._query2.query.isViewQuery) {
-      this._addQueryToTree(this.parent._query2);
-      if (this.hydrated) this.parent._query2.update();
+    this._addParentQuery(this.parent._query0);
+    this._addParentQuery(this.parent._query1);
+    this._addParentQuery(this.parent._query2);
+  }
+
+  private _addParentQuery(query): void {
+    if (isPresent(query) && !this._hasQuery(query)) {
+      this._addQueryToTree(query);
+      if (this.hydrated) query.update();
     }
   }
 
-  unlink(): void {
-    var queriesToUpdate = [];
-    if (isPresent(this.parent._query0)) {
-      this._pruneQueryFromTree(this.parent._query0);
-      queriesToUpdate.push(this.parent._query0);
-    }
-    if (isPresent(this.parent._query1)) {
-      this._pruneQueryFromTree(this.parent._query1);
-      queriesToUpdate.push(this.parent._query1);
-    }
-    if (isPresent(this.parent._query2)) {
-      this._pruneQueryFromTree(this.parent._query2);
-      queriesToUpdate.push(this.parent._query2);
-    }
+  private _removeParentQueries(parent: ElementInjector): void {
+    this._removeParentQuery(parent._query0);
+    this._removeParentQuery(parent._query1);
+    this._removeParentQuery(parent._query2);
+  }
 
-    this.remove();
-    // TODO(rado): update should work on view queries too, however currently it
-    // is not implemented, so we filter to non-view queries.
-    var nonViewQueries = ListWrapper.filter(queriesToUpdate, (q) => !q.query.isViewQuery);
-    ListWrapper.forEach(nonViewQueries, (q) => q.update());
+  private _removeParentQuery(query: QueryRef) {
+    if (isPresent(query)) {
+      this._pruneQueryFromTree(query);
+      query.update();
+    }
   }
 
   private _pruneQueryFromTree(query: QueryRef): void {
@@ -852,6 +861,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getHost(): ElementInjector { return this._host; }
 
   getBoundElementIndex(): number { return this._proto.index; }
+
+  getRootViewInjectors(): ElementInjector[] {
+    var view = this._preBuiltObjects.view;
+    return view.getNestedView(view.elementOffset + this.getBoundElementIndex())
+        .rootElementInjectors;
+  }
 }
 
 interface _ElementInjectorStrategy {
@@ -1133,9 +1148,19 @@ export class QueryRef {
   constructor(public query: Query, public list: QueryList<any>,
               public originator: ElementInjector) {}
 
+  get isViewQuery(): boolean { return this.query.isViewQuery; }
+
   update(): void {
     var aggregator = [];
-    this.visit(this.originator, aggregator);
+    if (this.query.isViewQuery) {
+      // intentionally skipping originator for view queries.
+      var rootViewInjectors = this.originator.getRootViewInjectors();
+      for (var i = 0; i < rootViewInjectors.length; i++) {
+        this.visit(rootViewInjectors[i], aggregator);
+      }
+    } else {
+      this.visit(this.originator, aggregator);
+    }
     this.list.reset(aggregator);
   }
 
