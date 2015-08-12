@@ -93,6 +93,9 @@ class GetTestability {
   static addToWindow(TestabilityRegistry registry) {
     js.context['getAngularTestability'] = _jsify((Element elem) {
       Testability testability = registry.findTestabilityInTree(elem);
+      if (testability == null) {
+        throw 'Could not find testability for element.';
+      }
       return _jsify(new PublicTestability(testability));
     });
     js.context['getAllAngularTestabilities'] = _jsify(() {
