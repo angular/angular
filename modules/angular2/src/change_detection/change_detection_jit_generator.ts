@@ -8,6 +8,7 @@ import {DirectiveIndex, DirectiveRecord} from './directive_record';
 import {ProtoRecord, RecordType} from './proto_record';
 import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 import {CodegenLogicUtil} from './codegen_logic_util';
+import {EventBinding} from './event_binding';
 
 
 /**
@@ -30,9 +31,10 @@ export class ChangeDetectorJITGenerator {
   _typeName: string;
 
   constructor(public id: string, private changeDetectionStrategy: string,
-              public records: List<ProtoRecord>, public directiveRecords: List<any>,
-              private generateCheckNoChanges: boolean) {
-    this._names = new CodegenNameUtil(this.records, this.directiveRecords, UTIL);
+              public records: List<ProtoRecord>, public eventBindings: EventBinding[],
+              public directiveRecords: List<any>, private generateCheckNoChanges: boolean) {
+    this._names =
+        new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);
     this._logic = new CodegenLogicUtil(this._names, UTIL);
     this._typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
@@ -47,6 +49,13 @@ export class ChangeDetectorJITGenerator {
       }
 
       ${this._typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
+
+      ${this._typeName}.prototype.handleEvent = function(eventName, elIndex, locals) {
+        var ${this._names.getPreventDefaultAccesor()} = false;
+        ${this._names.genInitEventLocals()}
+        ${this._genHandleEvent()}
+        return ${this._names.getPreventDefaultAccesor()};
+      }
 
       ${this._typeName}.prototype.detectChangesInRecordsInternal = function(throwOnChange) {
         ${this._names.genInitLocals()}
@@ -73,6 +82,33 @@ export class ChangeDetectorJITGenerator {
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
                         'directiveRecords', classDefinition)(
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
+  }
+
+  _genHandleEvent(): string {
+    return this.eventBindings.map(eb => this._genEventBinding(eb)).join("\n");
+  }
+
+  _genEventBinding(eb: EventBinding): string {
+    var recs = eb.records.map(r => this._genEventBindingEval(eb, r)).join("\n");
+    return `
+    if (eventName === "${eb.eventName}" && elIndex === ${eb.elIndex}) {
+      ${recs}
+    }`;
+  }
+
+  _genEventBindingEval(eb: EventBinding, r: ProtoRecord): string {
+    if (r.lastInBinding) {
+      var evalRecord = this._logic.genEventBindingEvalValue(eb, r);
+      var prevDefault = this._genUpdatePreventDefault(eb, r);
+      return `${evalRecord}\n${prevDefault}`;
+    } else {
+      return this._logic.genEventBindingEvalValue(eb, r);
+    }
+  }
+
+  _genUpdatePreventDefault(eb: EventBinding, r: ProtoRecord): string {
+    var local = this._names.getEventLocalName(eb, r.selfIndex);
+    return `if (${local} === false) { ${this._names.getPreventDefaultAccesor()} = true};`;
   }
 
   _maybeGenDehydrateDirectives(): string {
@@ -204,7 +240,7 @@ export class ChangeDetectorJITGenerator {
     var oldValue = this._names.getFieldName(r.selfIndex);
     var newValue = this._names.getLocalName(r.selfIndex);
     var read = `
-      ${this._logic.genUpdateCurrentValue(r)}
+      ${this._logic.genPropertyBindingEvalValue(r)}
     `;
 
     var check = `

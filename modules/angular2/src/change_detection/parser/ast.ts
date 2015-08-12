@@ -1,30 +1,18 @@
 import {isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/facade/lang";
 import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/collection";
-import {Locals} from "./locals";
 
 export class AST {
-  eval(context: any, locals: Locals): any { throw new BaseException("Not supported"); }
-
-  get isAssignable(): boolean { return false; }
-
-  assign(context: any, locals: Locals, value: any) { throw new BaseException("Not supported"); }
-
   visit(visitor: AstVisitor): any { return null; }
-
   toString(): string { return "AST"; }
 }
 
 export class EmptyExpr extends AST {
-  eval(context: any, locals: Locals): any { return null; }
-
   visit(visitor: AstVisitor) {
     // do nothing
   }
 }
 
 export class ImplicitReceiver extends AST {
-  eval(context: any, locals: Locals): any { return context; }
-
   visit(visitor: AstVisitor): any { return visitor.visitImplicitReceiver(this); }
 }
 
@@ -33,112 +21,45 @@ export class ImplicitReceiver extends AST {
  */
 export class Chain extends AST {
   constructor(public expressions: List<any>) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    var result;
-    for (var i = 0; i < this.expressions.length; i++) {
-      var last = this.expressions[i].eval(context, locals);
-      if (isPresent(last)) result = last;
-    }
-    return result;
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitChain(this); }
 }
 
 export class Conditional extends AST {
   constructor(public condition: AST, public trueExp: AST, public falseExp: AST) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    if (this.condition.eval(context, locals)) {
-      return this.trueExp.eval(context, locals);
-    } else {
-      return this.falseExp.eval(context, locals);
-    }
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitConditional(this); }
 }
 
 export class If extends AST {
   constructor(public condition: AST, public trueExp: AST, public falseExp?: AST) { super(); }
-
-  eval(context: any, locals: Locals) {
-    if (this.condition.eval(context, locals)) {
-      this.trueExp.eval(context, locals);
-    } else if (isPresent(this.falseExp)) {
-      this.falseExp.eval(context, locals);
-    }
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitIf(this); }
 }
 
-export class AccessMember extends AST {
-  constructor(public receiver: AST, public name: string, public getter: Function,
-              public setter: Function) {
-    super();
-  }
-
-  eval(context: any, locals: Locals): any {
-    if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
-        locals.contains(this.name)) {
-      return locals.get(this.name);
-    } else {
-      var evaluatedReceiver = this.receiver.eval(context, locals);
-      return this.getter(evaluatedReceiver);
-    }
-  }
-
-  get isAssignable(): boolean { return true; }
-
-  assign(context: any, locals: Locals, value: any): any {
-    var evaluatedContext = this.receiver.eval(context, locals);
-
-    if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
-        locals.contains(this.name)) {
-      throw new BaseException(`Cannot reassign a variable binding ${this.name}`);
-    } else {
-      return this.setter(evaluatedContext, value);
-    }
-  }
-
-  visit(visitor: AstVisitor): any { return visitor.visitAccessMember(this); }
+export class PropertyRead extends AST {
+  constructor(public receiver: AST, public name: string, public getter: Function) { super(); }
+  visit(visitor: AstVisitor): any { return visitor.visitPropertyRead(this); }
 }
 
-export class SafeAccessMember extends AST {
-  constructor(public receiver: AST, public name: string, public getter: Function,
-              public setter: Function) {
+export class PropertyWrite extends AST {
+  constructor(public receiver: AST, public name: string, public setter: Function,
+              public value: AST) {
     super();
   }
-
-  eval(context: any, locals: Locals): any {
-    var evaluatedReceiver = this.receiver.eval(context, locals);
-    return isBlank(evaluatedReceiver) ? null : this.getter(evaluatedReceiver);
-  }
-
-  visit(visitor: AstVisitor): any { return visitor.visitSafeAccessMember(this); }
+  visit(visitor: AstVisitor): any { return visitor.visitPropertyWrite(this); }
 }
 
-export class KeyedAccess extends AST {
+export class SafePropertyRead extends AST {
+  constructor(public receiver: AST, public name: string, public getter: Function) { super(); }
+  visit(visitor: AstVisitor): any { return visitor.visitSafePropertyRead(this); }
+}
+
+export class KeyedRead extends AST {
   constructor(public obj: AST, public key: AST) { super(); }
+  visit(visitor: AstVisitor): any { return visitor.visitKeyedRead(this); }
+}
 
-  eval(context: any, locals: Locals): any {
-    var obj: any = this.obj.eval(context, locals);
-    var key: any = this.key.eval(context, locals);
-    return obj[key];
-  }
-
-  get isAssignable(): boolean { return true; }
-
-  assign(context: any, locals: Locals, value: any): any {
-    var obj: any = this.obj.eval(context, locals);
-    var key: any = this.key.eval(context, locals);
-    obj[key] = value;
-    return value;
-  }
-
-  visit(visitor: AstVisitor): any { return visitor.visitKeyedAccess(this); }
+export class KeyedWrite extends AST {
+  constructor(public obj: AST, public key: AST, public value: AST) { super(); }
+  visit(visitor: AstVisitor): any { return visitor.visitKeyedWrite(this); }
 }
 
 export class BindingPipe extends AST {
@@ -149,113 +70,32 @@ export class BindingPipe extends AST {
 
 export class LiteralPrimitive extends AST {
   constructor(public value) { super(); }
-
-  eval(context: any, locals: Locals): any { return this.value; }
-
   visit(visitor: AstVisitor): any { return visitor.visitLiteralPrimitive(this); }
 }
 
 export class LiteralArray extends AST {
   constructor(public expressions: List<any>) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    return ListWrapper.map(this.expressions, (e) => e.eval(context, locals));
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitLiteralArray(this); }
 }
 
 export class LiteralMap extends AST {
   constructor(public keys: List<any>, public values: List<any>) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    var res = StringMapWrapper.create();
-    for (var i = 0; i < this.keys.length; ++i) {
-      StringMapWrapper.set(res, this.keys[i], this.values[i].eval(context, locals));
-    }
-    return res;
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitLiteralMap(this); }
 }
 
 export class Interpolation extends AST {
   constructor(public strings: List<any>, public expressions: List<any>) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    throw new BaseException("evaluating an Interpolation is not supported");
-  }
-
   visit(visitor: AstVisitor) { visitor.visitInterpolation(this); }
 }
 
 export class Binary extends AST {
   constructor(public operation: string, public left: AST, public right: AST) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    var left: any = this.left.eval(context, locals);
-    switch (this.operation) {
-      case '&&':
-        return left && this.right.eval(context, locals);
-      case '||':
-        return left || this.right.eval(context, locals);
-    }
-    var right: any = this.right.eval(context, locals);
-
-    switch (this.operation) {
-      case '+':
-        return left + right;
-      case '-':
-        return left - right;
-      case '*':
-        return left * right;
-      case '/':
-        return left / right;
-      case '%':
-        return left % right;
-      case '==':
-        return left == right;
-      case '!=':
-        return left != right;
-      case '===':
-        return left === right;
-      case '!==':
-        return left !== right;
-      case '<':
-        return left < right;
-      case '>':
-        return left > right;
-      case '<=':
-        return left <= right;
-      case '>=':
-        return left >= right;
-      case '^':
-        return left ^ right;
-      case '&':
-        return left & right;
-    }
-    throw 'Internal error [$operation] not handled';
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitBinary(this); }
 }
 
 export class PrefixNot extends AST {
   constructor(public expression: AST) { super(); }
-
-  eval(context: any, locals: Locals): any { return !this.expression.eval(context, locals); }
-
   visit(visitor: AstVisitor): any { return visitor.visitPrefixNot(this); }
-}
-
-export class Assignment extends AST {
-  constructor(public target: AST, public value: any) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    return this.target.assign(context, locals, this.value.eval(context, locals));
-  }
-
-  visit(visitor: AstVisitor): any { return visitor.visitAssignment(this); }
 }
 
 export class MethodCall extends AST {
@@ -263,19 +103,6 @@ export class MethodCall extends AST {
               public args: List<any>) {
     super();
   }
-
-  eval(context: any, locals: Locals): any {
-    var evaluatedArgs = evalList(context, locals, this.args);
-    if (this.receiver instanceof ImplicitReceiver && isPresent(locals) &&
-        locals.contains(this.name)) {
-      var fn = locals.get(this.name);
-      return FunctionWrapper.apply(fn, evaluatedArgs);
-    } else {
-      var evaluatedReceiver = this.receiver.eval(context, locals);
-      return this.fn(evaluatedReceiver, evaluatedArgs);
-    }
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitMethodCall(this); }
 }
 
@@ -284,44 +111,17 @@ export class SafeMethodCall extends AST {
               public args: List<any>) {
     super();
   }
-
-  eval(context: any, locals: Locals): any {
-    var evaluatedReceiver = this.receiver.eval(context, locals);
-    if (isBlank(evaluatedReceiver)) return null;
-    var evaluatedArgs = evalList(context, locals, this.args);
-    return this.fn(evaluatedReceiver, evaluatedArgs);
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitSafeMethodCall(this); }
 }
 
 export class FunctionCall extends AST {
   constructor(public target: AST, public args: List<any>) { super(); }
-
-  eval(context: any, locals: Locals): any {
-    var obj: any = this.target.eval(context, locals);
-    if (!(obj instanceof Function)) {
-      throw new BaseException(`${obj} is not a function`);
-    }
-    return FunctionWrapper.apply(obj, evalList(context, locals, this.args));
-  }
-
   visit(visitor: AstVisitor): any { return visitor.visitFunctionCall(this); }
 }
 
 export class ASTWithSource extends AST {
   constructor(public ast: AST, public source: string, public location: string) { super(); }
-
-  eval(context: any, locals: Locals): any { return this.ast.eval(context, locals); }
-
-  get isAssignable(): boolean { return this.ast.isAssignable; }
-
-  assign(context: any, locals: Locals, value: any): any {
-    return this.ast.assign(context, locals, value);
-  }
-
   visit(visitor: AstVisitor): any { return this.ast.visit(visitor); }
-
   toString(): string { return `${this.source} in ${this.location}`; }
 }
 
@@ -331,8 +131,8 @@ export class TemplateBinding {
 }
 
 export interface AstVisitor {
-  visitAccessMember(ast: AccessMember): any;
-  visitAssignment(ast: Assignment): any;
+  visitPropertyRead(ast: PropertyRead): any;
+  visitPropertyWrite(ast: PropertyWrite): any;
   visitBinary(ast: Binary): any;
   visitChain(ast: Chain): any;
   visitConditional(ast: Conditional): any;
@@ -341,13 +141,14 @@ export interface AstVisitor {
   visitFunctionCall(ast: FunctionCall): any;
   visitImplicitReceiver(ast: ImplicitReceiver): any;
   visitInterpolation(ast: Interpolation): any;
-  visitKeyedAccess(ast: KeyedAccess): any;
+  visitKeyedRead(ast: KeyedRead): any;
+  visitKeyedWrite(ast: KeyedWrite): any;
   visitLiteralArray(ast: LiteralArray): any;
   visitLiteralMap(ast: LiteralMap): any;
   visitLiteralPrimitive(ast: LiteralPrimitive): any;
   visitMethodCall(ast: MethodCall): any;
   visitPrefixNot(ast: PrefixNot): any;
-  visitSafeAccessMember(ast: SafeAccessMember): any;
+  visitSafePropertyRead(ast: SafePropertyRead): any;
   visitSafeMethodCall(ast: SafeMethodCall): any;
 }
 
@@ -362,12 +163,16 @@ export class AstTransformer implements AstVisitor {
     return new LiteralPrimitive(ast.value);
   }
 
-  visitAccessMember(ast: AccessMember): AccessMember {
-    return new AccessMember(ast.receiver.visit(this), ast.name, ast.getter, ast.setter);
+  visitPropertyRead(ast: PropertyRead): PropertyRead {
+    return new PropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
   }
 
-  visitSafeAccessMember(ast: SafeAccessMember): SafeAccessMember {
-    return new SafeAccessMember(ast.receiver.visit(this), ast.name, ast.getter, ast.setter);
+  visitPropertyWrite(ast: PropertyWrite): PropertyWrite {
+    return new PropertyWrite(ast.receiver.visit(this), ast.name, ast.setter, ast.value);
+  }
+
+  visitSafePropertyRead(ast: SafePropertyRead): SafePropertyRead {
+    return new SafePropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
   }
 
   visitMethodCall(ast: MethodCall): MethodCall {
@@ -405,8 +210,12 @@ export class AstTransformer implements AstVisitor {
     return new BindingPipe(ast.exp.visit(this), ast.name, this.visitAll(ast.args));
   }
 
-  visitKeyedAccess(ast: KeyedAccess): KeyedAccess {
-    return new KeyedAccess(ast.obj.visit(this), ast.key.visit(this));
+  visitKeyedRead(ast: KeyedRead): KeyedRead {
+    return new KeyedRead(ast.obj.visit(this), ast.key.visit(this));
+  }
+
+  visitKeyedWrite(ast: KeyedWrite): KeyedWrite {
+    return new KeyedWrite(ast.obj.visit(this), ast.key.visit(this), ast.value.visit(this));
   }
 
   visitAll(asts: List<any>): List<any> {
@@ -419,39 +228,8 @@ export class AstTransformer implements AstVisitor {
 
   visitChain(ast: Chain): Chain { return new Chain(this.visitAll(ast.expressions)); }
 
-  visitAssignment(ast: Assignment): Assignment {
-    return new Assignment(ast.target.visit(this), ast.value.visit(this));
-  }
-
   visitIf(ast: If): If {
     let falseExp = isPresent(ast.falseExp) ? ast.falseExp.visit(this) : null;
     return new If(ast.condition.visit(this), ast.trueExp.visit(this), falseExp);
   }
-}
-
-var _evalListCache = [
-  [],
-  [0],
-  [0, 0],
-  [0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-];
-
-function evalList(context, locals: Locals, exps: List<any>): any[] {
-  var length = exps.length;
-  if (length > 10) {
-    throw new BaseException("Cannot have more than 10 argument");
-  }
-
-  var result = _evalListCache[length];
-  for (var i = 0; i < length; i++) {
-    result[i] = exps[i].eval(context, locals);
-  }
-  return result;
 }

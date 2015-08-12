@@ -1,7 +1,6 @@
 library angular2.transform.template_compiler.change_detector_codegen;
 
 import 'package:angular2/src/change_detection/change_detection_util.dart';
-import 'package:angular2/src/change_detection/coalesce.dart';
 import 'package:angular2/src/change_detection/codegen_facade.dart';
 import 'package:angular2/src/change_detection/codegen_logic_util.dart';
 import 'package:angular2/src/change_detection/codegen_name_util.dart';
@@ -9,6 +8,7 @@ import 'package:angular2/src/change_detection/directive_record.dart';
 import 'package:angular2/src/change_detection/interfaces.dart';
 import 'package:angular2/src/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/change_detection/proto_record.dart';
+import 'package:angular2/src/change_detection/event_binding.dart';
 import 'package:angular2/src/facade/lang.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
@@ -74,8 +74,9 @@ class _CodegenState {
   /// detail and should not be visible to users.
   final String _changeDetectorTypeName;
   final String _changeDetectionMode;
-  final List<ProtoRecord> _records;
   final List<DirectiveRecord> _directiveRecords;
+  final List<ProtoRecord> _records;
+  final List<EventBinding> _eventBindings;
   final CodegenLogicUtil _logic;
   final CodegenNameUtil _names;
   final bool _generateCheckNoChanges;
@@ -86,6 +87,7 @@ class _CodegenState {
       this._changeDetectorTypeName,
       String changeDetectionStrategy,
       this._records,
+      this._eventBindings,
       this._directiveRecords,
       this._logic,
       this._names,
@@ -95,10 +97,9 @@ class _CodegenState {
 
   factory _CodegenState(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
-    var recBuilder = new ProtoRecordBuilder();
-    def.bindingRecords.forEach((rec) => recBuilder.add(rec, def.variableNames));
-    var protoRecords = coalesce(recBuilder.records);
-    var names = new CodegenNameUtil(protoRecords, def.directiveRecords, _UTIL);
+    var protoRecords = createPropertyRecords(def);
+    var eventBindings = createEventRecords(def);
+    var names = new CodegenNameUtil(protoRecords, eventBindings, def.directiveRecords, _UTIL);
     var logic = new CodegenLogicUtil(names, _UTIL);
     return new _CodegenState._(
         def.id,
@@ -106,6 +107,7 @@ class _CodegenState {
         changeDetectorTypeName,
         def.strategy,
         protoRecords,
+        eventBindings,
         def.directiveRecords,
         logic,
         names,
@@ -121,6 +123,13 @@ class _CodegenState {
           : super(${codify(_changeDetectorDefId)},
               dispatcher, protos, directiveRecords, '$_changeDetectionMode') {
           dehydrateDirectives(false);
+        }
+
+        bool handleEvent(eventName, elIndex, locals) {
+          var ${_names.getPreventDefaultAccesor()} = false;
+          ${_names.genInitEventLocals()}
+          ${_genHandleEvent()}
+          return ${this._names.getPreventDefaultAccesor()};
         }
 
         void detectChangesInRecordsInternal(throwOnChange) {
@@ -150,6 +159,33 @@ class _CodegenState {
         }
       }
     ''');
+  }
+
+  String _genHandleEvent() {
+    return _eventBindings.map((eb) => _genEventBinding(eb)).join("\n");
+  }
+
+  String _genEventBinding(EventBinding eb) {
+    var recs = eb.records.map((r) => _genEventBindingEval(eb, r)).join("\n");
+    return '''
+    if (eventName == "${eb.eventName}" && elIndex == ${eb.elIndex}) {
+    ${recs}
+    }''';
+  }
+
+  String _genEventBindingEval(EventBinding eb, ProtoRecord r){
+    if (r.lastInBinding) {
+      var evalRecord = _logic.genEventBindingEvalValue(eb, r);
+      var prevDefault = _genUpdatePreventDefault(eb, r);
+      return "${evalRecord}\n${prevDefault}";
+    } else {
+      return _logic.genEventBindingEvalValue(eb, r);
+    }
+  }
+
+  String _genUpdatePreventDefault(EventBinding eb, ProtoRecord r) {
+    var local = this._names.getEventLocalName(eb, r.selfIndex);
+    return """if (${local} == false) { ${_names.getPreventDefaultAccesor()} = true; }""";
   }
 
   void _writeInitToBuf(StringBuffer buf) {
@@ -295,7 +331,7 @@ class _CodegenState {
     var oldValue = _names.getFieldName(r.selfIndex);
     var newValue = _names.getLocalName(r.selfIndex);
     var read = '''
-      ${_logic.genUpdateCurrentValue(r)}
+      ${_logic.genPropertyBindingEvalValue(r)}
     ''';
 
     var check = '''

@@ -4,7 +4,7 @@ import {ProtoChangeDetector, ChangeDetector, ChangeDetectorDefinition} from './i
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 
 import {coalesce} from './coalesce';
-import {ProtoRecordBuilder} from './proto_change_detector';
+import {createPropertyRecords, createEventRecords} from './proto_change_detector';
 
 export class JitProtoChangeDetector implements ProtoChangeDetector {
   _factory: Function;
@@ -18,13 +18,11 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
   instantiate(dispatcher: any): ChangeDetector { return this._factory(dispatcher); }
 
   _createFactory(definition: ChangeDetectorDefinition) {
-    var recordBuilder = new ProtoRecordBuilder();
-    ListWrapper.forEach(definition.bindingRecords,
-                        (b) => { recordBuilder.add(b, definition.variableNames); });
-    var records = coalesce(recordBuilder.records);
-    return new ChangeDetectorJITGenerator(definition.id, definition.strategy, records,
-                                          this.definition.directiveRecords,
-                                          this.definition.generateCheckNoChanges)
+    var propertyBindingRecords = createPropertyRecords(definition);
+    var eventBindingRecords = createEventRecords(definition);
+    return new ChangeDetectorJITGenerator(
+               definition.id, definition.strategy, propertyBindingRecords, eventBindingRecords,
+               this.definition.directiveRecords, this.definition.generateCheckNoChanges)
         .generate();
   }
 }

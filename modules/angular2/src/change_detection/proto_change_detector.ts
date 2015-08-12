@@ -2,8 +2,9 @@ import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/fa
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {
-  AccessMember,
-  Assignment,
+  PropertyRead,
+  PropertyWrite,
+  KeyedWrite,
   AST,
   ASTWithSource,
   AstVisitor,
@@ -15,13 +16,13 @@ import {
   FunctionCall,
   ImplicitReceiver,
   Interpolation,
-  KeyedAccess,
+  KeyedRead,
   LiteralArray,
   LiteralMap,
   LiteralPrimitive,
   MethodCall,
   PrefixNot,
-  SafeAccessMember,
+  SafePropertyRead,
   SafeMethodCall
 } from './parser/ast';
 
@@ -30,29 +31,42 @@ import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
+import {EventBinding} from './event_binding';
 
 import {coalesce} from './coalesce';
-
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
-  _records: List<ProtoRecord>;
+  _propertyBindingRecords: ProtoRecord[];
+  _eventBindingRecords: EventBinding[];
 
   constructor(private definition: ChangeDetectorDefinition) {
-    this._records = this._createRecords(definition);
+    this._propertyBindingRecords = createPropertyRecords(definition);
+    this._eventBindingRecords = createEventRecords(definition);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
     return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
-                                     this._records, this.definition.directiveRecords);
+                                     this._propertyBindingRecords, this._eventBindingRecords,
+                                     this.definition.directiveRecords);
   }
+}
 
-  _createRecords(definition: ChangeDetectorDefinition) {
-    var recordBuilder = new ProtoRecordBuilder();
-    ListWrapper.forEach(definition.bindingRecords,
-                        (b) => { recordBuilder.add(b, definition.variableNames); });
-    return coalesce(recordBuilder.records);
-  }
+export function createPropertyRecords(definition: ChangeDetectorDefinition): ProtoRecord[] {
+  var recordBuilder = new ProtoRecordBuilder();
+  ListWrapper.forEach(definition.bindingRecords,
+                      (b) => { recordBuilder.add(b, definition.variableNames); });
+  return coalesce(recordBuilder.records);
+}
+
+export function createEventRecords(definition: ChangeDetectorDefinition): EventBinding[] {
+  // TODO: vsavkin: remove $event when the compiler handles render-side variables properly
+  var varNames = ListWrapper.concat(['$event'], definition.variableNames);
+  return definition.eventRecords.map(er => {
+    var records = _ConvertAstIntoProtoRecords.create(er, varNames);
+    var dirIndex = er.implicitReceiver instanceof DirectiveIndex ? er.implicitReceiver : null;
+    return new EventBinding(er.eventName, er.elementIndex, dirIndex, records);
+  });
 }
 
 export class ProtoRecordBuilder {
@@ -105,6 +119,13 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     b.ast.visit(c);
   }
 
+  static create(b: BindingRecord, variableNames: List<any>): ProtoRecord[] {
+    var rec = [];
+    _ConvertAstIntoProtoRecords.append(rec, b, variableNames);
+    rec[rec.length - 1].lastInBinding = true;
+    return rec;
+  }
+
   visitImplicitReceiver(ast: ImplicitReceiver): any { return this._bindingRecord.implicitReceiver; }
 
   visitInterpolation(ast: Interpolation): number {
@@ -117,17 +138,36 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return this._addRecord(RecordType.CONST, "literal", ast.value, [], null, 0);
   }
 
-  visitAccessMember(ast: AccessMember): number {
+  visitPropertyRead(ast: PropertyRead): number {
     var receiver = ast.receiver.visit(this);
     if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name) &&
         ast.receiver instanceof ImplicitReceiver) {
       return this._addRecord(RecordType.LOCAL, ast.name, ast.name, [], null, receiver);
     } else {
-      return this._addRecord(RecordType.PROPERTY, ast.name, ast.getter, [], null, receiver);
+      return this._addRecord(RecordType.PROPERTY_READ, ast.name, ast.getter, [], null, receiver);
     }
   }
 
-  visitSafeAccessMember(ast: SafeAccessMember): number {
+  visitPropertyWrite(ast: PropertyWrite): number {
+    if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name) &&
+        ast.receiver instanceof ImplicitReceiver) {
+      throw new BaseException(`Cannot reassign a variable binding ${ast.name}`);
+    } else {
+      var receiver = ast.receiver.visit(this);
+      var value = ast.value.visit(this);
+      return this._addRecord(RecordType.PROPERTY_WRITE, ast.name, ast.setter, [value], null,
+                             receiver);
+    }
+  }
+
+  visitKeyedWrite(ast: KeyedWrite): number {
+    var obj = ast.obj.visit(this);
+    var key = ast.key.visit(this);
+    var value = ast.value.visit(this);
+    return this._addRecord(RecordType.KEYED_WRITE, null, null, [key, value], null, obj);
+  }
+
+  visitSafePropertyRead(ast: SafePropertyRead): number {
     var receiver = ast.receiver.visit(this);
     return this._addRecord(RecordType.SAFE_PROPERTY, ast.name, ast.getter, [], null, receiver);
   }
@@ -195,16 +235,17 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return this._addRecord(RecordType.PIPE, ast.name, ast.name, args, null, value);
   }
 
-  visitKeyedAccess(ast: KeyedAccess): number {
+  visitKeyedRead(ast: KeyedRead): number {
     var obj = ast.obj.visit(this);
     var key = ast.key.visit(this);
-    return this._addRecord(RecordType.KEYED_ACCESS, "keyedAccess", ChangeDetectionUtil.keyedAccess,
+    return this._addRecord(RecordType.KEYED_READ, "keyedAccess", ChangeDetectionUtil.keyedAccess,
                            [key], null, obj);
   }
 
-  visitAssignment(ast: Assignment) { throw new BaseException('Not supported'); }
-
-  visitChain(ast: Chain) { throw new BaseException('Not supported'); }
+  visitChain(ast: Chain): number {
+    var args = ast.expressions.map(e => e.visit(this));
+    return this._addRecord(RecordType.CHAIN, "chain", null, args, null, 0);
+  }
 
   visitIf(ast: If) { throw new BaseException('Not supported'); }
 

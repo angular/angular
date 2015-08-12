@@ -1,15 +1,11 @@
-import {AST} from 'angular2/src/change_detection/change_detection';
 import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
 import * as eiModule from './element_injector';
 import {DirectiveBinding} from './element_injector';
-import {List, StringMap} from 'angular2/src/facade/collection';
 import * as viewModule from './view';
 
 export class ElementBinder {
   // updated later, so we are able to resolve cycles
   nestedProtoView: viewModule.AppProtoView = null;
-  // updated later when events are bound
-  hostListeners: StringMap<string, Map<number, AST>> = null;
 
   constructor(public index: int, public parent: ElementBinder, public distanceToParent: int,
               public protoElementInjector: eiModule.ProtoElementInjector,

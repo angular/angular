@@ -18,9 +18,12 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {
   ChangeDetection,
-  ChangeDetectorDefinition
+  ChangeDetectorDefinition,
+  BindingRecord,
+  DirectiveIndex
 } from 'angular2/src/change_detection/change_detection';
 import {
+  BindingRecordsCreator,
   ProtoViewFactory,
   getChangeDetectorDefinitions,
   createDirectiveVariableBindings,
@@ -160,6 +163,50 @@ export function main() {
               {variableBindings: MapWrapper.createFromStringMap<string>({"y": "b"})})
 
         ])).toEqual(MapWrapper.createFromStringMap<number>({'a': 0, 'b': 1}));
+      });
+    });
+
+    describe('BindingRecordsCreator', () => {
+      var creator: BindingRecordsCreator;
+
+      beforeEach(() => { creator = new BindingRecordsCreator(); });
+
+      describe('getEventBindingRecords', () => {
+        it("should return template event records", () => {
+          var rec = creator.getEventBindingRecords(
+              [
+                new renderApi.ElementBinder(
+                    {eventBindings: [new renderApi.EventBinding("a", null)], directives: []}),
+                new renderApi.ElementBinder(
+                    {eventBindings: [new renderApi.EventBinding("b", null)], directives: []})
+              ],
+              []);
+
+          expect(rec).toEqual([
+            BindingRecord.createForEvent(null, "a", 0),
+            BindingRecord.createForEvent(null, "b", 1)
+          ]);
+        });
+
+        it('should return host event records', () => {
+          var rec = creator.getEventBindingRecords(
+              [
+                new renderApi.ElementBinder({
+                  eventBindings: [],
+                  directives: [
+                    new renderApi.DirectiveBinder({
+                      directiveIndex: 0,
+                      eventBindings: [new renderApi.EventBinding("a", null)]
+                    })
+                  ]
+                })
+              ],
+              [renderApi.DirectiveMetadata.create({id: 'some-id'})]);
+
+          expect(rec.length).toEqual(1);
+          expect(rec[0].eventName).toEqual("a");
+          expect(rec[0].implicitReceiver).toBeAnInstanceOf(DirectiveIndex);
+        });
       });
     });
   });

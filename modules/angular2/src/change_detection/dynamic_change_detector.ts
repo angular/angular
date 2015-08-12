@@ -2,7 +2,9 @@ import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/f
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
+import {EventBinding} from './event_binding';
 import {BindingRecord} from './binding_record';
+import {Locals} from './parser/locals';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 
 
@@ -16,7 +18,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   directives: any = null;
 
   constructor(id: string, changeDetectionStrategy: string, dispatcher: any,
-              protos: List<ProtoRecord>, directiveRecords: List<any>) {
+              protos: List<ProtoRecord>, public eventBindings: EventBinding[],
+              directiveRecords: List<any>) {
     super(id, dispatcher, protos, directiveRecords,
           ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy));
     var len = protos.length + 1;
@@ -26,6 +29,41 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     this.changes = ListWrapper.createFixedSize(len);
 
     this.dehydrateDirectives(false);
+  }
+
+  handleEvent(eventName: string, elIndex: number, locals: Locals): boolean {
+    var preventDefault = false;
+
+    this._matchingEventBindings(eventName, elIndex)
+        .forEach(rec => {
+          var res = this._processEventBinding(rec, locals);
+          if (res === false) {
+            preventDefault = true;
+          }
+        });
+    return preventDefault;
+  }
+
+  _processEventBinding(eb: EventBinding, locals: Locals): any {
+    var values = ListWrapper.createFixedSize(eb.records.length);
+    values[0] = this.values[0];
+
+    for (var i = 0; i < eb.records.length; ++i) {
+      var proto = eb.records[i];
+      var res = this._calculateCurrValue(proto, values, locals);
+      if (proto.lastInBinding) {
+        return res;
+      } else {
+        this._writeSelf(proto, res, values);
+      }
+    }
+
+    throw new BaseException("Cannot be reached");
+  }
+
+  _matchingEventBindings(eventName: string, elIndex: number): EventBinding[] {
+    return ListWrapper.filter(this.eventBindings,
+                              eb => eb.eventName == eventName && eb.elIndex === elIndex);
   }
 
   hydrateDirectives(directives: any): void {
@@ -79,7 +117,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         }
 
       } else {
-        var change = this._check(proto, throwOnChange);
+        var change = this._check(proto, throwOnChange, this.values, this.locals);
         if (isPresent(change)) {
           this._updateDirectiveOrElement(change, bindingRecord);
           isChanged = true;
@@ -137,33 +175,33 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
 
-  _check(proto: ProtoRecord, throwOnChange: boolean): SimpleChange {
+  _check(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals): SimpleChange {
     if (proto.isPipeRecord()) {
-      return this._pipeCheck(proto, throwOnChange);
+      return this._pipeCheck(proto, throwOnChange, values);
     } else {
-      return this._referenceCheck(proto, throwOnChange);
+      return this._referenceCheck(proto, throwOnChange, values, locals);
     }
   }
 
-  _referenceCheck(proto: ProtoRecord, throwOnChange: boolean) {
+  _referenceCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals) {
     if (this._pureFuncAndArgsDidNotChange(proto)) {
       this._setChanged(proto, false);
       return null;
     }
 
-    var currValue = this._calculateCurrValue(proto);
+    var currValue = this._calculateCurrValue(proto, values, locals);
     if (proto.shouldBeChecked()) {
-      var prevValue = this._readSelf(proto);
+      var prevValue = this._readSelf(proto, values);
       if (!isSame(prevValue, currValue)) {
         if (proto.lastInBinding) {
           var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
           if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
 
-          this._writeSelf(proto, currValue);
+          this._writeSelf(proto, currValue, values);
           this._setChanged(proto, true);
           return change;
         } else {
-          this._writeSelf(proto, currValue);
+          this._writeSelf(proto, currValue, values);
           this._setChanged(proto, true);
           return null;
         }
@@ -173,70 +211,88 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       }
 
     } else {
-      this._writeSelf(proto, currValue);
+      this._writeSelf(proto, currValue, values);
       this._setChanged(proto, true);
       return null;
     }
   }
 
-  _calculateCurrValue(proto: ProtoRecord) {
+  _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
     switch (proto.mode) {
       case RecordType.SELF:
-        return this._readContext(proto);
+        return this._readContext(proto, values);
 
       case RecordType.CONST:
         return proto.funcOrValue;
 
-      case RecordType.PROPERTY:
-        var context = this._readContext(proto);
+      case RecordType.PROPERTY_READ:
+        var context = this._readContext(proto, values);
         return proto.funcOrValue(context);
 
       case RecordType.SAFE_PROPERTY:
-        var context = this._readContext(proto);
+        var context = this._readContext(proto, values);
         return isBlank(context) ? null : proto.funcOrValue(context);
 
+      case RecordType.PROPERTY_WRITE:
+        var context = this._readContext(proto, values);
+        var value = this._readArgs(proto, values)[0];
+        proto.funcOrValue(context, value);
+        return value;
+
+      case RecordType.KEYED_WRITE:
+        var context = this._readContext(proto, values);
+        var key = this._readArgs(proto, values)[0];
+        var value = this._readArgs(proto, values)[1];
+        context[key] = value;
+        return value;
+
       case RecordType.LOCAL:
-        return this.locals.get(proto.name);
+        return locals.get(proto.name);
 
       case RecordType.INVOKE_METHOD:
-        var context = this._readContext(proto);
-        var args = this._readArgs(proto);
+        var context = this._readContext(proto, values);
+        var args = this._readArgs(proto, values);
         return proto.funcOrValue(context, args);
 
       case RecordType.SAFE_INVOKE_METHOD:
-        var context = this._readContext(proto);
+        var context = this._readContext(proto, values);
         if (isBlank(context)) {
           return null;
         }
-        var args = this._readArgs(proto);
+        var args = this._readArgs(proto, values);
         return proto.funcOrValue(context, args);
 
-      case RecordType.KEYED_ACCESS:
-        var arg = this._readArgs(proto)[0];
-        return this._readContext(proto)[arg];
+      case RecordType.KEYED_READ:
+        var arg = this._readArgs(proto, values)[0];
+        return this._readContext(proto, values)[arg];
+
+      case RecordType.CHAIN:
+        var args = this._readArgs(proto, values);
+        return args[args.length - 1];
 
       case RecordType.INVOKE_CLOSURE:
-        return FunctionWrapper.apply(this._readContext(proto), this._readArgs(proto));
+        return FunctionWrapper.apply(this._readContext(proto, values),
+                                     this._readArgs(proto, values));
 
       case RecordType.INTERPOLATE:
       case RecordType.PRIMITIVE_OP:
       case RecordType.COLLECTION_LITERAL:
-        return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto));
+        return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto, values));
 
       default:
         throw new BaseException(`Unknown operation ${proto.mode}`);
     }
   }
 
-  _pipeCheck(proto: ProtoRecord, throwOnChange: boolean) {
-    var context = this._readContext(proto);
-    var args = this._readArgs(proto);
+  _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
+    var context = this._readContext(proto, values);
+    var args = this._readArgs(proto, values);
 
     var pipe = this._pipeFor(proto, context);
     var currValue = pipe.transform(context, args);
 
     if (proto.shouldBeChecked()) {
-      var prevValue = this._readSelf(proto);
+      var prevValue = this._readSelf(proto, values);
       if (!isSame(prevValue, currValue)) {
         currValue = ChangeDetectionUtil.unwrapValue(currValue);
 
@@ -244,13 +300,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
           var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
           if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
 
-          this._writeSelf(proto, currValue);
+          this._writeSelf(proto, currValue, values);
           this._setChanged(proto, true);
 
           return change;
 
         } else {
-          this._writeSelf(proto, currValue);
+          this._writeSelf(proto, currValue, values);
           this._setChanged(proto, true);
           return null;
         }
@@ -259,7 +315,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         return null;
       }
     } else {
-      this._writeSelf(proto, currValue);
+      this._writeSelf(proto, currValue, values);
       this._setChanged(proto, true);
       return null;
     }
@@ -274,19 +330,19 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return pipe;
   }
 
-  _readContext(proto: ProtoRecord) {
+  _readContext(proto: ProtoRecord, values: any[]) {
     if (proto.contextIndex == -1) {
       return this._getDirectiveFor(proto.directiveIndex);
     } else {
-      return this.values[proto.contextIndex];
+      return values[proto.contextIndex];
     }
 
-    return this.values[proto.contextIndex];
+    return values[proto.contextIndex];
   }
 
-  _readSelf(proto: ProtoRecord) { return this.values[proto.selfIndex]; }
+  _readSelf(proto: ProtoRecord, values: any[]) { return values[proto.selfIndex]; }
 
-  _writeSelf(proto: ProtoRecord, value) { this.values[proto.selfIndex] = value; }
+  _writeSelf(proto: ProtoRecord, value, values: any[]) { values[proto.selfIndex] = value; }
 
   _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
 
@@ -310,11 +366,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return false;
   }
 
-  _readArgs(proto: ProtoRecord) {
+  _readArgs(proto: ProtoRecord, values: any[]) {
     var res = ListWrapper.createFixedSize(proto.args.length);
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
-      res[i] = this.values[args[i]];
+      res[i] = values[args[i]];
     }
     return res;
   }

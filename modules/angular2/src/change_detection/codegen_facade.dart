@@ -13,3 +13,7 @@ String codify(funcOrValue) => JSON.encode(funcOrValue).replaceAll(r'$', r'\$');
 String combineGeneratedStrings(List<String> vals) {
   return '"${vals.map((v) => '\${$v}').join('')}"';
 }
+
+String rawString(String str) {
+  return "r'$str'";
+}

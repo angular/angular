@@ -1,9 +1,10 @@
 import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 
 import {DirectiveIndex} from './directive_record';
 
 import {ProtoRecord} from './proto_record';
+import {EventBinding} from './event_binding';
 
 // The names of these fields must be kept in sync with abstract_change_detector.ts or change
 // detection will fail.
@@ -41,13 +42,24 @@ export class CodegenNameUtil {
    * See [sanitizeName] for details.
    */
   _sanitizedNames: List<string>;
+  _sanitizedEventNames: Map<EventBinding, List<string>>;
 
-  constructor(private records: List<ProtoRecord>, private directiveRecords: List<any>,
-              private utilName: string) {
+  constructor(private records: List<ProtoRecord>, private eventBindings: EventBinding[],
+              private directiveRecords: List<any>, private utilName: string) {
     this._sanitizedNames = ListWrapper.createFixedSize(this.records.length + 1);
     this._sanitizedNames[CONTEXT_INDEX] = _CONTEXT_ACCESSOR;
     for (var i = 0, iLen = this.records.length; i < iLen; ++i) {
       this._sanitizedNames[i + 1] = sanitizeName(`${this.records[i].name}${i}`);
+    }
+
+    this._sanitizedEventNames = new Map();
+    for (var ebIndex = 0; ebIndex < eventBindings.length; ++ebIndex) {
+      var eb = eventBindings[ebIndex];
+      var names = [_CONTEXT_ACCESSOR];
+      for (var i = 0, iLen = eb.records.length; i < iLen; ++i) {
+        names.push(sanitizeName(`${eb.records[i].name}${i}_${ebIndex}`));
+      }
+      this._sanitizedEventNames.set(eb, names);
     }
   }
 
@@ -72,6 +84,10 @@ export class CodegenNameUtil {
   }
 
   getLocalName(idx: int): string { return `l_${this._sanitizedNames[idx]}`; }
+
+  getEventLocalName(eb: EventBinding, idx: int): string {
+    return `l_${MapWrapper.get(this._sanitizedEventNames, eb)[idx]}`;
+  }
 
   getChangeName(idx: int): string { return `c_${this._sanitizedNames[idx]}`; }
 
@@ -99,6 +115,23 @@ export class CodegenNameUtil {
         ListWrapper.isEmpty(assignments) ? '' : `${ListWrapper.join(assignments, '=')} = false;`;
     return `var ${ListWrapper.join(declarations, ',')};${assignmentsCode}`;
   }
+
+  /**
+   * Generate a statement initializing local variables for event handlers.
+   */
+  genInitEventLocals(): string {
+    var res = [`${this.getLocalName(CONTEXT_INDEX)} = ${this.getFieldName(CONTEXT_INDEX)}`];
+    MapWrapper.forEach(this._sanitizedEventNames, (names, eb) => {
+      for (var i = 0; i < names.length; ++i) {
+        if (i !== CONTEXT_INDEX) {
+          res.push(this.getEventLocalName(eb, i));
+        }
+      }
+    });
+    return res.length > 1 ? `var ${res.join(',')};` : '';
+  }
+
+  getPreventDefaultAccesor(): string { return "preventDefault"; }
 
   getFieldCount(): int { return this._sanitizedNames.length; }
 
