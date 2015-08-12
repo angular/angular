@@ -400,6 +400,10 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
+  resetBaseElement() {
+    throw 'not implemented';
+  }
+
   String getUserAgent() {
     throw 'not implemented';
   }

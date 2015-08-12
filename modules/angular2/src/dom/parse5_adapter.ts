@@ -529,6 +529,8 @@ export class Parse5DomAdapter extends DomAdapter {
       return this.defaultDoc().body;
     }
   }
+  getBaseHref(): string { throw 'not implemented'; }
+  resetBaseElement(): void { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
   getLocation(): Location { throw 'not implemented'; }
   getUserAgent(): string { return "Fake user agent"; }

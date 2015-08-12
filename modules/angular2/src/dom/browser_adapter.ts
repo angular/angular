@@ -292,6 +292,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return relativePath(href);
   }
+  resetBaseElement(): void { baseElement = null; }
   getUserAgent(): string { return window.navigator.userAgent; }
   setData(element, name: string, value: string) { element.dataset[name] = value; }
   getData(element, name: string): string { return element.dataset[name]; }
@@ -308,7 +309,7 @@ function getBaseElementHref(): string {
       return null;
     }
   }
-  return baseElement.attr('href');
+  return baseElement.getAttribute('href');
 }
 
 // based on urlUtils.js in AngularJS 1
