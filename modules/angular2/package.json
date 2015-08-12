@@ -13,5 +13,12 @@
     "rx": "<%= packageJson.dependencies['rx'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
-  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>
+  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
+  "typescript": {
+    "definitions": [
+      "bundles/typings/angular2/angular2.d.ts",
+      "bundles/typings/angular2/http.d.ts",
+      "bundles/typings/angular2/router.d.ts"
+    ]
+  }
 }
