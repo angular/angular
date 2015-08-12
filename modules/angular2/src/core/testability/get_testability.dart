@@ -91,8 +91,9 @@ class PublicTestability implements _JsObjectProxyable {
 
 class GetTestability {
   static addToWindow(TestabilityRegistry registry) {
-    js.context['getAngularTestability'] = _jsify((Element elem) {
-      Testability testability = registry.findTestabilityInTree(elem);
+    js.context['getAngularTestability'] = _jsify((Element elem,
+        [bool findInAncestors = true]) {
+      Testability testability = registry.findTestabilityInTree(elem, findInAncestors);
       if (testability == null) {
         throw 'Could not find testability for element.';
       }
