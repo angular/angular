@@ -48,7 +48,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   _destroyPipes() {
     for (var i = 0; i < this.localPipes.length; ++i) {
       if (isPresent(this.localPipes[i])) {
-        this.localPipes[i].onDestroy();
+        ChangeDetectionUtil.callPipeOnDestroy(this.localPipes[i]);
       }
     }
   }

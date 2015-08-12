@@ -2,6 +2,7 @@ import {CONST_EXPR, isPresent, isBlank, BaseException, Type} from 'angular2/src/
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
+import {implementsOnDestroy} from './pipe_lifecycle_reflector';
 
 
 /**
@@ -179,5 +180,11 @@ export class ChangeDetectionUtil {
     return selfIndex < 1 ?
                null :
                protos[selfIndex - 1];  // self index is shifted by one because of context
+  }
+
+  static callPipeOnDestroy(pipe: any): void {
+    if (implementsOnDestroy(pipe)) {
+      pipe.onDestroy();
+    }
   }
 }
