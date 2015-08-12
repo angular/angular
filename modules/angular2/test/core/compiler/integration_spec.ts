@@ -212,6 +212,26 @@ export function main() {
                });
          }));
 
+      it('should consume binding to className using class alias',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(
+                  MyComp,
+                  new viewAnn.View({template: '<div class="initial" [class]="ctxProp"></div>'}))
+
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 var nativeEl = rootTC.componentViewChildren[0].nativeElement;
+                 rootTC.componentInstance.ctxProp = 'foo bar';
+                 rootTC.detectChanges();
+
+                 expect(nativeEl).toHaveCssClass('foo');
+                 expect(nativeEl).toHaveCssClass('bar');
+                 expect(nativeEl).not.toHaveCssClass('initial');
+
+                 async.done();
+               });
+         }));
+
       it('should consume directive watch expression change.',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var tpl = '<div>' +

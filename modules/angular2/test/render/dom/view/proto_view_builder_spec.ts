@@ -104,6 +104,12 @@ export function main() {
         var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
         expect(pv.elementBinders[0].propertyBindings[0].property).toEqual('readOnly');
       });
+
+      it('should normalize "class" to "className"', () => {
+        builder.bindElement(el('<div></div>')).bindProperty('class', emptyExpr());
+        var pv = builder.build(new DomElementSchemaRegistry(), templateCloner);
+        expect(pv.elementBinders[0].propertyBindings[0].property).toEqual('className');
+      });
     });
 
     describe('property binding', () => {

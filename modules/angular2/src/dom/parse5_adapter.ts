@@ -13,6 +13,7 @@ import {BaseException, isPresent, isBlank, global} from 'angular2/src/facade/lan
 import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
 
 var _attrToPropMap = {
+  'class': 'className',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
@@ -37,6 +38,8 @@ export class Parse5DomAdapter extends DomAdapter {
   setProperty(el: /*element*/ any, name: string, value: any) {
     if (name === 'innerHTML') {
       this.setInnerHTML(el, value);
+    } else if (name === 'className') {
+      el.attribs["class"] = el.className = value;
     } else {
       el[name] = value;
     }
