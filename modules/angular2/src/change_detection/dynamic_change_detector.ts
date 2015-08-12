@@ -2,7 +2,7 @@ import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/f
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
-import {BindingRecord} from './binding_record';
+import {PropertyBindingRecord} from './binding_record';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 
 
@@ -16,7 +16,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   directives: any = null;
 
   constructor(id: string, changeDetectionStrategy: string, dispatcher: any,
-              protos: List<ProtoRecord>, directiveRecords: List<any>) {
+              protos: List<ProtoRecord>, public eventRecords:any, directiveRecords: List<any>) {
     super(id, dispatcher, protos, directiveRecords,
           ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy));
     var len = protos.length + 1;
@@ -26,6 +26,31 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     this.changes = ListWrapper.createFixedSize(len);
 
     this.dehydrateDirectives(false);
+  }
+
+  dispatchEvent(eventName: string, boundElementIndex: number, directiveIndex: number, locals: any):void {
+    var arr = this.eventRecords.get(eventName);
+    console.log("dispatch", eventName, boundElementIndex, directiveIndex);
+
+    var protos = arr.filter(i => {
+      var index = i[0];
+      if (index === null && boundElementIndex === null) return true;
+      if (index !== null && index.elementIndex === boundElementIndex && index.directiveIndex === directiveIndex) return true;
+      return false;
+    })[0][1];
+
+    this.locals = locals;
+
+    console.log("records", protos);
+
+
+    var res = null;
+    for (var i = 0; i < protos.length; ++i) {
+      var proto: ProtoRecord = protos[i];
+      res = this._calculateCurrValue(proto);
+      this._writeSelf(proto, res);
+    }
+    return res;
   }
 
   hydrateDirectives(directives: any): void {
@@ -125,7 +150,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  _addChange(bindingRecord: BindingRecord, change, changes) {
+  _addChange(bindingRecord: PropertyBindingRecord, change, changes) {
     if (bindingRecord.callOnChange()) {
       return super.addChange(changes, change.previousValue, change.currentValue);
     } else {

@@ -1,7 +1,7 @@
 import {List} from 'angular2/src/facade/collection';
 import {CONST} from 'angular2/src/facade/lang';
 import {Locals} from './parser/locals';
-import {BindingRecord} from './binding_record';
+import {EventBindingRecord, PropertyBindingRecord} from './binding_record';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 import {ChangeDetectorRef} from './change_detector_ref';
 
@@ -44,7 +44,7 @@ export class DebugContext {
 
 export interface ChangeDispatcher {
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext;
-  notifyOnBinding(bindingRecord: BindingRecord, value: any): void;
+  notifyOnBinding(bindingRecord: PropertyBindingRecord, value: any): void;
   notifyOnAllChangesDone(): void;
 }
 
@@ -70,7 +70,8 @@ export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher)
 
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: string, public variableNames: List<string>,
-              public bindingRecords: List<BindingRecord>,
+              public bindingRecords: List<PropertyBindingRecord>,
+              public eventBindingRecords: List<EventBindingRecord>,
               public directiveRecords: List<DirectiveRecord>,
               public generateCheckNoChanges: boolean) {}
 }

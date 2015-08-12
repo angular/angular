@@ -8,7 +8,7 @@ import {
 } from 'angular2/src/facade/collection';
 import {
   AST,
-  BindingRecord,
+  PropertyBindingRecord,
   ChangeDetector,
   ChangeDetectorRef,
   ChangeDispatcher,
@@ -104,7 +104,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   elementRefs: List<ElementRef>;
 
   ref: ViewRef;
-  changeDetector: ChangeDetector = null;
+  changeDetector: any = null;
 
 
   /**
@@ -171,7 +171,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   // dispatch to element injector or text nodes based on context
-  notifyOnBinding(b: BindingRecord, currentValue: any): void {
+  notifyOnBinding(b: PropertyBindingRecord, currentValue: any): void {
     if (b.isTextNode()) {
       this.renderer.setText(
           this.render, this.mainMergeMapping.renderTextIndices[b.elementIndex + this.textOffset],
@@ -271,6 +271,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
         if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
         var eventMap = elBinder.hostListeners[eventName];
         if (isBlank(eventMap)) return allowDefaultBehavior;
+
         MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
           var context;
           if (directiveIndex === -1) {
@@ -278,7 +279,9 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
           } else {
             context = this.elementInjectors[boundElementIndex].getDirectiveAtIndex(directiveIndex);
           }
-          var result = expr.eval(context, new Locals(this.locals, locals));
+
+          var result = this.changeDetector.dispatchEvent(eventName, boundElementIndex - this.elementOffset, directiveIndex, new Locals(this.locals, locals));
+
           if (isPresent(result)) {
             allowDefaultBehavior = allowDefaultBehavior && result == true;
           }
@@ -286,6 +289,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       }
       return allowDefaultBehavior;
     } catch (e) {
+      console.log("error", e);
+
       var c = this.getDebugContext(boundElementIndex - this.elementOffset, null);
       var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
                                                 c.injector) :

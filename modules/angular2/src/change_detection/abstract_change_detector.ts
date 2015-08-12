@@ -11,7 +11,7 @@ import {
   DehydratedException
 } from './exceptions';
 import {ProtoRecord} from './proto_record';
-import {BindingRecord} from './binding_record';
+import {PropertyBindingRecord} from './binding_record';
 import {Locals} from './parser/locals';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
@@ -192,7 +192,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   protected throwDehydratedError(): void { throw new DehydratedException(); }
 
-  private _currentBinding(): BindingRecord { return this._currentBindingProto().bindingRecord; }
+  private _currentBinding(): PropertyBindingRecord { return this._currentBindingProto().bindingRecord; }
 
   private _currentBindingProto(): ProtoRecord {
     return ChangeDetectionUtil.protoByIndex(this.protos, this.firstProtoInCurrentBinding);

@@ -26,7 +26,7 @@ import {
   DehydratedException,
   DynamicChangeDetector,
   ChangeDetectionError,
-  BindingRecord,
+  PropertyBindingRecord,
   DirectiveRecord,
   DirectiveIndex,
   PipeTransform,

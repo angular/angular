@@ -3,7 +3,7 @@ import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {
   DEFAULT,
   ON_PUSH,
-  BindingRecord,
+  PropertyBindingRecord,
   ChangeDetectorDefinition,
   DirectiveIndex,
   DirectiveRecord,
@@ -26,9 +26,9 @@ function _getParser() {
   return _parser;
 }
 
-function _createBindingRecords(expression: string): List<BindingRecord> {
+function _createBindingRecords(expression: string): List<PropertyBindingRecord> {
   var ast = _getParser().parseBinding(expression, 'location');
-  return [BindingRecord.createForElementProperty(ast, 0, PROP_NAME)];
+  return [PropertyBindingRecord.createForElementProperty(ast, 0, PROP_NAME)];
 }
 
 function _convertLocalsToVariableBindings(locals: Locals): List<any> {
@@ -142,7 +142,7 @@ class _ExpressionWithMode {
       var dirRecordWithOnPush =
           new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
       var updateDirWithOnPushRecord =
-          BindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
+          PropertyBindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
                                            (o, v) => (<any>o).a = v, dirRecordWithOnPush);
       bindingRecords = [updateDirWithOnPushRecord];
       directiveRecords = [dirRecordWithOnPush];
@@ -166,7 +166,7 @@ class _ExpressionWithMode {
 }
 
 class _DirectiveUpdating {
-  constructor(private _bindingRecords: List<BindingRecord>,
+  constructor(private _bindingRecords: List<PropertyBindingRecord>,
               private _directiveRecords: List<DirectiveRecord>) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
@@ -177,13 +177,13 @@ class _DirectiveUpdating {
                                         this._bindingRecords, this._directiveRecords, true);
   }
 
-  static updateA(expression: string, dirRecord): BindingRecord {
-    return BindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'a',
+  static updateA(expression: string, dirRecord): PropertyBindingRecord {
+    return PropertyBindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'a',
                                             (o, v) => (<any>o).a = v, dirRecord);
   }
 
-  static updateB(expression: string, dirRecord): BindingRecord {
-    return BindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'b',
+  static updateB(expression: string, dirRecord): PropertyBindingRecord {
+    return PropertyBindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'b',
                                             (o, v) => (<any>o).b = v, dirRecord);
   }
 
@@ -223,16 +223,16 @@ class _DirectiveUpdating {
                 [
                   _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
                   _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
-                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
+                  PropertyBindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
                   _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
-                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
+                  PropertyBindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
                 ],
                 [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
         'directiveOnCheck': new _DirectiveUpdating(
-            [BindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
+            [PropertyBindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
             [_DirectiveUpdating.basicRecords[0]]),
         'directiveOnInit': new _DirectiveUpdating(
-            [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
+            [PropertyBindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
             [_DirectiveUpdating.basicRecords[0]]),
         'emptyWithDirectiveRecords': new _DirectiveUpdating(
             [], [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
@@ -242,7 +242,7 @@ class _DirectiveUpdating {
         'readingDirectives':
             new _DirectiveUpdating(
                 [
-                  BindingRecord.createForHostProperty(new DirectiveIndex(0, 0),
+                  PropertyBindingRecord.createForHostProperty(new DirectiveIndex(0, 0),
                                                       _getParser().parseBinding('a', 'location'),
                                                       PROP_NAME)
                 ],
@@ -250,7 +250,7 @@ class _DirectiveUpdating {
         'interpolation':
             new _DirectiveUpdating(
                 [
-                  BindingRecord.createForElementProperty(
+                  PropertyBindingRecord.createForElementProperty(
                       _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
                 ],
                 [])

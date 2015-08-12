@@ -28,7 +28,7 @@ import {
 import {ChangeDetector, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
-import {BindingRecord} from './binding_record';
+import {PropertyBindingRecord} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
 
 import {coalesce} from './coalesce';
@@ -36,15 +36,17 @@ import {coalesce} from './coalesce';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
-  _records: List<ProtoRecord>;
+  _propertyRecords: List<ProtoRecord>;
+  _eventRecords: Map<any,any> = new Map();
 
   constructor(private definition: ChangeDetectorDefinition) {
-    this._records = this._createRecords(definition);
+    this._propertyRecords = this._createRecords(definition);
+    this._eventRecords = this._createEventRecords(definition);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
     return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
-                                     this._records, this.definition.directiveRecords);
+                                     this._propertyRecords, this._eventRecords, this.definition.directiveRecords);
   }
 
   _createRecords(definition: ChangeDetectorDefinition) {
@@ -53,6 +55,22 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
                         (b) => { recordBuilder.add(b, definition.variableNames); });
     return coalesce(recordBuilder.records);
   }
+
+  _createEventRecords(definition: ChangeDetectorDefinition) {
+    var res = new Map();
+    var varNames = definition.variableNames.concat(['$event']);
+    definition.eventBindingRecords.forEach(ebr => {
+      var records = [];
+      _ConvertAstIntoProtoRecords.append(records, ebr, varNames);
+
+      if (! res.has(ebr.name)) {
+        res.set(ebr.name, []);
+      }
+      var arrayForEvent = res.get(ebr.name);
+      arrayForEvent.push([ebr.directiveRecord.directiveIndex, records]);
+    });
+    return res;
+  }
 }
 
 export class ProtoRecordBuilder {
@@ -60,7 +78,7 @@ export class ProtoRecordBuilder {
 
   constructor() { this.records = []; }
 
-  add(b: BindingRecord, variableNames: List<string> = null) {
+  add(b: any, variableNames: List<string> = null) {
     var oldLast = ListWrapper.last(this.records);
     if (isPresent(oldLast) && oldLast.bindingRecord.directiveRecord == b.directiveRecord) {
       oldLast.lastInDirective = false;
@@ -85,7 +103,7 @@ export class ProtoRecordBuilder {
     }
   }
 
-  _appendRecords(b: BindingRecord, variableNames: List<string>) {
+  _appendRecords(b: PropertyBindingRecord, variableNames: List<string>) {
     if (b.isDirectiveLifecycle()) {
       this.records.push(new ProtoRecord(RecordType.DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [],
                                         [], -1, null, this.records.length + 1, b, null, false,
@@ -97,10 +115,10 @@ export class ProtoRecordBuilder {
 }
 
 class _ConvertAstIntoProtoRecords implements AstVisitor {
-  constructor(private _records: List<ProtoRecord>, private _bindingRecord: BindingRecord,
+  constructor(private _records: List<ProtoRecord>, private _bindingRecord: any,
               private _expressionAsString: string, private _variableNames: List<any>) {}
 
-  static append(records: List<ProtoRecord>, b: BindingRecord, variableNames: List<any>) {
+  static append(records: List<ProtoRecord>, b: any, variableNames: List<any>) {
     var c = new _ConvertAstIntoProtoRecords(records, b, b.ast.toString(), variableNames);
     b.ast.visit(c);
   }
