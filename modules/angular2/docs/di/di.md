@@ -32,18 +32,18 @@ class Engine {
 }
 
 class Car {
-	constructor(@Inject(Engine) engine) {
-	}
+  constructor(@Inject(Engine) engine) {
+  }
 }
 
 var inj = Injector.resolveAndCreate([
-	bind(Car).toClass(Car),
-	bind(Engine).toClass(Engine)
+  bind(Car).toClass(Car),
+  bind(Engine).toClass(Engine)
 ]);
 var car = inj.get(Car);
 ```
 
-In this example we create two bindings: one for Car and one for Engine. `@Inject(Engine)` declares a dependency on Engine.
+In this example we create two bindings: one for `Car` and one for `Engine`. `@Inject(Engine)` declares a dependency on Engine.
 
 ## Injector
 
@@ -79,7 +79,7 @@ Injectors are hierarchical.
 
 ```
 var parent = Injector.resolveAndCreate([
-	bind(Engine).toClass(TurboEngine)
+  bind(Engine).toClass(TurboEngine)
 ]);
 var child = parent.resolveAndCreateChild([Car]);
 
@@ -89,8 +89,8 @@ var car = child.get(Car); // uses the Car binding from the child injector and En
 Injectors form a tree.
 
 ```
-	GrandParentInjector
-	 /              \
+  GrandParentInjector
+   /              \
 Parent1Injector  Parent2Injector
   |
 ChildInjector
@@ -103,10 +103,10 @@ The dependency resolution algorithm works as follows:
 var inj = this;
 while (inj) {
   if (inj.hasKey(requestedKey)) {
-		return inj.get(requestedKey);
-	} else {
-		inj = inj.parent;
-	}
+    return inj.get(requestedKey);
+  } else {
+    inj = inj.parent;
+  }
 }
 throw new NoBindingError(requestedKey);
 ```
@@ -156,7 +156,7 @@ Dependency resolution only walks up the tree. The following will throw because D
 
 ```
 var parent = Injector.resolveAndCreate([Car]);
-var child = injector.resolveAndCreateChild([
+var child = parent.resolveAndCreateChild([
   bind(Engine).toClass(TurboEngine)
 ]);
 
@@ -170,22 +170,22 @@ You can bind to a class, a value, or a factory. It is also possible to alias exi
 
 ```
 var inj = Injector.resolveAndCreate([
-	bind(Car).toClass(Car),
-	bind(Engine).toClass(Engine)
+  bind(Car).toClass(Car),
+  bind(Engine).toClass(Engine)
 ]);
 
 var inj = Injector.resolveAndCreate([
-	Car,  // syntax sugar for bind(Car).toClass(Car)
-	Engine
+  Car,  // syntax sugar for bind(Car).toClass(Car)
+  Engine
 ]);
 
 var inj = Injector.resolveAndCreate([
-	bind(Car).toValue(new Car(new Engine()))
+  bind(Car).toValue(new Car(new Engine()))
 ]);
 
 var inj = Injector.resolveAndCreate([
-	bind(Car).toFactory((e) => new Car(e), [Engine]),
-	bind(Engine).toFactory(() => new Engine())
+  bind(Car).toFactory((e) => new Car(e), [Engine]),
+  bind(Engine).toFactory(() => new Engine())
 ]);
 ```
 
@@ -193,8 +193,8 @@ You can bind any token.
 
 ```
 var inj = Injector.resolveAndCreate([
-	bind(Car).toFactory((e) => new Car(), ["engine!"]),
-	bind("engine!").toClass(Engine)
+  bind(Car).toFactory((e) => new Car(), ["engine!"]),
+  bind("engine!").toClass(Engine)
 ]);
 ```
 
@@ -202,8 +202,8 @@ If you want to alias an existing binding, you can do so using `toAlias`:
 
 ```
 var inj = Injector.resolveAndCreate([
-	bind(Engine).toClass(Engine),
-	bind("engine!").toAlias(Engine)
+  bind(Engine).toClass(Engine),
+  bind("engine!").toAlias(Engine)
 ]);
 ```
 which implies `inj.get(Engine) === inj.get("engine!")`.
