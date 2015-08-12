@@ -4,13 +4,21 @@ import {PipeBinding} from './pipe_binding';
 import * as cd from 'angular2/src/change_detection/pipes';
 
 export class ProtoPipes {
+  static fromBindings(bindings: PipeBinding[]) {
+    var config = {};
+    bindings.forEach(b => config[b.name] = b);
+    return new ProtoPipes(config);    
+  }
+  
   /**
    * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
    */
   config: StringMap<string, PipeBinding> = {};
 
-  constructor(bindings: PipeBinding[]) { bindings.forEach(b => this.config[b.name] = b); }
-
+  constructor(config: StringMap<string, PipeBinding>) {
+    this.config = config; 
+  }
+  
   get(name: string): PipeBinding {
     var binding = this.config[name];
     if (isBlank(binding)) throw new BaseException(`Cannot find pipe '${name}'.`);

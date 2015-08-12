@@ -1,18 +1,18 @@
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 
 import {DomElementBinder} from './element_binder';
-import {RenderProtoViewRef, ViewType, ViewEncapsulation} from '../../api';
+import {RenderProtoViewRef, ViewType, ViewEncapsulation, RenderTemplateCmd} from '../../api';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {TemplateCloner} from '../template_cloner';
 
-export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef): DomProtoView {
-  return (<DomProtoViewRef>protoViewRef)._protoView;
+export function resolveInternalDomProtoView(protoViewRef: RenderProtoViewRef): RenderTemplateCmd[][] {
+  return (<DomProtoViewRef>protoViewRef).fragments;
 }
 
 export class DomProtoViewRef extends RenderProtoViewRef {
-  constructor(public _protoView: DomProtoView) { super(); }
+  constructor(public fragments: RenderTemplateCmd[][]) { super(); }
 }
 
 export class DomProtoView {

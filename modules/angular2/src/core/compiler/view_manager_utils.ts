@@ -27,7 +27,7 @@ export class AppViewManagerUtils {
     var renderFragments = renderViewWithFragments.fragmentRefs;
     var renderView = renderViewWithFragments.viewRef;
 
-    var elementCount = mergedParentViewProto.mergeMapping.renderElementIndices.length;
+    var elementCount = mergedParentViewProto.mergeMapping.nestedViewIndicesByElementIndex.length;
     var viewCount = mergedParentViewProto.mergeMapping.nestedViewCountByViewIndex[0] + 1;
     var elementRefs: ElementRef[] = ListWrapper.createFixedSize(elementCount);
     var viewContainers = ListWrapper.createFixedSize(elementCount);
@@ -79,8 +79,7 @@ export class AppViewManagerUtils {
 
         // elementRefs
         var el = new ElementRef(
-            currentView.ref, boundElementIndex,
-            mergedParentViewProto.mergeMapping.renderElementIndices[boundElementIndex], renderer);
+            currentView.ref, boundElementIndex, renderer);
         elementRefs[el.boundElementIndex] = el;
 
         // preBuiltObjects
