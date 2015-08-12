@@ -1,4 +1,4 @@
-library angular.core.facade.async;
+library angular2.core.facade.async;
 
 import 'dart:async';
 export 'dart:async' show Future, Stream, StreamController, StreamSubscription;
