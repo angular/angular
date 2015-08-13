@@ -6,6 +6,7 @@
   "bugs": "<%= packageJson.bugs %>",
   "contributors": <%= JSON.stringify(packageJson.contributors) %>,
   "license": "<%= packageJson.license %>",
+  "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
     "rx": "<%= packageJson.dependencies['rx'] %>",
