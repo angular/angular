@@ -21,7 +21,7 @@ import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {Parser} from 'angular2/src/change_detection/change_detection';
 import * as pvm from '../view/proto_view_merger';
 import {CssSelector} from './selector';
-import {DOCUMENT_TOKEN, APP_ID_TOKEN} from '../dom_tokens';
+import {DOCUMENT, APP_ID} from '../dom_tokens';
 import {Inject} from 'angular2/di';
 import {SharedStylesHost} from '../view/shared_styles_host';
 import {prependAll} from '../util';
@@ -126,7 +126,7 @@ export class DomCompiler extends RenderCompiler {
 export class DefaultDomCompiler extends DomCompiler {
   constructor(schemaRegistry: ElementSchemaRegistry, templateCloner: TemplateCloner, parser: Parser,
               viewLoader: ViewLoader, sharedStylesHost: SharedStylesHost,
-              @Inject(APP_ID_TOKEN) appId: any) {
+              @Inject(APP_ID) appId: any) {
     super(schemaRegistry, templateCloner, new DefaultStepFactory(parser, appId), viewLoader,
           sharedStylesHost);
   }

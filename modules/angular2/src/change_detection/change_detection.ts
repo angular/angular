@@ -72,7 +72,7 @@ export const defaultKeyValueDiffers = CONST_EXPR(new KeyValueDiffers(keyValDiff)
 // dart2js. See https://github.com/dart-lang/sdk/issues/23630 for details.
 export var preGeneratedProtoDetectors: StringMap<string, Function> = {};
 
-export const PROTO_CHANGE_DETECTOR_KEY = CONST_EXPR(new OpaqueToken('ProtoChangeDetectors'));
+export const PROTO_CHANGE_DETECTOR = CONST_EXPR(new OpaqueToken('ProtoChangeDetectors'));
 
 /**
  * Implements change detection using a map of pregenerated proto detectors.
@@ -82,7 +82,7 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
   _dynamicChangeDetection: ChangeDetection;
   _protoChangeDetectorFactories: StringMap<string, Function>;
 
-  constructor(@Inject(PROTO_CHANGE_DETECTOR_KEY) @Optional() protoChangeDetectorsForTest?:
+  constructor(@Inject(PROTO_CHANGE_DETECTOR) @Optional() protoChangeDetectorsForTest?:
                   StringMap<string, Function>) {
     super();
     this._dynamicChangeDetection = new DynamicChangeDetection();

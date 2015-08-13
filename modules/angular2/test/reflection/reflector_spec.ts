@@ -1,8 +1,9 @@
-import {describe, it, iit, ddescribe, expect, beforeEach, IS_DARTIUM} from 'angular2/test_lib';
+import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
 import {Reflector, ReflectionInfo} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
 import {List} from 'angular2/src/facade/collection';
+import {IS_DART} from '../platform';
 
 class AType {
   value;
@@ -132,7 +133,7 @@ export function main() {
       });
     });
 
-    if (IS_DARTIUM) {
+    if (IS_DART) {
       describe("interfaces", () => {
         it("should return an array of interfaces for a type", () => {
           var p = reflector.interfaces(ClassImplementingInterface);

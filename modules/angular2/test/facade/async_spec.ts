@@ -9,8 +9,7 @@ import {
   el,
   SpyObject,
   AsyncTestCompleter,
-  inject,
-  IS_DARTIUM
+  inject
 } from 'angular2/test_lib';
 
 import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/facade/async';

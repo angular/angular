@@ -15,14 +15,14 @@ import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';
-import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
+import {DOCUMENT} from 'angular2/src/render/render';
 import {Type} from 'angular2/src/facade/lang';
 
 import {
   routerInjectables,
   Router,
   RouteConfig,
-  appBaseHrefToken,
+  APP_BASE_HREF,
   routerDirectives
 } from 'angular2/router';
 
@@ -49,7 +49,7 @@ export function main() {
       testBindings = [
         routerInjectables,
         bind(LocationStrategy).toClass(MockLocationStrategy),
-        bind(DOCUMENT_TOKEN).toValue(fakeDoc),
+        bind(DOCUMENT).toValue(fakeDoc),
         bind(ExceptionHandler).toValue(exceptionHandler)
       ];
     });

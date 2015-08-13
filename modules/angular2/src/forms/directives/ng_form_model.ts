@@ -26,7 +26,7 @@ const formDirectiveBinding =
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [formDirectives],
+ *      directives: [FORM_DIRECTIVES],
  *      template: "<form [ng-form-model]='loginForm'>" +
  *              "Login <input type='text' ng-control='login'>" +
  *              "Password <input type='password' ng-control='password'>" +
@@ -55,7 +55,7 @@ const formDirectiveBinding =
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [formDirectives],
+ *      directives: [FORM_DIRECTIVES],
  *      template: "<form [ng-form-model]='loginForm'>" +
  *              "Login <input type='text' ng-control='login' [(ng-model)]='login'>" +
  *              "Password <input type='password' ng-control='password' [(ng-model)]='password'>" +

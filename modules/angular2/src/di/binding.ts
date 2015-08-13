@@ -36,7 +36,7 @@ export class Dependency {
 const _EMPTY_LIST = CONST_EXPR([]);
 
 /**
- * Describes how the {@link Injector} should instantiate a given token.
+ * Describes how_ the {@link Injector} should instantiate a given token.
  *
  * See {@link bind}.
  *

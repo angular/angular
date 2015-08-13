@@ -60,5 +60,5 @@ export * from './src/directives/ng_switch';
  * ```
  *
  */
-export const coreDirectives: List<Type> =
+export const CORE_DIRECTIVES: List<Type> =
     CONST_EXPR([NgClass, NgFor, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault]);

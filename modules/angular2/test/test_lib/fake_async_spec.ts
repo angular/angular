@@ -8,7 +8,6 @@ import {
   flushMicrotasks,
   iit,
   inject,
-  IS_DARTIUM,
   it,
   Log,
   tick,

@@ -13,7 +13,7 @@ import {
 
 import {Injectable} from 'angular2/di';
 
-import {formDirectives} from 'angular2/forms';
+import {FORM_DIRECTIVES} from 'angular2/forms';
 
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -113,7 +113,7 @@ class DataService {
       </form>
     </div>
   `,
-  directives: [formDirectives]
+  directives: [FORM_DIRECTIVES]
 })
 class FullNameComponent {
   constructor(private service: DataService) {}
@@ -161,7 +161,7 @@ class FullNameComponent {
       </form>
     </div>
   `,
-  directives: [formDirectives, NgIf]
+  directives: [FORM_DIRECTIVES, NgIf]
 })
 class PersonsDetailComponent {
   constructor(private service: DataService) {}
@@ -182,7 +182,7 @@ class PersonsDetailComponent {
      <person-detail-cmp></person-detail-cmp>
     </div>
   `,
-  directives: [formDirectives, PersonsDetailComponent, NgFor]
+  directives: [FORM_DIRECTIVES, PersonsDetailComponent, NgFor]
 })
 class PersonsComponent {
   persons: Person[];

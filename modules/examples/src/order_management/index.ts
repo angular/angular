@@ -14,7 +14,7 @@ import {
 
 import {Injectable} from 'angular2/di';
 
-import {formDirectives} from 'angular2/forms';
+import {FORM_DIRECTIVES} from 'angular2/forms';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -109,7 +109,7 @@ class DataService {
       <button (click)="select(order)">Select</button>
   	</div>
   `,
-  directives: [formDirectives, NgFor]
+  directives: [FORM_DIRECTIVES, NgFor]
 })
 class OrderListComponent {
   orders: Order[];
@@ -143,7 +143,7 @@ class OrderListComponent {
       <button (click)="onDelete()">Delete</button>
     </div>
   `,
-  directives: [formDirectives]
+  directives: [FORM_DIRECTIVES]
 })
 class OrderItemComponent {
   item: OrderItem;
@@ -180,7 +180,7 @@ class OrderItemComponent {
       <order-item-cmp *ng-for="#item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
     </div>
   `,
-  directives: [formDirectives, OrderItemComponent, NgFor, NgIf]
+  directives: [FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]
 })
 class OrderDetailsComponent {
   constructor(private service: DataService) {}

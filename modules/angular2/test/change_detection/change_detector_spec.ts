@@ -1,15 +1,5 @@
 ///<reference path="../../src/change_detection/pipe_transform.ts"/>
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  IS_DARTIUM
-} from 'angular2/test_lib';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
 import {
   CONST_EXPR,
@@ -51,6 +41,7 @@ import {JitProtoChangeDetector} from 'angular2/src/change_detection/jit_proto_ch
 
 import {getDefinition} from './change_detector_config';
 import {getFactoryById} from './generated/change_detector_classes';
+import {IS_DART} from '../platform';
 
 const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 
@@ -68,8 +59,8 @@ const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
  */
 export function main() {
   ListWrapper.forEach(['dynamic', 'JIT', 'Pregen'], (cdType) => {
-    if (cdType == "JIT" && IS_DARTIUM) return;
-    if (cdType == "Pregen" && !IS_DARTIUM) return;
+    if (cdType == "JIT" && IS_DART) return;
+    if (cdType == "Pregen" && !IS_DART) return;
 
     describe(`${cdType} Change Detector`, () => {
 
@@ -141,7 +132,7 @@ export function main() {
          () => { expect(_bindSimpleValue('1 != 1')).toEqual(['propName=false']); });
 
       it('should support == operations on coerceible', () => {
-        var expectedValue = IS_DARTIUM ? 'false' : 'true';
+        var expectedValue = IS_DART ? 'false' : 'true';
         expect(_bindSimpleValue('1 == true')).toEqual([`propName=${expectedValue}`]);
       });
 

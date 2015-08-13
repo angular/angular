@@ -1,4 +1,4 @@
-import {describe, xdescribe, it, expect, IS_DARTIUM} from 'angular2/test_lib';
+import {describe, xdescribe, it, expect} from 'angular2/test_lib';
 
 class A {}
 class B {}

@@ -8,8 +8,7 @@ import {
   inject,
   it,
   xdescribe,
-  xit,
-  IS_DARTIUM
+  xit
 } from 'angular2/test_lib';
 import {isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
@@ -20,7 +19,8 @@ import {bind, Inject, Injector} from 'angular2/di';
 import {LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {DOCUMENT_TOKEN} from 'angular2/src/render/render';
+import {DOCUMENT} from 'angular2/src/render/render';
+import {IS_DART} from '../platform';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -87,7 +87,7 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, 'loading');
-      testBindings = [bind(DOCUMENT_TOKEN).toValue(fakeDoc)];
+      testBindings = [bind(DOCUMENT).toValue(fakeDoc)];
     });
 
     it('should throw if bootstrapped Directive is not a Component',
@@ -109,7 +109,7 @@ export function main() {
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
          var logger = new _ArrayLogger();
-         var exceptionHandler = new ExceptionHandler(logger, IS_DARTIUM ? false : true);
+         var exceptionHandler = new ExceptionHandler(logger, IS_DART ? false : true);
 
          var refPromise =
              bootstrap(HelloRootCmp, [bind(ExceptionHandler).toValue(exceptionHandler)]);
@@ -124,7 +124,7 @@ export function main() {
       it('should invoke the default exception handler when bootstrap fails',
          inject([AsyncTestCompleter], (async) => {
            var logger = new _ArrayLogger();
-           var exceptionHandler = new ExceptionHandler(logger, IS_DARTIUM ? false : true);
+           var exceptionHandler = new ExceptionHandler(logger, IS_DART ? false : true);
 
            var refPromise =
                bootstrap(HelloRootCmp, [bind(ExceptionHandler).toValue(exceptionHandler)]);

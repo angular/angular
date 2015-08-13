@@ -621,7 +621,7 @@ gulp.task('test.unit.dart', function (done) {
         return;
       }
 
-      watch(['modules/angular2/**', 'modules/http/**'], { ignoreInitial: true }, [
+      watch(['modules/angular2/**'], { ignoreInitial: true }, [
         '!build/tree.dart',
         '!test.unit.dart/karma-run'
       ]);

@@ -2,7 +2,7 @@ import {Injectable} from 'angular2/di';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 import {ResponseTypes} from './enums';
-import {IResponseOptions} from './interfaces';
+import {ResponseOptionsArgs} from './interfaces';
 
 /**
  * Creates a response options object similar to the
@@ -13,7 +13,7 @@ import {IResponseOptions} from './interfaces';
  *
  * All values are null by default.
  */
-export class ResponseOptions implements IResponseOptions {
+export class ResponseOptions {
   // TODO: ArrayBuffer | FormData | Blob
   body: string | Object;
   status: number;
@@ -21,7 +21,7 @@ export class ResponseOptions implements IResponseOptions {
   statusText: string;
   type: ResponseTypes;
   url: string;
-  constructor({body, status, headers, statusText, type, url}: IResponseOptions = {}) {
+  constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
     this.body = isPresent(body) ? body : null;
     this.status = isPresent(status) ? status : null;
     this.headers = isPresent(headers) ? headers : null;
@@ -30,7 +30,7 @@ export class ResponseOptions implements IResponseOptions {
     this.url = isPresent(url) ? url : null;
   }
 
-  merge(options?: IResponseOptions): ResponseOptions {
+  merge(options?: ResponseOptionsArgs): ResponseOptions {
     return new ResponseOptions({
       body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
       status: isPresent(options) && isPresent(options.status) ? options.status : this.status,

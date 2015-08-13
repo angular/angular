@@ -7,8 +7,7 @@ import {
   BaseException,
   assertionsEnabled,
   print,
-  stringify,
-  isDart
+  stringify
 } from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -60,11 +59,11 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {
   DomRenderer,
-  DOCUMENT_TOKEN,
+  DOCUMENT,
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
   DefaultDomCompiler,
   APP_ID_RANDOM_BINDING,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN,
+  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
   TemplateCloner
 } from 'angular2/src/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
@@ -74,8 +73,9 @@ import {
   DomSharedStylesHost
 } from 'angular2/src/render/dom/view/shared_styles_host';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
-import {appComponentRefPromiseToken, appComponentTypeToken} from './application_tokens';
+import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from './application_tokens';
 import {wtfInit} from '../profile/wtf_init';
+import {EXCEPTION_BINDING} from './platform_bindings';
 
 var _rootInjector: Injector;
 
@@ -90,11 +90,11 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     bestChangeDetection = JitChangeDetection;
   }
   return [
-    bind(DOCUMENT_TOKEN)
+    bind(DOCUMENT)
         .toValue(DOM.defaultDoc()),
     bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
-    bind(appComponentTypeToken).toValue(appComponentType),
-    bind(appComponentRefPromiseToken)
+    bind(APP_COMPONENT).toValue(appComponentType),
+    bind(APP_COMPONENT_REF_PROMISE)
         .toFactory(
             (dynamicComponentLoader, injector, testability, registry) => {
               // TODO(rado): investigate whether to support bindings on root component.
@@ -107,7 +107,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
             [DynamicComponentLoader, Injector, Testability, TestabilityRegistry]),
 
     bind(appComponentType)
-        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [appComponentRefPromiseToken]),
+        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [APP_COMPONENT_REF_PROMISE]),
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
                               [ExceptionHandler]),
     bind(EventManager)
@@ -122,7 +122,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
     TemplateCloner,
-    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(20),
+    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(20),
     DefaultDomCompiler,
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
@@ -146,7 +146,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     PipeResolver,
     Parser,
     Lexer,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM, isDart ? false : true), []),
+    EXCEPTION_BINDING,
     bind(XHR).toValue(new XHRImpl()),
     ComponentUrlMapper,
     UrlResolver,
@@ -305,7 +305,7 @@ export function commonBootstrap(
       exceptionHandler = appInjector.get(ExceptionHandler);
       zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
 
-      var compRefToken: Promise<any> = appInjector.get(appComponentRefPromiseToken);
+      var compRefToken: Promise<any> = appInjector.get(APP_COMPONENT_REF_PROMISE);
       var tick = (componentRef) => {
         var appChangeDetector = internalView(componentRef.hostView).changeDetector;
         // retrieve life cycle: may have already been created if injected in root component

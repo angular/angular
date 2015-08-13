@@ -15,8 +15,8 @@ export {
   RenderFragmentRef,
   RenderViewWithFragments,
   ViewDefinition,
-  DOCUMENT_TOKEN,
-  APP_ID_TOKEN,
+  DOCUMENT,
+  APP_ID,
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN
+  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE
 } from './src/render/render';

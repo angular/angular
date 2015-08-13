@@ -5,7 +5,7 @@ import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
-import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_tokens';
+import {DOCUMENT} from 'angular2/src/render/dom/dom_tokens';
 import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {
   RenderViewWithFragments,
@@ -65,8 +65,7 @@ export class DomTestbed {
   compiler: DefaultDomCompiler;
   rootEl;
 
-  constructor(renderer: DomRenderer, compiler: DefaultDomCompiler,
-              @Inject(DOCUMENT_TOKEN) document) {
+  constructor(renderer: DomRenderer, compiler: DefaultDomCompiler, @Inject(DOCUMENT) document) {
     this.renderer = renderer;
     this.compiler = compiler;
     this.rootEl = el('<div id="root" class="rootElem"></div>');

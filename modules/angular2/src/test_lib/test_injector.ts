@@ -53,13 +53,13 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/render/api';
 import {
   DomRenderer,
-  DOCUMENT_TOKEN,
+  DOCUMENT,
   DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
   DefaultDomCompiler,
-  APP_ID_TOKEN,
+  APP_ID,
   SharedStylesHost,
   DomSharedStylesHost,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN,
+  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
   TemplateCloner
 } from 'angular2/src/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
@@ -99,13 +99,13 @@ function _getAppBindings() {
   }
 
   return [
-    bind(DOCUMENT_TOKEN)
+    bind(DOCUMENT)
         .toValue(appDoc),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
-    bind(APP_ID_TOKEN).toValue('a'),
+    bind(APP_ID).toValue('a'),
     TemplateCloner,
-    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN).toValue(-1),
+    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(-1),
     DefaultDomCompiler,
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),

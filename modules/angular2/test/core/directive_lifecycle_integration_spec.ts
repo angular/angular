@@ -9,8 +9,7 @@ import {
   it,
   xdescribe,
   xit,
-  TestComponentBuilder,
-  IS_DARTIUM
+  TestComponentBuilder
 } from 'angular2/test_lib';
 
 import {Directive, Component, View, LifecycleEvent} from 'angular2/angular2';

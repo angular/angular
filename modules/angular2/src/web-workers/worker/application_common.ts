@@ -54,10 +54,7 @@ import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {MessageBroker} from 'angular2/src/web-workers/worker/broker';
 import {WebWorkerMessageBus} from 'angular2/src/web-workers/worker/application';
-import {
-  appComponentRefPromiseToken,
-  appComponentTypeToken
-} from 'angular2/src/core/application_tokens';
+import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from 'angular2/src/core/application_tokens';
 import {ApplicationRef} from 'angular2/src/core/application';
 import {createNgZone} from 'angular2/src/core/application_common';
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
@@ -87,9 +84,9 @@ function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
     bestChangeDetection = JitChangeDetection;
   }
   return [
-    bind(appComponentTypeToken)
+    bind(APP_COMPONENT)
         .toValue(appComponentType),
-    bind(appComponentRefPromiseToken)
+    bind(APP_COMPONENT_REF_PROMISE)
         .toFactory(
             (dynamicComponentLoader, injector) => {
 
@@ -99,7 +96,7 @@ function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
             },
             [DynamicComponentLoader, Injector]),
 
-    bind(appComponentType).toFactory((ref) => ref.instance, [appComponentRefPromiseToken]),
+    bind(appComponentType).toFactory((ref) => ref.instance, [APP_COMPONENT_REF_PROMISE]),
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
                               [ExceptionHandler]),
     Serializer,
@@ -163,7 +160,7 @@ export function bootstrapWebWorkerCommon(
                                            message["data"]["value"]);
       var compRefToken = PromiseWrapper.wrap(() => {
         try {
-          return appInjector.get(appComponentRefPromiseToken);
+          return appInjector.get(APP_COMPONENT_REF_PROMISE);
         } catch (e) {
           throw e;
         }

@@ -19,8 +19,8 @@ export {Request} from 'http/src/static_request';
 export {Response} from 'http/src/static_response';
 
 export {
-  IRequestOptions,
-  IResponseOptions,
+  RequestOptionsArgs,
+  ResponseOptionsArgs,
   Connection,
   ConnectionBackend
 } from 'http/src/interfaces';
@@ -50,8 +50,8 @@ export {URLSearchParams} from 'http/src/url_search_params';
  * #Example
  *
  * ```
- * import {httpInjectables, Http} from 'http/http';
- * @Component({selector: 'http-app', viewBindings: [httpInjectables]})
+ * import {HTTP_BINDINGS, Http} from 'http/http';
+ * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
  * @View({template: '{{data}}'})
  * class MyApp {
  *   constructor(http:Http) {
@@ -61,7 +61,7 @@ export {URLSearchParams} from 'http/src/url_search_params';
  * ```
  *
  */
-export var httpInjectables: List<any> = [
+export const HTTP_BINDINGS: List<any> = [
   bind(ConnectionBackend)
       .toClass(XHRBackend),
   BrowserXhr,
@@ -70,7 +70,7 @@ export var httpInjectables: List<any> = [
   Http
 ];
 
-export var jsonpInjectables: List<any> = [
+export const JSONP_BINDINGS: List<any> = [
   bind(ConnectionBackend)
       .toClass(JSONPBackend),
   BrowserJsonp,

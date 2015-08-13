@@ -12,10 +12,8 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {
   Injector,
   ProtoInjector,
-  PUBLIC_AND_PRIVATE,
-  PUBLIC,
-  PRIVATE,
-  undefinedValue,
+  Visibility,
+  UNDEFINED,
   Key,
   Dependency,
   bind,
@@ -376,14 +374,15 @@ export class ProtoElementInjector {
   private static _createBindingWithVisibility(firstBindingIsComponent, dirBinding, dirBindings,
                                               binding) {
     var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
-    return new BindingWithVisibility(binding, isComponent ? PUBLIC_AND_PRIVATE : PUBLIC);
+    return new BindingWithVisibility(binding,
+                                     isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
   }
 
   private static _createViewBindingsWithVisibility(bindings: List<ResolvedBinding>,
                                                    bd: BindingWithVisibility[]) {
     var db = <DirectiveBinding>bindings[0];
     ListWrapper.forEach(db.resolvedViewBindings,
-                        b => bd.push(new BindingWithVisibility(b, PRIVATE)));
+                        b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
   }
 
 
@@ -645,7 +644,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       }
     }
 
-    return undefinedValue;
+    return UNDEFINED;
   }
 
   private _buildAttribute(dep: DirectiveDependency): string {
@@ -892,41 +891,41 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var p = i.protoStrategy;
     i.resetConstructionCounter();
 
-    if (p.binding0 instanceof DirectiveBinding && isPresent(p.keyId0) && i.obj0 === undefinedValue)
+    if (p.binding0 instanceof DirectiveBinding && isPresent(p.keyId0) && i.obj0 === UNDEFINED)
       i.obj0 = i.instantiateBinding(p.binding0, p.visibility0);
-    if (p.binding1 instanceof DirectiveBinding && isPresent(p.keyId1) && i.obj1 === undefinedValue)
+    if (p.binding1 instanceof DirectiveBinding && isPresent(p.keyId1) && i.obj1 === UNDEFINED)
       i.obj1 = i.instantiateBinding(p.binding1, p.visibility1);
-    if (p.binding2 instanceof DirectiveBinding && isPresent(p.keyId2) && i.obj2 === undefinedValue)
+    if (p.binding2 instanceof DirectiveBinding && isPresent(p.keyId2) && i.obj2 === UNDEFINED)
       i.obj2 = i.instantiateBinding(p.binding2, p.visibility2);
-    if (p.binding3 instanceof DirectiveBinding && isPresent(p.keyId3) && i.obj3 === undefinedValue)
+    if (p.binding3 instanceof DirectiveBinding && isPresent(p.keyId3) && i.obj3 === UNDEFINED)
       i.obj3 = i.instantiateBinding(p.binding3, p.visibility3);
-    if (p.binding4 instanceof DirectiveBinding && isPresent(p.keyId4) && i.obj4 === undefinedValue)
+    if (p.binding4 instanceof DirectiveBinding && isPresent(p.keyId4) && i.obj4 === UNDEFINED)
       i.obj4 = i.instantiateBinding(p.binding4, p.visibility4);
-    if (p.binding5 instanceof DirectiveBinding && isPresent(p.keyId5) && i.obj5 === undefinedValue)
+    if (p.binding5 instanceof DirectiveBinding && isPresent(p.keyId5) && i.obj5 === UNDEFINED)
       i.obj5 = i.instantiateBinding(p.binding5, p.visibility5);
-    if (p.binding6 instanceof DirectiveBinding && isPresent(p.keyId6) && i.obj6 === undefinedValue)
+    if (p.binding6 instanceof DirectiveBinding && isPresent(p.keyId6) && i.obj6 === UNDEFINED)
       i.obj6 = i.instantiateBinding(p.binding6, p.visibility6);
-    if (p.binding7 instanceof DirectiveBinding && isPresent(p.keyId7) && i.obj7 === undefinedValue)
+    if (p.binding7 instanceof DirectiveBinding && isPresent(p.keyId7) && i.obj7 === UNDEFINED)
       i.obj7 = i.instantiateBinding(p.binding7, p.visibility7);
-    if (p.binding8 instanceof DirectiveBinding && isPresent(p.keyId8) && i.obj8 === undefinedValue)
+    if (p.binding8 instanceof DirectiveBinding && isPresent(p.keyId8) && i.obj8 === UNDEFINED)
       i.obj8 = i.instantiateBinding(p.binding8, p.visibility8);
-    if (p.binding9 instanceof DirectiveBinding && isPresent(p.keyId9) && i.obj9 === undefinedValue)
+    if (p.binding9 instanceof DirectiveBinding && isPresent(p.keyId9) && i.obj9 === UNDEFINED)
       i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
   }
 
   dehydrate() {
     var i = this.injectorStrategy;
 
-    i.obj0 = undefinedValue;
-    i.obj1 = undefinedValue;
-    i.obj2 = undefinedValue;
-    i.obj3 = undefinedValue;
-    i.obj4 = undefinedValue;
-    i.obj5 = undefinedValue;
-    i.obj6 = undefinedValue;
-    i.obj7 = undefinedValue;
-    i.obj8 = undefinedValue;
-    i.obj9 = undefinedValue;
+    i.obj0 = UNDEFINED;
+    i.obj1 = UNDEFINED;
+    i.obj2 = UNDEFINED;
+    i.obj3 = UNDEFINED;
+    i.obj4 = UNDEFINED;
+    i.obj5 = UNDEFINED;
+    i.obj6 = UNDEFINED;
+    i.obj7 = UNDEFINED;
+    i.obj8 = UNDEFINED;
+    i.obj9 = UNDEFINED;
   }
 
   callOnDestroy(): void {
@@ -1012,43 +1011,43 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var p = i.protoStrategy;
 
     if (isPresent(p.binding0) && p.binding0.key.token === query.selector) {
-      if (i.obj0 === undefinedValue) i.obj0 = i.instantiateBinding(p.binding0, p.visibility0);
+      if (i.obj0 === UNDEFINED) i.obj0 = i.instantiateBinding(p.binding0, p.visibility0);
       list.push(i.obj0);
     }
     if (isPresent(p.binding1) && p.binding1.key.token === query.selector) {
-      if (i.obj1 === undefinedValue) i.obj1 = i.instantiateBinding(p.binding1, p.visibility1);
+      if (i.obj1 === UNDEFINED) i.obj1 = i.instantiateBinding(p.binding1, p.visibility1);
       list.push(i.obj1);
     }
     if (isPresent(p.binding2) && p.binding2.key.token === query.selector) {
-      if (i.obj2 === undefinedValue) i.obj2 = i.instantiateBinding(p.binding2, p.visibility2);
+      if (i.obj2 === UNDEFINED) i.obj2 = i.instantiateBinding(p.binding2, p.visibility2);
       list.push(i.obj2);
     }
     if (isPresent(p.binding3) && p.binding3.key.token === query.selector) {
-      if (i.obj3 === undefinedValue) i.obj3 = i.instantiateBinding(p.binding3, p.visibility3);
+      if (i.obj3 === UNDEFINED) i.obj3 = i.instantiateBinding(p.binding3, p.visibility3);
       list.push(i.obj3);
     }
     if (isPresent(p.binding4) && p.binding4.key.token === query.selector) {
-      if (i.obj4 === undefinedValue) i.obj4 = i.instantiateBinding(p.binding4, p.visibility4);
+      if (i.obj4 === UNDEFINED) i.obj4 = i.instantiateBinding(p.binding4, p.visibility4);
       list.push(i.obj4);
     }
     if (isPresent(p.binding5) && p.binding5.key.token === query.selector) {
-      if (i.obj5 === undefinedValue) i.obj5 = i.instantiateBinding(p.binding5, p.visibility5);
+      if (i.obj5 === UNDEFINED) i.obj5 = i.instantiateBinding(p.binding5, p.visibility5);
       list.push(i.obj5);
     }
     if (isPresent(p.binding6) && p.binding6.key.token === query.selector) {
-      if (i.obj6 === undefinedValue) i.obj6 = i.instantiateBinding(p.binding6, p.visibility6);
+      if (i.obj6 === UNDEFINED) i.obj6 = i.instantiateBinding(p.binding6, p.visibility6);
       list.push(i.obj6);
     }
     if (isPresent(p.binding7) && p.binding7.key.token === query.selector) {
-      if (i.obj7 === undefinedValue) i.obj7 = i.instantiateBinding(p.binding7, p.visibility7);
+      if (i.obj7 === UNDEFINED) i.obj7 = i.instantiateBinding(p.binding7, p.visibility7);
       list.push(i.obj7);
     }
     if (isPresent(p.binding8) && p.binding8.key.token === query.selector) {
-      if (i.obj8 === undefinedValue) i.obj8 = i.instantiateBinding(p.binding8, p.visibility8);
+      if (i.obj8 === UNDEFINED) i.obj8 = i.instantiateBinding(p.binding8, p.visibility8);
       list.push(i.obj8);
     }
     if (isPresent(p.binding9) && p.binding9.key.token === query.selector) {
-      if (i.obj9 === undefinedValue) i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
+      if (i.obj9 === UNDEFINED) i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
       list.push(i.obj9);
     }
   }
@@ -1072,7 +1071,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
     for (var i = 0; i < p.keyIds.length; i++) {
       if (p.bindings[i] instanceof DirectiveBinding && isPresent(p.keyIds[i]) &&
-          inj.objs[i] === undefinedValue) {
+          inj.objs[i] === UNDEFINED) {
         inj.objs[i] = inj.instantiateBinding(p.bindings[i], p.visibilities[i]);
       }
     }
@@ -1080,7 +1079,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
   dehydrate(): void {
     var inj = this.injectorStrategy;
-    ListWrapper.fill(inj.objs, undefinedValue);
+    ListWrapper.fill(inj.objs, UNDEFINED);
   }
 
   callOnDestroy(): void {
@@ -1119,7 +1118,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
     for (var i = 0; i < p.bindings.length; i++) {
       if (p.bindings[i].key.token === query.selector) {
-        if (ist.objs[i] === undefinedValue) {
+        if (ist.objs[i] === UNDEFINED) {
           ist.objs[i] = ist.instantiateBinding(p.bindings[i], p.visibilities[i]);
         }
         list.push(ist.objs[i]);
