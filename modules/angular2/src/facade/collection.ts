@@ -1,4 +1,4 @@
-import {isJsObject, global, isPresent, isArray} from 'angular2/src/facade/lang';
+import {isJsObject, global, isPresent, isBlank, isArray} from 'angular2/src/facade/lang';
 
 export var List = global.Array;
 export var Map = global.Map;
@@ -266,6 +266,26 @@ export class ListWrapper {
   }
   static toString<T>(l: List<T>): string { return l.toString(); }
   static toJSON<T>(l: List<T>): string { return JSON.stringify(l); }
+
+  static maximum<T>(list: List<T>, predicate: (T) => number): T {
+    if (list.length == 0) {
+      return null;
+    }
+    var solution = null;
+    var maxValue = -Infinity;
+    for (var index = 0; index < list.length; index++) {
+      var candidate = list[index];
+      if (isBlank(candidate)) {
+        continue;
+      }
+      var candidateValue = predicate(candidate);
+      if (candidateValue > maxValue) {
+        solution = candidate;
+        maxValue = candidateValue;
+      }
+    }
+    return solution;
+  }
 }
 
 export function isListLikeIterable(obj: any): boolean {
