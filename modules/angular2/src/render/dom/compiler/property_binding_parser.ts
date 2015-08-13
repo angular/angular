@@ -12,13 +12,14 @@ import {dashCaseToCamelCase} from '../util';
 // Group 1 = "bind-"
 // Group 2 = "var-" or "#"
 // Group 3 = "on-"
-// Group 4 = "bindon-"
-// Group 5 = the identifier after "bind-", "var-/#", or "on-"
-// Group 6 = idenitifer inside [()]
-// Group 7 = idenitifer inside []
-// Group 8 = identifier inside ()
+// Group 4 = "onbubble-"
+// Group 5 = "bindon-"
+// Group 6 = the identifier after "bind-", "var-/#", or "on-"
+// Group 7 = idenitifer inside [()]
+// Group 8 = idenitifer inside []
+// Group 9 = identifier inside ()
 var BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
+    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(onbubble-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 /**
  * Parses the property bindings on a single element.
  */
@@ -38,30 +39,33 @@ export class PropertyBindingParser implements CompileStep {
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
       if (isPresent(bindParts)) {
         if (isPresent(bindParts[1])) {  // match: bind-prop
-          this._bindProperty(bindParts[5], attrValue, current, newAttrs);
+          this._bindProperty(bindParts[6], attrValue, current, newAttrs);
 
         } else if (isPresent(
                        bindParts[2])) {  // match: var-name / var-name="iden" / #name / #name="iden"
-          var identifier = bindParts[5];
+          var identifier = bindParts[6];
           var value = attrValue == '' ? '\$implicit' : attrValue;
           this._bindVariable(identifier, value, current, newAttrs);
 
         } else if (isPresent(bindParts[3])) {  // match: on-event
-          this._bindEvent(bindParts[5], attrValue, current, newAttrs);
+          this._bindEvent(bindParts[6], attrValue, current, newAttrs);
 
-        } else if (isPresent(bindParts[4])) {  // match: bindon-prop
-          this._bindProperty(bindParts[5], attrValue, current, newAttrs);
-          this._bindAssignmentEvent(bindParts[5], attrValue, current, newAttrs);
+        } else if (isPresent(bindParts[4])) {  // match: onbubble-event
+          this._bindEvent('^' + bindParts[6], attrValue, current, newAttrs);
 
-        } else if (isPresent(bindParts[6])) {  // match: [(expr)]
+        } else if (isPresent(bindParts[5])) {  // match: bindon-prop
           this._bindProperty(bindParts[6], attrValue, current, newAttrs);
           this._bindAssignmentEvent(bindParts[6], attrValue, current, newAttrs);
 
-        } else if (isPresent(bindParts[7])) {  // match: [expr]
+        } else if (isPresent(bindParts[7])) {  // match: [(expr)]
           this._bindProperty(bindParts[7], attrValue, current, newAttrs);
+          this._bindAssignmentEvent(bindParts[7], attrValue, current, newAttrs);
 
-        } else if (isPresent(bindParts[8])) {  // match: (event)
-          this._bindEvent(bindParts[8], attrValue, current, newAttrs);
+        } else if (isPresent(bindParts[8])) {  // match: [expr]
+          this._bindProperty(bindParts[8], attrValue, current, newAttrs);
+
+        } else if (isPresent(bindParts[9])) {  // match: (event)
+          this._bindEvent(bindParts[9], attrValue, current, newAttrs);
         }
       } else {
         var expr = this._parser.parseInterpolation(attrValue, current.elementDescription);
