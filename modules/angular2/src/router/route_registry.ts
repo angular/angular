@@ -33,7 +33,7 @@ import {
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Injectable} from 'angular2/di';
 import {normalizeRouteConfig} from './route_config_nomalizer';
-import {parser, Url} from './url_parser';
+import {parser, Url, pathSegmentsToUrl} from './url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);
 
@@ -236,13 +236,46 @@ export class RouteRegistry {
       componentCursor = response.componentType;
     }
 
-    var instruction = null;
+    var instruction: Instruction = this._generateRedirects(componentCursor);
+
 
     while (segments.length > 0) {
       instruction = new Instruction(segments.pop(), instruction, {});
     }
 
     return instruction;
+  }
+
+  // if the child includes a redirect like : "/" -> "/something",
+  // we want to honor that redirection when creating the link
+  private _generateRedirects(componentCursor: Type): Instruction {
+    if (isBlank(componentCursor)) {
+      return null;
+    }
+    var componentRecognizer = this._rules.get(componentCursor);
+    if (isBlank(componentRecognizer)) {
+      return null;
+    }
+
+    for (let i = 0; i < componentRecognizer.redirects.length; i += 1) {
+      let redirect = componentRecognizer.redirects[i];
+
+      // we only handle redirecting from an empty segment
+      if (redirect.segments.length == 1 && redirect.segments[0] == '') {
+        var toSegments = pathSegmentsToUrl(redirect.toSegments);
+        var matches = componentRecognizer.recognize(toSegments);
+        var primaryInstruction =
+            ListWrapper.maximum(matches, (match: PathMatch) => match.instruction.specificity);
+
+        if (isPresent(primaryInstruction)) {
+          var child = this._generateRedirects(primaryInstruction.instruction.componentType);
+          return new Instruction(primaryInstruction.instruction, child, {});
+        }
+        return null;
+      }
+    }
+
+    return null;
   }
 }
 
@@ -251,20 +284,8 @@ export class RouteRegistry {
  * Given a list of instructions, returns the most specific instruction
  */
 function mostSpecific(instructions: List<PrimaryInstruction>): PrimaryInstruction {
-  if (instructions.length == 0) {
-    return null;
-  }
-  var mostSpecificSolution = instructions[0];
-  for (var solutionIndex = 1; solutionIndex < instructions.length; solutionIndex++) {
-    var solution: PrimaryInstruction = instructions[solutionIndex];
-    if (isBlank(solution)) {
-      continue;
-    }
-    if (solution.component.specificity > mostSpecificSolution.component.specificity) {
-      mostSpecificSolution = solution;
-    }
-  }
-  return mostSpecificSolution;
+  return ListWrapper.maximum(
+      instructions, (instruction: PrimaryInstruction) => instruction.component.specificity);
 }
 
 function assertTerminalComponent(component, path) {

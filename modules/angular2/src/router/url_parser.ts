@@ -57,6 +57,14 @@ export class RootUrl extends Url {
   }
 }
 
+export function pathSegmentsToUrl(pathSegments: List<string>): Url {
+  var url = new Url(pathSegments[pathSegments.length - 1]);
+  for (var i = pathSegments.length - 2; i >= 0; i -= 1) {
+    url = new Url(pathSegments[i], url);
+  }
+  return url;
+}
+
 var SEGMENT_RE = RegExpWrapper.create('^[^\\/\\(\\)\\?;=&]+');
 function matchUrlSegment(str: string): string {
   var match = RegExpWrapper.firstMatch(SEGMENT_RE, str);

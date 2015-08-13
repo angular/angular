@@ -216,15 +216,15 @@ export class PathRecognizer {
     var captured = [];
 
     for (var i = 0; i < this._segments.length; i += 1) {
-      if (isBlank(nextSegment)) {
-        return null;
-      }
-      currentSegment = nextSegment;
-
       var segment = this._segments[i];
 
+      currentSegment = nextSegment;
       if (segment instanceof ContinuationSegment) {
         break;
+      }
+
+      if (isBlank(currentSegment)) {
+        return null;
       }
 
       captured.push(currentSegment.path);
@@ -251,18 +251,26 @@ export class PathRecognizer {
 
     var urlPath = captured.join('/');
 
-    // If this is the root component, read query params. Otherwise, read matrix params.
-    var paramsSegment = beginningSegment instanceof RootUrl ? beginningSegment : currentSegment;
+    var auxiliary;
+    var instruction: ComponentInstruction;
+    if (isPresent(currentSegment)) {
+      // If this is the root component, read query params. Otherwise, read matrix params.
+      var paramsSegment = beginningSegment instanceof RootUrl ? beginningSegment : currentSegment;
 
+      var allParams = isPresent(paramsSegment.params) ?
+                          StringMapWrapper.merge(paramsSegment.params, positionalParams) :
+                          positionalParams;
 
-    var allParams = isPresent(paramsSegment.params) ?
-                        StringMapWrapper.merge(paramsSegment.params, positionalParams) :
-                        positionalParams;
-    var urlParams = serializeParams(paramsSegment.params);
+      var urlParams = serializeParams(paramsSegment.params);
 
-    var instruction = new ComponentInstruction(urlPath, urlParams, this, allParams);
+      instruction = new ComponentInstruction(urlPath, urlParams, this, allParams);
 
-    return new PathMatch(instruction, nextSegment, currentSegment.auxiliary);
+      auxiliary = currentSegment.auxiliary;
+    } else {
+      instruction = new ComponentInstruction(urlPath, [], this, positionalParams);
+      auxiliary = [];
+    }
+    return new PathMatch(instruction, nextSegment, auxiliary);
   }
 
 

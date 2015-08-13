@@ -14,7 +14,13 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Type} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {RouteConfig, Route, AuxRoute, AsyncRoute} from 'angular2/src/router/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  Redirect,
+  AuxRoute,
+  AsyncRoute
+} from 'angular2/src/router/route_config_decorator';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
 import {IS_DART} from '../platform';
 
@@ -43,6 +49,24 @@ export function main() {
           .toEqual('first/second');
       expect(stringifyInstruction(registry.generate(['secondCmp'], DummyParentCmp)))
           .toEqual('second');
+    });
+
+    it('should generate URLs that account for redirects', () => {
+      registry.config(
+          RootHostCmp,
+          new Route({path: '/first/...', component: DummyParentRedirectCmp, as: 'firstCmp'}));
+
+      expect(stringifyInstruction(registry.generate(['firstCmp'], RootHostCmp)))
+          .toEqual('first/second');
+    });
+
+    it('should generate URLs in a hierarchy of redirects', () => {
+      registry.config(
+          RootHostCmp,
+          new Route({path: '/first/...', component: DummyMultipleRedirectCmp, as: 'firstCmp'}));
+
+      expect(stringifyInstruction(registry.generate(['firstCmp'], RootHostCmp)))
+          .toEqual('first/second/third');
     });
 
     it('should generate URLs with params', () => {
@@ -254,6 +278,28 @@ class DummyAsyncCmp {
 
 class DummyCmpA {}
 class DummyCmpB {}
+
+@RouteConfig([
+  new Redirect({path: '/', redirectTo: '/third'}),
+  new Route({path: '/third', component: DummyCmpB, as: 'thirdCmp'})
+])
+class DummyRedirectCmp {
+}
+
+
+@RouteConfig([
+  new Redirect({path: '/', redirectTo: '/second'}),
+  new Route({path: '/second/...', component: DummyRedirectCmp, as: 'secondCmp'})
+])
+class DummyMultipleRedirectCmp {
+}
+
+@RouteConfig([
+  new Redirect({path: '/', redirectTo: '/second'}),
+  new Route({path: '/second', component: DummyCmpB, as: 'secondCmp'})
+])
+class DummyParentRedirectCmp {
+}
 
 @RouteConfig([new Route({path: '/second', component: DummyCmpB, as: 'secondCmp'})])
 class DummyParentCmp {
