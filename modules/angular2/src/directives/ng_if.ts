@@ -26,23 +26,17 @@ import {isBlank} from 'angular2/src/facade/lang';
  */
 @Directive({selector: '[ng-if]', properties: ['ngIf']})
 export class NgIf {
-  viewContainer: ViewContainerRef;
-  templateRef: TemplateRef;
-  prevCondition: boolean;
+  private _prevCondition: boolean = null;
 
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef) {
-    this.viewContainer = viewContainer;
-    this.prevCondition = null;
-    this.templateRef = templateRef;
-  }
+  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef) {}
 
   set ngIf(newCondition /* boolean */) {
-    if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
-      this.prevCondition = true;
-      this.viewContainer.createEmbeddedView(this.templateRef);
-    } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
-      this.prevCondition = false;
-      this.viewContainer.clear();
+    if (newCondition && (isBlank(this._prevCondition) || !this._prevCondition)) {
+      this._prevCondition = true;
+      this._viewContainer.createEmbeddedView(this._templateRef);
+    } else if (!newCondition && (isBlank(this._prevCondition) || this._prevCondition)) {
+      this._prevCondition = false;
+      this._viewContainer.clear();
     }
   }
 }
