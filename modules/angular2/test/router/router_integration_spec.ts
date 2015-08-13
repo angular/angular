@@ -130,7 +130,7 @@ export function main() {
 
                  router.navigate(history[0][0]);
                });
-         }));
+         }), 1000);
     });
 
     describe('hierarchical app', () => {
