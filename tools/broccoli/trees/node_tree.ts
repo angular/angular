@@ -59,6 +59,7 @@ module.exports = function makeNodeTree(destinationPath) {
     homepage: BASE_PACKAGE_JSON.homepage,
     bugs: BASE_PACKAGE_JSON.bugs,
     license: BASE_PACKAGE_JSON.license,
+    repository: BASE_PACKAGE_JSON.repository,
     contributors: BASE_PACKAGE_JSON.contributors,
     dependencies: BASE_PACKAGE_JSON.dependencies,
     devDependencies: BASE_PACKAGE_JSON.devDependencies,

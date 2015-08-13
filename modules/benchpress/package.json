@@ -7,6 +7,7 @@
   "main" : "./index.js",
   "contributors": <%= JSON.stringify(packageJson.contributors) %>,
   "license": "<%= packageJson.license %>",
+  "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
     "traceur": "<%= packageJson.dependencies.traceur %>",
