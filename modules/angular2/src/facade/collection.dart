@@ -217,6 +217,27 @@ class ListWrapper {
     if (end == null) return len;
     return end < 0 ? max(len + end, 0) : min(end, len);
   }
+
+
+  static maximum(List l, fn(item)) {
+    if (l.length == 0) {
+      return null;
+    }
+    var solution = null;
+    var maxValue = double.NEGATIVE_INFINITY;
+    for (var index = 0; index < l.length; index++) {
+      var candidate = l[index];
+      if (candidate == null) {
+        continue;
+      }
+      var candidateValue = fn(candidate);
+      if (candidateValue > maxValue) {
+        solution = candidate;
+        maxValue = candidateValue;
+      }
+    }
+    return solution;
+  }
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;

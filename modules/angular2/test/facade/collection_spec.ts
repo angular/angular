@@ -76,6 +76,20 @@ export function main() {
       it('should respect the startIndex parameter',
          () => { expect(ListWrapper.indexOf(l, 1, 1)).toEqual(-1); });
     });
+
+    describe('maximum', () => {
+      it('should return the maximal element',
+         () => { expect(ListWrapper.maximum([1, 2, 3, 4], x => x)).toEqual(4); });
+
+      it('should ignore null values',
+         () => { expect(ListWrapper.maximum([null, 2, 3, null], x => x)).toEqual(3); });
+
+      it('should use the provided function to determine maximum',
+         () => { expect(ListWrapper.maximum([1, 2, 3, 4], x => -x)).toEqual(1); });
+
+      it('should return null for an empty list',
+         () => { expect(ListWrapper.maximum([], x => x)).toEqual(null); });
+    });
   });
 
   describe('StringMapWrapper', () => {
