@@ -101,15 +101,8 @@ export class EventEmitter extends Observable {
 
   constructor() {
     super();
-
-    // System creates a different object for import * than Typescript es5 emit.
-    if (Rx.hasOwnProperty('default')) {
-      this._subject = new (<any>Rx).default.Rx.Subject();
-      this._immediateScheduler = (<any>Rx).default.Rx.Scheduler.immediate;
-    } else {
-      this._subject = new Rx.Subject<any>();
-      this._immediateScheduler = (<any>Rx.Scheduler).immediate;
-    }
+    this._subject = new Rx.Subject<any>();
+    this._immediateScheduler = (<any>Rx.Scheduler).immediate;
   }
 
   observer(generator: any): Rx.IDisposable {
