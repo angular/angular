@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/annotations';
+import {Component, Directive, View} from 'angular2/metadata';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject, Injector} from 'angular2/di';

@@ -3,7 +3,7 @@ import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 
 /**
- * Resolve a `Type` from a {@link Component} into a URL.
+ * Resolve a `Type` from a {@link ComponentMetadata} into a URL.
  *
  * This interface can be overridden by the application developer to create custom behavior.
  *

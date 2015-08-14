@@ -1,12 +1,12 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isArray} from 'angular2/src/facade/lang';
-import {DirectiveMetadata} from 'angular2/src/render/api';
+import {RenderDirectiveMetadata} from 'angular2/src/render/api';
 
 /**
  * Converts a [DirectiveMetadata] to a map representation. This creates a copy,
  * that is, subsequent changes to `meta` will not be mirrored in the map.
  */
-export function directiveMetadataToMap(meta: DirectiveMetadata): Map<string, any> {
+export function directiveMetadataToMap(meta: RenderDirectiveMetadata): Map<string, any> {
   return MapWrapper.createFromPairs([
     ['id', meta.id],
     ['selector', meta.selector],
@@ -35,8 +35,8 @@ export function directiveMetadataToMap(meta: DirectiveMetadata): Map<string, any
  * [DirectiveMetadata] object. This creates a copy, that is, subsequent changes
  * to `map` will not be mirrored in the [DirectiveMetadata] object.
  */
-export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetadata {
-  return new DirectiveMetadata({
+export function directiveMetadataFromMap(map: Map<string, any>): RenderDirectiveMetadata {
+  return new RenderDirectiveMetadata({
     id:<string>map.get('id'),
     selector:<string>map.get('selector'),
     compileChildren:<boolean>map.get('compileChildren'),

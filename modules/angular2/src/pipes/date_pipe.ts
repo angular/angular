@@ -15,7 +15,7 @@ import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-import {Pipe} from 'angular2/src/core/annotations/decorators';
+import {Pipe} from '../core/metadata';
 
 // TODO: move to a global configable location along with other i18n components.
 var defaultLocale: string = 'en-US';

@@ -20,7 +20,7 @@ import 'logging.dart';
 /// easier.
 class NgMeta {
   /// Directive metadata for each type annotated as a directive.
-  final Map<String, DirectiveMetadata> types;
+  final Map<String, RenderDirectiveMetadata> types;
 
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
@@ -66,7 +66,7 @@ class NgMeta {
   }
 
   /// Returns the metadata for every type associated with the given [alias].
-  List<DirectiveMetadata> flatten(String alias) {
+  List<RenderDirectiveMetadata> flatten(String alias) {
     var result = [];
     var seen = new Set();
     helper(name) {

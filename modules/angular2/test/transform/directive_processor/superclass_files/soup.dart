@@ -1,6 +1,6 @@
 library dinner.soup;
 
-import 'package:angular2/src/core/annotations_impl/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 @Component(selector: '[soup]')
 class ChangingSoupComponent extends Super {}

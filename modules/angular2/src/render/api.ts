@@ -36,7 +36,7 @@ export class ElementPropertyBinding {
               public property: string, public unit: string = null) {}
 }
 
-export class ElementBinder {
+export class RenderElementBinder {
   index: number;
   parentIndex: number;
   distanceToParent: number;
@@ -110,7 +110,7 @@ export enum ViewType {
 
 export class ProtoViewDto {
   render: RenderProtoViewRef;
-  elementBinders: List<ElementBinder>;
+  elementBinders: List<RenderElementBinder>;
   variableBindings: Map<string, string>;
   type: ViewType;
   textBindings: List<ASTWithSource>;
@@ -119,7 +119,7 @@ export class ProtoViewDto {
   constructor({render, elementBinders, variableBindings, type, textBindings,
                transitiveNgContentCount}: {
     render?: RenderProtoViewRef,
-    elementBinders?: List<ElementBinder>,
+    elementBinders?: List<RenderElementBinder>,
     variableBindings?: Map<string, string>,
     type?: ViewType,
     textBindings?: List<ASTWithSource>,
@@ -134,7 +134,7 @@ export class ProtoViewDto {
   }
 }
 
-export class DirectiveMetadata {
+export class RenderDirectiveMetadata {
   static get DIRECTIVE_TYPE() { return 0; }
   static get COMPONENT_TYPE() { return 1; }
   id: any;
@@ -220,7 +220,7 @@ export class DirectiveMetadata {
     callOnAllChangesDone?: boolean,
     changeDetection?: string,
     exportAs?: string
-  }): DirectiveMetadata {
+  }): RenderDirectiveMetadata {
     let hostListeners = new Map();
     let hostProperties = new Map();
     let hostAttributes = new Map();
@@ -228,7 +228,7 @@ export class DirectiveMetadata {
 
     if (isPresent(host)) {
       MapWrapper.forEach(host, (value: string, key: string) => {
-        var matches = RegExpWrapper.firstMatch(DirectiveMetadata._hostRegExp, key);
+        var matches = RegExpWrapper.firstMatch(RenderDirectiveMetadata._hostRegExp, key);
         if (isBlank(matches)) {
           hostAttributes.set(key, value);
         } else if (isPresent(matches[1])) {
@@ -241,7 +241,7 @@ export class DirectiveMetadata {
       });
     }
 
-    return new DirectiveMetadata({
+    return new RenderDirectiveMetadata({
       id: id,
       selector: selector,
       compileChildren: compileChildren,
@@ -296,7 +296,7 @@ export class ViewDefinition {
   componentId: string;
   templateAbsUrl: string;
   template: string;
-  directives: List<DirectiveMetadata>;
+  directives: List<RenderDirectiveMetadata>;
   styleAbsUrls: List<string>;
   styles: List<string>;
   encapsulation: ViewEncapsulation;
@@ -308,7 +308,7 @@ export class ViewDefinition {
     template?: string,
     styleAbsUrls?: List<string>,
     styles?: List<string>,
-    directives?: List<DirectiveMetadata>,
+    directives?: List<RenderDirectiveMetadata>,
     encapsulation?: ViewEncapsulation
   } = {}) {
     this.componentId = componentId;
@@ -348,7 +348,7 @@ export class RenderCompiler {
   /**
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
    */
-  compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> { return null; }
+  compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> { return null; }
 
   /**
    * Compiles a single DomProtoView. Non recursive so that

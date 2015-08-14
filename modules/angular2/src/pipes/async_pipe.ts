@@ -6,7 +6,7 @@ import {PipeTransform, PipeOnDestroy, WrappedValue} from 'angular2/change_detect
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 import {ChangeDetectorRef} from 'angular2/change_detection';
 
-import {Pipe} from 'angular2/src/core/annotations/decorators';
+import {Pipe} from '../core/metadata';
 
 
 class ObservableStrategy {

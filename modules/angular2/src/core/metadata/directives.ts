@@ -6,7 +6,7 @@ import {DEFAULT} from 'angular2/change_detection';
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
- * {@link Directive}s with an embedded view are called {@link Component}s.
+ * {@link DirectiveMetadata}s with an embedded view are called {@link ComponentMetadata}s.
  *
  * A directive consists of a single directive annotation and a controller class. When the
  * directive's `selector` matches
@@ -39,7 +39,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * current `ElementInjector` resolves the constructor dependencies for each directive.
  *
  * Angular then resolves dependencies as follows, according to the order in which they appear in the
- * {@link View}:
+ * {@link ViewMetadata}:
  *
  * 1. Dependencies on the current element
  * 2. Dependencies on element injectors and their parents until it encounters a Shadow DOM boundary
@@ -64,7 +64,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: ElementRef` to obtain a reference to logical element in the view.
  * - `viewContainer: ViewContainerRef` to control child template instantiation, for
- * {@link Directive} directives only
+ * {@link DirectiveMetadata} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -288,7 +288,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * location in the current view
  * where these actions are performed.
  *
- * Views are always created as children of the current {@link View}, and as siblings of the
+ * Views are always created as children of the current {@link ViewMetadata}, and as siblings of the
  * `<template>` element. Thus a
  * directive in a child view cannot inject the directive that created it.
  *
@@ -378,7 +378,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  */
 @CONST()
-export class Directive extends InjectableMetadata {
+export class DirectiveMetadata extends InjectableMetadata {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -422,7 +422,7 @@ export class Directive extends InjectableMetadata {
    * - `directiveProperty` specifies the component property where the value is written.
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
-   * You can include a {@link Pipe} when specifying a `bindingProperty` to allow for data
+   * You can include a {@link PipeMetadata} when specifying a `bindingProperty` to allow for data
    * transformation and structural change detection of the value. These pipes will be evaluated in
    * the context of this component.
    *
@@ -768,7 +768,7 @@ export class Directive extends InjectableMetadata {
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
- * For details on the `@View` annotation, see {@link View}.
+ * For details on the `@View` annotation, see {@link ViewMetadata}.
  *
  * ## Example
  *
@@ -790,7 +790,7 @@ export class Directive extends InjectableMetadata {
  *
  */
 @CONST()
-export class Component extends Directive {
+export class ComponentMetadata extends DirectiveMetadata {
   /**
    * Defines the used change detection strategy.
    *
@@ -884,7 +884,7 @@ export class Component extends Directive {
  */
 export enum LifecycleEvent {
   /**
-   * Notify a directive whenever a {@link View} that contains it is destroyed.
+   * Notify a directive whenever a {@link ViewMetadata} that contains it is destroyed.
    *
    * ## Example
    *
@@ -1022,7 +1022,7 @@ export enum LifecycleEvent {
  * ```
  */
 @CONST()
-export class Pipe extends InjectableMetadata {
+export class PipeMetadata extends InjectableMetadata {
   name: string;
 
   constructor({name}: {name: string}) {

@@ -8,11 +8,11 @@ import 'package:analyzer/task/model.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 
-/// The [DirectiveMetadata]s of a [LibrarySpecificUnit].
-final ListResultDescriptor<DirectiveMetadata> DIRECTIVES =
-    new ListResultDescriptor<DirectiveMetadata>('ANGULAR2_DIRECTIVES', null);
+/// The [RenderDirectiveMetadata]s of a [LibrarySpecificUnit].
+final ListResultDescriptor<RenderDirectiveMetadata> DIRECTIVES =
+    new ListResultDescriptor<RenderDirectiveMetadata>('ANGULAR2_DIRECTIVES', null);
 
-/// A task that builds [DirectiveMetadata]s for directive classes.
+/// A task that builds [RenderDirectiveMetadata]s for directive classes.
 class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
   static const String UNIT_INPUT = 'UNIT_INPUT';
 
@@ -29,10 +29,10 @@ class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
   @override
   void internalPerform() {
     CompilationUnit unit = getRequiredInput(UNIT_INPUT);
-    List<DirectiveMetadata> metaList = <DirectiveMetadata>[];
+    List<RenderDirectiveMetadata> metaList = <RenderDirectiveMetadata>[];
     for (CompilationUnitMember unitMember in unit.declarations) {
       if (unitMember is ClassDeclaration) {
-        DirectiveMetadata meta = readDirectiveMetadata(unitMember.metadata);
+        RenderDirectiveMetadata meta = readDirectiveMetadata(unitMember.metadata);
         if (meta != null) {
           metaList.add(meta);
         }

@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/annotations';
+import {Directive} from 'angular2/metadata';
 import {ViewContainerRef, TemplateRef} from 'angular2/core';
 import {isBlank} from 'angular2/src/facade/lang';
 

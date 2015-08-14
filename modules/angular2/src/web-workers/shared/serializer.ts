@@ -16,8 +16,8 @@ import {
 } from "angular2/src/facade/collection";
 import {
   ProtoViewDto,
-  DirectiveMetadata,
-  ElementBinder,
+  RenderDirectiveMetadata,
+  RenderElementBinder,
   DirectiveBinder,
   ElementPropertyBinding,
   EventBinding,
@@ -85,9 +85,9 @@ export class Serializer {
       return this._serializeDirectiveBinder(obj);
     } else if (type == ProtoViewDto) {
       return this._serializeProtoViewDto(obj);
-    } else if (type == ElementBinder) {
+    } else if (type == RenderElementBinder) {
       return this._serializeElementBinder(obj);
-    } else if (type == DirectiveMetadata) {
+    } else if (type == RenderDirectiveMetadata) {
       return this._serializeDirectiveMetadata(obj);
     } else if (type == ASTWithSource) {
       return this._serializeASTWithSource(obj);
@@ -129,9 +129,9 @@ export class Serializer {
       return this._deserializeDirectiveBinder(map);
     } else if (type == ProtoViewDto) {
       return this._deserializeProtoViewDto(map);
-    } else if (type == DirectiveMetadata) {
+    } else if (type == RenderDirectiveMetadata) {
       return this._deserializeDirectiveMetadata(map);
-    } else if (type == ElementBinder) {
+    } else if (type == RenderElementBinder) {
       return this._deserializeElementBinder(map);
     } else if (type == ASTWithSource) {
       return this._deserializeASTWithSource(map, data);
@@ -271,7 +271,7 @@ export class Serializer {
       'componentId': view.componentId,
       'templateAbsUrl': view.templateAbsUrl,
       'template': view.template,
-      'directives': this.serialize(view.directives, DirectiveMetadata),
+      'directives': this.serialize(view.directives, RenderDirectiveMetadata),
       'styleAbsUrls': view.styleAbsUrls,
       'styles': view.styles,
       'encapsulation': serializeEnum(view.encapsulation)
@@ -282,7 +282,7 @@ export class Serializer {
     return new ViewDefinition({
       componentId: obj['componentId'],
       templateAbsUrl: obj['templateAbsUrl'], template: obj['template'],
-      directives: this.deserialize(obj['directives'], DirectiveMetadata),
+      directives: this.deserialize(obj['directives'], RenderDirectiveMetadata),
       styleAbsUrls: obj['styleAbsUrls'],
       styles: obj['styles'],
       encapsulation:
@@ -308,7 +308,7 @@ export class Serializer {
     });
   }
 
-  private _serializeElementBinder(binder: ElementBinder): Object {
+  private _serializeElementBinder(binder: RenderElementBinder): Object {
     return {
       'index': binder.index,
       'parentIndex': binder.parentIndex,
@@ -322,8 +322,8 @@ export class Serializer {
     };
   }
 
-  private _deserializeElementBinder(obj: StringMap<string, any>): ElementBinder {
-    return new ElementBinder({
+  private _deserializeElementBinder(obj: StringMap<string, any>): RenderElementBinder {
+    return new RenderElementBinder({
       index: obj['index'],
       parentIndex: obj['parentIndex'],
       distanceToParent: obj['distanceToParent'],
@@ -339,7 +339,7 @@ export class Serializer {
   private _serializeProtoViewDto(view: ProtoViewDto): Object {
     return {
       'render': this._protoViewStore.serialize(view.render),
-      'elementBinders': this.serialize(view.elementBinders, ElementBinder),
+      'elementBinders': this.serialize(view.elementBinders, RenderElementBinder),
       'variableBindings': this.mapToObject(view.variableBindings),
       'type': serializeEnum(view.type),
       'textBindings': this.serialize(view.textBindings, ASTWithSource),
@@ -350,7 +350,7 @@ export class Serializer {
   private _deserializeProtoViewDto(obj: StringMap<string, any>): ProtoViewDto {
     return new ProtoViewDto({
       render: this._protoViewStore.deserialize(obj["render"]),
-      elementBinders: this.deserialize(obj['elementBinders'], ElementBinder),
+      elementBinders: this.deserialize(obj['elementBinders'], RenderElementBinder),
       variableBindings: this.objectToMap(obj['variableBindings']),
       textBindings: this.deserialize(obj['textBindings'], ASTWithSource, "interpolation"),
       type: deserializeEnum(obj['type'], this._enumRegistry.get(ViewType)),
@@ -358,7 +358,7 @@ export class Serializer {
     });
   }
 
-  private _serializeDirectiveMetadata(meta: DirectiveMetadata): Object {
+  private _serializeDirectiveMetadata(meta: RenderDirectiveMetadata): Object {
     var obj = {
       'id': meta.id,
       'selector': meta.selector,
@@ -381,8 +381,8 @@ export class Serializer {
     };
     return obj;
   }
-  private _deserializeDirectiveMetadata(obj: StringMap<string, any>): DirectiveMetadata {
-    return new DirectiveMetadata({
+  private _deserializeDirectiveMetadata(obj: StringMap<string, any>): RenderDirectiveMetadata {
+    return new RenderDirectiveMetadata({
       id: obj['id'],
       selector: obj['selector'],
       compileChildren: obj['compileChildren'],

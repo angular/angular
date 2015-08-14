@@ -16,8 +16,7 @@ import {
 } from 'angular2/test_lib';
 
 import {Injector, bind} from 'angular2/di';
-import {Component, View} from 'angular2/src/core/annotations/decorators';
-import * as annotations from 'angular2/src/core/annotations_impl/view';
+import {Component, View} from 'angular2/metadata';
 import {CONST, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
 import {
   Promise,
@@ -86,10 +85,10 @@ export function main() {
     }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
-      return tcb.overrideView(MyComp, new annotations.View({
-                  template: ('<div>' + template + '</div>'),
-                  directives: [RouterOutlet, RouterLink]
-                }))
+      return tcb.overrideView(MyComp, new View({
+                                template: ('<div>' + template + '</div>'),
+                                directives: [RouterOutlet, RouterLink]
+                              }))
           .createAsync(MyComp)
           .then((tc) => { rootTC = tc; });
     }

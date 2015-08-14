@@ -5,7 +5,7 @@ module.exports = new Package('angular-v2-public-docs', [basePackage])
 
 .config(function(readTypeScriptModules) {
   readTypeScriptModules.sourceFiles = [
-    'angular2/annotations.ts',
+    'angular2/metadata.ts',
     'angular2/change_detection.ts',
     'angular2/core.ts',
     'angular2/di.ts',

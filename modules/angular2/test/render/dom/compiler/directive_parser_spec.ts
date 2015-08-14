@@ -4,7 +4,7 @@ import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/col
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DirectiveParser} from 'angular2/src/render/dom/compiler/directive_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
-import {ViewDefinition, DirectiveMetadata, ViewType} from 'angular2/src/render/api';
+import {ViewDefinition, RenderDirectiveMetadata, ViewType} from 'angular2/src/render/api';
 import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
 import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 import {MockStep} from './pipeline_spec';
@@ -191,64 +191,64 @@ export function main() {
   });
 }
 
-var someComponent = DirectiveMetadata.create(
-    {selector: 'some-comp', id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE});
+var someComponent = RenderDirectiveMetadata.create(
+    {selector: 'some-comp', id: 'someComponent', type: RenderDirectiveMetadata.COMPONENT_TYPE});
 
-var someComponentDup = DirectiveMetadata.create(
-    {selector: 'some-comp', id: 'someComponentDup', type: DirectiveMetadata.COMPONENT_TYPE});
+var someComponentDup = RenderDirectiveMetadata.create(
+    {selector: 'some-comp', id: 'someComponentDup', type: RenderDirectiveMetadata.COMPONENT_TYPE});
 
-var someComponent2 = DirectiveMetadata.create(
-    {selector: 'some-comp2', id: 'someComponent2', type: DirectiveMetadata.COMPONENT_TYPE});
+var someComponent2 = RenderDirectiveMetadata.create(
+    {selector: 'some-comp2', id: 'someComponent2', type: RenderDirectiveMetadata.COMPONENT_TYPE});
 
-var someDirective = DirectiveMetadata.create(
-    {selector: '[some-decor]', id: 'someDirective', type: DirectiveMetadata.DIRECTIVE_TYPE});
+var someDirective = RenderDirectiveMetadata.create(
+    {selector: '[some-decor]', id: 'someDirective', type: RenderDirectiveMetadata.DIRECTIVE_TYPE});
 
-var someDirectiveIgnoringChildren = DirectiveMetadata.create({
+var someDirectiveIgnoringChildren = RenderDirectiveMetadata.create({
   selector: '[some-decor-ignoring-children]',
   compileChildren: false,
-  type: DirectiveMetadata.DIRECTIVE_TYPE
+  type: RenderDirectiveMetadata.DIRECTIVE_TYPE
 
 });
 
-var decoratorWithMultipleAttrs = DirectiveMetadata.create({
+var decoratorWithMultipleAttrs = RenderDirectiveMetadata.create({
   selector: 'input[type=text][control]',
   id: 'decoratorWithMultipleAttrs',
-  type: DirectiveMetadata.DIRECTIVE_TYPE
+  type: RenderDirectiveMetadata.DIRECTIVE_TYPE
 });
 
-var someDirectiveWithProps = DirectiveMetadata.create({
+var someDirectiveWithProps = RenderDirectiveMetadata.create({
   selector: '[some-decor-props]',
   properties: ['dirProp: elProp'],
   readAttributes: ['some-attr']
 });
 
-var someDirectiveWithHostProperties = DirectiveMetadata.create({
+var someDirectiveWithHostProperties = RenderDirectiveMetadata.create({
   selector: '[some-decor-with-host-props]',
   host: MapWrapper.createFromStringMap<string>({'[hostProp]': 'dirProp'})
 });
 
-var someDirectiveWithInvalidHostProperties = DirectiveMetadata.create({
+var someDirectiveWithInvalidHostProperties = RenderDirectiveMetadata.create({
   selector: '[some-decor-with-invalid-host-props]',
   host: MapWrapper.createFromStringMap<string>({'[hostProp]': 'dirProp + dirProp2'})
 });
 
-var someDirectiveWithHostAttributes = DirectiveMetadata.create({
+var someDirectiveWithHostAttributes = RenderDirectiveMetadata.create({
   selector: '[some-decor-with-host-attrs]',
   host: MapWrapper.createFromStringMap<string>({'attr_name': 'attr_val', 'class': 'foo bar'})
 });
 
-var someDirectiveWithEvents = DirectiveMetadata.create({
+var someDirectiveWithEvents = RenderDirectiveMetadata.create({
   selector: '[some-decor-events]',
   host: MapWrapper.createFromStringMap<string>({'(click)': 'doIt()'})
 });
 
-var someDirectiveWithGlobalEvents = DirectiveMetadata.create({
+var someDirectiveWithGlobalEvents = RenderDirectiveMetadata.create({
   selector: '[some-decor-globalevents]',
   host: MapWrapper.createFromStringMap<string>({'(window:resize)': 'doItGlobal()'})
 });
 
-var componentWithNonElementSelector = DirectiveMetadata.create({
+var componentWithNonElementSelector = RenderDirectiveMetadata.create({
   id: 'componentWithNonElementSelector',
   selector: '[attr]',
-  type: DirectiveMetadata.COMPONENT_TYPE
+  type: RenderDirectiveMetadata.COMPONENT_TYPE
 });

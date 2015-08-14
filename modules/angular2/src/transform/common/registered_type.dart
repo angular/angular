@@ -23,7 +23,7 @@ class RegisteredType {
   /// The annotations registered.
   final Expression annotations;
 
-  DirectiveMetadata _directiveMetadata = null;
+  RenderDirectiveMetadata _directiveMetadata = null;
 
   RegisteredType._(this.typeName, this.registerMethod, this.factoryFn,
       this.parameters, this.annotations);
@@ -37,7 +37,7 @@ class RegisteredType {
         visitor.factoryFn, visitor.parameters, visitor.annotations);
   }
 
-  DirectiveMetadata get directiveMetadata {
+  RenderDirectiveMetadata get directiveMetadata {
     if (_directiveMetadata == null) {
       try {
         _directiveMetadata = readDirectiveMetadata(annotations);

@@ -31,19 +31,19 @@ import {
   BindingWithVisibility
 } from 'angular2/src/di/injector';
 
-import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
+import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
 import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
-import {Directive, Component, LifecycleEvent} from 'angular2/src/core/annotations_impl/annotations';
+import {DirectiveMetadata, ComponentMetadata, LifecycleEvent} from '../metadata/directives';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/src/change_detection/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
-import {DirectiveMetadata} from 'angular2/src/render/api';
+import {RenderDirectiveMetadata} from 'angular2/src/render/api';
 import {PipeBinding} from '../pipes/pipe_binding';
 
 var _staticKeys;
@@ -160,7 +160,7 @@ export class TreeNode<T extends TreeNode<any>> {
 export class DirectiveDependency extends Dependency {
   constructor(key: Key, optional: boolean, lowerBoundVisibility: Object,
               upperBoundVisibility: Object, properties: List<any>, public attributeName: string,
-              public queryDecorator: Query) {
+              public queryDecorator: QueryMetadata) {
     super(key, optional, lowerBoundVisibility, upperBoundVisibility, properties);
     this._verify();
   }
@@ -181,12 +181,12 @@ export class DirectiveDependency extends Dependency {
   }
 
   static _attributeName(properties): string {
-    var p = <Attribute>ListWrapper.find(properties, (p) => p instanceof Attribute);
+    var p = <AttributeMetadata>ListWrapper.find(properties, (p) => p instanceof AttributeMetadata);
     return isPresent(p) ? p.attributeName : null;
   }
 
-  static _query(properties): Query {
-    return <Query>ListWrapper.find(properties, (p) => p instanceof Query);
+  static _query(properties): QueryMetadata {
+    return <QueryMetadata>ListWrapper.find(properties, (p) => p instanceof QueryMetadata);
   }
 }
 
@@ -194,7 +194,7 @@ export class DirectiveBinding extends ResolvedBinding {
   constructor(key: Key, factory: Function, dependencies: List<Dependency>,
               public resolvedBindings: List<ResolvedBinding>,
               public resolvedViewBindings: List<ResolvedBinding>,
-              public metadata: DirectiveMetadata) {
+              public metadata: RenderDirectiveMetadata) {
     super(key, factory, dependencies);
   }
 
@@ -218,21 +218,21 @@ export class DirectiveBinding extends ResolvedBinding {
 
   get changeDetection() { return this.metadata.changeDetection; }
 
-  static createFromBinding(binding: Binding, ann: Directive): DirectiveBinding {
+  static createFromBinding(binding: Binding, ann: DirectiveMetadata): DirectiveBinding {
     if (isBlank(ann)) {
-      ann = new Directive();
+      ann = new DirectiveMetadata();
     }
 
     var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
     var resolvedBindings = isPresent(ann.bindings) ? Injector.resolve(ann.bindings) : [];
-    var resolvedViewBindings = ann instanceof Component && isPresent(ann.viewBindings) ?
+    var resolvedViewBindings = ann instanceof ComponentMetadata && isPresent(ann.viewBindings) ?
                                    Injector.resolve(ann.viewBindings) :
                                    [];
-    var metadata = DirectiveMetadata.create({
+    var metadata = RenderDirectiveMetadata.create({
       id: stringify(rb.key.token),
-      type: ann instanceof Component ? DirectiveMetadata.COMPONENT_TYPE :
-                                       DirectiveMetadata.DIRECTIVE_TYPE,
+      type: ann instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
+                                               RenderDirectiveMetadata.DIRECTIVE_TYPE,
       selector: ann.selector,
       compileChildren: ann.compileChildren,
       events: ann.events,
@@ -246,7 +246,7 @@ export class DirectiveBinding extends ResolvedBinding {
       callOnInit: hasLifecycleHook(LifecycleEvent.onInit, rb.key.token, ann),
       callOnAllChangesDone: hasLifecycleHook(LifecycleEvent.onAllChangesDone, rb.key.token, ann),
 
-      changeDetection: ann instanceof Component ? ann.changeDetection : null,
+      changeDetection: ann instanceof ComponentMetadata ? ann.changeDetection : null,
 
       exportAs: ann.exportAs
     });
@@ -264,7 +264,7 @@ export class DirectiveBinding extends ResolvedBinding {
     return readAttributes;
   }
 
-  static createFromType(type: Type, annotation: Directive): DirectiveBinding {
+  static createFromType(type: Type, annotation: DirectiveMetadata): DirectiveBinding {
     var binding = new Binding(type, {toClass: type});
     return DirectiveBinding.createFromBinding(binding, annotation);
   }
@@ -608,7 +608,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
         // We provide the component's view change detector to components and
         // the surrounding component's change detector to directives.
-        if (dirBin.metadata.type === DirectiveMetadata.COMPONENT_TYPE) {
+        if (dirBin.metadata.type === RenderDirectiveMetadata.COMPONENT_TYPE) {
           var componentView = this._preBuiltObjects.view.getNestedView(
               this._preBuiltObjects.elementRef.boundElementIndex);
           return componentView.changeDetector.ref;
@@ -713,7 +713,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     matched.forEach(s => queryRef.list.add(s));
   }
 
-  private _createQueryRef(query: Query): void {
+  private _createQueryRef(query: QueryMetadata): void {
     var queryList = new QueryList<any>();
     if (isBlank(this._query0)) {
       this._query0 = new QueryRef(query, queryList, this);
@@ -726,7 +726,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     }
   }
 
-  addDirectivesMatchingQuery(query: Query, list: any[]): void {
+  addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var templateRef = this._preBuiltObjects.templateRef;
     if (query.selector === TemplateRef && isPresent(templateRef)) {
       list.push(templateRef);
@@ -873,7 +873,7 @@ interface _ElementInjectorStrategy {
   getComponent(): any;
   isComponentKey(key: Key): boolean;
   buildQueries(): void;
-  addDirectivesMatchingQuery(q: Query, res: any[]): void;
+  addDirectivesMatchingQuery(q: QueryMetadata, res: any[]): void;
   getComponentBinding(): DirectiveBinding;
   hydrate(): void;
   dehydrate(): void;
@@ -1006,7 +1006,7 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     }
   }
 
-  addDirectivesMatchingQuery(query: Query, list: any[]): void {
+  addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var i = this.injectorStrategy;
     var p = i.protoStrategy;
 
@@ -1112,7 +1112,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     }
   }
 
-  addDirectivesMatchingQuery(query: Query, list: any[]): void {
+  addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var ist = this.injectorStrategy;
     var p = ist.protoStrategy;
 
@@ -1144,7 +1144,7 @@ export class QueryError extends BaseException {
 }
 
 export class QueryRef {
-  constructor(public query: Query, public list: QueryList<any>,
+  constructor(public query: QueryMetadata, public list: QueryList<any>,
               public originator: ElementInjector) {}
 
   get isViewQuery(): boolean { return this.query.isViewQuery; }

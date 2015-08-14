@@ -8,7 +8,7 @@ import {
   ViewDefinition,
   ProtoViewDto,
   ViewType,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   RenderCompiler,
   RenderProtoViewRef,
   RenderProtoViewMergeMapping,
@@ -50,7 +50,7 @@ export class DomCompiler extends RenderCompiler {
         });
   }
 
-  compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> {
+  compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
     let hostViewDef = new ViewDefinition({
       componentId: directiveMetadata.id,
       templateAbsUrl: null, template: null,

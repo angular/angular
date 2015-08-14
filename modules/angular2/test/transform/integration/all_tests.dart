@@ -39,8 +39,8 @@ void allTests() {
    * every test.
    */
   var commonInputs = {
-    'angular2|lib/src/core/annotations_impl/annotations.dart':
-        '../../../lib/src/core/annotations_impl/annotations.dart',
+    'angular2|lib/src/core/metadata.dart':
+        '../../../lib/src/core/metadata.dart',
     'angular2|lib/src/core/application.dart': '../common/application.dart',
     'angular2|lib/src/reflection/reflection_capabilities.dart':
         '../common/reflection_capabilities.dart',
@@ -97,8 +97,7 @@ void allTests() {
     new IntegrationTestConfig('should preserve multiple annotations.', inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations_impl/view.dart':
-          '../../../lib/src/core/annotations_impl/view.dart'
+      'angular2|lib/src/core/metadata.dart': '../../../lib/src/core/metadata.dart'
     }, outputs: {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'

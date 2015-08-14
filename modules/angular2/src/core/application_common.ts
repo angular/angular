@@ -359,12 +359,12 @@ export class ApplicationRef {
   }
 
   /**
-   * Returns the current {@link Component} type.
+   * Returns the current {@link ComponentMetadata} type.
    */
   get hostComponentType(): Type { return this._hostComponentType; }
 
   /**
-   * Returns the current {@link Component} instance.
+   * Returns the current {@link ComponentMetadata} instance.
    */
   get hostComponent(): any { return this._hostComponent.instance; }
 

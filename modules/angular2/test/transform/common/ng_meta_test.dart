@@ -8,10 +8,10 @@ main() => allTests();
 
 void allTests() {
   var mockData = [
-    new DirectiveMetadata(id: 'm1'),
-    new DirectiveMetadata(id: 'm2'),
-    new DirectiveMetadata(id: 'm3'),
-    new DirectiveMetadata(id: 'm4')
+    new RenderDirectiveMetadata(id: 'm1'),
+    new RenderDirectiveMetadata(id: 'm2'),
+    new RenderDirectiveMetadata(id: 'm3'),
+    new RenderDirectiveMetadata(id: 'm4')
   ];
 
   it('should allow empty data.', () {

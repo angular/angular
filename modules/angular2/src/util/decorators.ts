@@ -53,7 +53,7 @@ export interface TypeDecorator {
   // ParameterDecorator is declared in lib.d.ts as a `declare type`
   // so we cannot declare this interface as a subtype.
   // see https://github.com/angular/angular/issues/3379#issuecomment-126169417
-  (target: Object, propertyKey: string | symbol, parameterIndex: number): void;
+  (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
 
   /**
    * Storage for the accumulated annotations so far used by the DSL syntax.

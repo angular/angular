@@ -14,7 +14,7 @@ import {
   ProtoViewDto,
   ViewDefinition,
   RenderEventDispatcher,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   RenderElementRef,
   RenderProtoViewMergeMapping,
   RenderProtoViewRef
@@ -76,7 +76,8 @@ export class DomTestbed {
     DOM.appendChild(DOM.querySelector(document, 'body'), this.rootEl);
   }
 
-  compile(host: DirectiveMetadata, componentViews: ViewDefinition[]): Promise<ProtoViewDto[]> {
+  compile(host: RenderDirectiveMetadata,
+          componentViews: ViewDefinition[]): Promise<ProtoViewDto[]> {
     var promises = [this.compiler.compileHost(host)];
     componentViews.forEach(view => promises.push(this.compiler.compile(view)));
     return PromiseWrapper.all(promises);
@@ -87,7 +88,7 @@ export class DomTestbed {
         <ProtoViewDto>protoViews[0], ListWrapper.slice(protoViews, 1)));
   }
 
-  compileAndMerge(host: DirectiveMetadata,
+  compileAndMerge(host: RenderDirectiveMetadata,
                   componentViews: ViewDefinition[]): Promise<RenderProtoViewMergeMapping> {
     return this.compile(host, componentViews).then(protoViewDtos => this.merge(protoViewDtos));
   }

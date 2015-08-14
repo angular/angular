@@ -1,5 +1,5 @@
 import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/facade/lang';
-import {Directive, LifecycleEvent} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {ElementRef} from 'angular2/core';
 import {Renderer} from 'angular2/src/render/api';
 import {

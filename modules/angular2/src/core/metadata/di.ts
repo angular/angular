@@ -29,7 +29,7 @@ import {resolveForwardRef} from 'angular2/di';
  * ```
  */
 @CONST()
-export class Attribute extends DependencyMetadata {
+export class AttributeMetadata extends DependencyMetadata {
   constructor(public attributeName: string) { super(); }
 
   get token() {
@@ -49,7 +49,7 @@ export class Attribute extends DependencyMetadata {
  * See {@link QueryList} for usage and example.
  */
 @CONST()
-export class Query extends DependencyMetadata {
+export class QueryMetadata extends DependencyMetadata {
   descendants: boolean;
   constructor(private _selector: Type | string,
               {descendants = false}: {descendants?: boolean} = {}) {
@@ -74,7 +74,7 @@ export class Query extends DependencyMetadata {
  * See {@link QueryList} for usage and example.
  */
 @CONST()
-export class ViewQuery extends Query {
+export class ViewQueryMetadata extends QueryMetadata {
   constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
     super(_selector, {descendants: descendants});
   }

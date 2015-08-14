@@ -3,7 +3,7 @@ library angular2.transform.directive_processor.visitors;
 import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
-import 'package:angular2/annotations.dart' show LifecycleEvent;
+import 'package:angular2/metadata.dart' show LifecycleEvent;
 import 'package:angular2/src/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';

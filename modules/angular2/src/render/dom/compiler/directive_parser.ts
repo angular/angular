@@ -9,7 +9,7 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
-import {DirectiveMetadata} from '../../api';
+import {RenderDirectiveMetadata} from '../../api';
 import {dashCaseToCamelCase, camelCaseToDashCase, EVENT_TARGET_SEPARATOR} from '../util';
 import {DirectiveBuilder, ElementBinderBuilder} from '../view/proto_view_builder';
 
@@ -20,7 +20,7 @@ import {DirectiveBuilder, ElementBinderBuilder} from '../view/proto_view_builder
 export class DirectiveParser implements CompileStep {
   _selectorMatcher: SelectorMatcher = new SelectorMatcher();
 
-  constructor(public _parser: Parser, public _directives: List<DirectiveMetadata>) {
+  constructor(public _parser: Parser, public _directives: List<RenderDirectiveMetadata>) {
     for (var i = 0; i < _directives.length; i++) {
       var directive = _directives[i];
       var selector = CssSelector.parse(directive.selector);
@@ -48,7 +48,7 @@ export class DirectiveParser implements CompileStep {
       var directive = this._directives[directiveIndex];
 
       elementBinder = current.bindElement();
-      if (directive.type === DirectiveMetadata.COMPONENT_TYPE) {
+      if (directive.type === RenderDirectiveMetadata.COMPONENT_TYPE) {
         this._ensureHasOnlyOneComponent(elementBinder, current.elementDescription);
 
         // components need to go first, so it is easier to locate them in the result.

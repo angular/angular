@@ -2,7 +2,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
-import {Directive, Attribute} from 'angular2/src/core/annotations/decorators';
+import {Directive, Attribute} from '../core/metadata';
 import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
 import {Injector, bind, Dependency, UNDEFINED} from 'angular2/di';
 

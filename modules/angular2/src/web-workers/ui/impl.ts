@@ -9,7 +9,7 @@ import {createInjector} from "./di_bindings";
 import {
   Renderer,
   RenderCompiler,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   ProtoViewDto,
   ViewDefinition,
   RenderProtoViewRef,
@@ -94,7 +94,7 @@ export class WebWorkerMain {
     var promise: Promise<any>;
     switch (data.method) {
       case "compileHost":
-        var directiveMetadata = this._serializer.deserialize(data.args[0], DirectiveMetadata);
+        var directiveMetadata = this._serializer.deserialize(data.args[0], RenderDirectiveMetadata);
         promise = this._renderCompiler.compileHost(directiveMetadata);
         this._wrapWebWorkerPromise(data.id, promise, ProtoViewDto);
         break;

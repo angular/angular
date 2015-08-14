@@ -1,10 +1,10 @@
 import {resolveForwardRef, Injectable} from 'angular2/di';
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
-import {Directive} from '../annotations_impl/annotations';
+import {DirectiveMetadata} from 'angular2/metadata';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 /**
- * Resolve a `Type` for {@link Directive}.
+ * Resolve a `Type` for {@link DirectiveMetadata}.
  *
  * This interface can be overridden by the application developer to create custom behavior.
  *
@@ -13,14 +13,14 @@ import {reflector} from 'angular2/src/reflection/reflection';
 @Injectable()
 export class DirectiveResolver {
   /**
-   * Return {@link Directive} for a given `Type`.
+   * Return {@link DirectiveMetadata} for a given `Type`.
    */
-  resolve(type: Type): Directive {
+  resolve(type: Type): DirectiveMetadata {
     var annotations = reflector.annotations(resolveForwardRef(type));
     if (isPresent(annotations)) {
       for (var i = 0; i < annotations.length; i++) {
         var annotation = annotations[i];
-        if (annotation instanceof Directive) {
+        if (annotation instanceof DirectiveMetadata) {
           return annotation;
         }
       }

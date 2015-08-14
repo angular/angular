@@ -23,7 +23,7 @@ import {
   Directive,
   Component,
   View,
-} from 'angular2/annotations';
+} from 'angular2/metadata';
 import {IS_DART} from '../platform';
 
 @Component({selector: 'my-comp'})

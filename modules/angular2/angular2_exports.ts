@@ -1,4 +1,4 @@
-export * from './annotations';
+export * from './metadata';
 export * from './change_detection';
 export * from './core';
 export * from './di';

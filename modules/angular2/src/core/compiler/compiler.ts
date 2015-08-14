@@ -20,7 +20,7 @@ import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {View} from '../annotations_impl/view';
+import {ViewMetadata} from 'angular2/metadata';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -30,7 +30,14 @@ import {wtfStartTimeRange, wtfEndTimeRange} from '../../profile/profile';
 import {PipeBinding} from '../pipes/pipe_binding';
 import {DEFAULT_PIPES_TOKEN} from 'angular2/pipes';
 
-import * as renderApi from 'angular2/src/render/api';
+import {
+  RenderDirectiveMetadata,
+  ViewDefinition,
+  RenderCompiler,
+  ViewType,
+  RenderProtoViewMergeMapping,
+  RenderProtoViewRef
+} from 'angular2/src/render/api';
 
 /**
  * Cache that stores the AppProtoView of the template of a component.
@@ -97,8 +104,8 @@ export class Compiler {
               @Inject(DEFAULT_PIPES_TOKEN) _defaultPipes: Type[],
               private _compilerCache: CompilerCache, private _viewResolver: ViewResolver,
               private _componentUrlMapper: ComponentUrlMapper, private _urlResolver: UrlResolver,
-              private _render: renderApi.RenderCompiler,
-              private _protoViewFactory: ProtoViewFactory, appUrl: AppRootUrl) {
+              private _render: RenderCompiler, private _protoViewFactory: ProtoViewFactory,
+              appUrl: AppRootUrl) {
     this._defaultPipes = _defaultPipes;
     this._appUrl = appUrl.value;
   }
@@ -215,7 +222,7 @@ export class Compiler {
                                    componentPath: Map<Type, AppProtoView>): Promise<AppProtoView> {
     var nestedPVPromises = [];
     componentPath = MapWrapper.clone(componentPath);
-    if (appProtoViews[0].type === renderApi.ViewType.COMPONENT) {
+    if (appProtoViews[0].type === ViewType.COMPONENT) {
       componentPath.set(componentType, appProtoViews[0]);
     }
     appProtoViews.forEach(appProtoView => {
@@ -230,7 +237,7 @@ export class Compiler {
               if (appProtoView.isEmbeddedFragment) {
                 throw new BaseException(
                     `<ng-content> is used within the recursive path of ${stringify(nestedComponentType)}`);
-              } else if (appProtoView.type === renderApi.ViewType.COMPONENT) {
+              } else if (appProtoView.type === ViewType.COMPONENT) {
                 throw new BaseException(
                     `Unconditional component cycle in ${stringify(nestedComponentType)}`);
               } else {
@@ -253,18 +260,17 @@ export class Compiler {
   }
 
   private _mergeProtoView(appProtoView: AppProtoView): Promise<any> {
-    if (appProtoView.type !== renderApi.ViewType.HOST &&
-        appProtoView.type !== renderApi.ViewType.EMBEDDED) {
+    if (appProtoView.type !== ViewType.HOST && appProtoView.type !== ViewType.EMBEDDED) {
       return null;
     }
     return this._render.mergeProtoViewsRecursively(this._collectMergeRenderProtoViews(appProtoView))
-        .then((mergeResult: renderApi.RenderProtoViewMergeMapping) => {
+        .then((mergeResult: RenderProtoViewMergeMapping) => {
           appProtoView.mergeMapping = new AppProtoViewMergeMapping(mergeResult);
         });
   }
 
-  private _collectMergeRenderProtoViews(
-      appProtoView: AppProtoView): List<renderApi.RenderProtoViewRef | List<any>> {
+  private _collectMergeRenderProtoViews(appProtoView:
+                                            AppProtoView): List<RenderProtoViewRef | List<any>> {
     var result = [appProtoView.render];
     for (var i = 0; i < appProtoView.elementBinders.length; i++) {
       var binder = appProtoView.elementBinders[i];
@@ -290,7 +296,7 @@ export class Compiler {
     return componentElementBinders;
   }
 
-  private _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {
+  private _buildRenderTemplate(component, view, directives): ViewDefinition {
     var componentUrl =
         this._urlResolver.resolve(this._appUrl, this._componentUrlMapper.getUrl(component));
     var templateAbsUrl = null;
@@ -307,7 +313,7 @@ export class Compiler {
       styleAbsUrls =
           ListWrapper.map(view.styleUrls, url => this._urlResolver.resolve(componentUrl, url));
     }
-    return new renderApi.ViewDefinition({
+    return new ViewDefinition({
       componentId: stringify(component),
       templateAbsUrl: templateAbsUrl, template: view.template,
       styleAbsUrls: styleAbsUrls,
@@ -317,14 +323,14 @@ export class Compiler {
     });
   }
 
-  private _flattenPipes(view: View): any[] {
+  private _flattenPipes(view: ViewMetadata): any[] {
     if (isBlank(view.pipes)) return this._defaultPipes;
     var pipes = ListWrapper.clone(this._defaultPipes);
     this._flattenList(view.pipes, pipes);
     return pipes;
   }
 
-  private _flattenDirectives(view: View): List<Type> {
+  private _flattenDirectives(view: ViewMetadata): List<Type> {
     if (isBlank(view.directives)) return [];
     var directives = [];
     this._flattenList(view.directives, directives);
@@ -347,7 +353,7 @@ export class Compiler {
   }
 
   private static _assertTypeIsComponent(directiveBinding: DirectiveBinding): void {
-    if (directiveBinding.metadata.type !== renderApi.DirectiveMetadata.COMPONENT_TYPE) {
+    if (directiveBinding.metadata.type !== RenderDirectiveMetadata.COMPONENT_TYPE) {
       throw new BaseException(
           `Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
     }

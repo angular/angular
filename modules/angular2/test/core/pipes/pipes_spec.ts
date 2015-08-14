@@ -14,7 +14,7 @@ import {PipeTransform} from 'angular2/change_detection';
 import {Injector, Inject, bind} from 'angular2/di';
 import {ProtoPipes, Pipes} from 'angular2/src/core/pipes/pipes';
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
-import {Pipe} from 'angular2/src/core/annotations_impl/annotations';
+import {Pipe} from 'angular2/metadata';
 
 class PipeA implements PipeTransform {
   transform(a, b) {}

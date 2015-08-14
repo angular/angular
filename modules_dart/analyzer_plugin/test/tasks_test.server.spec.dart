@@ -34,7 +34,7 @@ class BuildUnitDirectivesTaskTest extends _AbstractDartTaskTest {
   void test_Component() {
     _addAngularSources();
     Source source = _newSource('/test.dart', r'''
-import '/angular2/annotations.dart';
+import '/angular2/metadata.dart';
 
 @Component(selector: 'comp-a')
 class ComponentA {
@@ -57,7 +57,7 @@ class ComponentB {
   void test_Directive() {
     _addAngularSources();
     Source source = _newSource('/test.dart', r'''
-import '/angular2/annotations.dart';
+import '/angular2/metadata.dart';
 
 @Directive(selector: 'deco-a')
 class ComponentA {
@@ -78,12 +78,12 @@ class ComponentB {
   }
 
   void _addAngularSources() {
-    _newSource('/angular2/annotations.dart', r'''
-library angular2.src.core.annotations.annotations;
+    _newSource('/angular2/metadata.dart', r'''
+library angular2.src.core.metadata;
 
 abstract class Directive {
   final String selector;
-  final dynamic properties; 
+  final dynamic properties;
   final dynamic hostListeners;
   final List lifecycle;
   const Directive({selector, properties, hostListeners, lifecycle})

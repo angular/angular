@@ -41,7 +41,7 @@ const bContents = '''
 library b.ng_deps.dart;
 
 import 'b.dart';
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 bool _visited = false;
 void initReflector(reflector) {
@@ -60,7 +60,7 @@ const cContents = '''
 library c.ng_deps.dart;
 
 import 'c.dart';
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 import 'b.dart' as dep;
 
 bool _visited = false;

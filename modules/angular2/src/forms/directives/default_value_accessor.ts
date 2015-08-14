@@ -1,5 +1,5 @@
 import {Renderer} from 'angular2/render';
-import {Directive} from 'angular2/annotations';
+import {Directive} from 'angular2/metadata';
 import {ElementRef} from 'angular2/core';
 import {Self} from 'angular2/di';
 import {NgControl} from './ng_control';
