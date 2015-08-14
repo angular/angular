@@ -430,6 +430,28 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should handle long ng-for cycles',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-query-order #q></needs-view-query-order>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsViewQueryOrder = view.componentViewChildren[0].getLocal('q');
+
+                 // no significance to 50, just a reasonably large cycle.
+                 for (var i = 0; i < 50; i++) {
+                   var newString = i.toString();
+                   q.list = [newString];
+                   view.detectChanges();
+
+                   expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', newString, '4']);
+                 }
+
+                 async.done();
+               });
+         }));
     });
   });
 }
