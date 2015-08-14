@@ -486,11 +486,11 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._addDirectivesToQueries();
     this._addVarBindingsToQueries();
 
+    this.hydrated = true;
+
     // TODO(rado): optimize this call, if view queries are not moved around,
     // simply appending to the query list is faster than updating.
     this._updateViewQueries();
-
-    this.hydrated = true;
   }
 
   private _updateViewQueries() {
@@ -1164,7 +1164,7 @@ export class QueryRef {
   }
 
   visit(inj: ElementInjector, aggregator: any[]): void {
-    if (isBlank(inj) || !inj._hasQuery(this)) return;
+    if (isBlank(inj) || !inj._hasQuery(this) || !inj.hydrated) return;
 
     if (this.query.isVarBindingQuery) {
       this._aggregateVariableBindings(inj, aggregator);
