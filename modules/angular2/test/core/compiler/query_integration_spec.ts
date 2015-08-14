@@ -103,6 +103,24 @@ export function main() {
                });
          }));
 
+      it('should be cleanly destroyed when a query crosses view boundaries',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<div text="1"></div>' +
+               '<needs-query text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query>' +
+               '<div text="4"></div>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((rtc) => {
+                 rtc.componentInstance.shouldShow = true;
+                 rtc.detectChanges();
+                 rtc.destroy();
+
+                 async.done();
+               });
+         }));
+
       it('should reflect moved directives',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
