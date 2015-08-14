@@ -6,7 +6,8 @@ import {implementsOnDestroy} from './pipe_lifecycle_reflector';
 
 
 /**
- * Indicates that the result of a {@link Pipe} transformation has changed even though the reference
+ * Indicates that the result of a {@link PipeMetadata} transformation has changed even though the
+ * reference
  * has not changed.
  *
  * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.

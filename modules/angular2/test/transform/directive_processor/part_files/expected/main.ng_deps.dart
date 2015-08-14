@@ -3,7 +3,7 @@ library main.ng_deps.dart;
 import 'main.dart';
 export 'main.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
-import 'package:angular2/src/core/annotations_impl/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 var _visited = false;
 void initReflector() {

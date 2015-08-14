@@ -20,7 +20,7 @@ import {DomTestbed, TestRootView, elRef} from './dom_testbed';
 
 import {
   ViewDefinition,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   RenderViewRef,
   ViewEncapsulation
 } from 'angular2/src/render/api';
@@ -342,5 +342,5 @@ export function main() {
   });
 }
 
-export var someComponent = DirectiveMetadata.create(
-    {id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'some-comp'});
+export var someComponent = RenderDirectiveMetadata.create(
+    {id: 'someComponent', type: RenderDirectiveMetadata.COMPONENT_TYPE, selector: 'some-comp'});

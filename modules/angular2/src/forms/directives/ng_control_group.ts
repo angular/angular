@@ -1,4 +1,4 @@
-import {Directive, LifecycleEvent} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/di';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {CONST_EXPR} from 'angular2/src/facade/lang';

@@ -1,7 +1,7 @@
 import {
   Renderer,
   RenderCompiler,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   ProtoViewDto,
   ViewDefinition,
   RenderProtoViewRef,
@@ -28,8 +28,8 @@ export class WebWorkerCompiler implements RenderCompiler {
   /**
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
    */
-  compileHost(directiveMetadata: DirectiveMetadata): Promise<ProtoViewDto> {
-    var fnArgs: List<FnArg> = [new FnArg(directiveMetadata, DirectiveMetadata)];
+  compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
+    var fnArgs: List<FnArg> = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
     var args: UiArguments = new UiArguments("compiler", "compileHost", fnArgs);
     return this._messageBroker.runOnUiThread(args, ProtoViewDto);
   }

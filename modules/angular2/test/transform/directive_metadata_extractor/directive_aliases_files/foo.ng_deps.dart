@@ -1,7 +1,7 @@
 library foo.ng_deps.dart;
 
 import 'foo.dart';
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 export 'bar.dart';
 import 'bar.ng_deps.dart' as i0;

@@ -17,7 +17,7 @@ import {Serializer} from "angular2/src/web-workers/shared/serializer";
 import {isPresent, isBlank, BaseException, Type} from "angular2/src/facade/lang";
 import {MapWrapper, ListWrapper} from "angular2/src/facade/collection";
 import {
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   ProtoViewDto,
   RenderProtoViewRef,
   RenderViewWithFragments,
@@ -98,8 +98,8 @@ export function main() {
     it('should build the proto view', inject([AsyncTestCompleter], (async) => {
          var compiler: WebWorkerCompiler = createWorkerCompiler(workerSerializer, uiSerializer, tb);
 
-         var dirMetadata = DirectiveMetadata.create(
-             {id: 'id', selector: 'custom', type: DirectiveMetadata.COMPONENT_TYPE});
+         var dirMetadata = RenderDirectiveMetadata.create(
+             {id: 'id', selector: 'custom', type: RenderDirectiveMetadata.COMPONENT_TYPE});
          compiler.compileHost(dirMetadata)
              .then((protoView) => {
                expect(DOM.tagName(DOM.firstChild(DOM.content(

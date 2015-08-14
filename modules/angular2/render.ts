@@ -5,7 +5,7 @@
  */
 
 export {
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   DomRenderer,
   RenderEventDispatcher,
   Renderer,

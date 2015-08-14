@@ -3,7 +3,7 @@ library bar.ng_deps.dart;
 import 'bar.dart';
 export 'bar.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
-import 'package:angular2/src/core/annotations_impl/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 export 'foo.dart';
 import 'foo.ng_deps.dart' as i0;
 

@@ -1,12 +1,12 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {DirectiveMetadata} from 'angular2/src/render/api';
+import {RenderDirectiveMetadata} from 'angular2/src/render/api';
 import {directiveMetadataFromMap, directiveMetadataToMap} from 'angular2/src/render/dom/convert';
 import {ddescribe, describe, expect, it} from 'angular2/test_lib';
 
 export function main() {
   describe('convert', () => {
     it('directiveMetadataToMap', () => {
-      var someComponent = new DirectiveMetadata({
+      var someComponent = new RenderDirectiveMetadata({
         compileChildren: false,
         hostListeners: MapWrapper.createFromPairs([['LKey', 'LVal']]),
         hostProperties: MapWrapper.createFromPairs([['PKey', 'PVal']]),
@@ -16,7 +16,7 @@ export function main() {
         properties: ['propKey: propVal'],
         readAttributes: ['read1', 'read2'],
         selector: 'some-comp',
-        type: DirectiveMetadata.COMPONENT_TYPE,
+        type: RenderDirectiveMetadata.COMPONENT_TYPE,
         exportAs: 'aaa',
         callOnDestroy: true,
         callOnChange: true,
@@ -36,7 +36,7 @@ export function main() {
       expect(map.get('properties')).toEqual(['propKey: propVal']);
       expect(map.get('readAttributes')).toEqual(['read1', 'read2']);
       expect(map.get('selector')).toEqual('some-comp');
-      expect(map.get('type')).toEqual(DirectiveMetadata.COMPONENT_TYPE);
+      expect(map.get('type')).toEqual(RenderDirectiveMetadata.COMPONENT_TYPE);
       expect(map.get('callOnDestroy')).toEqual(true);
       expect(map.get('callOnCheck')).toEqual(true);
       expect(map.get('callOnChange')).toEqual(true);
@@ -58,7 +58,7 @@ export function main() {
         ['properties', ['propKey: propVal']],
         ['readAttributes', ['readTest1', 'readTest2']],
         ['selector', 'testSelector'],
-        ['type', DirectiveMetadata.DIRECTIVE_TYPE],
+        ['type', RenderDirectiveMetadata.DIRECTIVE_TYPE],
         ['exportAs', 'aaa'],
         ['callOnDestroy', true],
         ['callOnCheck', true],
@@ -78,7 +78,7 @@ export function main() {
       expect(meta.properties).toEqual(['propKey: propVal']);
       expect(meta.readAttributes).toEqual(['readTest1', 'readTest2']);
       expect(meta.selector).toEqual('testSelector');
-      expect(meta.type).toEqual(DirectiveMetadata.DIRECTIVE_TYPE);
+      expect(meta.type).toEqual(RenderDirectiveMetadata.DIRECTIVE_TYPE);
       expect(meta.exportAs).toEqual('aaa');
       expect(meta.callOnDestroy).toEqual(true);
       expect(meta.callOnCheck).toEqual(true);

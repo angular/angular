@@ -1,1 +1,1 @@
-library util_decorators;
+library angular2.core.util.decorators;

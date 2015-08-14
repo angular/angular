@@ -1,6 +1,6 @@
 library dinner.soup.ng_deps.dart;
 
-import 'package:angular2/src/core/annotations_impl/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 import 'soup.dart';
 
 var _visited = false;

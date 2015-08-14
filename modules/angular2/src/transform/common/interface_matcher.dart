@@ -11,32 +11,32 @@ export 'class_matcher_base.dart' show ClassDescriptor;
 /// covers all libraries which provide them.
 const _ON_CHANGE_INTERFACES = const [
   const ClassDescriptor('OnChange', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnChange', 'package:angular2/annotations.dart'),
+  const ClassDescriptor('OnChange', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
       'OnChange', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_DESTROY_INTERFACES = const [
   const ClassDescriptor('OnDestroy', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnDestroy', 'package:angular2/annotations.dart'),
+  const ClassDescriptor('OnDestroy', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
       'OnDestroy', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_CHECK_INTERFACES = const [
   const ClassDescriptor('OnCheck', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnCheck', 'package:angular2/annotations.dart'),
+  const ClassDescriptor('OnCheck', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
       'OnCheck', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_INIT_INTERFACES = const [
   const ClassDescriptor('OnInit', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnInit', 'package:angular2/annotations.dart'),
+  const ClassDescriptor('OnInit', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
       'OnInit', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_ALL_CHANGES_DONE_INTERFACES = const [
   const ClassDescriptor('OnAllChangesDone', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
-      'OnAllChangesDone', 'package:angular2/annotations.dart'),
+      'OnAllChangesDone', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
       'OnAllChangesDone', 'package:angular2/src/core/compiler/interfaces.dart')
 ];

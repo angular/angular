@@ -5,7 +5,7 @@ import * as cd from 'angular2/src/change_detection/pipes';
 
 export class ProtoPipes {
   /**
-   * Map of {@link Pipe} names to {@link Pipe} implementations.
+   * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
    */
   config: StringMap<string, PipeBinding> = {};
 

@@ -7,7 +7,7 @@ export {bootstrap} from 'angular2/src/core/application';
 // angular2_exports.ts. Re-exporting from angular2_exports.ts causes systemjs
 // to resolve imports very very very slowly. See also a similar notice in
 // angular2.ts
-export * from './annotations';
+export * from './metadata';
 export * from './change_detection';
 export * from './core';
 export * from './di';

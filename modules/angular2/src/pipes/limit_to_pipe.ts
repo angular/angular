@@ -13,7 +13,7 @@ import {Injectable} from 'angular2/di';
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-import {Pipe} from 'angular2/src/core/annotations/decorators';
+import {Pipe} from '../core/metadata';
 
 /**
  * Creates a new List or String containing only a prefix/suffix of the

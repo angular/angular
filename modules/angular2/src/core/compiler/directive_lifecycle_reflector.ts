@@ -1,7 +1,7 @@
 import {Type, isPresent} from 'angular2/src/facade/lang';
-import {LifecycleEvent, Directive} from 'angular2/src/core/annotations_impl/annotations';
+import {LifecycleEvent, DirectiveMetadata} from 'angular2/metadata';
 
-export function hasLifecycleHook(e: LifecycleEvent, type, annotation: Directive): boolean {
+export function hasLifecycleHook(e: LifecycleEvent, type, annotation: DirectiveMetadata): boolean {
   if (isPresent(annotation.lifecycle)) {
     return annotation.lifecycle.indexOf(e) !== -1;
   } else {

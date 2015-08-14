@@ -3,7 +3,7 @@ import {Injectable} from 'angular2/di';
 
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 
-import {Pipe} from 'angular2/src/core/annotations/decorators';
+import {Pipe} from '../core/metadata';
 
 /**
  * Implements json transforms to any object.

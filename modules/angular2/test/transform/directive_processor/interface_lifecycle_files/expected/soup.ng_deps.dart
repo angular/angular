@@ -3,7 +3,7 @@ library dinner.soup.ng_deps.dart;
 import 'soup.dart';
 export 'soup.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
-import 'package:angular2/annotations.dart';
+import 'package:angular2/metadata.dart';
 
 var _visited = false;
 void initReflector() {

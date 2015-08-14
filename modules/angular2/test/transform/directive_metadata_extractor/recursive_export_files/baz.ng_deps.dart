@@ -1,7 +1,7 @@
 library foo.ng_deps.dart;
 
 import 'baz.dart';
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 var _visited = false;
 void initReflector(reflector) {

@@ -21,7 +21,7 @@ import {DomTestbed} from '../dom_testbed';
 
 import {
   ViewDefinition,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   RenderProtoViewMergeMapping,
   ViewEncapsulation,
   ViewType
@@ -301,8 +301,8 @@ function runAndAssert(hostElementName: string, componentTemplates: string[],
 }
 
 function rootDirective(hostElementName: string) {
-  return DirectiveMetadata.create(
-      {id: 'rootComp', type: DirectiveMetadata.COMPONENT_TYPE, selector: hostElementName});
+  return RenderDirectiveMetadata.create(
+      {id: 'rootComp', type: RenderDirectiveMetadata.COMPONENT_TYPE, selector: hostElementName});
 }
 
 function componentView(template: string,
@@ -335,9 +335,9 @@ function stringify(cloner: TemplateCloner, protoViewMergeMapping: RenderProtoVie
   return testView.fragments.map(nodes => nodes.map(node => stringifyElement(node)).join(''));
 }
 
-var aComp =
-    DirectiveMetadata.create({id: 'aComp', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'a'});
-var bComp =
-    DirectiveMetadata.create({id: 'bComp', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'b'});
-var cComp =
-    DirectiveMetadata.create({id: 'cComp', type: DirectiveMetadata.COMPONENT_TYPE, selector: 'c'});
+var aComp = RenderDirectiveMetadata.create(
+    {id: 'aComp', type: RenderDirectiveMetadata.COMPONENT_TYPE, selector: 'a'});
+var bComp = RenderDirectiveMetadata.create(
+    {id: 'bComp', type: RenderDirectiveMetadata.COMPONENT_TYPE, selector: 'b'});
+var cComp = RenderDirectiveMetadata.create(
+    {id: 'cComp', type: RenderDirectiveMetadata.COMPONENT_TYPE, selector: 'c'});

@@ -1,30 +1,57 @@
-import {
-  ComponentAnnotation,
-  DirectiveAnnotation,
-  PipeAnnotation,
+/**
+ * This indirection is needed to free up Component, etc symbols in the public API
+ * to be used by the decorator versions of these annotations.
+ */
+
+export {
+  QueryMetadata,
+  ViewQueryMetadata,
+  AttributeMetadata,
+} from './metadata/di';
+
+export {
+  ComponentMetadata,
+  DirectiveMetadata,
+  PipeMetadata,
   LifecycleEvent
-} from './annotations';
-import {ViewAnnotation} from './view';
-import {AttributeAnnotation, QueryAnnotation, ViewQueryAnnotation} from './di';
-import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
+} from './metadata/directives';
+
+export {ViewMetadata, ViewEncapsulation} from './metadata/view';
+
+
+import {
+  QueryMetadata,
+  ViewQueryMetadata,
+  AttributeMetadata,
+} from './metadata/di';
+
+import {
+  ComponentMetadata,
+  DirectiveMetadata,
+  PipeMetadata,
+  LifecycleEvent
+} from './metadata/directives';
+
+import {ViewMetadata, ViewEncapsulation} from './metadata/view';
+
+import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../util/decorators';
 import {Type} from 'angular2/src/facade/lang';
-import {ViewEncapsulation} from 'angular2/src/render/api';
 
 /**
- * Interface for the {@link Directive} decorator function.
+ * Interface for the {@link DirectiveMetadata} decorator function.
  *
  * See {@link DirectiveFactory}.
  */
 export interface DirectiveDecorator extends TypeDecorator {}
 
 /**
- * Interface for the {@link Component} decorator function.
+ * Interface for the {@link ComponentMetadata} decorator function.
  *
  * See {@link ComponentFactory}.
  */
 export interface ComponentDecorator extends TypeDecorator {
   /**
-   * Chain {@link View} annotation.
+   * Chain {@link ViewMetadata} annotation.
    */
   View(obj: {
     templateUrl?: string,
@@ -38,13 +65,13 @@ export interface ComponentDecorator extends TypeDecorator {
 }
 
 /**
- * Interface for the {@link View} decorator function.
+ * Interface for the {@link ViewMetadata} decorator function.
  *
  * See {@link ViewFactory}.
  */
 export interface ViewDecorator extends TypeDecorator {
   /**
-   * Chain {@link View} annotation.
+   * Chain {@link ViewMetadata} annotation.
    */
   View(obj: {
     templateUrl?: string,
@@ -58,7 +85,7 @@ export interface ViewDecorator extends TypeDecorator {
 }
 
 /**
- * {@link Directive} factory for creating annotations, decorators or DSL.
+ * {@link DirectiveMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
@@ -107,7 +134,7 @@ export interface DirectiveFactory {
     selector?: string, properties?: List<string>, events?: List<string>,
         host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>, bindings?: List<any>,
         exportAs?: string, compileChildren?: boolean;
-  }): DirectiveAnnotation;
+  }): DirectiveMetadata;
 }
 
 /**
@@ -177,7 +204,7 @@ export interface ComponentFactory {
     compileChildren?: boolean,
     viewBindings?: List<any>,
     changeDetection?: string,
-  }): ComponentAnnotation;
+  }): ComponentMetadata;
 }
 
 /**
@@ -239,11 +266,11 @@ export interface ViewFactory {
     encapsulation?: ViewEncapsulation,
     styles?: List<string>,
     styleUrls?: List<string>,
-  }): ViewAnnotation;
+  }): ViewMetadata;
 }
 
 /**
- * {@link Attribute} factory for creating annotations, decorators or DSL.
+ * {@link AttributeMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
@@ -290,11 +317,11 @@ export interface ViewFactory {
  */
 export interface AttributeFactory {
   (name: string): TypeDecorator;
-  new (name: string): AttributeAnnotation;
+  new (name: string): AttributeMetadata;
 }
 
 /**
- * {@link Query} factory for creating annotations, decorators or DSL.
+ * {@link QueryMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
@@ -341,11 +368,11 @@ export interface AttributeFactory {
  */
 export interface QueryFactory {
   (selector: Type | string, {descendants}?: {descendants?: boolean}): ParameterDecorator;
-  new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryAnnotation;
+  new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryMetadata;
 }
 
 /**
- * {@link Pipe} factory for creating decorators.
+ * {@link PipeMetadata} factory for creating decorators.
  *
  * ## Example as TypeScript Decorator
  *
@@ -370,38 +397,38 @@ export interface PipeFactory {
 }
 
 /**
- * {@link Component} factory function.
+ * {@link ComponentMetadata} factory function.
  */
 export var Component: ComponentFactory =
-    <ComponentFactory>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
+    <ComponentFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.View = View);
 /**
- * {@link Directive} factory function.
+ * {@link DirectiveMetadata} factory function.
  */
-export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(DirectiveAnnotation);
+export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(DirectiveMetadata);
 
 /**
- * {@link View} factory function.
+ * {@link ViewMetadata} factory function.
  */
 export var View: ViewFactory =
-    <ViewFactory>makeDecorator(ViewAnnotation, (fn: any) => fn.View = View);
+    <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
 
 /**
- * {@link Attribute} factory function.
+ * {@link AttributeMetadata} factory function.
  */
-export var Attribute: AttributeFactory = makeParamDecorator(AttributeAnnotation);
+export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
 
 /**
- * {@link Query} factory function.
+ * {@link QueryMetadata} factory function.
  */
-export var Query: QueryFactory = makeParamDecorator(QueryAnnotation);
+export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 
 
 /**
- * {@link ViewQuery} factory function.
+ * {@link ViewQueryMetadata} factory function.
  */
-export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryAnnotation);
+export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
 
 /**
- * {@link Pipe} factory function.
+ * {@link PipeMetadata} factory function.
  */
-export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeAnnotation);
+export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);

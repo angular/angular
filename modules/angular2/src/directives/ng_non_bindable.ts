@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/annotations';
+import {Directive} from 'angular2/metadata';
 
 /**
  * The `NgNonBindable` directive tells Angular not to compile or bind the contents of the current

@@ -24,7 +24,7 @@ Future runBenchmark() async {
 const aContents = '''
 library dinner.soup;
 
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 @Component(selector: '[soup]')
 class SoupComponent {

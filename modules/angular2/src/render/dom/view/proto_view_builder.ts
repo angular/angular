@@ -23,7 +23,16 @@ import {DomElementBinder, Event, HostAction} from './element_binder';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {TemplateCloner} from '../template_cloner';
 
-import * as api from '../../api';
+import {
+  ViewType,
+  ViewEncapsulation,
+  ProtoViewDto,
+  DirectiveBinder,
+  RenderElementBinder,
+  EventBinding,
+  ElementPropertyBinding,
+  PropertyBindingType
+} from '../../api';
 
 import {
   NG_BINDING_CLASS,
@@ -39,8 +48,8 @@ export class ProtoViewBuilder {
   ngContentCount: number = 0;
   hostAttributes: Map<string, string> = new Map();
 
-  constructor(public rootElement, public type: api.ViewType,
-              public viewEncapsulation: api.ViewEncapsulation) {}
+  constructor(public rootElement, public type: ViewType,
+              public viewEncapsulation: ViewEncapsulation) {}
 
   bindElement(element: HTMLElement, description: string = null): ElementBinderBuilder {
     var builder = new ElementBinderBuilder(this.elements.length, element, description);
@@ -70,7 +79,7 @@ export class ProtoViewBuilder {
 
   setHostAttribute(name: string, value: string) { this.hostAttributes.set(name, value); }
 
-  build(schemaRegistry: ElementSchemaRegistry, templateCloner: TemplateCloner): api.ProtoViewDto {
+  build(schemaRegistry: ElementSchemaRegistry, templateCloner: TemplateCloner): ProtoViewDto {
     var domElementBinders = [];
 
     var apiElementBinders = [];
@@ -89,7 +98,7 @@ export class ProtoViewBuilder {
         ebb.eventBuilder.merge(dbb.eventBuilder);
         ListWrapper.forEach(dbb.templatePropertyNames,
                             (name) => directiveTemplatePropertyNames.add(name));
-        return new api.DirectiveBinder({
+        return new DirectiveBinder({
           directiveIndex: dbb.directiveIndex,
           propertyBindings: dbb.propertyBindings,
           eventBindings: dbb.eventBindings,
@@ -109,7 +118,7 @@ export class ProtoViewBuilder {
         textNodeExpressions.push(expression);
         textNodeIndices.push(nodeIndex);
       });
-      apiElementBinders.push(new api.ElementBinder({
+      apiElementBinders.push(new RenderElementBinder({
         index: ebb.index,
         parentIndex: parentIndex,
         distanceToParent: ebb.distanceToParent,
@@ -132,7 +141,7 @@ export class ProtoViewBuilder {
       }));
     });
     var rootNodeCount = DOM.childNodes(DOM.content(this.rootElement)).length;
-    return new api.ProtoViewDto({
+    return new ProtoViewDto({
       render: new DomProtoViewRef(DomProtoView.create(
           templateCloner, this.type, this.rootElement, this.viewEncapsulation, [rootNodeCount],
           rootTextNodeIndices, domElementBinders, this.hostAttributes)),
@@ -152,7 +161,7 @@ export class ElementBinderBuilder {
   nestedProtoView: ProtoViewBuilder = null;
   propertyBindings: Map<string, ASTWithSource> = new Map();
   variableBindings: Map<string, string> = new Map();
-  eventBindings: List<api.EventBinding> = [];
+  eventBindings: List<EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
   textBindings: Map<Node, ASTWithSource> = new Map();
   readAttributes: Map<string, string> = new Map();
@@ -185,7 +194,7 @@ export class ElementBinderBuilder {
       throw new BaseException('Only one nested view per element is allowed');
     }
     this.nestedProtoView =
-        new ProtoViewBuilder(rootElement, api.ViewType.EMBEDDED, api.ViewEncapsulation.NONE);
+        new ProtoViewBuilder(rootElement, ViewType.EMBEDDED, ViewEncapsulation.NONE);
     return this.nestedProtoView;
   }
 
@@ -230,7 +239,7 @@ export class DirectiveBuilder {
   // property names used in the template
   templatePropertyNames: List<string> = [];
   hostPropertyBindings: Map<string, ASTWithSource> = new Map();
-  eventBindings: List<api.EventBinding> = [];
+  eventBindings: List<EventBinding> = [];
   eventBuilder: EventBuilder = new EventBuilder();
 
   constructor(public directiveIndex: number) {}
@@ -261,14 +270,14 @@ export class EventBuilder extends AstTransformer {
 
   constructor() { super(); }
 
-  add(name: string, source: ASTWithSource, target: string): api.EventBinding {
+  add(name: string, source: ASTWithSource, target: string): EventBinding {
     // TODO(tbosch): reenable this when we are parsing element properties
     // out of action expressions
     // var adjustedAst = astWithSource.ast.visit(this);
     var adjustedAst = source.ast;
     var fullName = isPresent(target) ? target + EVENT_TARGET_SEPARATOR + name : name;
-    var result = new api.EventBinding(
-        fullName, new ASTWithSource(adjustedAst, source.source, source.location));
+    var result =
+        new EventBinding(fullName, new ASTWithSource(adjustedAst, source.source, source.location));
     var event = new Event(name, target, fullName);
     if (isBlank(target)) {
       this.localEvents.push(event);
@@ -331,7 +340,7 @@ const STYLE_PREFIX = 'style';
 function buildElementPropertyBindings(
     schemaRegistry: ElementSchemaRegistry, protoElement: /*element*/ any, isNgComponent: boolean,
     bindingsInTemplate: Map<string, ASTWithSource>, directiveTemplatePropertyNames: Set<string>):
-    List<api.ElementPropertyBinding> {
+    List<ElementPropertyBinding> {
   var propertyBindings = [];
 
   MapWrapper.forEach(bindingsInTemplate, (ast, propertyNameInTemplate) => {
@@ -361,8 +370,8 @@ function buildElementPropertyBindings(
 
 function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
                                        protoElement: /*element*/ any, isNgComponent: boolean,
-                                       binding: api.ElementPropertyBinding): boolean {
-  if (binding.type === api.PropertyBindingType.PROPERTY) {
+                                       binding: ElementPropertyBinding): boolean {
+  if (binding.type === PropertyBindingType.PROPERTY) {
     if (!isNgComponent) {
       return schemaRegistry.hasProperty(protoElement, binding.property);
     } else {
@@ -374,19 +383,19 @@ function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
 }
 
 function createElementPropertyBinding(schemaRegistry: ElementSchemaRegistry, ast: ASTWithSource,
-                                      propertyNameInTemplate: string): api.ElementPropertyBinding {
+                                      propertyNameInTemplate: string): ElementPropertyBinding {
   var parts = StringWrapper.split(propertyNameInTemplate, PROPERTY_PARTS_SEPARATOR);
   if (parts.length === 1) {
     var propName = schemaRegistry.getMappedPropName(parts[0]);
-    return new api.ElementPropertyBinding(api.PropertyBindingType.PROPERTY, ast, propName);
+    return new ElementPropertyBinding(PropertyBindingType.PROPERTY, ast, propName);
   } else if (parts[0] == ATTRIBUTE_PREFIX) {
-    return new api.ElementPropertyBinding(api.PropertyBindingType.ATTRIBUTE, ast, parts[1]);
+    return new ElementPropertyBinding(PropertyBindingType.ATTRIBUTE, ast, parts[1]);
   } else if (parts[0] == CLASS_PREFIX) {
-    return new api.ElementPropertyBinding(api.PropertyBindingType.CLASS, ast,
-                                          camelCaseToDashCase(parts[1]));
+    return new ElementPropertyBinding(PropertyBindingType.CLASS, ast,
+                                      camelCaseToDashCase(parts[1]));
   } else if (parts[0] == STYLE_PREFIX) {
     var unit = parts.length > 2 ? parts[2] : null;
-    return new api.ElementPropertyBinding(api.PropertyBindingType.STYLE, ast, parts[1], unit);
+    return new ElementPropertyBinding(PropertyBindingType.STYLE, ast, parts[1], unit);
   } else {
     throw new BaseException(`Invalid property name ${propertyNameInTemplate}`);
   }

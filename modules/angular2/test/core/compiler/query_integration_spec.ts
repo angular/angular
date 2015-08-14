@@ -17,7 +17,7 @@ import {
 
 import {Injectable, Optional} from 'angular2/di';
 import {QueryList, TemplateRef} from 'angular2/core';
-import {Query, ViewQuery, Component, Directive, View} from 'angular2/annotations';
+import {Query, ViewQuery, Component, Directive, View} from 'angular2/metadata';
 
 import {NgIf, NgFor} from 'angular2/angular2';
 

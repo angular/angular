@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/src/core/annotations/decorators';
+import {Directive} from '../core/metadata';
 import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {Router} from './router';

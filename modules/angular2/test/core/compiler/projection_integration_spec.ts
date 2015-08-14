@@ -23,8 +23,6 @@ import {
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import * as viewAnn from 'angular2/src/core/annotations_impl/view';
-
 import {
   Component,
   Directive,
@@ -43,12 +41,12 @@ export function main() {
   describe('projection', () => {
     it('should support simple components',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<simple>' +
-                            '<div>A</div>' +
-                            '</simple>',
-              directives: [Simple]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<simple>' +
+                                          '<div>A</div>' +
+                                          '</simple>',
+                            directives: [Simple]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
                expect(main.nativeElement).toHaveText('SIMPLE(A)');
@@ -58,12 +56,12 @@ export function main() {
 
     it('should support simple components with text interpolation as direct children',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '{{\'START(\'}}<simple>' +
-                            '{{text}}' +
-                            '</simple>{{\')END\'}}',
-              directives: [Simple]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '{{\'START(\'}}<simple>' +
+                                          '{{text}}' +
+                                          '</simple>{{\')END\'}}',
+                            directives: [Simple]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -78,11 +76,10 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(
                 Simple,
-                new viewAnn.View(
+                new View(
                     {template: 'SIMPLE(<div><ng-content></ng-content></div>)', directives: []}))
-             .overrideView(
-                 MainComp,
-                 new viewAnn.View({template: '<simple>{{text}}</simple>', directives: [Simple]}))
+             .overrideView(MainComp,
+                           new View({template: '<simple>{{text}}</simple>', directives: [Simple]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -96,13 +93,14 @@ export function main() {
 
     it('should support projecting text interpolation to a non bound element with other bound elements after it',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(Simple, new viewAnn.View({
-              template: 'SIMPLE(<div><ng-content></ng-content></div><div [tab-index]="0">EL</div>)',
-              directives: []
-            }))
-             .overrideView(
-                 MainComp,
-                 new viewAnn.View({template: '<simple>{{text}}</simple>', directives: [Simple]}))
+         tcb.overrideView(
+                Simple, new View({
+                  template:
+                      'SIMPLE(<div><ng-content></ng-content></div><div [tab-index]="0">EL</div>)',
+                  directives: []
+                }))
+             .overrideView(MainComp,
+                           new View({template: '<simple>{{text}}</simple>', directives: [Simple]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -115,8 +113,7 @@ export function main() {
 
     it('should not show the light dom even if there is no content tag',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp,
-                          new viewAnn.View({template: '<empty>A</empty>', directives: [Empty]}))
+         tcb.overrideView(MainComp, new View({template: '<empty>A</empty>', directives: [Empty]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -127,14 +124,14 @@ export function main() {
 
     it('should support multiple content tags',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<multiple-content-tags>' +
-                            '<div>B</div>' +
-                            '<div>C</div>' +
-                            '<div class="left">A</div>' +
-                            '</multiple-content-tags>',
-              directives: [MultipleContentTagsComponent]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<multiple-content-tags>' +
+                                          '<div>B</div>' +
+                                          '<div>C</div>' +
+                                          '<div class="left">A</div>' +
+                                          '</multiple-content-tags>',
+                            directives: [MultipleContentTagsComponent]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -145,13 +142,13 @@ export function main() {
 
     it('should redistribute only direct children',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<multiple-content-tags>' +
-                            '<div>B<div class="left">A</div></div>' +
-                            '<div>C</div>' +
-                            '</multiple-content-tags>',
-              directives: [MultipleContentTagsComponent]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<multiple-content-tags>' +
+                                          '<div>B<div class="left">A</div></div>' +
+                                          '<div>C</div>' +
+                                          '</multiple-content-tags>',
+                            directives: [MultipleContentTagsComponent]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -162,13 +159,13 @@ export function main() {
 
     it("should redistribute direct child viewcontainers when the light dom changes",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<multiple-content-tags>' +
-                            '<template manual class="left"><div>A1</div></template>' +
-                            '<div>B</div>' +
-                            '</multiple-content-tags>',
-              directives: [MultipleContentTagsComponent, ManualViewportDirective]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<multiple-content-tags>' +
+                                          '<template manual class="left"><div>A1</div></template>' +
+                                          '<div>B</div>' +
+                                          '</multiple-content-tags>',
+                            directives: [MultipleContentTagsComponent, ManualViewportDirective]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -188,13 +185,13 @@ export function main() {
 
     it("should support nested components",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<outer-with-indirect-nested>' +
-                            '<div>A</div>' +
-                            '<div>B</div>' +
-                            '</outer-with-indirect-nested>',
-              directives: [OuterWithIndirectNestedComponent]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<outer-with-indirect-nested>' +
+                                          '<div>A</div>' +
+                                          '<div>B</div>' +
+                                          '</outer-with-indirect-nested>',
+                            directives: [OuterWithIndirectNestedComponent]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -205,14 +202,14 @@ export function main() {
 
     it("should support nesting with content being direct child of a nested component",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<outer>' +
-                            '<template manual class="left"><div>A</div></template>' +
-                            '<div>B</div>' +
-                            '<div>C</div>' +
-                            '</outer>',
-              directives: [OuterComponent, ManualViewportDirective],
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<outer>' +
+                                          '<template manual class="left"><div>A</div></template>' +
+                                          '<div>B</div>' +
+                                          '<div>C</div>' +
+                                          '</outer>',
+                            directives: [OuterComponent, ManualViewportDirective],
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -229,14 +226,14 @@ export function main() {
 
     it('should redistribute when the shadow dom changes',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<conditional-content>' +
-                            '<div class="left">A</div>' +
-                            '<div>B</div>' +
-                            '<div>C</div>' +
-                            '</conditional-content>',
-              directives: [ConditionalContentComponent]
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<conditional-content>' +
+                                          '<div class="left">A</div>' +
+                                          '<div>B</div>' +
+                                          '<div>C</div>' +
+                                          '</conditional-content>',
+                            directives: [ConditionalContentComponent]
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -263,8 +260,7 @@ export function main() {
 
          tcb.overrideView(
                 MainComp,
-                new viewAnn.View(
-                    {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
+                new View({template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
              .then((main) => {
@@ -284,8 +280,7 @@ export function main() {
 
          tcb.overrideView(
                 MainComp,
-                new viewAnn.View(
-                    {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
+                new View({template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
              .then((main) => {
@@ -298,13 +293,13 @@ export function main() {
 
     it('should support moving non projected light dom around',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<empty>' +
-                            '  <template manual><div>A</div></template>' +
-                            '</empty>' +
-                            'START(<div project></div>)END',
-              directives: [Empty, ProjectDirective, ManualViewportDirective],
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<empty>' +
+                                          '  <template manual><div>A</div></template>' +
+                                          '</empty>' +
+                                          'START(<div project></div>)END',
+                            directives: [Empty, ProjectDirective, ManualViewportDirective],
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -323,11 +318,11 @@ export function main() {
 
     it('should support moving projected light dom around',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<simple><template manual><div>A</div></template></simple>' +
-                            'START(<div project></div>)END',
-              directives: [Simple, ProjectDirective, ManualViewportDirective],
-            }))
+         tcb.overrideView(MainComp, new View({
+                            template: '<simple><template manual><div>A</div></template></simple>' +
+                                          'START(<div project></div>)END',
+                            directives: [Simple, ProjectDirective, ManualViewportDirective],
+                          }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -346,15 +341,16 @@ export function main() {
 
     it('should support moving ng-content around',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new viewAnn.View({
-              template: '<conditional-content>' +
-                            '<div class="left">A</div>' +
-                            '<div>B</div>' +
-                            '</conditional-content>' +
-                            'START(<div project></div>)END',
-              directives:
-                  [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
-            }))
+         tcb.overrideView(
+                MainComp, new View({
+                  template: '<conditional-content>' +
+                                '<div class="left">A</div>' +
+                                '<div>B</div>' +
+                                '</conditional-content>' +
+                                'START(<div project></div>)END',
+                  directives:
+                      [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
+                }))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -382,8 +378,7 @@ export function main() {
     // the presence of ng-content elements!
     it('should still allow to implement a recursive trees',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp,
-                          new viewAnn.View({template: '<tree></tree>', directives: [Tree]}))
+         tcb.overrideView(MainComp, new View({template: '<tree></tree>', directives: [Tree]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -402,12 +397,12 @@ export function main() {
     if (DOM.supportsNativeShadowDOM()) {
       it('should support native content projection',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(MainComp, new viewAnn.View({
-                template: '<simple-native>' +
-                              '<div>A</div>' +
-                              '</simple-native>',
-                directives: [SimpleNative]
-              }))
+           tcb.overrideView(MainComp, new View({
+                              template: '<simple-native>' +
+                                            '<div>A</div>' +
+                                            '</simple-native>',
+                              directives: [SimpleNative]
+                            }))
                .createAsync(MainComp)
                .then((main) => {
 
@@ -422,10 +417,10 @@ export function main() {
         it('should support nested conditionals that contain ng-contents',
            inject(
                [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-                 tcb.overrideView(MainComp, new viewAnn.View({
-                      template: `<conditional-text>a</conditional-text>`,
-                      directives: [ConditionalTextComponent]
-                    }))
+                 tcb.overrideView(MainComp, new View({
+                                    template: `<conditional-text>a</conditional-text>`,
+                                    directives: [ConditionalTextComponent]
+                                  }))
                      .createAsync(MainComp)
                      .then((main) => {
                        expect(main.nativeElement).toHaveText('MAIN()');

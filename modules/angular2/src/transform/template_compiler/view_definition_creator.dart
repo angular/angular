@@ -27,7 +27,7 @@ class ViewDefinitionResults {
 }
 
 class ViewDefinitionEntry {
-  final DirectiveMetadata hostMetadata;
+  final RenderDirectiveMetadata hostMetadata;
   final ViewDefinition viewDef;
 
   ViewDefinitionEntry._(this.hostMetadata, this.viewDef);
@@ -113,7 +113,7 @@ class _ViewDefinitionCreator {
 
   /// Reads the `.ng_meta.json` files associated with all of `entryPoint`'s
   /// imports and creates a map `Type` name, prefixed if appropriate to the
-  /// associated [DirectiveMetadata].
+  /// associated [RenderDirectiveMetadata].
   ///
   /// For example, if in `entryPoint` we have:
   ///
@@ -129,13 +129,13 @@ class _ViewDefinitionCreator {
   /// ```
   ///
   /// This method will look for `component.ng_meta.json`to contain the
-  /// serialized [DirectiveMetadata] for `MyComponent` and any other
+  /// serialized [RenderDirectiveMetadata] for `MyComponent` and any other
   /// `Directive`s declared in `component.dart`. We use this information to
   /// build a map:
   ///
   /// ```
   /// {
-  ///   "prefix.MyComponent": [DirectiveMetadata for MyComponent],
+  ///   "prefix.MyComponent": [RenderDirectiveMetadata for MyComponent],
   ///   ...<any other entries>...
   /// }
   /// ```
@@ -184,7 +184,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (_isViewAnnotation(node)) {
-      viewDef = new ViewDefinition(directives: <DirectiveMetadata>[]);
+      viewDef = new ViewDefinition(directives: <RenderDirectiveMetadata>[]);
       node.visitChildren(this);
     }
     return null;

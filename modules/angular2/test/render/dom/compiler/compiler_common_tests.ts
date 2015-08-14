@@ -19,7 +19,7 @@ import {DomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {
   ProtoViewDto,
   ViewDefinition,
-  DirectiveMetadata,
+  RenderDirectiveMetadata,
   ViewType,
   ViewEncapsulation
 } from 'angular2/src/render/api';
@@ -74,8 +74,8 @@ export function runCompilerCommonTests() {
              current.inheritedProtoView.bindVariable('b', 'a');
            });
 
-           var dirMetadata = DirectiveMetadata.create(
-               {id: 'id', selector: 'custom', type: DirectiveMetadata.COMPONENT_TYPE});
+           var dirMetadata = RenderDirectiveMetadata.create(
+               {id: 'id', selector: 'custom', type: RenderDirectiveMetadata.COMPONENT_TYPE});
            compiler.compileHost(dirMetadata)
                .then((protoView) => {
                  expect(DOM.tagName(DOM.firstChild(DOM.content(templateRoot(protoView))))
@@ -93,10 +93,10 @@ export function runCompilerCommonTests() {
              current.inheritedProtoView.bindVariable('b', 'a');
            });
 
-           var dirMetadata = DirectiveMetadata.create({
+           var dirMetadata = RenderDirectiveMetadata.create({
              id: 'id',
              selector: 'marquee.jazzy[size=huge]',
-             type: DirectiveMetadata.COMPONENT_TYPE
+             type: RenderDirectiveMetadata.COMPONENT_TYPE
            });
 
            compiler.compileHost(dirMetadata)
@@ -334,5 +334,5 @@ class FakeViewLoader extends ViewLoader {
   }
 }
 
-var someComponent = DirectiveMetadata.create(
-    {selector: 'some-comp', id: 'someComponent', type: DirectiveMetadata.COMPONENT_TYPE});
+var someComponent = RenderDirectiveMetadata.create(
+    {selector: 'some-comp', id: 'someComponent', type: RenderDirectiveMetadata.COMPONENT_TYPE});

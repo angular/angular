@@ -1,4 +1,4 @@
-import {Directive, LifecycleEvent} from 'angular2/annotations';
+import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
 import {ChangeDetectorRef, IterableDiffer, IterableDiffers} from 'angular2/change_detection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';

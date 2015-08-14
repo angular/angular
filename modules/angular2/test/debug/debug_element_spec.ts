@@ -27,7 +27,7 @@ import {
   Directive,
   Component,
   View,
-} from 'angular2/annotations';
+} from 'angular2/metadata';
 
 import {NgFor} from 'angular2/src/directives/ng_for';
 

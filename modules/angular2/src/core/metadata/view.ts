@@ -13,7 +13,7 @@ export {ViewEncapsulation} from 'angular2/src/render/api';
  * When a component is instantiated, the template is loaded into the component's shadow root, and
  * the expressions and statements in the template are evaluated against the component.
  *
- * For details on the `@Component` annotation, see {@link Component}.
+ * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
  * ## Example
  *
@@ -35,7 +35,7 @@ export {ViewEncapsulation} from 'angular2/src/render/api';
  * ```
  */
 @CONST()
-export class View {
+export class ViewMetadata {
   /**
    * Specifies a template URL for an angular component.
    *

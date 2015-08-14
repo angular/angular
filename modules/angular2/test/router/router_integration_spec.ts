@@ -15,7 +15,7 @@ import {
 } from 'angular2/test_lib';
 
 import {bootstrap} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/src/core/annotations/decorators';
+import {Component, Directive, View} from 'angular2/metadata';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';
 import {DOCUMENT} from 'angular2/src/render/render';

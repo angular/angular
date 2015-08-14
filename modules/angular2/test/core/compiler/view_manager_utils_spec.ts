@@ -32,7 +32,7 @@ import {
   ProtoElementInjector
 } from 'angular2/src/core/compiler/element_injector';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {Component} from 'angular2/annotations';
+import {Component} from 'angular2/metadata';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {
   RenderProtoViewMergeMapping,

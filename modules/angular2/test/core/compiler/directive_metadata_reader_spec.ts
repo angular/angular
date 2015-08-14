@@ -1,7 +1,6 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {Directive} from 'angular2/annotations';
-import * as dirAnn from 'angular2/src/core/annotations_impl/annotations';
+import {DirectiveMetadata, Directive} from 'angular2/metadata';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -21,7 +20,7 @@ export function main() {
 
     it('should read out the Directive annotation', () => {
       var directiveMetadata = reader.resolve(SomeDirective);
-      expect(directiveMetadata).toEqual(new dirAnn.Directive({selector: 'someDirective'}));
+      expect(directiveMetadata).toEqual(new Directive({selector: 'someDirective'}));
     });
 
     it('should throw if not matching annotation is found', () => {
@@ -31,7 +30,7 @@ export function main() {
 
     it('should not read parent class Directive annotations', function() {
       var directiveMetadata = reader.resolve(SomeChildDirective);
-      expect(directiveMetadata).toEqual(new dirAnn.Directive({selector: 'someChildDirective'}));
+      expect(directiveMetadata).toEqual(new Directive({selector: 'someChildDirective'}));
     });
   });
 }

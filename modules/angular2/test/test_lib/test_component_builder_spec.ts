@@ -16,13 +16,7 @@ import {
 
 import {Injectable} from 'angular2/di';
 
-import {
-  Directive,
-  Component,
-  View,
-} from 'angular2/annotations';
-
-import * as viewAnn from 'angular2/src/core/annotations_impl/view';
+import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
 
@@ -98,7 +92,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
 
          tcb.overrideView(ChildComp,
-                          new viewAnn.View({template: '<span>Modified {{childBinding}}</span>'}))
+                          new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();

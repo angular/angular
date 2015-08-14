@@ -18,16 +18,11 @@ const INJECTABLES = const [
 ];
 
 const DIRECTIVES = const [
-  const ClassDescriptor(
-      'Directive', 'package:angular2/src/core/annotations/annotations.dart',
+  const ClassDescriptor('Directive', 'package:angular2/src/core/metadatada/directive.dart',
       superClass: 'Injectable'),
-  const ClassDescriptor(
-      'Directive', 'package:angular2/src/core/annotations/decorators.dart',
+  const ClassDescriptor('Directive', 'package:angular2/src/core/metadata.dart',
       superClass: 'Injectable'),
-  const ClassDescriptor('Directive',
-      'package:angular2/src/core/annotations_impl/annotations.dart',
-      superClass: 'Injectable'),
-  const ClassDescriptor('Directive', 'package:angular2/annotations.dart',
+  const ClassDescriptor('Directive', 'package:angular2/metadata.dart',
       superClass: 'Injectable'),
   const ClassDescriptor('Directive', 'package:angular2/angular2.dart',
       superClass: 'Injectable'),
@@ -38,34 +33,26 @@ const DIRECTIVES = const [
 ];
 
 const COMPONENTS = const [
-  const ClassDescriptor(
-      'Component', 'package:angular2/src/core/annotations/annotations.dart',
+  const ClassDescriptor('Component', 'package:angular2/src/core/metadata/directive.dart',
       superClass: 'Directive'),
-  const ClassDescriptor(
-      'Component', 'package:angular2/src/core/annotations/decorators.dart',
+  const ClassDescriptor('Component', 'package:angular2/src/core/metadata.dart',
       superClass: 'Directive'),
-  const ClassDescriptor('Component',
-      'package:angular2/src/core/annotations_impl/annotations.dart',
-      superClass: 'Directive'),
-  const ClassDescriptor('Component', 'package:angular2/annotations.dart',
+  const ClassDescriptor('Component', 'package:angular2/metadata.dart',
       superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/angular2.dart',
       superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/bootstrap_static.dart',
       superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/core.dart',
-      superClass: 'Directive'),
+      superClass: '`Directive'),
 ];
 
 const VIEWS = const [
-  const ClassDescriptor('View', 'package:angular2/view.dart'),
   const ClassDescriptor('View', 'package:angular2/angular2.dart'),
   const ClassDescriptor('View', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor('View', 'package:angular2/core.dart'),
-  const ClassDescriptor(
-      'View', 'package:angular2/src/core/annotations/view.dart'),
-  const ClassDescriptor(
-      'View', 'package:angular2/src/core/annotations_impl/view.dart'),
+  const ClassDescriptor('View', 'package:angular2/src/core/metadata/view.dart'),
+  const ClassDescriptor('View', 'package:angular2/src/core/metadata.dart'),
 ];
 
 /// Checks if a given [Annotation] matches any of the given

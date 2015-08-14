@@ -4,10 +4,10 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:angular2/src/render/api.dart';
 
-/// Reads [DirectiveMetadata] from the `node`. `node` is expected to be an
+/// Reads [RenderDirectiveMetadata] from the `node`. `node` is expected to be an
 /// instance of [Annotation], [NodeList<Annotation>], ListLiteral, or
 /// [InstanceCreationExpression].
-DirectiveMetadata readDirectiveMetadata(dynamic node) {
+RenderDirectiveMetadata readDirectiveMetadata(dynamic node) {
   assert(node is Annotation ||
       node is NodeList ||
       node is InstanceCreationExpression ||
@@ -22,10 +22,10 @@ num _getDirectiveType(String annotationName, Element element) {
   // TODO(kegluneq): Detect subtypes & implementations of `Directive`s.
   switch (annotationName) {
     case 'Directive':
-      byNameMatch = DirectiveMetadata.DIRECTIVE_TYPE;
+      byNameMatch = RenderDirectiveMetadata.DIRECTIVE_TYPE;
       break;
     case 'Component':
-      byNameMatch = DirectiveMetadata.COMPONENT_TYPE;
+      byNameMatch = RenderDirectiveMetadata.COMPONENT_TYPE;
       break;
     default:
       return -1;
@@ -34,8 +34,8 @@ num _getDirectiveType(String annotationName, Element element) {
     var byResolvedAst = -1;
     var libName = element.library.name;
     // If we have resolved, ensure the library is correct.
-    if (libName == 'angular2.src.core.annotations.annotations' ||
-        libName == 'angular2.src.core.annotations_impl.annotations') {
+    if (libName == 'angular2.src.core.metadata.directives' ||
+        libName == 'angular2.src.core.metadata') {
       byResolvedAst = byNameMatch;
     }
     // TODO(kegluneq): @keertip, can we expose this as a warning?
@@ -45,7 +45,7 @@ num _getDirectiveType(String annotationName, Element element) {
 }
 
 /// Visitor responsible for processing the `annotations` property of a
-/// [RegisterType] object and pulling out [DirectiveMetadata].
+/// [RegisterType] object and pulling out [RenderDirectiveMetadata].
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
   bool get _hasMeta => _type != null;
@@ -87,7 +87,7 @@ class _DirectiveMetadataVisitor extends Object
     _events = [];
   }
 
-  DirectiveMetadata get meta => DirectiveMetadata.create(
+  RenderDirectiveMetadata get meta => RenderDirectiveMetadata.create(
       type: _type,
       selector: _selector,
       compileChildren: _compileChildren,

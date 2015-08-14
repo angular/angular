@@ -6,8 +6,7 @@ import 'package:angular2/src/change_detection/pregen_proto_change_detector.dart'
 import 'bar.dart';
 export 'bar.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
-import 'package:angular2/src/core/annotations_impl/annotations.dart';
-import 'package:angular2/src/core/annotations_impl/view.dart';
+import 'package:angular2/src/core/metadata.dart';
 
 var _visited = false;
 void initReflector() {

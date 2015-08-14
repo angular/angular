@@ -13,7 +13,6 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 
-import * as viewModule from 'angular2/src/core/annotations_impl/view';
 import {Component, Directive, View} from 'angular2/angular2';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -122,10 +121,10 @@ class MultipleViewResolver extends ViewResolver {
     this._cache.set(component, ListWrapper.join(multiplier, ''));
   }
 
-  resolve(component: Type): viewModule.View {
+  resolve(component: Type): View {
     var view = super.resolve(component);
-    var myView = new viewModule.View(
-        {template:<string>this._cache.get(component), directives: view.directives});
+    var myView =
+        new View({template:<string>this._cache.get(component), directives: view.directives});
     return myView;
   }
 }
