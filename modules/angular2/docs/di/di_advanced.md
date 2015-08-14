@@ -74,7 +74,7 @@ Imagine the following scenario:
    Child1    Child2
 ```
 
-Here both Child1 and Child2 are children of ParentInjector. Child2 marks this relationship as host. ParentInjector might want to expose two different sets of bindings for its "regular" children and its "host" children. Bindings visible to "regular" children are called PUBLIC, and bindings visible to "host" children are called PRIVATE. This is an advanced use case used by Angular, where components can provide different sets of bindings for their children and their view.
+Here both Child1 and Child2 are children of ParentInjector. Child2 marks this relationship as host. ParentInjector might want to expose two different sets of bindings for its "regular" children and its "host" children. Bindings visible to "regular" children have a **public** visibility, whereas bindings visible to "host" children have a **private** visibility. This is an advanced use case used by Angular, where components can provide different sets of bindings for their children and their view.
 
 Let's look at this example.
 
@@ -85,23 +85,23 @@ class Car {
 var resolvedBindings = Injector.resolve([Car, Engine]);
 
 var parentProto = new ProtoInjector([
-  new BindingWithVisibility(Engine, PUBLIC),
-  new BindingWithVisibility(Car, PUBLIC)
+  new BindingWithVisibility(Engine, Visibility.Public),
+  new BindingWithVisibility(Car, Visibility.Public)
 ]);
 var parent = new Injector(parentProto);
 
-var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var hostChild = new Injector(hostChildProto, parent, true);
 
-var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var regularChild = new Injector(regularChildProto, parent, false);
 
-hostChild.get(Car); // will throw because PUBLIC dependencies declared at the host cannot be seen by child injectors
+hostChild.get(Car); // will throw because Visibility.Public dependencies declared at the host cannot be seen by child injectors
 parent.get(Car); // this works
 regularChild.get(Car); // this works
 ```
 
-Now, let's mark Engine as PRIVATE.
+Now, let's mark Engine as Visibility.Private.
 
 ```
 class Car {
@@ -110,15 +110,15 @@ class Car {
 
 var resolvedBindings = Injector.resolve([Car, Engine]);
 var parentProto = new ProtoInjector([
-  new BindingWithVisibility(Engine, PRIVATE),
-	new BindingWithVisibility(Car, PUBLIC)
+  new BindingWithVisibility(Engine, Visibility.Private),
+	new BindingWithVisibility(Car, Visibility.Public)
 ]);
 var parent = new Injector(parentProto);
 
-var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var hostChild = new Injector(hostChildProto, parent, true);
 
-var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visibility.Public)]);
 var regularChild = new Injector(regularChildProto, parent, false);
 
 hostChild.get(Car); // this works
@@ -126,7 +126,7 @@ parent.get(Car); // this throws
 regularChild.get(Car); // this throws
 ```
 
-Now, let's mark Engine as both PUBLIC and PRIVATE.
+Now, let's mark Engine as Visibility.PublicAndPrivate.
 
 ```
 class Car {
@@ -135,15 +135,15 @@ class Car {
 
 var resolvedBindings = Injector.resolve([Car, Engine]);
 var parentProto = new ProtoInjector([
-  new BindingWithVisibility(Engine, PUBLIC_AND_PRIVATE),
-	new BindingWithVisibility(Car, PUBLIC)
+  new BindingWithVisibility(Engine, Visibility.PublicAndPrivate),
+	new BindingWithVisibility(Car, Visbility.Public)
 ]);
 var parent = new Injector(parentProto);
 
-var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var hostChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visbility.Public)]);
 var hostChild = new Injector(hostChildProto, parent, true);
 
-var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, PUBLIC)]);
+var regularChildProto = new ProtoInjector([new BindingWithVisibility(Car, Visbility.Public)]);
 var regularChild = new Injector(regularChildProto, parent, false);
 
 hostChild.get(Car); // this works
@@ -223,16 +223,16 @@ This will create the following injector tree.
 
 ```
 		  Injector1 [
-			  {binding: MyComponent,        visibility: PUBLIC_AND_PRIVATE},
-				{binding: "componentService", visibility: PUBLIC_AND_PRIVATE},
-				{binding: "viewService",      visibility: PRIVATE},
-			  {binding: MyDirective         visibility: PUBLIC},
-				{binding: "directiveService", visibility: PUBLIC}
+			  {binding: MyComponent,        visibility: Visibility.PublicAndPrivate},
+				{binding: "componentService", visibility: Visibility.PublicAndPrivate},
+				{binding: "viewService",      visibility: Visibility.Private},
+			  {binding: MyDirective         visibility: Visibility.Public},
+				{binding: "directiveService", visibility: Visibility.Publicj}
 			]
   /                                                       \
   |                                                        \ host
 Injector2 [                                           Injector3 [
-  {binding: NeedsService, visibility: PUBLIC}           {binding: NeedsViewService, visibility: PUBLIC}
+  {binding: NeedsService, visibility: Visibility.Public}           {binding: NeedsViewService, visibility: Visibility.Public}
 ]                                                     ]
 ```
 
