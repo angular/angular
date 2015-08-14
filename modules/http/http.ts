@@ -5,34 +5,34 @@
  * class.
  */
 import {bind, Binding} from 'angular2/di';
-import {Http, Jsonp} from 'http/src/http';
-import {XHRBackend, XHRConnection} from 'http/src/backends/xhr_backend';
-import {JSONPBackend, JSONPConnection} from 'http/src/backends/jsonp_backend';
-import {BrowserXhr} from 'http/src/backends/browser_xhr';
-import {BrowserJsonp} from 'http/src/backends/browser_jsonp';
-import {BaseRequestOptions, RequestOptions} from 'http/src/base_request_options';
-import {ConnectionBackend} from 'http/src/interfaces';
-import {BaseResponseOptions, ResponseOptions} from 'http/src/base_response_options';
+import {Http, Jsonp} from './src/http';
+import {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
+import {JSONPBackend, JSONPConnection} from './src/backends/jsonp_backend';
+import {BrowserXhr} from './src/backends/browser_xhr';
+import {BrowserJsonp} from './src/backends/browser_jsonp';
+import {BaseRequestOptions, RequestOptions} from './src/base_request_options';
+import {ConnectionBackend} from './src/interfaces';
+import {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
 
-export {MockConnection, MockBackend} from 'http/src/backends/mock_backend';
-export {Request} from 'http/src/static_request';
-export {Response} from 'http/src/static_response';
+export {MockConnection, MockBackend} from './src/backends/mock_backend';
+export {Request} from './src/static_request';
+export {Response} from './src/static_response';
 
 export {
   RequestOptionsArgs,
   ResponseOptionsArgs,
   Connection,
   ConnectionBackend
-} from 'http/src/interfaces';
+} from './src/interfaces';
 
-export {BrowserXhr} from 'http/src/backends/browser_xhr';
-export {BaseRequestOptions, RequestOptions} from 'http/src/base_request_options';
-export {BaseResponseOptions, ResponseOptions} from 'http/src/base_response_options';
-export {XHRBackend, XHRConnection} from 'http/src/backends/xhr_backend';
-export {JSONPBackend, JSONPConnection} from 'http/src/backends/jsonp_backend';
-export {Http, Jsonp} from 'http/src/http';
+export {BrowserXhr} from './src/backends/browser_xhr';
+export {BaseRequestOptions, RequestOptions} from './src/base_request_options';
+export {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
+export {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
+export {JSONPBackend, JSONPConnection} from './src/backends/jsonp_backend';
+export {Http, Jsonp} from './src/http';
 
-export {Headers} from 'http/src/headers';
+export {Headers} from './src/headers';
 
 export {
   ResponseTypes,
@@ -41,8 +41,8 @@ export {
   RequestCredentialsOpts,
   RequestCacheOpts,
   RequestModesOpts
-} from 'http/src/enums';
-export {URLSearchParams} from 'http/src/url_search_params';
+} from './src/enums';
+export {URLSearchParams} from './src/url_search_params';
 
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.
