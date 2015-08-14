@@ -1,4 +1,6 @@
-$SCRIPTS$ window = {
+$SCRIPTS$
+
+window = {
   setTimeout: setTimeout,
   Map: Map,
   Set: Set,
@@ -10,6 +12,9 @@ $SCRIPTS$ window = {
   zone: zone
 };
 assert = function() {};
+
+
+System.config({baseURL: '/', defaultJSExtensions: true});
 
 System.import("examples/src/web_workers/todo/background_index")
     .then(

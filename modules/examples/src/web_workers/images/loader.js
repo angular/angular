@@ -1,4 +1,6 @@
-$SCRIPTS$ window = {
+$SCRIPTS$
+
+window = {
   setTimeout: setTimeout,
   Map: Map,
   Set: Set,
@@ -11,6 +13,9 @@ $SCRIPTS$ window = {
 };
 assert = function() {};
 importScripts("b64.js");
+
+
+System.config({baseURL: '/', defaultJSExtensions: true});
 
 System.import("examples/src/web_workers/images/background_index")
     .then(

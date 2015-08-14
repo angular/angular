@@ -1,4 +1,5 @@
 $SCRIPTS$
+
 //importScripts("math_worker.js").execute();
 //System.import("examples/src/web_workers/math_worker").then(function(m){console.log("got", m)});
 //importScripts("rx.js");
@@ -13,9 +14,11 @@ window = {
   RegExp: RegExp,
   Promise: Promise,
   Date: Date
-}
-assert = function(){}
+};
+assert = function(){};
 
+
+System.config({baseURL: '/', defaultJSExtensions: true});
 
 System.import("examples/src/message_broker/background_index").then(function(m){
   console.log("running main");
