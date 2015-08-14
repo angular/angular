@@ -673,7 +673,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   private _addViewQuery(queryRef: QueryRef, host: ElementInjector): void {
     if (isBlank(queryRef) || !queryRef.isViewQuery || this._hasQuery(queryRef)) return;
-    if (host._query0.originator == host) {
+    if (queryRef.originator == host) {
       // TODO(rado): Replace this.parent check with distanceToParent = 1 when
       // https://github.com/angular/angular/issues/2707 is fixed.
       if (!queryRef.query.descendants && isPresent(this.parent)) return;
@@ -863,8 +863,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   getRootViewInjectors(): ElementInjector[] {
     var view = this._preBuiltObjects.view;
-    return view.getNestedView(view.elementOffset + this.getBoundElementIndex())
-        .rootElementInjectors;
+    var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
+    return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
 }
 
@@ -1068,6 +1068,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
   hydrate(): void {
     var inj = this.injectorStrategy;
     var p = inj.protoStrategy;
+    inj.resetConstructionCounter();
 
     for (var i = 0; i < p.keyIds.length; i++) {
       if (p.bindings[i] instanceof DirectiveBinding && isPresent(p.keyIds[i]) &&

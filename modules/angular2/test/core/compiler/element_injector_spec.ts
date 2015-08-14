@@ -35,6 +35,7 @@ import {
 import {
   Attribute,
   Query,
+  ViewQuery,
   ComponentMetadata,
   DirectiveMetadata,
   LifecycleEvent
@@ -51,9 +52,11 @@ import {QueryList} from 'angular2/src/core/compiler/query_list';
 @IMPLEMENTS(AppView)
 class DummyView extends SpyObject {
   changeDetector;
+  elementOffset: number;
   constructor() {
     super(AppView);
     this.changeDetector = null;
+    this.elementOffset = 0;
   }
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
@@ -157,6 +160,12 @@ class NeedsAttributeNoType {
 class NeedsQuery {
   query: QueryList<CountingDirective>;
   constructor(@Query(CountingDirective) query: QueryList<CountingDirective>) { this.query = query; }
+}
+
+@Injectable()
+class NeedsViewQuery {
+  query: QueryList<CountingDirective>;
+  constructor(@ViewQuery(CountingDirective) query: QueryList<CountingDirective>) { this.query = query; }
 }
 
 @Injectable()
@@ -848,6 +857,41 @@ export function main() {
                    .toThrowError(containsRegexp(
                        `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirective) } -> ${stringify(SimpleDirective) })`));
              });
+        });
+
+        describe("getRootViewInjectors", () => {
+          it("should return an empty array if there is no nested view", () => {
+            var inj = injector(extraBindings);
+            expect(inj.getRootViewInjectors()).toEqual([]);
+          });
+        });
+
+        describe("dehydrate", () => {
+          function cycleHydrate(inj: ElementInjector, host=null): void {
+            // Each injection supports 3 query slots, so we cycle 4 times.
+            for (var i = 0; i < 4; i++) {
+              inj.dehydrate();
+              inj.hydrate(null, host, defaultPreBuiltObjects);
+            }
+          }
+
+          it("should handle repeated hydration / dehydration", () => {
+            var inj = injector(extraBindings);
+            cycleHydrate(inj);
+          });
+
+          it("should handle repeated hydration / dehydration with query present", () => {
+            var inj = injector(ListWrapper.concat([NeedsQuery], extraBindings));
+            cycleHydrate(inj);
+          });
+
+
+          it("should handle repeated hydration / dehydration with view query present", () => {
+            var inj = injector(extraBindings);
+            var host = injector(ListWrapper.concat([NeedsViewQuery], extraBindings));
+
+            cycleHydrate(inj, host);
+          });
         });
 
         describe("lifecycle", () => {
