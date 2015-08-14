@@ -34,7 +34,7 @@ Doing the following would be very inefficient.
 
 ```
 function createComponetInjector(parent, bindings:Binding[]) {
-	return parentresolveAndCreateChild(bindings);
+	return parent.resolveAndCreateChild(bindings);
 }
 ```
 
