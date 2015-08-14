@@ -31,6 +31,7 @@ import {WebWorkerElementRef} from 'angular2/src/web-workers/shared/api';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {Injectable} from 'angular2/di';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {XHR} from 'angular2/src/render/xhr';
 import {
   serializeMouseEvent,
   serializeKeyboardEvent,
@@ -61,7 +62,7 @@ export class WebWorkerMain {
 
   constructor(private _renderCompiler: RenderCompiler, private _renderer: Renderer,
               private _renderViewWithFragmentsStore: RenderViewWithFragmentsStore,
-              private _serializer: Serializer, rootUrl: AnchorBasedAppRootUrl) {
+              private _serializer: Serializer, rootUrl: AnchorBasedAppRootUrl, private _xhr: XHR) {
     this._rootUrl = rootUrl.value;
   }
 
@@ -207,9 +208,23 @@ export class WebWorkerMain {
     }
   }
 
+  private _handleXhrMessage(data: ReceivedMessage) {
+    var args = data.args;
+    switch (data.method) {
+      case "get":
+        var url = args[0];
+        var promise = this._xhr.get(url);
+        this._wrapWebWorkerPromise(data.id, promise, String);
+        break;
+      default:
+        throw new BaseException(data.method + " Not Implemented");
+    }
+  }
+
   // TODO(jteplitz602): Create message type enum #3044
   private _handleWebWorkerMessage(message: StringMap<string, any>) {
     var data: ReceivedMessage = new ReceivedMessage(message['data']);
+    // TODO(jteplitz602): Replace these with MessageBUs channels #3661
     switch (data.type) {
       case "ready":
         return this._sendInitMessage();
@@ -217,6 +232,8 @@ export class WebWorkerMain {
         return this._handleCompilerMessage(data);
       case "renderer":
         return this._handleRendererMessage(data);
+      case "xhr":
+        return this._handleXhrMessage(data);
     }
   }
 

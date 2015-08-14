@@ -34,7 +34,7 @@ import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/asy
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/render/xhr';
-import {XHRImpl} from 'angular2/src/render/xhr_impl';
+import {WebWorkerXHRImpl} from 'angular2/src/web-workers/worker/xhr_impl';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
@@ -129,7 +129,8 @@ function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
     Parser,
     Lexer,
     bind(ExceptionHandler).toFactory(() => new ExceptionHandler(new PrintLogger()), []),
-    bind(XHR).toValue(new XHRImpl()),
+    WebWorkerXHRImpl,
+    bind(XHR).toAlias(WebWorkerXHRImpl),
     ComponentUrlMapper,
     UrlResolver,
     StyleUrlResolver,
