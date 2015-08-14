@@ -11,10 +11,10 @@ import {
   beforeEachBindings,
   SpyObject
 } from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
-
+import {IMPLEMENTS, Type} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
+
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
@@ -23,7 +23,7 @@ import {Location} from 'angular2/src/router/location';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {RouteConfig, Route} from 'angular2/src/router/route_config_decorator';
+import {RouteConfig, AsyncRoute, Route} from 'angular2/src/router/route_config_decorator';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import {bind} from 'angular2/di';
@@ -133,6 +133,21 @@ export function main() {
       expect(stringifyInstruction(instruction)).toEqual('first/second');
     });
 
+    it('should generate an instruction with terminal async routes',
+       inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerOutlet(outlet);
+         router.config([new AsyncRoute({path: '/first', loader: loader, as: 'FirstCmp'})]);
+
+         var instruction = router.generate(['/FirstCmp']);
+         router.navigateInstruction(instruction)
+             .then((_) => {
+               expect(outlet.spy('commit')).toHaveBeenCalled();
+               async.done();
+             });
+       }));
+
     describe('query string params', () => {
       it('should use query string params for the root route', () => {
         router.config(
@@ -176,6 +191,10 @@ export function main() {
       });
     });
   });
+}
+
+function loader(): Promise<Type> {
+  return PromiseWrapper.resolve(DummyComponent);
 }
 
 @proxy

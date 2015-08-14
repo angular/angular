@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
+import {Map, StringMapWrapper, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {
   isBlank,
   isString,
@@ -131,7 +131,8 @@ export class Router {
   }
 
   _navigate(instruction: Instruction, _skipLocationChange: boolean): Promise<any> {
-    return this._reuse(instruction)
+    return this._settleInstruction(instruction)
+        .then((_) => this._reuse(instruction))
         .then((_) => this._canActivate(instruction))
         .then((result) => {
           if (!result) {
@@ -148,6 +149,25 @@ export class Router {
                 }
               });
         });
+  }
+
+  // TODO(btford): it'd be nice to remove this method as part of cleaning up the traversal logic
+  // Since refactoring `Router.generate` to return an instruction rather than a string, it's not
+  // guaranteed that the `componentType`s for the terminal async routes have been loaded by the time
+  // we begin navigation. The method below simply traverses instructions and resolves any components
+  // for which `componentType` is not present
+  _settleInstruction(instruction: Instruction): Promise<any> {
+    var unsettledInstructions: List<Promise<any>> = [];
+    if (isBlank(instruction.component.componentType)) {
+      unsettledInstructions.push(instruction.component.resolveComponentType());
+    }
+    if (isPresent(instruction.child)) {
+      unsettledInstructions.push(this._settleInstruction(instruction.child));
+    }
+    StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
+      unsettledInstructions.push(this._settleInstruction(instruction));
+    });
+    return PromiseWrapper.all(unsettledInstructions);
   }
 
   private _emitNavigationFinish(url): void { ObservableWrapper.callNext(this._subject, url); }
