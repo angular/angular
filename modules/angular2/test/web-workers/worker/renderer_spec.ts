@@ -55,7 +55,7 @@ export function main() {
 
     // set up the ui side
     var webWorkerMain = new WebWorkerMain(tb.compiler, tb.renderer, uiRenderViewStore, uiSerializer,
-                                          new AnchorBasedAppRootUrl());
+                                          new AnchorBasedAppRootUrl(), null);
     webWorkerMain.attachToWebWorker(uiMessageBus);
     return broker;
   }
