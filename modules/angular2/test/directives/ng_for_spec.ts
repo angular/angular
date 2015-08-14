@@ -15,7 +15,7 @@ import {
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, BaseView} from 'angular2/angular2';
 
 import {NgFor} from 'angular2/src/directives/ng_for';
 
@@ -260,7 +260,7 @@ class Foo {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NgFor]})
+@BaseView({directives: [NgFor]})
 class TestComponent {
   items: any;
   constructor() { this.items = [1, 2]; }

@@ -7,7 +7,7 @@ import 'bar.dart';
 export 'bar.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/annotations_impl/annotations.dart';
-import 'package:angular2/src/core/annotations_impl/view.dart';
+import 'package:angular2/src/core/annotations_impl/base_view.dart';
 
 var _visited = false;
 void initReflector() {
@@ -18,7 +18,7 @@ void initReflector() {
         MyComponent,
         new _ngRef.ReflectionInfo(const [
           const Component(selector: '[soup]'),
-          const View(template: 'Salad: {{myNum}} is awesome')
+          const BaseView(template: 'Salad: {{myNum}} is awesome')
         ], const [], () => new MyComponent()))
     ..registerGetters({'myNum': (o) => o.myNum})
     ..registerSetters({'myNum': (o, v) => o.myNum = v});

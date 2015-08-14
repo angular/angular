@@ -1,9 +1,9 @@
-import {NgIf, bootstrap, Component, View} from 'angular2/bootstrap';
+import {NgIf, bootstrap, Component, BaseView} from 'angular2/bootstrap';
 import {TimerWrapper} from 'angular2/src/facade/async';
 
 
 @Component({selector: 'async-app'})
-@View({
+@BaseView({
   template: `
     <div id='increment'>
       <span class='val'>{{val1}}</span>
@@ -12,12 +12,12 @@ import {TimerWrapper} from 'angular2/src/facade/async';
     <div id='delayedIncrement'>
       <span class='val'>{{val2}}</span>
       <button class='action' (click)="delayedIncrement()">Delayed Increment</button>
-      <button class='cancel' *ng-if="timeoutId != null" (click)="cancelDelayedIncrement()">Cancel</button>              
+      <button class='cancel' *ng-if="timeoutId != null" (click)="cancelDelayedIncrement()">Cancel</button>
     </div>
     <div id='multiDelayedIncrements'>
       <span class='val'>{{val3}}</span>
       <button class='action' (click)="multiDelayedIncrements(10)">10 Delayed Increments</button>
-      <button class='cancel' *ng-if="multiTimeoutId != null" (click)="cancelMultiDelayedIncrements()">Cancel</button>              
+      <button class='cancel' *ng-if="multiTimeoutId != null" (click)="cancelMultiDelayedIncrements()">Cancel</button>
     </div>
     <div id='periodicIncrement'>
       <span class='val'>{{val4}}</span>

@@ -12,7 +12,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, BaseView} from 'angular2/angular2';
 
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/directives/ng_switch';
 
@@ -145,7 +145,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]})
+@BaseView({directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]})
 class TestComponent {
   switchValue: any;
   when1: any;

@@ -1,4 +1,4 @@
-import {Component, View, Attribute, ViewEncapsulation} from 'angular2/angular2';
+import {Component, BaseView, Attribute, ViewEncapsulation} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 import {KeyCodes} from 'angular2_material/src/core/key_codes';
 import {KeyboardEvent} from 'angular2/src/facade/browser';
@@ -15,7 +15,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     '(keydown)': 'onKeydown($event)',
   }
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/checkbox/checkbox.html',
   directives: [],
   encapsulation: ViewEncapsulation.NONE

@@ -2,7 +2,7 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement;
+    show Component, Directive, BaseView, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -13,7 +13,7 @@ void initReflector(reflector) {
         HelloCmp,
         new ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(template: '<button (click)=\"action()\">go</button>')
+          const BaseView(template: '<button (click)=\"action()\">go</button>')
         ], const [
           const []
         ], () => new HelloCmp()))

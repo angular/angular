@@ -1,4 +1,4 @@
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, BaseView} from 'angular2/angular2';
 import {
   afterEach,
   AsyncTestCompleter,
@@ -770,7 +770,7 @@ class WrappedValue implements ControlValueAccessor {
 }
 
 @Component({selector: "my-comp"})
-@View({directives: [FORM_DIRECTIVES, WrappedValue, NgIf, NgFor]})
+@BaseView({directives: [FORM_DIRECTIVES, WrappedValue, NgIf, NgFor]})
 class MyComp {
   form: any;
   name: string;

@@ -4,7 +4,7 @@
  *
  * Annotations provide the additional information that Angular requires in order to run your
  * application. This module
- * contains {@link Component}, {@link Directive}, and {@link View} annotations, as well as
+ * contains {@link Component}, {@link Directive}, and {@link BaseView} annotations, as well as
  * the {@link Host} annotation that is used by Angular to resolve dependencies.
  *
  */
@@ -16,7 +16,7 @@ export {
   LifecycleEvent
 } from './src/core/annotations/annotations';
 
-export {ViewAnnotation, ViewEncapsulation} from 'angular2/src/core/annotations/view';
+export {BaseViewAnnotation, ViewEncapsulation} from 'angular2/src/core/annotations/base_view';
 export {QueryAnnotation, AttributeAnnotation} from 'angular2/src/core/annotations/di';
 
 export {
@@ -39,9 +39,9 @@ export {
   Directive,
   DirectiveDecorator,
   DirectiveFactory,
-  View,
-  ViewDecorator,
-  ViewFactory,
+  BaseView,
+  BaseViewDecorator,
+  BaseViewFactory,
   Query,
   QueryFactory,
   ViewQuery,

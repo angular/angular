@@ -17,7 +17,7 @@ import {Pipe} from 'angular2/src/core/annotations/decorators';
  * @Component({
  *   selector: "username-cmp"
  * })
- * @View({
+ * @BaseView({
  *   template: "Username: {{ user | uppercase }}"
  * })
  * class Username {

@@ -1,12 +1,12 @@
 library examples.src.hello_world.absolute_url_expression_files;
 
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show bootstrap, Component, Directive, BaseView, NgElement;
 export 'a.dart' show alias3;
 import 'b.dart' as b;
 
 @Component(selector: 'hello-app')
-@View(templateUrl: 'template.html', styleUrls: const ['template.css'])
+@BaseView(templateUrl: 'template.html', styleUrls: const ['template.css'])
 class HelloCmp {}
 
 class Foo {}

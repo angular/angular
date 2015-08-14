@@ -58,14 +58,14 @@ const COMPONENTS = const [
 ];
 
 const VIEWS = const [
-  const ClassDescriptor('View', 'package:angular2/view.dart'),
-  const ClassDescriptor('View', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('View', 'package:angular2/bootstrap_static.dart'),
-  const ClassDescriptor('View', 'package:angular2/core.dart'),
+  const ClassDescriptor('BaseView', 'package:angular2/view.dart'),
+  const ClassDescriptor('BaseView', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('BaseView', 'package:angular2/bootstrap_static.dart'),
+  const ClassDescriptor('BaseView', 'package:angular2/core.dart'),
   const ClassDescriptor(
-      'View', 'package:angular2/src/core/annotations/view.dart'),
+      'BaseView', 'package:angular2/src/core/annotations/base_view.dart'),
   const ClassDescriptor(
-      'View', 'package:angular2/src/core/annotations_impl/view.dart'),
+      'BaseView', 'package:angular2/src/core/annotations_impl/base_view.dart'),
 ];
 
 /// Checks if a given [Annotation] matches any of the given

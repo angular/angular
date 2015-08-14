@@ -16,7 +16,7 @@ import {Pipe} from 'angular2/src/core/annotations/decorators';
  * @Component({
  *   selector: "user-cmp"
  * })
- * @View({
+ * @BaseView({
  *   template: "User: {{ user | json }}"
  * })
  * class Username {

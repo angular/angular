@@ -16,7 +16,7 @@ import {
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, BaseView} from 'angular2/angular2';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {NgStyle} from 'angular2/src/directives/ng_style';
@@ -138,7 +138,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NgStyle]})
+@BaseView({directives: [NgStyle]})
 class TestComponent {
   expr;
 }

@@ -2,7 +2,7 @@ import {List, ListWrapper, Map} from 'angular2/src/facade/collection';
 import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST} from './common';
 import {NgFor} from 'angular2/directives';
 
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, BaseView} from 'angular2/angular2';
 
 export class HasStyle {
   cellWidth: int;
@@ -13,19 +13,20 @@ export class HasStyle {
 }
 
 @Component({selector: 'company-name', properties: ['width: cell-width', 'company']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`})
+@BaseView({directives: [], template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`})
 export class CompanyNameComponent extends HasStyle {
   company: Company;
 }
 
 @Component({selector: 'opportunity-name', properties: ['width: cell-width', 'opportunity']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`})
+@BaseView(
+    {directives: [], template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`})
 export class OpportunityNameComponent extends HasStyle {
   opportunity: Opportunity;
 }
 
 @Component({selector: 'offering-name', properties: ['width: cell-width', 'offering']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`})
+@BaseView({directives: [], template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`})
 export class OfferingNameComponent extends HasStyle {
   offering: Offering;
 }
@@ -38,7 +39,7 @@ export class Stage {
 }
 
 @Component({selector: 'stage-buttons', properties: ['width: cell-width', 'offering']})
-@View({
+@BaseView({
   directives: [NgFor],
   template: `
       <div [style.width.px]="cellWidth">
@@ -83,7 +84,7 @@ export class StageButtonsComponent extends HasStyle {
 }
 
 @Component({selector: 'account-cell', properties: ['width: cell-width', 'account']})
-@View({
+@BaseView({
   directives: [],
   template: `
       <div [style.width.px]="cellWidth">
@@ -97,7 +98,7 @@ export class AccountCellComponent extends HasStyle {
 }
 
 @Component({selector: 'formatted-cell', properties: ['width: cell-width', 'value']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{formattedValue}}</div>`})
+@BaseView({directives: [], template: `<div [style.width.px]="cellWidth">{{formattedValue}}</div>`})
 export class FormattedCellComponent extends HasStyle {
   formattedValue: string;
 

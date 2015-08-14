@@ -17,7 +17,7 @@ import {
 
 import {Injectable, Optional} from 'angular2/di';
 import {QueryList, TemplateRef} from 'angular2/core';
-import {Query, ViewQuery, Component, Directive, View} from 'angular2/annotations';
+import {Query, ViewQuery, Component, Directive, BaseView} from 'angular2/annotations';
 
 import {NgIf, NgFor} from 'angular2/angular2';
 
@@ -469,7 +469,7 @@ class InertDirective {
 }
 
 @Component({selector: 'needs-query'})
-@View({
+@BaseView({
   directives: [NgFor, TextDirective],
   template: '<div text="ignoreme"></div><div *ng-for="var dir of query">{{dir.text}}|</div>'
 })
@@ -480,7 +480,7 @@ class NeedsQuery {
 }
 
 @Component({selector: 'needs-query-desc'})
-@View({directives: [NgFor], template: '<div *ng-for="var dir of query">{{dir.text}}|</div>'})
+@BaseView({directives: [NgFor], template: '<div *ng-for="var dir of query">{{dir.text}}|</div>'})
 @Injectable()
 class NeedsQueryDesc {
   query: QueryList<TextDirective>;
@@ -490,7 +490,7 @@ class NeedsQueryDesc {
 }
 
 @Component({selector: 'needs-query-by-var-binding'})
-@View({directives: [], template: '<ng-content>'})
+@BaseView({directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByLabel {
   query: QueryList<any>;
@@ -500,7 +500,7 @@ class NeedsQueryByLabel {
 }
 
 @Component({selector: 'needs-query-by-var-bindings'})
-@View({directives: [], template: '<ng-content>'})
+@BaseView({directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByTwoLabels {
   query: QueryList<any>;
@@ -510,7 +510,7 @@ class NeedsQueryByTwoLabels {
 }
 
 @Component({selector: 'needs-query-and-project'})
-@View({
+@BaseView({
   directives: [NgFor],
   template: '<div *ng-for="var dir of query">{{dir.text}}|</div><ng-content></ng-content>'
 })
@@ -521,7 +521,7 @@ class NeedsQueryAndProject {
 }
 
 @Component({selector: 'needs-view-query'})
-@View({
+@BaseView({
   directives: [TextDirective],
   template: '<div text="1"><div text="need descendants"></div></div>' +
                 '<div text="2"></div><div text="3"></div>'
@@ -533,7 +533,7 @@ class NeedsViewQuery {
 }
 
 @Component({selector: 'needs-view-query-desc'})
-@View({
+@BaseView({
   directives: [TextDirective],
   template: '<div text="1"><div text="2"></div></div>' +
                 '<div text="3"></div><div text="4"></div>'
@@ -547,7 +547,7 @@ class NeedsViewQueryDesc {
 }
 
 @Component({selector: 'needs-view-query-if'})
-@View({directives: [NgIf, TextDirective], template: '<div *ng-if="show" text="1"></div>'})
+@BaseView({directives: [NgIf, TextDirective], template: '<div *ng-if="show" text="1"></div>'})
 @Injectable()
 class NeedsViewQueryIf {
   show: boolean;
@@ -560,7 +560,7 @@ class NeedsViewQueryIf {
 
 
 @Component({selector: 'needs-view-query-nested-if'})
-@View({
+@BaseView({
   directives: [NgIf, InertDirective, TextDirective],
   template: '<div text="1"><div *ng-if="show"><div dir></div></div></div>'
 })
@@ -578,7 +578,7 @@ class NeedsViewQueryNestedIf {
 // TODO(rado): once https://github.com/angular/angular/issues/3438 is resolved
 // duplicate the test without InertDirective.
 @Component({selector: 'needs-view-query-order'})
-@View({
+@BaseView({
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div dir><div text="1"></div>' +
                 '<div *ng-for="var i of list" [text]="i"></div>' +
@@ -595,7 +595,7 @@ class NeedsViewQueryOrder {
 }
 
 @Component({selector: 'needs-tpl'})
-@View({template: '<template var-x="shadow"></template>'})
+@BaseView({template: '<template var-x="shadow"></template>'})
 class NeedsTpl {
   viewQuery: QueryList<TemplateRef>;
   query: QueryList<TemplateRef>;
@@ -607,7 +607,7 @@ class NeedsTpl {
 }
 
 @Component({selector: 'my-comp'})
-@View({
+@BaseView({
   directives: [
     NeedsQuery,
     NeedsQueryDesc,

@@ -18,7 +18,7 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
  * # Example
  *  ```
  * @Component({selector: "search-comp"})
- * @View({
+ * @BaseView({
  *      directives: [FORM_DIRECTIVES],
  *      template: `
               <input type='text' [(ng-model)]="searchQuery">

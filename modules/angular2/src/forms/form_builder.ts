@@ -10,7 +10,7 @@ import * as modelModule from './model';
  * # Example
  *
  * ```
- * import {Component, View, bootstrap} from 'angular2/angular2';
+ * import {Component, BaseView, bootstrap} from 'angular2/angular2';
  * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/forms';
  *
  * @Component({
@@ -19,7 +19,7 @@ import * as modelModule from './model';
  *     FormBuilder
  *   ]
  * })
- * @View({
+ * @BaseView({
  *   template: `
  *     <form [control-group]="loginForm">
  *       Login <input control="login">

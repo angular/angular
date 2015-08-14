@@ -1,4 +1,4 @@
-import {ElementRef, Component, Directive, View, Injectable, Renderer} from 'angular2/angular2';
+import {ElementRef, Component, Directive, BaseView, Injectable, Renderer} from 'angular2/angular2';
 import {StringWrapper} from 'angular2/src/facade/lang';
 
 // A service available to the Injector, used by the HelloCmp component.
@@ -34,7 +34,7 @@ class RedDec {
   viewBindings: [GreetingService]
 })
 // The template for the component.
-@View({
+@BaseView({
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
   template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>

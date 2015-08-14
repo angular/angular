@@ -20,7 +20,7 @@ import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {View} from '../annotations_impl/view';
+import {BaseView} from '../annotations_impl/base_view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -317,14 +317,14 @@ export class Compiler {
     });
   }
 
-  private _flattenPipes(view: View): any[] {
+  private _flattenPipes(view: BaseView): any[] {
     if (isBlank(view.pipes)) return this._defaultPipes;
     var pipes = ListWrapper.clone(this._defaultPipes);
     this._flattenList(view.pipes, pipes);
     return pipes;
   }
 
-  private _flattenDirectives(view: View): List<Type> {
+  private _flattenDirectives(view: BaseView): List<Type> {
     if (isBlank(view.directives)) return [];
     var directives = [];
     this._flattenList(view.directives, directives);

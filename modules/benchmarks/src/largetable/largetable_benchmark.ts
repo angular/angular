@@ -1,4 +1,4 @@
-import {bootstrap, Component, Directive, View} from 'angular2/bootstrap';
+import {bootstrap, Component, Directive, BaseView} from 'angular2/bootstrap';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
@@ -215,7 +215,7 @@ class CellData {
 }
 
 @Component({selector: 'largetable', properties: ['data', 'benchmarkType']})
-@View({
+@BaseView({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `
       <table [ng-switch]="benchmarkType">
@@ -263,7 +263,7 @@ class LargetableComponent {
 }
 
 @Component({selector: 'app'})
-@View({
+@BaseView({
   directives: [LargetableComponent],
   template: `<largetable [data]='data' [benchmark-type]='benchmarkType'></largetable>`
 })

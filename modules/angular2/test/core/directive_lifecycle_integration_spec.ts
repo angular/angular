@@ -12,8 +12,8 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Directive, Component, View, LifecycleEvent} from 'angular2/angular2';
-import * as viewAnn from 'angular2/src/core/annotations_impl/view';
+import {Directive, Component, BaseView, LifecycleEvent} from 'angular2/angular2';
+import * as viewAnn from 'angular2/src/core/annotations_impl/base_view';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
@@ -22,7 +22,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(
                 MyComp,
-                new viewAnn.View(
+                new viewAnn.BaseView(
                     {template: '<div [field]="123" lifecycle></div>', directives: [LifecycleDir]}))
              .createAsync(MyComp)
              .then((tc) => {
@@ -75,6 +75,6 @@ class LifecycleDir {
 }
 
 @Component({selector: 'my-comp'})
-@View({directives: []})
+@BaseView({directives: []})
 class MyComp {
 }

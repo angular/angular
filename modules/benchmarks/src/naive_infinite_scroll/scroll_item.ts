@@ -7,7 +7,7 @@ import {
   FormattedCellComponent
 } from './cells';
 
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, BaseView} from 'angular2/angular2';
 
 import {
   Offering,
@@ -26,7 +26,7 @@ import {
 } from './common';
 
 @Component({selector: 'scroll-item', properties: ['offering']})
-@View({
+@BaseView({
   directives: [
     CompanyNameComponent,
     OpportunityNameComponent,

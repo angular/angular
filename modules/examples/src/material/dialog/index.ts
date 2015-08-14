@@ -3,7 +3,7 @@ import {
   ElementRef,
   ComponentRef,
   Component,
-  View,
+  BaseView,
   ViewEncapsulation
 } from 'angular2/bootstrap';
 import {
@@ -21,7 +21,7 @@ import {isPresent} from 'angular2/src/facade/lang';
   selector: 'demo-app',
   viewBindings: [MdDialog],
 })
-@View({
+@BaseView({
   templateUrl: './demo_app.html',
   directives: [],
   encapsulation: ViewEncapsulation.NONE,
@@ -69,7 +69,7 @@ class DemoApp {
   selector: 'simple-dialog',
   properties: ['numCoconuts'],
 })
-@View({
+@BaseView({
   encapsulation: ViewEncapsulation.NONE,
   template: `
     <h2>This is the dialog content</h2>

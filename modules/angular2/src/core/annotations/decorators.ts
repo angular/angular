@@ -4,7 +4,7 @@ import {
   PipeAnnotation,
   LifecycleEvent
 } from './annotations';
-import {ViewAnnotation} from './view';
+import {BaseViewAnnotation} from './base_view';
 import {AttributeAnnotation, QueryAnnotation, ViewQueryAnnotation} from './di';
 import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../../util/decorators';
 import {Type} from 'angular2/src/facade/lang';
@@ -24,9 +24,9 @@ export interface DirectiveDecorator extends TypeDecorator {}
  */
 export interface ComponentDecorator extends TypeDecorator {
   /**
-   * Chain {@link View} annotation.
+   * Chain {@link BaseView} annotation.
    */
-  View(obj: {
+  BaseView(obj: {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
@@ -34,19 +34,19 @@ export interface ComponentDecorator extends TypeDecorator {
     renderer?: string,
     styles?: List<string>,
     styleUrls?: List<string>,
-  }): ViewDecorator;
+  }): BaseViewDecorator;
 }
 
 /**
- * Interface for the {@link View} decorator function.
+ * Interface for the {@link BaseView} decorator function.
  *
- * See {@link ViewFactory}.
+ * See {@link BaseViewFactory}.
  */
-export interface ViewDecorator extends TypeDecorator {
+export interface BaseViewDecorator extends TypeDecorator {
   /**
-   * Chain {@link View} annotation.
+   * Chain {@link BaseView} annotation.
    */
-  View(obj: {
+  BaseView(obj: {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
@@ -54,7 +54,7 @@ export interface ViewDecorator extends TypeDecorator {
     renderer?: string,
     styles?: List<string>,
     styleUrls?: List<string>,
-  }): ViewDecorator;
+  }): BaseViewDecorator;
 }
 
 /**
@@ -116,10 +116,10 @@ export interface DirectiveFactory {
  * ## Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/angular2";
+ * import {Component, BaseView} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
+ * @BaseView({...})
  * class MyComponent {
  *   constructor() {
  *     ...
@@ -132,7 +132,7 @@ export interface DirectiveFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: function() {
  *       ...
@@ -149,7 +149,7 @@ export interface DirectiveFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * ```
  */
@@ -181,15 +181,15 @@ export interface ComponentFactory {
 }
 
 /**
- * {@link ViewAnnotation} factory for creating annotations, decorators or DSL.
+ * {@link BaseViewAnnotation} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/angular2";
+ * import {Component, BaseView} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
+ * @BaseView({...})
  * class MyComponent {
  *   constructor() {
  *     ...
@@ -202,7 +202,7 @@ export interface ComponentFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: function() {
  *       ...
@@ -219,11 +219,11 @@ export interface ComponentFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * ```
  */
-export interface ViewFactory {
+export interface BaseViewFactory {
   (obj: {
     templateUrl?: string,
     template?: string,
@@ -231,7 +231,7 @@ export interface ViewFactory {
     encapsulation?: ViewEncapsulation,
     styles?: List<string>,
     styleUrls?: List<string>,
-  }): ViewDecorator;
+  }): BaseViewDecorator;
   new (obj: {
     templateUrl?: string,
     template?: string,
@@ -239,7 +239,7 @@ export interface ViewFactory {
     encapsulation?: ViewEncapsulation,
     styles?: List<string>,
     styleUrls?: List<string>,
-  }): ViewAnnotation;
+  }): BaseViewAnnotation;
 }
 
 /**
@@ -248,10 +248,10 @@ export interface ViewFactory {
  * ## Example as TypeScript Decorator
  *
  * ```
- * import {Attribute, Component, View} from "angular2/angular2";
+ * import {Attribute, Component, BaseView} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
+ * @BaseView({...})
  * class MyComponent {
  *   constructor(@Attribute('title') title: string) {
  *     ...
@@ -264,7 +264,7 @@ export interface ViewFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: [new ng.Attribute('title'), function(title) {
  *       ...
@@ -299,10 +299,10 @@ export interface AttributeFactory {
  * ## Example as TypeScript Decorator
  *
  * ```
- * import {Query, QueryList, Component, View} from "angular2/angular2";
+ * import {Query, QueryList, Component, BaseView} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
+ * @BaseView({...})
  * class MyComponent {
  *   constructor(@Query(SomeType) queryList: QueryList) {
  *     ...
@@ -315,7 +315,7 @@ export interface AttributeFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: [new ng.Query(SomeType), function(queryList) {
  *       ...
@@ -332,7 +332,7 @@ export interface AttributeFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * MyComponent.parameters = [
  *   [new ng.Query(SomeType)]
@@ -373,17 +373,17 @@ export interface PipeFactory {
  * {@link Component} factory function.
  */
 export var Component: ComponentFactory =
-    <ComponentFactory>makeDecorator(ComponentAnnotation, (fn: any) => fn.View = View);
+    <ComponentFactory>makeDecorator(ComponentAnnotation, (fn: any) => fn.BaseView = BaseView);
 /**
  * {@link Directive} factory function.
  */
 export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(DirectiveAnnotation);
 
 /**
- * {@link View} factory function.
+ * {@link BaseView} factory function.
  */
-export var View: ViewFactory =
-    <ViewFactory>makeDecorator(ViewAnnotation, (fn: any) => fn.View = View);
+export var BaseView: BaseViewFactory =
+    <BaseViewFactory>makeDecorator(BaseViewAnnotation, (fn: any) => fn.BaseView = BaseView);
 
 /**
  * {@link Attribute} factory function.

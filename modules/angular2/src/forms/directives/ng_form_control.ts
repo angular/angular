@@ -26,7 +26,7 @@ const formControlBinding =
  *
  *  ```
  * @Component({selector: "login-comp"})
- * @View({
+ * @BaseView({
  *      directives: [FORM_DIRECTIVES],
  *      template: "<input type='text' [ng-form-control]='loginControl'>"
  *      })
@@ -44,7 +44,7 @@ const formControlBinding =
  *
  *  ```
  * @Component({selector: "login-comp"})
- * @View({
+ * @BaseView({
  *      directives: [FORM_DIRECTIVES],
  *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
  *      })

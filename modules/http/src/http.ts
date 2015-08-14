@@ -54,7 +54,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * ```
  * import {Http, HTTP_BINDINGS} from 'angular2/http';
  * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
- * @View({templateUrl: 'people.html'})
+ * @BaseView({templateUrl: 'people.html'})
  * class PeopleComponent {
  *   constructor(http: Http) {
  *     http.get('people.json')

@@ -52,7 +52,7 @@ export {URLSearchParams} from 'http/src/url_search_params';
  * ```
  * import {HTTP_BINDINGS, Http} from 'http/http';
  * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
- * @View({template: '{{data}}'})
+ * @BaseView({template: '{{data}}'})
  * class MyApp {
  *   constructor(http:Http) {
  *     http.request('data.txt').subscribe(res => this.data = res.text());

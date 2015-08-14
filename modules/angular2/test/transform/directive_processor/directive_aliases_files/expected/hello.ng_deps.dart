@@ -4,7 +4,7 @@ import 'hello.dart';
 export 'hello.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show bootstrap, Component, Directive, BaseView, NgElement;
 export 'a.dart' show alias3;
 import 'b.dart' as b;
 
@@ -17,7 +17,7 @@ void initReflector() {
         HelloCmp,
         new _ngRef.ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(
+          const BaseView(
               template: r'''{{greeting}}''',
               templateUrl: r'template.html',
               styles: const [r'''.greeting { .color: blue; }''',])

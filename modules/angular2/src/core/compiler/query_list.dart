@@ -47,7 +47,7 @@ import 'dart:collection';
  * @Component(
  *   selector: 'tabs'
  * )
- * @View(
+ * @BaseView(
  *  template: `
  *    <ul>
  *      <li *ng-for="#pane of panes">{{pane.title}}</li>
@@ -65,7 +65,7 @@ import 'dart:collection';
  *   selector: 'pane',
  *   properties: ['title']
  * )
- * @View(...)
+ * @BaseView(...)
  * class Pane {
  *   String title;
  * }

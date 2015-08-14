@@ -16,8 +16,8 @@ import {
 } from 'angular2/test_lib';
 
 import {Injector, bind} from 'angular2/di';
-import {Component, View} from 'angular2/src/core/annotations/decorators';
-import * as annotations from 'angular2/src/core/annotations_impl/view';
+import {Component, BaseView} from 'angular2/src/core/annotations/decorators';
+import * as annotations from 'angular2/src/core/annotations_impl/base_view';
 import {CONST, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
 import {
   Promise,
@@ -86,7 +86,7 @@ export function main() {
     }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
-      return tcb.overrideView(MyComp, new annotations.View({
+      return tcb.overrideView(MyComp, new annotations.BaseView({
                   template: ('<div>' + template + '</div>'),
                   directives: [RouterOutlet, RouterLink]
                 }))
@@ -615,7 +615,7 @@ export function main() {
 
 
 @Component({selector: 'hello-cmp'})
-@View({template: "{{greeting}}"})
+@BaseView({template: "{{greeting}}"})
 class HelloCmp {
   greeting: string;
   constructor() { this.greeting = "hello"; }
@@ -623,19 +623,19 @@ class HelloCmp {
 
 
 @Component({selector: 'a-cmp'})
-@View({template: "A"})
+@BaseView({template: "A"})
 class A {
 }
 
 
 @Component({selector: 'b-cmp'})
-@View({template: "B"})
+@BaseView({template: "B"})
 class B {
 }
 
 
 @Component({selector: 'user-cmp'})
-@View({template: "hello {{user}}"})
+@BaseView({template: "hello {{user}}"})
 class UserCmp {
   user: string;
   constructor(params: RouteParams) { this.user = params.get('name'); }
@@ -643,7 +643,7 @@ class UserCmp {
 
 
 @Component({selector: 'page-cmp'})
-@View({
+@BaseView({
   template:
       `page #{{pageNumber}} | <a href="hello" [router-link]="[\'../page\', {number: nextPage}]">next</a>`,
   directives: [RouterLink]
@@ -658,7 +658,7 @@ class SiblingPageCmp {
 }
 
 @Component({selector: 'book-cmp'})
-@View({
+@BaseView({
   template: `<a href="hello" [router-link]="[\'./page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>`,
   directives: [RouterLink, RouterOutlet]
@@ -671,7 +671,7 @@ class BookCmp {
 
 
 @Component({selector: 'parent-cmp'})
-@View({template: "inner { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@BaseView({template: "inner { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/b', component: HelloCmp})])
 class ParentCmp {
   constructor() {}
@@ -679,7 +679,7 @@ class ParentCmp {
 
 
 @Component({selector: 'team-cmp'})
-@View({template: "team {{id}} { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@BaseView({template: "team {{id}} { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/user/:name', component: UserCmp})])
 class TeamCmp {
   id: string;
@@ -703,7 +703,7 @@ function logHook(name: string, next: ComponentInstruction, prev: ComponentInstru
 }
 
 @Component({selector: 'activate-cmp'})
-@View({template: 'activate cmp'})
+@BaseView({template: 'activate cmp'})
 class ActivateCmp implements OnActivate {
   onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('activate', next, prev);
@@ -711,7 +711,7 @@ class ActivateCmp implements OnActivate {
 }
 
 @Component({selector: 'parent-activate-cmp'})
-@View({template: `parent {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
+@BaseView({template: `parent {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/child-activate', component: ActivateCmp})])
 class ParentActivateCmp implements OnActivate {
   onActivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
@@ -722,7 +722,7 @@ class ParentActivateCmp implements OnActivate {
 }
 
 @Component({selector: 'deactivate-cmp'})
-@View({template: 'deactivate cmp'})
+@BaseView({template: 'deactivate cmp'})
 class DeactivateCmp implements OnDeactivate {
   onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('deactivate', next, prev);
@@ -730,7 +730,7 @@ class DeactivateCmp implements OnDeactivate {
 }
 
 @Component({selector: 'deactivate-cmp'})
-@View({template: 'deactivate cmp'})
+@BaseView({template: 'deactivate cmp'})
 class WaitDeactivateCmp implements OnDeactivate {
   onDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
     completer = PromiseWrapper.completer();
@@ -740,7 +740,7 @@ class WaitDeactivateCmp implements OnDeactivate {
 }
 
 @Component({selector: 'parent-deactivate-cmp'})
-@View({template: `parent {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
+@BaseView({template: `parent {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/child-deactivate', component: WaitDeactivateCmp})])
 class ParentDeactivateCmp implements OnDeactivate {
   onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -749,7 +749,7 @@ class ParentDeactivateCmp implements OnDeactivate {
 }
 
 @Component({selector: 'reuse-cmp'})
-@View({template: `reuse {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
+@BaseView({template: `reuse {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class ReuseCmp implements OnReuse, CanReuse {
   constructor() { cmpInstanceCount += 1; }
@@ -758,7 +758,7 @@ class ReuseCmp implements OnReuse, CanReuse {
 }
 
 @Component({selector: 'never-reuse-cmp'})
-@View({template: `reuse {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
+@BaseView({template: `reuse {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class NeverReuseCmp implements OnReuse, CanReuse {
   constructor() { cmpInstanceCount += 1; }
@@ -767,7 +767,7 @@ class NeverReuseCmp implements OnReuse, CanReuse {
 }
 
 @Component({selector: 'can-activate-cmp'})
-@View({template: `canActivate {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
+@BaseView({template: `canActivate {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 @CanActivate(CanActivateCmp.canActivate)
 class CanActivateCmp {
@@ -779,7 +779,7 @@ class CanActivateCmp {
 }
 
 @Component({selector: 'can-deactivate-cmp'})
-@View({template: `canDeactivate {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
+@BaseView({template: `canDeactivate {<router-outlet></router-outlet>}`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class CanDeactivateCmp implements CanDeactivate {
   canDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<boolean> {
@@ -790,7 +790,7 @@ class CanDeactivateCmp implements CanDeactivate {
 }
 
 @Component({selector: 'all-hooks-child-cmp'})
-@View({template: `child`})
+@BaseView({template: `child`})
 @CanActivate(AllHooksChildCmp.canActivate)
 class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
   canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -813,7 +813,7 @@ class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
 }
 
 @Component({selector: 'all-hooks-parent-cmp'})
-@View({template: `<router-outlet></router-outlet>`, directives: [RouterOutlet]})
+@BaseView({template: `<router-outlet></router-outlet>`, directives: [RouterOutlet]})
 @RouteConfig([new Route({path: '/child', component: AllHooksChildCmp})])
 @CanActivate(AllHooksParentCmp.canActivate)
 class AllHooksParentCmp implements CanDeactivate, OnDeactivate, OnActivate {
@@ -837,7 +837,7 @@ class AllHooksParentCmp implements CanDeactivate, OnDeactivate, OnActivate {
 }
 
 @Component({selector: 'reuse-hooks-cmp'})
-@View({template: 'reuse hooks cmp'})
+@BaseView({template: 'reuse hooks cmp'})
 @CanActivate(ReuseHooksCmp.canActivate)
 class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanDeactivate {
   canReuse(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
@@ -870,7 +870,7 @@ class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanD
 }
 
 @Component({selector: 'lifecycle-cmp'})
-@View({template: `<router-outlet></router-outlet>`, directives: [RouterOutlet]})
+@BaseView({template: `<router-outlet></router-outlet>`, directives: [RouterOutlet]})
 @RouteConfig([
   new Route({path: '/a', component: A}),
   new Route({path: '/on-activate', component: ActivateCmp}),
@@ -888,12 +888,12 @@ class LifecycleCmp {
 }
 
 @Component({selector: 'modal-cmp'})
-@View({template: "modal"})
+@BaseView({template: "modal"})
 class ModalCmp {
 }
 
 @Component({selector: 'aux-cmp'})
-@View({
+@BaseView({
   template:
       `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`,
   directives: [RouterOutlet]

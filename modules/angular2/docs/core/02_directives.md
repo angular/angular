@@ -113,7 +113,7 @@ Example of a component:
     'open'                        |  - open attribute mapped to component's open property
   ],                              |
 })                                |
-@View({                           | View annotation
+@BaseView({                       | View annotation
   templateUrl: 'pane.html'        |  - URL of template HTML
 })                                |
 class Pane {                      | Component controller class
@@ -229,7 +229,7 @@ class MyService {}                   | Assume a service which needs to be inject
   selector: 'my-app',                | configures the services to be injected.
   viewBindings: [MyService]          |
 })                                   |
-@View({                              | Assume we have a template that needs to be
+@BaseView({                          | Assume we have a template that needs to be
   templateUrl: 'my_app.html',        | configured with directives to be injected.
   directives: [House]                |
 })                                   |
@@ -274,7 +274,7 @@ Here is an example of the kinds of injections which can be achieved:
 @Component({                         |
   selector: 'my-app'                 |
 })                                   |
-@View({                              |
+@BaseView({                          |
   templateUrl: 'my_app.html',        |
   directives: [Form, FieldSet,       |
     Field, Primary]                  |
@@ -330,7 +330,7 @@ Shadow DOM provides an encapsulation for components, so as a general rule it doe
 @Component({
   selector: '[kid]'
 })
-@View({
+@BaseView({
   templateUrl: 'kid.html',
   directives: []
 })
@@ -348,7 +348,7 @@ class Kid {
 @Component({
   selector: '[dad]'
 })
-@View({
+@BaseView({
   templateUrl: 'dad.html',
   directives: [Kid]
 })
@@ -363,7 +363,7 @@ class Dad {
   selector: '[grandpa]',
   viewBindings: []
 })
-@View({
+@BaseView({
   templateUrl: 'grandpa.html',
   directives: [Dad]
 })

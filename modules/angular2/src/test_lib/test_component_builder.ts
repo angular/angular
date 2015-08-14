@@ -4,7 +4,7 @@ import {Type, isPresent, BaseException, isBlank} from 'angular2/src/facade/lang'
 import {Promise} from 'angular2/src/facade/async';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {BaseView} from 'angular2/src/core/annotations_impl/base_view';
 
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
@@ -48,7 +48,7 @@ var _nextRootElementId = 0;
 @Injectable()
 export class TestComponentBuilder {
   _injector: Injector;
-  _viewOverrides: Map<Type, View>;
+  _viewOverrides: Map<Type, BaseView>;
   _directiveOverrides: Map<Type, Map<Type, Type>>;
   _templateOverrides: Map<Type, string>;
 
@@ -90,14 +90,14 @@ export class TestComponentBuilder {
    *
    * @return {TestComponentBuilder}
    */
-  overrideView(componentType: Type, view: View): TestComponentBuilder {
+  overrideView(componentType: Type, view: BaseView): TestComponentBuilder {
     var clone = this._clone();
     clone._viewOverrides.set(componentType, view);
     return clone;
   }
 
   /**
-   * Overrides the directives from the component {@link View}.
+   * Overrides the directives from the component {@link BaseView}.
    *
    * @param {Type} component
    * @param {Type} from

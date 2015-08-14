@@ -717,7 +717,7 @@ export class Directive extends InjectableMetadata {
    * @Component({
    *   selector: 'main',
    * })
-   * @View({
+   * @BaseView({
    *   template: `<child-dir #c="child"></child-dir>`,
    *   directives: [ChildDir]
    * })
@@ -756,7 +756,8 @@ export class Directive extends InjectableMetadata {
 /**
  * Declare reusable UI building blocks for an application.
  *
- * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
+ * Each Angular component requires a single `@Component` and at least one `@BaseView` annotation.
+ * The
  * `@Component`
  * annotation specifies when a component is instantiated, and which properties and hostListeners it
  * binds to.
@@ -768,7 +769,7 @@ export class Directive extends InjectableMetadata {
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
- * For details on the `@View` annotation, see {@link View}.
+ * For details on the `@BaseView` annotation, see {@link BaseView}.
  *
  * ## Example
  *
@@ -776,7 +777,7 @@ export class Directive extends InjectableMetadata {
  * @Component({
  *   selector: 'greet'
  * })
- * @View({
+ * @BaseView({
  *   template: 'Hello {{name}}!'
  * })
  * class Greet {
@@ -835,7 +836,7 @@ export class Component extends Directive {
    *     Greeter
    *   ]
    * })
-   * @View({
+   * @BaseView({
    *   template: `<needs-greeter></needs-greeter>`,
    *   directives: [NeedsGreeter]
    * })

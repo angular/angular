@@ -19,15 +19,15 @@ import {Injectable} from 'angular2/di';
 import {
   Directive,
   Component,
-  View,
+  BaseView,
 } from 'angular2/annotations';
 
-import * as viewAnn from 'angular2/src/core/annotations_impl/view';
+import * as viewAnn from 'angular2/src/core/annotations_impl/base_view';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
 
 @Component({selector: 'child-comp'})
-@View({template: `<span>Original {{childBinding}}</span>`, directives: []})
+@BaseView({template: `<span>Original {{childBinding}}</span>`, directives: []})
 @Injectable()
 class ChildComp {
   childBinding: string;
@@ -35,19 +35,19 @@ class ChildComp {
 }
 
 @Component({selector: 'child-comp'})
-@View({template: `<span>Mock</span>`})
+@BaseView({template: `<span>Mock</span>`})
 @Injectable()
 class MockChildComp {
 }
 
 @Component({selector: 'parent-comp'})
-@View({template: `Parent(<child-comp></child-comp>)`, directives: [ChildComp]})
+@BaseView({template: `Parent(<child-comp></child-comp>)`, directives: [ChildComp]})
 @Injectable()
 class ParentComp {
 }
 
 @Component({selector: 'my-if-comp'})
-@View({template: `MyIf(<span *ng-if="showMore">More</span>)`, directives: [NgIf]})
+@BaseView({template: `MyIf(<span *ng-if="showMore">More</span>)`, directives: [NgIf]})
 @Injectable()
 class MyIfComp {
   showMore: boolean = false;
@@ -97,8 +97,8 @@ export function main() {
     it('should override a view',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
 
-         tcb.overrideView(ChildComp,
-                          new viewAnn.View({template: '<span>Modified {{childBinding}}</span>'}))
+         tcb.overrideView(ChildComp, new viewAnn.BaseView(
+                                         {template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();

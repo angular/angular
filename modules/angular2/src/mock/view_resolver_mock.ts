@@ -1,13 +1,13 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent, BaseException, stringify, isBlank} from 'angular2/src/facade/lang';
 
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {BaseView} from 'angular2/src/core/annotations_impl/base_view';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 
 export class MockViewResolver extends ViewResolver {
-  _views: Map<Type, View> = new Map();
+  _views: Map<Type, BaseView> = new Map();
   _inlineTemplates: Map<Type, string> = new Map();
-  _viewCache: Map<Type, View> = new Map();
+  _viewCache: Map<Type, BaseView> = new Map();
   _directiveOverrides: Map<Type, Map<Type, Type>> = new Map();
 
   constructor() { super(); }
@@ -18,7 +18,7 @@ export class MockViewResolver extends ViewResolver {
    * @param {Type} component
    * @param {ViewDefinition} view
    */
-  setView(component: Type, view: View): void {
+  setView(component: Type, view: BaseView): void {
     this._checkOverrideable(component);
     this._views.set(component, view);
   }
@@ -60,12 +60,12 @@ export class MockViewResolver extends ViewResolver {
    * `ViewResolver`,
    *   see `setView`.
    * - Override the directives, see `overrideViewDirective`.
-   * - Override the @View definition, see `setInlineTemplate`.
+   * - Override the @BaseView definition, see `setInlineTemplate`.
    *
    * @param component
    * @returns {ViewDefinition}
    */
-  resolve(component: Type): View {
+  resolve(component: Type): BaseView {
     var view = this._viewCache.get(component);
     if (isPresent(view)) return view;
 
@@ -87,13 +87,14 @@ export class MockViewResolver extends ViewResolver {
         }
         directives[srcIndex] = to;
       });
-      view = new View(
+      view = new BaseView(
           {template: view.template, templateUrl: view.templateUrl, directives: directives});
     }
 
     var inlineTemplate = this._inlineTemplates.get(component);
     if (isPresent(inlineTemplate)) {
-      view = new View({template: inlineTemplate, templateUrl: null, directives: view.directives});
+      view =
+          new BaseView({template: inlineTemplate, templateUrl: null, directives: view.directives});
     }
 
     this._viewCache.set(component, view);

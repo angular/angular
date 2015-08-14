@@ -4,7 +4,7 @@ import 'hello.dart';
 export 'hello.dart';
 import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show bootstrap, Component, Directive, BaseView, NgElement;
 
 var _visited = false;
 void initReflector() {
@@ -15,7 +15,7 @@ void initReflector() {
         HelloCmp,
         new _ngRef.ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(
+          const BaseView(
               template: r'''{{greeting}}''',
               templateUrl: r'package:other_package/template.html')
         ], const [], () => new HelloCmp()));

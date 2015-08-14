@@ -4,7 +4,7 @@ import {
   Directive,
   DynamicComponentLoader,
   ElementRef,
-  View
+  BaseView
 } from 'angular2/bootstrap';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
@@ -50,7 +50,7 @@ export function main() {
 
 
 @Component({selector: 'dummy'})
-@View({template: `<div></div>`})
+@BaseView({template: `<div></div>`})
 class DummyComponent {
 }
 
@@ -66,7 +66,7 @@ class DynamicDummy {
 }
 
 @Component({selector: 'app'})
-@View({
+@BaseView({
   directives: [NgIf, NgFor, DummyComponent, DummyDirective, DynamicDummy],
   template: `
     <div *ng-if="testingPlainComponents">

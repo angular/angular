@@ -15,7 +15,7 @@ import {
 } from 'angular2/test_lib';
 
 import {bootstrap} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/src/core/annotations/decorators';
+import {Component, Directive, BaseView} from 'angular2/src/core/annotations/decorators';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {bind} from 'angular2/di';
 import {DOCUMENT} from 'angular2/src/render/render';
@@ -200,36 +200,37 @@ export function main() {
 
 
 @Component({selector: 'hello-cmp'})
-@View({template: 'hello'})
+@BaseView({template: 'hello'})
 class HelloCmp {
 }
 
 @Component({selector: 'hello2-cmp'})
-@View({template: 'hello2'})
+@BaseView({template: 'hello2'})
 class Hello2Cmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
+@BaseView({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
 @RouteConfig([new Route({path: '/', component: HelloCmp})])
 class AppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
 @Component({selector: 'parent-cmp'})
-@View({template: `parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@BaseView({template: `parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([new Route({path: '/child', component: HelloCmp})])
 class ParentCmp {
 }
 
 @Component({selector: 'super-parent-cmp'})
-@View({template: `super-parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@BaseView(
+    {template: `super-parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([new Route({path: '/child', component: Hello2Cmp})])
 class SuperParentCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@BaseView({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([
   new Route({path: '/parent/...', component: ParentCmp}),
   new Route({path: '/super-parent/...', component: SuperParentCmp})
@@ -239,27 +240,27 @@ class HierarchyAppCmp {
 }
 
 @Component({selector: 'qs-cmp'})
-@View({template: "qParam = {{q}}"})
+@BaseView({template: "qParam = {{q}}"})
 class QSCmp {
   q: string;
   constructor(params: RouteParams) { this.q = params.get('q'); }
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: `<router-outlet></router-outlet>`, directives: routerDirectives})
+@BaseView({template: `<router-outlet></router-outlet>`, directives: routerDirectives})
 @RouteConfig([new Route({path: '/qs', component: QSCmp})])
 class QueryStringAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
 @Component({selector: 'oops-cmp'})
-@View({template: "oh no"})
+@BaseView({template: "oh no"})
 class BrokenCmp {
   constructor() { throw new BaseException('oops!'); }
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: `outer { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@BaseView({template: `outer { <router-outlet></router-outlet> }`, directives: routerDirectives})
 @RouteConfig([new Route({path: '/cause-error', component: BrokenCmp})])
 class BrokenAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}

@@ -28,7 +28,7 @@ const controlNameBinding =
  *
  *  ```
  * @Component({selector: "login-comp"})
- * @View({
+ * @BaseView({
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form #f="form" (submit)='onLogIn(f.value)'>
@@ -51,7 +51,7 @@ const controlNameBinding =
  *
  *  ```
  * @Component({selector: "login-comp"})
- * @View({
+ * @BaseView({
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form (submit)='onLogIn()'>

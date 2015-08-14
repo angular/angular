@@ -1,10 +1,10 @@
 import {BaseException} from 'angular2/src/facade/lang';
-import {bootstrap, Component, View} from 'angular2/bootstrap';
+import {bootstrap, Component, BaseView} from 'angular2/bootstrap';
 
 @Component({
   selector: 'error-app',
 })
-@View({
+@BaseView({
   template: `
            <button class="errorButton" (click)="createError()">create error</button>`
 })
