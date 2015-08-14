@@ -27,4 +27,5 @@ export {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 export {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 
 export {NgZone} from 'angular2/src/core/zone/ng_zone';
+export {NgZoneImpl} from 'angular2/src/core/zone/ng_zone_impl';
 export {Observable, EventEmitter} from 'angular2/src/facade/async';
