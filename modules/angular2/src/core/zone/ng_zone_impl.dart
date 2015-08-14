@@ -1,7 +1,8 @@
-library angular.zone;
+library angular.zone.ng_zone_impl;
 
 import 'dart:async';
 import 'package:stack_trace/stack_trace.dart' show Chain;
+import 'ng_zone.dart' show NgZone;
 
 typedef void ZeroArgFunction();
 typedef void ErrorHandlingFn(error, stackTrace);
@@ -50,7 +51,7 @@ class WrappedTimer implements Timer {
  * A typical application will create a singleton `NgZone`. The mount zone is the `Zone` where the singleton has been
  * instantiated. The default `onTurnDone` runs the Angular change detection.
  */
-class NgZone {
+class NgZoneImpl extends NgZone {
   ZeroArgFunction _onTurnStart;
   ZeroArgFunction _onTurnDone;
   ZeroArgFunction _onEventDone;
@@ -85,7 +86,7 @@ class NgZone {
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
    */
-  NgZone({bool enableLongStackTrace}) {
+  NgZoneImpl({bool enableLongStackTrace}) {
     _mountZone = Zone.current;
 
     if (enableLongStackTrace) {

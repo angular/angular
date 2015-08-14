@@ -2,7 +2,7 @@
 
 import {BaseException, global} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneZone} from 'angular2/src/core/zone/ng_zone_impl';
 
 var _scheduler;
 var _microtasks: List<Function> = [];

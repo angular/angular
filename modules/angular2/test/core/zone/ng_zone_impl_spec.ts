@@ -17,13 +17,13 @@ import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/facad
 import {BaseException} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneImpl} from 'angular2/src/core/zone/ng_zone_impl';
 
 var isIE = DOM.getUserAgent().indexOf("Trident") > -1;
 // Schedules a macrotask (using a timer)
 function macroTask(fn: Function, timer = 1): void {
   // adds longer timers for passing tests in IE
-  _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, isIE ? timer : 1));
+  _ngZone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, isIE ? timer : 1));
 }
 
 // Schedules a microtasks (using a resolved promise .then())
@@ -34,7 +34,7 @@ function microTask(fn: Function): void {
 var _log;
 var _errors: any[];
 var _traces: any[];
-var _zone;
+var _ngZone;
 
 function logError(error, stackTrace) {
   _errors.push(error);
@@ -44,11 +44,11 @@ function logError(error, stackTrace) {
 export function main() {
   describe("NgZone", () => {
 
-    function createZone(enableLongStackTrace) {
-      var zone = new NgZone({enableLongStackTrace: enableLongStackTrace});
-      zone.overrideOnTurnStart(_log.fn('onTurnStart'));
-      zone.overrideOnTurnDone(_log.fn('onTurnDone'));
-      return zone;
+    function createNgZone(enableLongStackTrace) {
+      var ngZone = new NgZoneImpl({enableLongStackTrace: enableLongStackTrace});
+      ngZone.overrideOnTurnStart(_log.fn('onTurnStart'));
+      ngZone.overrideOnTurnDone(_log.fn('onTurnDone'));
+      return ngZone;
     }
 
     beforeEach(() => {
@@ -58,16 +58,16 @@ export function main() {
     });
 
     describe('long stack trace', () => {
-      beforeEach(() => { _zone = createZone(true); });
+      beforeEach(() => { _ngZone = createNgZone(true); });
 
       commonTests();
 
       it('should produce long stack traces', inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
-             _zone.overrideOnErrorHandler(logError);
+             _ngZone.overrideOnErrorHandler(logError);
              var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
-             _zone.run(() => {
+             _ngZone.run(() => {
                TimerWrapper.setTimeout(() => {
                  TimerWrapper.setTimeout(() => {
                    c.resolve(null);
@@ -87,10 +87,10 @@ export function main() {
       it('should produce long stack traces (when using microtasks)',
          inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
-             _zone.overrideOnErrorHandler(logError);
+             _ngZone.overrideOnErrorHandler(logError);
              var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
-             _zone.run(() => {
+             _ngZone.run(() => {
                microTask(() => {
                  microTask(() => {
                    c.resolve(null);
@@ -109,16 +109,16 @@ export function main() {
     });
 
     describe('short stack trace', () => {
-      beforeEach(() => { _zone = createZone(false); });
+      beforeEach(() => { _ngZone = createNgZone(false); });
 
       commonTests();
 
       it('should disable long stack traces', inject([AsyncTestCompleter], (async) => {
            macroTask(() => {
-             _zone.overrideOnErrorHandler(logError);
+             _ngZone.overrideOnErrorHandler(logError);
              var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
-             _zone.run(() => {
+             _ngZone.run(() => {
                TimerWrapper.setTimeout(() => {
                  TimerWrapper.setTimeout(() => {
                    c.resolve(null);
@@ -142,18 +142,18 @@ function commonTests() {
   describe('isInInnerZone',
            () => {it('should return whether the code executes in the inner zone', () => {
              expect(isInInnerZone()).toEqual(false);
-             _zone.run(() => { expect(isInInnerZone()).toEqual(true); });
+             _ngZone.run(() => { expect(isInInnerZone()).toEqual(true); });
            })});
 
   describe('run', () => {
     it('should return the body return value from run', inject([AsyncTestCompleter], (async) => {
-         macroTask(() => { expect(_zone.run(() => { return 6; })).toEqual(6); });
+         macroTask(() => { expect(_ngZone.run(() => { return 6; })).toEqual(6); });
 
          macroTask(() => { async.done(); });
        }));
 
     it('should call onTurnStart and onTurnDone', inject([AsyncTestCompleter], (async) => {
-         macroTask(() => { _zone.run(_log.fn('run')); });
+         macroTask(() => { _ngZone.run(_log.fn('run')); });
 
          macroTask(() => {
            expect(_log.result()).toEqual('onTurnStart; run; onTurnDone');
@@ -164,11 +164,11 @@ function commonTests() {
     it('should call onEventDone once at the end of event', inject([AsyncTestCompleter], (async) => {
          // The test is set up in a way that causes the zone loop to run onTurnDone twice
          // then verified that onEventDone is only called once at the end
-         _zone.overrideOnTurnStart(null);
-         _zone.overrideOnEventDone(() => { _log.add('onEventDone'); });
+         _ngZone.overrideOnTurnStart(null);
+         _ngZone.overrideOnEventDone(() => { _log.add('onEventDone'); });
 
          var times = 0;
-         _zone.overrideOnTurnDone(() => {
+         _ngZone.overrideOnTurnDone(() => {
            times++;
            _log.add(`onTurnDone ${times}`);
            if (times < 2) {
@@ -177,7 +177,7 @@ function commonTests() {
            }
          });
 
-         macroTask(() => { _zone.run(_log.fn('run')); });
+         macroTask(() => { _ngZone.run(_log.fn('run')); });
 
          macroTask(() => {
            expect(_log.result()).toEqual('run; onTurnDone 1; onTurnDone 2; onEventDone');
@@ -187,10 +187,10 @@ function commonTests() {
 
     it('should not allow onEventDone to cause further digests',
        inject([AsyncTestCompleter], (async) => {
-         _zone.overrideOnTurnStart(null);
+         _ngZone.overrideOnTurnStart(null);
 
          var eventDone = false;
-         _zone.overrideOnEventDone(() => {
+         _ngZone.overrideOnEventDone(() => {
            if (eventDone) throw 'Should not call this more than once';
            _log.add('onEventDone');
            // If not implemented correctly, this microtask will cause another digest,
@@ -199,9 +199,9 @@ function commonTests() {
            eventDone = true;
          });
 
-         _zone.overrideOnTurnDone(() => { _log.add('onTurnDone'); });
+         _ngZone.overrideOnTurnDone(() => { _log.add('onTurnDone'); });
 
-         macroTask(() => { _zone.run(_log.fn('run')); });
+         macroTask(() => { _ngZone.run(_log.fn('run')); });
 
          macroTask(() => {
            expect(_log.result()).toEqual('run; onTurnDone; onEventDone');
@@ -211,18 +211,18 @@ function commonTests() {
 
     it('should run async tasks scheduled inside onEventDone outside Angular zone',
        inject([AsyncTestCompleter], (async) => {
-         _zone.overrideOnTurnStart(null);
+         _ngZone.overrideOnTurnStart(null);
 
-         _zone.overrideOnEventDone(() => {
+         _ngZone.overrideOnEventDone(() => {
            _log.add('onEventDone');
            // If not implemented correctly, this time will cause another digest,
            // which is not what we want.
            TimerWrapper.setTimeout(() => { _log.add('asyncTask'); }, 5);
          });
 
-         _zone.overrideOnTurnDone(() => { _log.add('onTurnDone'); });
+         _ngZone.overrideOnTurnDone(() => { _log.add('onTurnDone'); });
 
-         macroTask(() => { _zone.run(_log.fn('run')); });
+         macroTask(() => { _ngZone.run(_log.fn('run')); });
 
          macroTask(() => {
            TimerWrapper.setTimeout(() => {
@@ -236,7 +236,7 @@ function commonTests() {
        inject([AsyncTestCompleter], (async) => {
 
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              _log.add('run start');
              microTask(_log.fn('async'));
              _log.add('run end');
@@ -253,9 +253,9 @@ function commonTests() {
     it('should not run onTurnStart and onTurnDone for nested Zone.run',
        inject([AsyncTestCompleter], (async) => {
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              _log.add('start run');
-             _zone.run(() => {
+             _ngZone.run(() => {
                _log.add('nested run');
                microTask(_log.fn('nested run microtask'));
              });
@@ -273,14 +273,14 @@ function commonTests() {
 
     it('should not run onTurnStart and onTurnDone for nested Zone.run invoked from onTurnDone',
        inject([AsyncTestCompleter], (async) => {
-         _zone.overrideOnTurnStart(null);
-         _zone.overrideOnTurnDone(() => {
+         _ngZone.overrideOnTurnStart(null);
+         _ngZone.overrideOnTurnDone(() => {
            _log.add('onTurnDone:started');
-           _zone.run(() => _log.add('nested run'));
+           _ngZone.run(() => _log.add('nested run'));
            _log.add('onTurnDone:finished');
          });
 
-         macroTask(() => { _zone.run(() => { _log.add('start run'); }); });
+         macroTask(() => { _ngZone.run(() => { _log.add('start run'); }); });
 
          macroTask(() => {
            expect(_log.result())
@@ -291,9 +291,9 @@ function commonTests() {
 
     it('should call onTurnStart and onTurnDone before and after each top-level run',
        inject([AsyncTestCompleter], (async) => {
-         macroTask(() => { _zone.run(_log.fn('run1')); });
+         macroTask(() => { _ngZone.run(_log.fn('run1')); });
 
-         macroTask(() => { _zone.run(_log.fn('run2')); });
+         macroTask(() => { _ngZone.run(_log.fn('run2')); });
 
          macroTask(() => {
            expect(_log.result())
@@ -308,7 +308,7 @@ function commonTests() {
          var b: PromiseCompleter<string>;
 
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              a = PromiseWrapper.completer();
              b = PromiseWrapper.completer();
 
@@ -319,7 +319,7 @@ function commonTests() {
          });
 
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              a.resolve('a');
              b.resolve('b');
            });
@@ -335,7 +335,7 @@ function commonTests() {
 
     it('should run a function outside of the angular zone',
        inject([AsyncTestCompleter], (async) => {
-         macroTask(() => { _zone.runOutsideAngular(_log.fn('run')); });
+         macroTask(() => { _ngZone.runOutsideAngular(_log.fn('run')); });
 
          macroTask(() => {
            expect(_log.result()).toEqual('run');
@@ -347,14 +347,16 @@ function commonTests() {
        inject([AsyncTestCompleter], (async) => {
          var completer: PromiseCompleter<any>;
 
-         macroTask(
-             () => { _zone.runOutsideAngular(() => { completer = PromiseWrapper.completer(); }); });
-
-         macroTask(
-             () => { _zone.run(() => { completer.promise.then(_log.fn('executedMicrotask')); }); });
+         macroTask(() => {
+           _ngZone.runOutsideAngular(() => { completer = PromiseWrapper.completer(); });
+         });
 
          macroTask(() => {
-           _zone.runOutsideAngular(() => {
+           _ngZone.run(() => { completer.promise.then(_log.fn('executedMicrotask')); });
+         });
+
+         macroTask(() => {
+           _ngZone.runOutsideAngular(() => {
              _log.add('scheduling a microtask');
              completer.resolve(null);
            });
@@ -377,8 +379,8 @@ function commonTests() {
            'onTurnDone after executing the task',
        inject([AsyncTestCompleter], (async) => {
          var ran = false;
-         _zone.overrideOnTurnStart(_log.fn('onTurnStart'));
-         _zone.overrideOnTurnDone(() => {
+         _ngZone.overrideOnTurnStart(_log.fn('onTurnStart'));
+         _ngZone.overrideOnTurnDone(() => {
            _log.add('onTurnDone(begin)');
            if (!ran) {
              microTask(() => {
@@ -390,7 +392,7 @@ function commonTests() {
            _log.add('onTurnDone(end)');
          });
 
-         macroTask(() => { _zone.run(_log.fn('run')); });
+         macroTask(() => { _ngZone.run(_log.fn('run')); });
 
          macroTask(() => {
            expect(_log.result())
@@ -407,8 +409,8 @@ function commonTests() {
            'a scheduleMicrotask in run',
        inject([AsyncTestCompleter], (async) => {
          var ran = false;
-         _zone.overrideOnTurnStart(_log.fn('onTurnStart'));
-         _zone.overrideOnTurnDone(() => {
+         _ngZone.overrideOnTurnStart(_log.fn('onTurnStart'));
+         _ngZone.overrideOnTurnDone(() => {
            _log.add('onTurnDone(begin)');
            if (!ran) {
              _log.add('onTurnDone(scheduleMicrotask)');
@@ -421,7 +423,7 @@ function commonTests() {
          });
 
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              _log.add('scheduleMicrotask');
              microTask(_log.fn('run(executeMicrotask)'));
            });
@@ -443,7 +445,7 @@ function commonTests() {
          var donePromiseRan = false;
          var startPromiseRan = false;
 
-         _zone.overrideOnTurnStart(() => {
+         _ngZone.overrideOnTurnStart(() => {
            _log.add('onTurnStart(begin)');
            if (!startPromiseRan) {
              _log.add('onTurnStart(schedulePromise)');
@@ -452,7 +454,7 @@ function commonTests() {
            }
            _log.add('onTurnStart(end)');
          });
-         _zone.overrideOnTurnDone(() => {
+         _ngZone.overrideOnTurnDone(() => {
            _log.add('onTurnDone(begin)');
            if (!donePromiseRan) {
              _log.add('onTurnDone(schedulePromise)');
@@ -463,7 +465,7 @@ function commonTests() {
          });
 
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              _log.add('run start');
              PromiseWrapper.resolve(null)
                  .then((_) => {
@@ -499,7 +501,7 @@ function commonTests() {
          var completerB: PromiseCompleter<any>;
 
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              completerA = PromiseWrapper.completer();
              completerB = PromiseWrapper.completer();
              completerA.promise.then(_log.fn('a then'));
@@ -508,10 +510,10 @@ function commonTests() {
            });
          });
 
-         macroTask(() => { _zone.run(() => { completerA.resolve(null); }); }, 20);
+         macroTask(() => { _ngZone.run(() => { completerA.resolve(null); }); }, 20);
 
 
-         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 40);
+         macroTask(() => { _ngZone.run(() => { completerB.resolve(null); }); }, 40);
 
          macroTask(() => {
            expect(_log.result())
@@ -529,7 +531,7 @@ function commonTests() {
     it('should call onTurnStart and onTurnDone before and after (respectively) all turns in a chain',
        inject([AsyncTestCompleter], (async) => {
          macroTask(() => {
-           _zone.run(() => {
+           _ngZone.run(() => {
              _log.add('run start');
              microTask(() => {
                _log.add('async1');
@@ -551,11 +553,11 @@ function commonTests() {
          var promise;
 
          macroTask(() => {
-           _zone.runOutsideAngular(() => {
+           _ngZone.runOutsideAngular(() => {
              promise = PromiseWrapper.resolve(4).then((x) => PromiseWrapper.resolve(x));
            });
 
-           _zone.run(() => {
+           _ngZone.run(() => {
              promise.then(_log.fn('promise then'));
              _log.add('zone run');
            });
@@ -573,11 +575,11 @@ function commonTests() {
     it('should call the on error callback when it is defined',
        inject([AsyncTestCompleter], (async) => {
          macroTask(() => {
-           _zone.overrideOnErrorHandler(logError);
+           _ngZone.overrideOnErrorHandler(logError);
 
            var exception = new BaseException('sync');
 
-           _zone.run(() => { throw exception; });
+           _ngZone.run(() => { throw exception; });
 
            expect(_errors.length).toBe(1);
            expect(_errors[0]).toBe(exception);
@@ -586,11 +588,11 @@ function commonTests() {
        }));
 
     it('should call onError for errors from microtasks', inject([AsyncTestCompleter], (async) => {
-         _zone.overrideOnErrorHandler(logError);
+         _ngZone.overrideOnErrorHandler(logError);
 
          var exception = new BaseException('async');
 
-         macroTask(() => { _zone.run(() => { microTask(() => { throw exception; }); }); });
+         macroTask(() => { _ngZone.run(() => { microTask(() => { throw exception; }); }); });
 
          macroTask(() => {
            expect(_errors.length).toBe(1);
@@ -603,10 +605,10 @@ function commonTests() {
        inject([AsyncTestCompleter], (async) => {
          var exception = new BaseException('fromOnTurnDone');
 
-         _zone.overrideOnErrorHandler(logError);
-         _zone.overrideOnTurnDone(() => { throw exception; });
+         _ngZone.overrideOnErrorHandler(logError);
+         _ngZone.overrideOnTurnDone(() => { throw exception; });
 
-         macroTask(() => { _zone.run(() => {}); });
+         macroTask(() => { _ngZone.run(() => {}); });
 
          macroTask(() => {
            expect(_errors.length).toBe(1);
@@ -621,10 +623,10 @@ function commonTests() {
 
          var exception = new BaseException('fromOnTurnDone');
 
-         _zone.overrideOnErrorHandler(logError);
-         _zone.overrideOnTurnDone(() => { throw exception; });
+         _ngZone.overrideOnErrorHandler(logError);
+         _ngZone.overrideOnTurnDone(() => { throw exception; });
 
-         macroTask(() => { _zone.run(() => { microTask(() => { asyncRan = true; }); }); });
+         macroTask(() => { _ngZone.run(() => { microTask(() => { asyncRan = true; }); }); });
 
          macroTask(() => {
            expect(asyncRan).toBe(true);

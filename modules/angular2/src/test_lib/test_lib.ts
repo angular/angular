@@ -3,7 +3,7 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {global} from 'angular2/src/facade/lang';
-import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneZone} from 'angular2/src/core/zone/ng_zone_impl';
 
 import {bind} from 'angular2/di';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';

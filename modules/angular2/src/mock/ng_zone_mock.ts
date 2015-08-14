@@ -1,9 +1,9 @@
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneImpl} from 'angular2/src/core/zone/ng_zone_impl';
 
-export class MockNgZone extends NgZone {
+export class MockNgZone extends NgZoneImpl {
   constructor() { super({enableLongStackTrace: false}); }
 
-  run(fn: Function): any { return fn(); }
+  run(fn: () => any): any { return fn(); }
 
-  runOutsideAngular(fn: Function): any { return fn(); }
+  runOutsideAngular(fn: () => any): any { return fn(); }
 }

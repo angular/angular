@@ -14,7 +14,7 @@ import {
   EventManagerPlugin,
   DomEventsPlugin
 } from 'angular2/src/render/dom/events/event_manager';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneImpl} from 'angular2/src/core/zone/ng_zone_impl';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -145,10 +145,10 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
   }
 }
 
-class FakeNgZone extends NgZone {
+class FakeNgZone extends NgZoneImpl {
   constructor() { super({enableLongStackTrace: false}); }
 
-  run(fn) { fn(); }
+  run(fn: () => any): any { return fn(); }
 
-  runOutsideAngular(fn) { return fn(); }
+  runOutsideAngular(fn: () => any): any { return fn(); }
 }
