@@ -95,6 +95,14 @@ final _keyCodeToKeyMap = const {
   145: 'ScrollLock'
 };
 
+final bool _supportsTemplateElement = () {
+  try {
+    return new TemplateElement().content != null;
+  } catch(_) {
+    return false;
+  }
+}();
+
 class BrowserDomAdapter extends GenericBrowserDomAdapter {
   js.JsFunction _setProperty;
   js.JsFunction _getProperty;
@@ -207,7 +215,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   String nodeName(Node el) => el.nodeName;
   String nodeValue(Node el) => el.nodeValue;
   String type(InputElement el) => el.type;
-  Node content(TemplateElement el) => el.content;
+  Node content(TemplateElement el) => _supportsTemplateElement ? el.content : el;
   Node firstChild(el) => el.firstChild;
   Node nextSibling(Node el) => el.nextNode;
   Element parentElement(Node el) => el.parent;
