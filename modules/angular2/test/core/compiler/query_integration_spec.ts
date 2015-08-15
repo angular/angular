@@ -119,7 +119,6 @@ export function main() {
 
                  view.componentInstance.list = ['3d', '2d'];
                  view.detectChanges();
-                 view.detectChanges();
                  expect(asNativeElements(view.componentViewChildren)).toHaveText('2|3d|2d|');
 
                  async.done();
