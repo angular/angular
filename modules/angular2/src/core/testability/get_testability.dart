@@ -114,7 +114,9 @@ class GetTestability {
     object['getAngularTestability'] = _jsify((Element elem,
         bool findInAncestors) {
       var testability = registry.findTestabilityInTree(elem, findInAncestors);
-      return _jsify(new PublicTestability(testability));
+      return testability == null
+          ? null
+          : _jsify(new PublicTestability(testability));
     });
     object['getAllAngularTestabilities'] = _jsify(() {
       var publicTestabilities = registry
