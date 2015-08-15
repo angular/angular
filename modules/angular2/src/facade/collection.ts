@@ -242,7 +242,7 @@ export class ListWrapper {
   static join(list: List<any>, s: string): string { return list.join(s); }
   static isEmpty(list: List<any>): boolean { return list.length == 0; }
   static fill(list: List<any>, value: any, start: number = 0, end: number = null) {
-    list.fill(value, start, end === null ? undefined : end);
+    list.fill(value, start, end === null ? list.length : end);
   }
   static equals(a: List<any>, b: List<any>): boolean {
     if (a.length != b.length) return false;
