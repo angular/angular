@@ -66,7 +66,8 @@ export function main() {
       });
     }
 
-    if (DOM.getUserAgent().indexOf('AppleWebKit') > -1) {
+    if (DOM.getUserAgent().indexOf('AppleWebKit') > -1 &&
+        DOM.getUserAgent().indexOf('Edge') == -1) {
       it('should handle -webkit-keyframes rules', () => {
         var css = '@-webkit-keyframes foo {0% {-webkit-transform: translate(-50%) scaleX(0);}}';
         var passRe =

@@ -19,11 +19,12 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-var isIE = DOM.getUserAgent().indexOf("Trident") > -1;
+var isIEorEdge =
+    DOM.getUserAgent().indexOf("Trident") > -1 || DOM.getUserAgent().indexOf("Edge") > -1;
 // Schedules a macrotask (using a timer)
 function macroTask(fn: Function, timer = 1): void {
-  // adds longer timers for passing tests in IE
-  _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, isIE ? timer : 1));
+  // adds longer timers for passing tests in IE and Edge
+  _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, isIEorEdge ? timer : 1));
 }
 
 // Schedules a microtasks (using a resolved promise .then())
@@ -511,7 +512,7 @@ function commonTests() {
          macroTask(() => { _zone.run(() => { completerA.resolve(null); }); }, 20);
 
 
-         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 40);
+         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 60);
 
          macroTask(() => {
            expect(_log.result())
@@ -523,7 +524,7 @@ function commonTests() {
                    // Third VM turn
                    'onTurnStart; b then; onTurnDone');
            async.done();
-         }, 80);
+         }, 90);
        }));
 
     it('should call onTurnStart and onTurnDone before and after (respectively) all turns in a chain',
