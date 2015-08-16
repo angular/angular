@@ -233,5 +233,5 @@ Injector2 [                                                 Injector3 [
 ]                                                           ]
 ```
 
-As you can see the component and its bindings can be seen by its children and its view. The view bindings can be seen only by the view. And the bindings of other directives can be seen only their children.
+As you can see the component and its bindings can be seen by its children and its view. The view bindings can be seen only by the view. And the bindings of other directives can be seen only by their children.
 
