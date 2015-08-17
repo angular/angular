@@ -53,6 +53,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       var proto = eb.records[i];
       var res = this._calculateCurrValue(proto, values, locals);
       if (proto.lastInBinding) {
+        this._markPathAsCheckOnce(proto);
         return res;
       } else {
         this._writeSelf(proto, res, values);
@@ -60,6 +61,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
 
     throw new BaseException("Cannot be reached");
+  }
+
+  _markPathAsCheckOnce(proto: ProtoRecord): void {
+    if (proto.bindingRecord.isOnPushChangeDetection()) {
+      var dir = proto.bindingRecord.directiveRecord;
+      this._getDetectorFor(dir.directiveIndex).markPathToRootAsCheckOnce();
+    }
   }
 
   _matchingEventBindings(eventName: string, elIndex: number): EventBinding[] {

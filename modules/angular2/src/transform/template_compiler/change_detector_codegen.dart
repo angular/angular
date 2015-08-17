@@ -183,10 +183,20 @@ class _CodegenState {
   String _genEventBindingEval(EventBinding eb, ProtoRecord r){
     if (r.lastInBinding) {
       var evalRecord = _logic.genEventBindingEvalValue(eb, r);
+      var markPath = _genMarkPathToRootAsCheckOnce(r);
       var prevDefault = _genUpdatePreventDefault(eb, r);
-      return "${evalRecord}\n${prevDefault}";
+      return "${evalRecord}\n${markPath}\n${prevDefault}";
     } else {
       return _logic.genEventBindingEvalValue(eb, r);
+    }
+  }
+
+  String _genMarkPathToRootAsCheckOnce(ProtoRecord r) {
+    var br = r.bindingRecord;
+    if (br.isOnPushChangeDetection()) {
+      return "${_names.getDetectorName(br.directiveRecord.directiveIndex)}.markPathToRootAsCheckOnce();";
+    } else {
+      return "";
     }
   }
 

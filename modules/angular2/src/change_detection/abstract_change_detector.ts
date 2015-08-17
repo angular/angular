@@ -72,9 +72,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     return res;
   }
 
-  handleEventInternal(eventName: string, elIndex: number, locals: Locals): boolean {
-    return false;
-  }
+  handleEventInternal(eventName: string, elIndex: number, locals: Locals): boolean { return false; }
 
   detectChanges(): void { this.runDetectChanges(false); }
 

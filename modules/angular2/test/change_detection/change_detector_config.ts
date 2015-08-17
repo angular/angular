@@ -39,13 +39,14 @@ function _createEventRecords(expression: string): List<BindingRecord> {
   return [BindingRecord.createForEvent(ast, eventName, 0)];
 }
 
-function _createHostEventRecords(expression: string): List<BindingRecord> {
+function _createHostEventRecords(expression: string, directiveRecord: DirectiveRecord):
+    List<BindingRecord> {
   var parts = expression.split("=");
   var eventName = parts[0].substring(1, parts[0].length - 1);
   var exp = parts[1].substring(1, parts[1].length - 1);
 
   var ast = _getParser().parseAction(exp, 'location');
-  return [BindingRecord.createForHostEvent(ast, eventName, new DirectiveIndex(0, 0))];
+  return [BindingRecord.createForHostEvent(ast, eventName, directiveRecord)];
 }
 
 function _convertLocalsToVariableBindings(locals: Locals): List<any> {
@@ -98,7 +99,7 @@ export function getDefinition(id: string): TestDefinition {
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (ListWrapper.indexOf(_availableHostEventDefinitions, id) >= 0) {
-    var eventRecords = _createHostEventRecords(id);
+    var eventRecords = _createHostEventRecords(id, _DirectiveUpdating.basicRecords[0]);
     let cdDef = new ChangeDetectorDefinition(id, null, [], [], eventRecords,
                                              [_DirectiveUpdating.basicRecords[0]], true);
     testDef = new TestDefinition(id, cdDef, null);
@@ -165,12 +166,15 @@ class _ExpressionWithLocals {
 }
 
 class _ExpressionWithMode {
-  constructor(private _strategy: string, private _withRecords: boolean) {}
+  constructor(private _strategy: string, private _withRecords: boolean,
+              private _withEvents: boolean) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var variableBindings = [];
-    var bindingRecords = null;
-    var directiveRecords = null;
+    var bindingRecords = [];
+    var directiveRecords = [];
+    var eventRecords = [];
+
     if (this._withRecords) {
       var dirRecordWithOnPush =
           new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
@@ -183,8 +187,19 @@ class _ExpressionWithMode {
       bindingRecords = [];
       directiveRecords = [];
     }
+
+    if (this._withEvents) {
+      var dirRecordWithOnPush =
+          new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
+      directiveRecords = [dirRecordWithOnPush];
+
+      eventRecords =
+          ListWrapper.concat(_createEventRecords("(event)='false'"),
+                             _createHostEventRecords("(host-event)='false'", dirRecordWithOnPush))
+    }
+
     return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
-                                        bindingRecords, [], directiveRecords, true);
+                                        bindingRecords, eventRecords, directiveRecords, true);
   }
 
   /**
@@ -192,9 +207,11 @@ class _ExpressionWithMode {
    * Definitions in this map define conditions which allow testing various change detector modes.
    */
   static availableDefinitions: StringMap<string, _ExpressionWithMode> = {
-    'emptyUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, false),
-    'emptyUsingOnPushStrategy': new _ExpressionWithMode(ON_PUSH, false),
-    'onPushRecordsUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, true)
+    'emptyUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, false, false),
+    'emptyUsingOnPushStrategy': new _ExpressionWithMode(ON_PUSH, false, false),
+    'onPushRecordsUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, true, false),
+    'onPushWithEvent': new _ExpressionWithMode(ON_PUSH, false, true),
+    'onPushWithHostEvent': new _ExpressionWithMode(ON_PUSH, false, true)
   };
 }
 

@@ -716,6 +716,25 @@ export function main() {
 
             expect(checkedDetector.mode).toEqual(CHECK_ONCE);
           });
+
+          it('should mark ON_PUSH detectors as CHECK_ONCE after an event', () => {
+            var cd = _createWithoutHydrate('onPushWithEvent').changeDetector;
+            cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
+            cd.mode = CHECKED;
+
+            cd.handleEvent("event", 0, null);
+
+            expect(cd.mode).toEqual(CHECK_ONCE);
+          });
+
+          it('should mark ON_PUSH detectors as CHECK_ONCE after a host event', () => {
+            var cd = _createWithoutHydrate('onPushWithHostEvent').changeDetector;
+            cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
+
+            cd.handleEvent("host-event", 0, null);
+
+            expect(checkedDetector.mode).toEqual(CHECK_ONCE);
+          });
         });
       });
 
@@ -899,7 +918,6 @@ export function main() {
           res = val.changeDetector.handleEvent("event", 0, locals);
           expect(res).toBe(false);
         });
-
       });
     });
   });
