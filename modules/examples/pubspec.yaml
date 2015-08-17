@@ -2,6 +2,7 @@ name: examples
 environment:
   sdk: '>=1.10.0 <2.0.0'
 dependencies:
+  observe: '^0.13.1'
   angular2: '^<%= packageJson.version %>'
   angular2_material: '^<%= packageJson.version %>'
   browser: '^0.10.0'
@@ -29,8 +30,9 @@ transformers:
         - web/src/key_events/index.dart
         - web/src/sourcemap/index.dart
         - web/src/todo/index.dart
-        - web/src/model_driven_forms/index.dart
         - web/src/order_management/index.dart
+        - web/src/model_driven_forms/index.dart
+        - web/src/observable_models/index.dart
         - web/src/person_management/index.dart
         - web/src/template_driven_forms/index.dart
         # These entrypoints are disabled until cross-package urls are working (issue #2982)
@@ -53,6 +55,7 @@ transformers:
         - web/src/sourcemap/index.dart
         - web/src/todo/index.dart
         - web/src/model_driven_forms/index.dart
+        - web/src/observable_models/index.dart
         - web/src/order_management/index.dart
         - web/src/person_management/index.dart
         - web/src/template_driven_forms/index.dart
