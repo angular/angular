@@ -52,8 +52,8 @@ import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
-import {MessageBroker} from 'angular2/src/web-workers/worker/broker';
-import {WebWorkerMessageBus} from 'angular2/src/web-workers/worker/application';
+import {MessageBrokerFactory} from 'angular2/src/web-workers/worker/broker';
+import {MessageBus, MessageBusInterface} from 'angular2/src/web-workers/shared/message_bus';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from 'angular2/src/core/application_tokens';
 import {ApplicationRef} from 'angular2/src/core/application';
 import {createNgZone} from 'angular2/src/core/application_common';
@@ -63,6 +63,9 @@ import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
+import {ObservableWrapper} from 'angular2/src/facade/async';
+import {SETUP_CHANNEL} from 'angular2/src/web-workers/shared/messaging_api';
+import {WebWorkerEventDispatcher} from 'angular2/src/web-workers/worker/event_dispatcher';
 
 var _rootInjector: Injector;
 
@@ -75,7 +78,7 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
+function _injectorBindings(appComponentType, bus: MessageBusInterface,
                            initData: StringMap<string, any>): List<Type | Binding | List<any>> {
   var bestChangeDetection: Type = DynamicChangeDetection;
   if (PreGeneratedChangeDetection.isSupported()) {
@@ -100,10 +103,8 @@ function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
                               [ExceptionHandler]),
     Serializer,
-    bind(WebWorkerMessageBus).toValue(bus),
-    bind(MessageBroker)
-        .toFactory((a, b, c) => new MessageBroker(a, b, c),
-                   [WebWorkerMessageBus, Serializer, NgZone]),
+    bind(MessageBus).toValue(bus),
+    MessageBrokerFactory,
     WebWorkerRenderer,
     bind(Renderer).toAlias(WebWorkerRenderer),
     WebWorkerCompiler,
@@ -136,12 +137,13 @@ function _injectorBindings(appComponentType, bus: WebWorkerMessageBus,
     StyleUrlResolver,
     DynamicComponentLoader,
     Testability,
-    bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl']))
+    bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl'])),
+    WebWorkerEventDispatcher
   ];
 }
 
 export function bootstrapWebWorkerCommon(
-    appComponentType: Type, bus: WebWorkerMessageBus,
+    appComponentType: Type, bus: MessageBusInterface,
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
@@ -151,14 +153,12 @@ export function bootstrapWebWorkerCommon(
     // index.html and main.js are possible.
     //
 
-    var listenerId: int;
-    listenerId = bus.source.addListener((message: StringMap<string, any>) => {
-      if (message["data"]["type"] !== "init") {
-        return;
-      }
 
-      var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone, bus,
-                                           message["data"]["value"]);
+    var subscription: any;
+    var emitter = bus.from(SETUP_CHANNEL);
+    subscription = ObservableWrapper.subscribe(emitter, (message: StringMap<string, any>) => {
+      var appInjector =
+          _createAppInjector(appComponentType, componentInjectableBindings, zone, bus, message);
       var compRefToken = PromiseWrapper.wrap(() => {
         try {
           return appInjector.get(APP_COMPONENT_REF_PROMISE);
@@ -178,17 +178,17 @@ export function bootstrapWebWorkerCommon(
       PromiseWrapper.then(compRefToken, tick,
                           (err, stackTrace) => { bootstrapProcess.reject(err, stackTrace); });
 
-      bus.source.removeListener(listenerId);
+      ObservableWrapper.dispose(subscription);
     });
 
-    bus.sink.send({'type': "ready"});
+    ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
   });
 
   return bootstrapProcess.promise;
 }
 
 function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,
-                            zone: NgZone, bus: WebWorkerMessageBus,
+                            zone: NgZone, bus: MessageBusInterface,
                             initData: StringMap<string, any>): Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);
   var mergedBindings: any[] =

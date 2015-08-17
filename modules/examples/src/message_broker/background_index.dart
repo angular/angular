@@ -1,28 +1,29 @@
 library angular2.examples.message_broker.background_index;
 
-import "package:angular2/src/web-workers/worker/application.dart"
-    show WebWorkerMessageBus;
 import "package:angular2/src/web-workers/worker/broker.dart"
     show MessageBroker, UiArguments;
 import "package:angular2/src/web-workers/shared/serializer.dart"
     show Serializer;
-
+import "package:angular2/src/web-workers/shared/isolate_message_bus.dart";
+import "package:angular2/src/web-workers/worker/application.dart"
+    show WebWorkerMessageBusSink;
+import "package:angular2/src/facade/async.dart";
 import "dart:isolate";
 
 main(List<String> args, SendPort replyTo) {
   ReceivePort rPort = new ReceivePort();
-  WebWorkerMessageBus bus = new WebWorkerMessageBus.fromPorts(replyTo, rPort);
-  bus.source.addListener((message) {
-    if (identical(message['data']['type'], "echo")) {
-      bus.sink
-          .send({"type": "echo_response", "value": message['data']['value']});
-    }
+  var sink = new WebWorkerMessageBusSink(replyTo, rPort);
+  var source = new IsolateMessageBusSource(rPort);
+  IsolateMessageBus bus = new IsolateMessageBus(sink, source);
+
+  ObservableWrapper.subscribe(bus.from("echo"), (value) {
+    ObservableWrapper.callNext(bus.to("echo"), value);
   });
 
   MessageBroker broker =
-      new MessageBroker(bus, new Serializer(null, null, null), null);
-  var args = new UiArguments("test", "tester");
+      new MessageBroker(bus, new Serializer(null, null, null), "test");
+  var args = new UiArguments("tester");
   broker.runOnUiThread(args, String).then((data) {
-    bus.sink.send({"type": "result", "value": data});
+    ObservableWrapper.callNext(bus.to("result"), data);
   });
 }

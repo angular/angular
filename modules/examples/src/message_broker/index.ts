@@ -1,29 +1,28 @@
 import {
-  UIMessageBus,
-  UIMessageBusSink,
-  UIMessageBusSource
-} from "angular2/src/web-workers/ui/application";
+  PostMessageBus,
+  PostMessageBusSink,
+  PostMessageBusSource
+} from 'angular2/src/web-workers/shared/post_message_bus';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 
-var worker = new Worker("loader.js");
-var bus = new UIMessageBus(new UIMessageBusSink(worker), new UIMessageBusSource(worker));
-var VALUE = 5;
+var webWorker = new Worker("loader.js");
+var sink = new PostMessageBusSink(webWorker);
+var source = new PostMessageBusSource(webWorker);
+var bus = new PostMessageBus(sink, source);
+const VALUE = 5;
 
 document.getElementById("send_echo")
     .addEventListener("click", (e) => {
       var val = (<HTMLInputElement>document.getElementById("echo_input")).value;
-      bus.sink.send({type: "echo", value: val});
+      ObservableWrapper.callNext(bus.to("echo"), val);
     });
 
-bus.source.addListener((message) => {
-  if (message.data.type === "echo_response") {
-    document.getElementById("echo_result").innerHTML =
-        `<span class='response'>${message.data.value}</span>`;
-  } else if (message.data.type === "test") {
-    bus.sink.send({type: "result", id: message.data.id, value: VALUE});
-  } else if (message.data.type == "result") {
-    document.getElementById("ui_result").innerHTML =
-        `<span class='result'>${message.data.value}</span>`;
-  } else if (message.data.type == "ready") {
-    bus.sink.send({type: "init"});
-  }
+ObservableWrapper.subscribe(bus.from("echo"), (message) => {
+  document.getElementById("echo_result").innerHTML = `<span class='response'>${message}</span>`;
+});
+ObservableWrapper.subscribe(bus.from("result"), (message) => {
+  document.getElementById("ui_result").innerHTML = `<span class='result'>${message}</span>`;
+});
+ObservableWrapper.subscribe(bus.from("test"), (message: StringMap<string, any>) => {
+  ObservableWrapper.callNext(bus.to("test"), {id: message['id'], type: "result", value: VALUE});
 });

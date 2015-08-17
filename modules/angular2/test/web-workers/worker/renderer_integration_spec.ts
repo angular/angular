@@ -12,7 +12,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DomTestbed, TestRootView, elRef} from '../../render/dom/dom_testbed';
 import {bind} from 'angular2/di';
 import {WebWorkerCompiler, WebWorkerRenderer} from "angular2/src/web-workers/worker/renderer";
-import {MessageBroker, UiArguments, FnArg} from "angular2/src/web-workers/worker/broker";
+import {MessageBrokerFactory, UiArguments, FnArg} from "angular2/src/web-workers/worker/broker";
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
 import {isPresent, isBlank, BaseException, Type} from "angular2/src/facade/lang";
 import {MapWrapper, ListWrapper} from "angular2/src/facade/collection";
@@ -37,42 +37,47 @@ import {
 import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
 import {WebWorkerMain} from 'angular2/src/web-workers/ui/impl';
-import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
-import {MockMessageBus, MockMessageBusSink, MockMessageBusSource} from './worker_test_util';
+import {MessageBasedRenderCompiler} from 'angular2/src/web-workers/ui/render_compiler';
+import {MessageBasedRenderer} from 'angular2/src/web-workers/ui/renderer';
+import {
+  createPairedMessageBuses
+} from './worker_test_util'
 
-export function main() {
-  function createBroker(workerSerializer: Serializer, uiSerializer: Serializer, tb: DomTestbed,
-                        uiRenderViewStore: RenderViewWithFragmentsStore,
-                        workerRenderViewStore: RenderViewWithFragmentsStore): MessageBroker {
-    // set up the two message buses to pass messages to each other
-    var uiMessageBus = new MockMessageBus(new MockMessageBusSink(), new MockMessageBusSource());
-    var workerMessageBus = new MockMessageBus(new MockMessageBusSink(), new MockMessageBusSource());
-    uiMessageBus.attachToBus(workerMessageBus);
-    workerMessageBus.attachToBus(uiMessageBus);
+    export function
+    main() {
+  function createBrokerFactory(workerSerializer: Serializer, uiSerializer: Serializer,
+                               tb: DomTestbed, uiRenderViewStore: RenderViewWithFragmentsStore,
+                               workerRenderViewStore: RenderViewWithFragmentsStore):
+      MessageBrokerFactory {
+    var messageBuses = createPairedMessageBuses();
+    var uiMessageBus = messageBuses.ui;
+    var workerMessageBus = messageBuses.worker;
 
     // set up the worker side
-    var broker = new MessageBroker(workerMessageBus, workerSerializer, null);
+    var brokerFactory = new MessageBrokerFactory(workerMessageBus, workerSerializer);
 
     // set up the ui side
-    var webWorkerMain = new WebWorkerMain(tb.compiler, tb.renderer, uiRenderViewStore, uiSerializer,
-                                          new AnchorBasedAppRootUrl(), null);
-    webWorkerMain.attachToWebWorker(uiMessageBus);
-    return broker;
+    var renderCompiler = new MessageBasedRenderCompiler(uiMessageBus, uiSerializer, tb.compiler);
+    var renderer =
+        new MessageBasedRenderer(uiMessageBus, uiSerializer, uiRenderViewStore, tb.renderer);
+    new WebWorkerMain(renderCompiler, renderer, null, null);
+
+    return brokerFactory;
   }
 
   function createWorkerRenderer(workerSerializer: Serializer, uiSerializer: Serializer,
                                 tb: DomTestbed, uiRenderViewStore: RenderViewWithFragmentsStore,
                                 workerRenderViewStore: RenderViewWithFragmentsStore):
       WebWorkerRenderer {
-    var broker =
-        createBroker(workerSerializer, uiSerializer, tb, uiRenderViewStore, workerRenderViewStore);
-    return new WebWorkerRenderer(broker, workerRenderViewStore);
+    var brokerFactory = createBrokerFactory(workerSerializer, uiSerializer, tb, uiRenderViewStore,
+                                            workerRenderViewStore);
+    return new WebWorkerRenderer(brokerFactory, workerRenderViewStore, null);
   }
 
   function createWorkerCompiler(workerSerializer: Serializer, uiSerializer: Serializer,
                                 tb: DomTestbed): WebWorkerCompiler {
-    var broker = createBroker(workerSerializer, uiSerializer, tb, null, null);
-    return new WebWorkerCompiler(broker);
+    var brokerFactory = createBrokerFactory(workerSerializer, uiSerializer, tb, null, null);
+    return new WebWorkerCompiler(brokerFactory);
   }
 
   describe("Web Worker Compiler", function() {
