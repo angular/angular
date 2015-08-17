@@ -67,7 +67,13 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   remove(): void { this.parent.removeChild(this); }
 
   handleEvent(eventName: string, elIndex: number, locals: Locals): boolean {
-    throw new BaseException("Not implemented");
+    var res = this.handleEventInternal(eventName, elIndex, locals);
+    this.markPathToRootAsCheckOnce();
+    return res;
+  }
+
+  handleEventInternal(eventName: string, elIndex: number, locals: Locals): boolean {
+    return false;
   }
 
   detectChanges(): void { this.runDetectChanges(false); }

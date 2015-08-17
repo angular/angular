@@ -899,6 +899,7 @@ export function main() {
           res = val.changeDetector.handleEvent("event", 0, locals);
           expect(res).toBe(false);
         });
+
       });
     });
   });

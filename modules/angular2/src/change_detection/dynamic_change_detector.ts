@@ -31,7 +31,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     this.dehydrateDirectives(false);
   }
 
-  handleEvent(eventName: string, elIndex: number, locals: Locals): boolean {
+  handleEventInternal(eventName: string, elIndex: number, locals: Locals): boolean {
     var preventDefault = false;
 
     this._matchingEventBindings(eventName, elIndex)
@@ -41,6 +41,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
             preventDefault = true;
           }
         });
+
     return preventDefault;
   }
 
