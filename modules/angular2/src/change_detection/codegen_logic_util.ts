@@ -1,14 +1,20 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException, Json} from 'angular2/src/facade/lang';
+import {BaseException, Json, StringWrapper} from 'angular2/src/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';
 
 /**
+ * This is an experimental feature. Works only in Dart.
+ */
+const ON_PUSH_OBSERVE = "ON_PUSH_OBSERVE";
+
+/**
  * Class responsible for providing change detection logic for chagne detector classes.
  */
 export class CodegenLogicUtil {
-  constructor(private _names: CodegenNameUtil, private _utilName: string) {}
+  constructor(private _names: CodegenNameUtil, private _utilName: string,
+              private _changeDetection: string) {}
 
   /**
    * Generates a statement which updates the local variable representing `protoRec` with the current
@@ -46,11 +52,13 @@ export class CodegenLogicUtil {
         break;
 
       case RecordType.PROPERTY_READ:
-        rhs = `${context}.${protoRec.name}`;
+        rhs = this._observe(`${context}.${protoRec.name}`, protoRec);
         break;
 
       case RecordType.SAFE_PROPERTY:
-        rhs = `${this._utilName}.isValueBlank(${context}) ? null : ${context}.${protoRec.name}`;
+        var read = this._observe(`${context}.${protoRec.name}`, protoRec);
+        rhs =
+            `${this._utilName}.isValueBlank(${context}) ? null : ${this._observe(read, protoRec)}`;
         break;
 
       case RecordType.PROPERTY_WRITE:
@@ -58,16 +66,17 @@ export class CodegenLogicUtil {
         break;
 
       case RecordType.LOCAL:
-        rhs = `${localsAccessor}.get(${rawString(protoRec.name)})`;
+        rhs = this._observe(`${localsAccessor}.get(${rawString(protoRec.name)})`, protoRec);
         break;
 
       case RecordType.INVOKE_METHOD:
-        rhs = `${context}.${protoRec.name}(${argString})`;
+        rhs = this._observe(`${context}.${protoRec.name}(${argString})`, protoRec);
         break;
 
       case RecordType.SAFE_INVOKE_METHOD:
+        var invoke = `${context}.${protoRec.name}(${argString})`;
         rhs =
-            `${this._utilName}.isValueBlank(${context}) ? null : ${context}.${protoRec.name}(${argString})`;
+            `${this._utilName}.isValueBlank(${context}) ? null : ${this._observe(invoke, protoRec)}`;
         break;
 
       case RecordType.INVOKE_CLOSURE:
@@ -87,7 +96,7 @@ export class CodegenLogicUtil {
         break;
 
       case RecordType.KEYED_READ:
-        rhs = `${context}[${getLocalName(protoRec.args[0])}]`;
+        rhs = this._observe(`${context}[${getLocalName(protoRec.args[0])}]`, protoRec);
         break;
 
       case RecordType.KEYED_WRITE:
@@ -104,6 +113,14 @@ export class CodegenLogicUtil {
     return `${getLocalName(protoRec.selfIndex)} = ${rhs};`;
   }
 
+  _observe(exp: string, rec: ProtoRecord): string {
+    // This is an experimental feature. Works only in Dart.
+    if (StringWrapper.equals(this._changeDetection, ON_PUSH_OBSERVE)) {
+      return `this.observe(${exp}, ${rec.selfIndex})`;
+    } else {
+      return exp;
+    }
+  }
 
   _genInterpolation(protoRec: ProtoRecord): string {
     var iVals = [];

@@ -103,7 +103,14 @@ export function getDefinition(id: string): TestDefinition {
     let cdDef = new ChangeDetectorDefinition(id, null, [], [], eventRecords,
                                              [_DirectiveUpdating.basicRecords[0]], true);
     testDef = new TestDefinition(id, cdDef, null);
+
+  } else if (id == "onPushObserve") {
+    var records = _createBindingRecords("a");
+    let cdDef = new ChangeDetectorDefinition(id, "ON_PUSH_OBSERVE", [], records, [], [], false);
+    testDef = new TestDefinition(id, cdDef, null);
   }
+
+
   if (isBlank(testDef)) {
     throw `No ChangeDetectorDefinition for ${id} available. Please modify this file if necessary.`;
   }
@@ -129,6 +136,7 @@ export function getAllDefinitions(): List<TestDefinition> {
       ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
   allDefs = ListWrapper.concat(allDefs, _availableEventDefinitions);
   allDefs = ListWrapper.concat(allDefs, _availableHostEventDefinitions);
+  allDefs = ListWrapper.concat(allDefs, ["onPushObserve"]);
   return ListWrapper.map(allDefs, (id) => getDefinition(id));
 }
 

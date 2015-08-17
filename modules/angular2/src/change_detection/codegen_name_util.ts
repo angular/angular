@@ -124,7 +124,7 @@ export class CodegenNameUtil {
     MapWrapper.forEach(this._sanitizedEventNames, (names, eb) => {
       for (var i = 0; i < names.length; ++i) {
         if (i !== CONTEXT_INDEX) {
-          res.push(this.getEventLocalName(eb, i));
+          res.push(`${this.getEventLocalName(eb, i)}`);
         }
       }
     });
@@ -155,7 +155,7 @@ export class CodegenNameUtil {
     for (var j = 0, jLen = this.directiveRecords.length; j < jLen; ++j) {
       var dRec = this.directiveRecords[j];
       fieldList.push(this.getDirectiveName(dRec.directiveIndex));
-      if (dRec.isOnPushChangeDetection()) {
+      if (!dRec.isDefaultChangeDetection()) {
         fieldList.push(this.getDetectorName(dRec.directiveIndex));
       }
     }
@@ -202,7 +202,7 @@ export class CodegenNameUtil {
 
   getAllDetectorNames(): List<string> {
     return ListWrapper.map(
-        ListWrapper.filter(this.directiveRecords, r => r.isOnPushChangeDetection()),
+        ListWrapper.filter(this.directiveRecords, r => !r.isDefaultChangeDetection()),
         (d) => this.getDetectorName(d.directiveIndex));
   }
 

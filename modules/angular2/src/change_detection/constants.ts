@@ -1,4 +1,5 @@
 // TODO:vsavkin Use enums after switching to TypeScript
+import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/facade/lang';
 
 /**
  * CHECK_ONCE means that after calling detectChanges the mode of the change detector
@@ -33,3 +34,7 @@ export const ON_PUSH: string = "ON_PUSH";
  * DEFAULT means that the change detector's mode will be set to CHECK_ALWAYS during hydration.
  */
 export const DEFAULT: string = "DEFAULT";
+
+export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: string): boolean {
+  return isBlank(changeDetectionStrategy) || StringWrapper.equals(changeDetectionStrategy, DEFAULT);
+}

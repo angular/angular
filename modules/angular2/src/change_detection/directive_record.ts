@@ -1,5 +1,5 @@
-import {ON_PUSH} from './constants';
-import {StringWrapper, normalizeBool} from 'angular2/src/facade/lang';
+import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/facade/lang';
+import {isDefaultChangeDetectionStrategy} from './constants';
 
 export class DirectiveIndex {
   constructor(public elementIndex: number, public directiveIndex: number) {}
@@ -32,5 +32,7 @@ export class DirectiveRecord {
     this.changeDetection = changeDetection;
   }
 
-  isOnPushChangeDetection(): boolean { return StringWrapper.equals(this.changeDetection, ON_PUSH); }
+  isDefaultChangeDetection(): boolean {
+    return isDefaultChangeDetectionStrategy(this.changeDetection);
+  }
 }

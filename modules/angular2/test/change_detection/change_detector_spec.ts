@@ -1,5 +1,16 @@
 ///<reference path="../../src/change_detection/pipe_transform.ts"/>
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  tick,
+  fakeAsync
+} from 'angular2/test_lib';
 
 import {
   CONST_EXPR,
@@ -40,6 +51,7 @@ import {Pipes} from 'angular2/src/change_detection/pipes';
 import {JitProtoChangeDetector} from 'angular2/src/change_detection/jit_proto_change_detector';
 
 import {getDefinition} from './change_detector_config';
+import {createObservableModel} from './change_detector_spec_util';
 import {getFactoryById} from './generated/change_detector_classes';
 import {IS_DART} from '../platform';
 
@@ -735,6 +747,67 @@ export function main() {
 
             expect(checkedDetector.mode).toEqual(CHECK_ONCE);
           });
+
+          if (IS_DART) {
+            it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable fires an event',
+               fakeAsync(() => {
+                 var context = new TestDirective();
+                 context.a = createObservableModel();
+
+                 var cd = _createWithoutHydrate('onPushObserve').changeDetector;
+                 cd.hydrate(context, null, directives, null);
+                 cd.detectChanges();
+
+                 expect(cd.mode).toEqual(CHECKED);
+
+                 context.a.pushUpdate();
+                 tick();
+
+                 expect(cd.mode).toEqual(CHECK_ONCE);
+               }));
+
+            it('should unsubscribe from an old observable when an object changes', fakeAsync(() => {
+                 var originalModel = createObservableModel();
+                 var context = new TestDirective();
+                 context.a = originalModel;
+
+                 var cd = _createWithoutHydrate('onPushObserve').changeDetector;
+                 cd.hydrate(context, null, directives, null);
+                 cd.detectChanges();
+
+                 context.a = createObservableModel();
+                 cd.mode = CHECK_ONCE;
+                 cd.detectChanges();
+
+                 // Updating this model will not reenable the detector. This model is not longer
+                 // used.
+                 originalModel.pushUpdate();
+                 tick();
+                 expect(cd.mode).toEqual(CHECKED);
+               }));
+
+            it('should unsubscribe from observables when dehydrating', fakeAsync(() => {
+                 var originalModel = createObservableModel();
+                 var context = new TestDirective();
+                 context.a = originalModel;
+
+                 var cd = _createWithoutHydrate('onPushObserve').changeDetector;
+                 cd.hydrate(context, null, directives, null);
+                 cd.detectChanges();
+
+                 cd.dehydrate();
+
+                 context.a = "not an observable model";
+                 cd.hydrate(context, null, directives, null);
+                 cd.detectChanges();
+
+                 // Updating this model will not reenable the detector. This model is not longer
+                 // used.
+                 originalModel.pushUpdate();
+                 tick();
+                 expect(cd.mode).toEqual(CHECKED);
+               }));
+          }
         });
       });
 

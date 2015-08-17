@@ -48,10 +48,8 @@ class ObservableListDiff extends DefaultIterableDiffer {
       return super.diff(collection);
 
       // No updates has been registered.
-      // Returning this tells change detection that object has not change,
-      // so it should NOT update the binding.
     } else {
-      return this;
+      return null;
     }
   }
 }

@@ -36,7 +36,7 @@ main() {
 
       d.diff(c);
 
-      expect(d.diff(c)).toBe(d);
+      expect(d.diff(c)).toBe(null);
     });
 
     it("should return the wrapped value once a change has been triggered",
@@ -50,7 +50,7 @@ main() {
       c.add(3);
 
       // same value, because we have not detected the change yet
-      expect(d.diff(c)).toBe(d);
+      expect(d.diff(c)).toBe(null);
 
       // now we detect the change
       flushMicrotasks();
@@ -92,7 +92,7 @@ main() {
 
       // pushing into the first collection has no effect, and we do not see the change
       c1.add(3);
-      expect(d.diff(c2)).toBe(d);
+      expect(d.diff(c2)).toBe(null);
     });
   });
 }
