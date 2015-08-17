@@ -2,7 +2,7 @@ library angular2.test.transform.template_compiler.with_prefix_files.ng2_prefix.n
 
 import 'ng2_prefix.dart';
 import 'package:angular2/angular2.dart' as ng2
-    show Component, Directive, View, NgElement;
+    show Component, Directive, BaseView, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -13,7 +13,7 @@ void initReflector(reflector) {
         MyApp,
         new ReflectionInfo(const [
           const ng2.Component(selector: 'my-app'),
-          const ng2.View(template: 'MyApp {{name}}')
+          const ng2.BaseView(template: 'MyApp {{name}}')
         ], const [
           const []
         ], () => new MyApp()))

@@ -23,7 +23,7 @@ const controlGroupBinding =
  *
  *  ```
  * @Component({selector: "signup-comp"})
- * @View({
+ * @BaseView({
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form #f="form" (submit)='onSignUp(f.value)'>

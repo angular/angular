@@ -6,9 +6,9 @@ export {ViewEncapsulation} from 'angular2/src/render/api';
 /**
  * Declares the available HTML templates for an application.
  *
- * Each angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@View` annotation specifies the HTML template to use, and lists the directives that are active
- * within the template.
+ * Each angular component requires a single `@Component` and at least one `@BaseView` annotation.
+ * The `@BaseView` annotation specifies the HTML template to use, and lists the directives that are
+ * active within the template.
  *
  * When a component is instantiated, the template is loaded into the component's shadow root, and
  * the expressions and statements in the template are evaluated against the component.
@@ -21,7 +21,7 @@ export {ViewEncapsulation} from 'angular2/src/render/api';
  * @Component({
  *   selector: 'greet'
  * })
- * @View({
+ * @BaseView({
  *   template: 'Hello {{name}}!',
  *   directives: [GreetUser, Bold]
  * })
@@ -35,7 +35,7 @@ export {ViewEncapsulation} from 'angular2/src/render/api';
  * ```
  */
 @CONST()
-export class View {
+export class BaseView {
   /**
    * Specifies a template URL for an angular component.
    *
@@ -71,7 +71,7 @@ export class View {
    * @Component({
    *     selector: 'my-component'
    *   })
-   * @View({
+   * @BaseView({
    *   directives: [For]
    *   template: '
    *   <ul>

@@ -199,7 +199,7 @@ export function createNgZone(): NgZone {
  * @Component({
  *    selector: 'my-app'
  * })
- * @View({
+ * @BaseView({
  *    template: 'Hello {{ name }}!'
  * })
  * class MyApp {

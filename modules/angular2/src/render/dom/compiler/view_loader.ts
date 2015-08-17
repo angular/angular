@@ -52,7 +52,7 @@ export class ViewLoader {
       });
     }
 
-    // Inline the styles from the @View annotation
+    // Inline the styles from the @BaseView annotation
     return PromiseWrapper.all(tplAndStyles)
         .then((res: List<TemplateAndStyles | string>) => {
           let loadedTplAndStyles = <TemplateAndStyles>res[0];

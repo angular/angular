@@ -22,7 +22,7 @@ export * from './src/directives/ng_switch';
  * A collection of the Angular core directives that are likely to be used in each and every Angular
  * application.
  *
- * This collection can be used to quickly enumerate all the built-in directives in the `@View`
+ * This collection can be used to quickly enumerate all the built-in directives in the `@BaseView`
  * annotation. For example,
  * instead of writing:
  *
@@ -33,7 +33,7 @@ export * from './src/directives/ng_switch';
  * @Component({
  *  selector: 'my-component'
  * })
- * @View({
+ * @BaseView({
  *   templateUrl: 'myComponent.html',
  *   directives: [If, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
  * })
@@ -50,7 +50,7 @@ export * from './src/directives/ng_switch';
  * @Component({
  *  selector: 'my-component'
  * })
- * @View({
+ * @BaseView({
  *   templateUrl: 'myComponent.html',
  *   directives: [coreDirectives, OtherDirective]
  * })

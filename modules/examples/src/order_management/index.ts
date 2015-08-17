@@ -4,7 +4,7 @@ import {
   NgFor,
   Component,
   Directive,
-  View,
+  BaseView,
   Host,
   NgValidator,
   forwardRef,
@@ -83,7 +83,7 @@ class DataService {
 // ---- components
 
 @Component({selector: 'order-list-cmp'})
-@View({
+@BaseView({
   template: `
     <h1>Orders</h1>
   	<div *ng-for="#order of orders" [class.warning]="order.total > order.limit">
@@ -120,7 +120,7 @@ class OrderListComponent {
 
 
 @Component({selector: 'order-item-cmp', properties: ['item'], events: ['delete']})
-@View({
+@BaseView({
   template: `
     <div>
       <div>
@@ -153,7 +153,7 @@ class OrderItemComponent {
 }
 
 @Component({selector: 'order-details-cmp'})
-@View({
+@BaseView({
   template: `
     <div *ng-if="order !== null">
       <h1>Selected Order</h1>
@@ -193,7 +193,7 @@ class OrderDetailsComponent {
 }
 
 @Component({selector: 'order-management-app', viewBindings: [DataService]})
-@View({
+@BaseView({
   template: `
     <order-list-cmp></order-list-cmp>
     <order-details-cmp></order-details-cmp>

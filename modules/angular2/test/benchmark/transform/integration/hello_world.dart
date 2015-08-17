@@ -45,7 +45,7 @@ import "package:angular2/bootstrap.dart"
 import "package:angular2/di.dart" show Injectable;
 
 @Component(selector: "hello-app", services: const [GreetingService])
-@View(
+@BaseView(
     template: '<div class="greeting">{{greeting}} <span red>world</span>!</div>'
         '<button class="changeButton" (click)="changeGreeting()">'
         'change greeting</button><ng-content></ng-content>',

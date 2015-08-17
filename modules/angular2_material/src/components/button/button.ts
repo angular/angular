@@ -1,4 +1,4 @@
-import {Component, View, LifecycleEvent, ViewEncapsulation} from 'angular2/angular2';
+import {Component, BaseView, LifecycleEvent, ViewEncapsulation} from 'angular2/angular2';
 
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -15,7 +15,7 @@ import {isPresent} from 'angular2/src/facade/lang';
     '[class.md-button-focus]': 'isKeyboardFocused',
   },
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
   encapsulation: ViewEncapsulation.NONE,
 })
@@ -59,7 +59,7 @@ export class MdButton {
     '[attr.aria-disabled]': 'disabled',
   },
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
   encapsulation: ViewEncapsulation.NONE
 })

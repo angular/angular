@@ -1,11 +1,11 @@
 ///<reference path="../dist/docs/typings/angular2/angular2.d.ts"/>
 
-import {Component, bootstrap, View} from 'angular2/angular2'
+import {Component, bootstrap, BaseView} from 'angular2/angular2'
 
 @Component({
   selector: 'my-app'
 })
-@View({
+@BaseView({
 	template: '<h1>Hello {{ name }}</h1>'
 })
 // Component controller

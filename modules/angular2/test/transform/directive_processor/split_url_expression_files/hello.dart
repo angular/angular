@@ -1,8 +1,8 @@
 library examples.src.hello_world.split_url_expression_files;
 
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement;
+    show Component, Directive, BaseView, NgElement;
 
 @Component(selector: 'hello-app')
-@View(templateUrl: 'templ' 'ate.html')
+@BaseView(templateUrl: 'templ' 'ate.html')
 class HelloCmp {}

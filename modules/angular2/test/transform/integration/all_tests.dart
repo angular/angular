@@ -97,8 +97,8 @@ void allTests() {
     new IntegrationTestConfig('should preserve multiple annotations.', inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations_impl/view.dart':
-          '../../../lib/src/core/annotations_impl/view.dart'
+      'angular2|lib/src/core/annotations_impl/base_view.dart':
+          '../../../lib/src/core/annotations_impl/base_view.dart'
     }, outputs: {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'

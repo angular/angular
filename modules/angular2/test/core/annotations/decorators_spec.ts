@@ -10,7 +10,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {Component, View, Directive} from 'angular2/angular2';
+import {Component, Directive} from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 export function main() {
@@ -21,15 +21,15 @@ export function main() {
     });
 
     it('should declare Component class', () => {
-      var MyComponent =
-          Component({}).View({}).View({}).Class({constructor: function() { this.works = true; }});
+      var MyComponent = Component({}).BaseView({}).BaseView({}).Class(
+          {constructor: function() { this.works = true; }});
       expect(new MyComponent().works).toEqual(true);
     });
 
     it('should create type in ES5', () => {
       function MyComponent(){};
       var as;
-      (<any>MyComponent).annotations = as = Component({}).View({});
+      (<any>MyComponent).annotations = as = Component({}).BaseView({});
       expect(reflector.annotations(MyComponent)).toEqual(as.annotations);
     });
   });

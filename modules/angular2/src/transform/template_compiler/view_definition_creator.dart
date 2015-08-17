@@ -41,10 +41,10 @@ bool _isViewAnnotation(InstanceCreationExpression node) {
   if (constructorName is PrefixedIdentifier) {
     constructorName = constructorName.identifier;
   }
-  return constructorName.name == 'View';
+  return constructorName.name == 'BaseView';
 }
 
-/// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
+/// Creates [ViewDefinition] objects for all `BasesView` `Directive`s defined in
 /// `entryPoint`.
 class _ViewDefinitionCreator {
   final AssetReader reader;

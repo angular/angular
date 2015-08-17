@@ -1,8 +1,8 @@
-import {bootstrap, Component, View} from 'angular2/bootstrap';
+import {bootstrap, Component, BaseView} from 'angular2/bootstrap';
 import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 
 @Component({selector: 'key-events-app'})
-@View({
+@BaseView({
   template: `Click in the following area and press a key to display its name:<br>
   <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{lastKey}}</div><br>
   Click in the following area and press shift.enter:<br>

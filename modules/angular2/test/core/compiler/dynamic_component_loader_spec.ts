@@ -20,8 +20,8 @@ import {
 
 import {Injector} from 'angular2/di';
 import {NgIf} from 'angular2/directives';
-import {Component, View, LifecycleEvent} from 'angular2/annotations';
-import * as viewAnn from 'angular2/src/core/annotations_impl/view';
+import {Component, BaseView, LifecycleEvent} from 'angular2/annotations';
+import * as viewAnn from 'angular2/src/core/annotations_impl/base_view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DOCUMENT} from 'angular2/src/render/render';
@@ -35,7 +35,7 @@ export function main() {
                 (loader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(
                          MyComp,
-                         new viewAnn.View(
+                         new viewAnn.BaseView(
                              {template: '<location #loc></location>', directives: [Location]}))
                       .createAsync(MyComp)
                       .then((tc) => {
@@ -53,7 +53,7 @@ export function main() {
                 (loader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(
                          MyComp,
-                         new viewAnn.View(
+                         new viewAnn.BaseView(
                              {template: '<location #loc></location>', directives: [Location]}))
                       .createAsync(MyComp)
                       .then((tc) => {
@@ -70,13 +70,13 @@ export function main() {
       it('should allow to dispose even if the location has been removed',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                 (loader, tcb: TestComponentBuilder, async) => {
-                  tcb.overrideView(MyComp, new viewAnn.View({
+                  tcb.overrideView(MyComp, new viewAnn.BaseView({
                        template: '<child-cmp *ng-if="ctxBoolProp"></child-cmp>',
                        directives: [NgIf, ChildComp]
                      }))
                       .overrideView(
                           ChildComp,
-                          new viewAnn.View(
+                          new viewAnn.BaseView(
                               {template: '<location #loc></location>', directives: [Location]}))
                       .createAsync(MyComp)
                       .then((tc) => {
@@ -103,7 +103,7 @@ export function main() {
              [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
              (loader, tcb: TestComponentBuilder, async) => {
                tcb.overrideView(
-                      MyComp, new viewAnn.View(
+                      MyComp, new viewAnn.BaseView(
                                   {template: '<location #loc></location>', directives: [Location]}))
                    .createAsync(MyComp)
                    .then((tc) => {
@@ -125,7 +125,7 @@ export function main() {
                 (loader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(
                          MyComp,
-                         new viewAnn.View(
+                         new viewAnn.BaseView(
                              {template: '<location #loc></location>', directives: [Location]}))
                       .createAsync(MyComp)
                       .then((tc) => {
@@ -140,7 +140,7 @@ export function main() {
     describe("loading next to a location", () => {
       it('should work', inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                                (loader, tcb: TestComponentBuilder, async) => {
-                                 tcb.overrideView(MyComp, new viewAnn.View({
+                                 tcb.overrideView(MyComp, new viewAnn.BaseView({
                                       template: '<div><location #loc></location></div>',
                                       directives: [Location]
                                     }))
@@ -160,7 +160,7 @@ export function main() {
       it('should return a disposable component ref',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                 (loader, tcb: TestComponentBuilder, async) => {
-                  tcb.overrideView(MyComp, new viewAnn.View({
+                  tcb.overrideView(MyComp, new viewAnn.BaseView({
                        template: '<div><location #loc></location></div>',
                        directives: [Location]
                      }))
@@ -193,7 +193,7 @@ export function main() {
       it('should update host properties',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                 (loader, tcb: TestComponentBuilder, async) => {
-                  tcb.overrideView(MyComp, new viewAnn.View({
+                  tcb.overrideView(MyComp, new viewAnn.BaseView({
                        template: '<div><location #loc></location></div>',
                        directives: [Location]
                      }))
@@ -253,7 +253,7 @@ export function main() {
 @Component({
   selector: 'child-cmp',
 })
-@View({template: '{{ctxProp}}'})
+@BaseView({template: '{{ctxProp}}'})
 class ChildComp {
   ctxProp: string;
   constructor() { this.ctxProp = 'hello'; }
@@ -267,7 +267,7 @@ class DynamicallyCreatedComponentService {}
   viewBindings: [DynamicallyCreatedComponentService],
   lifecycle: [LifecycleEvent.onDestroy]
 })
-@View({template: "{{greeting}}"})
+@BaseView({template: "{{greeting}}"})
 class DynamicallyCreatedCmp {
   greeting: string;
   dynamicallyCreatedComponentService: DynamicallyCreatedComponentService;
@@ -282,17 +282,17 @@ class DynamicallyCreatedCmp {
 }
 
 @Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded;"})
+@BaseView({template: "DynamicallyLoaded;"})
 class DynamicallyLoaded {
 }
 
 @Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded2;"})
+@BaseView({template: "DynamicallyLoaded2;"})
 class DynamicallyLoaded2 {
 }
 
 @Component({selector: 'dummy', host: {'[id]': 'id'}})
-@View({template: "DynamicallyLoadedWithHostProps;"})
+@BaseView({template: "DynamicallyLoadedWithHostProps;"})
 class DynamicallyLoadedWithHostProps {
   id: string;
 
@@ -300,7 +300,7 @@ class DynamicallyLoadedWithHostProps {
 }
 
 @Component({selector: 'location'})
-@View({template: "Location;"})
+@BaseView({template: "Location;"})
 class Location {
   elementRef: ElementRef;
 
@@ -308,7 +308,7 @@ class Location {
 }
 
 @Component({selector: 'my-comp'})
-@View({directives: []})
+@BaseView({directives: []})
 class MyComp {
   ctxBoolProp: boolean;
 

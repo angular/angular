@@ -2,7 +2,7 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Directive, View, NgElement;
+    show bootstrap, Component, Directive, BaseView, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -13,7 +13,7 @@ void initReflector(reflector) {
         HelloCmp,
         new ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(template: 'goodbye-app', directives: const [GoodbyeCmp])
+          const BaseView(template: 'goodbye-app', directives: const [GoodbyeCmp])
         ], const [
           const []
         ], () => new HelloCmp()))
@@ -21,7 +21,7 @@ void initReflector(reflector) {
         GoodbyeCmp,
         new ReflectionInfo(const [
           const Component(selector: 'goodbye-app'),
-          const View(template: 'Goodbye')
+          const BaseView(template: 'Goodbye')
         ], const [
           const []
         ], () => new GoodbyeCmp()));

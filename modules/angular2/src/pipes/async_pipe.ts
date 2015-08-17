@@ -48,7 +48,7 @@ var _observableStrategy = new ObservableStrategy();
  *   selector: "task-cmp",
  *   changeDetection: ON_PUSH
  * })
- * @View({
+ * @BaseView({
  *   template: "Task Description {{ description | async }}"
  * })
  * class Task {

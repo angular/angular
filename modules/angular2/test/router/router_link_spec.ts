@@ -19,7 +19,7 @@ import {
 
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
-import {bind, Component, View} from 'angular2/angular2';
+import {bind, Component, BaseView} from 'angular2/angular2';
 
 import {Location, Router, RouterLink} from 'angular2/router';
 import {Instruction, ComponentInstruction} from 'angular2/src/router/instruction';
@@ -66,7 +66,7 @@ export function main() {
 
 
 @Component({selector: 'test-component'})
-@View({
+@BaseView({
   template: `
     <div>
       <a [router-link]="['/detail']">detail view</a>

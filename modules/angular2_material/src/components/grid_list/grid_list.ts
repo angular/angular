@@ -1,6 +1,6 @@
 import {
   Component,
-  View,
+  BaseView,
   ViewEncapsulation,
   Host,
   SkipSelf,
@@ -30,7 +30,7 @@ class RowHeightMode {
   properties: ['cols', 'rowHeight', 'gutterSize'],
   lifecycle: [LifecycleEvent.onAllChangesDone]
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
   encapsulation: ViewEncapsulation.NONE
 })
@@ -228,7 +228,7 @@ export class MdGridList {
   },
   lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange]
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html',
   encapsulation: ViewEncapsulation.NONE
 })

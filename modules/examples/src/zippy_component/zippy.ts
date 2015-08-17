@@ -1,4 +1,4 @@
-import {Component, View, EventEmitter} from 'angular2/angular2';
+import {Component, BaseView, EventEmitter} from 'angular2/angular2';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 
 @Component({
@@ -6,7 +6,7 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
   properties: ['title'],
   events: ['openHandler: open', 'closeHandler: close']
 })
-@View({templateUrl: 'zippy.html'})
+@BaseView({templateUrl: 'zippy.html'})
 export class Zippy {
   visible: boolean = true;
   title: string = '';
