@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var ts = require('typescript');
 
@@ -58,6 +60,10 @@ function main() {
           "});",
         "}));",
       "}",
+      "if (constructor.$routeConfig) {",
+        "constructor.annotations = constructor.annotations || [];",
+        "constructor.annotations.push(new angular.annotations.RouteConfig(constructor.$routeConfig));",
+      "}",
       "if (constructor.annotations) {",
         "constructor.annotations.forEach(function(annotation) {",
           "if (annotation instanceof RouteConfig) {",
@@ -70,7 +76,11 @@ function main() {
     "});",
 
     "var router = new RootRouter(registry, undefined, location, new Object());",
-    "$rootScope.$watch(function () { return $location.path(); }, function (path) { router.navigate(path); });",
+    "$rootScope.$watch(function () { return $location.path(); }, function (path) {",
+      "if (router.lastNavigationAttempt !== path) {",
+        "router.navigate(path);",
+      "}",
+    "});",
 
     "return router;"
   ].join('\n'));

@@ -134,11 +134,14 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
 
     router.registerOutlet({
       commit: function (instruction) {
-        var next;
+        var next = $q.when(true);
         var componentInstruction = instruction.component;
         if (componentInstruction.reuse) {
-          // todo(shahata): lifecycle - onReuse
-          next = $q.when(true);
+          var previousInstruction = currentInstruction;
+          currentInstruction = componentInstruction;
+          if (currentController.onReuse) {
+            next = $q.when(currentController.onReuse(currentInstruction, previousInstruction));
+          }
         } else {
           var self = this;
           next = this.deactivate(instruction).then(function () {
@@ -159,8 +162,9 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
         if (!currentInstruction ||
             currentInstruction.componentType !== componentInstruction.componentType) {
           result = false;
+        } else if (currentController.canReuse) {
+          result = currentController.canReuse(componentInstruction, currentInstruction);
         } else {
-          // todo(shahata): lifecycle - canReuse
           result = componentInstruction === currentInstruction ||
                    angular.equals(componentInstruction.params, currentInstruction.params);
         }
