@@ -118,8 +118,9 @@ export class BindingRecord {
   }
 
   static createForHostEvent(ast: AST, eventName: string,
-                            directiveIndex: DirectiveIndex): BindingRecord {
+                            directiveRecord: DirectiveRecord): BindingRecord {
+    var directiveIndex = directiveRecord.directiveIndex;
     return new BindingRecord(EVENT, directiveIndex, ast, directiveIndex.elementIndex, null, null,
-                             eventName, null, null, null);
+                             eventName, null, null, directiveRecord);
   }
 }

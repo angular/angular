@@ -83,7 +83,7 @@ export class ChangeDetectorJITGenerator {
     if (this.eventBindings.length > 0) {
       var handlers = this.eventBindings.map(eb => this._genEventBinding(eb)).join("\n");
       return `
-        ${this._typeName}.prototype.handleEvent = function(eventName, elIndex, locals) {
+        ${this._typeName}.prototype.handleEventInternal = function(eventName, elIndex, locals) {
           var ${this._names.getPreventDefaultAccesor()} = false;
           ${this._names.genInitEventLocals()}
           ${handlers}
@@ -106,10 +106,20 @@ export class ChangeDetectorJITGenerator {
   _genEventBindingEval(eb: EventBinding, r: ProtoRecord): string {
     if (r.lastInBinding) {
       var evalRecord = this._logic.genEventBindingEvalValue(eb, r);
+      var markPath = this._genMarkPathToRootAsCheckOnce(r);
       var prevDefault = this._genUpdatePreventDefault(eb, r);
-      return `${evalRecord}\n${prevDefault}`;
+      return `${evalRecord}\n${markPath}\n${prevDefault}`;
     } else {
       return this._logic.genEventBindingEvalValue(eb, r);
+    }
+  }
+
+  _genMarkPathToRootAsCheckOnce(r: ProtoRecord): string {
+    var br = r.bindingRecord;
+    if (br.isOnPushChangeDetection()) {
+      return `${this._names.getDetectorName(br.directiveRecord.directiveIndex)}.markPathToRootAsCheckOnce();`;
+    } else {
+      return "";
     }
   }
 

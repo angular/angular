@@ -57,8 +57,7 @@ export class BindingRecordsCreator {
       var directiveMetadata = allDirectiveMetadatas[dir.directiveIndex];
       var dirRecord = this._getDirectiveRecord(boundElementIndex, i, directiveMetadata);
       dir.eventBindings.forEach(heb => {
-        res.push(
-            BindingRecord.createForHostEvent(heb.source, heb.fullName, dirRecord.directiveIndex));
+        res.push(BindingRecord.createForHostEvent(heb.source, heb.fullName, dirRecord));
       });
     }
   }
