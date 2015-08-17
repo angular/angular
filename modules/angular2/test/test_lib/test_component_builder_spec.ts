@@ -45,6 +45,26 @@ class MyIfComp {
   showMore: boolean = false;
 }
 
+@Component({selector: 'child-child-comp'})
+@View({template: `<span>ChildChild</span>`})
+@Injectable()
+class ChildChildComp {}
+
+@Component({selector: 'child-comp'})
+@View({template: `<span>Original {{childBinding}}(<child-child-comp></child-child-comp>)</span>`,
+  directives: [ChildChildComp]})
+@Injectable()
+class ChildWithChildComp {
+  childBinding: string;
+  constructor() { this.childBinding = 'Child'; }
+}
+
+@Component({selector: 'child-child-comp'})
+@View({template: `<span>ChildChild Mock</span>`})
+@Injectable()
+class MockChildChildComp {}
+
+
 export function main() {
   describe('test component builder', function() {
     it('should instantiate a component with valid DOM',
@@ -112,5 +132,20 @@ export function main() {
                async.done();
              });
        }));
+
+
+    it("should override child component's dependencies",
+        inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+
+          tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
+              .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
+              .createAsync(ParentComp)
+              .then((rootTestComponent) => {
+                rootTestComponent.detectChanges();
+                expect(rootTestComponent.nativeElement).toHaveText('Parent(Original Child(ChildChild Mock))');
+
+                async.done();
+              });
+      }));
   });
 }
