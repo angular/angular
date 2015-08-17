@@ -8,6 +8,7 @@ import 'package:analyzer/task/model.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 
+
 /// The [RenderDirectiveMetadata]s of a [LibrarySpecificUnit].
 final ListResultDescriptor<RenderDirectiveMetadata> DIRECTIVES =
     new ListResultDescriptor<RenderDirectiveMetadata>('ANGULAR2_DIRECTIVES', null);
@@ -29,6 +30,7 @@ class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
   @override
   void internalPerform() {
     CompilationUnit unit = getRequiredInput(UNIT_INPUT);
+
     List<RenderDirectiveMetadata> metaList = <RenderDirectiveMetadata>[];
     for (CompilationUnitMember unitMember in unit.declarations) {
       if (unitMember is ClassDeclaration) {

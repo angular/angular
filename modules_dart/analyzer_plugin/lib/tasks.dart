@@ -5,5 +5,6 @@ import 'package:analyzer/task/model.dart';
 
 /// The analysis errors associated with a target.
 /// The value combines errors represented by multiple other results.
-final CompositeResultDescriptor<List<AnalysisError>> HTML_ERRORS =
-    new CompositeResultDescriptor<List<AnalysisError>>('ANGULAR_HTML_ERRORS');
+final ListResultDescriptor<AnalysisError> HTML_ERRORS =
+    new ListResultDescriptor<AnalysisError>(
+        'ANGULAR_HTML_ERRORS', AnalysisError.NO_ERRORS);
