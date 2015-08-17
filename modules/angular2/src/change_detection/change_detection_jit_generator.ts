@@ -35,7 +35,7 @@ export class ChangeDetectorJITGenerator {
               public directiveRecords: List<any>, private generateCheckNoChanges: boolean) {
     this._names =
         new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);
-    this._logic = new CodegenLogicUtil(this._names, UTIL);
+    this._logic = new CodegenLogicUtil(this._names, UTIL, changeDetectionStrategy);
     this._typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
@@ -116,10 +116,10 @@ export class ChangeDetectorJITGenerator {
 
   _genMarkPathToRootAsCheckOnce(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    if (br.isOnPushChangeDetection()) {
-      return `${this._names.getDetectorName(br.directiveRecord.directiveIndex)}.markPathToRootAsCheckOnce();`;
-    } else {
+    if (br.isDefaultChangeDetection()) {
       return "";
+    } else {
+      return `${this._names.getDetectorName(br.directiveRecord.directiveIndex)}.markPathToRootAsCheckOnce();`;
     }
   }
 
@@ -369,7 +369,7 @@ export class ChangeDetectorJITGenerator {
 
   _genNotifyOnPushDetectors(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    if (!r.lastInDirective || !br.isOnPushChangeDetection()) return "";
+    if (!r.lastInDirective || br.isDefaultChangeDetection()) return "";
     var retVal = `
       if(${IS_CHANGED_LOCAL}) {
         ${this._names.getDetectorName(br.directiveRecord.directiveIndex)}.markAsCheckOnce();

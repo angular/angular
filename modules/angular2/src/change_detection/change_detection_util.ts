@@ -1,7 +1,20 @@
-import {CONST_EXPR, isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
+import {
+  CONST_EXPR,
+  isPresent,
+  isBlank,
+  BaseException,
+  Type,
+  StringWrapper
+} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
-import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
+import {
+  CHECK_ALWAYS,
+  CHECK_ONCE,
+  CHECKED,
+  DETACHED,
+  isDefaultChangeDetectionStrategy
+} from './constants';
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';
 
 
@@ -166,7 +179,7 @@ export class ChangeDetectionUtil {
   }
 
   static changeDetectionMode(strategy: string): string {
-    return strategy == ON_PUSH ? CHECK_ONCE : CHECK_ALWAYS;
+    return isDefaultChangeDetectionStrategy(strategy) ? CHECK_ALWAYS : CHECK_ONCE;
   }
 
   static simpleChange(previousValue: any, currentValue: any): SimpleChange {

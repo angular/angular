@@ -1,4 +1,4 @@
-import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
@@ -13,8 +13,9 @@ import {
 import {ProtoRecord} from './proto_record';
 import {BindingRecord} from './binding_record';
 import {Locals} from './parser/locals';
-import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
+import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
+import {isObservable} from './observable_facade';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
 
@@ -41,6 +42,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   pipes: Pipes = null;
   firstProtoInCurrentBinding: number;
   protos: List<ProtoRecord>;
+
+  // This is an experimental feature. Works only in Dart.
+  subscriptions: any[];
+  streams: any[];
 
   constructor(public id: string, dispatcher: ChangeDispatcher, protos: List<ProtoRecord>,
               directiveRecords: List<DirectiveRecord>, public modeOnHydrate: string) {
@@ -79,13 +84,14 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   checkNoChanges(): void { throw new BaseException("Not implemented"); }
 
   runDetectChanges(throwOnChange: boolean): void {
-    if (this.mode === DETACHED || this.mode === CHECKED) return;
+    if (StringWrapper.equals(this.mode, DETACHED) || StringWrapper.equals(this.mode, CHECKED))
+      return;
     var s = _scope_check(this.id, throwOnChange);
     this.detectChangesInRecords(throwOnChange);
     this._detectChangesInLightDomChildren(throwOnChange);
     if (throwOnChange === false) this.callOnAllChangesDone();
     this._detectChangesInShadowDomChildren(throwOnChange);
-    if (this.mode === CHECK_ONCE) this.mode = CHECKED;
+    if (StringWrapper.equals(this.mode, CHECK_ONCE)) this.mode = CHECKED;
     wtfLeave(s);
   }
 
@@ -132,6 +138,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // implementation of `dehydrateDirectives`.
   dehydrate(): void {
     this.dehydrateDirectives(true);
+
+    // This is an experimental feature. Works only in Dart.
+    this.unsubsribeFromObservables();
+
     this.context = null;
     this.locals = null;
     this.pipes = null;
@@ -163,10 +173,41 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   markPathToRootAsCheckOnce(): void {
     var c: ChangeDetector = this;
-    while (isPresent(c) && c.mode != DETACHED) {
-      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
+    while (isPresent(c) && !StringWrapper.equals(c.mode, DETACHED)) {
+      if (StringWrapper.equals(c.mode, CHECKED)) c.mode = CHECK_ONCE;
       c = c.parent;
     }
+  }
+
+  private unsubsribeFromObservables(): void {
+    if (isPresent(this.subscriptions)) {
+      for (var i = 0; i < this.subscriptions.length; ++i) {
+        var s = this.subscriptions[i];
+        if (isPresent(this.subscriptions[i])) {
+          s.cancel();
+          this.subscriptions[i] = null;
+        }
+      }
+    }
+  }
+
+  // This is an experimental feature. Works only in Dart.
+  protected observe(value: any, index: number): any {
+    if (isObservable(value)) {
+      if (isBlank(this.subscriptions)) {
+        this.subscriptions = ListWrapper.createFixedSize(this.protos.length + 1);
+        this.streams = ListWrapper.createFixedSize(this.protos.length + 1);
+      }
+      if (isBlank(this.subscriptions[index])) {
+        this.streams[index] = value.changes;
+        this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+      } else if (this.streams[index] !== value.changes) {
+        this.subscriptions[index].cancel();
+        this.streams[index] = value.changes;
+        this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+      }
+    }
+    return value;
   }
 
   protected notifyDispatcher(value: any): void {

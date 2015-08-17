@@ -1,4 +1,10 @@
-import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  BaseException,
+  FunctionWrapper,
+  StringWrapper
+} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
@@ -64,7 +70,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   _markPathAsCheckOnce(proto: ProtoRecord): void {
-    if (proto.bindingRecord.isOnPushChangeDetection()) {
+    if (!proto.bindingRecord.isDefaultChangeDetection()) {
       var dir = proto.bindingRecord.directiveRecord;
       this._getDetectorFor(dir.directiveIndex).markPathToRootAsCheckOnce();
     }
@@ -136,7 +142,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
       if (proto.lastInDirective) {
         changes = null;
-        if (isChanged && bindingRecord.isOnPushChangeDetection()) {
+        if (isChanged && !bindingRecord.isDefaultChangeDetection()) {
           this._getDetectorFor(directiveRecord.directiveIndex).markAsCheckOnce();
         }
 
@@ -198,7 +204,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       return null;
     }
 
-    var currValue = this._calculateCurrValue(proto, values, locals);
+    var currValue = this.observe(this._calculateCurrValue(proto, values, locals), proto.selfIndex);
     if (proto.shouldBeChecked()) {
       var prevValue = this._readSelf(proto, values);
       if (!isSame(prevValue, currValue)) {

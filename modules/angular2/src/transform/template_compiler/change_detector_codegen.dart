@@ -100,7 +100,7 @@ class _CodegenState {
     var protoRecords = createPropertyRecords(def);
     var eventBindings = createEventRecords(def);
     var names = new CodegenNameUtil(protoRecords, eventBindings, def.directiveRecords, _UTIL);
-    var logic = new CodegenLogicUtil(names, _UTIL);
+    var logic = new CodegenLogicUtil(names, _UTIL, def.strategy);
     return new _CodegenState._(
         def.id,
         typeName,
@@ -193,7 +193,7 @@ class _CodegenState {
 
   String _genMarkPathToRootAsCheckOnce(ProtoRecord r) {
     var br = r.bindingRecord;
-    if (br.isOnPushChangeDetection()) {
+    if (!br.isDefaultChangeDetection()) {
       return "${_names.getDetectorName(br.directiveRecord.directiveIndex)}.markPathToRootAsCheckOnce();";
     } else {
       return "";
@@ -469,7 +469,7 @@ class _CodegenState {
 
   String _genNotifyOnPushDetectors(ProtoRecord r) {
     var br = r.bindingRecord;
-    if (!r.lastInDirective || !br.isOnPushChangeDetection()) return '';
+    if (!r.lastInDirective || br.isDefaultChangeDetection()) return '';
     return '''
       if($_IS_CHANGED_LOCAL) {
         ${_names.getDetectorName(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
