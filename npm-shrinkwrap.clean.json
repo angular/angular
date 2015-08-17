@@ -9926,7 +9926,7 @@
       }
     },
     "systemjs": {
-      "version": "0.18.3",
+      "version": "0.18.10",
       "dependencies": {
         "es6-module-loader": {
           "version": "0.17.6"

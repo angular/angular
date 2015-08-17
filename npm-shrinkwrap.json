@@ -9,7 +9,7 @@
     },
     "base64-js": {
       "version": "0.0.8",
-      "from": "base64-js@>=0.0.8 <0.0.9",
+      "from": "https://registry.npmjs.org/base64-js/-/base64-js-0.0.8.tgz",
       "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-0.0.8.tgz"
     },
     "bower": {
@@ -15348,13 +15348,13 @@
       }
     },
     "systemjs": {
-      "version": "0.18.3",
-      "from": "systemjs@0.18.3",
-      "resolved": "https://registry.npmjs.org/systemjs/-/systemjs-0.18.3.tgz",
+      "version": "0.18.10",
+      "from": "systemjs@latest",
+      "resolved": "https://registry.npmjs.org/systemjs/-/systemjs-0.18.10.tgz",
       "dependencies": {
         "es6-module-loader": {
           "version": "0.17.6",
-          "from": "es6-module-loader@>=0.17.3 <0.18.0",
+          "from": "es6-module-loader@>=0.17.4 <0.18.0",
           "resolved": "https://registry.npmjs.org/es6-module-loader/-/es6-module-loader-0.17.6.tgz"
         },
         "when": {
