@@ -11,7 +11,11 @@ import {
   proxy
 } from 'angular2/test_lib';
 import {IMPLEMENTS, Type} from 'angular2/src/facade/lang';
-import {MessageBroker, UiArguments} from 'angular2/src/web-workers/worker/broker';
+import {
+  MessageBroker,
+  UiArguments,
+  MessageBrokerFactory
+} from 'angular2/src/web-workers/worker/broker';
 import {WebWorkerXHRImpl} from "angular2/src/web-workers/worker/xhr_impl";
 import {PromiseWrapper} from "angular2/src/facade/async";
 
@@ -25,14 +29,13 @@ export function main() {
          var messageBroker: any = new SpyMessageBroker();
          messageBroker.spy("runOnUiThread")
              .andCallFake((args: UiArguments, returnType: Type) => {
-               expect(args.type).toEqual("xhr");
                expect(args.method).toEqual("get");
                expect(args.args.length).toEqual(1);
                expect(args.args[0].value).toEqual(URL);
                return PromiseWrapper.wrap(() => { return RESPONSE; });
              });
 
-         var xhrImpl = new WebWorkerXHRImpl(messageBroker);
+         var xhrImpl = new WebWorkerXHRImpl(new MockMessageBrokerFactory(messageBroker));
          xhrImpl.get(URL).then((response) => {
            expect(response).toEqual(RESPONSE);
            async.done();
@@ -46,4 +49,9 @@ export function main() {
 class SpyMessageBroker extends SpyObject {
   constructor() { super(MessageBroker); }
   noSuchMethod(m) { return super.noSuchMethod(m); }
+}
+
+class MockMessageBrokerFactory extends MessageBrokerFactory {
+  constructor(private _messageBroker: MessageBroker) { super(null, null); }
+  createMessageBroker(channel: string) { return this._messageBroker; }
 }

@@ -62,6 +62,11 @@ import {
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
 import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
 import {WebWorkerMain} from 'angular2/src/web-workers/ui/impl';
+import {MessageBus, MessageBusInterface} from 'angular2/src/web-workers/shared/message_bus';
+import {MessageBasedRenderCompiler} from 'angular2/src/web-workers/ui/render_compiler';
+import {MessageBasedRenderer} from 'angular2/src/web-workers/ui/renderer';
+import {MessageBasedXHRImpl} from 'angular2/src/web-workers/ui/xhr_impl';
+import {WebWorkerSetup} from 'angular2/src/web-workers/ui/setup';
 
 var _rootInjector: Injector;
 
@@ -129,13 +134,18 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     Testability,
     AnchorBasedAppRootUrl,
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
-    WebWorkerMain
+    WebWorkerMain,
+    WebWorkerSetup,
+    MessageBasedRenderCompiler,
+    MessageBasedXHRImpl,
+    MessageBasedRenderer
   ];
 }
 
-export function createInjector(zone: NgZone): Injector {
+export function createInjector(zone: NgZone, bus: MessageBusInterface): Injector {
   BrowserDomAdapter.makeCurrent();
   _rootBindings.push(bind(NgZone).toValue(zone));
+  _rootBindings.push(bind(MessageBus).toValue(bus));
   var injector: Injector = Injector.resolveAndCreate(_rootBindings);
   return injector.resolveAndCreateChild(_injectorBindings());
 }

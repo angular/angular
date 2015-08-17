@@ -81,13 +81,13 @@ class ObservableWrapper {
 }
 
 class EventEmitter extends Stream {
-  StreamController<String> _controller;
+  StreamController<dynamic> _controller;
 
   EventEmitter() {
     _controller = new StreamController.broadcast();
   }
 
-  StreamSubscription listen(void onData(String line),
+  StreamSubscription listen(void onData(dynamic line),
       {void onError(Error error), void onDone(), bool cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
