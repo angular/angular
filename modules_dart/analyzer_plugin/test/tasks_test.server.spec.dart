@@ -3,21 +3,17 @@ library angular2.src.analysis.analyzer_plugin.src.tasks_test;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/context/cache.dart';
+import 'package:analyzer/src/context/context.dart';
 import 'package:analyzer/src/generated/engine.dart'
-    show AnalysisOptionsImpl, TimestampedData;
-import 'package:analyzer/src/generated/resolver.dart';
+    show AnalysisOptionsImpl, TimestampedData, AnalysisEngine;
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
-import 'package:analyzer/src/task/dart.dart';
 import 'package:analyzer/src/task/driver.dart';
-import 'package:analyzer/src/task/general.dart';
-import 'package:analyzer/src/task/manager.dart';
 import 'package:analyzer/task/dart.dart';
 import 'package:analyzer/task/model.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2_analyzer_plugin/src/tasks.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
-import 'package:typed_mock/typed_mock.dart';
 import 'package:unittest/unittest.dart';
 
 import 'mock_sdk.dart';
@@ -33,16 +29,17 @@ class BuildUnitDirectivesTaskTest extends _AbstractDartTaskTest {
 
   void test_Component() {
     _addAngularSources();
+
     Source source = _newSource('/test.dart', r'''
-import '/angular2/metadata.dart';
+  import '/angular2/metadata.dart';
 
-@Component(selector: 'comp-a')
-class ComponentA {
-}
+  @Component(selector: 'comp-a')
+  class ComponentA {
+  }
 
-@Component(selector: 'comp-b')
-class ComponentB {
-}
+  @Component(selector: 'comp-b')
+  class ComponentB {
+  }
 ''');
     LibrarySpecificUnit target = new LibrarySpecificUnit(source, source);
     _computeResult(target, DIRECTIVES);
@@ -56,7 +53,9 @@ class ComponentB {
 
   void test_Directive() {
     _addAngularSources();
+
     Source source = _newSource('/test.dart', r'''
+
 import '/angular2/metadata.dart';
 
 @Directive(selector: 'deco-a')
@@ -78,7 +77,10 @@ class ComponentB {
   }
 
   void _addAngularSources() {
+
+
     _newSource('/angular2/metadata.dart', r'''
+
 library angular2.src.core.metadata;
 
 abstract class Directive {
@@ -118,54 +120,31 @@ class _AbstractDartTaskTest {
   Source emptySource;
 
   DartSdk sdk = new MockSdk();
-  _MockContext context = new _MockContext();
+  AnalysisContextImpl context;
   Map<AnalysisTarget, CacheEntry> entryMap = <AnalysisTarget, CacheEntry>{};
 
-  TaskManager taskManager = new TaskManager();
   AnalysisDriver analysisDriver;
 
   AnalysisTask task;
   Map<ResultDescriptor<dynamic>, dynamic> outputs;
 
   CacheEntry getCacheEntry(AnalysisTarget target) {
-    return entryMap.putIfAbsent(target, () => new CacheEntry());
+    return entryMap.putIfAbsent(target, () => new CacheEntry(target));
   }
 
   void setUp() {
     emptySource = _newSource('/test.dart');
-    // prepare AnalysisContext
+    AnalysisEngine.instance.useTaskModel = true;
+    context = new AnalysisContextImpl();
+
     context.sourceFactory = new SourceFactory(<UriResolver>[
       new DartUriResolver(sdk),
       new ResourceUriResolver(resourceProvider)
     ]);
-    // prepare TaskManager
-    taskManager.addTaskDescriptor(GetContentTask.DESCRIPTOR);
-    // TODO(scheglov) extract into API
-    taskManager.addTaskDescriptor(ScanDartTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(ParseDartTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildClassConstructorsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildCompilationUnitElementTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildLibraryConstructorsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildLibraryElementTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildPublicNamespaceTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildDirectiveElementsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildSourceClosuresTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildExportNamespaceTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildEnumMemberElementsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildFunctionTypeAliasesTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(BuildTypeProviderTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(GatherUsedImportedElementsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(GatherUsedLocalElementsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(GenerateHintsTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(ResolveUnitTypeNamesTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(ResolveLibraryTypeNamesTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(ResolveReferencesTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(ResolveVariableReferencesTask.DESCRIPTOR);
-    taskManager.addTaskDescriptor(VerifyUnitTask.DESCRIPTOR);
-    // Angular specific tasks
-    taskManager.addTaskDescriptor(BuildUnitDirectivesTask.DESCRIPTOR);
-    // prepare AnalysisDriver
-    analysisDriver = new AnalysisDriver(taskManager, context);
+
+    analysisDriver = context.driver;
+    analysisDriver.taskManager
+        .addTaskDescriptor(BuildUnitDirectivesTask.DESCRIPTOR);
   }
 
   void _computeResult(AnalysisTarget target, ResultDescriptor result) {
@@ -177,29 +156,5 @@ class _AbstractDartTaskTest {
   Source _newSource(String path, [String content = '']) {
     File file = resourceProvider.newFile(path, content);
     return file.createSource();
-  }
-}
-
-class _MockContext extends TypedMock implements ExtendedAnalysisContext {
-  AnalysisOptionsImpl analysisOptions = new AnalysisOptionsImpl();
-  SourceFactory sourceFactory;
-  TypeProvider typeProvider;
-
-  Map<AnalysisTarget, CacheEntry> entryMap = <AnalysisTarget, CacheEntry>{};
-
-  String get name => '_MockContext';
-
-  bool exists(Source source) => source.exists();
-
-  @override
-  CacheEntry getCacheEntry(AnalysisTarget target) {
-    return entryMap.putIfAbsent(target, () => new CacheEntry());
-  }
-
-  TimestampedData<String> getContents(Source source) => source.contents;
-
-  noSuchMethod(Invocation invocation) {
-    print('noSuchMethod: ${invocation.memberName}');
-    return super.noSuchMethod(invocation);
   }
 }
