@@ -96,7 +96,7 @@ export class ViewRef implements HostViewRef {
  * A ProtoView is a reference to a template for easy creation of views.
  * (See {@link AppViewManager#createViewInContainer} and {@link AppViewManager#createRootHostView}).
  *
- * A `ProtoView` is a foctary for creating `View`s.
+ * A `ProtoView` is a factory for creating `View`s.
  *
  * ## Example
  *
