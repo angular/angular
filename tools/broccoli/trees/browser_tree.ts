@@ -83,6 +83,15 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     ],
     destDir: '/'
   });
+  
+  var es5ModulesTree = new Funnel('modules', {
+    include: ['**/**'],
+    exclude: [
+      '**/*.cjs',
+      'benchmarks/e2e_test/**'
+    ],
+    destDir: '/'
+  });
 
   var scriptPathPatternReplacement = {
     match: '@@FILENAME_NO_EXT',
@@ -108,12 +117,20 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     sourceRoot: '.',
     target: 'ES6'
   });
-
-  // Call Traceur to lower the ES6 build tree to ES5
-  var es5Tree = transpileWithTraceur(es6Tree, {
-    destExtension: '.js',
-    destSourceMapExtension: '.js.map',
-    traceurOptions: {modules: 'instantiate', sourceMaps: true}
+  
+  // Use TypeScript to transpile the *.ts files to ES5
+  var es5Tree = compileWithTypescript(es5ModulesTree, {
+    allowNonTsExtensions: false,
+    declaration: false,
+    emitDecoratorMetadata: true,
+    experimentalDecorators: true,
+    mapRoot: '',  // force sourcemaps to use relative path
+    module: 'System',
+    noEmitOnError: false,
+    rootDir: '.',
+    sourceMap: true,
+    sourceRoot: '.',
+    target: 'ES5'
   });
 
   // Now we add a few more files to the es6 tree that Traceur should not see
