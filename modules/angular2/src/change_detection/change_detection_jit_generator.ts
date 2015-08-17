@@ -50,13 +50,6 @@ export class ChangeDetectorJITGenerator {
 
       ${this._typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 
-      ${this._typeName}.prototype.handleEvent = function(eventName, elIndex, locals) {
-        var ${this._names.getPreventDefaultAccesor()} = false;
-        ${this._names.genInitEventLocals()}
-        ${this._genHandleEvent()}
-        return ${this._names.getPreventDefaultAccesor()};
-      }
-
       ${this._typeName}.prototype.detectChangesInRecordsInternal = function(throwOnChange) {
         ${this._names.genInitLocals()}
         var ${IS_CHANGED_LOCAL} = false;
@@ -66,6 +59,8 @@ export class ChangeDetectorJITGenerator {
 
         ${this._names.getAlreadyCheckedName()} = true;
       }
+
+      ${this._maybeGenHandleEventInternal()}
 
       ${this._genCheckNoChanges()}
 
@@ -84,8 +79,20 @@ export class ChangeDetectorJITGenerator {
         AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
   }
 
-  _genHandleEvent(): string {
-    return this.eventBindings.map(eb => this._genEventBinding(eb)).join("\n");
+  _maybeGenHandleEventInternal(): string {
+    if (this.eventBindings.length > 0) {
+      var handlers = this.eventBindings.map(eb => this._genEventBinding(eb)).join("\n");
+      return `
+        ${this._typeName}.prototype.handleEvent = function(eventName, elIndex, locals) {
+          var ${this._names.getPreventDefaultAccesor()} = false;
+          ${this._names.genInitEventLocals()}
+          ${handlers}
+          return ${this._names.getPreventDefaultAccesor()};
+        }
+      `;
+    } else {
+      return '';
+    }
   }
 
   _genEventBinding(eb: EventBinding): string {

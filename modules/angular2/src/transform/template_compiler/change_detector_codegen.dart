@@ -125,13 +125,6 @@ class _CodegenState {
           dehydrateDirectives(false);
         }
 
-        bool handleEvent(eventName, elIndex, locals) {
-          var ${_names.getPreventDefaultAccesor()} = false;
-          ${_names.genInitEventLocals()}
-          ${_genHandleEvent()}
-          return ${this._names.getPreventDefaultAccesor()};
-        }
-
         void detectChangesInRecordsInternal(throwOnChange) {
           ${_names.genInitLocals()}
           var $_IS_CHANGED_LOCAL = false;
@@ -141,6 +134,8 @@ class _CodegenState {
 
           ${_names.getAlreadyCheckedName()} = true;
         }
+
+        ${_maybeGenHandleEventInternal()}
 
         ${_genCheckNoChanges()}
 
@@ -161,8 +156,20 @@ class _CodegenState {
     ''');
   }
 
-  String _genHandleEvent() {
-    return _eventBindings.map((eb) => _genEventBinding(eb)).join("\n");
+  String _maybeGenHandleEventInternal() {
+    if (_eventBindings.length > 0) {
+      var handlers = _eventBindings.map((eb) => _genEventBinding(eb)).join("\n");
+      return '''
+        handleEventInternal(eventName, elIndex, locals) {
+          var ${this._names.getPreventDefaultAccesor()} = false;
+          ${this._names.genInitEventLocals()}
+          ${handlers}
+          return ${this._names.getPreventDefaultAccesor()};
+        }
+      ''';
+    } else {
+      return '';
+    }
   }
 
   String _genEventBinding(EventBinding eb) {
