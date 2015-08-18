@@ -1,7 +1,6 @@
 /**
  * The `angular2` is the single place to import all of the individual types.
  */
-export {commonBootstrap as bootstrap} from 'angular2/src/core/application_common';
 
 // TODO(someone familiar with systemjs): the exports below are copied from
 // angular2_exports.ts. Re-exporting from angular2_exports.ts causes systemjs
