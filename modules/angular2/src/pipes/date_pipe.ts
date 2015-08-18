@@ -21,6 +21,9 @@ import {Pipe} from '../core/metadata';
 var defaultLocale: string = 'en-US';
 
 /**
+ * WARNING: this pipe uses the Internationalization API.
+ * Therefore it is only reliable in Chrome and Opera browsers.
+ *
  * Formats a date value to a string based on the requested format.
  *
  * # Usage

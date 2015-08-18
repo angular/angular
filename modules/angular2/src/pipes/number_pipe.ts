@@ -57,6 +57,9 @@ export class NumberPipe {
 }
 
 /**
+ * WARNING: this pipe uses the Internationalization API.
+ * Therefore it is only reliable in Chrome and Opera browsers.
+ *
  * Formats a number as local text. i.e. group sizing and seperator and other locale-specific
  * configurations are based on the active locale.
  *
@@ -92,6 +95,9 @@ export class DecimalPipe extends NumberPipe implements PipeTransform {
 }
 
 /**
+ * WARNING: this pipe uses the Internationalization API.
+ * Therefore it is only reliable in Chrome and Opera browsers.
+ *
  * Formats a number as local percent.
  *
  * # Usage
@@ -111,6 +117,9 @@ export class PercentPipe extends NumberPipe implements PipeTransform {
 }
 
 /**
+ * WARNING: this pipe uses the Internationalization API.
+ * Therefore it is only reliable in Chrome and Opera browsers.
+ *
  * Formats a number as local currency.
  *
  * # Usage
