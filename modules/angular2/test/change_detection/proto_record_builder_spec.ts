@@ -19,7 +19,7 @@ export function main() {
     it('should set argumentToPureFunction flag', inject([Parser], (p: Parser) => {
          var builder = new ProtoRecordBuilder();
          var ast = p.parseBinding("[1,2]", "location");  // collection literal is a pure function
-         builder.add(BindingRecord.createForElementProperty(ast, 0, "property"), []);
+         builder.add(BindingRecord.createForElementProperty(ast, 0, "property"), [], 0);
 
          var isPureFunc = builder.records.map(r => r.argumentToPureFunction);
          expect(isPureFunc).toEqual([true, true, false]);
@@ -29,7 +29,7 @@ export function main() {
        inject([Parser], (p: Parser) => {
          var builder = new ProtoRecordBuilder();
          var ast = p.parseBinding("f(1,2)", "location");
-         builder.add(BindingRecord.createForElementProperty(ast, 0, "property"), []);
+         builder.add(BindingRecord.createForElementProperty(ast, 0, "property"), [], 0);
 
          var isPureFunc = builder.records.map(r => r.argumentToPureFunction);
          expect(isPureFunc).toEqual([false, false, false]);

@@ -23,6 +23,8 @@ export enum RecordType {
 }
 
 export class ProtoRecord {
+  bindingIndex: number;
+
   constructor(public mode: RecordType, public name: string, public funcOrValue,
               public args: List<any>, public fixedArgs: List<any>, public contextIndex: number,
               public directiveIndex: DirectiveIndex, public selfIndex: number,

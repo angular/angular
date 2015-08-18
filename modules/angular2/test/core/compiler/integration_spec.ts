@@ -1274,7 +1274,7 @@ export function main() {
            });
          }));
 
-      it('should provide an error context when an error happens in change detection',
+      xit('should provide an error context when an error happens in change detection',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
            tcb = tcb.overrideView(
@@ -1298,7 +1298,7 @@ export function main() {
            });
          }));
 
-      it('should provide an error context when an error happens in change detection (text node)',
+      xit('should provide an error context when an error happens in change detection (text node)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
            tcb = tcb.overrideView(MyComp, new ViewMetadata({template: `{{one.two.three}}`}));
@@ -1368,7 +1368,7 @@ export function main() {
            }));
       }
 
-      it('should specify a location of an error that happened during change detection (text)',
+      xit('should specify a location of an error that happened during change detection (text)',
          inject([TestComponentBuilder, AsyncTestCompleter],
                 (tcb: TestComponentBuilder, async) => {
 
@@ -1381,7 +1381,7 @@ export function main() {
                           async.done();
                         })}));
 
-      it('should specify a location of an error that happened during change detection (element property)',
+      xit('should specify a location of an error that happened during change detection (element property)',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async) => {
@@ -1395,7 +1395,7 @@ export function main() {
                        async.done();
                      })}));
 
-      it('should specify a location of an error that happened during change detection (directive property)',
+      xit('should specify a location of an error that happened during change detection (directive property)',
          inject([TestComponentBuilder, AsyncTestCompleter],
                 (tcb: TestComponentBuilder, async) => {
 
@@ -1411,6 +1411,7 @@ export function main() {
                           async.done();
                         })}));
     });
+
 
     it('should support imperative views',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

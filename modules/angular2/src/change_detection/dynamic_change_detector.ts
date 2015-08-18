@@ -23,12 +23,14 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   prevContexts: List<any>;
   directives: any = null;
 
-  constructor(id: string, changeDetectionStrategy: string, dispatcher: any,
-              protos: List<ProtoRecord>, public eventBindings: EventBinding[],
-              directiveRecords: List<any>) {
-    super(id, dispatcher, protos, directiveRecords,
+  constructor(id: string, changeDetectionStrategy: string, dispatcher: any, bindings:BindingRecord[],
+              public protos: ProtoRecord[], public eventBindings: EventBinding[],
+              public directiveRecords: List<any>, directiveIndices:any[]) {
+    super(id, dispatcher, bindings, directiveIndices,
           ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy));
+
     var len = protos.length + 1;
+    this.length = len;
     this.values = ListWrapper.createFixedSize(len);
     this.localPipes = ListWrapper.createFixedSize(len);
     this.prevContexts = ListWrapper.createFixedSize(len);
@@ -119,7 +121,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       var directiveRecord = bindingRecord.directiveRecord;
 
       if (this._firstInBinding(proto)) {
-        this.firstProtoInCurrentBinding = proto.selfIndex;
+        this.currentBindingIndex = proto.bindingIndex;
       }
 
       if (proto.isLifeCycleRecord()) {
@@ -171,7 +173,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _updateDirectiveOrElement(change, bindingRecord) {
     if (isBlank(bindingRecord.directiveRecord)) {
-      this.dispatcher.notifyOnBinding(bindingRecord, change.currentValue);
+      super.notifyDispatcher(change.currentValue);
     } else {
       var directiveIndex = bindingRecord.directiveRecord.directiveIndex;
       bindingRecord.setter(this._getDirectiveFor(directiveIndex), change.currentValue);

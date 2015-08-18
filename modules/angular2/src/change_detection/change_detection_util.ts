@@ -8,6 +8,7 @@ import {
 } from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
+import {BindingRecord} from './binding_record';
 import {
   CHECK_ALWAYS,
   CHECK_ONCE,
@@ -200,5 +201,9 @@ export class ChangeDetectionUtil {
     if (implementsOnDestroy(pipe)) {
       pipe.onDestroy();
     }
+  }
+
+  static binding(mode, propName, propUnit, elIndex) {
+    return new BindingRecord(mode, null, null, elIndex, propName, propUnit, null, null, null, null);
   }
 }

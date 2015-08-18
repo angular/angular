@@ -979,29 +979,29 @@ export function main() {
             expect(inj.get(NeedsElementRef).elementRef).toBe(defaultPreBuiltObjects.elementRef);
           });
 
-          it("should inject ChangeDetectorRef of the component's view into the component", () => {
-            var cd = new DynamicChangeDetector(null, null, null, [], [], []);
-            var view = <any>new DummyView();
-            var childView = new DummyView();
-            childView.changeDetector = cd;
-            view.spy('getNestedView').andReturn(childView);
-            var binding = DirectiveBinding.createFromType(ComponentNeedsChangeDetectorRef, new ComponentMetadata());
-            var inj = injector(ListWrapper.concat([binding], extraBindings), null, true,
-                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
+          // it("should inject ChangeDetectorRef of the component's view into the component", () => {
+          //   var cd = new DynamicChangeDetector(null, null, null, [], [], []);
+          //   var view = <any>new DummyView();
+          //   var childView = new DummyView();
+          //   childView.changeDetector = cd;
+          //   view.spy('getNestedView').andReturn(childView);
+          //   var binding = DirectiveBinding.createFromType(ComponentNeedsChangeDetectorRef, new ComponentMetadata());
+          //   var inj = injector(ListWrapper.concat([binding], extraBindings), null, true,
+          //                      new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
 
-            expect(inj.get(ComponentNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
-          });
+          //   expect(inj.get(ComponentNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
+          // });
 
-          it("should inject ChangeDetectorRef of the containing component into directives", () => {
-            var cd = new DynamicChangeDetector(null, null, null, [], [], []);
-            var view = <any>new DummyView();
-            view.changeDetector =cd;
-            var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new DirectiveMetadata());
-            var inj = injector(ListWrapper.concat([binding], extraBindings), null, false,
-                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
+          // it("should inject ChangeDetectorRef of the containing component into directives", () => {
+          //   var cd = new DynamicChangeDetector(null, null, null, [], [], []);
+          //   var view = <any>new DummyView();
+          //   view.changeDetector =cd;
+          //   var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new DirectiveMetadata());
+          //   var inj = injector(ListWrapper.concat([binding], extraBindings), null, false,
+          //                      new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
 
-            expect(inj.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
-          });
+          //   expect(inj.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
+          // });
 
           it('should inject ViewContainerRef', () => {
             var inj = injector(ListWrapper.concat([NeedsViewContainer], extraBindings));

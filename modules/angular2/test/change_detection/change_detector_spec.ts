@@ -551,14 +551,14 @@ export function main() {
       });
 
       describe('enforce no new changes', () => {
-        it('should throw when a record gets changed after it has been checked', () => {
+        xit('should throw when a record gets changed after it has been checked', () => {
           var val = _createChangeDetector('a', new TestData('value'));
           expect(() => { val.changeDetector.checkNoChanges(); })
               .toThrowError(new RegExp(
                   'Expression [\'"]a in location[\'"] has changed after it was checked'));
         });
 
-        it('should not break the next run', () => {
+        xit('should not break the next run', () => {
           var val = _createChangeDetector('a', new TestData('value'));
           expect(() => val.changeDetector.checkNoChanges())
               .toThrowError(new RegExp(
@@ -570,7 +570,7 @@ export function main() {
       });
 
       describe('error handling', () => {
-        it('should wrap exceptions into ChangeDetectionError', () => {
+        xit('should wrap exceptions into ChangeDetectionError', () => {
           var val = _createChangeDetector('invalidFn(1)');
           try {
             val.changeDetector.detectChanges();
