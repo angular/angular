@@ -17,13 +17,18 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {
   BaseRequestOptions,
   ConnectionBackend,
-  Http,
   Request,
   RequestMethods,
   RequestOptions,
   Response,
   ResponseOptions,
-  URLSearchParams
+  URLSearchParams,
+  JSONP_BINDINGS,
+  HTTP_BINDINGS,
+  XHRBackend,
+  JSONPBackend,
+  Http,
+  Jsonp
 } from 'http/http';
 
 class SpyObserver extends SpyObject {
@@ -39,6 +44,59 @@ class SpyObserver extends SpyObject {
 }
 
 export function main() {
+  describe('injectables', () => {
+    var url = 'http://foo.bar';
+    var http: Http;
+    var parentInjector: Injector;
+    var childInjector: Injector;
+    var jsonpBackend: MockBackend;
+    var xhrBackend: MockBackend;
+    var jsonp: Jsonp;
+    var http: Http;
+
+    it('should allow using jsonpInjectables and httpInjectables in same injector',
+       inject([AsyncTestCompleter], (async) => {
+         parentInjector = Injector.resolveAndCreate(
+             [bind(XHRBackend).toClass(MockBackend), bind(JSONPBackend).toClass(MockBackend)]);
+
+         childInjector = parentInjector.resolveAndCreateChild([
+           HTTP_BINDINGS,
+           JSONP_BINDINGS,
+           bind(XHRBackend).toClass(MockBackend),
+           bind(JSONPBackend).toClass(MockBackend)
+         ]);
+
+         http = childInjector.get(Http);
+         jsonp = childInjector.get(Jsonp);
+         jsonpBackend = childInjector.get(JSONPBackend);
+         xhrBackend = childInjector.get(XHRBackend);
+
+         var xhrCreatedConnections = 0;
+         var jsonpCreatedConnections = 0;
+
+
+         ObservableWrapper.subscribe(xhrBackend.connections, () => {
+           xhrCreatedConnections++;
+           expect(xhrCreatedConnections).toEqual(1);
+           if (jsonpCreatedConnections) {
+             async.done();
+           }
+         });
+
+         ObservableWrapper.subscribe(http.get(url), () => {});
+
+         ObservableWrapper.subscribe(jsonpBackend.connections, () => {
+           jsonpCreatedConnections++;
+           expect(jsonpCreatedConnections).toEqual(1);
+           if (xhrCreatedConnections) {
+             async.done();
+           }
+         });
+
+         ObservableWrapper.subscribe(jsonp.request(url), () => {});
+       }));
+  });
+
   describe('http', () => {
     var url = 'http://foo.bar';
     var http: Http;
