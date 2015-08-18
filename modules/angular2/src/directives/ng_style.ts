@@ -14,16 +14,16 @@ import {Renderer} from 'angular2/src/render/api';
  * # Example:
  *
  * ```
- * <div ng-style="{'text-align': alignEpr}"></div>
+ * <div [ng-style]="{'text-align': alignExp}"></div>
  * ```
  *
- * In the above example the `text-align` style will be updated based on the `alignEpr` value
+ * In the above example the `text-align` style will be updated based on the `alignExp` value
  * changes.
  *
  * # Syntax
  *
- * - `<div ng-style="{'text-align': alignEpr}"></div>`
- * - `<div ng-style="styleExp"></div>`
+ * - `<div [ng-style]="{'text-align': alignExp}"></div>`
+ * - `<div [ng-style]="styleExp"></div>`
  */
 @Directive({
   selector: '[ng-style]',
