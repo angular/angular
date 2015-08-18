@@ -8,7 +8,7 @@ import {Injector, bind, Dependency, UNDEFINED} from 'angular2/di';
 
 import * as routerMod from './router';
 import {Instruction, ComponentInstruction, RouteParams} from './instruction';
-import {ROUTE_DATA} from './route_config_impl';
+import {ROUTE_DATA} from './route_data';
 import * as hookMod from './lifecycle_annotations';
 import {hasLifecycleHook} from './route_lifecycle_reflector';
 
