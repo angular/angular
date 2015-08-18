@@ -8,18 +8,9 @@
 {%- endmacro -%}
 
 
-{%- macro memberInfo(member) -%}
+{%- macro memberInfo(signature, member) -%}
 {$ commentBlock(member, 5) $}
-     {% if member.isStatic -%}static {% endif -%}{$ member.name $}{% if member.optional %}?{% endif -%}
-{% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
-{%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
-{%- if member.returnType -%}
-  : {$ member.returnType $}
-{%- elif member.parameters -%}
-  : void
-{%- else -%}
-  : any
-{%- endif -%};
+     {$ signature(member) $};
 {%- endmacro -%}
 
 
@@ -53,16 +44,16 @@ declare module {$ module.namespace $} {
   {$ export.docType $} {$ export.name $}{$ export.typeParams $}{%- if export.heritage == ' extends Directive' %} extends DirectiveAnnotation{% else %}{$ export.heritage $}{% endif %}
   {%- if export.docType == 'class' or export.docType == 'interface' %} {
   {%- if export.newMember %}
-    {$ memberInfo(export.newMember) $}
+    {$ memberInfo(doc.signature, export.newMember) $}
   {% endif %}
   {%- if export.callMember %}
-    {$ memberInfo(export.callMember) $}
+    {$ memberInfo(doc.signature, export.callMember) $}
   {% endif -%}
   {%- for static in export.statics %}
-    {$ memberInfo(static) $}
+    {$ memberInfo(doc.signature, static) $}
   {%- endfor -%}
   {%- for member in export.members %}
-    {$ memberInfo(member) $}
+    {$ memberInfo(doc.signature, member) $}
   {%- endfor %}
   }
 
