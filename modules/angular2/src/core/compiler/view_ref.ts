@@ -94,7 +94,7 @@ export class ViewRef implements HostViewRef {
  * A reference to an Angular ProtoView.
  *
  * A ProtoView is a reference to a template for easy creation of views.
- * (See {@link AppViewManager#createViewInContainer} and {@link AppViewManager#createRootHostView}).
+ * (See {@link AppViewManager#createViewInContainer `AppViewManager#createViewInContainer`} and {@link AppViewManager#createRootHostView `AppViewManager#createRootHostView`}).
  *
  * A `ProtoView` is a foctary for creating `View`s.
  *
