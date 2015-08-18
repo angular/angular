@@ -28,4 +28,4 @@ export 'package:angular2/src/core/compiler/dynamic_component_loader.dart'
     show ComponentRef;
 
 export 'package:angular2/src/core/zone/ng_zone.dart' show NgZone;
-export 'package:angular2/src/facade/async.dart' show Observable, EventEmitter;
+export 'package:angular2/src/facade/async.dart' show Stream, EventEmitter;
