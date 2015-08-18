@@ -85,3 +85,10 @@ export function stringifyElement(el): string {
 
   return result;
 }
+
+// The Intl API is only properly supported in Chrome and Opera.
+// Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
+// see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
+export function supportsIntlApi(): boolean {
+  return DOM.getUserAgent().indexOf('Chrome') > -1 && DOM.getUserAgent().indexOf('Edge') == -1;
+}
