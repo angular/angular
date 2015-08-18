@@ -424,7 +424,7 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 
 
 /**
- * {@link ViewQueryMetadata} factory function.
+ * {@link di/ViewQueryMetadata} factory function.
  */
 export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
 
