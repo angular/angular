@@ -49,5 +49,56 @@ export function main() {
       expect(DOM.isElementNode(secondChild)).toBe(true);
 
     });
+
+    if (DOM.supportsDOMEvents()) {
+      it('should getBaseHref should return null if blank', () => {
+
+        var subject = DOM.getBaseHref();
+        var result = null;
+
+        expect(subject).toEqual(result);
+      });
+
+      it('should getBaseHref correctly', () => {
+
+        DOM.resetBaseElement();
+        var result = '/drop/bass/connon/';
+
+        var $base = DOM.createElement('base');
+        DOM.setAttribute($base, 'href', result);
+        var $head = DOM.defaultDoc().head;
+        DOM.appendChild($head, $base);
+
+
+        var subject = DOM.getBaseHref();
+        DOM.removeChild($head, $base);
+        DOM.resetBaseElement();
+
+        expect(subject).toEqual(result);
+
+      });
+
+      it('should getBaseHref relative url', () => {
+
+        DOM.resetBaseElement();
+        var initialValue = 'bass';
+
+        var $base = DOM.createElement('base');
+        DOM.setAttribute($base, 'href', initialValue);
+        var $head = DOM.defaultDoc().head;
+        DOM.appendChild($head, $base);
+
+
+        var result = '/' + initialValue;
+        var subject = DOM.getBaseHref();
+        DOM.removeChild($head, $base);
+        DOM.resetBaseElement();
+
+        expect(subject).toEqual(result);
+
+      });
+    }
+
+
   });
 }
