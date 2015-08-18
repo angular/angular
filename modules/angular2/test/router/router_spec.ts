@@ -12,7 +12,7 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 import {IMPLEMENTS, Type} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
@@ -122,6 +122,12 @@ export function main() {
           .toThrowError(`Link "${ListWrapper.toJSON(['/'])}" must include a route name.`);
     });
 
+    it('should, when subscribed to, return a disposable subscription', () => {
+      expect(() => {
+        var subscription = router.subscribe((_) => {});
+        ObservableWrapper.dispose(subscription);
+      }).not.toThrow();
+    });
 
     it('should generate URLs from the root component when the path starts with /', () => {
       router.config([new Route({path: '/first/...', component: DummyParentComp, as: 'firstCmp'})]);
