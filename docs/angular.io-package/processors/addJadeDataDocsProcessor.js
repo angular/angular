@@ -51,7 +51,7 @@ module.exports = function addJadeDataDocsProcessor() {
           var modulePageInfo  = _.map(doc.exports, function(exportDoc) {
             return {
               name: exportDoc.name + '-' + exportDoc.docType,
-              title: exportDoc.name + ' ' + titleCase(exportDoc.docType)
+              title: exportDoc.name
             };
           });
 
