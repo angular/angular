@@ -23,11 +23,11 @@ import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_dec
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 import {
-  routerInjectables,
+  ROUTER_BINDINGS,
   RouteParams,
   Router,
   APP_BASE_HREF,
-  routerDirectives,
+  ROUTER_DIRECTIVES,
   HashLocationStrategy
 } from 'angular2/router';
 
@@ -37,9 +37,8 @@ import {APP_COMPONENT} from 'angular2/src/core/application_tokens';
 
 export function main() {
   describe('router injectables', () => {
-    beforeEachBindings(() => {
-      return [routerInjectables, bind(LocationStrategy).toClass(MockLocationStrategy)];
-    });
+    beforeEachBindings(
+        () => { return [ROUTER_BINDINGS, bind(LocationStrategy).toClass(MockLocationStrategy)]; });
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrapping a router works
@@ -51,7 +50,7 @@ export function main() {
 
            bootstrap(AppCmp,
                      [
-                       routerInjectables,
+                       ROUTER_BINDINGS,
                        bind(LocationStrategy).toClass(MockLocationStrategy),
                        bind(DOCUMENT).toValue(fakeDoc)
                      ])
@@ -210,26 +209,26 @@ class Hello2Cmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: "outer { <router-outlet></router-outlet> }", directives: routerDirectives})
+@View({template: "outer { <router-outlet></router-outlet> }", directives: ROUTER_DIRECTIVES})
 @RouteConfig([new Route({path: '/', component: HelloCmp})])
 class AppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
 @Component({selector: 'parent-cmp'})
-@View({template: `parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@View({template: `parent { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([new Route({path: '/child', component: HelloCmp})])
 class ParentCmp {
 }
 
 @Component({selector: 'super-parent-cmp'})
-@View({template: `super-parent { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@View({template: `super-parent { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([new Route({path: '/child', component: Hello2Cmp})])
 class SuperParentCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([
   new Route({path: '/parent/...', component: ParentCmp}),
   new Route({path: '/super-parent/...', component: SuperParentCmp})
@@ -246,7 +245,7 @@ class QSCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: `<router-outlet></router-outlet>`, directives: routerDirectives})
+@View({template: `<router-outlet></router-outlet>`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([new Route({path: '/qs', component: QSCmp})])
 class QueryStringAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
@@ -259,7 +258,7 @@ class BrokenCmp {
 }
 
 @Component({selector: 'app-cmp'})
-@View({template: `outer { <router-outlet></router-outlet> }`, directives: routerDirectives})
+@View({template: `outer { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([new Route({path: '/cause-error', component: BrokenCmp})])
 class BrokenAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}

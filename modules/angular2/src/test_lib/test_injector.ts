@@ -48,7 +48,7 @@ import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {ELEMENT_PROBE_CONFIG} from 'angular2/debug';
+import {ELEMENT_PROBE_BINDINGS} from 'angular2/debug';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/render/api';
 import {
@@ -117,7 +117,7 @@ function _getAppBindings() {
     AppViewManager,
     AppViewManagerUtils,
     Serializer,
-    ELEMENT_PROBE_CONFIG,
+    ELEMENT_PROBE_BINDINGS,
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,

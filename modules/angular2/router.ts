@@ -32,19 +32,25 @@ import {RouteRegistry} from './src/router/route_registry';
 import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
 import {APP_COMPONENT} from './src/core/application_tokens';
-import {bind} from './di';
+import {Binding} from './di';
 import {CONST_EXPR} from './src/facade/lang';
 import {List} from './src/facade/collection';
 
-export const routerDirectives: List<any> = CONST_EXPR([RouterOutlet, RouterLink]);
+export const ROUTER_DIRECTIVES: List<any> = CONST_EXPR([RouterOutlet, RouterLink]);
 
-export var routerInjectables: List<any> = [
+export const ROUTER_BINDINGS: List<any> = CONST_EXPR([
   RouteRegistry,
   Pipeline,
-  bind(LocationStrategy).toClass(HTML5LocationStrategy),
+  CONST_EXPR(new Binding(LocationStrategy, {toClass: HTML5LocationStrategy})),
   Location,
-  bind(Router)
-      .toFactory((registry, pipeline, location,
-                  appRoot) => { return new RootRouter(registry, pipeline, location, appRoot);},
-                 [RouteRegistry, Pipeline, Location, APP_COMPONENT])
-];
+  CONST_EXPR(
+      new Binding(Router,
+                  {
+                    toFactory: routerFactory,
+                    deps: CONST_EXPR([RouteRegistry, Pipeline, Location, APP_COMPONENT])
+                  }))
+]);
+
+function routerFactory(registry, pipeline, location, appRoot) {
+  return new RootRouter(registry, pipeline, location, appRoot);
+}

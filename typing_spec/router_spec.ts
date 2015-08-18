@@ -2,7 +2,7 @@
 ///<reference path="../dist/docs/typings/angular2/router.d.ts"/>
 
 import {Component, bootstrap, View} from 'angular2/angular2';
-import {RouteConfig, routerDirectives, routerInjectables} from 'angular2/router';
+import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_BINDINGS} from 'angular2/router';
 
 @Component({
   selector: 'my-app'
@@ -19,7 +19,7 @@ class FooCmp {
 })
 @View({
 	template: '<h1>Hello {{ name }}</h1><router-outlet></router-outlet>',
-  directives: routerDirectives
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
   {path: '/home', component: FooCmp}
@@ -30,4 +30,4 @@ class MyAppComponent {
   constructor() { this.name = 'Alice'; }
 }
 
-bootstrap(MyAppComponent, routerInjectables);
+bootstrap(MyAppComponent, ROUTER_BINDINGS);

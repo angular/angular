@@ -68,7 +68,7 @@ export class DebugElementViewListener implements AppViewListener {
   }
 }
 
-export var ELEMENT_PROBE_CONFIG = [
+export const ELEMENT_PROBE_BINDINGS = CONST_EXPR([
   DebugElementViewListener,
-  bind(AppViewListener).toAlias(DebugElementViewListener),
-];
+  CONST_EXPR(new Binding(AppViewListener, {toAlias: DebugElementViewListener})),
+]);
