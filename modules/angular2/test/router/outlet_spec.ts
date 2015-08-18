@@ -28,7 +28,7 @@ import {
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
-import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from 'angular2/router';
 import {
   RouteConfig,
   Route,
@@ -253,6 +253,102 @@ export function main() {
              });
        }));
 
+    it('should inject RouteData into component', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new Route({path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})
+             ]))
+             .then((_) => rtr.navigate('/route-data'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('{"isAdmin":true}');
+               async.done();
+             });
+       }));
+
+    it('should inject RouteData into component with AsyncRoute',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new AsyncRoute(
+                   {path: '/route-data', loader: AsyncRouteDataCmp, data: {isAdmin: true}})
+             ]))
+             .then((_) => rtr.navigate('/route-data'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('{"isAdmin":true}');
+               async.done();
+             });
+       }));
+
+    it('should inject nested RouteData into component', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([
+               new Route({
+                 path: '/route-data-nested',
+                 component: RouteDataCmp,
+                 data: {isAdmin: true, test: {moreData: "testing"}}
+               })
+             ]))
+             .then((_) => rtr.navigate('/route-data-nested'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement)
+                   .toHaveText('{"isAdmin":true,"test":{"moreData":"testing"}}');
+               async.done();
+             });
+       }));
+
+    it('should return an empty object if RouteData is not provided',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config(
+                       [new Route({path: '/route-data-default', component: RouteDataCmp})]))
+             .then((_) => rtr.navigate('/route-data-default'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('{}');
+               async.done();
+             });
+       }));
+
+    it('should throw an error when injecting a array into RouteData',
+       inject([AsyncTestCompleter],
+              (async) => {compile().then((_) => {
+                try {
+                  rtr.config([
+                    new Route({
+                      path: '/route-data-invalid-array',
+                      component: RouteDataCmp,
+                      data: [1, 2, 3]
+                    })
+                  ])
+                } catch (e) {
+                  expect(e.name).toEqual('TypeError');
+                  expect(e.message)
+                      .toEqual('RouteData for /route-data-invalid-array must be an object.');
+                  async.done();
+                }
+              })}));
+
+    it('should throw an error when injecting a string into RouteData',
+       inject([AsyncTestCompleter],
+              (async) => {compile().then((_) => {
+                try {
+                  rtr.config([
+                    new Route({
+                      path: '/route-data-invalid-string',
+                      component: RouteDataCmp,
+                      data: "invalid-string-non-object"
+                    })
+                  ])
+                } catch (e) {
+                  expect(e.name).toEqual('TypeError');
+                  expect(e.message)
+                      .toEqual('RouteData for /route-data-invalid-string must be an object.');
+                  async.done();
+                }
+              })}));
 
     describe('lifecycle hooks', () => {
       it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
@@ -632,6 +728,17 @@ class A {
 class B {
 }
 
+
+function AsyncRouteDataCmp() {
+  return PromiseWrapper.resolve(RouteDataCmp);
+}
+
+@Component({selector: 'data-cmp'})
+@View({template: "{{myData}}"})
+class RouteDataCmp {
+  myData: RouteData;
+  constructor(data: RouteData) { this.myData = JSON.stringify(data); }
+}
 
 @Component({selector: 'user-cmp'})
 @View({template: "hello {{user}}"})

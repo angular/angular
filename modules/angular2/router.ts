@@ -9,6 +9,7 @@ export {Router, RootRouter} from './src/router/router';
 export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
 export {RouteParams} from './src/router/instruction';
+export {RouteData} from './src/router/instruction';
 export {RouteRegistry} from './src/router/route_registry';
 export {LocationStrategy} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';

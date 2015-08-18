@@ -6,6 +6,7 @@ export interface RouteDefinition {
   loader?: Function;
   redirectTo?: string;
   as?: string;
+  data?: Object;
 }
 
 export interface ComponentDefinition {

@@ -46,7 +46,7 @@ export class RouteRecognizer {
     var handler;
 
     if (config instanceof AuxRoute) {
-      handler = new SyncRouteHandler(config.component);
+      handler = new SyncRouteHandler(config.component, config.data);
       let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
       var recognizer = new PathRecognizer(config.path, handler);
       this.auxRoutes.set(path, recognizer);
@@ -58,9 +58,9 @@ export class RouteRecognizer {
     }
 
     if (config instanceof Route) {
-      handler = new SyncRouteHandler(config.component);
+      handler = new SyncRouteHandler(config.component, config.data);
     } else if (config instanceof AsyncRoute) {
-      handler = new AsyncRouteHandler(config.loader);
+      handler = new AsyncRouteHandler(config.loader, config.data);
     }
     var recognizer = new PathRecognizer(config.path, handler);
 

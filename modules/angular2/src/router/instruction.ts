@@ -18,6 +18,12 @@ export class RouteParams {
   get(param: string): string { return normalizeBlank(StringMapWrapper.get(this.params, param)); }
 }
 
+export class RouteData {
+  constructor(data: Object = {}) {
+    // binding object attributes to instance
+    Object.keys(data).forEach((key) => { this[key] = data[key]; });
+  }
+}
 
 /**
  * `Instruction` is a tree of `ComponentInstructions`, with all the information needed
@@ -98,4 +104,6 @@ export class ComponentInstruction {
   get specificity() { return this._recognizer.specificity; }
 
   get terminal() { return this._recognizer.terminal; }
+
+  routeData(): Object { return this._recognizer.handler.data; }
 }
