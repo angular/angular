@@ -18,7 +18,13 @@ window = {
 assert = function(){};
 
 
-System.config({baseURL: '/', defaultJSExtensions: true});
+System.config({
+  baseURL: '/',
+  defaultJSExtensions: true,
+  paths: {
+    'rx': 'examples/src/message_broker/rx.js'
+  }
+});
 
 System.import("examples/src/message_broker/background_index").then(function(m){
   console.log("running main");

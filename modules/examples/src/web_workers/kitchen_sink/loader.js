@@ -14,7 +14,13 @@ window = {
 assert = function() {};
 
 
-System.config({baseURL: '/', defaultJSExtensions: true});
+System.config({
+  baseURL: '/',
+  defaultJSExtensions: true,
+  paths: {
+    'rx': 'examples/src/web_workers/kitchen_sink/rx.js'
+  }
+});
 
 System.import("examples/src/web_workers/kitchen_sink/background_index")
     .then(

@@ -15,7 +15,13 @@ assert = function() {};
 importScripts("b64.js");
 
 
-System.config({baseURL: '/', defaultJSExtensions: true});
+System.config({
+  baseURL: '/',
+  defaultJSExtensions: true,
+  paths: {
+    'rx': 'examples/src/web_workers/images/rx.js'
+  }
+});
 
 System.import("examples/src/web_workers/images/background_index")
     .then(

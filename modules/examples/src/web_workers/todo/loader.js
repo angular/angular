@@ -14,7 +14,13 @@ window = {
 assert = function() {};
 
 
-System.config({baseURL: '/', defaultJSExtensions: true});
+System.config({
+  baseURL: '/',
+  defaultJSExtensions: true,
+  paths: {
+    'rx': 'examples/src/web_workers/todo/rx.js'
+  }
+});
 
 System.import("examples/src/web_workers/todo/background_index")
     .then(
