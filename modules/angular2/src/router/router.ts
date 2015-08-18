@@ -242,8 +242,8 @@ export class Router {
   /**
    * Subscribe to URL updates from the router
    */
-  subscribe(onNext: (value: any) => void): void {
-    ObservableWrapper.subscribe(this._subject, onNext);
+  subscribe(onNext: (value: any) => void): Object {
+    return ObservableWrapper.subscribe(this._subject, onNext);
   }
 
 
