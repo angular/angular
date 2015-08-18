@@ -36,6 +36,7 @@ import {PipeResolver} from './compiler/pipe_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneImpl} from 'angular2/src/core/zone/ng_zone_impl';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/render/xhr';
 import {XHRImpl} from 'angular2/src/render/xhr_impl';
@@ -160,7 +161,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
 }
 
 export function createNgZone(): NgZone {
-  return new NgZone({enableLongStackTrace: assertionsEnabled()});
+  return new NgZoneImpl({enableLongStackTrace: assertionsEnabled()});
 }
 
 /**
@@ -291,26 +292,30 @@ export function createNgZone(): NgZone {
  */
 export function commonBootstrap(
     appComponentType: /*Type*/ any,
-    componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
+    componentInjectableBindings: List<Type | Binding | List<any>> = null,
+    ngZone: NgZone = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   var bootstrapProcess = PromiseWrapper.completer();
-  var zone = createNgZone();
 
-  zone.run(() => {
+  if (isBlank(ngZone)) {
+    ngZone = createNgZone();
+  }
+
+  ngZone.run(() => {
     var exceptionHandler;
 
     try {
-      var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
+      var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, ngZone);
       exceptionHandler = appInjector.get(ExceptionHandler);
-      zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+      ngZone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
 
       var compRefToken: Promise<any> = appInjector.get(APP_COMPONENT_REF_PROMISE);
       var tick = (componentRef) => {
         var appChangeDetector = internalView(componentRef.hostView).changeDetector;
         // retrieve life cycle: may have already been created if injected in root component
         var lc = appInjector.get(LifeCycle);
-        lc.registerWith(zone, appChangeDetector);
+        lc.registerWith(ngZone, appChangeDetector);
         lc.tick();  // the first tick that will bootstrap the app
 
         bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));

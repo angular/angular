@@ -12,7 +12,7 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZoneImpl} from 'angular2/src/core/zone/ng_zone_impl';
 import {normalizeBlank} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -21,7 +21,7 @@ function microTask(fn: Function): void {
   PromiseWrapper.resolve(null).then((_) => { fn(); });
 }
 
-class MockNgZone extends NgZone {
+class MockNgZone extends NgZoneImpl {
   _onTurnStart: () => void;
   _onEventDone: () => void;
 
