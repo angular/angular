@@ -33,8 +33,7 @@ env:
     # Order: slowest build on top, so that we don't hog VMs while waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable
     - MODE=dart DART_CHANNEL=dev
-    # Disabled until we can make it pass.
-    # - MODE=saucelabs DART_CHANNEL=dev
+    - MODE=saucelabs DART_CHANNEL=dev
     - MODE=dart_experimental DART_CHANNEL=dev
     - MODE=js DART_CHANNEL=dev
     - MODE=lint DART_CHANNEL=dev

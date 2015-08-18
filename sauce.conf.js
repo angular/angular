@@ -8,7 +8,7 @@ var customLaunchers = {
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
-    version: '43'
+    version: '44'
   },
   'SL_CHROMEBETA': {
     base: 'SauceLabs',
@@ -125,7 +125,7 @@ var aliases = {
   'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
-  'CI': ['SL_CHROME', 'SL_FIREFOX']
+  'CI': ['SL_CHROME', 'SL_ANDROID5.1']
 };
 
 module.exports = {
