@@ -42,6 +42,7 @@ env:
 matrix:
   allow_failures:
   - env: "MODE=saucelabs DART_CHANNEL=dev"
+  - env: "MODE=dart_experimental DART_CHANNEL=dev"
 
 addons:
   firefox: "38.0"

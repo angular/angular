@@ -107,19 +107,10 @@ module.exports = function(gulp, plugins, config) {
         if (report.length > 0) {
           error = 'Dartanalyzer showed ' + report.join(', ');
         }
-        if (useDdc) {
-          // TODO(yjbanov): fail the build when:
-          //  - DDC analyzer is stable enough
-          //  - We have cleaned up all DDC warnings
-          console.log(error);
-          done();
-        } else {
-          done(error);
-        }
+        done(error);
       });
-      stream.on('error', function(e) {
-        // TODO(yjbanov): fail the build when DDC is stable enough
-        console.log('ERROR: failed to run DDC at all: ' + e);
+      stream.on('error', function(error) {
+        done(error);
       });
     }
   };
