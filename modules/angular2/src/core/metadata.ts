@@ -175,7 +175,7 @@ export interface DirectiveFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...})
+ *   new ng.Component({...}),
  *   new ng.View({...})
  * ]
  * ```
@@ -245,7 +245,7 @@ export interface ComponentFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...})
+ *   new ng.Component({...}),
  *   new ng.View({...})
  * ]
  * ```
@@ -307,7 +307,7 @@ export interface ViewFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...})
+ *   new ng.Component({...}),
  *   new ng.View({...})
  * ]
  * MyComponent.parameters = [
@@ -358,7 +358,7 @@ export interface AttributeFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...})
+ *   new ng.Component({...}),
  *   new ng.View({...})
  * ]
  * MyComponent.parameters = [
