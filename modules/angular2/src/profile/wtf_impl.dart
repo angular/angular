@@ -70,7 +70,7 @@ dynamic createScope(String signature, [flags]) {
       return ([arg0, arg1]) {
         _arg2[0] = arg0;
         _arg2[1] = arg1;
-        return jsScope.apply(_arg1);
+        return jsScope.apply(_arg2);
       };
     default:
       throw "Max 2 arguments are supported.";
