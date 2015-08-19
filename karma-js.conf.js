@@ -21,7 +21,7 @@ module.exports = function(config) {
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'node_modules/systemjs/dist/system.src.js',
-      'node_modules/rx/dist/rx.js',
+      {pattern: 'node_modules/rx/dist/rx.js', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
