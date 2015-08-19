@@ -125,7 +125,7 @@ var aliases = {
   'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
-  'CI': ['SL_CHROME', 'SL_ANDROID5.1']
+  'CI': ['SL_CHROME', 'SL_ANDROID5.1', 'SL_FIREFOX']
 };
 
 module.exports = {

@@ -737,6 +737,13 @@ export function main() {
                   rootTC.componentInstance.form = form;
                   rootTC.detectChanges();
 
+                  // In Firefox, effective text selection in the real DOM requires an actual focus
+                  // of the field. This is not an issue in a new HTML document.
+                  if (DOM.getUserAgent().indexOf("Firefox") > -1) {
+                    var fakeDoc = DOM.createHtmlDocument();
+                    DOM.appendChild(fakeDoc.body, rootTC.nativeElement);
+                  }
+
                   var input = rootTC.query(By.css("input")).nativeElement;
                   input.value = "aa";
                   input.selectionStart = 1;
