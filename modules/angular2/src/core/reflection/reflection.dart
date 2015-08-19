@@ -38,6 +38,8 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
   MethodFn method(String name) {
     throw "Cannot find method ${name}";
   }
+
+  String importUri(Type type) => './';
 }
 
 final Reflector reflector = new Reflector(new NoReflectionCapabilities());
