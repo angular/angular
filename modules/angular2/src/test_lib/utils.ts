@@ -92,3 +92,8 @@ export function stringifyElement(el): string {
 export function supportsIntlApi(): boolean {
   return DOM.getUserAgent().indexOf('Chrome') > -1 && DOM.getUserAgent().indexOf('Edge') == -1;
 }
+
+// TODO(mlaval): extract all browser detection checks from all tests
+export function isFirefox(): boolean {
+  return DOM.getUserAgent().indexOf("Firefox") > -1;
+}
