@@ -4,6 +4,8 @@ import {
   ListWrapper,
   Map,
   MapWrapper,
+  Set,
+  SetWrapper,
   StringMap,
   StringMapWrapper
 } from 'angular2/src/facade/collection';
@@ -32,6 +34,7 @@ export class Reflector {
   _getters: Map<string, GetterFn>;
   _setters: Map<string, SetterFn>;
   _methods: Map<string, MethodFn>;
+  _usedKeys: Set<any>;
   reflectionCapabilities: PlatformReflectionCapabilities;
 
   constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
@@ -39,10 +42,30 @@ export class Reflector {
     this._getters = new Map();
     this._setters = new Map();
     this._methods = new Map();
+    this._usedKeys = null;
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
   isReflectionEnabled(): boolean { return this.reflectionCapabilities.isReflectionEnabled(); }
+
+  /**
+   * Causes `this` reflector to track keys used to access
+   * {@link ReflectionInfo} objects.
+   */
+  trackUsage(): void { this._usedKeys = new Set(); }
+
+  /**
+   * Lists types for which reflection information was not requested since
+   * {@link #trackUsage} was called. This list could later be audited as
+   * potential dead code.
+   */
+  listUnusedKeys(): List<any> {
+    if (this._usedKeys == null) {
+      throw new BaseException('Usage tracking is disabled');
+    }
+    var allTypes = MapWrapper.keys(this._injectableInfo);
+    return ListWrapper.filter(allTypes, (key) => { return !SetWrapper.has(this._usedKeys, key); });
+  }
 
   registerFunction(func: Function, funcInfo: ReflectionInfo): void {
     this._injectableInfo.set(func, funcInfo);
@@ -66,7 +89,7 @@ export class Reflector {
 
   factory(type: Type): Function {
     if (this._containsReflectionInfo(type)) {
-      var res = this._injectableInfo.get(type)._factory;
+      var res = this._getReflectionInfo(type)._factory;
       return isPresent(res) ? res : null;
     } else {
       return this.reflectionCapabilities.factory(type);
@@ -75,7 +98,7 @@ export class Reflector {
 
   parameters(typeOrFunc: /*Type*/ any): List<any> {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._injectableInfo.get(typeOrFunc)._parameters;
+      var res = this._getReflectionInfo(typeOrFunc)._parameters;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.parameters(typeOrFunc);
@@ -84,7 +107,7 @@ export class Reflector {
 
   annotations(typeOrFunc: /*Type*/ any): List<any> {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._injectableInfo.get(typeOrFunc)._annotations;
+      var res = this._getReflectionInfo(typeOrFunc)._annotations;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.annotations(typeOrFunc);
@@ -93,7 +116,7 @@ export class Reflector {
 
   interfaces(type: Type): List<any> {
     if (this._injectableInfo.has(type)) {
-      var res = this._injectableInfo.get(type)._interfaces;
+      var res = this._getReflectionInfo(type)._interfaces;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.interfaces(type);
@@ -122,6 +145,13 @@ export class Reflector {
     } else {
       return this.reflectionCapabilities.method(name);
     }
+  }
+
+  _getReflectionInfo(typeOrFunc) {
+    if (isPresent(this._usedKeys)) {
+      this._usedKeys.add(typeOrFunc);
+    }
+    return this._injectableInfo.get(typeOrFunc);
   }
 
   _containsReflectionInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }

@@ -48,6 +48,29 @@ export function main() {
 
     beforeEach(() => { reflector = new Reflector(new ReflectionCapabilities()); });
 
+    describe("usage tracking", () => {
+      beforeEach(() => { reflector = new Reflector(null); });
+
+      it("should be disabled by default", () => {
+        expect(() => reflector.listUnusedKeys()).toThrowError('Usage tracking is disabled');
+      });
+
+      it("should report unused keys", () => {
+        reflector.trackUsage();
+        expect(reflector.listUnusedKeys()).toEqual([]);
+
+        reflector.registerType(AType, new ReflectionInfo(null, null, () => "AType"));
+        reflector.registerType(TestObj, new ReflectionInfo(null, null, () => "TestObj"));
+        expect(reflector.listUnusedKeys()).toEqual([AType, TestObj]);
+
+        reflector.factory(AType);
+        expect(reflector.listUnusedKeys()).toEqual([TestObj]);
+
+        reflector.factory(TestObj);
+        expect(reflector.listUnusedKeys()).toEqual([]);
+      });
+    });
+
     describe("factory", () => {
       it("should create a factory for the given type", () => {
         var obj = reflector.factory(TestObj)(1, 2);
