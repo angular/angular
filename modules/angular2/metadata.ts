@@ -27,7 +27,7 @@ export {
   Directive,
   DirectiveDecorator,
   DirectiveFactory,
-  View,
+  BaseView,
   ViewDecorator,
   ViewFactory,
   Query,

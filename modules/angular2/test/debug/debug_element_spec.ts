@@ -26,7 +26,7 @@ import {Injectable} from 'angular2/di';
 import {
   Directive,
   Component,
-  View,
+  BaseView,
 } from 'angular2/metadata';
 
 import {NgFor} from 'angular2/src/directives/ng_for';
@@ -51,7 +51,7 @@ class MessageDir {
 }
 
 @Component({selector: 'child-comp'})
-@View({
+@BaseView({
   template: `<div class="child" message="child">
                <span class="childnested" message="nestedchild">Child</span>
              </div>
@@ -66,7 +66,7 @@ class ChildComp {
 }
 
 @Component({selector: 'parent-comp', viewBindings: [Logger]})
-@View({
+@BaseView({
   template: `<div class="parent" message="parent">
                <span class="parentnested" message="nestedparent">Parent</span>
              </div>
@@ -89,7 +89,7 @@ class CustomEmitter {
 }
 
 @Component({selector: 'events-comp'})
-@View({
+@BaseView({
   template: `<button (click)="handleClick()"></button>
              <custom-emitter (myevent)="handleCustom()"></custom-emitter>`,
   directives: [CustomEmitter]
@@ -110,7 +110,7 @@ class EventsComp {
 }
 
 @Component({selector: 'using-for', viewBindings: [Logger]})
-@View({
+@BaseView({
   template: `<span *ng-for="#thing of stuff">{{thing}}</span>
             <ul message="list">
               <li *ng-for="#item of stuff">{{item}}</li>

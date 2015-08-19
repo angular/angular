@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/metadata';
+import {Component, Directive, BaseView} from 'angular2/metadata';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject, Injector} from 'angular2/di';
@@ -23,27 +23,27 @@ import {DOCUMENT} from 'angular2/src/render/render';
 import {IS_DART} from '../platform';
 
 @Component({selector: 'hello-app'})
-@View({template: '{{greeting}} world!'})
+@BaseView({template: '{{greeting}} world!'})
 class HelloRootCmp {
   greeting: string;
   constructor() { this.greeting = 'hello'; }
 }
 
 @Component({selector: 'hello-app'})
-@View({template: 'before: <ng-content></ng-content> after: done'})
+@BaseView({template: 'before: <ng-content></ng-content> after: done'})
 class HelloRootCmpContent {
   constructor() {}
 }
 
 @Component({selector: 'hello-app-2'})
-@View({template: '{{greeting}} world, again!'})
+@BaseView({template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting: string;
   constructor() { this.greeting = 'hello'; }
 }
 
 @Component({selector: 'hello-app'})
-@View({template: ''})
+@BaseView({template: ''})
 class HelloRootCmp3 {
   appBinding;
 
@@ -51,7 +51,7 @@ class HelloRootCmp3 {
 }
 
 @Component({selector: 'hello-app'})
-@View({template: ''})
+@BaseView({template: ''})
 class HelloRootCmp4 {
   lc;
 

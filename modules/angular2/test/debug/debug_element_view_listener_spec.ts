@@ -22,12 +22,12 @@ import {Injectable, bind} from 'angular2/di';
 import {
   Directive,
   Component,
-  View,
+  BaseView,
 } from 'angular2/metadata';
 import {IS_DART} from '../platform';
 
 @Component({selector: 'my-comp'})
-@View({directives: []})
+@BaseView({directives: []})
 @Injectable()
 class MyComp {
   ctxProp: string;
