@@ -52,8 +52,8 @@ class Component extends ComponentMetadata {
 /**
  * See: [ViewMetadata] for docs.
  */
-class View extends ViewMetadata {
-  const View({String templateUrl, String template, dynamic directives,
+class BaseView extends ViewMetadata {
+  const BaseView({String templateUrl, String template, dynamic directives,
   dynamic pipes, ViewEncapsulation encapsulation, List<String> styles,
   List<String> styleUrls})
     : super(
