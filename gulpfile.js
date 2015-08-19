@@ -785,15 +785,25 @@ gulp.task('test.typings', ['!pre.test.typings'], function() {
 //
 // This task also fixes relative `dependency_overrides` paths in `pubspec.yaml`
 // files.
+//
+// This task is expected to be run after build/tree.dart
 gulp.task('build/pure-packages.dart', function() {
   var through2 = require('through2');
   var yaml = require('js-yaml');
   var originalPrefix = '../../dist/dart/';
 
-  return gulp
+  var transformStream = gulp
+    .src([
+      'modules_dart/transform/**/*',
+      '!modules_dart/transform/pubspec.yaml'
+    ])
+    .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
+
+  var moveStream = gulp
     .src([
       'modules_dart/**/*.dart',
       'modules_dart/**/pubspec.yaml',
+      '!modules_dart/transform/**'
     ])
     .pipe(through2.obj(function(file, enc, done) {
       if (file.path.endsWith('pubspec.yaml')) {
@@ -829,17 +839,20 @@ gulp.task('build/pure-packages.dart', function() {
       this.push(file);
       done();
     }))
-    .pipe(gulp.dest('dist/dart'));
+    .pipe(gulp.dest(CONFIG.dest.dart));
+
+
+  return merge2(transformStream, moveStream);
 });
 
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
     'build/tree.dart',
+    'build/pure-packages.dart',
     // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
-    'build/pure-packages.dart',
     sequenceComplete(done));
 });
 
