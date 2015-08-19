@@ -183,24 +183,25 @@ class _ExpressionWithMode {
     var directiveRecords = [];
     var eventRecords = [];
 
+    var dirRecordWithDefault =
+        new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: DEFAULT});
+    var dirRecordWithOnPush =
+        new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 1), changeDetection: ON_PUSH});
+
     if (this._withRecords) {
-      var dirRecordWithOnPush =
-          new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
+      var updateDirWithOnDefaultRecord =
+          BindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
+                                           (o, v) => (<any>o).a = v, dirRecordWithDefault);
       var updateDirWithOnPushRecord =
           BindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
                                            (o, v) => (<any>o).a = v, dirRecordWithOnPush);
-      bindingRecords = [updateDirWithOnPushRecord];
-      directiveRecords = [dirRecordWithOnPush];
-    } else {
-      bindingRecords = [];
-      directiveRecords = [];
+
+      directiveRecords = [dirRecordWithDefault, dirRecordWithOnPush];
+      bindingRecords = [updateDirWithOnDefaultRecord, updateDirWithOnPushRecord];
     }
 
     if (this._withEvents) {
-      var dirRecordWithOnPush =
-          new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
-      directiveRecords = [dirRecordWithOnPush];
-
+      directiveRecords = [dirRecordWithDefault, dirRecordWithOnPush];
       eventRecords =
           ListWrapper.concat(_createEventRecords("(event)='false'"),
                              _createHostEventRecords("(host-event)='false'", dirRecordWithOnPush))

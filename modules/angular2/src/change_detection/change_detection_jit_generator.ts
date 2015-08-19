@@ -143,7 +143,7 @@ export class ChangeDetectorJITGenerator {
 
   _maybeGenHydrateDirectives(): string {
     var hydrateDirectivesCode = this._genHydrateDirectives();
-    var hydrateDetectorsCode = this._genHydrateDetectors();
+    var hydrateDetectorsCode = this._logic.genHydrateDetectors(this.directiveRecords);
     if (!hydrateDirectivesCode && !hydrateDetectorsCode) return '';
     return `${this._typeName}.prototype.hydrateDirectives = function(directives) {
       ${hydrateDirectivesCode}
@@ -156,16 +156,6 @@ export class ChangeDetectorJITGenerator {
     var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
     for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
       lines[i] = `${directiveFieldNames[i]} = directives.getDirectiveFor(
-          ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
-    }
-    return lines.join('\n');
-  }
-
-  _genHydrateDetectors(): string {
-    var detectorFieldNames = this._names.getAllDetectorNames();
-    var lines = ListWrapper.createFixedSize(detectorFieldNames.length);
-    for (var i = 0, iLen = detectorFieldNames.length; i < iLen; ++i) {
-      lines[i] = `${detectorFieldNames[i]} = directives.getDetectorFor(
           ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
     }
     return lines.join('\n');
