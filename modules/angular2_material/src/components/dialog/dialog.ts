@@ -1,7 +1,7 @@
 import {
   Component,
   Directive,
-  View,
+  BaseView,
   ViewEncapsulation,
   Host,
   SkipSelf,
@@ -209,7 +209,7 @@ export class MdDialogConfig {
     '(body:^keydown)': 'documentKeypress($event)',
   },
 })
-@View({
+@BaseView({
   encapsulation: ViewEncapsulation.NONE,
   templateUrl: 'package:angular2_material/src/components/dialog/dialog.html',
   directives: [forwardRef(() => MdDialogContent)]
@@ -258,7 +258,7 @@ class MdDialogContent {
     '(click)': 'onClick()',
   },
 })
-@View({template: '', encapsulation: ViewEncapsulation.NONE})
+@BaseView({template: '', encapsulation: ViewEncapsulation.NONE})
 class MdBackdrop {
   dialogRef: MdDialogRef;
 
