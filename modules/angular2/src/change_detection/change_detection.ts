@@ -38,7 +38,7 @@ export {
 } from './interfaces';
 export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
-export {BindingRecord} from './binding_record';
+export {BindingRecord, BindingTarget} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';
 export {DynamicChangeDetector} from './dynamic_change_detector';
 export {ChangeDetectorRef} from './change_detector_ref';
@@ -93,13 +93,14 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
 
   static isSupported(): boolean { return PregenProtoChangeDetector.isSupported(); }
 
-  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
-    var id = definition.id;
+  getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
     if (StringMapWrapper.contains(this._protoChangeDetectorFactories, id)) {
       return StringMapWrapper.get(this._protoChangeDetectorFactories, id)(definition);
     }
-    return this._dynamicChangeDetection.createProtoChangeDetector(definition);
+    return this._dynamicChangeDetection.getProtoChangeDetector(id, definition);
   }
+
+  get generateDetectors(): boolean { return true; }
 }
 
 
@@ -110,9 +111,11 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
  */
 @Injectable()
 export class DynamicChangeDetection extends ChangeDetection {
-  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
+  getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return new DynamicProtoChangeDetector(definition);
   }
+
+  get generateDetectors(): boolean { return true; }
 }
 
 /**
@@ -126,7 +129,9 @@ export class DynamicChangeDetection extends ChangeDetection {
 export class JitChangeDetection extends ChangeDetection {
   static isSupported(): boolean { return JitProtoChangeDetector.isSupported(); }
 
-  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
+  getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return new JitProtoChangeDetector(definition);
   }
+
+  get generateDetectors(): boolean { return true; }
 }

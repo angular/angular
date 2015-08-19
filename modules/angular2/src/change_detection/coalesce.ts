@@ -44,8 +44,8 @@ export function coalesce(records: ProtoRecord[]): ProtoRecord[] {
 
 function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): ProtoRecord {
   return new ProtoRecord(RecordType.SELF, "self", null, [], r.fixedArgs, contextIndex,
-                         r.directiveIndex, selfIndex, r.bindingRecord, r.expressionAsString,
-                         r.lastInBinding, r.lastInDirective, false, false);
+                         r.directiveIndex, selfIndex, r.bindingRecord, r.lastInBinding,
+                         r.lastInDirective, false, false, r.propertyBindingIndex);
 }
 
 function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
@@ -70,9 +70,9 @@ function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, a
   var args = ListWrapper.map(r.args, (a) => _map(indexMap, a));
   var contextIndex = _map(indexMap, r.contextIndex);
   return new ProtoRecord(r.mode, r.name, r.funcOrValue, args, r.fixedArgs, contextIndex,
-                         r.directiveIndex, selfIndex, r.bindingRecord, r.expressionAsString,
-                         r.lastInBinding, r.lastInDirective, r.argumentToPureFunction,
-                         r.referencedBySelf);
+                         r.directiveIndex, selfIndex, r.bindingRecord, r.lastInBinding,
+                         r.lastInDirective, r.argumentToPureFunction, r.referencedBySelf,
+                         r.propertyBindingIndex);
 }
 
 function _map(indexMap: Map<any, any>, value: number) {

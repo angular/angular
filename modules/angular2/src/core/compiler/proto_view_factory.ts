@@ -211,12 +211,10 @@ export class ProtoViewFactory {
     var nestedPvVariableBindings = _collectNestedProtoViewsVariableBindings(nestedPvsWithIndex);
     var nestedPvVariableNames = _collectNestedProtoViewsVariableNames(nestedPvsWithIndex);
 
-    var changeDetectorDefs =
-        _getChangeDetectorDefinitions(hostComponentBinding.metadata, nestedPvsWithIndex,
+    var protoChangeDetectors =
+        this._getProtoChangeDetectors(hostComponentBinding, nestedPvsWithIndex,
                                       nestedPvVariableNames, allRenderDirectiveMetadata);
-    var protoChangeDetectors = ListWrapper.map(
-        changeDetectorDefs,
-        changeDetectorDef => this._changeDetection.createProtoChangeDetector(changeDetectorDef));
+
     var appProtoViews = ListWrapper.createFixedSize(nestedPvsWithIndex.length);
     ListWrapper.forEach(nestedPvsWithIndex, (pvWithIndex: RenderProtoViewWithIndex) => {
       var appProtoView =
@@ -229,6 +227,24 @@ export class ProtoViewFactory {
       appProtoViews[pvWithIndex.index] = appProtoView;
     });
     return appProtoViews;
+  }
+
+  private _getProtoChangeDetectors(hostComponentBinding: DirectiveBinding,
+                                   nestedPvsWithIndex: RenderProtoViewWithIndex[],
+                                   nestedPvVariableNames: string[][],
+                                   allRenderDirectiveMetadata: any[]): ProtoChangeDetector[] {
+    if (this._changeDetection.generateDetectors) {
+      var changeDetectorDefs =
+          _getChangeDetectorDefinitions(hostComponentBinding.metadata, nestedPvsWithIndex,
+                                        nestedPvVariableNames, allRenderDirectiveMetadata);
+      return changeDetectorDefs.map(changeDetectorDef =>
+                                        this._changeDetection.getProtoChangeDetector(
+                                            changeDetectorDef.id, changeDetectorDef));
+    } else {
+      var changeDetectorIds =
+          _getChangeDetectorDefinitionIds(hostComponentBinding.metadata, nestedPvsWithIndex);
+      return changeDetectorIds.map(id => this._changeDetection.getProtoChangeDetector(id, null));
+    }
   }
 }
 
@@ -280,20 +296,33 @@ function _getChangeDetectorDefinitions(
     var directiveRecords =
         bindingRecordsCreator.getDirectiveRecords(elementBinders, allRenderDirectiveMetadata);
     var strategyName = DEFAULT;
-    var typeString;
     if (pvWithIndex.renderProtoView.type === ViewType.COMPONENT) {
       strategyName = hostComponentMetadata.changeDetection;
-      typeString = 'comp';
-    } else if (pvWithIndex.renderProtoView.type === ViewType.HOST) {
-      typeString = 'host';
-    } else {
-      typeString = 'embedded';
     }
-    var id = `${hostComponentMetadata.id}_${typeString}_${pvWithIndex.index}`;
+    var id = _protoViewId(hostComponentMetadata, pvWithIndex);
     var variableNames = nestedPvVariableNames[pvWithIndex.index];
     return new ChangeDetectorDefinition(id, strategyName, variableNames, propBindingRecords,
                                         eventBindingRecords, directiveRecords, assertionsEnabled());
   });
+}
+
+function _getChangeDetectorDefinitionIds(hostComponentMetadata: RenderDirectiveMetadata,
+                                         nestedPvsWithIndex: List<RenderProtoViewWithIndex>):
+    string[] {
+  return nestedPvsWithIndex.map(pvWithIndex => _protoViewId(hostComponentMetadata, pvWithIndex));
+}
+
+function _protoViewId(hostComponentMetadata: RenderDirectiveMetadata,
+                      pvWithIndex: RenderProtoViewWithIndex): string {
+  var typeString;
+  if (pvWithIndex.renderProtoView.type === ViewType.COMPONENT) {
+    typeString = 'comp';
+  } else if (pvWithIndex.renderProtoView.type === ViewType.HOST) {
+    typeString = 'host';
+  } else {
+    typeString = 'embedded';
+  }
+  return `${hostComponentMetadata.id}_${typeString}_${pvWithIndex.index}`;
 }
 
 function _createAppProtoView(

@@ -9,6 +9,7 @@ import 'package:angular2/src/change_detection/interfaces.dart';
 import 'package:angular2/src/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/change_detection/proto_record.dart';
 import 'package:angular2/src/change_detection/event_binding.dart';
+import 'package:angular2/src/change_detection/binding_record.dart';
 import 'package:angular2/src/facade/lang.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
@@ -79,7 +80,8 @@ class _CodegenState {
   final List<EventBinding> _eventBindings;
   final CodegenLogicUtil _logic;
   final CodegenNameUtil _names;
-  final bool _generateCheckNoChanges;
+  final bool _devMode;
+  final List<BindingTarget> _propertyBindingTargets;
 
   _CodegenState._(
       this._changeDetectorDefId,
@@ -87,11 +89,12 @@ class _CodegenState {
       this._changeDetectorTypeName,
       String changeDetectionStrategy,
       this._records,
+      this._propertyBindingTargets,
       this._eventBindings,
       this._directiveRecords,
       this._logic,
       this._names,
-      this._generateCheckNoChanges)
+      this._devMode)
       : _changeDetectionMode =
             ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy);
 
@@ -99,6 +102,8 @@ class _CodegenState {
       ChangeDetectorDefinition def) {
     var protoRecords = createPropertyRecords(def);
     var eventBindings = createEventRecords(def);
+    var propertyBindingTargets = def.bindingRecords.map((b) => b.target).toList();
+
     var names = new CodegenNameUtil(protoRecords, eventBindings, def.directiveRecords, _UTIL);
     var logic = new CodegenLogicUtil(names, _UTIL, def.strategy);
     return new _CodegenState._(
@@ -107,11 +112,12 @@ class _CodegenState {
         changeDetectorTypeName,
         def.strategy,
         protoRecords,
+        propertyBindingTargets,
         eventBindings,
         def.directiveRecords,
         logic,
         names,
-        def.generateCheckNoChanges);
+        def.devMode);
   }
 
   void _writeToBuf(StringBuffer buf) {
@@ -119,9 +125,12 @@ class _CodegenState {
       class $_changeDetectorTypeName extends $_BASE_CLASS<$_contextTypeName> {
         ${_genDeclareFields()}
 
-        $_changeDetectorTypeName(dispatcher, protos, directiveRecords)
+        $_changeDetectorTypeName(dispatcher)
           : super(${codify(_changeDetectorDefId)},
-              dispatcher, protos, directiveRecords, '$_changeDetectionMode') {
+              dispatcher, ${_records.length},
+              ${_changeDetectorTypeName}.gen_propertyBindingTargets,
+              ${_changeDetectorTypeName}.gen_directiveIndices,
+              '$_changeDetectionMode') {
           dehydrateDirectives(false);
         }
 
@@ -145,15 +154,29 @@ class _CodegenState {
 
         ${_maybeGenDehydrateDirectives()}
 
+        ${_genPropertyBindingTargets()};
+
+        ${_genDirectiveIndices()};
+
         static $_GEN_PREFIX.ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
             $_GEN_PREFIX.ChangeDetectorDefinition def) {
           return new $_GEN_PREFIX.PregenProtoChangeDetector(
-              (a, b, c) => new $_changeDetectorTypeName(a, b, c),
+              (a) => new $_changeDetectorTypeName(a),
               def);
         }
       }
     ''');
+  }
+
+  String _genPropertyBindingTargets() {
+    var targets = _logic.genPropertyBindingTargets(_propertyBindingTargets, this._devMode);
+    return "static var gen_propertyBindingTargets = ${targets}";
+  }
+
+  String _genDirectiveIndices() {
+    var indices = _logic.genDirectiveIndices(_directiveRecords);
+    return "static var gen_directiveIndices = ${indices}";
   }
 
   String _maybeGenHandleEventInternal() {
@@ -239,7 +262,7 @@ class _CodegenState {
     var directiveFieldNames = _names.getAllDirectiveNames();
     for (var i = 0; i < directiveFieldNames.length; ++i) {
       buf.writeln('${directiveFieldNames[i]} = directives.getDirectiveFor('
-          '${_names.getDirectivesAccessorName()}[$i].directiveIndex);');
+          '${_names.getDirectivesAccessorName()}[$i]);');
     }
     return '$buf';
   }
@@ -378,9 +401,9 @@ class _CodegenState {
     var oldValue = _names.getFieldName(r.selfIndex);
 
     var br = r.bindingRecord;
-    if (br.isDirective()) {
+    if (br.target.isDirective()) {
       var directiveProperty =
-          '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.propertyName}';
+          '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.target.name}';
       return '''
       ${_genThrowOnChangeCheck(oldValue, newValue)}
       $directiveProperty = $newValue;
@@ -395,7 +418,7 @@ class _CodegenState {
   }
 
   String _genThrowOnChangeCheck(String oldValue, String newValue) {
-    if (this._generateCheckNoChanges) {
+    if (this._devMode) {
       return '''
         if(throwOnChange) {
           this.throwOnChangeError(${oldValue}, ${newValue});
@@ -407,7 +430,7 @@ class _CodegenState {
   }
 
   String _genCheckNoChanges() {
-    if (this._generateCheckNoChanges) {
+    if (this._devMode) {
       return 'void checkNoChanges() { runDetectChanges(true); }';
     } else {
       return '';
@@ -417,8 +440,8 @@ class _CodegenState {
   String _maybeFirstInBinding(ProtoRecord r) {
     var prev = ChangeDetectionUtil.protoByIndex(_records, r.selfIndex - 1);
     var firstInBindng = prev == null || prev.bindingRecord != r.bindingRecord;
-    return firstInBindng
-        ? "${_names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};"
+    return firstInBindng && !r.bindingRecord.isDirectiveLifecycle()
+        ? "${_names.getPropertyBindingIndex()} = ${r.propertyBindingIndex};"
         : '';
   }
 

@@ -1135,8 +1135,8 @@ class TestDispatcher implements ChangeDispatcher {
     this.onAllChangesDoneCalled = true;
   }
 
-  notifyOnBinding(binding, value) {
-    this.log.push(`${binding.propertyName}=${this._asString(value)}`);
+  notifyOnBinding(target, value) {
+    this.log.push(`${target.name}=${this._asString(value)}`);
     this.loggedValues.push(value);
   }
 

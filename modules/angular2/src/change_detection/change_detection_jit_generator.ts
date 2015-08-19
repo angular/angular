@@ -9,6 +9,7 @@ import {ProtoRecord, RecordType} from './proto_record';
 import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 import {CodegenLogicUtil} from './codegen_logic_util';
 import {EventBinding} from './event_binding';
+import {BindingTarget} from './binding_record';
 
 
 /**
@@ -30,9 +31,10 @@ export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
   _typeName: string;
 
-  constructor(public id: string, private changeDetectionStrategy: string,
-              public records: List<ProtoRecord>, public eventBindings: EventBinding[],
-              public directiveRecords: List<any>, private generateCheckNoChanges: boolean) {
+  constructor(private id: string, private changeDetectionStrategy: string,
+              private records: List<ProtoRecord>, private propertyBindingTargets: BindingTarget[],
+              private eventBindings: EventBinding[], private directiveRecords: List<any>,
+              private devMode: boolean) {
     this._names =
         new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);
     this._logic = new CodegenLogicUtil(this._names, UTIL, changeDetectionStrategy);
@@ -41,9 +43,10 @@ export class ChangeDetectorJITGenerator {
 
   generate(): Function {
     var classDefinition = `
-      var ${this._typeName} = function ${this._typeName}(dispatcher, protos, directiveRecords) {
+      var ${this._typeName} = function ${this._typeName}(dispatcher) {
         ${ABSTRACT_CHANGE_DETECTOR}.call(
-            this, ${JSON.stringify(this.id)}, dispatcher, protos, directiveRecords,
+            this, ${JSON.stringify(this.id)}, dispatcher, ${this.records.length},
+            ${this._typeName}.gen_propertyBindingTargets, ${this._typeName}.gen_directiveIndices,
             "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}");
         this.dehydrateDirectives(false);
       }
@@ -70,13 +73,27 @@ export class ChangeDetectorJITGenerator {
 
       ${this._maybeGenDehydrateDirectives()}
 
+      ${this._genPropertyBindingTargets()};
+
+      ${this._genDirectiveIndices()};
+
       return function(dispatcher) {
-        return new ${this._typeName}(dispatcher, protos, directiveRecords);
+        return new ${this._typeName}(dispatcher);
       }
     `;
-    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
-                        'directiveRecords', classDefinition)(
-        AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
+
+    return new Function(ABSTRACT_CHANGE_DETECTOR, UTIL, classDefinition)(AbstractChangeDetector,
+                                                                         ChangeDetectionUtil);
+  }
+
+  _genPropertyBindingTargets(): string {
+    var targets = this._logic.genPropertyBindingTargets(this.propertyBindingTargets, true);
+    return `${this._typeName}.gen_propertyBindingTargets = ${targets};`;
+  }
+
+  _genDirectiveIndices(): string {
+    var indices = this._logic.genDirectiveIndices(this.directiveRecords);
+    return `${this._typeName}.gen_directiveIndices = ${indices};`;
   }
 
   _maybeGenHandleEventInternal(): string {
@@ -156,7 +173,7 @@ export class ChangeDetectorJITGenerator {
     var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
     for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
       lines[i] = `${directiveFieldNames[i]} = directives.getDirectiveFor(
-          ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
+          ${this._names.getDirectivesAccessorName()}[${i}]);`;
     }
     return lines.join('\n');
   }
@@ -284,9 +301,9 @@ export class ChangeDetectorJITGenerator {
     var oldValue = this._names.getFieldName(r.selfIndex);
 
     var br = r.bindingRecord;
-    if (br.isDirective()) {
+    if (br.target.isDirective()) {
       var directiveProperty =
-          `${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.propertyName}`;
+          `${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.target.name}`;
       return `
         ${this._genThrowOnChangeCheck(oldValue, newValue)}
         ${directiveProperty} = ${newValue};
@@ -301,7 +318,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genThrowOnChangeCheck(oldValue: string, newValue: string): string {
-    if (this.generateCheckNoChanges) {
+    if (this.devMode) {
       return `
         if(throwOnChange) {
           this.throwOnChangeError(${oldValue}, ${newValue});
@@ -313,7 +330,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genCheckNoChanges(): string {
-    if (this.generateCheckNoChanges) {
+    if (this.devMode) {
       return `${this._typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
     } else {
       return '';
@@ -330,7 +347,9 @@ export class ChangeDetectorJITGenerator {
   _maybeFirstInBinding(r: ProtoRecord): string {
     var prev = ChangeDetectionUtil.protoByIndex(this.records, r.selfIndex - 1);
     var firstInBindng = isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
-    return firstInBindng ? `${this._names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};` : '';
+    return firstInBindng && !r.bindingRecord.isDirectiveLifecycle() ?
+               `${this._names.getPropertyBindingIndex()} = ${r.propertyBindingIndex};` :
+               '';
   }
 
   _maybeGenLastInDirective(r: ProtoRecord): string {

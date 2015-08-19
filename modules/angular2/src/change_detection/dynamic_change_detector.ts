@@ -9,10 +9,10 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {EventBinding} from './event_binding';
-import {BindingRecord} from './binding_record';
+import {BindingRecord, BindingTarget} from './binding_record';
+import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
-
 
 import {ProtoRecord, RecordType} from './proto_record';
 
@@ -23,12 +23,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   prevContexts: List<any>;
   directives: any = null;
 
-  constructor(id: string, changeDetectionStrategy: string, dispatcher: any,
-              protos: List<ProtoRecord>, public eventBindings: EventBinding[],
-              directiveRecords: List<any>) {
-    super(id, dispatcher, protos, directiveRecords,
-          ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy));
-    var len = protos.length + 1;
+  constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
+              propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
+              modeOnHydrate: string, private records: ProtoRecord[],
+              private eventBindings: EventBinding[], private directiveRecords: DirectiveRecord[]) {
+    super(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices,
+          modeOnHydrate);
+    var len = records.length + 1;
     this.values = ListWrapper.createFixedSize(len);
     this.localPipes = ListWrapper.createFixedSize(len);
     this.prevContexts = ListWrapper.createFixedSize(len);
@@ -109,7 +110,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   checkNoChanges(): void { this.runDetectChanges(true); }
 
   detectChangesInRecordsInternal(throwOnChange: boolean) {
-    var protos = this.protos;
+    var protos = this.records;
 
     var changes = null;
     var isChanged = false;
@@ -119,7 +120,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       var directiveRecord = bindingRecord.directiveRecord;
 
       if (this._firstInBinding(proto)) {
-        this.firstProtoInCurrentBinding = proto.selfIndex;
+        this.propertyBindingIndex = proto.propertyBindingIndex;
       }
 
       if (proto.isLifeCycleRecord()) {
@@ -154,7 +155,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   _firstInBinding(r: ProtoRecord): boolean {
-    var prev = ChangeDetectionUtil.protoByIndex(this.protos, r.selfIndex - 1);
+    var prev = ChangeDetectionUtil.protoByIndex(this.records, r.selfIndex - 1);
     return isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
   }
 
@@ -171,7 +172,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _updateDirectiveOrElement(change, bindingRecord) {
     if (isBlank(bindingRecord.directiveRecord)) {
-      this.dispatcher.notifyOnBinding(bindingRecord, change.currentValue);
+      super.notifyDispatcher(change.currentValue);
     } else {
       var directiveIndex = bindingRecord.directiveRecord.directiveIndex;
       bindingRecord.setter(this._getDirectiveFor(directiveIndex), change.currentValue);

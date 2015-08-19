@@ -14,7 +14,7 @@ class NullReflectionCapabilities implements ReflectionCapabilities {
     return false;
   }
 
-  Function factory(Type type) => _notImplemented('factory');
+  Function factory(Type type) => _notImplemented("factory");
 
   List<List> parameters(typeOrFunc) => _notImplemented('parameters');
 

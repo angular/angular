@@ -134,6 +134,12 @@ class ListWrapper {
     list.forEach(fn);
   }
 
+  static void forEachWithIndex(List list, fn(item, index)) {
+    for (var i = 0; i < list.length; ++i) {
+      fn(list[i], i);
+    }
+  }
+
   static reduce(List list, fn(a, b), init) {
     return list.fold(init, fn);
   }

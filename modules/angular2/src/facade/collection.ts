@@ -182,6 +182,11 @@ export class ListWrapper {
       fn(array[i]);
     }
   }
+  static forEachWithIndex<T>(array: List<T>, fn: (T, number) => void) {
+    for (var i = 0; i < array.length; i++) {
+      fn(array[i], i);
+    }
+  }
   static first<T>(array: List<T>): T {
     if (!array) return null;
     return array[0];

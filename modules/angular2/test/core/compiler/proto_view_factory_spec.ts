@@ -20,7 +20,8 @@ import {
   ChangeDetection,
   ChangeDetectorDefinition,
   BindingRecord,
-  DirectiveIndex
+  DirectiveIndex,
+  Parser
 } from 'angular2/src/change_detection/change_detection';
 import {
   BindingRecordsCreator,
@@ -177,39 +178,44 @@ export function main() {
       beforeEach(() => { creator = new BindingRecordsCreator(); });
 
       describe('getEventBindingRecords', () => {
-        it("should return template event records", () => {
-          var rec = creator.getEventBindingRecords(
-              [
-                new RenderElementBinder(
-                    {eventBindings: [new EventBinding("a", null)], directives: []}),
-                new RenderElementBinder(
-                    {eventBindings: [new EventBinding("b", null)], directives: []})
-              ],
-              []);
+        it("should return template event records", inject([Parser], (p: Parser) => {
+             var ast1 = p.parseAction("1", null);
+             var ast2 = p.parseAction("2", null);
 
-          expect(rec).toEqual([
-            BindingRecord.createForEvent(null, "a", 0),
-            BindingRecord.createForEvent(null, "b", 1)
-          ]);
-        });
+             var rec = creator.getEventBindingRecords(
+                 [
+                   new RenderElementBinder(
+                       {eventBindings: [new EventBinding("a", ast1)], directives: []}),
+                   new RenderElementBinder(
+                       {eventBindings: [new EventBinding("b", ast2)], directives: []})
+                 ],
+                 []);
 
-        it('should return host event records', () => {
-          var rec = creator.getEventBindingRecords(
-              [
-                new RenderElementBinder({
-                  eventBindings: [],
-                  directives: [
-                    new DirectiveBinder(
-                        {directiveIndex: 0, eventBindings: [new EventBinding("a", null)]})
-                  ]
-                })
-              ],
-              [RenderDirectiveMetadata.create({id: 'some-id'})]);
+             expect(rec).toEqual([
+               BindingRecord.createForEvent(ast1, "a", 0),
+               BindingRecord.createForEvent(ast2, "b", 1)
+             ]);
+           }));
 
-          expect(rec.length).toEqual(1);
-          expect(rec[0].eventName).toEqual("a");
-          expect(rec[0].implicitReceiver).toBeAnInstanceOf(DirectiveIndex);
-        });
+        it('should return host event records', inject([Parser], (p: Parser) => {
+             var ast1 = p.parseAction("1", null);
+
+             var rec = creator.getEventBindingRecords(
+                 [
+                   new RenderElementBinder({
+                     eventBindings: [],
+                     directives: [
+                       new DirectiveBinder(
+                           {directiveIndex: 0, eventBindings: [new EventBinding("a", ast1)]})
+                     ]
+                   })
+                 ],
+                 [RenderDirectiveMetadata.create({id: 'some-id'})]);
+
+             expect(rec.length).toEqual(1);
+             expect(rec[0].target.name).toEqual("a");
+             expect(rec[0].implicitReceiver).toBeAnInstanceOf(DirectiveIndex);
+           }));
       });
     });
   });
@@ -253,6 +259,7 @@ function createRenderViewportElementBinder(nestedProtoView) {
 class ChangeDetectionSpy extends SpyObject {
   constructor() { super(ChangeDetection); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
+  get generateDetectors() { return true; }
 }
 
 @Component({selector: 'main-comp'})

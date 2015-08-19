@@ -20,8 +20,8 @@ export function main() {
     if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;
     if (isBlank(referencedBySelf)) referencedBySelf = false;
 
-    return new ProtoRecord(mode, name, null, [], null, 0, directiveIndex, 0, null, null,
-                           lastInBinding, false, argumentToPureFunction, referencedBySelf);
+    return new ProtoRecord(mode, name, null, [], null, 0, directiveIndex, 0, null, lastInBinding,
+                           false, argumentToPureFunction, referencedBySelf, 0);
   }
 
   describe("ProtoRecord", () => {

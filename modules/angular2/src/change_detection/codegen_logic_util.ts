@@ -1,8 +1,9 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException, Json, StringWrapper} from 'angular2/src/facade/lang';
+import {BaseException, Json, StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';
+import {BindingTarget} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 
 /**
@@ -121,6 +122,23 @@ export class CodegenLogicUtil {
     } else {
       return exp;
     }
+  }
+
+  genPropertyBindingTargets(propertyBindingTargets: BindingTarget[], devMode: boolean): string {
+    var bs = propertyBindingTargets.map(b => {
+      if (isBlank(b)) return "null";
+
+      var debug = devMode ? codify(b.debug) : "null";
+      return `${this._utilName}.bindingTarget(${codify(b.mode)}, ${b.elementIndex}, ${codify(b.name)}, ${codify(b.unit)}, ${debug})`;
+    });
+    return `[${bs.join(", ")}]`;
+  }
+
+  genDirectiveIndices(directiveRecords: DirectiveRecord[]): string {
+    var bs = directiveRecords.map(
+        b =>
+            `${this._utilName}.directiveIndex(${b.directiveIndex.elementIndex}, ${b.directiveIndex.directiveIndex})`);
+    return `[${bs.join(", ")}]`;
   }
 
   _genInterpolation(protoRec: ProtoRecord): string {

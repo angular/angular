@@ -16,6 +16,8 @@ import {
   isDefaultChangeDetectionStrategy
 } from './constants';
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';
+import {BindingTarget} from './binding_record';
+import {DirectiveIndex} from './directive_record';
 
 
 /**
@@ -200,5 +202,14 @@ export class ChangeDetectionUtil {
     if (implementsOnDestroy(pipe)) {
       pipe.onDestroy();
     }
+  }
+
+  static bindingTarget(mode: string, elementIndex: number, name: string, unit: string,
+                       debug: string): BindingTarget {
+    return new BindingTarget(mode, elementIndex, name, unit, debug);
+  }
+
+  static directiveIndex(elementIndex: number, directiveIndex: number): DirectiveIndex {
+    return new DirectiveIndex(elementIndex, directiveIndex);
   }
 }

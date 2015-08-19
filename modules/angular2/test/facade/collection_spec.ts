@@ -90,6 +90,18 @@ export function main() {
       it('should return null for an empty list',
          () => { expect(ListWrapper.maximum([], x => x)).toEqual(null); });
     });
+
+    describe('forEachWithIndex', () => {
+      var l;
+
+      beforeEach(() => { l = ["a", "b"]; });
+
+      it('should iterate over an array passing values and indices', () => {
+        var record = [];
+        ListWrapper.forEachWithIndex(l, (value, index) => record.push([value, index]));
+        expect(record).toEqual([["a", 0], ["b", 1]]);
+      });
+    });
   });
 
   describe('StringMapWrapper', () => {

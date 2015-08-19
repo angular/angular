@@ -13,12 +13,10 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(
-        MyComponent,
-        new _ngRef.ReflectionInfo(const [
-          const Component(selector: '[soup]'),
-          const View(template: 'Salad: {{myNum}} is awesome')
-        ], const [], () => new MyComponent()))
+    ..registerType(MyComponent, new _ngRef.ReflectionInfo(const [
+      const Component(selector: '[soup]'),
+      const View(template: 'Salad: {{myNum}} is awesome')
+    ], const [], () => new MyComponent()))
     ..registerGetters({'myNum': (o) => o.myNum});
   _gen.preGeneratedProtoDetectors['MyComponent_comp_0'] =
       _MyComponent_ChangeDetector0.newProtoChangeDetector;
@@ -28,19 +26,23 @@ class _MyComponent_ChangeDetector0
     extends _gen.AbstractChangeDetector<MyComponent> {
   var myNum0, interpolate1;
 
-  _MyComponent_ChangeDetector0(dispatcher, protos, directiveRecords)
-      : super("MyComponent_comp_0", dispatcher, protos, directiveRecords,
-            'ALWAYS_CHECK') {
+  _MyComponent_ChangeDetector0(dispatcher) : super(
+          "MyComponent_comp_0", dispatcher, 2,
+          _MyComponent_ChangeDetector0.gen_propertyBindingTargets,
+          _MyComponent_ChangeDetector0.gen_directiveIndices, 'ALWAYS_CHECK') {
     dehydrateDirectives(false);
   }
 
   void detectChangesInRecordsInternal(throwOnChange) {
-    var l_context = this.context, l_myNum0, c_myNum0, l_interpolate1;
+    var l_context = this.context,
+        l_myNum0,
+        c_myNum0,
+        l_interpolate1;
     c_myNum0 = false;
     var isChanged = false;
     var changes = null;
 
-    this.firstProtoInCurrentBinding = 1;
+    this.propertyBindingIndex = 0;
     l_myNum0 = l_context.myNum;
     if (_gen.looseNotIdentical(l_myNum0, this.myNum0)) {
       c_myNum0 = true;
@@ -75,9 +77,16 @@ class _MyComponent_ChangeDetector0
     this.myNum0 = this.interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
+  static var gen_propertyBindingTargets = [
+    _gen.ChangeDetectionUtil.bindingTarget("textNode", 0, null, null,
+        "Salad: {{myNum}} is awesome in MyComponent: <template>")
+  ];
+
+  static var gen_directiveIndices = [];
+
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c) => new _MyComponent_ChangeDetector0(a, b, c), def);
+        (a) => new _MyComponent_ChangeDetector0(a), def);
   }
 }
