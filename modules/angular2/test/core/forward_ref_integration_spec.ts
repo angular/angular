@@ -11,7 +11,7 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {Directive, Component, Query, View} from 'angular2/metadata';
+import {Directive, Component, Query, BaseView} from 'angular2/metadata';
 import {QueryList, NgFor} from 'angular2/angular2';
 import {forwardRef, resolveForwardRef, bind, Inject} from 'angular2/di';
 import {Type} from 'angular2/src/facade/lang';
@@ -30,7 +30,7 @@ export function main() {
 }
 
 @Component({selector: 'app', viewBindings: [forwardRef(() => Frame)]})
-@View({
+@BaseView({
   template: `<door><lock></lock></door>`,
   directives: [
     bind(forwardRef(() => Door))
@@ -42,7 +42,7 @@ class App {
 }
 
 @Component({selector: 'Lock'})
-@View({
+@BaseView({
   directives: [NgFor],
   template: `{{frame.name}}(<span *ng-for="var lock of locks">{{lock.name}}</span>)`
 })

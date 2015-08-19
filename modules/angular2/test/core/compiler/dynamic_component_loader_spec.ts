@@ -20,7 +20,7 @@ import {
 
 import {Injector} from 'angular2/di';
 import {NgIf} from 'angular2/directives';
-import {Component, View, ViewMetadata, LifecycleEvent} from 'angular2/metadata';
+import {Component, BaseView, ViewMetadata, LifecycleEvent} from 'angular2/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DOCUMENT} from 'angular2/src/render/render';
@@ -253,7 +253,7 @@ export function main() {
 @Component({
   selector: 'child-cmp',
 })
-@View({template: '{{ctxProp}}'})
+@BaseView({template: '{{ctxProp}}'})
 class ChildComp {
   ctxProp: string;
   constructor() { this.ctxProp = 'hello'; }
@@ -267,7 +267,7 @@ class DynamicallyCreatedComponentService {}
   viewBindings: [DynamicallyCreatedComponentService],
   lifecycle: [LifecycleEvent.onDestroy]
 })
-@View({template: "{{greeting}}"})
+@BaseView({template: "{{greeting}}"})
 class DynamicallyCreatedCmp {
   greeting: string;
   dynamicallyCreatedComponentService: DynamicallyCreatedComponentService;
@@ -282,17 +282,17 @@ class DynamicallyCreatedCmp {
 }
 
 @Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded;"})
+@BaseView({template: "DynamicallyLoaded;"})
 class DynamicallyLoaded {
 }
 
 @Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded2;"})
+@BaseView({template: "DynamicallyLoaded2;"})
 class DynamicallyLoaded2 {
 }
 
 @Component({selector: 'dummy', host: {'[id]': 'id'}})
-@View({template: "DynamicallyLoadedWithHostProps;"})
+@BaseView({template: "DynamicallyLoadedWithHostProps;"})
 class DynamicallyLoadedWithHostProps {
   id: string;
 
@@ -300,7 +300,7 @@ class DynamicallyLoadedWithHostProps {
 }
 
 @Component({selector: 'location'})
-@View({template: "Location;"})
+@BaseView({template: "Location;"})
 class Location {
   elementRef: ElementRef;
 
@@ -308,7 +308,7 @@ class Location {
 }
 
 @Component({selector: 'my-comp'})
-@View({directives: []})
+@BaseView({directives: []})
 class MyComp {
   ctxBoolProp: boolean;
 

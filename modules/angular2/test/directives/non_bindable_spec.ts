@@ -14,7 +14,7 @@ import {
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, BaseView} from 'angular2/angular2';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
@@ -71,7 +71,7 @@ class TestDirective {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NgNonBindable, TestDirective]})
+@BaseView({directives: [NgNonBindable, TestDirective]})
 class TestComponent {
   text: string;
   constructor() { this.text = 'foo'; }

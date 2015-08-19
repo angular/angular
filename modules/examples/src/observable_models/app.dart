@@ -3,7 +3,7 @@ library benchmarks.src.naive_infinite_scroll.app;
 import "package:angular2/src/facade/collection.dart" show List, ListWrapper;
 import "package:angular2/directives.dart" show NgIf, NgFor;
 import "scroll_area.dart" show ScrollAreaComponent;
-import "package:angular2/angular2.dart" show Component, Directive, View, IterableDiffers, SkipSelf, Binding;
+import "package:angular2/angular2.dart" show Component, Directive, BaseView, IterableDiffers, SkipSelf, Binding;
 import "package:angular2/src/directives/observable_list_diff.dart" show ObservableListDiffFactory;
 import 'package:observe/observe.dart' show ObservableList;
 
@@ -18,7 +18,7 @@ const binding = const Binding(IterableDiffers,
   selector: "scroll-app",
   bindings: const [binding]
 )
-@View(directives: const [ScrollAreaComponent, NgIf, NgFor], template: '''
+@BaseView(directives: const [ScrollAreaComponent, NgIf, NgFor], template: '''
   <div>
     <div style="display: flex">
       <scroll-area id="testArea"></scroll-area>

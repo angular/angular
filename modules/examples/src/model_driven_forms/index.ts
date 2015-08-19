@@ -1,4 +1,4 @@
-import {bootstrap, NgIf, NgFor, Component, Directive, View, Host} from 'angular2/bootstrap';
+import {bootstrap, NgIf, NgFor, Component, Directive, BaseView, Host} from 'angular2/bootstrap';
 import {FORM_DIRECTIVES, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
@@ -30,7 +30,7 @@ function creditCardValidator(c): StringMap<string, boolean> {
  * To make it simple, we are using a simple map here.
  */
 @Component({selector: 'show-error', properties: ['controlPath: control', 'errorTypes: errors']})
-@View({
+@BaseView({
   template: `
     <span *ng-if="errorMessage !== null">{{errorMessage}}</span>
   `,
@@ -61,7 +61,7 @@ class ShowError {
 
 
 @Component({selector: 'model-driven-forms', viewBindings: [FormBuilder]})
-@View({
+@BaseView({
   template: `
     <h1>Checkout Form (Model Driven)</h1>
 

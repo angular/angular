@@ -48,7 +48,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template:
                           '<type-literal-component></type-literal-component>',
                       directives: [TypeLiteralComponent]))
@@ -69,7 +69,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template: '<throwing-component></throwing-component>',
                       directives: [ThrowingComponent]))
               .createAsync(Dummy)
@@ -86,7 +86,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template: '<throwing-component2></throwing-component2>',
                       directives: [ThrowingComponent2]))
               .createAsync(Dummy)
@@ -105,7 +105,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template: '<property-access></property-access>',
                       directives: [PropertyAccess]))
               .createAsync(Dummy)
@@ -123,7 +123,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template: '<no-property-access></no-property-access>',
                       directives: [NoPropertyAccess]))
               .createAsync(Dummy)
@@ -142,7 +142,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template: '''<on-change [prop]="'hello'"></on-change>''',
                       directives: [OnChangeComponent]))
               .createAsync(Dummy)
@@ -164,7 +164,7 @@ main() {
           tcb
               .overrideView(
                   Dummy,
-                  new View(
+                  new BaseView(
                       template:
                           '''<component-with-observable-list [list]="value"></component-with-observable-list>''',
                       directives: [ComponentWithObservableList]))
@@ -217,7 +217,7 @@ class Dummy {
       const Binding(const TypeLiteral<List<String>>(),
           toValue: const <String>['Hello', 'World'])
     ])
-@View(template: '{{list}}')
+@BaseView(template: '{{list}}')
 class TypeLiteralComponent {
   final List<String> list;
 
@@ -225,7 +225,7 @@ class TypeLiteralComponent {
 }
 
 @Component(selector: 'throwing-component')
-@View(template: '')
+@BaseView(template: '')
 class ThrowingComponent {
   ThrowingComponent() {
     functionThatThrows();
@@ -233,7 +233,7 @@ class ThrowingComponent {
 }
 
 @Component(selector: 'throwing-component2')
-@View(template: '')
+@BaseView(template: '')
 class ThrowingComponent2 {
   ThrowingComponent2() {
     functionThatThrowsNonError();
@@ -252,13 +252,13 @@ class PropModel implements Map {
 }
 
 @Component(selector: 'property-access')
-@View(template: '''prop:{{model.foo}};map:{{model['foo']}}''')
+@BaseView(template: '''prop:{{model.foo}};map:{{model['foo']}}''')
 class PropertyAccess {
   final model = new PropModel();
 }
 
 @Component(selector: 'no-property-access')
-@View(template: '''{{model.doesNotExist}}''')
+@BaseView(template: '''{{model.doesNotExist}}''')
 class NoPropertyAccess {
   final model = new PropModel();
 }
@@ -268,7 +268,7 @@ class NoPropertyAccess {
     // TODO: needed because of https://github.com/angular/angular/issues/2120
     lifecycle: const [LifecycleEvent.onChange],
     properties: const ['prop'])
-@View(template: '')
+@BaseView(template: '')
 class OnChangeComponent implements OnChange {
   Map changes;
   String prop;
@@ -290,7 +290,7 @@ class OnChangeComponent implements OnChange {
             const DefaultIterableDifferFactory()
           ]))
     ])
-@View(
+@BaseView(
     template:
         '<span *ng-for="#item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
     directives: const [NgFor, DirectiveLoggingChecks])

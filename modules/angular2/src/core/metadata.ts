@@ -53,7 +53,7 @@ export interface ComponentDecorator extends TypeDecorator {
   /**
    * Chain {@link ViewMetadata} annotation.
    */
-  View(obj: {
+  BaseView(obj: {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
@@ -73,7 +73,7 @@ export interface ViewDecorator extends TypeDecorator {
   /**
    * Chain {@link ViewMetadata} annotation.
    */
-  View(obj: {
+  BaseView(obj: {
     templateUrl?: string,
     template?: string,
     directives?: List<Type | any | List<any>>,
@@ -159,7 +159,7 @@ export interface DirectiveFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: function() {
  *       ...
@@ -176,7 +176,7 @@ export interface DirectiveFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * ```
  */
@@ -229,7 +229,7 @@ export interface ComponentFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: function() {
  *       ...
@@ -246,7 +246,7 @@ export interface ComponentFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * ```
  */
@@ -291,7 +291,7 @@ export interface ViewFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: [new ng.Attribute('title'), function(title) {
  *       ...
@@ -308,7 +308,7 @@ export interface ViewFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * MyComponent.parameters = [
  *   [new ng.Attribute('title')]
@@ -329,7 +329,7 @@ export interface AttributeFactory {
  * import {Query, QueryList, Component, View} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
+ * @BaseView({...})
  * class MyComponent {
  *   constructor(@Query(SomeType) queryList: QueryList) {
  *     ...
@@ -342,7 +342,7 @@ export interface AttributeFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
+ *   .BaseView({...})
  *   .Class({
  *     constructor: [new ng.Query(SomeType), function(queryList) {
  *       ...
@@ -359,7 +359,7 @@ export interface AttributeFactory {
  *
  * MyComponent.annotations = [
  *   new ng.Component({...})
- *   new ng.View({...})
+ *   new ng.BaseView({...})
  * ]
  * MyComponent.parameters = [
  *   [new ng.Query(SomeType)]
@@ -400,7 +400,7 @@ export interface PipeFactory {
  * {@link ComponentMetadata} factory function.
  */
 export var Component: ComponentFactory =
-    <ComponentFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.View = View);
+    <ComponentFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.BaseView = BaseView);
 /**
  * {@link DirectiveMetadata} factory function.
  */
@@ -409,8 +409,8 @@ export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(Directi
 /**
  * {@link ViewMetadata} factory function.
  */
-export var View: ViewFactory =
-    <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
+export var BaseView: ViewFactory =
+    <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.BaseView = BaseView);
 
 /**
  * {@link AttributeMetadata} factory function.

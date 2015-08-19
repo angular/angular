@@ -1,6 +1,6 @@
 import {
   Component,
-  View,
+  BaseView,
   ViewEncapsulation,
   LifecycleEvent,
   Host,
@@ -45,7 +45,7 @@ var _uniqueIdCounter: number = 0;
     '[tabindex]': 'tabindex',
   }
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/radio/radio_group.html',
   encapsulation: ViewEncapsulation.NONE
 })
@@ -202,7 +202,7 @@ export class MdRadioGroup {
     '(keydown)': 'onKeydown($event)',
   }
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',
   directives: [],
   encapsulation: ViewEncapsulation.NONE

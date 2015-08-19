@@ -1,4 +1,4 @@
-import {bootstrap, Component, Directive, View, ViewEncapsulation} from 'angular2/bootstrap';
+import {bootstrap, Component, Directive, BaseView, ViewEncapsulation} from 'angular2/bootstrap';
 import {MdCheckbox} from 'angular2_material/src/components/checkbox/checkbox';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
@@ -7,7 +7,7 @@ import {bind} from 'angular2/di';
 @Component({
   selector: 'demo-app',
 })
-@View({
+@BaseView({
   templateUrl: './demo_app.html',
   directives: [MdCheckbox],
   encapsulation: ViewEncapsulation.NONE

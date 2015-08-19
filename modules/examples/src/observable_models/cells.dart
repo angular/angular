@@ -5,7 +5,7 @@ import "package:angular2/src/facade/collection.dart"
 import "common.dart"
     show Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST;
 import "package:angular2/directives.dart" show NgFor;
-import "package:angular2/angular2.dart" show Component, Directive, View;
+import "package:angular2/angular2.dart" show Component, Directive, BaseView;
 
 class HasStyle {
   int cellWidth;
@@ -19,7 +19,7 @@ class HasStyle {
     properties: const ["width: cell-width", "company"],
     changeDetection: "ON_PUSH_OBSERVE"
 )
-@View(
+@BaseView(
     directives: const [],
     template: '''<div [style.width.px]="cellWidth">{{company.name}}</div>'''
 )
@@ -31,7 +31,7 @@ class CompanyNameComponent extends HasStyle {
     properties: const ["width: cell-width", "opportunity"],
     changeDetection: "ON_PUSH_OBSERVE"
 )
-@View(
+@BaseView(
     directives: const [],
     template: '''<div [style.width.px]="cellWidth">{{opportunity.name}}</div>'''
 )
@@ -43,7 +43,7 @@ class OpportunityNameComponent extends HasStyle {
     properties: const ["width: cell-width", "offering"],
     changeDetection: "ON_PUSH_OBSERVE"
 )
-@View(
+@BaseView(
     directives: const [],
     template: '''<div [style.width.px]="cellWidth">{{offering.name}}</div>'''
 )
@@ -61,7 +61,7 @@ class Stage {
     properties: const ["width: cell-width", "offering"],
     changeDetection: "ON_PUSH_OBSERVE"
 )
-@View(directives: const [NgFor], template: '''
+@BaseView(directives: const [NgFor], template: '''
       <div [style.width.px]="cellWidth">
           <button template="ng-for #stage of stages"
                   [disabled]="stage.isDisabled"
@@ -105,7 +105,7 @@ class StageButtonsComponent extends HasStyle {
     properties: const ["width: cell-width", "account"],
     changeDetection: "ON_PUSH_OBSERVE"
 )
-@View(directives: const [], template: '''
+@BaseView(directives: const [], template: '''
       <div [style.width.px]="cellWidth">
         <a href="/account/{{account.accountId}}">
           {{account.accountId}}
@@ -119,7 +119,7 @@ class AccountCellComponent extends HasStyle {
     properties: const ["width: cell-width", "value"],
     changeDetection: "ON_PUSH_OBSERVE"
 )
-@View(
+@BaseView(
     directives: const [],
     template: '''<div [style.width.px]="cellWidth">{{formattedValue}}</div>''')
 class FormattedCellComponent extends HasStyle {

@@ -13,7 +13,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, ViewMetadata, BaseView} from 'angular2/angular2';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/services/app_root_url';
@@ -121,16 +121,16 @@ class MultipleViewResolver extends ViewResolver {
     this._cache.set(component, ListWrapper.join(multiplier, ''));
   }
 
-  resolve(component: Type): View {
+  resolve(component: Type): ViewMetadata {
     var view = super.resolve(component);
-    var myView =
-        new View({template:<string>this._cache.get(component), directives: view.directives});
+    var myView = new ViewMetadata(
+        {template:<string>this._cache.get(component), directives: view.directives});
     return myView;
   }
 }
 
 @Component({selector: 'cmp-nobind'})
-@View({
+@BaseView({
   directives: [Dir0, Dir1, Dir2, Dir3, Dir4],
   template: `
 <div class="class0 class1 class2 class3 class4 " nodir0="" attr0="value0" nodir1="" attr1="value1" nodir2="" attr2="value2" nodir3="" attr3="value3" nodir4="" attr4="value4">
@@ -148,7 +148,7 @@ class BenchmarkComponentNoBindings {
 }
 
 @Component({selector: 'cmp-withbind'})
-@View({
+@BaseView({
   directives: [Dir0, Dir1, Dir2, Dir3, Dir4],
   template: `
 <div class="class0 class1 class2 class3 class4 " dir0="" [attr0]="value0" dir1="" [attr1]="value1" dir2="" [attr2]="value2" dir3="" [attr3]="value3" dir4="" [attr4]="value4">

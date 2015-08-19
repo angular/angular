@@ -3,7 +3,7 @@ import {
   Compiler,
   Component,
   Directive,
-  View,
+  BaseView,
   ViewContainerRef
 } from 'angular2/bootstrap';
 
@@ -219,7 +219,7 @@ class BaseLineIf {
 }
 
 @Component({selector: 'tree', properties: ['data']})
-@View({
+@BaseView({
   directives: [TreeComponent, NgIf],
   template:
       `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
@@ -229,7 +229,7 @@ class TreeComponent {
 }
 
 @Component({selector: 'app'})
-@View({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
+@BaseView({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
 class AppComponent {
   initData: TreeNode;
   constructor() {

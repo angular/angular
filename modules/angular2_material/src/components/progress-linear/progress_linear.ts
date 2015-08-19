@@ -1,4 +1,4 @@
-import {Component, LifecycleEvent, View, ViewEncapsulation, Attribute} from 'angular2/angular2';
+import {Component, LifecycleEvent, BaseView, ViewEncapsulation, Attribute} from 'angular2/angular2';
 import {CONST} from 'angular2/src/facade/lang';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
@@ -24,7 +24,7 @@ class ProgressMode {
     '[attr.aria-valuenow]': 'value'
   }
 })
-@View({
+@BaseView({
   templateUrl: 'package:angular2_material/src/components/progress-linear/progress_linear.html',
   directives: [],
   encapsulation: ViewEncapsulation.NONE

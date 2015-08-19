@@ -16,12 +16,12 @@ import {
 
 import {Injectable} from 'angular2/di';
 
-import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
+import {Directive, Component, BaseView, ViewMetadata} from 'angular2/metadata';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
 
 @Component({selector: 'child-comp'})
-@View({template: `<span>Original {{childBinding}}</span>`, directives: []})
+@BaseView({template: `<span>Original {{childBinding}}</span>`, directives: []})
 @Injectable()
 class ChildComp {
   childBinding: string;
@@ -29,19 +29,19 @@ class ChildComp {
 }
 
 @Component({selector: 'child-comp'})
-@View({template: `<span>Mock</span>`})
+@BaseView({template: `<span>Mock</span>`})
 @Injectable()
 class MockChildComp {
 }
 
 @Component({selector: 'parent-comp'})
-@View({template: `Parent(<child-comp></child-comp>)`, directives: [ChildComp]})
+@BaseView({template: `Parent(<child-comp></child-comp>)`, directives: [ChildComp]})
 @Injectable()
 class ParentComp {
 }
 
 @Component({selector: 'my-if-comp'})
-@View({template: `MyIf(<span *ng-if="showMore">More</span>)`, directives: [NgIf]})
+@BaseView({template: `MyIf(<span *ng-if="showMore">More</span>)`, directives: [NgIf]})
 @Injectable()
 class MyIfComp {
   showMore: boolean = false;

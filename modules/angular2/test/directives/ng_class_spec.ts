@@ -14,7 +14,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Component, View, NgFor, bind} from 'angular2/angular2';
+import {Component, BaseView, NgFor, bind} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
@@ -401,7 +401,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NgClass, NgFor]})
+@BaseView({directives: [NgClass, NgFor]})
 class TestComponent {
   condition: boolean = true;
   items: any[];

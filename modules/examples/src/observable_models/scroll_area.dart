@@ -2,7 +2,7 @@ library benchmarks.src.naive_infinite_scroll.scroll_area;
 
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/math.dart" show Math;
-import "package:angular2/angular2.dart" show Component, Directive, View;
+import "package:angular2/angular2.dart" show Component, Directive, BaseView;
 import "common.dart"
     show
         Offering,
@@ -17,7 +17,7 @@ import "scroll_item.dart" show ScrollItemComponent;
 import "package:angular2/directives.dart" show NgFor;
 
 @Component(selector: "scroll-area", changeDetection: "ON_PUSH_OBSERVE")
-@View(directives: const [ScrollItemComponent, NgFor], template: '''
+@BaseView(directives: const [ScrollItemComponent, NgFor], template: '''
     <div>
         <div id="scrollDiv"
              [style.height.px]="viewPortHeight"
