@@ -1,7 +1,6 @@
 library angular2.src.web_workers.worker;
 
-import "package:angular2/src/web-workers/shared/message_bus.dart"
-    show MessageBus, MessageBusSource, MessageBusSink;
+import "package:angular2/src/web-workers/shared/isolate_message_bus.dart";
 import "package:angular2/src/web-workers/worker/application_common.dart"
     show bootstrapWebWorkerCommon;
 import "package:angular2/src/facade/async.dart" show Future;
@@ -26,56 +25,15 @@ Future<ApplicationRef> bootstrapWebWorker(
     SendPort replyTo, Type appComponentType,
     [List<dynamic> componentInjectableBindings = null]) {
   ReceivePort rPort = new ReceivePort();
-  WebWorkerMessageBus bus = new WebWorkerMessageBus.fromPorts(replyTo, rPort);
+  var sink = new WebWorkerMessageBusSink(replyTo, rPort);
+  var source = new IsolateMessageBusSource(rPort);
+  IsolateMessageBus bus = new IsolateMessageBus(sink, source);
   return bootstrapWebWorkerCommon(
       appComponentType, bus, componentInjectableBindings);
 }
 
-class WebWorkerMessageBus extends MessageBus {
-  final WebWorkerMessageBusSink sink;
-  final WebWorkerMessageBusSource source;
-
-  WebWorkerMessageBus(this.sink, this.source);
-
-  WebWorkerMessageBus.fromPorts(SendPort sPort, ReceivePort rPort)
-      : sink = new WebWorkerMessageBusSink(sPort, rPort),
-        source = new WebWorkerMessageBusSource(rPort);
-}
-
-class WebWorkerMessageBusSink extends MessageBusSink {
-  final SendPort _port;
-
-  WebWorkerMessageBusSink(SendPort sPort, ReceivePort rPort) : _port = sPort {
-    this.send(rPort.sendPort);
-  }
-
-  void send(dynamic message) {
-    this._port.send(message);
-  }
-}
-
-class WebWorkerMessageBusSource extends MessageBusSource {
-  final ReceivePort _port;
-  final Stream rawDataStream;
-  Map<int, StreamSubscription> _listenerStore =
-      new Map<int, StreamSubscription>();
-  int _numListeners = 0;
-
-  WebWorkerMessageBusSource(ReceivePort rPort)
-      : _port = rPort,
-        rawDataStream = rPort.asBroadcastStream();
-
-  int addListener(Function fn) {
-    var subscription = rawDataStream.listen((message) {
-      fn({"data": message});
-    });
-
-    _listenerStore[++_numListeners] = subscription;
-    return _numListeners;
-  }
-
-  void removeListener(int index) {
-    _listenerStore[index].cancel();
-    _listenerStore.remove(index);
+class WebWorkerMessageBusSink extends IsolateMessageBusSink {
+  WebWorkerMessageBusSink(SendPort sPort, ReceivePort rPort) : super(sPort) {
+    sPort.send(rPort.sendPort);
   }
 }

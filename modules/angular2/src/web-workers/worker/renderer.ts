@@ -13,7 +13,12 @@ import {
   RenderFragmentRef
 } from 'angular2/src/render/api';
 import {Promise, PromiseWrapper} from "angular2/src/facade/async";
-import {MessageBroker, FnArg, UiArguments} from "angular2/src/web-workers/worker/broker";
+import {
+  MessageBroker,
+  MessageBrokerFactory,
+  FnArg,
+  UiArguments
+} from "angular2/src/web-workers/worker/broker";
 import {isPresent, print, BaseException} from "angular2/src/facade/lang";
 import {Injectable} from "angular2/di";
 import {
@@ -21,16 +26,24 @@ import {
   WebWorkerRenderViewRef
 } from 'angular2/src/web-workers/shared/render_view_with_fragments_store';
 import {WebWorkerElementRef} from 'angular2/src/web-workers/shared/api';
+import {
+  RENDER_COMPILER_CHANNEL,
+  RENDERER_CHANNEL
+} from 'angular2/src/web-workers/shared/messaging_api';
+import {WebWorkerEventDispatcher} from 'angular2/src/web-workers/worker/event_dispatcher';
 
 @Injectable()
 export class WebWorkerCompiler implements RenderCompiler {
-  constructor(private _messageBroker: MessageBroker) {}
+  private _messageBroker;
+  constructor(messageBrokerFactory: MessageBrokerFactory) {
+    this._messageBroker = messageBrokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
+  }
   /**
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
    */
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
     var fnArgs: List<FnArg> = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
-    var args: UiArguments = new UiArguments("compiler", "compileHost", fnArgs);
+    var args: UiArguments = new UiArguments("compileHost", fnArgs);
     return this._messageBroker.runOnUiThread(args, ProtoViewDto);
   }
 
@@ -41,7 +54,7 @@ export class WebWorkerCompiler implements RenderCompiler {
    */
   compile(view: ViewDefinition): Promise<ProtoViewDto> {
     var fnArgs: List<FnArg> = [new FnArg(view, ViewDefinition)];
-    var args: UiArguments = new UiArguments("compiler", "compile", fnArgs);
+    var args: UiArguments = new UiArguments("compile", fnArgs);
     return this._messageBroker.runOnUiThread(args, ProtoViewDto);
   }
 
@@ -57,7 +70,7 @@ export class WebWorkerCompiler implements RenderCompiler {
   mergeProtoViewsRecursively(
       protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping> {
     var fnArgs: List<FnArg> = [new FnArg(protoViewRefs, RenderProtoViewRef)];
-    var args: UiArguments = new UiArguments("compiler", "mergeProtoViewsRecursively", fnArgs);
+    var args: UiArguments = new UiArguments("mergeProtoViewsRecursively", fnArgs);
     return this._messageBroker.runOnUiThread(args, RenderProtoViewMergeMapping);
   }
 }
@@ -65,8 +78,12 @@ export class WebWorkerCompiler implements RenderCompiler {
 
 @Injectable()
 export class WebWorkerRenderer implements Renderer {
-  constructor(private _messageBroker: MessageBroker,
-              private _renderViewStore: RenderViewWithFragmentsStore) {}
+  private _messageBroker;
+  constructor(messageBrokerFactory: MessageBrokerFactory,
+              private _renderViewStore: RenderViewWithFragmentsStore,
+              private _eventDispatcher: WebWorkerEventDispatcher) {
+    this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
+  }
   /**
    * Creates a root host view that includes the given element.
    * Note that the fragmentCount needs to be passed in so that we can create a result
@@ -108,7 +125,7 @@ export class WebWorkerRenderer implements Renderer {
     }
     fnArgs.push(new FnArg(startIndex, null));
 
-    var args = new UiArguments("renderer", method, fnArgs);
+    var args = new UiArguments(method, fnArgs);
     this._messageBroker.runOnUiThread(args, null);
 
     return renderViewWithFragments;
@@ -119,7 +136,7 @@ export class WebWorkerRenderer implements Renderer {
    */
   destroyView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("renderer", "destroyView", fnArgs);
+    var args = new UiArguments("destroyView", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -132,7 +149,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(previousFragmentRef, RenderFragmentRef),
       new FnArg(fragmentRef, RenderFragmentRef)
     ];
-    var args = new UiArguments("renderer", "attachFragmentAfterFragment", fnArgs);
+    var args = new UiArguments("attachFragmentAfterFragment", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -142,7 +159,7 @@ export class WebWorkerRenderer implements Renderer {
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {
     var fnArgs =
         [new FnArg(elementRef, WebWorkerElementRef), new FnArg(fragmentRef, RenderFragmentRef)];
-    var args = new UiArguments("renderer", "attachFragmentAfterElement", fnArgs);
+    var args = new UiArguments("attachFragmentAfterElement", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -151,7 +168,7 @@ export class WebWorkerRenderer implements Renderer {
    */
   detachFragment(fragmentRef: RenderFragmentRef) {
     var fnArgs = [new FnArg(fragmentRef, RenderFragmentRef)];
-    var args = new UiArguments("renderer", "detachFragment", fnArgs);
+    var args = new UiArguments("detachFragment", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -161,7 +178,7 @@ export class WebWorkerRenderer implements Renderer {
    */
   hydrateView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("renderer", "hydrateView", fnArgs);
+    var args = new UiArguments("hydrateView", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -171,7 +188,7 @@ export class WebWorkerRenderer implements Renderer {
    */
   dehydrateView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("renderer", "dehydrateView", fnArgs);
+    var args = new UiArguments("dehydrateView", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -190,7 +207,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(propertyName, null),
       new FnArg(propertyValue, null)
     ];
-    var args = new UiArguments("renderer", "setElementProperty", fnArgs);
+    var args = new UiArguments("setElementProperty", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -203,7 +220,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(attributeName, null),
       new FnArg(attributeValue, null)
     ];
-    var args = new UiArguments("renderer", "setElementAttribute", fnArgs);
+    var args = new UiArguments("setElementAttribute", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -216,7 +233,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(className, null),
       new FnArg(isAdd, null)
     ];
-    var args = new UiArguments("renderer", "setElementClass", fnArgs);
+    var args = new UiArguments("setElementClass", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -229,7 +246,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(styleName, null),
       new FnArg(styleValue, null)
     ];
-    var args = new UiArguments("renderer", "setElementStyle", fnArgs);
+    var args = new UiArguments("setElementStyle", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -243,7 +260,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(methodName, null),
       new FnArg(args, null)
     ];
-    var uiArgs = new UiArguments("renderer", "invokeElementMethod", fnArgs);
+    var uiArgs = new UiArguments("invokeElementMethod", fnArgs);
     this._messageBroker.runOnUiThread(uiArgs, null);
   }
 
@@ -253,7 +270,7 @@ export class WebWorkerRenderer implements Renderer {
   setText(viewRef: RenderViewRef, textNodeIndex: number, text: string) {
     var fnArgs =
         [new FnArg(viewRef, RenderViewRef), new FnArg(textNodeIndex, null), new FnArg(text, null)];
-    var args = new UiArguments("renderer", "setText", fnArgs);
+    var args = new UiArguments("setText", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
   }
 
@@ -262,8 +279,8 @@ export class WebWorkerRenderer implements Renderer {
    */
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: RenderEventDispatcher) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("renderer", "setEventDispatcher", fnArgs);
-    this._messageBroker.registerEventDispatcher(viewRef, dispatcher);
+    var args = new UiArguments("setEventDispatcher", fnArgs);
+    this._eventDispatcher.registerEventDispatcher(viewRef, dispatcher);
     this._messageBroker.runOnUiThread(args, null);
   }
 }

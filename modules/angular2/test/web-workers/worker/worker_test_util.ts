@@ -1,36 +1,60 @@
+import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {
-  MessageBus,
-  MessageBusSource,
+  MessageBusInterface,
   MessageBusSink,
-  SourceListener
-} from "angular2/src/web-workers/shared/message_bus";
-import {MapWrapper} from "angular2/src/facade/collection";
+  MessageBusSource,
+  MessageBus
+} from 'angular2/src/web-workers/shared/message_bus';
+import {MockEventEmitter} from './mock_event_emitter';
+
+/**
+ * Returns two MessageBus instances that are attached to each other.
+ * Such that whatever goes into one's sink comes out the others source.
+ */
+export function createPairedMessageBuses(): PairedMessageBuses {
+  var firstChannels: StringMap<string, MockEventEmitter> = {};
+  var workerMessageBusSink = new MockMessageBusSink(firstChannels);
+  var uiMessageBusSource = new MockMessageBusSource(firstChannels);
+
+  var secondChannels: StringMap<string, MockEventEmitter> = {};
+  var uiMessageBusSink = new MockMessageBusSink(secondChannels);
+  var workerMessageBusSource = new MockMessageBusSource(secondChannels);
+
+  return new PairedMessageBuses(new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
+                                new MockMessageBus(workerMessageBusSink, workerMessageBusSource));
+}
+
+export class PairedMessageBuses {
+  constructor(public ui: MessageBusInterface, public worker: MessageBusInterface) {}
+}
 
 export class MockMessageBusSource implements MessageBusSource {
-  private _listenerStore: Map<int, SourceListener> = new Map<int, SourceListener>();
-  private _numListeners: number = 0;
+  constructor(private _channels: StringMap<string, MockEventEmitter>) {}
 
-  addListener(fn: SourceListener): int {
-    this._listenerStore.set(++this._numListeners, fn);
-    return this._numListeners;
-  }
-
-  removeListener(index: int): void { MapWrapper.delete(this._listenerStore, index); }
-
-  receive(message: Object): void {
-    MapWrapper.forEach(this._listenerStore, (fn: SourceListener, key: int) => { fn(message); });
+  from(channel: string): MockEventEmitter {
+    if (!StringMapWrapper.contains(this._channels, channel)) {
+      this._channels[channel] = new MockEventEmitter();
+    }
+    return this._channels[channel];
   }
 }
 
 export class MockMessageBusSink implements MessageBusSink {
-  private _sendTo: MockMessageBusSource;
+  constructor(private _channels: StringMap<string, MockEventEmitter>) {}
 
-  send(message: Object): void { this._sendTo.receive({'data': message}); }
-
-  attachToSource(source: MockMessageBusSource) { this._sendTo = source; }
+  to(channel: string): MockEventEmitter {
+    if (!StringMapWrapper.contains(this._channels, channel)) {
+      this._channels[channel] = new MockEventEmitter();
+    }
+    return this._channels[channel];
+  }
 }
 
-export class MockMessageBus implements MessageBus {
-  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) {}
-  attachToBus(bus: MockMessageBus) { this.sink.attachToSource(bus.source); }
+export class MockMessageBus extends MessageBus {
+  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) { super(); }
+
+
+  to(channel: string): MockEventEmitter { return this.sink.to(channel); }
+
+  from(channel: string): MockEventEmitter { return this.source.from(channel); }
 }

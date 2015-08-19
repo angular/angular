@@ -1,21 +1,30 @@
 import {
-  WebWorkerMessageBus,
-  WebWorkerMessageBusSource,
-  WebWorkerMessageBusSink
-} from "angular2/src/web-workers/worker/application";
+  PostMessageBus,
+  PostMessageBusSink,
+  PostMessageBusSource
+} from 'angular2/src/web-workers/shared/post_message_bus';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 import {MessageBroker, UiArguments} from "angular2/src/web-workers/worker/broker";
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
 
-export function main() {
-  var bus = new WebWorkerMessageBus(new WebWorkerMessageBusSink(), new WebWorkerMessageBusSource());
-  bus.source.addListener((message) => {
-    if (message.data.type === "echo") {
-      bus.sink.send({type: "echo_response", 'value': message.data.value});
-    }
-  });
+interface PostMessageInterface {
+  (message: any, transferrables?:[ArrayBuffer]): void;
+}
+var _postMessage: PostMessageInterface = <any>postMessage;
 
-  var broker = new MessageBroker(bus, new Serializer(null, null, null), null);
-  var args = new UiArguments("test", "tester");
+export function main() {
+  var sink = new PostMessageBusSink({
+    postMessage:
+        (message: any, transferrables?:[ArrayBuffer]) => { _postMessage(message, transferrables); }
+  });
+  var source = new PostMessageBusSource();
+  var bus = new PostMessageBus(sink, source);
+
+  ObservableWrapper.subscribe(bus.from("echo"),
+                              (value) => { ObservableWrapper.callNext(bus.to("echo"), value); });
+
+  var broker = new MessageBroker(bus, new Serializer(null, null, null), "test");
+  var args = new UiArguments("tester");
   broker.runOnUiThread(args, String)
-      .then((data: string) => { bus.sink.send({type: "result", value: data}); });
+      .then((data: string) => { ObservableWrapper.callNext(bus.to("result"), data); });
 }
