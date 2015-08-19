@@ -1,3 +1,154 @@
+<a name="2.0.0-alpha.35"></a>
+# 2.0.0-alpha.35 (2015-08-19)
+
+
+### Bug Fixes
+
+* **benchmarks:** remove reference to String.prototype.contains() ([b6ee208](https://github.com/angular/angular/commit/b6ee208)), closes [#3570](https://github.com/angular/angular/issues/3570)
+* **browser_adapter.ts:** baseElement.getAttribute ([235dec2](https://github.com/angular/angular/commit/235dec2)), closes [#3214](https://github.com/angular/angular/issues/3214)
+* **compiler:** strip script tag from templates ([748c2d6](https://github.com/angular/angular/commit/748c2d6)), closes [#2766](https://github.com/angular/angular/issues/2766) [#3486](https://github.com/angular/angular/issues/3486)
+* **CSSClass:** change selector to ng-class ([ff1b110](https://github.com/angular/angular/commit/ff1b110)), closes [#3498](https://github.com/angular/angular/issues/3498)
+* **dart:** @proxy is a value, not a factory ([b4a0629](https://github.com/angular/angular/commit/b4a0629)), closes [#3494](https://github.com/angular/angular/issues/3494)
+* **docs:** export bootstrap in core.ts but not in core.dart ([5f7d4fa](https://github.com/angular/angular/commit/5f7d4fa))
+* **docs:** ng-non-bindable ([f2f4b90](https://github.com/angular/angular/commit/f2f4b90)), closes [#3607](https://github.com/angular/angular/issues/3607)
+* **exception_handler:** log errors that are thrown by the compiler ([07b9be7](https://github.com/angular/angular/commit/07b9be7))
+* **NgClass:** take initial classes into account during cleanup ([ed25a29](https://github.com/angular/angular/commit/ed25a29)), closes [#3557](https://github.com/angular/angular/issues/3557)
+* **presubmit:** uses proper branch instead of hard coded ([96e34c1](https://github.com/angular/angular/commit/96e34c1)), closes [#3552](https://github.com/angular/angular/issues/3552)
+* **query:** do not visit dehydrated injectors. ([6c9e712](https://github.com/angular/angular/commit/6c9e712))
+* **router:** fix regression with generating links to async routes ([26d2ea8](https://github.com/angular/angular/commit/26d2ea8)), closes [#3650](https://github.com/angular/angular/issues/3650)
+* **router:** throw when component in route config is not defined ([903a0f0](https://github.com/angular/angular/commit/903a0f0)), closes [#3265](https://github.com/angular/angular/issues/3265) [#3569](https://github.com/angular/angular/issues/3569)
+* **test_lib:** run unit tests in default Documnent ([a37de36](https://github.com/angular/angular/commit/a37de36)), closes [#3501](https://github.com/angular/angular/issues/3501) [#3475](https://github.com/angular/angular/issues/3475)
+* **testability:** properly throw when no testability available ([841206c](https://github.com/angular/angular/commit/841206c))
+* **testability:** throw if no testability available ([08dbe87](https://github.com/angular/angular/commit/08dbe87))
+* **Testability:** fix type error in getAllAngularTestability (dart) ([574bbea](https://github.com/angular/angular/commit/574bbea))
+* **transformers:** be more specific in the imports to rewrite ([86eb46a](https://github.com/angular/angular/commit/86eb46a)), closes [#3473](https://github.com/angular/angular/issues/3473) [#3523](https://github.com/angular/angular/issues/3523)
+* improper use package name in facade ([64ebf27](https://github.com/angular/angular/commit/64ebf27)), closes [#3613](https://github.com/angular/angular/issues/3613)
+* **typescript:** update to typescript with fixed system emit ([ac31191](https://github.com/angular/angular/commit/ac31191)), closes [#3594](https://github.com/angular/angular/issues/3594)
+* **UrlResolver:** encode URLs before resolving ([4f5e405](https://github.com/angular/angular/commit/4f5e405)), closes [#3543](https://github.com/angular/angular/issues/3543) [#3545](https://github.com/angular/angular/issues/3545)
+* **WebWorkers:** Run XHR requests on the UI ([2968517](https://github.com/angular/angular/commit/2968517)), closes [#3652](https://github.com/angular/angular/issues/3652)
+
+### Features
+
+* **change_detection:** added an example demonstrating how to use observable models ([52da220](https://github.com/angular/angular/commit/52da220)), closes [#3684](https://github.com/angular/angular/issues/3684)
+* **change_detection:** added an experimental support for observables ([cbfc9cb](https://github.com/angular/angular/commit/cbfc9cb))
+* **change_detection:** request a change detection check when  an event happens ([5e6317f](https://github.com/angular/angular/commit/5e6317f)), closes [#3679](https://github.com/angular/angular/issues/3679)
+* **compiler:** allow binding to className using class alias ([a7a1851](https://github.com/angular/angular/commit/a7a1851)), closes [#2364](https://github.com/angular/angular/issues/2364)
+* **coreDirectives:** add NgClass to coreDirectives ([6bd95c1](https://github.com/angular/angular/commit/6bd95c1)), closes [#3534](https://github.com/angular/angular/issues/3534)
+* **dart/transform:** Support `part` directives ([aa480fe](https://github.com/angular/angular/commit/aa480fe)), closes [#1817](https://github.com/angular/angular/issues/1817)
+* **di:** added resolveAndInstantiate and instantiateResolved to Injector ([06da60f](https://github.com/angular/angular/commit/06da60f))
+* **http:** serialize search parameters from request options ([77d3668](https://github.com/angular/angular/commit/77d3668)), closes [#2417](https://github.com/angular/angular/issues/2417) [#3020](https://github.com/angular/angular/issues/3020)
+* **npm:** add typescript block to package.json ([b5fb05b](https://github.com/angular/angular/commit/b5fb05b)), closes [#3590](https://github.com/angular/angular/issues/3590) [#3609](https://github.com/angular/angular/issues/3609)
+* **npm:** publish bundles and their typings in npm distribution ([7b3cca2](https://github.com/angular/angular/commit/7b3cca2)), closes [#3555](https://github.com/angular/angular/issues/3555)
+* **pipe:** added the Pipe decorator and the pipe property to View ([5b5d31f](https://github.com/angular/angular/commit/5b5d31f)), closes [#3572](https://github.com/angular/angular/issues/3572)
+* **pipes:** changed PipeTransform to make onDestroy optional ([839edaa](https://github.com/angular/angular/commit/839edaa))
+* **PropertyBindingParser:** support onbubble-event as an alternate syntax for (^event) ([1f54e64](https://github.com/angular/angular/commit/1f54e64)), closes [#3448](https://github.com/angular/angular/issues/3448) [#3616](https://github.com/angular/angular/issues/3616)
+* **query:** allow to query for `TemplateRef` ([585ea5d](https://github.com/angular/angular/commit/585ea5d)), closes [#3202](https://github.com/angular/angular/issues/3202)
+* **query:** view query is properly updated when dom changes. ([2150a8f](https://github.com/angular/angular/commit/2150a8f)), closes [#3033](https://github.com/angular/angular/issues/3033) [#3439](https://github.com/angular/angular/issues/3439)
+* **query_list:** delegate `toString` to `_results` array ([35a83b4](https://github.com/angular/angular/commit/35a83b4)), closes [#3004](https://github.com/angular/angular/issues/3004)
+* **refactor:** replaced ObservablePipe and PromisePipe with AsyncPipe ([106a28b](https://github.com/angular/angular/commit/106a28b))
+* **router:** auxiliary routes ([ac6227e](https://github.com/angular/angular/commit/ac6227e)), closes [#2775](https://github.com/angular/angular/issues/2775)
+* **router:** user metadata in route configs ([ed81cb9](https://github.com/angular/angular/commit/ed81cb9)), closes [#2777](https://github.com/angular/angular/issues/2777) [#3541](https://github.com/angular/angular/issues/3541)
+* **test:** find testabilities across dart js applications ([1d65b38](https://github.com/angular/angular/commit/1d65b38)), closes [#3611](https://github.com/angular/angular/issues/3611)
+* **testability:** option to disable tree walking ([8f5360c](https://github.com/angular/angular/commit/8f5360c))
+* **typings:** allow declaration of reference paths ([1f692ae](https://github.com/angular/angular/commit/1f692ae)), closes [#3540](https://github.com/angular/angular/issues/3540)
+* **typings:** allow defining custom namespace for bundle ([dfa5103](https://github.com/angular/angular/commit/dfa5103)), closes [#2948](https://github.com/angular/angular/issues/2948) [#3544](https://github.com/angular/angular/issues/3544)
+
+
+### BREAKING CHANGES
+
+* rename all constants to UPPER_CASE names
+
+  - `appComponentTypeToken` => `APP_COMPONENT`
+  - `coreDirectives` => `CORE_DIRECTIVES`
+  - `formDirectives` => `FORM_DIRECTIVES`
+  - `formInjectables` => `FORM_BINDINGS`
+  - `httpInjectables` => `HTTP_BINDINGS`
+  - `jsonpInjectables` => `JSONP_BINDINGS`
+  - `PROTO_CHANGE_DETECTOR_KEY` => `PROTO_CHANGE_DETECTOR`
+  - `appComponentRefPromiseToken` => `APP_COMPONENT_REF_PROMISE`
+  - `appComponentTypeToken` => `APP_COMPONENT`
+  - `undefinedValue` => `UNDEFINED`
+  - `formDirectives` => `FORM_DIRECTIVES`
+  - `DOCUMENT_TOKEN` => `DOCUMENT`
+  - `APP_ID_TOKEN` => `APP_ID`
+  - `MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN` => `MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE`
+  - `appBaseHrefToken` => `APP_BASE_HREF`
+
+* renamed DI visibility flags
+
+  - `PRIVATE` => `Visibility.Private`
+  - `PUBLIC` => `Visibility.Public`
+  - `PUBLIC_AND_PRIVATE` => `Visibility.PublicAndPrivate`
+
+* renamed all "annotation" references to "metadata"
+
+  - *Annotations => *Metadata
+  - renderer.DirectiveMetadata => renderer.RendererDirectiveMetadata
+  - renderer.ElementBinder => renderer.RendererElementBinder
+  - impl.Directive => impl.DirectiveMetadata
+  - impl.Component => impl.ComponentMetadata
+  - impl.View => impl.ViewMetadata
+
+
+* `IS_DARTIUM` constant is no longer exported/supported
+
+* The HTTP package is no longer supported in Dart (use standard library apis instead)
+
+* Remove IRequestOptions / IResponseOptions / IQueryList interfaces
+
+* Pipe factories have been removed and Pipe names to pipe implementations are 1-to-1  instead of 1-to-*
+
+  Before:
+  <code><pre>
+   class DateFormatter {
+       transform(date, args){}
+   }
+
+   class DateFormatterFactory {
+     supporst(obj) { return true; }
+     create(cdRef) { return new DateFormatter(); }
+   }
+   new Pipes({date: [new DateFormatterFactory()]})
+  </pre></code>
+
+  After:
+  <code><pre>
+  class DateFormatter {
+    transform(date, args){}
+  }
+  new Pipes({date: DateFormatter})
+  </pre></code>
+
+
+* Previously Angular called onDestroy on all pipes. Now Angular calls onDestroy only on pipes that have the onDestroy method.
+
+* Instead of configuring pipes via a Pipes object, now you can configure them by providing the pipes property to the View decorator.
+
+  <code><pre>
+    @Pipe({
+      name: 'double'
+    })
+    class DoublePipe {
+      transform(value, args) { return value * 2; }
+    }
+    @View({
+      template: '{{ 10 | double}}'
+      pipes: [DoublePipe]
+    })
+    class CustomComponent {}
+  </pre></code>
+
+
+* The router was previously exported as ng.router in the 
+    angular.sfx.dev.js bundle, but now it is exported as ngRouter.
+
+* The selector for the CSSClass directive was changed
+from [class] to [ng-class]. The directive itself was
+renamed from CSSClass to NgClass
+
+
+
+
 <a name="2.0.0-alpha.34"></a>
 # 2.0.0-alpha.34 (2015-08-07)
 
