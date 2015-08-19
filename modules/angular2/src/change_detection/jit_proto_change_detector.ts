@@ -1,4 +1,5 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent} from 'angular2/src/facade/lang';
 
 import {ProtoChangeDetector, ChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
@@ -20,9 +21,11 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
   _createFactory(definition: ChangeDetectorDefinition) {
     var propertyBindingRecords = createPropertyRecords(definition);
     var eventBindingRecords = createEventRecords(definition);
+    var propertyBindingTargets = this.definition.bindingRecords.map(b => b.target);
+
     return new ChangeDetectorJITGenerator(
-               definition.id, definition.strategy, propertyBindingRecords, eventBindingRecords,
-               this.definition.directiveRecords, this.definition.generateCheckNoChanges)
+               definition.id, definition.strategy, propertyBindingRecords, propertyBindingTargets,
+               eventBindingRecords, this.definition.directiveRecords, this.definition.devMode)
         .generate();
   }
 }

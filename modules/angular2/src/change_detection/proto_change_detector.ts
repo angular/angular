@@ -29,7 +29,7 @@ import {
 import {ChangeDetector, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
-import {BindingRecord} from './binding_record';
+import {BindingRecord, BindingTarget} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {EventBinding} from './event_binding';
 
@@ -38,24 +38,30 @@ import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
   _propertyBindingRecords: ProtoRecord[];
+  _propertyBindingTargets: BindingTarget[];
   _eventBindingRecords: EventBinding[];
+  _directiveIndices: DirectiveIndex[];
 
   constructor(private definition: ChangeDetectorDefinition) {
     this._propertyBindingRecords = createPropertyRecords(definition);
     this._eventBindingRecords = createEventRecords(definition);
+    this._propertyBindingTargets = this.definition.bindingRecords.map(b => b.target);
+    this._directiveIndices = this.definition.directiveRecords.map(d => d.directiveIndex);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
-    return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
-                                     this._propertyBindingRecords, this._eventBindingRecords,
-                                     this.definition.directiveRecords);
+    return new DynamicChangeDetector(
+        this.definition.id, dispatcher, this._propertyBindingRecords.length,
+        this._propertyBindingTargets, this._directiveIndices,
+        ChangeDetectionUtil.changeDetectionMode(this.definition.strategy),
+        this._propertyBindingRecords, this._eventBindingRecords, this.definition.directiveRecords);
   }
 }
 
 export function createPropertyRecords(definition: ChangeDetectorDefinition): ProtoRecord[] {
   var recordBuilder = new ProtoRecordBuilder();
-  ListWrapper.forEach(definition.bindingRecords,
-                      (b) => { recordBuilder.add(b, definition.variableNames); });
+  ListWrapper.forEachWithIndex(definition.bindingRecords,
+                               (b, index) => recordBuilder.add(b, definition.variableNames, index));
   return coalesce(recordBuilder.records);
 }
 
@@ -65,7 +71,7 @@ export function createEventRecords(definition: ChangeDetectorDefinition): EventB
   return definition.eventRecords.map(er => {
     var records = _ConvertAstIntoProtoRecords.create(er, varNames);
     var dirIndex = er.implicitReceiver instanceof DirectiveIndex ? er.implicitReceiver : null;
-    return new EventBinding(er.eventName, er.elementIndex, dirIndex, records);
+    return new EventBinding(er.target.name, er.target.elementIndex, dirIndex, records);
   });
 }
 
@@ -74,13 +80,13 @@ export class ProtoRecordBuilder {
 
   constructor() { this.records = []; }
 
-  add(b: BindingRecord, variableNames: List<string> = null) {
+  add(b: BindingRecord, variableNames: string[], bindingIndex: number) {
     var oldLast = ListWrapper.last(this.records);
     if (isPresent(oldLast) && oldLast.bindingRecord.directiveRecord == b.directiveRecord) {
       oldLast.lastInDirective = false;
     }
     var numberOfRecordsBefore = this.records.length;
-    this._appendRecords(b, variableNames);
+    this._appendRecords(b, variableNames, bindingIndex);
     var newLast = ListWrapper.last(this.records);
     if (isPresent(newLast) && newLast !== oldLast) {
       newLast.lastInBinding = true;
@@ -99,29 +105,30 @@ export class ProtoRecordBuilder {
     }
   }
 
-  _appendRecords(b: BindingRecord, variableNames: List<string>) {
+  _appendRecords(b: BindingRecord, variableNames: string[], bindingIndex: number) {
     if (b.isDirectiveLifecycle()) {
       this.records.push(new ProtoRecord(RecordType.DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [],
-                                        [], -1, null, this.records.length + 1, b, null, false,
-                                        false, false, false));
+                                        [], -1, null, this.records.length + 1, b, false, false,
+                                        false, false, null));
     } else {
-      _ConvertAstIntoProtoRecords.append(this.records, b, variableNames);
+      _ConvertAstIntoProtoRecords.append(this.records, b, variableNames, bindingIndex);
     }
   }
 }
 
 class _ConvertAstIntoProtoRecords implements AstVisitor {
   constructor(private _records: List<ProtoRecord>, private _bindingRecord: BindingRecord,
-              private _expressionAsString: string, private _variableNames: List<any>) {}
+              private _variableNames: string[], private _bindingIndex: number) {}
 
-  static append(records: List<ProtoRecord>, b: BindingRecord, variableNames: List<any>) {
-    var c = new _ConvertAstIntoProtoRecords(records, b, b.ast.toString(), variableNames);
+  static append(records: List<ProtoRecord>, b: BindingRecord, variableNames: string[],
+                bindingIndex: number) {
+    var c = new _ConvertAstIntoProtoRecords(records, b, variableNames, bindingIndex);
     b.ast.visit(c);
   }
 
   static create(b: BindingRecord, variableNames: List<any>): ProtoRecord[] {
     var rec = [];
-    _ConvertAstIntoProtoRecords.append(rec, b, variableNames);
+    _ConvertAstIntoProtoRecords.append(rec, b, variableNames, null);
     rec[rec.length - 1].lastInBinding = true;
     return rec;
   }
@@ -261,12 +268,12 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {
       this._records.push(new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1, context,
-                                         selfIndex, this._bindingRecord, this._expressionAsString,
-                                         false, false, false, false));
+                                         selfIndex, this._bindingRecord, false, false, false, false,
+                                         this._bindingIndex));
     } else {
       this._records.push(new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, null,
-                                         selfIndex, this._bindingRecord, this._expressionAsString,
-                                         false, false, false, false));
+                                         selfIndex, this._bindingRecord, false, false, false, false,
+                                         this._bindingIndex));
     }
     return selfIndex;
   }

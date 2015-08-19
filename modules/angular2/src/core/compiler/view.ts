@@ -8,12 +8,12 @@ import {
 } from 'angular2/src/facade/collection';
 import {
   AST,
-  BindingRecord,
   ChangeDetector,
   ChangeDetectorRef,
   ChangeDispatcher,
   DirectiveIndex,
   DirectiveRecord,
+  BindingTarget,
   Locals,
   ProtoChangeDetector
 } from 'angular2/src/change_detection/change_detection';
@@ -171,7 +171,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   // dispatch to element injector or text nodes based on context
-  notifyOnBinding(b: BindingRecord, currentValue: any): void {
+  notifyOnBinding(b: BindingTarget, currentValue: any): void {
     if (b.isTextNode()) {
       this.renderer.setText(
           this.render, this.mainMergeMapping.renderTextIndices[b.elementIndex + this.textOffset],
@@ -179,14 +179,14 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     } else {
       var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
       if (b.isElementProperty()) {
-        this.renderer.setElementProperty(elementRef, b.propertyName, currentValue);
+        this.renderer.setElementProperty(elementRef, b.name, currentValue);
       } else if (b.isElementAttribute()) {
-        this.renderer.setElementAttribute(elementRef, b.propertyName, currentValue);
+        this.renderer.setElementAttribute(elementRef, b.name, currentValue);
       } else if (b.isElementClass()) {
-        this.renderer.setElementClass(elementRef, b.propertyName, currentValue);
+        this.renderer.setElementClass(elementRef, b.name, currentValue);
       } else if (b.isElementStyle()) {
-        var unit = isPresent(b.propertyUnit) ? b.propertyUnit : '';
-        this.renderer.setElementStyle(elementRef, b.propertyName, `${currentValue}${unit}`);
+        var unit = isPresent(b.unit) ? b.unit : '';
+        this.renderer.setElementStyle(elementRef, b.name, `${currentValue}${unit}`);
       } else {
         throw new BaseException('Unsupported directive record');
       }

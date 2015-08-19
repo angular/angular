@@ -10,8 +10,8 @@ import {EventBinding} from './event_binding';
 // detection will fail.
 const _ALREADY_CHECKED_ACCESSOR = "alreadyChecked";
 const _CONTEXT_ACCESSOR = "context";
-const _FIRST_PROTO_IN_CURRENT_BINDING = "firstProtoInCurrentBinding";
-const _DIRECTIVES_ACCESSOR = "directiveRecords";
+const _PROP_BINDING_INDEX = "propertyBindingIndex";
+const _DIRECTIVES_ACCESSOR = "directiveIndices";
 const _DISPATCHER_ACCESSOR = "dispatcher";
 const _LOCALS_ACCESSOR = "locals";
 const _MODE_ACCESSOR = "mode";
@@ -79,9 +79,7 @@ export class CodegenNameUtil {
 
   getModeName(): string { return this._addFieldPrefix(_MODE_ACCESSOR); }
 
-  getFirstProtoInCurrentBinding(): string {
-    return this._addFieldPrefix(_FIRST_PROTO_IN_CURRENT_BINDING);
-  }
+  getPropertyBindingIndex(): string { return this._addFieldPrefix(_PROP_BINDING_INDEX); }
 
   getLocalName(idx: int): string { return `l_${this._sanitizedNames[idx]}`; }
 

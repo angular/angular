@@ -26,9 +26,9 @@ export class ProtoRecord {
   constructor(public mode: RecordType, public name: string, public funcOrValue,
               public args: List<any>, public fixedArgs: List<any>, public contextIndex: number,
               public directiveIndex: DirectiveIndex, public selfIndex: number,
-              public bindingRecord: BindingRecord, public expressionAsString: string,
-              public lastInBinding: boolean, public lastInDirective: boolean,
-              public argumentToPureFunction: boolean, public referencedBySelf: boolean) {}
+              public bindingRecord: BindingRecord, public lastInBinding: boolean,
+              public lastInDirective: boolean, public argumentToPureFunction: boolean,
+              public referencedBySelf: boolean, public propertyBindingIndex: number) {}
 
   isPureFunction(): boolean {
     return this.mode === RecordType.INTERPOLATE || this.mode === RecordType.COLLECTION_LITERAL;

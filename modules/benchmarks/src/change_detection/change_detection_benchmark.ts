@@ -249,8 +249,8 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = changeDetection.createProtoChangeDetector(
-      new ChangeDetectorDefinition('parent', null, [], [], [], [], false));
+  var parentProto = changeDetection.getProtoChangeDetector(
+      "id", new ChangeDetectorDefinition('parent', null, [], [], [], [], false));
   var parentCd = parentProto.instantiate(dispatcher);
 
   var directiveRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
@@ -277,7 +277,8 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
                                      reflector.setter("field9"), directiveRecord)
   ];
 
-  var proto = changeDetection.createProtoChangeDetector(
+  var proto = changeDetection.getProtoChangeDetector(
+      "id",
       new ChangeDetectorDefinition("proto", null, [], bindings, [], [directiveRecord], false));
 
   var targetObj = new Obj();

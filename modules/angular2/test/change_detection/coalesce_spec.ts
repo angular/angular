@@ -21,8 +21,7 @@ export function main() {
     if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;
 
     return new ProtoRecord(mode, name, funcOrValue, args, null, contextIndex, directiveIndex,
-                           selfIndex, null, null, lastInBinding, false, argumentToPureFunction,
-                           false);
+                           selfIndex, null, lastInBinding, false, argumentToPureFunction, false, 0);
   }
 
   describe("change detection - coalesce", () => {
@@ -64,7 +63,7 @@ export function main() {
           [r("user", [], 0, 1, {lastInBinding: true}), r("user", [], 0, 2, {lastInBinding: true})]);
 
       expect(rs[1]).toEqual(new ProtoRecord(RecordType.SELF, "self", null, [], null, 1, null, 2,
-                                            null, null, true, false, false, false));
+                                            null, true, false, false, false, 0));
     });
 
     it("should set referencedBySelf", () => {
