@@ -1,4 +1,4 @@
-import {bootstrap, Component, View, ViewEncapsulation} from 'angular2/bootstrap';
+import {bootstrap, Component, BaseView, ViewEncapsulation} from 'angular2/bootstrap';
 import {MdRadioButton, MdRadioGroup} from 'angular2_material/src/components/radio/radio_button';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -9,7 +9,7 @@ import {bind} from 'angular2/di';
   selector: 'demo-app',
   viewBindings: [MdRadioDispatcher],
 })
-@View({
+@BaseView({
   templateUrl: './demo_app.html',
   directives: [MdRadioGroup, MdRadioButton],
   encapsulation: ViewEncapsulation.NONE,

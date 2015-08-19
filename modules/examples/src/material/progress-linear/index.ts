@@ -1,4 +1,4 @@
-import {bootstrap, Component, View, ViewEncapsulation} from 'angular2/bootstrap';
+import {bootstrap, Component, BaseView, ViewEncapsulation} from 'angular2/bootstrap';
 import {MdProgressLinear} from 'angular2_material/src/components/progress-linear/progress_linear';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
@@ -7,7 +7,7 @@ import {bind} from 'angular2/di';
 @Component({
   selector: 'demo-app',
 })
-@View({
+@BaseView({
   templateUrl: './demo_app.html',
   directives: [MdProgressLinear],
   encapsulation: ViewEncapsulation.NONE,

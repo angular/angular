@@ -1,4 +1,4 @@
-import {NgIf, NgFor, EventEmitter, Component, View, Inject, Injectable} from 'angular2/angular2';
+import {NgIf, NgFor, EventEmitter, Component, BaseView, Inject, Injectable} from 'angular2/angular2';
 import {
   RouterLink,
   RouteConfig,
@@ -91,7 +91,7 @@ class DbService {
 }
 
 @Component({selector: 'inbox-detail'})
-@View({templateUrl: "inbox-detail.html", directives: [NgFor, RouterLink]})
+@BaseView({templateUrl: "inbox-detail.html", directives: [NgFor, RouterLink]})
 class InboxDetailCmp {
   record: InboxRecord = new InboxRecord();
   ready: boolean = false;
@@ -103,7 +103,7 @@ class InboxDetailCmp {
 }
 
 @Component({selector: 'inbox'})
-@View({templateUrl: "inbox.html", directives: [NgFor, RouterLink]})
+@BaseView({templateUrl: "inbox.html", directives: [NgFor, RouterLink]})
 class InboxCmp {
   items: List<InboxRecord> = [];
   ready: boolean = false;
@@ -118,7 +118,7 @@ class InboxCmp {
 
 
 @Component({selector: 'drafts'})
-@View({templateUrl: "drafts.html", directives: [NgFor, RouterLink]})
+@BaseView({templateUrl: "drafts.html", directives: [NgFor, RouterLink]})
 class DraftsCmp {
   items: List<InboxRecord> = [];
   ready: boolean = false;
@@ -132,7 +132,7 @@ class DraftsCmp {
 }
 
 @Component({selector: 'inbox-app', viewBindings: [DbService]})
-@View({templateUrl: "inbox-app.html", directives: [RouterOutlet, RouterLink]})
+@BaseView({templateUrl: "inbox-app.html", directives: [RouterOutlet, RouterLink]})
 @RouteConfig([
   new Route({path: '/', component: InboxCmp, as: 'inbox'}),
   new Route({path: '/drafts', component: DraftsCmp, as: 'drafts'}),

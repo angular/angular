@@ -1,8 +1,8 @@
-import {bootstrap, Component, View, NgFor} from 'angular2/bootstrap';
+import {bootstrap, Component, BaseView, NgFor} from 'angular2/bootstrap';
 import {Zippy} from './zippy';
 
 @Component({selector: 'zippy-app'})
-@View({
+@BaseView({
   template: `
     <zippy (open)="pushLog('open')" (close)="pushLog('close')" title="Details">
       This is some content.

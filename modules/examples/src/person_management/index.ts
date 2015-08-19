@@ -4,7 +4,7 @@ import {
   NgFor,
   Component,
   Directive,
-  View,
+  BaseView,
   Host,
   NgValidator,
   forwardRef,
@@ -90,7 +90,7 @@ class DataService {
 // ---- components
 
 @Component({selector: 'full-name-cmp'})
-@View({
+@BaseView({
   template: `
     <h1>Edit Full Name</h1>
     <div>
@@ -121,7 +121,7 @@ class FullNameComponent {
 }
 
 @Component({selector: 'person-detail-cmp'})
-@View({
+@BaseView({
   template: `
     <h2>{{person.fullName}}</h2>
 
@@ -169,7 +169,7 @@ class PersonsDetailComponent {
 }
 
 @Component({selector: 'persons-cmp'})
-@View({
+@BaseView({
   template: `
     <h1>FullName Demo</h1>
     <div>
@@ -194,7 +194,7 @@ class PersonsComponent {
 
 
 @Component({selector: 'person-management-app', viewBindings: [DataService]})
-@View({
+@BaseView({
   template: `
     <button (click)="switchToEditName()">Edit Full Name</button>
     <button (click)="switchToPersonList()">Person List</button>

@@ -1,7 +1,7 @@
-import {bootstrap, Component, View} from 'angular2/bootstrap';
+import {bootstrap, Component, BaseView} from 'angular2/angular2';
 
 @Component({selector: 'gestures-app'})
-@View({templateUrl: 'template.html'})
+@BaseView({templateUrl: 'template.html'})
 class GesturesCmp {
   swipeDirection: string = '-';
   pinchScale: number = 1;

@@ -4,7 +4,7 @@ import {
   NgFor,
   Component,
   Directive,
-  View,
+  BaseView,
   Host,
   NgValidator,
   forwardRef,
@@ -64,7 +64,7 @@ class CreditCardValidator {
  * To make it simple, we are using a simple map here.
  */
 @Component({selector: 'show-error', properties: ['controlPath: control', 'errorTypes: errors']})
-@View({
+@BaseView({
   template: `
     <span *ng-if="errorMessage !== null">{{errorMessage}}</span>
   `,
@@ -95,7 +95,7 @@ class ShowError {
 
 
 @Component({selector: 'template-driven-forms'})
-@View({
+@BaseView({
   template: `
     <h1>Checkout Form</h1>
 

@@ -1,8 +1,8 @@
-import {NgFor, Component, View, FORM_DIRECTIVES} from 'angular2/angular2';
+import {NgFor, Component, BaseView, FORM_DIRECTIVES} from 'angular2/angular2';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({selector: 'todo-app', viewBindings: [Store, TodoFactory]})
-@View({templateUrl: 'todo.html', directives: [NgFor, FORM_DIRECTIVES]})
+@BaseView({templateUrl: 'todo.html', directives: [NgFor, FORM_DIRECTIVES]})
 export class TodoApp {
   todoEdit: Todo = null;
   inputValue: string;
