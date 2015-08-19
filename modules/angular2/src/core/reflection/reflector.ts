@@ -153,6 +153,8 @@ export class Reflector {
   }
 
   _containsReflectionInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
+
+  importUri(type: Type): string { return this.reflectionCapabilities.importUri(type); }
 }
 
 function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {

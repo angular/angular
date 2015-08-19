@@ -297,4 +297,8 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
     ClassMirror classMirror = reflectType(type);
     return classMirror.metadata;
   }
+
+  String importUri(Type type) {
+    return '${(reflectClass(type).owner as LibraryMirror).uri}';
+  }
 }
