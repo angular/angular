@@ -210,6 +210,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     return value;
   }
 
+  protected getDetectorFor(directives: any, index: number): ChangeDetector {
+    return directives.getDetectorFor(this.directiveRecords[index].directiveIndex);
+  }
+
   protected notifyDispatcher(value: any): void {
     this.dispatcher.notifyOnBinding(this._currentBinding(), value);
   }

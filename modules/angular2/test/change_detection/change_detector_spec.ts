@@ -704,29 +704,36 @@ export function main() {
         });
 
         describe('marking ON_PUSH detectors as CHECK_ONCE after an update', () => {
-          var checkedDetector;
+          var childDirectiveDetectorRegular;
+          var childDirectiveDetectorOnPush;
           var directives;
 
           beforeEach(() => {
-            checkedDetector = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
-            checkedDetector.hydrate(_DEFAULT_CONTEXT, null, null, null);
-            checkedDetector.mode = CHECKED;
+            childDirectiveDetectorRegular = _createWithoutHydrate('10').changeDetector;
+            childDirectiveDetectorRegular.hydrate(_DEFAULT_CONTEXT, null, null, null);
+            childDirectiveDetectorRegular.mode = CHECK_ALWAYS;
 
-            var targetDirective = new TestData(null);
-            directives = new FakeDirectives([targetDirective], [checkedDetector]);
+            childDirectiveDetectorOnPush =
+                _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
+            childDirectiveDetectorOnPush.hydrate(_DEFAULT_CONTEXT, null, null, null);
+            childDirectiveDetectorOnPush.mode = CHECKED;
+
+            directives =
+                new FakeDirectives([new TestData(null), new TestData(null)],
+                                   [childDirectiveDetectorRegular, childDirectiveDetectorOnPush]);
           });
 
           it('should set the mode to CHECK_ONCE when a binding is updated', () => {
-            var cd = _createWithoutHydrate('onPushRecordsUsingDefaultStrategy').changeDetector;
-            cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
+            var parentDetector =
+                _createWithoutHydrate('onPushRecordsUsingDefaultStrategy').changeDetector;
+            parentDetector.hydrate(_DEFAULT_CONTEXT, null, directives, null);
 
-            expect(checkedDetector.mode).toEqual(CHECKED);
+            parentDetector.detectChanges();
 
-            // evaluate the record, update the targetDirective, and mark its detector as
-            // CHECK_ONCE
-            cd.detectChanges();
+            // making sure that we only change the status of ON_PUSH components
+            expect(childDirectiveDetectorRegular.mode).toEqual(CHECK_ALWAYS);
 
-            expect(checkedDetector.mode).toEqual(CHECK_ONCE);
+            expect(childDirectiveDetectorOnPush.mode).toEqual(CHECK_ONCE);
           });
 
           it('should mark ON_PUSH detectors as CHECK_ONCE after an event', () => {
@@ -745,7 +752,7 @@ export function main() {
 
             cd.handleEvent("host-event", 0, null);
 
-            expect(checkedDetector.mode).toEqual(CHECK_ONCE);
+            expect(childDirectiveDetectorOnPush.mode).toEqual(CHECK_ONCE);
           });
 
           if (IS_DART) {

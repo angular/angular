@@ -3,6 +3,7 @@ import {BaseException, Json, StringWrapper} from 'angular2/src/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';
+import {DirectiveRecord} from './directive_record';
 
 /**
  * This is an experimental feature. Works only in Dart.
@@ -130,5 +131,17 @@ export class CodegenLogicUtil {
     }
     iVals.push(codify(protoRec.fixedArgs[protoRec.args.length]));
     return combineGeneratedStrings(iVals);
+  }
+
+  genHydrateDetectors(directiveRecords: DirectiveRecord[]): string {
+    var res = [];
+    for (var i = 0; i < directiveRecords.length; ++i) {
+      var r = directiveRecords[i];
+      if (!r.isDefaultChangeDetection()) {
+        res.push(
+            `${this._names.getDetectorName(r.directiveIndex)} = this.getDetectorFor(directives, ${i});`);
+      }
+    }
+    return res.join("\n");
   }
 }

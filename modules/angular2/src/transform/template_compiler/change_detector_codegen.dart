@@ -226,7 +226,7 @@ class _CodegenState {
 
   String _maybeGenHydrateDirectives() {
     var hydrateDirectivesCode = _genHydrateDirectives();
-    var hydrateDetectorsCode = _genHydrateDetectors();
+    var hydrateDetectorsCode = _logic.genHydrateDetectors(_directiveRecords);
     if (hydrateDirectivesCode.isEmpty && hydrateDetectorsCode.isEmpty) {
       return '';
     }
@@ -239,16 +239,6 @@ class _CodegenState {
     var directiveFieldNames = _names.getAllDirectiveNames();
     for (var i = 0; i < directiveFieldNames.length; ++i) {
       buf.writeln('${directiveFieldNames[i]} = directives.getDirectiveFor('
-          '${_names.getDirectivesAccessorName()}[$i].directiveIndex);');
-    }
-    return '$buf';
-  }
-
-  String _genHydrateDetectors() {
-    var buf = new StringBuffer();
-    var detectorFieldNames = _names.getAllDetectorNames();
-    for (var i = 0; i < detectorFieldNames.length; ++i) {
-      buf.writeln('${detectorFieldNames[i]} = directives.getDetectorFor('
           '${_names.getDirectivesAccessorName()}[$i].directiveIndex);');
     }
     return '$buf';

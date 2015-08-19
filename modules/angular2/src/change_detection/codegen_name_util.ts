@@ -200,11 +200,5 @@ export class CodegenNameUtil {
     return this._addFieldPrefix(`directive_${d.name}`);
   }
 
-  getAllDetectorNames(): List<string> {
-    return ListWrapper.map(
-        ListWrapper.filter(this.directiveRecords, r => !r.isDefaultChangeDetection()),
-        (d) => this.getDetectorName(d.directiveIndex));
-  }
-
   getDetectorName(d: DirectiveIndex): string { return this._addFieldPrefix(`detector_${d.name}`); }
 }
