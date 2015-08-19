@@ -93,8 +93,8 @@ class Query extends QueryMetadata {
  * See: [ViewQueryMetadata] for docs.
  */
 class ViewQuery extends ViewQueryMetadata {
-  const ViewQuery(dynamic /*Type | string*/ selector, {bool descendants: false})
-    : super(selector, descendants: descendants);
+  const ViewQuery(dynamic /*Type | string*/ selector)
+    : super(selector, descendants: true);
 }
 
 /**

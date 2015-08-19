@@ -131,24 +131,23 @@ export function main() {
         var binders = [];
         for (var i = 0; i < numInj; i++) {
           binders.push(createEmptyElBinder(i > 0 ? binders[i - 1] : null))
-        };
+        }
         var contextPv = createHostPv(binders);
         contextView = createViewWithChildren(contextPv);
       }
 
-      it('should link the views rootElementInjectors at the given context', () => {
+      it('should not modify the rootElementInjectors at the given context view', () => {
         createViews();
         utils.attachViewInContainer(parentView, 0, contextView, 0, 0, childView);
-        expect(contextView.rootElementInjectors.length).toEqual(2);
+        expect(contextView.rootElementInjectors.length).toEqual(1);
       });
 
       it('should link the views rootElementInjectors after the elementInjector at the given context',
          () => {
            createViews(2);
            utils.attachViewInContainer(parentView, 0, contextView, 1, 0, childView);
-           expect(childView.rootElementInjectors[0].spy('linkAfter'))
-               .toHaveBeenCalledWith(contextView.elementInjectors[0],
-                                     contextView.elementInjectors[1]);
+           expect(childView.rootElementInjectors[0].spy('link'))
+               .toHaveBeenCalledWith(contextView.elementInjectors[0]);
          });
     });
 
