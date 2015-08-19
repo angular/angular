@@ -56,7 +56,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
       {
         id: 'angular2/router',
         namespace: 'ngRouter',
-        references: ['../es6-promise/es6-promise.d.ts'],
+        references: ['./angular2.d.ts'],
         modules: {
           'angular2/router': 'angular2/router'
         }
