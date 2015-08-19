@@ -57,6 +57,7 @@ export class NgModel extends NgControl implements OnChanges {
 
     if (isPropertyUpdated(c, this.viewModel)) {
       this._control.updateValue(this.model);
+      this.viewModel = this.model;
     }
   }
 
