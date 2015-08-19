@@ -1,4 +1,4 @@
-import {Type, isPresent, stringify, BaseException} from 'angular2/src/facade/lang';
+import {ExpandoWrapper, Type, isPresent, stringify, BaseException} from 'angular2/src/facade/lang';
 import {
   List,
   ListWrapper,
@@ -28,14 +28,14 @@ export class ReflectionInfo {
 }
 
 export class Reflector {
-  _injectableInfo: Map<any, ReflectionInfo>;
+  _injectableInfo: ExpandoWrapper<ReflectionInfo>;
   _getters: Map<string, GetterFn>;
   _setters: Map<string, SetterFn>;
   _methods: Map<string, MethodFn>;
   reflectionCapabilities: PlatformReflectionCapabilities;
 
   constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
-    this._injectableInfo = new Map();
+    this._injectableInfo = new ExpandoWrapper<ReflectionInfo>('injectable_info');
     this._getters = new Map();
     this._setters = new Map();
     this._methods = new Map();
@@ -74,7 +74,7 @@ export class Reflector {
   }
 
   parameters(typeOrFunc: /*Type*/ any): List<any> {
-    if (this._injectableInfo.has(typeOrFunc)) {
+    if (this._containsReflectionInfo(typeOrFunc)) {
       var res = this._injectableInfo.get(typeOrFunc)._parameters;
       return isPresent(res) ? res : [];
     } else {
@@ -83,7 +83,7 @@ export class Reflector {
   }
 
   annotations(typeOrFunc: /*Type*/ any): List<any> {
-    if (this._injectableInfo.has(typeOrFunc)) {
+    if (this._containsReflectionInfo(typeOrFunc)) {
       var res = this._injectableInfo.get(typeOrFunc)._annotations;
       return isPresent(res) ? res : [];
     } else {
@@ -92,7 +92,7 @@ export class Reflector {
   }
 
   interfaces(type: Type): List<any> {
-    if (this._injectableInfo.has(type)) {
+    if (this._containsReflectionInfo(type)) {
       var res = this._injectableInfo.get(type)._interfaces;
       return isPresent(res) ? res : [];
     } else {
@@ -124,7 +124,7 @@ export class Reflector {
     }
   }
 
-  _containsReflectionInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
+  _containsReflectionInfo(typeOrFunc) { return isPresent(this._injectableInfo.get(typeOrFunc)); }
 }
 
 function _mergeMaps(target: Map<any, any>, config: StringMap<string, Function>): void {
