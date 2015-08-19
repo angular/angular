@@ -17,6 +17,5 @@ void initReflector(reflector) {
         ], const [
           const []
         ], () => new HelloCmp()))
-    ..registerGetters({'greeting': (o) => o.greeting})
-    ..registerSetters({'greeting': (o, v) => o.greeting = v});
+    ..registerGetters({'greeting': (o) => o.greeting});
 }

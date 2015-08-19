@@ -38,31 +38,13 @@ class Processor implements CodegenModel {
             new ReflectiveAccessor(eventName, isStaticallyNecessary: true));
       });
     }
-    viewDefEntry.viewDef.directives.forEach((directiveMetadata) {
-      if (directiveMetadata != null && directiveMetadata.events != null) {
-        directiveMetadata.events.forEach((eventName) {
-          getterNames.add(
-              new ReflectiveAccessor(eventName, isStaticallyNecessary: true));
-        });
-      }
-    });
   }
 
   void _processProtoViewDto(ProtoViewDto protoViewDto) {
     _visitor.isStaticallyNecessary = false;
-    _visitor.recordGetters = true;
-
-    // TODO(kegluneq): These setters are not actually necessary, however the
-    // compiler still requests setters for these entries so we need to generate
-    // them to avoid runtime errors.
-    // See https://github.com/angular/angular/issues/3436
-    var settersForNonEvents_falseWhen3436Fixed = true;
-    _visitor.recordSetters = settersForNonEvents_falseWhen3436Fixed;
 
     protoViewDto.textBindings.forEach((ast) => ast.visit(_visitor));
     protoViewDto.elementBinders.forEach((binder) {
-      _visitor.recordSetters = settersForNonEvents_falseWhen3436Fixed;
-
       binder.propertyBindings.forEach((binding) {
         binding.astWithSource.visit(_visitor);
         setterNames.add(new ReflectiveAccessor(binding.property,
@@ -83,8 +65,6 @@ class Processor implements CodegenModel {
               isStaticallyNecessary: false));
         });
       });
-
-      _visitor.recordSetters = true;
 
       binder.eventBindings
           .forEach((eventBinding) => eventBinding.source.visit(_visitor));
@@ -110,18 +90,6 @@ class _NgAstVisitor extends RecursiveAstVisitor {
   /// by the dedicated change detector classes.
   bool isStaticallyNecessary = false;
 
-  /// Whether we should record a getter for any [AccessMember] or
-  /// [SafeAccessMember] encountered.
-  /// This value should not be updated by the visitor because it is dependent on
-  /// what portion of the template is being processed.
-  bool recordGetters = false;
-
-  /// Whether we should record a setter for any [AccessMember] or
-  /// [SafeAccessMember] encountered.
-  /// This value should not be updated by the visitor because it is dependent on
-  /// what portion of the template is being processed.
-  bool recordSetters = false;
-
   _NgAstVisitor(this._result);
 
   visitMethodCall(MethodCall ast) {
@@ -131,26 +99,14 @@ class _NgAstVisitor extends RecursiveAstVisitor {
   }
 
   visitPropertyRead(PropertyRead ast) {
-    if (recordGetters) {
-      _result.getterNames.add(new ReflectiveAccessor(ast.name,
-          isStaticallyNecessary: isStaticallyNecessary));
-    }
-    if (recordSetters) {
-      _result.setterNames.add(new ReflectiveAccessor(ast.name,
-          isStaticallyNecessary: isStaticallyNecessary));
-    }
+    _result.getterNames.add(new ReflectiveAccessor(ast.name,
+        isStaticallyNecessary: isStaticallyNecessary));
     super.visitPropertyRead(ast);
   }
 
   visitPropertyWrite(PropertyWrite ast) {
-    if (recordGetters) {
-      _result.getterNames.add(new ReflectiveAccessor(ast.name,
-          isStaticallyNecessary: isStaticallyNecessary));
-    }
-    if (recordSetters) {
-      _result.setterNames.add(new ReflectiveAccessor(ast.name,
-          isStaticallyNecessary: isStaticallyNecessary));
-    }
+    _result.setterNames.add(new ReflectiveAccessor(ast.name,
+        isStaticallyNecessary: isStaticallyNecessary));
     super.visitPropertyWrite(ast);
   }
 
@@ -161,14 +117,8 @@ class _NgAstVisitor extends RecursiveAstVisitor {
   }
 
   visitSafePropertyRead(SafePropertyRead ast) {
-    if (recordGetters) {
-      _result.getterNames.add(new ReflectiveAccessor(ast.name,
-          isStaticallyNecessary: isStaticallyNecessary));
-    }
-    if (recordSetters) {
-      _result.setterNames.add(new ReflectiveAccessor(ast.name,
-          isStaticallyNecessary: isStaticallyNecessary));
-    }
+    _result.getterNames.add(new ReflectiveAccessor(ast.name,
+        isStaticallyNecessary: isStaticallyNecessary));
     super.visitSafePropertyRead(ast);
   }
 }

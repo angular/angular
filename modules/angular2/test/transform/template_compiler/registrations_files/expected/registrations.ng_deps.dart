@@ -85,9 +85,7 @@ void initReflector(reflector) {
           const []
         ], () => new RecursiveCmp()))
     ..registerGetters({
-      'dependencyEventName': (o) => o.dependencyEventName,
       'eventName': (o) => o.eventName,
-      'field': (o) => o.field,
       'hprop': (o) => o.hprop,
       'propValue': (o) => o.propValue,
       'textBindings': (o) => o.textBindings,
@@ -100,11 +98,7 @@ void initReflector(reflector) {
       'ngForOf': (o, v) => o.ngForOf = v,
       'prop': (o, v) => o.prop = v,
       'propName': (o, v) => o.propName = v,
-      'propValue': (o, v) => o.propValue = v,
-      'recursiveProp': (o, v) => o.recursiveProp = v,
-      'textBindings': (o, v) => o.textBindings = v,
-      'thing': (o, v) => o.thing = v,
-      'things': (o, v) => o.things = v
+      'recursiveProp': (o, v) => o.recursiveProp = v
     })
     ..registerMethods({
       'doAThing': (o, List args) => Function.apply(o.doAThing, args),
