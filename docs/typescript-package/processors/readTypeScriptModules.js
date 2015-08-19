@@ -188,6 +188,12 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
       location: getLocation(exportSymbol)
     };
 
+    if (exportDoc.docType === 'var' || exportDoc.docType === 'const') {
+      exportDoc.symbolTypeName = exportSymbol.valueDeclaration.type &&
+                                 exportSymbol.valueDeclaration.type.typeName &&
+                                 exportSymbol.valueDeclaration.type.typeName.text;
+    }
+
     if(exportSymbol.flags & ts.SymbolFlags.Function) {
       exportDoc.parameters = getParameters(typeChecker, exportSymbol);
     }

@@ -2,7 +2,8 @@
 {%- for item in doc.data %}
   "{$ item.name $}" : {
     "title" : "{$ item.title $}"{% if item.intro %},
-    "intro" : "{$ item.intro $}"{% endif %}
+    "intro" : "{$ item.intro $}"{% endif %}{% if item.varType %},
+    "varType" : "{$ item.varType $}"{% endif %}
   }{% if not loop.last %},{% endif %}
 {% endfor -%}
 }
