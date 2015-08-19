@@ -80,8 +80,9 @@ export function main() {
                 Simple,
                 new ViewMetadata(
                     {template: 'SIMPLE(<div><ng-content></ng-content></div>)', directives: []}))
-             .overrideView(MainComp,
-                           new ViewMetadata({template: '<simple>{{text}}</simple>', directives: [Simple]}))
+             .overrideView(
+                 MainComp,
+                 new ViewMetadata({template: '<simple>{{text}}</simple>', directives: [Simple]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -101,8 +102,9 @@ export function main() {
                       'SIMPLE(<div><ng-content></ng-content></div><div [tab-index]="0">EL</div>)',
                   directives: []
                 }))
-             .overrideView(MainComp,
-                           new ViewMetadata({template: '<simple>{{text}}</simple>', directives: [Simple]}))
+             .overrideView(
+                 MainComp,
+                 new ViewMetadata({template: '<simple>{{text}}</simple>', directives: [Simple]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -115,7 +117,8 @@ export function main() {
 
     it('should not show the light dom even if there is no content tag',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new ViewMetadata({template: '<empty>A</empty>', directives: [Empty]}))
+         tcb.overrideView(MainComp,
+                          new ViewMetadata({template: '<empty>A</empty>', directives: [Empty]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -262,7 +265,8 @@ export function main() {
 
          tcb.overrideView(
                 MainComp,
-                new ViewMetadata({template: '<simple string-prop="text"></simple>', directives: [Simple]}))
+                new ViewMetadata(
+                    {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
              .then((main) => {
@@ -282,7 +286,8 @@ export function main() {
 
          tcb.overrideView(
                 MainComp,
-                new ViewMetadata({template: '<simple string-prop="text"></simple>', directives: [Simple]}))
+                new ViewMetadata(
+                    {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
              .then((main) => {
@@ -380,7 +385,8 @@ export function main() {
     // the presence of ng-content elements!
     it('should still allow to implement a recursive trees',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp, new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
+         tcb.overrideView(MainComp,
+                          new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
              .createAsync(MainComp)
              .then((main) => {
 

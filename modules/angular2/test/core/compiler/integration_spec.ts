@@ -61,7 +61,15 @@ import {
   ON_PUSH
 } from 'angular2/src/change_detection/change_detection';
 
-import {Directive, Component, BaseView, ViewMetadata, Attribute, Query, Pipe} from 'angular2/metadata';
+import {
+  Directive,
+  Component,
+  BaseView,
+  ViewMetadata,
+  Attribute,
+  Query,
+  Pipe
+} from 'angular2/metadata';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 

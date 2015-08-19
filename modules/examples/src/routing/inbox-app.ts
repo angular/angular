@@ -1,4 +1,12 @@
-import {NgIf, NgFor, EventEmitter, Component, BaseView, Inject, Injectable} from 'angular2/angular2';
+import {
+  NgIf,
+  NgFor,
+  EventEmitter,
+  Component,
+  BaseView,
+  Inject,
+  Injectable
+} from 'angular2/angular2';
 import {
   RouterLink,
   RouteConfig,

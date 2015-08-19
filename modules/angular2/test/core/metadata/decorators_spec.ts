@@ -21,8 +21,8 @@ export function main() {
     });
 
     it('should declare Component class', () => {
-      var MyComponent =
-          Component({}).BaseView({}).BaseView({}).Class({constructor: function() { this.works = true; }});
+      var MyComponent = Component({}).BaseView({}).BaseView({}).Class(
+          {constructor: function() { this.works = true; }});
       expect(new MyComponent().works).toEqual(true);
     });
 

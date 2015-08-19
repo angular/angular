@@ -222,7 +222,8 @@ class ParentCmp {
 }
 
 @Component({selector: 'super-parent-cmp'})
-@BaseView({template: `super-parent { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@BaseView(
+    {template: `super-parent { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([new Route({path: '/child', component: Hello2Cmp})])
 class SuperParentCmp {
 }
