@@ -1,4 +1,4 @@
-import {bootstrap, Component, BaseView} from 'angular2/angular2';
+import {bootstrap, Component, BaseView} from 'angular2/bootstrap';
 
 @Component({selector: 'gestures-app'})
 @BaseView({templateUrl: 'template.html'})
