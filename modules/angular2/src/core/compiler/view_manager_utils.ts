@@ -38,15 +38,15 @@ export class AppViewManagerUtils {
     var elementOffset = 0;
     var textOffset = 0;
     var fragmentIdx = 0;
-    var hostElementIndicesByViewIndex:number[] = ListWrapper.createFixedSize(viewCount);
+    var containerElementIndicesByViewIndex:number[] = ListWrapper.createFixedSize(viewCount);
     for (var viewOffset = 0; viewOffset < viewCount; viewOffset++) {
-      var hostElementIndex = hostElementIndicesByViewIndex[viewOffset];
-      var hostElementInjector = isPresent(hostElementIndex) ? elementInjectors[hostElementIndex] : null;
-      var parentView = isPresent(hostElementInjector) ?
-                           hostElementInjector.getView() : null;
+      var containerElementIndex = containerElementIndicesByViewIndex[viewOffset];
+      var containerElementInjector = isPresent(containerElementIndex) ? elementInjectors[containerElementIndex] : null;
+      var parentView = isPresent(containerElementInjector) ?
+                           preBuiltObjects[containerElementIndex].view : null;
       var protoView =
-          isPresent(hostElementIndex) ?
-              parentView.proto.elementBinders[hostElementIndex - parentView.elementOffset]
+          isPresent(containerElementIndex) ?
+              parentView.proto.elementBinders[containerElementIndex - parentView.elementOffset]
                   .nestedProtoView :
               mergedParentViewProto;
       var renderFragment = null;
@@ -56,10 +56,10 @@ export class AppViewManagerUtils {
       var currentView = new viewModule.AppView(
           renderer, protoView, viewOffset, elementOffset,
           textOffset, protoView.protoLocals, renderView, renderFragment);
-      currentView.hostElementInjector = hostElementInjector;
+      currentView.containerElementInjector = containerElementInjector;
       views[viewOffset] = currentView;
-      if (isPresent(hostElementIndex)) {
-        preBuiltObjects[hostElementIndex].nestedView = currentView;
+      if (isPresent(containerElementIndex)) {
+        preBuiltObjects[containerElementIndex].nestedView = currentView;
       }
       var rootElementInjectors = [];
       var nestedViewOffset = viewOffset + 1;
@@ -69,7 +69,7 @@ export class AppViewManagerUtils {
         var elementInjector = null;
         
         if (isPresent(binder.nestedProtoView) && binder.nestedProtoView.isMergable) {
-          hostElementIndicesByViewIndex[nestedViewOffset] = boundElementIndex;
+          containerElementIndicesByViewIndex[nestedViewOffset] = boundElementIndex;
           nestedViewOffset += binder.nestedProtoView.mergeInfo.viewCount;
         }
 
@@ -96,7 +96,7 @@ export class AppViewManagerUtils {
         if (isPresent(elementInjector)) {
           var templateRef = binder.hasEmbeddedProtoView() ? new TemplateRef(el) : null;
           preBuiltObjects[boundElementIndex] =
-              new eli.PreBuiltObjects(viewManager, currentView, el, templateRef, null);
+              new eli.PreBuiltObjects(viewManager, currentView, el, templateRef);
         }
       }
       currentView.init(protoView.protoChangeDetector.instantiate(currentView), elementInjectors,
@@ -198,7 +198,7 @@ export class AppViewManagerUtils {
           // hydrate a nested component view
           imperativelyCreatedInjector = null;
           parentLocals = null;
-          context = currView.hostElementInjector.getComponent();
+          context = currView.containerElementInjector.getComponent();
         }
         currView.context = context;
         currView.locals.parent = parentLocals;

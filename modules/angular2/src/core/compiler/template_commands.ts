@@ -36,13 +36,14 @@ class EndElementCmd implements TemplateCmd {
 	constructor(public type: RenderTemplateCmdType) {}
 }
 
-export class EmbeddedTemplateCmd implements CommonBeginElementCmd, RenderEmbeddedTemplateCmd {
-	constructor(public templateId: string, public attrs: string[], public variables: string[], public directives: any[], public isMerged: boolean, public content:TemplateCmd[], public ngContentIndex:number) {}
+export class EmbeddedTemplateCmd implements TemplateCmd, CommonBeginElementCmd, RenderEmbeddedTemplateCmd {
+	constructor(public templateId: string, public attrs: string[], public variables: string[], public directive: any, public isMerged: boolean, public content:TemplateCmd[], public ngContentIndex:number) {}
+	get directives() { return [this.directive]; }
 	get type(): RenderTemplateCmdType { return RenderTemplateCmdType.EMBEDDED_TEMPLATE; }
 	get isBound() { return true; }
 }
 
-export class BeginBasicElementCmd implements CommonBeginElementCmd, RenderBeginElementCmd {
+export class BeginBasicElementCmd implements TemplateCmd, CommonBeginElementCmd, RenderBeginElementCmd {
 	constructor(public name: string, public attrs: string[], public events: string[], public variables:string[], public directives: any[], public isBound: boolean, public ngContentIndex:number) {
 	}
 	get type(): RenderTemplateCmdType { return RenderTemplateCmdType.BEGIN_BASIC_ELEMENT; }
@@ -52,7 +53,7 @@ export function createEndBasicElementCmd():TemplateCmd {
 	return new EndElementCmd(RenderTemplateCmdType.END_BASIC_ELEMENT);
 }
 
-export class BeginComponentCmd implements CommonBeginElementCmd, RenderBeginComponentCmd {
+export class BeginComponentCmd implements TemplateCmd, CommonBeginElementCmd, RenderBeginComponentCmd {
 	component: any;
 	constructor(public templateId: string, public name: string, public attrs: string[], public events: string[], public variables:string[], public directives: any[], public nativeShadow:boolean, public ngContentIndex:number) {
 		this.component = directives[0];

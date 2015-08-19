@@ -591,10 +591,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return this._preBuiltObjects.nestedView;
   }
 
-  getView(): viewModule.AppView {
-    return this._preBuiltObjects.view;
-  }
-
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
   isComponentKey(key: Key): boolean { return this._strategy.isComponentKey(key); }

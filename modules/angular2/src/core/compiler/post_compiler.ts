@@ -7,13 +7,14 @@ import {reflector} from 'angular2/src/reflection/reflection';
 import {PipeBinding} from '../pipes/pipe_binding';
 import {ProtoPipes} from '../pipes/pipes';
 
-import {RenderDirectiveMetadata, ViewType} from 'angular2/src/render/api';
+import {RenderDirectiveMetadata, ViewType, RenderProtoViewRef} from 'angular2/src/render/api';
 import {AppProtoView, AppProtoViewMergeInfo} from './view';
 import {ProtoViewRef} from './view_ref';
 import {ElementBinder} from './element_binder';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
+import {PipeResolver} from './pipe_resolver';
 import {ComponentMetadata} from '../metadata/directives';
 import {ViewMetadata} from '../metadata/view';
 import {DEFAULT_PIPES_TOKEN} from 'angular2/pipes';
@@ -39,7 +40,7 @@ export class PostCompiler {
    * @private
    */
   constructor(private _renderer:Renderer, private _cache: CompilerCache, private _changeDetection: ChangeDetection,
-      private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
+      private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver, private _pipeResolver: PipeResolver,
       private _templateRegistry: TemplateRegistry, @Inject(DEFAULT_PIPES_TOKEN) defaultPipes: Type[]) {
     this._defaultPipes = defaultPipes;
   }
@@ -64,15 +65,15 @@ export class PostCompiler {
     var component = bc.directives[0];
     if (isBlank(protoView)) {
       var view = this._viewResolver.resolve(component);
-      var pipes:PipeBinding[] = this._flattenPipes(view);
       var cmds = this._templateRegistry.getTemplate(bc.templateId);
       var styles = this._templateRegistry.getSharedStyles(bc.templateId);
       this._renderer.addComponentTemplate(bc.templateId, cmds, styles);
-      protoView = this._createAppProtoView(bc.templateId, ViewType.COMPONENT, true, null, cmds, ProtoPipes.fromBindings(pipes));
+      var boundPipes = this._flattenPipes(view).map(pipe => this._bindPipe(pipe));
+      protoView = this._createAppProtoView(bc.templateId, ViewType.COMPONENT, true, null, cmds, ProtoPipes.fromBindings(boundPipes));
       // Note: The cache is updated inside of _createAppProtoView before recursing
       // to be able to resolve cycles                
     }
-    this._initializeProtoView(protoView);
+    this._initializeProtoView(protoView, null);
     return protoView;
   }
     
@@ -80,7 +81,7 @@ export class PostCompiler {
     var embeddedProtoView = this._createAppProtoView(et.templateId, ViewType.EMBEDDED, et.isMerged,
       arrayToMap(et.variables), et.content, new ProtoPipes(parentProtoView.pipes.config));
     if (et.isMerged) {
-      this._initializeProtoView(embeddedProtoView);
+      this._initializeProtoView(embeddedProtoView, null);
     }
     return embeddedProtoView;
   }
@@ -99,22 +100,23 @@ export class PostCompiler {
   
   initializeProtoViewIfNeeded(protoView: AppProtoView) {
     if (!protoView.isInitialized()) {
-      this._initializeProtoView(protoView);
+      var render = this._renderer.createProtoView(protoView.templateCmds);
+      this._initializeProtoView(protoView, render);
     }
   }
   
-  private _initializeProtoView(protoView: AppProtoView) {
+  private _initializeProtoView(protoView: AppProtoView, render: RenderProtoViewRef) {
     var variableLocations:Map<string, number> = new Map();
     var boundTextCount = 0;
     var boundElementIndex = 0;
     var elementBinderStack:ElementBinder[] = [];
-    var distanceToParentElementBinder = -1;
-    var distanceToParentProtoElementInjector = -1;
+    var distanceToParentElementBinder = 0;
+    var distanceToParentProtoElementInjector = 0;
     var templateCmds = protoView.templateCmds;
     var elementBinders = [];
     var mergeEmbeddedViewCount = 0;
     var mergeElementCount = 0;
-    var mergeViewCount = 0;
+    var mergeViewCount = 1;
     for (var cmdIdx=0; cmdIdx<templateCmds.length; cmdIdx++) {
       var cmd = templateCmds[cmdIdx];
       var type = cmd.type;
@@ -123,6 +125,7 @@ export class PostCompiler {
         var elementBinder:ElementBinder = null;
         var protoElementInjector: ProtoElementInjector = null;
         if (beginElement.isBound) {
+          mergeElementCount++;
           var nestedProtoView: AppProtoView = null;
           if (type === RenderTemplateCmdType.BEGIN_COMPONENT) {
             var bc = <BeginComponentCmd> beginElement;
@@ -130,14 +133,17 @@ export class PostCompiler {
           } else if (type === RenderTemplateCmdType.EMBEDDED_TEMPLATE) {
             var et = <EmbeddedTemplateCmd> beginElement;
             nestedProtoView = this._createEmbeddedProtoView(et, protoView);
+            if (et.isMerged) {
+              mergeEmbeddedViewCount++;
+            }
           }
           if (isPresent(nestedProtoView) && nestedProtoView.isMergable) {
-            mergeEmbeddedViewCount += nestedProtoView.mergeInfo.embeddedViewCount;
             mergeElementCount += nestedProtoView.mergeInfo.elementCount;
             mergeViewCount += nestedProtoView.mergeInfo.viewCount;
+            mergeEmbeddedViewCount += nestedProtoView.mergeInfo.embeddedViewCount;
           }
           elementBinder =
-              _createElementBinder(protoView, nestedProtoView, elementBinderStack, boundElementIndex, distanceToParentElementBinder, distanceToParentProtoElementInjector, beginElement);
+              _createElementBinder(this._directiveResolver, nestedProtoView, elementBinderStack, boundElementIndex, distanceToParentElementBinder, distanceToParentProtoElementInjector, beginElement);
           elementBinders.push(elementBinder);
           protoElementInjector = elementBinder.protoElementInjector;
           for (var i=0; i<beginElement.attrs.length; i+=2) {
@@ -160,23 +166,14 @@ export class PostCompiler {
         }
       }
     }    
-    var render = null;
-    if (protoView.isMergable) {
-      render = this._renderer.createProtoView(protoView.templateCmds);
-    }
     var mergeInfo = new AppProtoViewMergeInfo(mergeEmbeddedViewCount, mergeElementCount, mergeViewCount);
     protoView.init(render, elementBinders, boundTextCount, mergeInfo, variableLocations);
   }
   
-  private _bindDirective(directiveTypeOrBinding:Type | Binding): DirectiveBinding {
-    if (directiveTypeOrBinding instanceof Binding) {
-      let annotation = this._directiveResolver.resolve(directiveTypeOrBinding.token);
-      return DirectiveBinding.createFromBinding(directiveTypeOrBinding, annotation);
-    } else {
-      let annotation = this._directiveResolver.resolve(<Type>directiveTypeOrBinding);
-      return DirectiveBinding.createFromType(<Type>directiveTypeOrBinding, annotation);
-    }
-  }
+  private _bindPipe(typeOrBinding): PipeBinding {
+    let meta = this._pipeResolver.resolve(typeOrBinding);
+    return PipeBinding.createFromType(typeOrBinding, meta);
+  }  
 
   private _flattenPipes(view: ViewMetadata): any[] {
     if (isBlank(view.pipes)) return this._defaultPipes;
@@ -187,20 +184,24 @@ export class PostCompiler {
 }
 
 
-function _createElementBinder(protoView: AppProtoView, nestedProtoView: AppProtoView, elementBinderStack:ElementBinder[], boundElementIndex: number, distanceToParentBinder: number, distanceToParentPei: number,
+function _createElementBinder(directiveResolver: DirectiveResolver, nestedProtoView: AppProtoView, elementBinderStack:ElementBinder[], boundElementIndex: number, distanceToParentBinder: number, distanceToParentPei: number,
                               beginElementCmd:CommonBeginElementCmd):ElementBinder {
       
   var parentElementBinder = null;
   var parentProtoElementInjector = null;
-  if (distanceToParentBinder <= elementBinderStack.length) {
+  if (distanceToParentBinder > 0) {
     parentElementBinder = elementBinderStack[elementBinderStack.length - distanceToParentBinder];
+  } else {
+    distanceToParentBinder = -1;
   }
-  if (distanceToParentPei <= elementBinderStack.length) {
+  if (distanceToParentPei > 0) {
     parentProtoElementInjector = elementBinderStack[elementBinderStack.length - distanceToParentPei].protoElementInjector;
+  } else {
+    distanceToParentPei = -1;
   }
   var componentDirectiveBinding:DirectiveBinding = null;
   var templateDirectiveBinding:DirectiveBinding = null;
-  var directiveBindings:DirectiveBinding[] = beginElementCmd.directives.map( typeOrBinding => this._bindDirective(typeOrBinding) );
+  var directiveBindings:DirectiveBinding[] = beginElementCmd.directives.map( typeOrBinding => bindDirective(directiveResolver, typeOrBinding) );
   if (beginElementCmd.type === RenderTemplateCmdType.BEGIN_COMPONENT) {
     var bc = <BeginComponentCmd> beginElementCmd;
     componentDirectiveBinding = directiveBindings[0];
@@ -227,8 +228,21 @@ function _createElementBinder(protoView: AppProtoView, nestedProtoView: AppProto
     protoElementInjector.attributes = arrayToMap(beginElementCmd.attrs);
   }    
         
-  return new ElementBinder(boundElementIndex, parentElementBinder, distanceToParentBinder,
+  var elb = new ElementBinder(boundElementIndex, parentElementBinder, distanceToParentBinder,
                                      protoElementInjector, componentDirectiveBinding);
+  // TODO: Move this into the ElementBinder constructor!
+  elb.nestedProtoView = nestedProtoView;
+  return elb;
+}
+
+function bindDirective(directiveResolver:DirectiveResolver, directiveTypeOrBinding:Type | Binding): DirectiveBinding {
+  if (directiveTypeOrBinding instanceof Binding) {
+    let annotation = directiveResolver.resolve(directiveTypeOrBinding.token);
+    return DirectiveBinding.createFromBinding(directiveTypeOrBinding, annotation);
+  } else {
+    let annotation = directiveResolver.resolve(<Type>directiveTypeOrBinding);
+    return DirectiveBinding.createFromType(<Type>directiveTypeOrBinding, annotation);
+  }
 }
 
 export function createDirectiveVariableBindings(variableBindings: string[],
@@ -292,7 +306,7 @@ function _flattenList(tree: List<any>, out: List<Type | Binding | List<any>>): v
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
-      this._flattenList(item, out);
+      _flattenList(item, out);
     } else {
       out.push(item);
     }

@@ -73,7 +73,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
   ref: ViewRef;
   changeDetector: ChangeDetector = null;
-  hostElementInjector: ElementInjector = null;
+  containerElementInjector: ElementInjector = null;
 
 
   /**
@@ -180,8 +180,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     return eli.getNestedView();
   }
 
-  getHostElement(): ElementRef {
-    return isPresent(this.hostElementInjector) ? this.hostElementInjector.getElementRef() : null;
+  getContainerElement(): ElementRef {
+    return isPresent(this.containerElementInjector) ? this.containerElementInjector.getElementRef() : null;
   }
 
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
@@ -190,7 +190,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       var hasRefForIndex = offsettedIndex < this.elementRefs.length;
 
       var elementRef = hasRefForIndex ? this.elementRefs[this.elementOffset + elementIndex] : null;
-      var host = this.getHostElement();
+      var host = this.getContainerElement();
       var ei = hasRefForIndex ? this.elementInjectors[this.elementOffset + elementIndex] : null;
 
       var element = isPresent(elementRef) ? elementRef.nativeElement : null;

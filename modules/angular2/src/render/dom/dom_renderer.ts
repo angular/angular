@@ -71,8 +71,7 @@ export class DomRenderer extends Renderer implements ComponentTemplateResolver {
   }
   
   createProtoView(cmds:RenderTemplateCmd[]):RenderProtoViewRef {
-    var s = this._scope_createRootHostView();    
-    return wtfLeave(s, new DomProtoViewRef(cmds));
+    return new DomProtoViewRef(cmds);
   }
 
   _scope_createRootHostView: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
@@ -290,6 +289,7 @@ class DomViewBuilder extends RenderViewBuilder<Node> {
   }
   
   protected mergeElement(existing:Node, attrs:string[]) {
+    DOM.clearNodes(existing);
     for (var attrIdx = 0; attrIdx<attrs.length; attrIdx+=2) {
       DOM.setAttribute(existing, attrs[attrIdx], attrs[attrIdx+1]);
     }
