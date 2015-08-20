@@ -204,6 +204,11 @@ export function main() {
 
       it('should store the passed-in location',
          () => { expect(parseAction('someExpr', 'location').location).toBe('location'); });
+
+      it("should throw when encountering interpolation", () => {
+        expectActionError("{{a()}}")
+            .toThrowErrorWith('Got interpolation ({{}}) where expression was expected');
+      });
     });
 
     describe("general error handling", () => {
@@ -255,6 +260,11 @@ export function main() {
 
       it('should throw on assignment', () => {
         expect(() => parseBinding("a=2")).toThrowError(new RegExp("contain assignments"));
+      });
+
+      it('should throw when encountering interpolation', () => {
+        expectBindingError("{{a.b}}")
+            .toThrowErrorWith('Got interpolation ({{}}) where expression was expected');
       });
     });
 
@@ -398,12 +408,12 @@ export function main() {
 
       it("should throw on empty interpolation expressions", () => {
         expect(() => parseInterpolation("{{}}"))
-            .toThrowError(new RegExp(
-                "Parser Error: Blank expressions are not allowed in interpolated strings"));
+            .toThrowErrorWith(
+                "Parser Error: Blank expressions are not allowed in interpolated strings");
 
         expect(() => parseInterpolation("foo {{  }}"))
-            .toThrowError(new RegExp(
-                "Parser Error: Blank expressions are not allowed in interpolated strings"));
+            .toThrowErrorWith(
+                "Parser Error: Blank expressions are not allowed in interpolated strings");
       });
     });
 
@@ -420,8 +430,13 @@ export function main() {
 
       it("should throw when the given expression is not just a field name", () => {
         expect(() => parseSimpleBinding("name + 1"))
-            .toThrowError(new RegExp(
-                'Simple binding expression can only contain field access and constants'));
+            .toThrowErrorWith(
+                'Simple binding expression can only contain field access and constants');
+      });
+
+      it('should throw when encountering interpolation', () => {
+        expect(() => parseSimpleBinding('{{exp}}'))
+            .toThrowErrorWith('Got interpolation ({{}}) where expression was expected');
       });
     });
 

@@ -49,6 +49,12 @@ export function main() {
       expect(process(el('<div [a]v="b"></div>'))[0]).toBe(null);
     });
 
+    it('should throw when [] binding contains interpolation', () => {
+      expect(() => process(el('<div [a]="a + {{b()}}"></div>'))[0])
+          .toThrowErrorWith(
+              'Got interpolation ({{}}) where expression was expected at column 4 in [a + {{b()}}] in someComponent');
+    });
+
     it('should detect bind- syntax', () => {
       var results = process(el('<div bind-a="b"></div>'));
       expect(results[0].propertyBindings.get('a').source).toEqual('b');
@@ -155,6 +161,12 @@ export function main() {
       var eventBinding = results[0].eventBindings[0];
       expect(eventBinding.source.source).toEqual('foo=bar');
       expect(eventBinding.fullName).toEqual('click');
+    });
+
+    it('should throw when () action contains interpolation', () => {
+      expect(() => process(el('<div (a)="{{b()}}"></div>'))[0])
+          .toThrowErrorWith(
+              'Got interpolation ({{}}) where expression was expected at column 0 in [{{b()}}] in someComponent');
     });
 
     it('should detect on- syntax', () => {
