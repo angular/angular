@@ -35,6 +35,8 @@
   },
   "devDependencies": {
     "angular": "1.3.5",
+    "angular-animate": "1.3.5",
+    "angular-mocks": "1.3.5",
     "base64-js": "^0.0.8",
     "bower": "^1.3.12",
     "broccoli": "^0.15.3",
