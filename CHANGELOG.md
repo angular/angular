@@ -68,7 +68,6 @@
   - `appComponentRefPromiseToken` => `APP_COMPONENT_REF_PROMISE`
   - `appComponentTypeToken` => `APP_COMPONENT`
   - `undefinedValue` => `UNDEFINED`
-  - `formDirectives` => `FORM_DIRECTIVES`
   - `DOCUMENT_TOKEN` => `DOCUMENT`
   - `APP_ID_TOKEN` => `APP_ID`
   - `MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE_TOKEN` => `MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE`
