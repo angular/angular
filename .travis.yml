@@ -36,6 +36,7 @@ env:
     - MODE=saucelabs DART_CHANNEL=dev
     - MODE=dart_experimental DART_CHANNEL=dev
     - MODE=js DART_CHANNEL=dev
+    - MODE=router DART_CHANNEL=dev
     - MODE=lint DART_CHANNEL=dev
 
 matrix:
