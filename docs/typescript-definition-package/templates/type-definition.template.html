@@ -13,7 +13,12 @@
      {$ member.name $}{% if member.optional %}?{% endif -%}
 {% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
 {%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
-{%- if member.returnType == 'Directive' %}: DirectiveAnnotation{%- elif member.returnType -%}: {$ member.returnType $}{%- else -%}: void
+{%- if member.returnType -%}
+  : {$ member.returnType $}
+{%- elif member.parameters -%}
+  : void
+{%- else -%}
+  : any
 {%- endif -%};
 {%- endmacro -%}
 
