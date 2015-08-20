@@ -80,7 +80,7 @@ class _CodegenState {
   final List<EventBinding> _eventBindings;
   final CodegenLogicUtil _logic;
   final CodegenNameUtil _names;
-  final bool _devMode;
+  final ChangeDetectorGenConfig _genConfig;
   final List<BindingTarget> _propertyBindingTargets;
 
   _CodegenState._(
@@ -94,7 +94,7 @@ class _CodegenState {
       this._directiveRecords,
       this._logic,
       this._names,
-      this._devMode)
+      this._genConfig)
       : _changeDetectionMode =
             ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy);
 
@@ -117,7 +117,7 @@ class _CodegenState {
         def.directiveRecords,
         logic,
         names,
-        def.devMode);
+        def.genConfig);
   }
 
   void _writeToBuf(StringBuffer buf) {
@@ -170,7 +170,7 @@ class _CodegenState {
   }
 
   String _genPropertyBindingTargets() {
-    var targets = _logic.genPropertyBindingTargets(_propertyBindingTargets, this._devMode);
+    var targets = _logic.genPropertyBindingTargets(_propertyBindingTargets, this._genConfig.genDebugInfo);
     return "static var gen_propertyBindingTargets = ${targets}";
   }
 
@@ -418,7 +418,7 @@ class _CodegenState {
   }
 
   String _genThrowOnChangeCheck(String oldValue, String newValue) {
-    if (this._devMode) {
+    if (this._genConfig.genCheckNoChanges) {
       return '''
         if(throwOnChange) {
           this.throwOnChangeError(${oldValue}, ${newValue});
@@ -430,7 +430,7 @@ class _CodegenState {
   }
 
   String _genCheckNoChanges() {
-    if (this._devMode) {
+    if (this._genConfig.genCheckNoChanges) {
       return 'void checkNoChanges() { runDetectChanges(true); }';
     } else {
       return '';

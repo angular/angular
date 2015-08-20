@@ -37,6 +37,8 @@ export class ChangeDetection {
   }
 
   get generateDetectors(): boolean { return null; }
+
+  get genConfig(): ChangeDetectorGenConfig { return null; }
 }
 
 export class DebugContext {
@@ -71,8 +73,13 @@ export interface ChangeDetector {
 
 export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher): ChangeDetector; }
 
+export class ChangeDetectorGenConfig {
+  constructor(public genCheckNoChanges: boolean, public genDebugInfo: boolean) {}
+}
+
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: string, public variableNames: List<string>,
               public bindingRecords: BindingRecord[], public eventRecords: BindingRecord[],
-              public directiveRecords: DirectiveRecord[], public devMode: boolean) {}
+              public directiveRecords: DirectiveRecord[],
+              public genConfig: ChangeDetectorGenConfig) {}
 }

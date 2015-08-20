@@ -5,10 +5,21 @@ import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
 import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
+import {
+  ChangeDetection,
+  ProtoChangeDetector,
+  ChangeDetectorDefinition,
+  ChangeDetectorGenConfig
+} from './interfaces';
 import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/di';
 import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-import {CONST, CONST_EXPR, isPresent, BaseException} from 'angular2/src/facade/lang';
+import {
+  CONST,
+  CONST_EXPR,
+  isPresent,
+  BaseException,
+  assertionsEnabled
+} from 'angular2/src/facade/lang';
 
 export {
   ASTWithSource,
@@ -34,7 +45,8 @@ export {
   ChangeDispatcher,
   ChangeDetection,
   ChangeDetectorDefinition,
-  DebugContext
+  DebugContext,
+  ChangeDetectorGenConfig
 } from './interfaces';
 export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
@@ -101,6 +113,10 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
   }
 
   get generateDetectors(): boolean { return true; }
+
+  get genConfig(): ChangeDetectorGenConfig {
+    return new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
+  }
 }
 
 
@@ -116,6 +132,10 @@ export class DynamicChangeDetection extends ChangeDetection {
   }
 
   get generateDetectors(): boolean { return true; }
+
+  get genConfig(): ChangeDetectorGenConfig {
+    return new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
+  }
 }
 
 /**
@@ -134,4 +154,8 @@ export class JitChangeDetection extends ChangeDetection {
   }
 
   get generateDetectors(): boolean { return true; }
+
+  get genConfig(): ChangeDetectorGenConfig {
+    return new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
+  }
 }

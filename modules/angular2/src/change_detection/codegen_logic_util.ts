@@ -124,11 +124,12 @@ export class CodegenLogicUtil {
     }
   }
 
-  genPropertyBindingTargets(propertyBindingTargets: BindingTarget[], devMode: boolean): string {
+  genPropertyBindingTargets(propertyBindingTargets: BindingTarget[],
+                            genDebugInfo: boolean): string {
     var bs = propertyBindingTargets.map(b => {
       if (isBlank(b)) return "null";
 
-      var debug = devMode ? codify(b.debug) : "null";
+      var debug = genDebugInfo ? codify(b.debug) : "null";
       return `${this._utilName}.bindingTarget(${codify(b.mode)}, ${b.elementIndex}, ${codify(b.name)}, ${codify(b.unit)}, ${debug})`;
     });
     return `[${bs.join(", ")}]`;

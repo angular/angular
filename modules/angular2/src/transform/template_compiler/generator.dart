@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:angular2/src/change_detection/parser/lexer.dart' as ng;
 import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
+import 'package:angular2/src/change_detection/interfaces.dart';
 import 'package:angular2/src/core/compiler/proto_view_factory.dart';
 import 'package:angular2/src/dom/dom_adapter.dart';
 import 'package:angular2/src/render/api.dart';
@@ -19,6 +20,7 @@ import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
+import 'package:angular2/src/facade/lang.dart';
 import 'package:barback/barback.dart';
 
 import 'change_detector_codegen.dart' as change;
@@ -56,9 +58,10 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
     }
     if (generateChangeDetectors) {
       var saved = reflector.reflectionCapabilities;
+      var genConfig = new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
       reflector.reflectionCapabilities = const NullReflectionCapabilities();
       var defs = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
-          protoView, viewDefEntry.viewDef.directives);
+          protoView, viewDefEntry.viewDef.directives, genConfig);
       for (var i = 0; i < defs.length; ++i) {
         changeDetectorClasses.generate('${rType.typeName}',
             '_${rType.typeName}_ChangeDetector$i', defs[i]);

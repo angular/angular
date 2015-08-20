@@ -54,7 +54,8 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
         this.definition.id, dispatcher, this._propertyBindingRecords.length,
         this._propertyBindingTargets, this._directiveIndices,
         ChangeDetectionUtil.changeDetectionMode(this.definition.strategy),
-        this._propertyBindingRecords, this._eventBindingRecords, this.definition.directiveRecords);
+        this._propertyBindingRecords, this._eventBindingRecords, this.definition.directiveRecords,
+        this.definition.genConfig);
   }
 }
 
