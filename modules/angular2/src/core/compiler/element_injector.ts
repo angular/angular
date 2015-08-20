@@ -854,6 +854,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getBoundElementIndex(): number { return this._proto.index; }
 
   getRootViewInjectors(): ElementInjector[] {
+    if (!this.hydrated) return [];
     var view = this._preBuiltObjects.view;
     var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
