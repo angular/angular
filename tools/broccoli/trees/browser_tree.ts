@@ -76,7 +76,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     exclude: [
       '**/*.cjs',
       'benchmarks/e2e_test/**',
-      'angular1_router/**',
       // Exclude ES6 polyfill typings when tsc target=ES6
       'angular2/traceur-runtime.d.ts',
       'angular2/typings/es6-promise/**'

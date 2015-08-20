@@ -56,7 +56,7 @@ function stripModulePrefix(relativePath: string): string {
 
 function getSourceTree() {
   // Transpile everything in 'modules' except for rtts_assertions.
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
+  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart']);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
@@ -147,7 +147,7 @@ function getDocsTree() {
   var licenses = new MultiCopy('', {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
-    exclude: ['*/rtts_assert', '*/http', '*/upgrade', '*/angular1_router']  // Not in dart.
+    exclude: ['*/rtts_assert', '*/http', '*/upgrade'],  // Not in dart.
   });
   licenses = stew.rename(licenses, stripModulePrefix);
 
@@ -157,7 +157,7 @@ function getDocsTree() {
                            relativePath => relativePath.replace(/\.dart\.md$/, '.md'));
   // Copy all assets, ignore .js. and .dart. (handled above).
   var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
-                           ['**/*.js.md', '**/*.dart.md', 'angular1_router/**/*']);
+                           ['**/*.js.md', '**/*.dart.md']);
 
   var assets = modulesFunnel(['examples/**/*.json']);
 
