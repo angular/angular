@@ -16,7 +16,7 @@ module.exports = function (config) {
       '../../dist/angular_1_router.js',
 
       'test/*.es5.js',
-      'test/*_spec.js'
+      'test/**/*_spec.js'
     ],
 
     customLaunchers: sauceConf.customLaunchers,
