@@ -864,6 +864,12 @@ export function main() {
             var inj = injector(extraBindings);
             expect(inj.getRootViewInjectors()).toEqual([]);
           });
+
+          it("should return an empty array on a dehydrated view", () => {
+            var inj = injector(extraBindings);
+            inj.dehydrate();
+            expect(inj.getRootViewInjectors()).toEqual([]);
+          });
         });
 
         describe("dehydrate", () => {
