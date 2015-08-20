@@ -65,18 +65,21 @@ export class Parser {
   }
 
   parseAction(input: string, location: any): ASTWithSource {
+    this._checkNoInterpolation(input, location);
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, true).parseChain();
     return new ASTWithSource(ast, input, location);
   }
 
   parseBinding(input: string, location: any): ASTWithSource {
+    this._checkNoInterpolation(input, location);
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
     return new ASTWithSource(ast, input, location);
   }
 
   parseSimpleBinding(input: string, location: string): ASTWithSource {
+    this._checkNoInterpolation(input, location);
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseSimpleBinding();
     return new ASTWithSource(ast, input, location);
@@ -105,12 +108,9 @@ export class Parser {
         var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
         expressions.push(ast);
       } else {
-        var errLocation = '';
-        for (var j = 0; j < i; j++) {
-          errLocation += j % 2 === 0 ? parts[j] : `{{${parts[j]}}}`;
-        }
         throw new ParseException('Blank expressions are not allowed in interpolated strings', input,
-                                 `at column ${errLocation.length} in`, location);
+                                 `at column ${this._findInterpolationErrorColumn(parts, i)} in`,
+                                 location);
       }
     }
     return new ASTWithSource(new Interpolation(strings, expressions), input, location);
@@ -118,6 +118,24 @@ export class Parser {
 
   wrapLiteralPrimitive(input: string, location: any): ASTWithSource {
     return new ASTWithSource(new LiteralPrimitive(input), input, location);
+  }
+
+  private _checkNoInterpolation(input: string, location: any): void {
+    var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
+    if (parts.length > 1) {
+      throw new ParseException('Got interpolation ({{}}) where expression was expected', input,
+                               `at column ${this._findInterpolationErrorColumn(parts, 1)} in`,
+                               location);
+    }
+  }
+
+  private _findInterpolationErrorColumn(parts: string[], partInErrIdx: number): number {
+    var errLocation = '';
+    for (var j = 0; j < partInErrIdx; j++) {
+      errLocation += j % 2 === 0 ? parts[j] : `{{${parts[j]}}}`;
+    }
+
+    return errLocation.length;
   }
 }
 
