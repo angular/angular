@@ -10,6 +10,7 @@ const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';
 const ENTRY_POINT_PARAM = 'entry_points';
 const FORMAT_CODE_PARAM = 'format_code';
 const GENERATE_CHANGE_DETECTORS_PARAM = 'generate_change_detectors';
+const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflectPropertiesAsAttributes';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
@@ -43,6 +44,8 @@ class TransformerOptions {
   /// Whether to create change detector classes for discovered `@View`s.
   final bool generateChangeDetectors;
 
+  final bool reflectPropertiesAsAttributes;
+
   /// The number of phases to spend optimizing output size.
   /// Each additional phase adds time to the transformation but may decrease
   /// final output size. There is a limit beyond which this will no longer
@@ -66,6 +69,7 @@ class TransformerOptions {
       this.annotationMatcher,
       this.optimizationPhases,
       {this.generateChangeDetectors,
+      this.reflectPropertiesAsAttributes,
       this.inlineViews,
       this.formatCode});
 
@@ -78,6 +82,7 @@ class TransformerOptions {
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
       bool inlineViews: true,
       bool generateChangeDetectors: true,
+      bool reflectPropertiesAsAttributes: true,
       bool formatCode: false}) {
     if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {
       reflectionEntryPoints = entryPoints;
@@ -94,6 +99,7 @@ class TransformerOptions {
         annotationMatcher,
         optimizationPhases,
         generateChangeDetectors: generateChangeDetectors,
+        reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
         inlineViews: inlineViews,
         formatCode: formatCode);
   }

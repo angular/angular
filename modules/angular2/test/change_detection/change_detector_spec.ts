@@ -535,6 +535,31 @@ export function main() {
         });
       });
 
+      describe("logBindingUpdate", () => {
+        it('should be called for element updates in the dev mode', () => {
+          var person = new Person('bob');
+          var val = _createChangeDetector('name', person);
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.debugLog).toEqual(['propName=bob']);
+        });
+
+        it('should be called for directive updates in the dev mode', () => {
+          var val = _createWithoutHydrate('directNoDispatcher');
+          val.changeDetector.hydrate(_DEFAULT_CONTEXT, null,
+                                     new FakeDirectives([new TestDirective()], []), null);
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.debugLog).toEqual(["a=42"]);
+        });
+
+        it('should not be called in the prod mode', () => {
+          var person = new Person('bob');
+          var val = _createChangeDetector('updateElementProduction', person);
+          val.changeDetector.detectChanges();
+          expect(val.dispatcher.debugLog).toEqual([]);
+        });
+
+      });
+
       describe('reading directives', () => {
         it('should read directive properties', () => {
           var directive = new TestDirective();
@@ -1123,7 +1148,8 @@ class FakeDirectives {
 }
 
 class TestDispatcher implements ChangeDispatcher {
-  log: List<string>;
+  log: string[];
+  debugLog: string[];
   loggedValues: List<any>;
   onAllChangesDoneCalled: boolean = false;
 
@@ -1131,6 +1157,7 @@ class TestDispatcher implements ChangeDispatcher {
 
   clear() {
     this.log = [];
+    this.debugLog = [];
     this.loggedValues = [];
     this.onAllChangesDoneCalled = true;
   }
@@ -1139,6 +1166,8 @@ class TestDispatcher implements ChangeDispatcher {
     this.log.push(`${target.name}=${this._asString(value)}`);
     this.loggedValues.push(value);
   }
+
+  logBindingUpdate(target, value) { this.debugLog.push(`${target.name}=${this._asString(value)}`); }
 
   notifyOnAllChangesDone() { this.onAllChangesDoneCalled = true; }
 

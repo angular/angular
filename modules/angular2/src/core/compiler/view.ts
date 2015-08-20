@@ -32,8 +32,11 @@ import {RenderEventDispatcher} from 'angular2/src/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
+import {camelCaseToDashCase} from 'angular2/src/render/dom/util';
 
 export {DebugContext} from 'angular2/src/change_detection/interfaces';
+
+const REFLECT_PREFIX: string = 'ng-reflect-';
 
 export class AppProtoViewMergeMapping {
   renderProtoViewRef: renderApi.RenderProtoViewRef;
@@ -190,6 +193,14 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       } else {
         throw new BaseException('Unsupported directive record');
       }
+    }
+  }
+
+  logBindingUpdate(b: BindingTarget, value: any): void {
+    if (b.isDirective() || b.isElementProperty()) {
+      var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
+      this.renderer.setElementAttribute(
+          elementRef, `${REFLECT_PREFIX}${camelCaseToDashCase(b.name)}`, `${value}`);
     }
   }
 

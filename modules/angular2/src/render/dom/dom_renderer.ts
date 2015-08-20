@@ -35,7 +35,7 @@ import {
 
 import {TemplateCloner} from './template_cloner';
 
-import {DOCUMENT, DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from './dom_tokens';
+import {DOCUMENT} from './dom_tokens';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
@@ -43,15 +43,11 @@ const REFLECT_PREFIX: string = 'ng-reflect-';
 @Injectable()
 export class DomRenderer extends Renderer {
   _document;
-  _reflectPropertiesAsAttributes: boolean;
 
   constructor(private _eventManager: EventManager,
               private _domSharedStylesHost: DomSharedStylesHost,
-              private _templateCloner: TemplateCloner, @Inject(DOCUMENT) document,
-              @Inject(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES) reflectPropertiesAsAttributes:
-                  boolean) {
+              private _templateCloner: TemplateCloner, @Inject(DOCUMENT) document) {
     super();
-    this._reflectPropertiesAsAttributes = reflectPropertiesAsAttributes;
     this._document = document;
   }
 
@@ -165,11 +161,6 @@ export class DomRenderer extends Renderer {
     }
     var view = resolveInternalDomView(location.renderView);
     view.setElementProperty(location.renderBoundElementIndex, propertyName, propertyValue);
-    // Reflect the property value as an attribute value with ng-reflect- prefix.
-    if (this._reflectPropertiesAsAttributes) {
-      this.setElementAttribute(location, `${REFLECT_PREFIX}${camelCaseToDashCase(propertyName)}`,
-                               `${propertyValue}`);
-    }
   }
 
   setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string):

@@ -84,8 +84,6 @@ export const defaultKeyValueDiffers = CONST_EXPR(new KeyValueDiffers(keyValDiff)
 // dart2js. See https://github.com/dart-lang/sdk/issues/23630 for details.
 export var preGeneratedProtoDetectors: StringMap<string, Function> = {};
 
-export const PROTO_CHANGE_DETECTOR = CONST_EXPR(new OpaqueToken('ProtoChangeDetectors'));
-
 /**
  * Implements change detection using a map of pregenerated proto detectors.
  */
@@ -93,14 +91,19 @@ export const PROTO_CHANGE_DETECTOR = CONST_EXPR(new OpaqueToken('ProtoChangeDete
 export class PreGeneratedChangeDetection extends ChangeDetection {
   _dynamicChangeDetection: ChangeDetection;
   _protoChangeDetectorFactories: StringMap<string, Function>;
+  _genConfig: ChangeDetectorGenConfig;
 
-  constructor(@Inject(PROTO_CHANGE_DETECTOR) @Optional() protoChangeDetectorsForTest?:
-                  StringMap<string, Function>) {
+  constructor(config?: ChangeDetectorGenConfig,
+              protoChangeDetectorsForTest?: StringMap<string, Function>) {
     super();
     this._dynamicChangeDetection = new DynamicChangeDetection();
     this._protoChangeDetectorFactories = isPresent(protoChangeDetectorsForTest) ?
                                              protoChangeDetectorsForTest :
                                              preGeneratedProtoDetectors;
+
+    this._genConfig =
+        isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
+                                                                 assertionsEnabled(), false);
   }
 
   static isSupported(): boolean { return PregenProtoChangeDetector.isSupported(); }
@@ -112,11 +115,8 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
     return this._dynamicChangeDetection.getProtoChangeDetector(id, definition);
   }
 
+  get genConfig(): ChangeDetectorGenConfig { return this._genConfig; }
   get generateDetectors(): boolean { return true; }
-
-  get genConfig(): ChangeDetectorGenConfig {
-    return new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
-  }
 }
 
 
@@ -127,15 +127,21 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
  */
 @Injectable()
 export class DynamicChangeDetection extends ChangeDetection {
+  _genConfig: ChangeDetectorGenConfig;
+
+  constructor(config?: ChangeDetectorGenConfig) {
+    super();
+    this._genConfig =
+        isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
+                                                                 assertionsEnabled(), false);
+  }
+
   getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return new DynamicProtoChangeDetector(definition);
   }
 
+  get genConfig(): ChangeDetectorGenConfig { return this._genConfig; }
   get generateDetectors(): boolean { return true; }
-
-  get genConfig(): ChangeDetectorGenConfig {
-    return new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
-  }
 }
 
 /**
@@ -145,17 +151,21 @@ export class DynamicChangeDetection extends ChangeDetection {
  * {@link DynamicChangeDetection} and {@link PreGeneratedChangeDetection}.
  */
 @Injectable()
-@CONST()
 export class JitChangeDetection extends ChangeDetection {
+  _genConfig: ChangeDetectorGenConfig;
+  constructor(config?: ChangeDetectorGenConfig) {
+    super();
+    this._genConfig =
+        isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
+                                                                 assertionsEnabled(), false);
+  }
+
   static isSupported(): boolean { return JitProtoChangeDetector.isSupported(); }
 
   getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return new JitProtoChangeDetector(definition);
   }
 
+  get genConfig(): ChangeDetectorGenConfig { return this._genConfig; }
   get generateDetectors(): boolean { return true; }
-
-  get genConfig(): ChangeDetectorGenConfig {
-    return new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled());
-  }
 }

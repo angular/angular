@@ -27,7 +27,7 @@ import {ChangeDetectorRef} from './change_detector_ref';
  *
  * # Example
  * ```javascript
- * bootstrap(MyApp, [bind(ChangeDetection).toClass(DynamicChangeDetection)]);
+ * bootstrap(MyApp, [bind(ChangeDetection).toValue(new DynamicChangeDetection())]);
  * ```
  */
 @CONST()
@@ -49,6 +49,7 @@ export class DebugContext {
 export interface ChangeDispatcher {
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext;
   notifyOnBinding(bindingTarget: BindingTarget, value: any): void;
+  logBindingUpdate(bindingTarget: BindingTarget, value: any): void;
   notifyOnAllChangesDone(): void;
 }
 
@@ -74,7 +75,8 @@ export interface ChangeDetector {
 export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher): ChangeDetector; }
 
 export class ChangeDetectorGenConfig {
-  constructor(public genCheckNoChanges: boolean, public genDebugInfo: boolean) {}
+  constructor(public genCheckNoChanges: boolean, public genDebugInfo: boolean,
+              public logBindingUpdate: boolean) {}
 }
 
 export class ChangeDetectorDefinition {

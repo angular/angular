@@ -24,8 +24,6 @@ import {
   RenderViewRef,
   ViewEncapsulation
 } from 'angular2/src/render/api';
-import {DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES} from 'angular2/src/render/dom/dom_tokens';
-import {bind} from 'angular2/di';
 
 export function main() {
   describe('DomRenderer integration', () => {
@@ -105,72 +103,6 @@ export function main() {
                async.done();
              });
        }));
-
-
-    it('should NOT reflect property values as attributes if flag is NOT set',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
-         tb.compileAndMerge(someComponent,
-                            [
-                              new ViewDefinition({
-                                componentId: 'someComponent',
-                                template: '<input [title]="y">',
-                                directives: []
-                              })
-                            ])
-             .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings);
-               var el = DOM.childNodes(rootView.hostElement)[0];
-               tb.renderer.setElementProperty(elRef(rootView.viewRef, 1), 'maxLength', '20');
-               expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
-                   .toEqual(null);
-
-               async.done();
-             });
-       }));
-
-    describe('reflection', () => {
-      beforeEachBindings(() => [bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(true)]);
-
-      it('should reflect property values as attributes if flag is set',
-         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
-           tb.compileAndMerge(someComponent,
-                              [
-                                new ViewDefinition({
-                                  componentId: 'someComponent',
-                                  template: '<input [title]="y">',
-                                  directives: []
-                                })
-                              ])
-               .then((protoViewMergeMappings) => {
-                 var rootView = tb.createView(protoViewMergeMappings);
-                 var el = DOM.childNodes(rootView.hostElement)[0];
-                 tb.renderer.setElementProperty(elRef(rootView.viewRef, 1), 'maxLength', '20');
-                 expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
-                     .toEqual('20');
-                 async.done();
-               });
-         }));
-
-      it('should reflect non-string property values as attributes if flag is set',
-         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
-           tb.compileAndMerge(someComponent,
-                              [
-                                new ViewDefinition({
-                                  componentId: 'someComponent',
-                                  template: '<input [title]="y">',
-                                  directives: []
-                                })
-                              ])
-               .then((protoViewMergeMappings) => {
-                 var rootView = tb.createView(protoViewMergeMappings);
-                 var el = DOM.childNodes(rootView.hostElement)[0];
-                 tb.renderer.setElementProperty(elRef(rootView.viewRef, 1), 'maxLength', 20);
-                 expect(DOM.getAttribute(<HTMLInputElement>el, 'ng-reflect-max-length'))
-                     .toEqual('20');
-                 async.done();
-               });
-         }));
-    });
 
     if (DOM.supportsDOMEvents()) {
       it('should call actions on the element independent of the compilation',

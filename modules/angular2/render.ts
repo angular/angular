@@ -17,6 +17,5 @@ export {
   ViewDefinition,
   DOCUMENT,
   APP_ID,
-  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE
 } from './src/render/render';

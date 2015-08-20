@@ -80,11 +80,11 @@ class PrintLogger {
 
 function _injectorBindings(appComponentType, bus: MessageBusInterface,
                            initData: StringMap<string, any>): List<Type | Binding | List<any>> {
-  var bestChangeDetection: Type = DynamicChangeDetection;
+  var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = PreGeneratedChangeDetection;
+    bestChangeDetection = new PreGeneratedChangeDetection();
   } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = JitChangeDetection;
+    bestChangeDetection = new JitChangeDetection();
   }
   return [
     bind(APP_COMPONENT)
@@ -124,7 +124,7 @@ function _injectorBindings(appComponentType, bus: MessageBusInterface,
     DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
-    bind(ChangeDetection).toClass(bestChangeDetection),
+    bind(ChangeDetection).toValue(bestChangeDetection),
     DirectiveResolver,
     PipeResolver,
     Parser,

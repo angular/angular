@@ -1,7 +1,6 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/di";
-import {Type, isBlank, isPresent} from "angular2/src/facade/lang";
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {
@@ -24,7 +23,6 @@ import {AppRootUrl} from 'angular2/src/services/app_root_url';
 import {
   DomRenderer,
   DOCUMENT,
-  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
   DefaultDomCompiler,
   APP_ID_RANDOM_BINDING,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
@@ -75,12 +73,12 @@ var _rootBindings = [bind(Reflector).toValue(reflector)];
 
 // TODO: This code is nearly identitcal to core/application. There should be a way to only write it
 // once
-function _injectorBindings(): List<Type | Binding | List<any>> {
-  var bestChangeDetection: Type = DynamicChangeDetection;
+function _injectorBindings(): List<any> {
+  var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = PreGeneratedChangeDetection;
+    bestChangeDetection = new PreGeneratedChangeDetection();
   } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = JitChangeDetection;
+    bestChangeDetection = new JitChangeDetection();
   }
 
   return [
@@ -94,7 +92,6 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
               return new EventManager(plugins, ngZone);
             },
             [NgZone]),
-    bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
@@ -119,7 +116,7 @@ function _injectorBindings(): List<Type | Binding | List<any>> {
     CompilerCache,
     ViewResolver,
     DEFAULT_PIPES,
-    bind(ChangeDetection).toClass(bestChangeDetection),
+    bind(ChangeDetection).toValue(bestChangeDetection),
     ViewLoader,
     DirectiveResolver,
     Parser,

@@ -3,10 +3,6 @@ import {CONST_EXPR, StringWrapper, Math} from 'angular2/src/facade/lang';
 
 export const DOCUMENT: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
 
-export const DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('DomReflectPropertiesAsAttributes'));
-
-
 /**
  * A unique id (string) for an angular application.
  */

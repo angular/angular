@@ -82,7 +82,6 @@ export class ChangeDetectorJITGenerator {
         return new ${this._typeName}(dispatcher);
       }
     `;
-
     return new Function(ABSTRACT_CHANGE_DETECTOR, UTIL, classDefinition)(AbstractChangeDetector,
                                                                          ChangeDetectionUtil);
   }
@@ -301,6 +300,7 @@ export class ChangeDetectorJITGenerator {
 
     var newValue = this._names.getLocalName(r.selfIndex);
     var oldValue = this._names.getFieldName(r.selfIndex);
+    var notifyDebug = this.genConfig.logBindingUpdate ? `this.logBindingUpdate(${newValue});` : "";
 
     var br = r.bindingRecord;
     if (br.target.isDirective()) {
@@ -309,12 +309,14 @@ export class ChangeDetectorJITGenerator {
       return `
         ${this._genThrowOnChangeCheck(oldValue, newValue)}
         ${directiveProperty} = ${newValue};
+        ${notifyDebug}
         ${IS_CHANGED_LOCAL} = true;
       `;
     } else {
       return `
         ${this._genThrowOnChangeCheck(oldValue, newValue)}
         this.notifyDispatcher(${newValue});
+        ${notifyDebug}
       `;
     }
   }

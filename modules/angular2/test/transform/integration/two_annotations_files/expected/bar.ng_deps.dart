@@ -58,6 +58,7 @@ class _MyComponent_ChangeDetector0
         }
 
         this.notifyDispatcher(l_interpolate1);
+        this.logBindingUpdate(l_interpolate1);
 
         this.interpolate1 = l_interpolate1;
       }

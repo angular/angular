@@ -399,6 +399,7 @@ class _CodegenState {
 
     var newValue = _names.getLocalName(r.selfIndex);
     var oldValue = _names.getFieldName(r.selfIndex);
+    var notifyDebug = _genConfig.logBindingUpdate ? "this.logBindingUpdate(${newValue});" : "";
 
     var br = r.bindingRecord;
     if (br.target.isDirective()) {
@@ -407,12 +408,14 @@ class _CodegenState {
       return '''
       ${_genThrowOnChangeCheck(oldValue, newValue)}
       $directiveProperty = $newValue;
+      ${notifyDebug}
       $_IS_CHANGED_LOCAL = true;
     ''';
     } else {
       return '''
       ${_genThrowOnChangeCheck(oldValue, newValue)}
       this.notifyDispatcher(${newValue});
+      ${notifyDebug}
     ''';
     }
   }

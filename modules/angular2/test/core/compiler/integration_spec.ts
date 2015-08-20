@@ -58,7 +58,10 @@ import {
 import {
   PipeTransform,
   ChangeDetectorRef,
-  ON_PUSH
+  ON_PUSH,
+  ChangeDetection,
+  DynamicChangeDetection,
+  ChangeDetectorGenConfig
 } from 'angular2/src/change_detection/change_detection';
 
 import {Directive, Component, View, ViewMetadata, Attribute, Query, Pipe} from 'angular2/metadata';
@@ -1518,6 +1521,30 @@ export function main() {
          }));
     });
 
+    describe('logging property updates', () => {
+      beforeEachBindings(() => [
+        bind(ChangeDetection)
+            .toValue(new DynamicChangeDetection(new ChangeDetectorGenConfig(true, true, true)))
+      ]);
+
+      it('should reflect property values as attributes',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var tpl = '<div>' +
+                     '<div my-dir [elprop]="ctxProp"></div>' +
+                     '</div>';
+           tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [MyDir]}))
+
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.componentInstance.ctxProp = 'hello';
+                 rootTC.detectChanges();
+
+                 expect(DOM.getInnerHTML(rootTC.nativeElement))
+                     .toContain('ng-reflect-dir-prop="hello"');
+                 async.done();
+               });
+         }));
+    });
 
     describe('different proto view storages', () => {
       function runWithMode(mode: string) {
