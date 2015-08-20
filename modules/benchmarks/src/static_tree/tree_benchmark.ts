@@ -24,10 +24,14 @@ import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind, Binding} from 'angular2/di';
+import {stringify} from 'angular2/src/facade/lang';
+import {TemplateRegistry} from 'angular2/core';
+import * as _tf_ from 'angular2/src/core/compiler/template_factory';
 
 function createBindings(): List<Binding> {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 0;
-  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
+  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity),
+    bind(TemplateRegistry).toValue(_registerTemplates())];
 }
 
 function setupReflector() {
@@ -226,6 +230,52 @@ class StaticTreeComponentBase {
   get data() { return this._value; }
 }
 
+function _registerTemplates() {
+  var templates = new Map();
+  var styles = new Map();
+  templates.set('AppComponentWithStaticTree_comp_0', AppComponentWithStaticTreeCommands);
+  templates.set('StaticTreeComponent0_comp_0', treeLeafComponentCmds);
+  templates.set('StaticTreeComponent1_comp_0', treeBranchComponentCmds(StaticTreeComponent0));
+  templates.set('StaticTreeComponent2_comp_0', treeBranchComponentCmds(StaticTreeComponent1));
+  templates.set('StaticTreeComponent3_comp_0', treeBranchComponentCmds(StaticTreeComponent2));
+  templates.set('StaticTreeComponent4_comp_0', treeBranchComponentCmds(StaticTreeComponent3));
+  templates.set('StaticTreeComponent5_comp_0', treeBranchComponentCmds(StaticTreeComponent4));
+  templates.set('StaticTreeComponent6_comp_0', treeBranchComponentCmds(StaticTreeComponent5));
+  templates.set('StaticTreeComponent7_comp_0', treeBranchComponentCmds(StaticTreeComponent6));
+  templates.set('StaticTreeComponent8_comp_0', treeBranchComponentCmds(StaticTreeComponent7));
+  templates.set('StaticTreeComponent9_comp_0', treeBranchComponentCmds(StaticTreeComponent8));  
+  
+  styles.set('AppComponentWithStaticTree_comp_0', []);
+  styles.set('StaticTreeComponent0_comp_0', []);
+  styles.set('StaticTreeComponent1_comp_0', []);  
+  styles.set('StaticTreeComponent2_comp_0', []);  
+  styles.set('StaticTreeComponent3_comp_0', []);  
+  styles.set('StaticTreeComponent4_comp_0', []);  
+  styles.set('StaticTreeComponent5_comp_0', []);  
+  styles.set('StaticTreeComponent6_comp_0', []);  
+  styles.set('StaticTreeComponent7_comp_0', []);  
+  styles.set('StaticTreeComponent8_comp_0', []);  
+  styles.set('StaticTreeComponent9_comp_0', []);  
+  return new TemplateRegistry(templates, styles); 
+}
+
+function treeBranchComponentCmds(childComponentType) {
+  var childComponentName = stringify(childComponentType);
+  return [
+  _tf_.bbe('span', null, null, null, [], null),
+    _tf_.btt(null),
+    _tf_.bc(`${childComponentName}_comp_0`, 'tree', null, null, null, [childComponentType], false, null),
+    _tf_.ec(),
+    _tf_.bc(`${childComponentName}_comp_0`, 'tree', null, null, null, [childComponentType], false, null),  
+    _tf_.ec(),
+  _tf_.ee()
+  ];
+}
+
+var treeLeafComponentCmds = [
+  _tf_.bbe('span', null, null, null, [], null),_tf_.btt(null),_tf_.ee() 
+];
+
 @Component({selector: 'tree', properties: ['data']})
 @View({directives: [], template: '<span>{{data.value}} </span>'})
 class StaticTreeComponent0 extends StaticTreeComponentBase {
@@ -312,6 +362,13 @@ class StaticTreeComponent8 extends StaticTreeComponentBase {
 })
 class StaticTreeComponent9 extends StaticTreeComponentBase {
 }
+
+var AppComponentWithStaticTreeCommands = [
+    _tf_.et('AppComponentWithStaticTree_embedded_1', null, null, NgIf, false, null, [  
+      _tf_.bc('StaticTreeComponent9_comp_0', 'tree', null, null, null, [StaticTreeComponent9], false, null),
+      _tf_.ec(),
+    ])
+];
 
 @Component({selector: 'app'})
 @View({

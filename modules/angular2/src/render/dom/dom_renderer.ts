@@ -149,7 +149,7 @@ export class DomRenderer extends Renderer implements ComponentTemplateResolver {
 
     // add global events
     // TODO
-    // view.eventHandlerRemovers = [];
+    view.eventHandlerRemovers = [];
     // var binders = view.proto.elementBinders;
     // for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
     //   var binder = binders[binderIdx];
