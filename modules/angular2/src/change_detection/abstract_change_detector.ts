@@ -35,24 +35,20 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // change detection will fail.
   alreadyChecked: any = false;
   context: T;
-  directiveRecords: List<DirectiveRecord>;
-  dispatcher: ChangeDispatcher;
   locals: Locals = null;
   mode: string = null;
   pipes: Pipes = null;
-  firstProtoInCurrentBinding: number;
-  protos: List<ProtoRecord>;
+  currentBindingIndex: number;
+  length: number;
 
   // This is an experimental feature. Works only in Dart.
   subscriptions: any[];
   streams: any[];
 
-  constructor(public id: string, dispatcher: ChangeDispatcher, protos: List<ProtoRecord>,
-              directiveRecords: List<DirectiveRecord>, public modeOnHydrate: string) {
+  constructor(public id: string, public dispatcher: ChangeDispatcher, public bindings: BindingRecord[],
+              public directiveIndices: any[],
+              public modeOnHydrate: string) {
     this.ref = new ChangeDetectorRef(this);
-    this.directiveRecords = directiveRecords;
-    this.dispatcher = dispatcher;
-    this.protos = protos;
   }
 
   addChild(cd: ChangeDetector): void {
@@ -195,8 +191,8 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   protected observe(value: any, index: number): any {
     if (isObservable(value)) {
       if (isBlank(this.subscriptions)) {
-        this.subscriptions = ListWrapper.createFixedSize(this.protos.length + 1);
-        this.streams = ListWrapper.createFixedSize(this.protos.length + 1);
+        this.subscriptions = ListWrapper.createFixedSize(this.length);
+        this.streams = ListWrapper.createFixedSize(this.length);
       }
       if (isBlank(this.subscriptions[index])) {
         this.streams[index] = value.changes;
@@ -225,25 +221,23 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   }
 
   private _throwError(exception: any, stack: any): void {
-    var proto = this._currentBindingProto();
-    var c = this.dispatcher.getDebugContext(proto.bindingRecord.elementIndex, proto.directiveIndex);
-    var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.directive, c.context,
-                                              c.locals, c.injector, proto.expressionAsString) :
-                                 null;
-    throw new ChangeDetectionError(proto, exception, stack, context);
+    // var proto = this._currentBindingProto();
+    // var c = this.dispatcher.getDebugContext(proto.bindingRecord.elementIndex, proto.directiveIndex);
+    // var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.directive, c.context,
+    //                                           c.locals, c.injector, proto.expressionAsString) :
+    //                              null;
+    // throw new ChangeDetectionError(proto, exception, stack, context);
+    throw exception;
   }
 
   protected throwOnChangeError(oldValue: any, newValue: any): void {
-    var change = ChangeDetectionUtil.simpleChange(oldValue, newValue);
-    throw new ExpressionChangedAfterItHasBeenCheckedException(this._currentBindingProto(), change,
-                                                              null);
+    // var change = ChangeDetectionUtil.simpleChange(oldValue, newValue);
+    // throw new ExpressionChangedAfterItHasBeenCheckedException(this._currentBindingProto(), change,
+    //                                                           null);
+    throw new BaseException("throwOnChangeError");
   }
 
   protected throwDehydratedError(): void { throw new DehydratedException(); }
 
-  private _currentBinding(): BindingRecord { return this._currentBindingProto().bindingRecord; }
-
-  private _currentBindingProto(): ProtoRecord {
-    return ChangeDetectionUtil.protoByIndex(this.protos, this.firstProtoInCurrentBinding);
-  }
+  private _currentBinding(): BindingRecord { return this.bindings[this.currentBindingIndex]; }
 }

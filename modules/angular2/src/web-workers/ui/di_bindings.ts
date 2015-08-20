@@ -14,7 +14,8 @@ import {
 } from 'angular2/src/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {CompilerCache} from 'angular2/src/core/compiler/compiler_cache';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';

@@ -17,6 +17,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DomTestbed, TestRootView, elRef} from './dom_testbed';
+import {be, bbe, ee, bc, ec, tpl, tt} from '../test_template_commands';
 
 import {
   ViewDefinition,
@@ -30,60 +31,40 @@ import {bind} from 'angular2/di';
 export function main() {
   describe('DomRenderer integration', () => {
     beforeEachBindings(() => [DomTestbed]);
-
+    
     it('should create and destroy root host views while using the given elements in place',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-         tb.compiler.compileHost(someComponent)
-             .then((hostProtoViewDto) => {
-               var view = new TestRootView(
-                   tb.renderer.createRootHostView(hostProtoViewDto.render, 0, '#root'));
-               expect(tb.rootEl.parentNode).toBeTruthy();
-               expect(view.hostElement).toEqual(tb.rootEl);
-
-               tb.renderer.detachFragment(view.fragments[0]);
-               tb.renderer.destroyView(view.viewRef);
-               expect(tb.rootEl.parentNode).toBeFalsy();
-
-               async.done();
-             });
+       inject([DomTestbed], (tb: DomTestbed) => {
+         var view = tb.createRootHostView([[
+           bbe('div', ['attr1', 'value1']),
+           ee()
+         ]]);
+         expect(tb.rootEl.parentNode).toBeTruthy();
+         expect(view.hostElement).toEqual(tb.rootEl);
+         expect(DOM.getAttribute(tb.rootEl, 'attr1')).toEqual('value1');
+  
+         tb.renderer.detachFragment(view.fragments[0]);
+         tb.renderer.destroyView(view.viewRef);
+         expect(tb.rootEl.parentNode).toBeFalsy();
        }));
 
     it('should update text nodes',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-         tb.compileAndMerge(
-               someComponent,
-               [
-                 new ViewDefinition(
-                     {componentId: 'someComponent', template: '{{a}}', directives: []})
-               ])
-             .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings);
-
-               tb.renderer.setText(rootView.viewRef, 0, 'hello');
-               expect(rootView.hostElement).toHaveText('hello');
-               async.done();
-             });
+       inject([ DomTestbed], (tb: DomTestbed) => {
+         var rootView = tb.createView([[
+           tt('{{a}}', true),
+         ]]);
+         tb.renderer.setText(rootView.viewRef, 0, 'hello');
+         expect(rootView.hostElement).toHaveText('hello');
        }));
 
 
     it('should update any element property/attributes/class/style independent of the compilation on the root element and other elements',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-         tb.compileAndMerge(someComponent,
-                            [
-                              new ViewDefinition({
-                                componentId: 'someComponent',
-                                template: '<input [title]="y" style="position:absolute">',
-                                directives: []
-                              })
-                            ])
-             .then((protoViewMergeMappings) => {
-
+       inject([DomTestbed], (tb: DomTestbed) => {
                var checkSetters = (elr, el) => {
                  tb.renderer.setElementProperty(elr, 'tabIndex', 1);
                  expect((<HTMLInputElement>el).tabIndex).toEqual(1);
 
                  tb.renderer.setElementClass(elr, 'a', true);
-                 expect(DOM.hasClass(el, 'a')).toBe(true);
+                 expect(DOM.hasClass(el, 'a')).toBe(true); 
                  tb.renderer.setElementClass(elr, 'a', false);
                  expect(DOM.hasClass(el, 'a')).toBe(false);
 
@@ -95,15 +76,18 @@ export function main() {
                  tb.renderer.setElementAttribute(elr, 'someAttr', 'someValue');
                  expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
                };
-
-               var rootView = tb.createView(protoViewMergeMappings);
+               
+               var rootView = tb.createRootHostView([[
+                 bc('root'),
+                 ec()                 
+               ],[
+                 bbe('input'),
+                 ee()                 
+               ]]);
                // root element
                checkSetters(elRef(rootView.viewRef, 0), rootView.hostElement);
                // nested elements
                checkSetters(elRef(rootView.viewRef, 1), DOM.firstChild(rootView.hostElement));
-
-               async.done();
-             });
        }));
 
 
@@ -197,55 +181,39 @@ export function main() {
     }
 
     it('should add and remove fragments',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-         tb.compileAndMerge(someComponent,
-                            [
-                              new ViewDefinition({
-                                componentId: 'someComponent',
-                                template: '<template>hello</template>',
-                                directives: []
-                              })
-                            ])
-             .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings);
-
-               var elr = elRef(rootView.viewRef, 1);
-               expect(rootView.hostElement).toHaveText('');
-               var fragment = rootView.fragments[1];
-               tb.renderer.attachFragmentAfterElement(elr, fragment);
-               expect(rootView.hostElement).toHaveText('hello');
-               tb.renderer.detachFragment(fragment);
-               expect(rootView.hostElement).toHaveText('');
-
-               async.done();
-             });
+       inject([DomTestbed], (tb: DomTestbed) => {
+         var rootView = tb.createRootHostView([[
+            bc('root'),
+            ec()
+         ], [tpl()],
+         [
+           tt('hello')
+         ]]);
+        var elr = elRef(rootView.viewRef, 1);
+        expect(rootView.hostElement).toHaveText('');
+        var fragment = rootView.fragments[1];
+        tb.renderer.attachFragmentAfterElement(elr, fragment);
+        expect(rootView.hostElement).toHaveText('hello');
+        tb.renderer.detachFragment(fragment);
+        expect(rootView.hostElement).toHaveText('');
        }));
 
-    it('should add and remove empty fragments',
-       inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
-         tb.compileAndMerge(someComponent,
-                            [
-                              new ViewDefinition({
-                                componentId: 'someComponent',
-                                template: '<template></template><template></template>',
-                                directives: []
-                              })
-                            ])
-             .then((protoViewMergeMappings) => {
-               var rootView = tb.createView(protoViewMergeMappings);
+    iit('should add and remove empty fragments',
+       inject([DomTestbed], (tb: DomTestbed) => {
+         var rootView = tb.createRootHostView([[
+            bc('root'),
+            ec()                            
+         ], [tpl(),tpl()], [], []]);
 
-               var elr = elRef(rootView.viewRef, 1);
-               expect(rootView.hostElement).toHaveText('');
-               var fragment = rootView.fragments[1];
-               var fragment2 = rootView.fragments[2];
-               tb.renderer.attachFragmentAfterElement(elr, fragment);
-               tb.renderer.attachFragmentAfterFragment(fragment, fragment2);
-               tb.renderer.detachFragment(fragment);
-               tb.renderer.detachFragment(fragment2);
-               expect(rootView.hostElement).toHaveText('');
-
-               async.done();
-             });
+        var elr = elRef(rootView.viewRef, 1);
+        expect(rootView.hostElement).toHaveText('');
+        var fragment = rootView.fragments[1];
+        var fragment2 = rootView.fragments[2];
+        tb.renderer.attachFragmentAfterElement(elr, fragment);
+        tb.renderer.attachFragmentAfterFragment(fragment, fragment2);
+        tb.renderer.detachFragment(fragment);
+        tb.renderer.detachFragment(fragment2);
+        expect(rootView.hostElement).toHaveText('');
        }));
 
     it('should handle events', inject([AsyncTestCompleter, DomTestbed], (async, tb: DomTestbed) => {
@@ -267,7 +235,7 @@ export function main() {
                // event type
                expect(eventEntry[1]).toEqual('change');
                // actual event
-               expect((<Map<any, any>>eventEntry[2]).get('$event').type).toEqual('change');
+               expect(((<Map<any, any>>eventEntry[2]).get('$event')).type).toEqual('change');
                async.done();
              });
 

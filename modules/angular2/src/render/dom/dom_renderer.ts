@@ -30,7 +30,13 @@ import {
   RenderViewRef,
   RenderElementRef,
   RenderFragmentRef,
-  RenderViewWithFragments
+  RenderViewWithFragments,
+  RenderTemplateCmd,
+  RenderTemplateCmdType,
+  RenderBeginElementCmd,
+  RenderTextCmd,
+  RenderNgContentCmd,
+  RenderBeginComponentCmd
 } from '../api';
 
 import {TemplateCloner} from './template_cloner';
@@ -54,36 +60,43 @@ export class DomRenderer extends Renderer {
     this._reflectPropertiesAsAttributes = reflectPropertiesAsAttributes;
     this._document = document;
   }
+  
+  _scope_createProtoView: WtfScopeFn = wtfCreateScope('DomRenderer#createProtoView()');
+  createProtoView(fragments:RenderTemplateCmd[][]):RenderProtoViewRef {
+    var s = this._scope_createRootHostView();    
+    return wtfLeave(s, new DomProtoViewRef(fragments));
+  }
 
   _scope_createRootHostView: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
     var s = this._scope_createRootHostView();
-    var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
+    var fragments = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
       wtfLeave(s);
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return wtfLeave(s, this._createView(hostProtoView, element));
+    return wtfLeave(s, this._createView(fragments, element));
   }
 
   _scope_createView = wtfCreateScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
     var s = this._scope_createView();
-    var protoView = resolveInternalDomProtoView(protoViewRef);
-    return wtfLeave(s, this._createView(protoView, null));
+    var fragments = resolveInternalDomProtoView(protoViewRef);
+    return wtfLeave(s, this._createView(fragments, null));
   }
 
   destroyView(viewRef: RenderViewRef) {
     var view = resolveInternalDomView(viewRef);
-    var elementBinders = view.proto.elementBinders;
-    for (var i = 0; i < elementBinders.length; i++) {
-      var binder = elementBinders[i];
-      if (binder.hasNativeShadowRoot) {
-        this._domSharedStylesHost.removeHost(DOM.getShadowRoot(view.boundElements[i]));
-      }
-    }
+    // TODO
+    // var elementBinders = view.proto.elementBinders;
+    // for (var i = 0; i < elementBinders.length; i++) {
+    //   var binder = elementBinders[i];
+    //   if (binder.hasNativeShadowRoot) {
+    //     this._domSharedStylesHost.removeHost(DOM.getShadowRoot(view.boundElements[i]));
+    //   }
+    // }
   }
 
   getNativeElementSync(location: RenderElementRef): any {
@@ -132,19 +145,20 @@ export class DomRenderer extends Renderer {
     view.hydrated = true;
 
     // add global events
-    view.eventHandlerRemovers = [];
-    var binders = view.proto.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      if (isPresent(binder.globalEvents)) {
-        for (var i = 0; i < binder.globalEvents.length; i++) {
-          var globalEvent = binder.globalEvents[i];
-          var remover = this._createGlobalEventListener(view, binderIdx, globalEvent.name,
-                                                        globalEvent.target, globalEvent.fullName);
-          view.eventHandlerRemovers.push(remover);
-        }
-      }
-    }
+    // TODO
+    // view.eventHandlerRemovers = [];
+    // var binders = view.proto.elementBinders;
+    // for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
+    //   var binder = binders[binderIdx];
+    //   if (isPresent(binder.globalEvents)) {
+    //     for (var i = 0; i < binder.globalEvents.length; i++) {
+    //       var globalEvent = binder.globalEvents[i];
+    //       var remover = this._createGlobalEventListener(view, binderIdx, globalEvent.name,
+    //                                                     globalEvent.target, globalEvent.fullName);
+    //       view.eventHandlerRemovers.push(remover);
+    //     }
+    //   }
+    // }
   }
 
   dehydrateView(viewRef: RenderViewRef) {
@@ -221,52 +235,14 @@ export class DomRenderer extends Renderer {
     wtfLeave(s);
   }
 
-  _createView(protoView: DomProtoView, inplaceElement: HTMLElement): RenderViewWithFragments {
-    var clonedProtoView = cloneAndQueryProtoView(this._templateCloner, protoView, true);
-
-    var boundElements = clonedProtoView.boundElements;
-
-    // adopt inplaceElement
-    if (isPresent(inplaceElement)) {
-      if (protoView.fragmentsRootNodeCount[0] !== 1) {
-        throw new BaseException('Root proto views can only contain one element!');
-      }
-      DOM.clearNodes(inplaceElement);
-      var tempRoot = clonedProtoView.fragments[0][0];
-      moveChildNodes(tempRoot, inplaceElement);
-      if (boundElements.length > 0 && boundElements[0] === tempRoot) {
-        boundElements[0] = inplaceElement;
-      }
-      clonedProtoView.fragments[0][0] = inplaceElement;
+  _createView(fragmentsCmds: RenderTemplateCmd[][], inplaceElement: HTMLElement): RenderViewWithFragments {
+    var context = new ViewCreateContext(fragmentsCmds);
+    createFragments(context, null, inplaceElement);
+    var embeddedFragments = [];
+    for (var i=0; i<context.embeddedFragments.length; i++) {
+      embeddedFragments.push(new DomFragmentRef(context.embeddedFragments[i]));
     }
-
-    var view = new DomView(protoView, clonedProtoView.boundTextNodes, boundElements);
-
-    var binders = protoView.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      var element = boundElements[binderIdx];
-
-      // native shadow DOM
-      if (binder.hasNativeShadowRoot) {
-        var shadowRootWrapper = DOM.firstChild(element);
-        var shadowRoot = DOM.createShadowRoot(element);
-        this._domSharedStylesHost.addHost(shadowRoot);
-        moveChildNodes(shadowRootWrapper, shadowRoot);
-        DOM.remove(shadowRootWrapper);
-      }
-
-      // events
-      if (isPresent(binder.eventLocals) && isPresent(binder.localEvents)) {
-        for (var i = 0; i < binder.localEvents.length; i++) {
-          this._createEventListener(view, element, binderIdx, binder.localEvents[i].name,
-                                    binder.eventLocals);
-        }
-      }
-    }
-
-    return new RenderViewWithFragments(
-        new DomViewRef(view), clonedProtoView.fragments.map(nodes => new DomFragmentRef(nodes)));
+    return new RenderViewWithFragments(new DomViewRef(new DomView(null, flattenArr(context.boundTextNodes), flattenArr(context.boundElements))), embeddedFragments);
   }
 
   _createEventListener(view, element, elementIndex, eventName, eventLocals) {
@@ -278,6 +254,145 @@ export class DomRenderer extends Renderer {
     return this._eventManager.addGlobalEventListener(
         eventTarget, eventName, (event) => { view.dispatchEvent(elementIndex, fullName, event); });
   }
+}
+
+function createFragments(context:ViewCreateContext, parentComponent:Component, inplaceElement:Element) {
+    var parent:Element | Node | Component = null; // can be a ShadowRoot as well...
+    var fragmentRootNodes = [];
+    if (isBlank(parentComponent) || context.embeddedFragments.length === 0) {
+      context.embeddedFragments.push(fragmentRootNodes);      
+    }
+    if (isPresent(parentComponent)) {
+      parent = parentComponent.childrenRoot;      
+    }
+    var parentStack:List<Element | Node | Component> = [];
+    var boundElements = [];
+    var boundTextNodes = [];
+    context.boundElements.push(boundElements);
+    context.boundTextNodes.push(boundTextNodes);
+    var fragmentCmds = context.shiftFragmentCmds();
+    for (var cmdIdx=0; cmdIdx<fragmentCmds.length; cmdIdx++) {
+      var cmd = fragmentCmds[cmdIdx];
+      switch (cmd.type) {
+        case RenderTemplateCmdType.BEGIN_COMPONENT:
+        case RenderTemplateCmdType.BEGIN_BASIC_ELEMENT: {
+          var bec = <RenderBeginElementCmd> cmd;
+          var el:Element;
+          if (isPresent(inplaceElement)) {
+            el = mergeElement(fragmentRootNodes, inplaceElement, bec.attrs);
+            inplaceElement = null;
+          } else {
+            el = createElement(parent, fragmentRootNodes, bec.name, bec.attrs, bec.ngContentId);                          
+          }
+          if (bec.isBound) {
+            boundElements.push(el);
+          }
+          parentStack.push(parent);
+          if (cmd.type === RenderTemplateCmdType.BEGIN_COMPONENT) {
+            var root = el;
+            if ((<RenderBeginComponentCmd>cmd).nativeShadow) {
+              root = DOM.createShadowRoot(el);
+            }
+            parent = new Component(root);
+          } else {
+            parent = el;              
+          }
+          // TODO: events!
+          break;
+        }
+        case RenderTemplateCmdType.END_COMPONENT: {
+          var c = <Component> parent;
+          createFragments(context, c, null);
+          parent = parentStack.pop();
+          break;
+        }
+        case RenderTemplateCmdType.END_BASIC_ELEMENT: {
+          parent = parentStack.pop();
+          break;
+        } 
+        case RenderTemplateCmdType.TEMPLATE_ANCHOR: {
+          var bec = <RenderBeginElementCmd> cmd;
+          var el = createElement(parent, fragmentRootNodes, bec.name, bec.attrs, bec.ngContentId);              
+          if (bec.isBound) {
+            boundElements.push(el);
+          }
+          createFragments(context, null, null);
+          break;
+        }
+        case RenderTemplateCmdType.NG_CONTENT: {
+          var nct = <RenderNgContentCmd> cmd;
+          var id = nct.id;
+          parentComponent.project(nct.id, parent, fragmentRootNodes);
+        }
+        case RenderTemplateCmdType.TEXT: {
+          var ttc = <RenderTextCmd> cmd;
+          var text = createText(parent, fragmentRootNodes, ttc.value, ttc.ngContentId);
+          if (ttc.isBound) {
+            boundTextNodes.push(text);
+          }
+          break;
+        }
+      }
+    }
+    return fragmentRootNodes;
+}
+
+class ViewCreateContext {
+  fragmentIndex:number = 0;
+  boundElements:Element[][] = [];
+  boundTextNodes:Node[][] = [];
+  embeddedFragments:Node[][] = [];
+  
+  constructor(public fragmentCmds:RenderTemplateCmd[][]) {}
+  
+  shiftFragmentCmds():RenderTemplateCmd[] {
+    return this.fragmentCmds[this.fragmentIndex++];
+  }
+}
+
+class Component {
+  constructor(public childrenRoot:Element | Node) {}
+  addLightDom(ngContentId:string, node: Node) {
+    // TODO
+  }
+  project(ngContentId: string, parent: Node | Component, fragmentRootNodes: Node[]) {
+    // TODO
+  }
+}
+
+function createElement(parent:Node | Component, fragmentRootNodes: Node[], name: string, attrs: string[], ngContentId: string):Element {
+  var el = DOM.createElement(name);
+  for (var attrIdx = 0; attrIdx<attrs.length; attrIdx+=2) {
+    DOM.setAttribute(el, attrs[attrIdx], attrs[attrIdx+1]);
+  }
+  addChild(parent, fragmentRootNodes, el, ngContentId);
+  return el;
+}
+
+function mergeElement(fragmentRootNodes:Node[], el:Element, attrs: string[]):Element {
+  for (var attrIdx = 0; attrIdx<attrs.length; attrIdx+=2) {
+    DOM.setAttribute(el, attrs[attrIdx], attrs[attrIdx+1]);
+  }
+  fragmentRootNodes.push(el);
+  return el;
+}
+
+function createText(parent:Node | Component, fragmentRootNodes: Node[], value:string, ngContentId: string):Node {
+  var t = DOM.createTextNode(value);
+  addChild(parent, fragmentRootNodes, t, ngContentId);
+  return t;
+}
+
+function addChild(parent:Node | Component, fragmentRootNodes: Node[], node: Node, ngContentId: string) {
+  if (isPresent(parent)) {
+    if (isPresent(ngContentId)) {
+      (<Component>parent).addLightDom(ngContentId, node);
+    } else {
+      DOM.appendChild(parent, node);          
+    }
+  } else {
+    fragmentRootNodes.push(node);
+  } 
 }
 
 function moveNodesAfterSibling(sibling, nodes) {
@@ -296,4 +411,15 @@ function moveChildNodes(source: Node, target: Node) {
     DOM.appendChild(target, currChild);
     currChild = nextChild;
   }
+}
+
+function flattenArr(arr:any[][]):any[] {
+  var res = [];
+  for (var i=0; i<arr.length; i++) {
+    var entry = arr[i];
+    for (var j=0; j<entry.length; j++) {
+      res.push(entry[j]);
+    }
+  }
+  return res;
 }

@@ -17,7 +17,8 @@ import {
   RenderDirectiveMetadata,
   RenderElementRef,
   RenderProtoViewMergeMapping,
-  RenderProtoViewRef
+  RenderProtoViewRef,
+  RenderTemplateCmd
 } from 'angular2/src/render/api';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 import {resolveInternalDomFragment} from 'angular2/src/render/dom/view/fragment';
@@ -100,8 +101,16 @@ export class DomTestbed {
     return testView;
   }
 
-  createView(protoView: RenderProtoViewMergeMapping): TestRootView {
-    var viewWithFragments = this.renderer.createView(protoView.mergedProtoViewRef, 0);
+  createRootHostView(mainTemplateFragments:RenderTemplateCmd[][]): TestRootView {
+    var protoViewRef = this.renderer.createProtoView(mainTemplateFragments);
+    var viewWithFragments = this.renderer.createRootHostView(protoViewRef, mainTemplateFragments.length, '#root');
+    this.renderer.hydrateView(viewWithFragments.viewRef);
+    return this._createTestView(viewWithFragments);
+  }
+
+  createView(mainTemplateFragments:RenderTemplateCmd[][]): TestRootView {
+    var protoViewRef = this.renderer.createProtoView(mainTemplateFragments);
+    var viewWithFragments = this.renderer.createView(protoViewRef, mainTemplateFragments.length);
     this.renderer.hydrateView(viewWithFragments.viewRef);
     return this._createTestView(viewWithFragments);
   }

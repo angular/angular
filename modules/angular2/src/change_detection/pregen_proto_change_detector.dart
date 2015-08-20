@@ -14,6 +14,8 @@ export 'package:angular2/src/change_detection/change_detection.dart'
     show preGeneratedProtoDetectors;
 export 'package:angular2/src/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
+export 'package:angular2/src/change_detection/binding_record.dart'
+    show BindingRecord;
 export 'package:angular2/src/change_detection/interfaces.dart'
     show ChangeDetector, ChangeDetectorDefinition, ProtoChangeDetector;
 export 'package:angular2/src/change_detection/pipes.dart' show Pipes;
@@ -26,8 +28,7 @@ export 'package:angular2/src/facade/lang.dart' show looseIdentical;
 typedef ProtoChangeDetector PregenProtoChangeDetectorFactory(
     ChangeDetectorDefinition definition);
 
-typedef ChangeDetector InstantiateMethod(dynamic dispatcher,
-    List<ProtoRecord> protoRecords, List<DirectiveRecord> directiveRecords);
+typedef ChangeDetector InstantiateMethod(dynamic dispatcher);
 
 /// Implementation of [ProtoChangeDetector] for use by pre-generated change
 /// detectors in Angular 2 Dart.
@@ -40,32 +41,22 @@ class PregenProtoChangeDetector extends ProtoChangeDetector {
 
   /// Closure used to generate an actual [ChangeDetector].
   final InstantiateMethod _instantiateMethod;
-
-  // [ChangeDetector] dependencies.
-  final List<ProtoRecord> _protoRecords;
-  final List<DirectiveRecord> _directiveRecords;
-
+  
   /// Internal ctor.
-  PregenProtoChangeDetector._(this.id, this._instantiateMethod,
-      this._protoRecords, this._directiveRecords);
+  PregenProtoChangeDetector._(this.id, this._instantiateMethod);
 
   static bool isSupported() => true;
 
   factory PregenProtoChangeDetector(
       InstantiateMethod instantiateMethod, ChangeDetectorDefinition def) {
     // TODO(kegluneq): Pre-generate these (#2067).
-    var recordBuilder = new ProtoRecordBuilder();
-    def.bindingRecords.forEach((b) {
-      recordBuilder.add(b, def.variableNames);
-    });
-    var protoRecords = coalesce(recordBuilder.records);
     return new PregenProtoChangeDetector._(
-        def.id, instantiateMethod, protoRecords, def.directiveRecords);
+        def.id, instantiateMethod);
   }
 
   @override
   instantiate(dynamic dispatcher) =>
-      _instantiateMethod(dispatcher, _protoRecords, _directiveRecords);
+      _instantiateMethod(dispatcher);
 }
 
 /// Provided as an optimization to cut down on '!' characters in generated

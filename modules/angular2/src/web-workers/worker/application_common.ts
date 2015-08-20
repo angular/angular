@@ -9,7 +9,8 @@ import {
   print,
   stringify
 } from 'angular2/src/facade/lang';
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {CompilerCache} from 'angular2/src/core/compiler/compiler_cache';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {
   Parser,

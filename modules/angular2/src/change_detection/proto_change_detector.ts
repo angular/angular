@@ -39,23 +39,27 @@ import {ProtoRecord, RecordType} from './proto_record';
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
   _propertyBindingRecords: ProtoRecord[];
   _eventBindingRecords: EventBinding[];
+  _definition: ChangeDetectorDefinition;
 
   constructor(private definition: ChangeDetectorDefinition) {
+    this._definition = definition;
     this._propertyBindingRecords = createPropertyRecords(definition);
     this._eventBindingRecords = createEventRecords(definition);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
-    return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher,
+    return new DynamicChangeDetector(this.definition.id, this.definition.strategy, dispatcher, this._definition.bindingRecords,
                                      this._propertyBindingRecords, this._eventBindingRecords,
-                                     this.definition.directiveRecords);
+                                     this.definition.directiveRecords, this.definition.directiveRecords.map(d => d.directiveIndex));
   }
 }
 
 export function createPropertyRecords(definition: ChangeDetectorDefinition): ProtoRecord[] {
   var recordBuilder = new ProtoRecordBuilder();
-  ListWrapper.forEach(definition.bindingRecords,
-                      (b) => { recordBuilder.add(b, definition.variableNames); });
+  for (var i = 0; i < definition.bindingRecords.length; ++i ) {
+    var b = definition.bindingRecords[i];
+    recordBuilder.add(b, definition.variableNames, i);
+  }
   return coalesce(recordBuilder.records);
 }
 
@@ -74,7 +78,7 @@ export class ProtoRecordBuilder {
 
   constructor() { this.records = []; }
 
-  add(b: BindingRecord, variableNames: List<string> = null) {
+  add(b: BindingRecord, variableNames: List<string>, bindingIndex: number) {
     var oldLast = ListWrapper.last(this.records);
     if (isPresent(oldLast) && oldLast.bindingRecord.directiveRecord == b.directiveRecord) {
       oldLast.lastInDirective = false;
@@ -87,6 +91,12 @@ export class ProtoRecordBuilder {
       newLast.lastInDirective = true;
       this._setArgumentToPureFunction(numberOfRecordsBefore);
     }
+
+    this.records.forEach(r => {
+      if(isBlank(r.bindingIndex)) {
+        r.bindingIndex = bindingIndex;
+      }
+    });
   }
 
   _setArgumentToPureFunction(startIndex: number): void {

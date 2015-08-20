@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {ddescribe, describe, xdescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 import {isBlank} from 'angular2/src/facade/lang';
 
 import {coalesce} from 'angular2/src/change_detection/coalesce';
@@ -25,7 +25,7 @@ export function main() {
                            false);
   }
 
-  describe("change detection - coalesce", () => {
+  xdescribe("change detection - coalesce", () => {
     it("should work with an empty list", () => { expect(coalesce([])).toEqual([]); });
 
     it("should remove non-terminal duplicate records" +

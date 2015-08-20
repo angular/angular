@@ -35,38 +35,14 @@ import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 
 export {DebugContext} from 'angular2/src/change_detection/interfaces';
 
-export class AppProtoViewMergeMapping {
-  renderProtoViewRef: renderApi.RenderProtoViewRef;
-  renderFragmentCount: number;
-  renderElementIndices: number[];
-  renderInverseElementIndices: number[];
-  renderTextIndices: number[];
-  nestedViewIndicesByElementIndex: number[];
-  hostElementIndicesByViewIndex: number[];
-  nestedViewCountByViewIndex: number[];
-  constructor(renderProtoViewMergeMapping: renderApi.RenderProtoViewMergeMapping) {
-    this.renderProtoViewRef = renderProtoViewMergeMapping.mergedProtoViewRef;
-    this.renderFragmentCount = renderProtoViewMergeMapping.fragmentCount;
-    this.renderElementIndices = renderProtoViewMergeMapping.mappedElementIndices;
-    this.renderInverseElementIndices = inverseIndexMapping(
-        this.renderElementIndices, renderProtoViewMergeMapping.mappedElementCount);
-    this.renderTextIndices = renderProtoViewMergeMapping.mappedTextIndices;
-    this.hostElementIndicesByViewIndex = renderProtoViewMergeMapping.hostElementIndicesByViewIndex;
-    this.nestedViewIndicesByElementIndex =
-        inverseIndexMapping(this.hostElementIndicesByViewIndex, this.renderElementIndices.length);
-    this.nestedViewCountByViewIndex = renderProtoViewMergeMapping.nestedViewCountByViewIndex;
-  }
-}
+import {TemplateCmd} from './template_commands';
 
-function inverseIndexMapping(input: number[], resultLength: number): number[] {
-  var result = ListWrapper.createGrowableSize(resultLength);
-  for (var i = 0; i < input.length; i++) {
-    var value = input[i];
-    if (isPresent(value)) {
-      result[input[i]] = i;
-    }
-  }
-  return result;
+export class AppProtoViewMergeMapping {
+  constructor(public renderFragmentCount: number,
+    public nestedViewIndicesByElementIndex: number[],
+    public hostElementIndicesByViewIndex: number[],
+    public nestedViewCountByViewIndex: number[],
+    public renderProtoViewRef:renderApi.RenderProtoViewRef) {}
 }
 
 export class AppViewContainer {
@@ -174,7 +150,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   notifyOnBinding(b: BindingRecord, currentValue: any): void {
     if (b.isTextNode()) {
       this.renderer.setText(
-          this.render, this.mainMergeMapping.renderTextIndices[b.elementIndex + this.textOffset],
+          this.render, b.elementIndex + this.textOffset,
           currentValue);
     } else {
       var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
@@ -250,10 +226,10 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   // implementation of RenderEventDispatcher#dispatchRenderEvent
-  dispatchRenderEvent(renderElementIndex: number, eventName: string,
+  dispatchRenderEvent(boundElementIndex: number, eventName: string,
                       locals: Map<string, any>): boolean {
     var elementRef =
-        this.elementRefs[this.mainMergeMapping.renderInverseElementIndices[renderElementIndex]];
+        this.elementRefs[boundElementIndex];
     var view = internalView(elementRef.parentView);
     return view.dispatchEvent(elementRef.boundElementIndex, eventName, locals);
   }
@@ -314,6 +290,9 @@ export class AppProtoView {
   protoLocals: Map<string, any> = new Map();
   mergeMapping: AppProtoViewMergeMapping;
   ref: ProtoViewRef;
+  // TODO: pass this into the constructor!
+  templateCmds: TemplateCmd[];
+  id: string;
 
   constructor(public type: renderApi.ViewType, public isEmbeddedFragment: boolean,
               public render: renderApi.RenderProtoViewRef,
@@ -326,6 +305,10 @@ export class AppProtoView {
       MapWrapper.forEach(variableBindings,
                          (templateName, _) => { this.protoLocals.set(templateName, null); });
     }
+  }
+  
+  isInitialized() {
+    return isPresent(this.elementBinders);
   }
 
   bindElement(parent: ElementBinder, distanceToParent: int,

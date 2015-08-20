@@ -24,6 +24,7 @@ export class ElementRef implements RenderElementRef {
    */
   boundElementIndex: number;
 
+  // TODO: remove this!
   /**
    * Index of the element inside the `RenderViewRef`.
    *
@@ -31,11 +32,10 @@ export class ElementRef implements RenderElementRef {
    */
   renderBoundElementIndex: number;
 
-  constructor(parentView: ViewRef, boundElementIndex: number, renderBoundElementIndex: number,
-              private _renderer: Renderer) {
+  constructor(parentView: ViewRef, boundElementIndex: number, private _renderer: Renderer) {
     this.parentView = parentView;
     this.boundElementIndex = boundElementIndex;
-    this.renderBoundElementIndex = renderBoundElementIndex;
+    this.renderBoundElementIndex = boundElementIndex;
   }
 
   /**

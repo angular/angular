@@ -14,6 +14,7 @@ export {UrlResolver} from 'angular2/src/services/url_resolver';
 export {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 export {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 export {Compiler} from 'angular2/src/core/compiler/compiler';
+export {CompilerCache} from 'angular2/src/core/compiler/compiler_cache';
 
 export {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 export {QueryList} from 'angular2/src/core/compiler/query_list';

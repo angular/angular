@@ -9,7 +9,7 @@ import {ProtoRecord, RecordType} from './proto_record';
 import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 import {CodegenLogicUtil} from './codegen_logic_util';
 import {EventBinding} from './event_binding';
-
+import {BindingRecord} from './binding_record';
 
 /**
  * The code generator takes a list of proto records and creates a function/class
@@ -30,7 +30,7 @@ export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
   _typeName: string;
 
-  constructor(public id: string, private changeDetectionStrategy: string,
+  constructor(public id: string, private changeDetectionStrategy: string, public bindings:BindingRecord[],
               public records: List<ProtoRecord>, public eventBindings: EventBinding[],
               public directiveRecords: List<any>, private generateCheckNoChanges: boolean) {
     this._names =
@@ -41,10 +41,12 @@ export class ChangeDetectorJITGenerator {
 
   generate(): Function {
     var classDefinition = `
-      var ${this._typeName} = function ${this._typeName}(dispatcher, protos, directiveRecords) {
+      var ${this._typeName} = function ${this._typeName}(dispatcher) {
         ${ABSTRACT_CHANGE_DETECTOR}.call(
-            this, ${JSON.stringify(this.id)}, dispatcher, protos, directiveRecords,
+            this, ${JSON.stringify(this.id)}, dispatcher, ${this._typeName}.bindings,
+            ${this._typeName}.directiveIndices,
             "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}");
+        this.length = ${this.records.length + 1};
         this.dehydrateDirectives(false);
       }
 
@@ -68,15 +70,34 @@ export class ChangeDetectorJITGenerator {
 
       ${this._maybeGenHydrateDirectives()}
 
+
       ${this._maybeGenDehydrateDirectives()}
 
+      ${this._typeName}.bindings = ${this._genBindings()};
+
+      ${this._typeName}.directiveIndices = ${this._genDirIndices()};
+
       return function(dispatcher) {
-        return new ${this._typeName}(dispatcher, protos, directiveRecords);
+        return new ${this._typeName}(dispatcher);
       }
     `;
-    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
-                        'directiveRecords', classDefinition)(
-        AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
+    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', classDefinition)(AbstractChangeDetector, ChangeDetectionUtil);
+  }
+
+  _genBindings():string {
+    var bs = this.bindings.map(b => {
+      return `ChangeDetectionUtil.binding('${b.mode}', '${b.propertyName}', '${b.propertyUnit}', ${b.elementIndex})`;
+    }).join(", ");
+
+    return `[${bs}]`;
+  }
+
+  _genDirIndices():string {
+    var bs = this.directiveRecords.map(b => {
+      return JSON.stringify(b.directiveIndex);
+    }).join(", ");
+
+    return `[${bs}]`;
   }
 
   _maybeGenHandleEventInternal(): string {
@@ -156,7 +177,7 @@ export class ChangeDetectorJITGenerator {
     var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
     for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
       lines[i] = `${directiveFieldNames[i]} = directives.getDirectiveFor(
-          ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
+          this.directiveIndices[${i}]);`;
     }
     return lines.join('\n');
   }
@@ -166,7 +187,7 @@ export class ChangeDetectorJITGenerator {
     var lines = ListWrapper.createFixedSize(detectorFieldNames.length);
     for (var i = 0, iLen = detectorFieldNames.length; i < iLen; ++i) {
       lines[i] = `${detectorFieldNames[i]} = directives.getDetectorFor(
-          ${this._names.getDirectivesAccessorName()}[${i}].directiveIndex);`;
+          this.directiveIndices[${i}]);`;
     }
     return lines.join('\n');
   }
@@ -340,7 +361,7 @@ export class ChangeDetectorJITGenerator {
   _maybeFirstInBinding(r: ProtoRecord): string {
     var prev = ChangeDetectionUtil.protoByIndex(this.records, r.selfIndex - 1);
     var firstInBindng = isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
-    return firstInBindng ? `${this._names.getFirstProtoInCurrentBinding()} = ${r.selfIndex};` : '';
+    return firstInBindng ? `this.currentBindingIndex = ${r.bindingIndex};` : '';
   }
 
   _maybeGenLastInDirective(r: ProtoRecord): string {

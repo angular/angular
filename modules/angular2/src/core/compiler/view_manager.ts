@@ -15,6 +15,7 @@ import {
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
+import {PostCompiler} from './post_compiler';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../../profile/profile';
 
 /**
@@ -28,7 +29,7 @@ export class AppViewManager {
    * @private
    */
   constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
-              private _utils: AppViewManagerUtils, private _renderer: Renderer) {}
+              private _utils: AppViewManagerUtils, private _renderer: Renderer, private _postCompiler:PostCompiler) {}
 
   /**
    * Returns a {@link ViewContainerRef} at the {@link ElementRef} location.
@@ -147,6 +148,7 @@ export class AppViewManager {
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
     }
+    this._mergeTemplateIfNeeded(hostProtoView);
     var renderViewWithFragments = this._renderer.createRootHostView(
         hostProtoView.mergeMapping.renderProtoViewRef,
         hostProtoView.mergeMapping.renderFragmentCount, hostElementSelector);
@@ -187,6 +189,7 @@ export class AppViewManager {
     if (protoView.type !== ViewType.EMBEDDED) {
       throw new BaseException('This method can only be called with embedded ProtoViews!');
     }
+    this._mergeTemplateIfNeeded(protoView);
     return wtfLeave(s, this._createViewInContainer(viewContainerLocation, atIndex, protoView,
                                                    templateRef.elementRef, null));
   }
@@ -205,9 +208,14 @@ export class AppViewManager {
     if (protoView.type !== ViewType.HOST) {
       throw new BaseException('This method can only be called with host ProtoViews!');
     }
+    this._mergeTemplateIfNeeded(protoView);
     return wtfLeave(
         s, this._createViewInContainer(viewContainerLocation, atIndex, protoView,
                                        viewContainerLocation, imperativelyCreatedInjector));
+  }
+  
+  _mergeTemplateIfNeeded(mainProtoView: viewModule.AppProtoView) {
+    this._postCompiler.initializeProtoViewIfNeeded(mainProtoView);
   }
 
   /**

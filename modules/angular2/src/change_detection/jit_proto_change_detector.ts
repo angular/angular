@@ -21,7 +21,7 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
     var propertyBindingRecords = createPropertyRecords(definition);
     var eventBindingRecords = createEventRecords(definition);
     return new ChangeDetectorJITGenerator(
-               definition.id, definition.strategy, propertyBindingRecords, eventBindingRecords,
+               definition.id, definition.strategy, this.definition.bindingRecords, propertyBindingRecords, eventBindingRecords,
                this.definition.directiveRecords, this.definition.generateCheckNoChanges)
         .generate();
   }
