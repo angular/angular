@@ -16,7 +16,7 @@ import {
 } from 'angular2/test_lib';
 
 import {Injector, Inject, bind} from 'angular2/di';
-import {Component, View} from 'angular2/metadata';
+import {Component, View, ViewMetadata} from 'angular2/metadata';
 import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/facade/lang';
 import {
   Promise,
@@ -85,7 +85,7 @@ export function main() {
     }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
-      return tcb.overrideView(MyComp, new View({
+      return tcb.overrideView(MyComp, new ViewMetadata({
                                 template: ('<div>' + template + '</div>'),
                                 directives: [RouterOutlet, RouterLink]
                               }))
