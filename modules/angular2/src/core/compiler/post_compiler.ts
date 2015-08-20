@@ -72,8 +72,8 @@ export class PostCompiler {
       protoView = this._createAppProtoView(bc.templateId, ViewType.COMPONENT, true, null, cmds, ProtoPipes.fromBindings(boundPipes));
       // Note: The cache is updated inside of _createAppProtoView before recursing
       // to be able to resolve cycles                
+      this._initializeProtoView(protoView, null);
     }
-    this._initializeProtoView(protoView, null);
     return protoView;
   }
     
