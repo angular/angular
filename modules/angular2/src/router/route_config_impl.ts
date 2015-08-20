@@ -1,10 +1,7 @@
-import {CONST, CONST_EXPR, Type} from 'angular2/src/facade/lang';
+import {CONST, Type} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import {RouteDefinition} from './route_definition';
 export {RouteDefinition} from './route_definition';
-import {OpaqueToken} from 'angular2/di';
-
-export const ROUTE_DATA: OpaqueToken = CONST_EXPR(new OpaqueToken('routeData'));
 
 /**
  * You use the RouteConfig annotation to add routes to a component.
