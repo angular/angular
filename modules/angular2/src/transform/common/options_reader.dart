@@ -15,6 +15,8 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var inlineViews = _readBool(config, INLINE_VIEWS_PARAM, defaultValue: true);
   var generateChangeDetectors =
       _readBool(config, GENERATE_CHANGE_DETECTORS_PARAM, defaultValue: true);
+  var reflectPropertiesAsAttributes =
+      _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
       config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
@@ -41,6 +43,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       customAnnotationDescriptors: _readCustomAnnotations(config),
       optimizationPhases: optimizationPhases,
       generateChangeDetectors: generateChangeDetectors,
+      reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       formatCode: formatCode);
 }
 

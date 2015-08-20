@@ -64,7 +64,8 @@ export class BindingRecord {
 
   static createForDirective(ast: AST, propertyName: string, setter: SetterFn,
                             directiveRecord: DirectiveRecord): BindingRecord {
-    var t = new BindingTarget(DIRECTIVE, null, propertyName, null, ast.toString());
+    var elementIndex = directiveRecord.directiveIndex.elementIndex;
+    var t = new BindingTarget(DIRECTIVE, elementIndex, propertyName, null, ast.toString());
     return new BindingRecord(DIRECTIVE, t, 0, ast, setter, null, directiveRecord);
   }
 

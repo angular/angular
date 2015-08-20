@@ -28,13 +28,13 @@ export function main() {
 
     it("should return a proto change detector when one is available", () => {
       var map = {'id': (def) => proto};
-      var cd = new PreGeneratedChangeDetection(map);
+      var cd = new PreGeneratedChangeDetection(null, map);
 
       expect(cd.getProtoChangeDetector('id', def)).toBe(proto)
     });
 
     it("should delegate to dynamic change detection otherwise", () => {
-      var cd = new PreGeneratedChangeDetection({});
+      var cd = new PreGeneratedChangeDetection(null, {});
       expect(cd.getProtoChangeDetector('id', def)).toBeAnInstanceOf(DynamicProtoChangeDetector);
     });
   });

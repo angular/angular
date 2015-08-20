@@ -66,7 +66,7 @@ export var PROP_NAME = 'propName';
  * In this case, we expect `id` and `expression` to be the same string.
  */
 export function getDefinition(id: string): TestDefinition {
-  var genConfig = new ChangeDetectorGenConfig(true, true);
+  var genConfig = new ChangeDetectorGenConfig(true, true, true);
   var testDef = null;
   if (StringMapWrapper.contains(_ExpressionWithLocals.availableDefinitions, id)) {
     let val = StringMapWrapper.get(_ExpressionWithLocals.availableDefinitions, id);
@@ -110,6 +110,12 @@ export function getDefinition(id: string): TestDefinition {
     var records = _createBindingRecords("a");
     let cdDef = new ChangeDetectorDefinition(id, "ON_PUSH_OBSERVE", [], records, [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
+
+  } else if (id == "updateElementProduction") {
+    var genConfig = new ChangeDetectorGenConfig(false, false, false);
+    var records = _createBindingRecords("name");
+    let cdDef = new ChangeDetectorDefinition(id, null, [], records, [], [], genConfig);
+    testDef = new TestDefinition(id, cdDef, null);
   }
 
 
@@ -138,7 +144,7 @@ export function getAllDefinitions(): List<TestDefinition> {
       ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
   allDefs = ListWrapper.concat(allDefs, _availableEventDefinitions);
   allDefs = ListWrapper.concat(allDefs, _availableHostEventDefinitions);
-  allDefs = ListWrapper.concat(allDefs, ["onPushObserve"]);
+  allDefs = ListWrapper.concat(allDefs, ["onPushObserve", "updateElementProduction"]);
   return ListWrapper.map(allDefs, (id) => getDefinition(id));
 }
 
@@ -150,7 +156,7 @@ class _ExpressionWithLocals {
     var variableBindings = _convertLocalsToVariableBindings(this.locals);
     var bindingRecords = _createBindingRecords(this._expression);
     var directiveRecords = [];
-    var genConfig = new ChangeDetectorGenConfig(true, true);
+    var genConfig = new ChangeDetectorGenConfig(true, true, true);
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings, bindingRecords,
                                         [], directiveRecords, genConfig);
   }
@@ -210,7 +216,7 @@ class _ExpressionWithMode {
                              _createHostEventRecords("(host-event)='false'", dirRecordWithOnPush))
     }
 
-    var genConfig = new ChangeDetectorGenConfig(true, true);
+    var genConfig = new ChangeDetectorGenConfig(true, true, true);
 
     return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
                                         bindingRecords, eventRecords, directiveRecords, genConfig);
@@ -236,7 +242,7 @@ class _DirectiveUpdating {
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var strategy = null;
     var variableBindings = [];
-    var genConfig = new ChangeDetectorGenConfig(true, true);
+    var genConfig = new ChangeDetectorGenConfig(true, true, true);
 
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings,
                                         this._bindingRecords, [], this._directiveRecords,

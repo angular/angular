@@ -12,6 +12,7 @@ import {
   DynamicChangeDetection,
   JitChangeDetection,
   ChangeDetectorDefinition,
+  ChangeDetectorGenConfig,
   BindingRecord,
   DirectiveRecord,
   DirectiveIndex,
@@ -249,8 +250,9 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
+  var genConfig = new ChangeDetectorGenConfig(false, false, false);
   var parentProto = changeDetection.getProtoChangeDetector(
-      "id", new ChangeDetectorDefinition('parent', null, [], [], [], [], false));
+      "id", new ChangeDetectorDefinition('parent', null, [], [], [], [], genConfig));
   var parentCd = parentProto.instantiate(dispatcher);
 
   var directiveRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
@@ -279,7 +281,7 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
 
   var proto = changeDetection.getProtoChangeDetector(
       "id",
-      new ChangeDetectorDefinition("proto", null, [], bindings, [], [directiveRecord], false));
+      new ChangeDetectorDefinition("proto", null, [], bindings, [], [directiveRecord], genConfig));
 
   var targetObj = new Obj();
   parentCd.hydrate(object, null, new FakeDirectives(targetObj), null);
@@ -385,6 +387,7 @@ class DummyDispatcher implements ChangeDispatcher {
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
     throw "getDebugContext not implemented.";
   }
-  notifyOnBinding(bindingRecord, newValue) { throw "Should not be used"; }
+  notifyOnBinding(bindingTarget, newValue) { throw "Should not be used"; }
+  logBindingUpdate(bindingTarget, newValue) { throw "Should not be used"; }
   notifyOnAllChangesDone() {}
 }

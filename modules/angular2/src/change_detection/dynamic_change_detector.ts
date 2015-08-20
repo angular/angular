@@ -179,6 +179,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       var directiveIndex = bindingRecord.directiveRecord.directiveIndex;
       bindingRecord.setter(this._getDirectiveFor(directiveIndex), change.currentValue);
     }
+
+    if (this.genConfig.logBindingUpdate) {
+      super.logBindingUpdate(change.currentValue);
+    }
   }
 
   _addChange(bindingRecord: BindingRecord, change, changes) {

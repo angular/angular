@@ -33,7 +33,8 @@ class TemplateCompiler extends Transformer {
       var id = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = formatter.format(await processTemplates(reader, id,
-          generateChangeDetectors: options.generateChangeDetectors));
+          generateChangeDetectors: options.generateChangeDetectors,
+          reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes));
       transform.addOutput(new Asset.fromString(id, transformedCode));
     });
   }

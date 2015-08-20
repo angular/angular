@@ -60,7 +60,6 @@ import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {
   DomRenderer,
   DOCUMENT,
-  DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES,
   DefaultDomCompiler,
   APP_ID_RANDOM_BINDING,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
@@ -84,16 +83,15 @@ var _rootInjector: Injector;
 var _rootBindings = [bind(Reflector).toValue(reflector), TestabilityRegistry];
 
 function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
-  var bestChangeDetection: Type = DynamicChangeDetection;
+  var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = PreGeneratedChangeDetection;
+    bestChangeDetection = new PreGeneratedChangeDetection();
   } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = JitChangeDetection;
+    bestChangeDetection = new JitChangeDetection();
   }
   return [
     bind(DOCUMENT)
         .toValue(DOM.defaultDoc()),
-    bind(DOM_REFLECT_PROPERTIES_AS_ATTRIBUTES).toValue(false),
     bind(APP_COMPONENT).toValue(appComponentType),
     bind(APP_COMPONENT_REF_PROMISE)
         .toFactory(
@@ -141,7 +139,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
-    bind(ChangeDetection).toClass(bestChangeDetection),
+    bind(ChangeDetection).toValue(bestChangeDetection),
     ViewLoader,
     DirectiveResolver,
     PipeResolver,
