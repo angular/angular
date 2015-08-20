@@ -36,6 +36,7 @@ export function normalizeCSS(css: string): string {
   css = StringWrapper.replaceAll(css, /\s+/g, ' ');
   css = StringWrapper.replaceAll(css, /:\s/g, ':');
   css = StringWrapper.replaceAll(css, /'/g, '"');
+  css = StringWrapper.replaceAll(css, / }/g, '}');
   css = StringWrapper.replaceAllMapped(css, /url\(\"(.+)\\"\)/g, (match) => `url(${match[1]})`);
   css = StringWrapper.replaceAllMapped(css, /\[(.+)=([^"\]]+)\]/g,
                                        (match) => `[${match[1]}="${match[2]}"]`);
@@ -86,14 +87,25 @@ export function stringifyElement(el): string {
   return result;
 }
 
-// The Intl API is only properly supported in Chrome and Opera.
+// The Intl API is only properly supported in recent Chrome and Opera.
 // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
 // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
 export function supportsIntlApi(): boolean {
-  return DOM.getUserAgent().indexOf('Chrome') > -1 && DOM.getUserAgent().indexOf('Edge') == -1;
+  return DOM.getUserAgent().indexOf('Chrome/4') > -1 && DOM.getUserAgent().indexOf('Edge') == -1;
 }
 
 // TODO(mlaval): extract all browser detection checks from all tests
 export function isFirefox(): boolean {
   return DOM.getUserAgent().indexOf("Firefox") > -1;
+}
+export function isAndroid(): boolean {
+  var ua = DOM.getUserAgent();
+  return ua.indexOf('Mozilla/5.0') > -1 && ua.indexOf('Android ') > -1 &&
+         ua.indexOf('AppleWebKit') > -1 && ua.indexOf('Chrome') == -1;
+}
+export function isEdge(): boolean {
+  return DOM.getUserAgent().indexOf('Edge') > -1;
+}
+export function isIE(): boolean {
+  return DOM.getUserAgent().indexOf('Trident') > -1;
 }
