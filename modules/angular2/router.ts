@@ -22,7 +22,6 @@ export {CanActivate} from './src/router/lifecycle_annotations';
 export {Instruction, ComponentInstruction} from './src/router/instruction';
 export {Url} from './src/router/url_parser';
 export {OpaqueToken, Type} from 'angular2/angular2';
-export {ROUTE_DATA} from './src/router/route_data';
 
 import {LocationStrategy} from './src/router/location_strategy';
 import {HTML5LocationStrategy} from './src/router/html5_location_strategy';
