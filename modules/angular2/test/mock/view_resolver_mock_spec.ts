@@ -12,7 +12,7 @@ import {stringify} from 'angular2/src/facade/lang';
 
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, View, ViewMetadata} from 'angular2/metadata';
 
 import {isBlank} from 'angular2/src/facade/lang';
 
@@ -30,7 +30,7 @@ export function main() {
       });
 
       it('should allow overriding the @View', () => {
-        viewResolver.setView(SomeComponent, new View({template: 'overridden template'}));
+        viewResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
         var view = viewResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template');
         expect(isBlank(view.directives)).toBe(true);
@@ -40,7 +40,7 @@ export function main() {
       it('should not allow overriding a view after it has been resolved', () => {
         viewResolver.resolve(SomeComponent);
         expect(() => {
-          viewResolver.setView(SomeComponent, new View({template: 'overridden template'}));
+          viewResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
         })
             .toThrowError(
                 `The component ${stringify(SomeComponent)} has already been compiled, its configuration can not be changed`);
@@ -56,7 +56,7 @@ export function main() {
       });
 
       it('should allow overriding an overriden @View', () => {
-        viewResolver.setView(SomeComponent, new View({template: 'overridden template'}));
+        viewResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
         viewResolver.setInlineTemplate(SomeComponent, 'overridden template x 2');
         var view = viewResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template x 2');
@@ -80,7 +80,7 @@ export function main() {
       });
 
       it('should allow overriding a directive from an overriden @View', () => {
-        viewResolver.setView(SomeComponent, new View({directives: [SomeOtherDirective]}));
+        viewResolver.setView(SomeComponent, new ViewMetadata({directives: [SomeOtherDirective]}));
         viewResolver.overrideViewDirective(SomeComponent, SomeOtherDirective, SomeComponent);
         var view = viewResolver.resolve(SomeComponent);
         expect(view.directives.length).toEqual(1);

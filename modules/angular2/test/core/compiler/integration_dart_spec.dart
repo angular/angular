@@ -48,7 +48,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template:
                           '<type-literal-component></type-literal-component>',
                       directives: [TypeLiteralComponent]))
@@ -69,7 +69,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template: '<throwing-component></throwing-component>',
                       directives: [ThrowingComponent]))
               .createAsync(Dummy)
@@ -86,7 +86,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template: '<throwing-component2></throwing-component2>',
                       directives: [ThrowingComponent2]))
               .createAsync(Dummy)
@@ -105,7 +105,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template: '<property-access></property-access>',
                       directives: [PropertyAccess]))
               .createAsync(Dummy)
@@ -123,7 +123,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template: '<no-property-access></no-property-access>',
                       directives: [NoPropertyAccess]))
               .createAsync(Dummy)
@@ -142,7 +142,7 @@ main() {
           tb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template: '''<on-change [prop]="'hello'"></on-change>''',
                       directives: [OnChangeComponent]))
               .createAsync(Dummy)
@@ -164,7 +164,7 @@ main() {
           tcb
               .overrideView(
                   Dummy,
-                  new View(
+                  new ViewMetadata(
                       template:
                           '''<component-with-observable-list [list]="value"></component-with-observable-list>''',
                       directives: [ComponentWithObservableList]))
