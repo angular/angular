@@ -102,7 +102,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('hello');
                async.done();
              });
-       }));
+       }), 1000);
 
 
     it('should navigate between components with different parameters',
@@ -120,7 +120,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('hello igor');
                async.done();
              });
-       }));
+       }), 1000);
 
 
     it('should work with child routers', inject([AsyncTestCompleter], (async) => {
@@ -132,7 +132,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('outer { inner { hello } }');
                async.done();
              });
-       }));
+       }), 1000);
 
 
     it('should work with redirects', inject([AsyncTestCompleter, Location], (async, location) => {
@@ -148,7 +148,7 @@ export function main() {
                expect(location.urlChanges).toEqual(['/redirected']);
                async.done();
              });
-       }));
+       }), 1000);
 
     function getHref(tc) {
       return DOM.getAttribute(tc.componentViewChildren[0].nativeElement, 'href');
@@ -165,7 +165,7 @@ export function main() {
                expect(getHref(rootTC)).toEqual('/my/base/user');
                async.done();
              });
-       }));
+       }), 1000);
 
 
     it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
@@ -177,7 +177,7 @@ export function main() {
                expect(getHref(rootTC)).toEqual('/user');
                async.done();
              });
-       }));
+       }), 1000);
 
 
     it('should reuse common parent components', inject([AsyncTestCompleter], (async) => {
@@ -196,7 +196,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('team angular { hello victor }');
                async.done();
              });
-       }));
+       }), 1000);
 
 
     it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
@@ -212,7 +212,7 @@ export function main() {
                    .toEqual('/user/brian');
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should generate link hrefs from a child to its sibling',
        inject([AsyncTestCompleter], (async) => {
@@ -228,7 +228,7 @@ export function main() {
                    .toEqual('/page/2');
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should generate relative links preserving the existing parent route',
        inject([AsyncTestCompleter], (async) => {
@@ -251,7 +251,7 @@ export function main() {
                    .toEqual('/book/1984/page/2');
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should inject RouteData into component', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -264,7 +264,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should inject RouteData into component with AsyncRoute',
        inject([AsyncTestCompleter], (async) => {
@@ -279,7 +279,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should inject nested RouteData into component', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -297,7 +297,7 @@ export function main() {
                    .toHaveText(Json.stringify({'isAdmin': true, 'test': {'moreData': 'testing'}}));
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should inject null if the route has no data property',
        inject([AsyncTestCompleter], (async) => {
@@ -310,7 +310,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText('null');
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should allow an array as the route data', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -323,7 +323,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
                async.done();
              });
-       }));
+       }), 1000);
 
     it('should allow a string as the route data', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -337,7 +337,7 @@ export function main() {
                expect(rootTC.nativeElement).toHaveText(Json.stringify('hello world'));
                async.done();
              });
-       }));
+       }), 1000);
 
     describe('lifecycle hooks', () => {
       it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
@@ -350,7 +350,7 @@ export function main() {
                  expect(log).toEqual(['activate: null -> /on-activate']);
                  async.done();
                });
-         }));
+         }), 1000);
 
       it('should wait for a parent component\'s onActivate hook to resolve before calling its child\'s',
          inject([AsyncTestCompleter], (async) => {
@@ -373,7 +373,7 @@ export function main() {
                        async.done();
                      });
                });
-         }));
+         }), 1000);
 
       it('should call the onDeactivate hook', inject([AsyncTestCompleter], (async) => {
            compile()
@@ -386,7 +386,7 @@ export function main() {
                  expect(log).toEqual(['deactivate: /on-deactivate -> /a']);
                  async.done();
                });
-         }));
+         }), 1000);
 
       it('should wait for a child component\'s onDeactivate hook to resolve before calling its parent\'s',
          inject([AsyncTestCompleter], (async) => {
@@ -411,7 +411,7 @@ export function main() {
                    async.done();
                  });
                });
-         }));
+         }), 1000);
 
       it('should reuse a component when the canReuse hook returns true',
          inject([AsyncTestCompleter], (async) => {
@@ -432,7 +432,7 @@ export function main() {
                  expect(cmpInstanceCount).toBe(1);
                  async.done();
                });
-         }));
+         }), 1000);
 
 
       it('should not reuse a component when the canReuse hook returns false',
@@ -454,7 +454,7 @@ export function main() {
                  expect(cmpInstanceCount).toBe(2);
                  async.done();
                });
-         }));
+         }), 1000);
 
 
       it('should navigate when canActivate returns true', inject([AsyncTestCompleter], (async) => {
@@ -474,7 +474,7 @@ export function main() {
                        async.done();
                      });
                });
-         }));
+         }), 1000);
 
       it('should not navigate when canActivate returns false',
          inject([AsyncTestCompleter], (async) => {
@@ -494,7 +494,7 @@ export function main() {
                        async.done();
                      });
                });
-         }));
+         }), 1000);
 
       it('should navigate away when canDeactivate returns true',
          inject([AsyncTestCompleter], (async) => {
@@ -519,7 +519,7 @@ export function main() {
                    async.done();
                  });
                });
-         }));
+         }), 1000);
 
       it('should not navigate away when canDeactivate returns false',
          inject([AsyncTestCompleter], (async) => {
@@ -544,7 +544,7 @@ export function main() {
                    async.done();
                  });
                });
-         }));
+         }), 1000);
 
 
       it('should run activation and deactivation hooks in the correct order',
@@ -572,7 +572,7 @@ export function main() {
                  ]);
                  async.done();
                });
-         }));
+         }), 1000);
 
       it('should only run reuse hooks when reusing', inject([AsyncTestCompleter], (async) => {
            compile()
@@ -599,7 +599,7 @@ export function main() {
                  ]);
                  async.done();
                });
-         }));
+         }), 1000);
 
       it('should not run reuse hooks when not reusing', inject([AsyncTestCompleter], (async) => {
            compile()
@@ -628,7 +628,7 @@ export function main() {
                  ]);
                  async.done();
                });
-         }));
+         }), 1000);
 
     });
 
