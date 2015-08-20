@@ -10,21 +10,22 @@ import {
   xdescribe,
   xit,
   Log,
-  isInInnerZone
+  isInInnerZone,
+  isAndroid,
+  isEdge,
+  isIE
 } from 'angular2/test_lib';
 
 import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-var isIEorEdge =
-    DOM.getUserAgent().indexOf("Trident") > -1 || DOM.getUserAgent().indexOf("Edge") > -1;
+var needsLongerTimers = isAndroid() || isEdge() || isIE();
 // Schedules a macrotask (using a timer)
 function macroTask(fn: Function, timer = 1): void {
   // adds longer timers for passing tests in IE and Edge
-  _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, isIEorEdge ? timer : 1));
+  _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, needsLongerTimers ? timer : 1));
 }
 
 // Schedules a microtasks (using a resolved promise .then())
