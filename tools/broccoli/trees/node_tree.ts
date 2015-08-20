@@ -34,7 +34,7 @@ module.exports = function makeNodeTree(destinationPath) {
     declaration: false,
     mapRoot: '', /* force sourcemaps to use relative path */
     module: 'commonjs',
-    noEmitOnError: true,
+    noEmitOnError: false,
     rootDir: '.',
     rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
     sourceMap: true,

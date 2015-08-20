@@ -23,10 +23,13 @@ import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind, Binding} from 'angular2/di';
+import {TemplateRegistry} from 'angular2/core';
+import * as _tf_ from 'angular2/src/core/compiler/template_factory';
 
 function createBindings(): List<Binding> {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
-  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
+  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity),
+    bind(TemplateRegistry).toValue(_registerTemplates())];
 }
 
 var BASELINE_TREE_TEMPLATE;
@@ -91,7 +94,7 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, createBindings())
+    bootstrap(TreeAppComponent, createBindings())
         .then((ref) => {
           var injector = ref.injector;
           lifeCycle = injector.get(LifeCycle);
@@ -218,6 +221,35 @@ class BaseLineIf {
   }
 }
 
+function _registerTemplates() {
+  var templates = new Map();
+  var styles = new Map();
+  templates.set('TreeComponent_comp_0', TreeComponentCommands);
+  templates.set('TreeAppComponent_comp_0', AppComponentCommands);
+  styles.set('TreeComponent_comp_0', []);
+  styles.set('TreeAppComponent_comp_0', []);
+  return new TemplateRegistry(templates, styles); 
+}
+
+var TreeComponentCommands = [
+  _tf_.bbe('span', null, null, null, [], null),
+    _tf_.btt(null),
+    _tf_.et('TreeComponent_embedded_1', null, null, NgIf, false, null, [  
+      _tf_.be('span', null, null, null, [], null),
+        _tf_.bc('TreeComponent_comp_0', 'tree', null, null, null, [TreeComponent], false, null),
+        _tf_.ec(),
+      _tf_.ee()        
+    ]),
+    _tf_.et('TreeComponent_embedded_2', null, null, NgIf, false, null, [  
+      _tf_.be('span', null, null, null, [], null),
+        _tf_.bc('TreeComponent_comp_0', 'tree', null, null, null, [TreeComponent], false, null),  
+        _tf_.ec(),
+      _tf_.ee()        
+    ]),  
+  _tf_.ee()
+];
+
+
 @Component({selector: 'tree', properties: ['data']})
 @View({
   directives: [TreeComponent, NgIf],
@@ -228,9 +260,14 @@ class TreeComponent {
   data: TreeNode;
 }
 
+var AppComponentCommands = [
+  _tf_.bc('TreeComponent_comp_0', 'tree', null, null, null, [TreeComponent], false, null),
+  _tf_.ec(),
+];
+
 @Component({selector: 'app'})
 @View({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
-class AppComponent {
+class TreeAppComponent {
   initData: TreeNode;
   constructor() {
     // TODO: We need an initial value as otherwise the getter for data.value will fail

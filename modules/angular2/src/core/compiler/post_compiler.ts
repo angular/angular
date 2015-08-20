@@ -195,7 +195,12 @@ function _createElementBinder(directiveResolver: DirectiveResolver, nestedProtoV
     distanceToParentBinder = -1;
   }
   if (distanceToParentPei > 0) {
-    parentProtoElementInjector = elementBinderStack[elementBinderStack.length - distanceToParentPei].protoElementInjector;
+    var peiBinder = elementBinderStack[elementBinderStack.length - distanceToParentPei];
+    if (isPresent(peiBinder)) {
+      parentProtoElementInjector = peiBinder.protoElementInjector;      
+    } else {
+      distanceToParentPei = -1;
+    }
   } else {
     distanceToParentPei = -1;
   }

@@ -267,7 +267,7 @@ export class AppViewManagerUtils {
 
   dehydrateView(initView: viewModule.AppView) {
     var endViewOffset = initView.viewOffset +
-                        initView.proto.mergeInfo.viewCount;
+                        initView.proto.mergeInfo.viewCount - 1;
     for (var viewIdx = initView.viewOffset; viewIdx <= endViewOffset; viewIdx++) {
       var currView = initView.views[viewIdx];
       if (currView.hydrated()) {
