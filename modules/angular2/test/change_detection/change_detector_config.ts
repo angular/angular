@@ -9,7 +9,8 @@ import {
   DirectiveRecord,
   Lexer,
   Locals,
-  Parser
+  Parser,
+  ChangeDetectorGenConfig
 } from 'angular2/src/change_detection/change_detection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
@@ -65,6 +66,7 @@ export var PROP_NAME = 'propName';
  * In this case, we expect `id` and `expression` to be the same string.
  */
 export function getDefinition(id: string): TestDefinition {
+  var genConfig = new ChangeDetectorGenConfig(true, true);
   var testDef = null;
   if (StringMapWrapper.contains(_ExpressionWithLocals.availableDefinitions, id)) {
     let val = StringMapWrapper.get(_ExpressionWithLocals.availableDefinitions, id);
@@ -90,23 +92,23 @@ export function getDefinition(id: string): TestDefinition {
     var eventRecords = _createBindingRecords(id);
     var directiveRecords = [];
     let cdDef = new ChangeDetectorDefinition(id, strategy, variableBindings, eventRecords, [],
-                                             directiveRecords, true);
+                                             directiveRecords, genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (ListWrapper.indexOf(_availableEventDefinitions, id) >= 0) {
     var eventRecords = _createEventRecords(id);
-    let cdDef = new ChangeDetectorDefinition(id, null, [], [], eventRecords, [], true);
+    let cdDef = new ChangeDetectorDefinition(id, null, [], [], eventRecords, [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (ListWrapper.indexOf(_availableHostEventDefinitions, id) >= 0) {
     var eventRecords = _createHostEventRecords(id, _DirectiveUpdating.basicRecords[0]);
     let cdDef = new ChangeDetectorDefinition(id, null, [], [], eventRecords,
-                                             [_DirectiveUpdating.basicRecords[0]], true);
+                                             [_DirectiveUpdating.basicRecords[0]], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (id == "onPushObserve") {
     var records = _createBindingRecords("a");
-    let cdDef = new ChangeDetectorDefinition(id, "ON_PUSH_OBSERVE", [], records, [], [], false);
+    let cdDef = new ChangeDetectorDefinition(id, "ON_PUSH_OBSERVE", [], records, [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   }
 
@@ -148,8 +150,9 @@ class _ExpressionWithLocals {
     var variableBindings = _convertLocalsToVariableBindings(this.locals);
     var bindingRecords = _createBindingRecords(this._expression);
     var directiveRecords = [];
+    var genConfig = new ChangeDetectorGenConfig(true, true);
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings, bindingRecords,
-                                        [], directiveRecords, true);
+                                        [], directiveRecords, genConfig);
   }
 
   /**
@@ -207,8 +210,10 @@ class _ExpressionWithMode {
                              _createHostEventRecords("(host-event)='false'", dirRecordWithOnPush))
     }
 
+    var genConfig = new ChangeDetectorGenConfig(true, true);
+
     return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
-                                        bindingRecords, eventRecords, directiveRecords, true);
+                                        bindingRecords, eventRecords, directiveRecords, genConfig);
   }
 
   /**
@@ -231,9 +236,11 @@ class _DirectiveUpdating {
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var strategy = null;
     var variableBindings = [];
+    var genConfig = new ChangeDetectorGenConfig(true, true);
 
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings,
-                                        this._bindingRecords, [], this._directiveRecords, true);
+                                        this._bindingRecords, [], this._directiveRecords,
+                                        genConfig);
   }
 
   static updateA(expression: string, dirRecord): BindingRecord {

@@ -10,6 +10,7 @@ import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 import {CodegenLogicUtil} from './codegen_logic_util';
 import {EventBinding} from './event_binding';
 import {BindingTarget} from './binding_record';
+import {ChangeDetectorGenConfig} from './interfaces';
 
 
 /**
@@ -34,7 +35,7 @@ export class ChangeDetectorJITGenerator {
   constructor(private id: string, private changeDetectionStrategy: string,
               private records: List<ProtoRecord>, private propertyBindingTargets: BindingTarget[],
               private eventBindings: EventBinding[], private directiveRecords: List<any>,
-              private devMode: boolean) {
+              private genConfig: ChangeDetectorGenConfig) {
     this._names =
         new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);
     this._logic = new CodegenLogicUtil(this._names, UTIL, changeDetectionStrategy);
@@ -87,7 +88,8 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genPropertyBindingTargets(): string {
-    var targets = this._logic.genPropertyBindingTargets(this.propertyBindingTargets, true);
+    var targets = this._logic.genPropertyBindingTargets(this.propertyBindingTargets,
+                                                        this.genConfig.genDebugInfo);
     return `${this._typeName}.gen_propertyBindingTargets = ${targets};`;
   }
 
@@ -318,7 +320,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genThrowOnChangeCheck(oldValue: string, newValue: string): string {
-    if (this.devMode) {
+    if (this.genConfig.genCheckNoChanges) {
       return `
         if(throwOnChange) {
           this.throwOnChangeError(${oldValue}, ${newValue});
@@ -330,7 +332,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genCheckNoChanges(): string {
-    if (this.devMode) {
+    if (this.genConfig.genCheckNoChanges) {
       return `${this._typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
     } else {
       return '';

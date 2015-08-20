@@ -12,6 +12,7 @@ import {EventBinding} from './event_binding';
 import {BindingRecord, BindingTarget} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
+import {ChangeDetectorGenConfig} from './interfaces';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 
 import {ProtoRecord, RecordType} from './proto_record';
@@ -26,7 +27,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
               propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
               modeOnHydrate: string, private records: ProtoRecord[],
-              private eventBindings: EventBinding[], private directiveRecords: DirectiveRecord[]) {
+              private eventBindings: EventBinding[], private directiveRecords: DirectiveRecord[],
+              private genConfig: ChangeDetectorGenConfig) {
     super(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices,
           modeOnHydrate);
     var len = records.length + 1;

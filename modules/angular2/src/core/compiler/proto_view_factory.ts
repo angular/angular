@@ -12,6 +12,7 @@ import {
   ProtoChangeDetector,
   DEFAULT,
   ChangeDetectorDefinition,
+  ChangeDetectorGenConfig,
   ASTWithSource
 } from 'angular2/src/change_detection/change_detection';
 
@@ -234,9 +235,9 @@ export class ProtoViewFactory {
                                    nestedPvVariableNames: string[][],
                                    allRenderDirectiveMetadata: any[]): ProtoChangeDetector[] {
     if (this._changeDetection.generateDetectors) {
-      var changeDetectorDefs =
-          _getChangeDetectorDefinitions(hostComponentBinding.metadata, nestedPvsWithIndex,
-                                        nestedPvVariableNames, allRenderDirectiveMetadata);
+      var changeDetectorDefs = _getChangeDetectorDefinitions(
+          hostComponentBinding.metadata, nestedPvsWithIndex, nestedPvVariableNames,
+          allRenderDirectiveMetadata, this._changeDetection.genConfig);
       return changeDetectorDefs.map(changeDetectorDef =>
                                         this._changeDetection.getProtoChangeDetector(
                                             changeDetectorDef.id, changeDetectorDef));
@@ -254,11 +255,13 @@ export class ProtoViewFactory {
  */
 export function getChangeDetectorDefinitions(
     hostComponentMetadata: RenderDirectiveMetadata, rootRenderProtoView: ProtoViewDto,
-    allRenderDirectiveMetadata: List<RenderDirectiveMetadata>): List<ChangeDetectorDefinition> {
+    allRenderDirectiveMetadata: List<RenderDirectiveMetadata>, genConfig: ChangeDetectorGenConfig):
+    List<ChangeDetectorDefinition> {
   var nestedPvsWithIndex = _collectNestedProtoViews(rootRenderProtoView);
   var nestedPvVariableNames = _collectNestedProtoViewsVariableNames(nestedPvsWithIndex);
   return _getChangeDetectorDefinitions(hostComponentMetadata, nestedPvsWithIndex,
-                                       nestedPvVariableNames, allRenderDirectiveMetadata);
+                                       nestedPvVariableNames, allRenderDirectiveMetadata,
+                                       genConfig);
 }
 
 function _collectNestedProtoViews(
@@ -285,7 +288,8 @@ function _collectNestedProtoViews(
 function _getChangeDetectorDefinitions(
     hostComponentMetadata: RenderDirectiveMetadata,
     nestedPvsWithIndex: List<RenderProtoViewWithIndex>, nestedPvVariableNames: List<List<string>>,
-    allRenderDirectiveMetadata: List<RenderDirectiveMetadata>): List<ChangeDetectorDefinition> {
+    allRenderDirectiveMetadata: List<RenderDirectiveMetadata>, genConfig: ChangeDetectorGenConfig):
+    List<ChangeDetectorDefinition> {
   return ListWrapper.map(nestedPvsWithIndex, (pvWithIndex) => {
     var elementBinders = pvWithIndex.renderProtoView.elementBinders;
     var bindingRecordsCreator = new BindingRecordsCreator();
@@ -302,7 +306,7 @@ function _getChangeDetectorDefinitions(
     var id = _protoViewId(hostComponentMetadata, pvWithIndex);
     var variableNames = nestedPvVariableNames[pvWithIndex.index];
     return new ChangeDetectorDefinition(id, strategyName, variableNames, propBindingRecords,
-                                        eventBindingRecords, directiveRecords, assertionsEnabled());
+                                        eventBindingRecords, directiveRecords, genConfig);
   });
 }
 

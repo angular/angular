@@ -66,7 +66,7 @@ export function main() {
       it('should create a ChangeDetectorDefinition for the root render proto view', () => {
         var renderPv = createRenderProtoView();
         var defs =
-            getChangeDetectorDefinitions(bindDirective(MainComponent).metadata, renderPv, []);
+            getChangeDetectorDefinitions(bindDirective(MainComponent).metadata, renderPv, [], null);
         expect(defs.length).toBe(1);
         expect(defs[0].id).toEqual(`${stringify(MainComponent)}_comp_0`);
       });
