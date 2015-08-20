@@ -1,7 +1,7 @@
-import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
-import {ViewEncapsulation} from 'angular2/src/render/api';
+import {ABSTRACT, CONST, Type} from 'angular2/src/core/facade/lang';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
-export {ViewEncapsulation} from 'angular2/src/render/api';
+export {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 /**
  * Declares the available HTML templates for an application.

@@ -45,6 +45,7 @@ module.exports = function(config) {
       '/packages/path': '/base/packages/path',
 
       // Local dependencies, transpiled from the source.
+      '/packages/angular2/test/': '/base/dist/dart/angular2/test/',
       '/packages/angular2': '/base/dist/dart/angular2/lib',
       '/packages/http': '/base/dist/dart/http/lib',
       '/packages/angular2_material': '/base/dist/dart/angular2_material/lib',

@@ -1,6 +1,6 @@
 library reflection.reflection_capabilities;
 
-import 'package:angular2/src/facade/lang.dart';
+import 'package:angular2/src/core/facade/lang.dart';
 import 'types.dart';
 import 'dart:mirrors';
 import 'platform_reflection_capabilities.dart';

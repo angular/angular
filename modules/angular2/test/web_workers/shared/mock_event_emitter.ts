@@ -1,6 +1,6 @@
-import {EventEmitter} from 'angular2/src/facade/async';
+import {EventEmitter} from 'angular2/src/core/facade/async';
 import * as Rx from 'rx';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export class MockEventEmitter extends EventEmitter {
   private _nextFns: List<Function> = [];

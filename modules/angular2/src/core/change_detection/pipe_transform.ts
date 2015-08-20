@@ -1,4 +1,4 @@
-import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/facade/lang';
+import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
 
 /**
  * An interface which all pipes must implement.

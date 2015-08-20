@@ -1,6 +1,6 @@
 import {AsyncRoute, AuxRoute, Route, Redirect, RouteDefinition} from './route_config_decorator';
 import {ComponentDefinition} from './route_definition';
-import {Type, BaseException} from 'angular2/src/facade/lang';
+import {Type, BaseException} from 'angular2/src/core/facade/lang';
 
 /**
  * Given a JS Object that represents... returns a corresponding Route, AsyncRoute, or Redirect

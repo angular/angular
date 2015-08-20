@@ -1,5 +1,5 @@
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Instruction} from './instruction';
 import {Injectable} from 'angular2/di';
 

@@ -12,7 +12,7 @@ import {
 } from 'angular2/bootstrap';
 import {FORM_DIRECTIVES, NgControl, Validators, NgForm} from 'angular2/forms';
 
-import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.

@@ -1,6 +1,6 @@
 import {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {Injector} from 'angular2/di';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 /**
  * Represents a Angular's representation of an Application.
  *

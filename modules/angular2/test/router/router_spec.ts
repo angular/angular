@@ -11,9 +11,9 @@ import {
   beforeEachBindings,
   SpyObject
 } from 'angular2/test_lib';
-import {IMPLEMENTS, Type} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {IMPLEMENTS, Type} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';

@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
-import 'package:angular2/src/render/xhr.dart' show XHR;
+import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
@@ -446,4 +446,4 @@ class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
 }
 
 const _REF_PREFIX = '_ngRef';
-const _REFLECTOR_IMPORT = 'package:angular2/src/reflection/reflection.dart';
+const _REFLECTOR_IMPORT = 'package:angular2/src/core/reflection/reflection.dart';

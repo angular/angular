@@ -1,4 +1,4 @@
-import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, BaseException} from 'angular2/src/core/facade/lang';
 import * as eiModule from './element_injector';
 import {DirectiveBinding} from './element_injector';
 import * as viewModule from './view';

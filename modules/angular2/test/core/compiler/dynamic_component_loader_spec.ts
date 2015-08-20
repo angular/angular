@@ -23,8 +23,8 @@ import {NgIf} from 'angular2/directives';
 import {Component, View, ViewMetadata, LifecycleEvent} from 'angular2/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {DOCUMENT} from 'angular2/src/render/render';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOCUMENT} from 'angular2/src/core/render/render';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
   describe('DynamicComponentLoader', function() {

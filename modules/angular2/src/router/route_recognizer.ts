@@ -8,7 +8,7 @@ import {
   isStringMap,
   BaseException,
   Type
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {
   Map,
   MapWrapper,
@@ -16,7 +16,7 @@ import {
   ListWrapper,
   StringMap,
   StringMapWrapper
-} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/collection';
 
 import {PathRecognizer, PathMatch} from './path_recognizer';
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';

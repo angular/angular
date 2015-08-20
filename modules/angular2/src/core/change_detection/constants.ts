@@ -1,5 +1,5 @@
 // TODO:vsavkin Use enums after switching to TypeScript
-import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/facade/lang';
+import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/core/facade/lang';
 
 /**
  * CHECK_ONCE means that after calling detectChanges the mode of the change detector

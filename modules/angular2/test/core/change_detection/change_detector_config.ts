@@ -1,5 +1,5 @@
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {
   DEFAULT,
   ON_PUSH,
@@ -11,10 +11,10 @@ import {
   Locals,
   Parser,
   ChangeDetectorGenConfig
-} from 'angular2/src/change_detection/change_detection';
-import {ON_PUSH_OBSERVE} from 'angular2/src/change_detection/constants';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+} from 'angular2/src/core/change_detection/change_detection';
+import {ON_PUSH_OBSERVE} from 'angular2/src/core/change_detection/constants';
+import {reflector} from 'angular2/src/core/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
 /*
  * This file defines `ChangeDetectorDefinition` objects which are used in the tests defined in

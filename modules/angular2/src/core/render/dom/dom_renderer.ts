@@ -5,10 +5,16 @@ import {
   BaseException,
   RegExpWrapper,
   CONST_EXPR
-} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {
+  ListWrapper,
+  MapWrapper,
+  Map,
+  StringMapWrapper,
+  List
+} from 'angular2/src/core/facade/collection';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {EventManager} from './events/event_manager';
 

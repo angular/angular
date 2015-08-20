@@ -1,15 +1,15 @@
-import {IMPLEMENTS, print} from 'angular2/src/facade/lang';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {IMPLEMENTS, print} from 'angular2/src/core/facade/lang';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {
   isPresent,
   isBlank,
   RegExpWrapper,
   StringWrapper,
   BaseException
-} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+} from 'angular2/src/core/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Injectable} from 'angular2/di';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
 
 export function commonDemoSetup(): void {

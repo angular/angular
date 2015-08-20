@@ -10,10 +10,10 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {makeDecorator, makeParamDecorator, Class} from 'angular2/src/util/decorators';
-import {global} from 'angular2/src/facade/lang';
+import {makeDecorator, makeParamDecorator, Class} from 'angular2/src/core/util/decorators';
+import {global} from 'angular2/src/core/facade/lang';
 import {Inject} from 'angular2/angular2';
-import {reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 class TestAnnotation {
   constructor(public arg: any) {}

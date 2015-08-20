@@ -1,8 +1,8 @@
 import {SpyObject, proxy} from 'angular2/test_lib';
 
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Location} from 'angular2/src/router/location';
 
 

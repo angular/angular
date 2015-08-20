@@ -11,13 +11,13 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
+import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 
-import {isBlank} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {isBlank} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {Map, MapWrapper} from 'angular2/src/core/facade/collection';
 
-import {XHR} from 'angular2/src/render/xhr';
+import {XHR} from 'angular2/src/core/render/xhr';
 
 import {bind} from 'angular2/di';
 

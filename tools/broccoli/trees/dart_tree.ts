@@ -15,7 +15,9 @@ import replace from '../broccoli-replace';
 
 var global_excludes = [
   'rtts_assert/**/*',
-  'http/**/*',
+  'angular2/http*',
+  'angular2/src/http/**/*',
+  'angular2/test/http/**/*',
   'examples/src/http/**/*',
   'examples/test/http/**/*',
   'examples/src/jsonp/**/*',
@@ -147,7 +149,8 @@ function getDocsTree() {
   var licenses = new MultiCopy('', {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
-    exclude: ['*/rtts_assert', '*/http', '*/upgrade', '*/angular1_router']  // Not in dart.
+    exclude:
+        ['*/rtts_assert', '*/angular2/src/http', '*/upgrade', '*/angular1_router']  // Not in dart.
   });
   licenses = stew.rename(licenses, stripModulePrefix);
 

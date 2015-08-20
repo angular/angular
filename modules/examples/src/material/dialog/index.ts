@@ -11,10 +11,10 @@ import {
   MdDialogRef,
   MdDialogConfig
 } from 'angular2_material/src/components/dialog/dialog';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
 
 
 @Component({

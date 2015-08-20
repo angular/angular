@@ -15,15 +15,15 @@ export 'package:guinness/guinness.dart'
         SpyObject,
         SpyFunction;
 
-import 'package:angular2/src/dom/dom_adapter.dart' show DOM;
+import 'package:angular2/src/core/dom/dom_adapter.dart' show DOM;
 
-import 'package:angular2/src/reflection/reflection.dart';
-import 'package:angular2/src/reflection/reflection_capabilities.dart';
+import 'package:angular2/src/core/reflection/reflection.dart';
+import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 
-import 'package:angular2/src/di/binding.dart' show bind;
-import 'package:angular2/src/di/injector.dart' show Injector;
+import 'package:angular2/src/core/di/binding.dart' show bind;
+import 'package:angular2/src/core/di/injector.dart' show Injector;
 import 'package:angular2/src/core/exception_handler.dart' show ExceptionHandler;
-import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
+import 'package:angular2/src/core/facade/collection.dart' show StringMapWrapper;
 
 import 'test_injector.dart';
 export 'test_injector.dart' show inject;

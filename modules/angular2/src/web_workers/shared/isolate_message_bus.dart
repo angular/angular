@@ -5,7 +5,7 @@ import 'dart:async';
 import 'dart:core';
 import 'package:angular2/src/web_workers/shared/message_bus.dart'
     show MessageBus, MessageBusSink, MessageBusSource;
-import 'package:angular2/src/facade/async.dart';
+import 'package:angular2/src/core/facade/async.dart';
 
 class IsolateMessageBus implements MessageBus {
   final IsolateMessageBusSink sink;

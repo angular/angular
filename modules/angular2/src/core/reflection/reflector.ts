@@ -1,4 +1,4 @@
-import {Type, isPresent, stringify, BaseException} from 'angular2/src/facade/lang';
+import {Type, isPresent, stringify, BaseException} from 'angular2/src/core/facade/lang';
 import {
   List,
   ListWrapper,
@@ -8,7 +8,7 @@ import {
   SetWrapper,
   StringMap,
   StringMapWrapper
-} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 export {SetterFn, GetterFn, MethodFn} from './types';

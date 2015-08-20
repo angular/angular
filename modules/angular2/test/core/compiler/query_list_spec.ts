@@ -1,7 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
 
-import {List, MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/facade/collection';
-import {StringWrapper} from 'angular2/src/facade/lang';
+import {List, MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/core/facade/collection';
+import {StringWrapper} from 'angular2/src/core/facade/lang';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 

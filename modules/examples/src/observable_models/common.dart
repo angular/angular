@@ -1,7 +1,7 @@
 library benchmarks.src.naive_infinite_scroll.common;
 
-import "package:angular2/src/facade/math.dart" show Math;
-import "package:angular2/src/facade/collection.dart";
+import "package:angular2/src/core/facade/math.dart" show Math;
+import "package:angular2/src/core/facade/collection.dart";
 import 'package:observe/observe.dart';
 import 'dart:collection';
 import 'dart:async';

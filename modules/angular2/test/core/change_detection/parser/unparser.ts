@@ -21,10 +21,10 @@ import {
   PrefixNot,
   SafePropertyRead,
   SafeMethodCall
-} from 'angular2/src/change_detection/parser/ast';
+} from 'angular2/src/core/change_detection/parser/ast';
 
 
-import {StringWrapper, isPresent, isString} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent, isString} from 'angular2/src/core/facade/lang';
 
 export class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;

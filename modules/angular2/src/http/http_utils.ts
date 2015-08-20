@@ -1,1 +1,1 @@
-export {isJsObject} from 'angular2/src/facade/lang';
+export {isJsObject} from 'angular2/src/core/facade/lang';

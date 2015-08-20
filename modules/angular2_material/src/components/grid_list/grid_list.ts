@@ -7,9 +7,9 @@ import {
   LifecycleEvent
 } from 'angular2/angular2';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {StringWrapper, isPresent, isString, NumberWrapper} from 'angular2/src/facade/lang';
-import {Math} from 'angular2/src/facade/math';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringWrapper, isPresent, isString, NumberWrapper} from 'angular2/src/core/facade/lang';
+import {Math} from 'angular2/src/core/facade/math';
 
 // TODO(jelbourn): Set appropriate aria attributes for grid list elements.
 // TODO(jelbourn): Animations.

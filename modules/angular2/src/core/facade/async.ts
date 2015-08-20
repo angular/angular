@@ -1,7 +1,7 @@
-/// <reference path="../../typings/rx/rx.d.ts" />
+/// <reference path="../../../typings/rx/rx.d.ts" />
 
-import {global, isPresent} from 'angular2/src/facade/lang';
-import {List} from 'angular2/src/facade/collection';
+import {global, isPresent} from 'angular2/src/core/facade/lang';
+import {List} from 'angular2/src/core/facade/collection';
 import * as Rx from 'rx';
 
 export {Promise};

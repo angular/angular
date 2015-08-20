@@ -3,9 +3,9 @@ library angular2.src.web_workers.worker;
 import "package:angular2/src/web_workers/shared/isolate_message_bus.dart";
 import "package:angular2/src/web_workers/worker/application_common.dart"
     show bootstrapWebWorkerCommon;
-import "package:angular2/src/facade/async.dart" show Future;
+import "package:angular2/src/core/facade/async.dart" show Future;
 import "package:angular2/src/core/application_ref.dart" show ApplicationRef;
-import "package:angular2/src/facade/lang.dart" show Type, BaseException;
+import "package:angular2/src/core/facade/lang.dart" show Type, BaseException;
 import "dart:isolate";
 import "dart:async";
 import 'dart:core';

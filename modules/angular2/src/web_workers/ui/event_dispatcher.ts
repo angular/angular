@@ -1,7 +1,7 @@
 import {
   RenderViewRef,
   RenderEventDispatcher,
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {
   serializeMouseEvent,
@@ -9,9 +9,9 @@ import {
   serializeGenericEvent,
   serializeEventWithTarget
 } from 'angular2/src/web_workers/ui/event_serializer';
-import {BaseException} from "angular2/src/facade/lang";
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {BaseException} from "angular2/src/core/facade/lang";
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
 export class EventDispatcher implements RenderEventDispatcher {
   constructor(private _viewRef: RenderViewRef, private _sink: EventEmitter,

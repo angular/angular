@@ -1,5 +1,5 @@
-import {CONST, Type} from 'angular2/src/facade/lang';
-import {List} from 'angular2/src/facade/collection';
+import {CONST, Type} from 'angular2/src/core/facade/lang';
+import {List} from 'angular2/src/core/facade/collection';
 import {RouteDefinition} from './route_definition';
 export {RouteDefinition} from './route_definition';
 

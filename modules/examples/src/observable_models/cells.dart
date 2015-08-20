@@ -1,6 +1,6 @@
 library benchmarks.src.naive_infinite_scroll.cells;
 
-import "package:angular2/src/facade/collection.dart"
+import "package:angular2/src/core/facade/collection.dart"
     show List, ListWrapper, Map;
 import "common.dart"
     show Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST;

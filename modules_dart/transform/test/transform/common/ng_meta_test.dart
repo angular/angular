@@ -1,6 +1,6 @@
 library angular2.test.transform.common.annotation_matcher_test;
 
-import 'package:angular2/src/render/api.dart';
+import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:guinness/guinness.dart';
 

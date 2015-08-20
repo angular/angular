@@ -1,7 +1,7 @@
 library angular2.transform.template_compiler.reflection.processor;
 
-import 'package:angular2/src/change_detection/parser/ast.dart';
-import 'package:angular2/src/render/api.dart';
+import 'package:angular2/src/core/change_detection/parser/ast.dart';
+import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/transform/template_compiler/view_definition_creator.dart';
 
 import 'model.dart';

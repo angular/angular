@@ -2,7 +2,7 @@ library angular2.test.web_workers.worker.mock_event_emitter;
 
 import 'dart:core';
 import 'dart:async';
-import "package:angular2/src/facade/async.dart";
+import "package:angular2/src/core/facade/async.dart";
 
 class MockEventEmitter extends EventEmitter {
   List<Function> _nextFns = new List();

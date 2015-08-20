@@ -1,7 +1,7 @@
 import {bind, Binding} from 'angular2/di';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
   Lexer,
@@ -11,29 +11,29 @@ import {
   defaultIterableDiffers,
   KeyValueDiffers,
   defaultKeyValueDiffers
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
-import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {XHR} from 'angular2/src/render/xhr';
+import {XHR} from 'angular2/src/core/render/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
-import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
+import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
 
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockXHR} from 'angular2/src/render/xhr_mock';
+import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
@@ -42,15 +42,15 @@ import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/di';
 
-import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
 
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {ELEMENT_PROBE_BINDINGS} from 'angular2/debug';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {RenderCompiler, Renderer} from 'angular2/src/render/api';
+import {RenderCompiler, Renderer} from 'angular2/src/core/render/api';
 import {
   DomRenderer,
   DOCUMENT,
@@ -60,9 +60,11 @@ import {
   DomSharedStylesHost,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
   TemplateCloner
-} from 'angular2/src/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
-import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/render/render';
+import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {
+  DomElementSchemaRegistry
+} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 

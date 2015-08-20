@@ -2,13 +2,13 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '
 import {
   DefaultIterableDiffer,
   DefaultIterableDifferFactory
-} from 'angular2/src/change_detection/differs/default_iterable_differ';
+} from 'angular2/src/core/change_detection/differs/default_iterable_differ';
 
-import {NumberWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {NumberWrapper} from 'angular2/src/core/facade/lang';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
-import {TestIterable} from '../iterable';
-import {iterableChangesAsString} from '../util';
+import {TestIterable} from '../../../core/change_detection/iterable';
+import {iterableChangesAsString} from '../../../core/change_detection/util';
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
 export function main() {

@@ -10,8 +10,8 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {Type} from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {Type} from 'angular2/src/core/facade/lang';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {

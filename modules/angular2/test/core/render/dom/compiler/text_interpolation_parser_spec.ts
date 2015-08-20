@@ -1,15 +1,17 @@
 import {describe, beforeEach, expect, it, iit, ddescribe, el} from 'angular2/test_lib';
-import {TextInterpolationParser} from 'angular2/src/render/dom/compiler/text_interpolation_parser';
-import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Lexer, Parser, ASTWithSource} from 'angular2/src/change_detection/change_detection';
+import {
+  TextInterpolationParser
+} from 'angular2/src/core/render/dom/compiler/text_interpolation_parser';
+import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Lexer, Parser, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';
 import {
   ProtoViewBuilder,
   ElementBinderBuilder
-} from 'angular2/src/render/dom/view/proto_view_builder';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {ViewDefinition, ViewType} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/dom/view/proto_view_builder';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {ViewDefinition, ViewType} from 'angular2/src/core/render/api';
 
 export function main() {
   describe('TextInterpolationParser', () => {

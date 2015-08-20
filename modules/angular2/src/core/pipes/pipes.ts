@@ -1,7 +1,7 @@
-import {isBlank, isPresent, BaseException, CONST, Type} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
 import {Injectable, OptionalMetadata, SkipSelfMetadata, Binding, Injector, bind} from 'angular2/di';
 import {PipeBinding} from './pipe_binding';
-import * as cd from 'angular2/src/change_detection/pipes';
+import * as cd from 'angular2/src/core/change_detection/pipes';
 
 export class ProtoPipes {
   /**

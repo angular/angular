@@ -1,15 +1,20 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {ListWrapper, List, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isPresent, NumberWrapper, StringWrapper, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {ListWrapper, List, MapWrapper} from 'angular2/src/core/facade/collection';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {isPresent, NumberWrapper, StringWrapper, IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
-import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
-import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
-import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
-import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
+import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
+import {CompileElement} from 'angular2/src/core/render/dom/compiler/compile_element';
+import {CompileStep} from 'angular2/src/core/render/dom/compiler/compile_step';
+import {CompileControl} from 'angular2/src/core/render/dom/compiler/compile_control';
 
-import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
-import {ProtoViewDto, ViewType, ViewEncapsulation, ViewDefinition} from 'angular2/src/render/api';
+import {ProtoViewBuilder} from 'angular2/src/core/render/dom/view/proto_view_builder';
+import {
+  ProtoViewDto,
+  ViewType,
+  ViewEncapsulation,
+  ViewDefinition
+} from 'angular2/src/core/render/api';
 
 export function main() {
   describe('compile_pipeline', () => {

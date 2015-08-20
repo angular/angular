@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 
 export function main() {
   describe('UrlResolver', () => {

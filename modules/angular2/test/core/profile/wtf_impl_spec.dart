@@ -2,7 +2,7 @@
 library angular2.test.core.wtf_impl;
 
 import 'package:angular2/test_lib.dart';
-import 'package:angular2/src/profile/wtf_impl.dart' as impl;
+import 'package:angular2/src/core/profile/wtf_impl.dart' as impl;
 
 main() {
   describe('WTF', () {

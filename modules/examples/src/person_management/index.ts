@@ -15,7 +15,7 @@ import {Injectable} from 'angular2/di';
 
 import {FORM_DIRECTIVES} from 'angular2/forms';
 
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 
 /**

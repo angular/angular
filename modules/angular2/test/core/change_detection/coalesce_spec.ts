@@ -1,9 +1,9 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/core/facade/lang';
 
-import {coalesce} from 'angular2/src/change_detection/coalesce';
-import {RecordType, ProtoRecord} from 'angular2/src/change_detection/proto_record';
-import {DirectiveIndex} from 'angular2/src/change_detection/directive_record';
+import {coalesce} from 'angular2/src/core/change_detection/coalesce';
+import {RecordType, ProtoRecord} from 'angular2/src/core/change_detection/proto_record';
+import {DirectiveIndex} from 'angular2/src/core/change_detection/directive_record';
 
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex,

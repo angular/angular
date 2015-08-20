@@ -1,7 +1,7 @@
 import {bind, Binding} from 'angular2/di';
-import {Promise} from 'angular2/src/facade/async';
-import {BaseException, ABSTRACT} from 'angular2/src/facade/lang';
-import {List, Map} from 'angular2/src/facade/collection';
+import {Promise} from 'angular2/src/core/facade/async';
+import {BaseException, ABSTRACT} from 'angular2/src/core/facade/lang';
+import {List, Map} from 'angular2/src/core/facade/collection';
 
 /**
  * A WebDriverAdapter bridges API differences between different WebDriver clients,

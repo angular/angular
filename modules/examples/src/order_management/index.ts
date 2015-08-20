@@ -16,7 +16,7 @@ import {Injectable} from 'angular2/di';
 
 import {FORM_DIRECTIVES} from 'angular2/forms';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * You can find the Angular 1 implementation of this example here:

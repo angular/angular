@@ -1,4 +1,4 @@
-import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, List} from 'angular2/src/core/facade/collection';
 
 import * as viewModule from './view';
 

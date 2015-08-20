@@ -1,5 +1,5 @@
-import {List} from 'angular2/src/facade/collection';
-import {CONST} from 'angular2/src/facade/lang';
+import {List} from 'angular2/src/core/facade/collection';
+import {CONST} from 'angular2/src/core/facade/lang';
 import {Locals} from './parser/locals';
 import {BindingTarget, BindingRecord} from './binding_record';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';

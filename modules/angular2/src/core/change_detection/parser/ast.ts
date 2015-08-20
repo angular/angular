@@ -1,5 +1,5 @@
-import {isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/facade/lang";
-import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/collection";
+import {isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/core/facade/lang";
+import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/core/facade/collection";
 
 export class AST {
   visit(visitor: AstVisitor): any { return null; }

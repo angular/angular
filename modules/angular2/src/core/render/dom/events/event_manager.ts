@@ -1,6 +1,6 @@
-import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 var BUBBLE_SYMBOL = '^';

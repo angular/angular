@@ -1,4 +1,4 @@
-import {isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 export function iterableChangesAsString({collection = CONST_EXPR([]), previous = CONST_EXPR([]),
                                          additions = CONST_EXPR([]), moves = CONST_EXPR([]),

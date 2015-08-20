@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/di';
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/core/facade/lang';
 
 /**
  * Specifies app root url for the application.

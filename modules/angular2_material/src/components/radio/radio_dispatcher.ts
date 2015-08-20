@@ -1,4 +1,4 @@
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * Class for radio buttons to coordinate unique selection based on name.

@@ -12,7 +12,7 @@ import {
   proxy,
   SpyObject
 } from 'angular2/test_lib';
-import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 
 import {JsonPipe} from 'angular2/pipes';
 

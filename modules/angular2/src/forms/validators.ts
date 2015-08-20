@@ -1,5 +1,5 @@
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import * as modelModule from './model';
 

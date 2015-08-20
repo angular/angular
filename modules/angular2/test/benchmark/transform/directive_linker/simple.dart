@@ -28,7 +28,7 @@ const aContents = '''
 library a.ng_deps.dart;
 
 import 'package:angular2/src/core/application.dart';
-import 'package:angular2/src/reflection/reflection_capabilities.dart';
+import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 import 'b.dart';
 
 bool _visited = false;

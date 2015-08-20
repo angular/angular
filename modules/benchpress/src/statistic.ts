@@ -1,5 +1,5 @@
-import {Math} from 'angular2/src/facade/math';
-import {ListWrapper, List} from 'angular2/src/facade/collection';
+import {Math} from 'angular2/src/core/facade/math';
+import {ListWrapper, List} from 'angular2/src/core/facade/collection';
 
 export class Statistic {
   static calculateCoefficientOfVariation(sample, mean) {

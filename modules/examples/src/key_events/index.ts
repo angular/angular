@@ -1,5 +1,5 @@
 import {bootstrap, Component, View} from 'angular2/bootstrap';
-import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
+import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 
 @Component({selector: 'key-events-app'})
 @View({

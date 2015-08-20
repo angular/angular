@@ -1,8 +1,8 @@
 /// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {global} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {global} from 'angular2/src/core/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {bind} from 'angular2/di';

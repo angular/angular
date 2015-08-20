@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {SetterFn} from 'angular2/src/reflection/types';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {SetterFn} from 'angular2/src/core/reflection/types';
 import {AST} from './parser/ast';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 

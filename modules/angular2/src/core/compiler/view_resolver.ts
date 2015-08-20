@@ -1,10 +1,10 @@
 import {Injectable} from 'angular2/di';
 import {ViewMetadata} from '../metadata/view';
 
-import {Type, stringify, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
+import {Type, stringify, isBlank, BaseException} from 'angular2/src/core/facade/lang';
+import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 
 @Injectable()

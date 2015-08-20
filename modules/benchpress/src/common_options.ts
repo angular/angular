@@ -1,5 +1,5 @@
 import {bind, Binding, OpaqueToken} from 'angular2/di';
-import {DateWrapper} from 'angular2/src/facade/lang';
+import {DateWrapper} from 'angular2/src/core/facade/lang';
 
 export class Options {
   static get DEFAULT_BINDINGS(): Binding[] { return _DEFAULT_BINDINGS; }

@@ -1,10 +1,10 @@
 import {Injectable} from 'angular2/di';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {StringWrapper, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringWrapper, isBlank, BaseException} from 'angular2/src/core/facade/lang';
 import * as getTestabilityModule from './get_testability';
 import {NgZone} from '../zone/ng_zone';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 
 /**

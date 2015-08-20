@@ -1,4 +1,4 @@
-import {makeDecorator, makeParamDecorator} from 'angular2/src/util/decorators';
+import {makeDecorator, makeParamDecorator} from 'angular2/src/core/util/decorators';
 
 export class ClassDecoratorImpl {
   value;

@@ -1,6 +1,6 @@
-import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
-import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../../profile/profile';
+import {List, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {normalizeBlank, isPresent, global} from 'angular2/src/core/facade/lang';
+import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
 
 export interface NgZoneZone extends Zone { _innerZone: boolean; }

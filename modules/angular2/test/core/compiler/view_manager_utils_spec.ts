@@ -20,8 +20,8 @@ import {
 } from 'angular2/test_lib';
 
 import {Injector, bind} from 'angular2/di';
-import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AppProtoView, AppView, AppProtoViewMergeMapping} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
@@ -38,7 +38,7 @@ import {
   RenderProtoViewMergeMapping,
   ViewType,
   RenderViewWithFragments
-} from 'angular2/src/render/render';
+} from 'angular2/src/core/render/render';
 
 export function main() {
   // TODO(tbosch): add more tests here!

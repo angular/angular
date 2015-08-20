@@ -1,7 +1,7 @@
 /// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 
-import {BaseException, global} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {BaseException, global} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 var _scheduler;

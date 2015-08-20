@@ -1,8 +1,8 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
 
-import {Locals} from 'angular2/src/change_detection/parser/locals';
+import {Locals} from 'angular2/src/core/change_detection/parser/locals';
 
-import {MapWrapper} from 'angular2/src/facade/collection';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 
 export function main() {
   describe('Locals', () => {

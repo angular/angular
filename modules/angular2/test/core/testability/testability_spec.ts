@@ -13,8 +13,8 @@ import {
 } from 'angular2/test_lib';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {normalizeBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {normalizeBlank} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {

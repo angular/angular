@@ -5,8 +5,8 @@ import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/di';
 import {BrowserJsonp} from './browser_jsonp';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {StringWrapper, isPresent, ENUM_INDEX, makeTypeError} from 'angular2/src/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {StringWrapper, isPresent, ENUM_INDEX, makeTypeError} from 'angular2/src/core/facade/lang';
 
 export class JSONPConnection implements Connection {
   readyState: ReadyStates;

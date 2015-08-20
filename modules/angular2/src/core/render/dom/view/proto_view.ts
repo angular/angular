@@ -1,9 +1,9 @@
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {DomElementBinder} from './element_binder';
 import {RenderProtoViewRef, ViewType, ViewEncapsulation} from '../../api';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {TemplateCloner} from '../template_cloner';
 

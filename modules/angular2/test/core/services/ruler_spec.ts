@@ -11,12 +11,12 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {DOM, DomAdapter} from 'angular2/src/dom/dom_adapter';
+import {DOM, DomAdapter} from 'angular2/src/core/dom/dom_adapter';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {Ruler, Rectangle} from 'angular2/src/services/ruler';
+import {Ruler, Rectangle} from 'angular2/src/core/services/ruler';
 import {createRectangle} from './rectangle_mock';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 function assertDimensions(rect: Rectangle, left, right, top, bottom, width, height) {
   expect(rect.left).toEqual(left);

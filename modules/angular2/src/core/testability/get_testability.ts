@@ -1,5 +1,5 @@
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
-import {global} from 'angular2/src/facade/lang';
+import {global} from 'angular2/src/core/facade/lang';
 
 class PublicTestability {
   _testability: Testability;

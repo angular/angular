@@ -1,8 +1,8 @@
 import {bind, Binding} from 'angular2/di';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {Promise} from 'angular2/src/facade/async';
+import {Promise} from 'angular2/src/core/facade/async';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
   static get BINDINGS(): List<Binding> { return _BINDINGS; }

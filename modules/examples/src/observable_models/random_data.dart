@@ -1,7 +1,7 @@
 library benchmarks.src.naive_infinite_scroll.random_data;
 
-import "package:angular2/src/facade/lang.dart" show StringWrapper;
-import "package:angular2/src/facade/collection.dart" show List, ListWrapper;
+import "package:angular2/src/core/facade/lang.dart" show StringWrapper;
+import "package:angular2/src/core/facade/collection.dart" show List, ListWrapper;
 import "common.dart"
     show
         CustomDate,

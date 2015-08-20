@@ -1,5 +1,5 @@
 import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
-import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
 import {ElementRef} from './element_ref';
 import {ProtoViewRef, ViewRef, HostViewRef, internalView, internalProtoView} from './view_ref';
@@ -11,11 +11,11 @@ import {
   RenderFragmentRef,
   RenderViewWithFragments,
   ViewType
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
-import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../../profile/profile';
+import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 /**
  * Entry point for creating, moving views in the view hierarchy and destroying views.

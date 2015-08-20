@@ -1,11 +1,11 @@
 library bar.ng_deps.dart;
 
-import 'package:angular2/src/change_detection/pregen_proto_change_detector.dart'
+import 'package:angular2/src/core/change_detection/pregen_proto_change_detector.dart'
     as _gen;
 
 import 'bar.dart';
 export 'bar.dart';
-import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
+import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
 
 var _visited = false;

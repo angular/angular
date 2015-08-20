@@ -1,5 +1,5 @@
-import {StringWrapper} from 'angular2/src/facade/lang';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {StringWrapper} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   CustomDate,
   Offering,

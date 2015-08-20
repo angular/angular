@@ -1,7 +1,7 @@
-import {reflector} from 'angular2/src/reflection/reflection';
-import {isPresent} from 'angular2/src/facade/lang';
+import {reflector} from 'angular2/src/core/reflection/reflection';
+import {isPresent} from 'angular2/src/core/facade/lang';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
 import {
   Lexer,
@@ -17,7 +17,7 @@ import {
   DirectiveRecord,
   DirectiveIndex,
   DEFAULT
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 
 // ---- SHARED

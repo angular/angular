@@ -13,14 +13,13 @@ System.config({
   paths: {
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
     'angular2/*': 'dist/js/dev/es5/angular2/*.js',
-    'http/*': 'dist/js/dev/es5/http/*.js',
     'rtts_assert/*': 'dist/js/dev/es5/rtts_assert/*.js',
     'rx': 'node_modules/rx/dist/rx.js'
   }
 });
 
 // Import all the specs, execute their `main()` method and kick off Karma (Jasmine).
-System.import('angular2/src/dom/browser_adapter').then(function(browser_adapter) {
+System.import('angular2/src/core/dom/browser_adapter').then(function(browser_adapter) {
   browser_adapter.BrowserDomAdapter.makeCurrent();
 }).then(function() {
   return Promise.all(

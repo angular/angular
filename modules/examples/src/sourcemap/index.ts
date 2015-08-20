@@ -1,4 +1,4 @@
-import {BaseException} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/lang';
 import {bootstrap, Component, View} from 'angular2/bootstrap';
 
 @Component({

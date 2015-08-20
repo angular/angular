@@ -1,4 +1,4 @@
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * An iterable and observable live list of components in the DOM.

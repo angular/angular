@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST} from 'angular2/src/core/facade/lang';
 
 // Can't use an enum because Dart doesn't support enum initializers.
 @CONST()

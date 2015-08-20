@@ -21,7 +21,7 @@ import {
 } from 'angular2/test_lib';
 
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
   Type,
   isPresent,
@@ -33,14 +33,14 @@ import {
   isBlank,
   CONST,
   CONST_EXPR
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {
   PromiseWrapper,
   EventEmitter,
   ObservableWrapper,
   PromiseCompleter,
   Promise
-} from 'angular2/src/facade/async';
+} from 'angular2/src/core/facade/async';
 
 import {
   Injector,
@@ -62,14 +62,14 @@ import {
   ChangeDetection,
   DynamicChangeDetection,
   ChangeDetectorGenConfig
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 import {Directive, Component, View, ViewMetadata, Attribute, Query, Pipe} from 'angular2/metadata';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
-import {NgIf} from 'angular2/src/directives/ng_if';
-import {NgFor} from 'angular2/src/directives/ng_for';
+import {NgIf} from 'angular2/src/core/directives/ng_if';
+import {NgFor} from 'angular2/src/core/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -78,7 +78,7 @@ import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 
-import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
+import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
 import {IS_DART} from '../../platform';
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));

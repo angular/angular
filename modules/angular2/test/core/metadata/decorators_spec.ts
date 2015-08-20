@@ -11,7 +11,7 @@ import {
 } from 'angular2/test_lib';
 
 import {Component, View, Directive} from 'angular2/angular2';
-import {reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 export function main() {
   describe('es5 decorators', () => {

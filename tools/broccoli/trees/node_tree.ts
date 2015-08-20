@@ -14,15 +14,15 @@ var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..')
 
 module.exports = function makeNodeTree(destinationPath) {
   // list of npm packages that this build will create
-  var outputPackages = ['angular2', 'http', 'benchpress', 'rtts_assert'];
+  var outputPackages = ['angular2', 'benchpress', 'rtts_assert'];
 
   var modulesTree = new Funnel('modules', {
-    include: ['angular2/**', 'http/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
+    include: ['angular2/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
       'angular2/test/core/zone/**',
       'angular2/test/test_lib/fake_async_spec.ts',
-      'angular2/test/render/xhr_impl_spec.ts',
+      'angular2/test/core/render/xhr_impl_spec.ts',
       'angular2/test/forms/**',
       'angular1_router/**'
     ]
@@ -85,13 +85,13 @@ module.exports = function makeNodeTree(destinationPath) {
     files: ['**/test/**/*_spec.js'],
     patterns: [
       {
-        match: /$/,
-        replacement: function(_, relativePath) {
-          return "\r\n main(); \n\r" +
-                 "var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
-                 "parse5Adapter.Parse5DomAdapter.makeCurrent();";
+        match: /^/,
+        replacement: function() {
+          return `var parse5Adapter = require('angular2/src/core/dom/parse5_adapter');\n\r
+                  parse5Adapter.Parse5DomAdapter.makeCurrent();`
         }
-      }
+      },
+      {match: /$/, replacement: function(_, relativePath) { return "\r\n main(); \n\r"; }}
     ]
   });
 

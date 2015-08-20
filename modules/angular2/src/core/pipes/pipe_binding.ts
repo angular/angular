@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 import {Key, Dependency, ResolvedBinding, Binding} from 'angular2/di';
 import {PipeMetadata} from '../metadata/directives';
 

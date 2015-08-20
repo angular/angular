@@ -12,8 +12,8 @@ var code = """
 library web_foo;
 
 import 'package:angular2/bootstrap.dart';import 'index.ng_deps.dart' as ngStaticInit0;
-import 'package:angular2/src/reflection/reflection.dart';
-import 'package:angular2/src/reflection/debug_reflection_capabilities.dart';
+import 'package:angular2/src/core/reflection/reflection.dart';
+import 'package:angular2/src/core/reflection/debug_reflection_capabilities.dart';
 
 void main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();

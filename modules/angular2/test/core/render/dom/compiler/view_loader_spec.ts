@@ -10,16 +10,16 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/view_loader';
-import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
-import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {ViewLoader, TemplateAndStyles} from 'angular2/src/core/render/dom/compiler/view_loader';
+import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {XHR} from 'angular2/src/render/xhr';
-import {MockXHR} from 'angular2/src/render/xhr_mock';
-import {ViewDefinition} from 'angular2/src/render/api';
+import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {XHR} from 'angular2/src/core/render/xhr';
+import {MockXHR} from 'angular2/src/core/render/xhr_mock';
+import {ViewDefinition} from 'angular2/src/core/render/api';
 
 export function main() {
   describe('ViewLoader', () => {

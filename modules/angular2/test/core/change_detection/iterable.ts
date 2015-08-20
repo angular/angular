@@ -1,4 +1,4 @@
-import {List} from 'angular2/src/facade/collection';
+import {List} from 'angular2/src/core/facade/collection';
 
 export class TestIterable {
   list: List<number>;

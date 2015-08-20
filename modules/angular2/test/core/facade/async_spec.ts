@@ -12,8 +12,8 @@ import {
   inject
 } from 'angular2/test_lib';
 
-import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export function main() {
   describe('EventEmitter', () => {

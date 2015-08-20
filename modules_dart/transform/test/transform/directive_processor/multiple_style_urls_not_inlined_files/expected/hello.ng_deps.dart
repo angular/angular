@@ -2,7 +2,7 @@ library examples.src.hello_world.multiple_style_urls_not_inlined_files.ng_deps.d
 
 import 'hello.dart';
 export 'hello.dart';
-import 'package:angular2/src/reflection/reflection.dart' as _ngRef;
+import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;
 

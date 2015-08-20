@@ -2,7 +2,7 @@ import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from '
 
 import {Statistic} from 'benchpress/src/statistic';
 
-import {NaN} from 'angular2/src/facade/math';
+import {NaN} from 'angular2/src/core/facade/math';
 
 export function main() {
   describe('statistic', () => {

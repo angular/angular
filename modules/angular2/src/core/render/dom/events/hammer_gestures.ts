@@ -1,7 +1,7 @@
-/// <reference path="../../../../typings/hammerjs/hammerjs.d.ts"/>
+/// <reference path="../../../../../typings/hammerjs/hammerjs.d.ts"/>
 
 import {HammerGesturesPluginCommon} from './hammer_common';
-import {isPresent, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
 
 export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   constructor() { super(); }

@@ -1,5 +1,5 @@
 import {Injectable, Inject} from "angular2/di";
-import {RenderProtoViewRef} from "angular2/src/render/api";
+import {RenderProtoViewRef} from "angular2/src/core/render/api";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
 
 @Injectable()

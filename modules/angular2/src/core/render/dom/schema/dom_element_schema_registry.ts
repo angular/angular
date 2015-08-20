@@ -1,6 +1,6 @@
-import {isPresent} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {ElementSchemaRegistry} from './element_schema_registry';
 

@@ -7,15 +7,15 @@ import {
   CONST,
   isBlank,
   FunctionWrapper
-} from 'angular2/src/facade/lang';
-import {DateFormatter} from 'angular2/src/facade/intl';
+} from 'angular2/src/core/facade/lang';
+import {DateFormatter} from 'angular2/src/core/facade/intl';
 import {Injectable} from 'angular2/di';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-import {Pipe} from '../core/metadata';
+import {Pipe} from '../metadata';
 
 // TODO: move to a global configable location along with other i18n components.
 var defaultLocale: string = 'en-US';

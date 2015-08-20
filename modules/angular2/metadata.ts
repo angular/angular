@@ -45,4 +45,4 @@ export {
   OnCheck
 } from './src/core/compiler/interfaces';
 
-export {Class, ClassDefinition, TypeDecorator} from './src/util/decorators';
+export {Class, ClassDefinition, TypeDecorator} from './src/core/util/decorators';

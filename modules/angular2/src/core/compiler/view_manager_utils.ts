@@ -1,16 +1,22 @@
 import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
-import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
+import {
+  ListWrapper,
+  MapWrapper,
+  Map,
+  StringMapWrapper,
+  List
+} from 'angular2/src/core/facade/collection';
 import * as eli from './element_injector';
-import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
 import {internalView} from './view_ref';
 import * as avmModule from './view_manager';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
-import {Renderer, RenderViewWithFragments} from 'angular2/src/render/api';
-import {Locals} from 'angular2/src/change_detection/change_detection';
+import {Renderer, RenderViewWithFragments} from 'angular2/src/core/render/api';
+import {Locals} from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/pipes/pipes';
-import {RenderViewRef, RenderFragmentRef, ViewType} from 'angular2/src/render/api';
+import {RenderViewRef, RenderFragmentRef, ViewType} from 'angular2/src/core/render/api';
 
 @Injectable()
 export class AppViewManagerUtils {

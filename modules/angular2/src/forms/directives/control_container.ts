@@ -1,6 +1,6 @@
 import {Form} from './form_interface';
 import {AbstractControlDirective} from './abstract_control_directive';
-import {List} from 'angular2/src/facade/collection';
+import {List} from 'angular2/src/core/facade/collection';
 
 /**
  * A directive that contains a group of [NgControl].

@@ -1,6 +1,6 @@
 library angular2.transform.template_compiler.reflection.model;
 
-import 'package:angular2/src/render/dom/util.dart';
+import 'package:angular2/src/core/render/dom/util.dart';
 
 /// Defines the names of getters, setters, and methods which need to be
 /// available to Angular 2 via the `reflector` at runtime.

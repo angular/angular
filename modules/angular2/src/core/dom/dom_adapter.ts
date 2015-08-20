@@ -1,4 +1,4 @@
-import {BaseException, isBlank} from 'angular2/src/facade/lang';
+import {BaseException, isBlank} from 'angular2/src/core/facade/lang';
 
 export var DOM: DomAdapter;
 
@@ -7,6 +7,8 @@ export function setRootDomAdapter(adapter: DomAdapter) {
     DOM = adapter;
   }
 }
+
+
 
 function _abstract() {
   return new BaseException('This method is abstract');

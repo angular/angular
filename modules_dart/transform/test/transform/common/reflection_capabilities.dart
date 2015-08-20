@@ -4,6 +4,6 @@
 library angular2.test.transform;
 
 /// Mocked out version of {@link ReflectionCapabilities}, defined in
-/// src/reflection/reflection_capabilities.dart. Importing the actual file in
+/// src/core/reflection/reflection_capabilities.dart. Importing the actual file in
 /// tests causes issues with resolution due to transitive dependencies.
 class ReflectionCapabilities {}

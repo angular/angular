@@ -1,6 +1,6 @@
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 
 import {Directive, Attribute} from '../core/metadata';
 import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';

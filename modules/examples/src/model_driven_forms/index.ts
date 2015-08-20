@@ -1,7 +1,7 @@
 import {bootstrap, NgIf, NgFor, Component, Directive, View, Host} from 'angular2/bootstrap';
 import {FORM_DIRECTIVES, NgControl, Validators, NgFormModel, FormBuilder} from 'angular2/forms';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent} from 'angular2/src/core/facade/lang';
 
 /**
  * Custom validator.

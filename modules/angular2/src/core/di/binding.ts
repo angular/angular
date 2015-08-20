@@ -7,9 +7,9 @@ import {
   BaseException,
   stringify,
   isArray
-} from 'angular2/src/facade/lang';
-import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {reflector} from 'angular2/src/reflection/reflection';
+} from 'angular2/src/core/facade/lang';
+import {List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Key} from './key';
 import {
   InjectMetadata,

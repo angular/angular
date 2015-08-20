@@ -1,4 +1,4 @@
-import {isJsObject, global, isPresent, isBlank, isArray} from 'angular2/src/facade/lang';
+import {isJsObject, global, isPresent, isBlank, isArray} from 'angular2/src/core/facade/lang';
 
 export var List = global.Array;
 export var Map = global.Map;

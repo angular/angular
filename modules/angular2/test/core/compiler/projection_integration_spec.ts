@@ -21,7 +21,7 @@ import {
   By
 } from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {
   forwardRef,
@@ -33,7 +33,7 @@ import {
 } from 'angular2/angular2';
 import {Component, Directive, View, ViewMetadata} from 'angular2/metadata';
 
-import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/render/render';
+import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/core/render/render';
 
 export function main() {
   describe('projection', () => {

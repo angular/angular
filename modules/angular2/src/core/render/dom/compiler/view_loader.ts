@@ -6,13 +6,13 @@ import {
   stringify,
   isPromise,
   StringWrapper
-} from 'angular2/src/facade/lang';
-import {Map, MapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+} from 'angular2/src/core/facade/lang';
+import {Map, MapWrapper, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ViewDefinition} from '../../api';
 
-import {XHR} from 'angular2/src/render/xhr';
+import {XHR} from 'angular2/src/core/render/xhr';
 
 import {StyleInliner} from './style_inliner';
 import {StyleUrlResolver} from './style_url_resolver';

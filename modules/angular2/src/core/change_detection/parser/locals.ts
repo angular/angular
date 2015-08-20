@@ -1,5 +1,5 @@
-import {isPresent, BaseException} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 export class Locals {
   constructor(public parent: Locals, public current: Map<any, any>) {}

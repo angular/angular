@@ -1,6 +1,6 @@
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 import {GetterFn, SetterFn, MethodFn} from './types';
-import {List} from 'angular2/src/facade/collection';
+import {List} from 'angular2/src/core/facade/collection';
 
 export interface PlatformReflectionCapabilities {
   isReflectionEnabled(): boolean;

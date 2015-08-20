@@ -1,6 +1,6 @@
-import {Injectable} from 'angular2/src/di/decorators';
-import {isBlank, isPresent, BaseException, StringWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper, List} from 'angular2/src/facade/collection';
+import {Injectable} from 'angular2/src/core/di/decorators';
+import {isBlank, isPresent, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
+import {ListWrapper, List} from 'angular2/src/core/facade/collection';
 import {
   Lexer,
   EOF,
@@ -16,7 +16,7 @@ import {
   $LPAREN,
   $RPAREN
 } from './lexer';
-import {reflector, Reflector} from 'angular2/src/reflection/reflection';
+import {reflector, Reflector} from 'angular2/src/core/reflection/reflection';
 import {
   AST,
   EmptyExpr,

@@ -5,8 +5,8 @@ import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/di';
 import {BrowserXhr} from './browser_xhr';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {isPresent, ENUM_INDEX} from 'angular2/src/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {isPresent, ENUM_INDEX} from 'angular2/src/core/facade/lang';
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -65,7 +65,7 @@ export class XHRConnection implements Connection {
       if (isPresent(baseResponseOptions)) {
         responseOptions = baseResponseOptions.merge(responseOptions);
       }
-      ObservableWrapper.callThrow(this.response, new Response(responseOptions))
+      ObservableWrapper.callThrow(this.response, new Response(responseOptions));
     });
     // TODO(jeffbcross): make this more dynamic based on body type
 
@@ -92,7 +92,7 @@ export class XHRConnection implements Connection {
  * #Example
  *
  * ```
- * import {Http, MyNodeBackend, HTTP_BINDINGS, BaseRequestOptions} from 'http/http';
+ * import {Http, MyNodeBackend, HTTP_BINDINGS, BaseRequestOptions} from 'angular2/http';
  * @Component({
  *   viewBindings: [
  *     HTTP_BINDINGS,

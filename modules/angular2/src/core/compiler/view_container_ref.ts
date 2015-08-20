@@ -1,6 +1,6 @@
-import {ListWrapper, List} from 'angular2/src/facade/collection';
+import {ListWrapper, List} from 'angular2/src/core/facade/collection';
 import {ResolvedBinding} from 'angular2/di';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
 import * as avmModule from './view_manager';
 import * as viewModule from './view';

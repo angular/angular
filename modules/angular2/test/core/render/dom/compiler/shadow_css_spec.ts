@@ -9,10 +9,10 @@ import {
   el,
   normalizeCSS
 } from 'angular2/test_lib';
-import {ShadowCss} from 'angular2/src/render/dom/compiler/shadow_css';
+import {ShadowCss} from 'angular2/src/core/render/dom/compiler/shadow_css';
 
-import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
   describe('ShadowCss', function() {

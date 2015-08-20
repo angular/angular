@@ -11,15 +11,15 @@ import {
   RenderProtoViewMergeMapping,
   RenderViewWithFragments,
   RenderFragmentRef
-} from 'angular2/src/render/api';
-import {Promise, PromiseWrapper} from "angular2/src/facade/async";
+} from 'angular2/src/core/render/api';
+import {Promise, PromiseWrapper} from "angular2/src/core/facade/async";
 import {
   ClientMessageBroker,
   ClientMessageBrokerFactory,
   FnArg,
   UiArguments
 } from "angular2/src/web_workers/shared/client_message_broker";
-import {isPresent, print, BaseException} from "angular2/src/facade/lang";
+import {isPresent, print, BaseException} from "angular2/src/core/facade/lang";
 import {Injectable} from "angular2/di";
 import {
   RenderViewWithFragmentsStore,

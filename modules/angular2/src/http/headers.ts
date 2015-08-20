@@ -5,7 +5,7 @@ import {
   isType,
   StringWrapper,
   BaseException
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {
   isListLikeIterable,
   List,
@@ -13,7 +13,7 @@ import {
   MapWrapper,
   ListWrapper,
   StringMap
-} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/collection';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as

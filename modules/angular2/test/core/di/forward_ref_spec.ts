@@ -10,7 +10,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {forwardRef, resolveForwardRef} from 'angular2/di';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 
 export function main() {
   describe("forwardRef", function() {

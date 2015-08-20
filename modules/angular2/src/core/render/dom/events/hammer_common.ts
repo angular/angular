@@ -1,5 +1,5 @@
 import {EventManagerPlugin} from './event_manager';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 var _eventNames = {
   // pan

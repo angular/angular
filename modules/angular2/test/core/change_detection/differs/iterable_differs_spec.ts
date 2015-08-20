@@ -9,7 +9,7 @@ import {
   afterEach,
   SpyIterableDifferFactory
 } from 'angular2/test_lib';
-import {IterableDiffers} from 'angular2/src/change_detection/differs/iterable_differs';
+import {IterableDiffers} from 'angular2/src/core/change_detection/differs/iterable_differs';
 import {Injector, bind} from 'angular2/di';
 
 export function main() {

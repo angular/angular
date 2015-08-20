@@ -10,14 +10,14 @@ import {
   SpyObject,
   proxy
 } from 'angular2/test_lib';
-import {IMPLEMENTS, Type} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, Type} from 'angular2/src/core/facade/lang';
 import {
   ClientMessageBroker,
   UiArguments,
   ClientMessageBrokerFactory
 } from 'angular2/src/web_workers/shared/client_message_broker';
 import {WebWorkerXHRImpl} from "angular2/src/web_workers/worker/xhr_impl";
-import {PromiseWrapper} from "angular2/src/facade/async";
+import {PromiseWrapper} from "angular2/src/core/facade/async";
 
 export function main() {
   describe("WebWorkerXHRImpl", () => {

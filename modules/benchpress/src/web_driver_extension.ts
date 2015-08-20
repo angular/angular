@@ -1,8 +1,8 @@
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/di';
 
-import {BaseException, ABSTRACT, isBlank, isPresent} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper, StringMap} from 'angular2/src/facade/collection';
+import {BaseException, ABSTRACT, isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {List, ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 
 import {Options} from './common_options';
 

@@ -2,7 +2,7 @@ library angular.router.route_lifecycle_reflector;
 
 import 'package:angular2/src/router/lifecycle_annotations_impl.dart';
 import 'package:angular2/src/router/interfaces.dart';
-import 'package:angular2/src/reflection/reflection.dart';
+import 'package:angular2/src/core/reflection/reflection.dart';
 
 bool hasLifecycleHook(RouteLifecycleHook e, type) {
   if (type is! Type) return false;

@@ -9,8 +9,8 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {BaseRequestOptions, RequestOptions} from 'http/src/base_request_options';
-import {RequestMethods, RequestModesOpts} from 'http/src/enums';
+import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
+import {RequestMethods, RequestModesOpts} from 'angular2/src/http/enums';
 
 export function main() {
   describe('BaseRequestOptions', () => {

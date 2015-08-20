@@ -1,5 +1,5 @@
-import {AppRootUrl} from "angular2/src/services/app_root_url";
-import {DOM} from "angular2/src/dom/dom_adapter";
+import {AppRootUrl} from "angular2/src/core/services/app_root_url";
+import {DOM} from "angular2/src/core/dom/dom_adapter";
 import {Injectable} from "angular2/di";
 
 /**

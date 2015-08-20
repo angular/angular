@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/metadata.dart' show LifecycleEvent;
-import 'package:angular2/src/render/xhr.dart' show XHR;
+import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
