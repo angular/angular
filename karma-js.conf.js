@@ -9,7 +9,7 @@ module.exports = function(config) {
 
     files: [
       // Sources and specs.
-      // Loaded through the es6-module-loader, in `test-main.js`.
+      // Loaded through the System loader, in `test-main.js`.
       {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
 
       // zone-microtask must be included first as it contains a Promise monkey patch
@@ -18,7 +18,6 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/jasmine-patch.js',
 
       'node_modules/traceur/bin/traceur-runtime.js',
-      'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'modules/angular2/src/test_lib/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
