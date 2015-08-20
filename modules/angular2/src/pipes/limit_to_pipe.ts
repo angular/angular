@@ -67,7 +67,7 @@ export class LimitToPipe implements PipeTransform {
       throw new InvalidPipeArgumentException(LimitToPipe, value);
     }
     if (isBlank(value)) return value;
-    var limit: int = args[0];
+    var limit: number = args[0];
     var left = 0, right = Math.min(limit, value.length);
     if (limit < 0) {
       left = Math.max(0, value.length + limit);

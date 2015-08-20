@@ -162,9 +162,9 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
    *
    * @param {string} eventName
    * @param {*} eventObj
-   * @param {int} boundElementIndex
+   * @param {number} boundElementIndex
    */
-  triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: int): void {
+  triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: number): void {
     var locals = new Map();
     locals.set('$event', eventObj);
     this.dispatchEvent(boundElementIndex, eventName, locals);
@@ -328,7 +328,7 @@ export class AppProtoView {
     }
   }
 
-  bindElement(parent: ElementBinder, distanceToParent: int,
+  bindElement(parent: ElementBinder, distanceToParent: number,
               protoElementInjector: ProtoElementInjector,
               componentDirective: DirectiveBinding = null): ElementBinder {
     var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,

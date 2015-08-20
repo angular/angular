@@ -302,13 +302,13 @@ export class MdGridTile {
  */
 class TileCoordinator {
   // Tracking array (see class description).
-  tracker: List<int>;
+  tracker: List<number>;
 
   // Index at which the search for the next gap will start.
-  columnIndex: int;
+  columnIndex: number;
 
   // The current row index.
-  rowIndex: int;
+  rowIndex: number;
 
   // The computed (row, col) position of each tile (the output).
   positions: List<Position>;

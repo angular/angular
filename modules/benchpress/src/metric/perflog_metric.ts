@@ -25,7 +25,7 @@ export class PerflogMetric extends Metric {
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 
   private _remainingEvents: List<StringMap<string, any>>;
-  private _measureCount: int;
+  private _measureCount: number;
   _perfLogFeatures: PerfLogFeatures;
 
 
@@ -124,7 +124,7 @@ export class PerflogMetric extends Metric {
         .then((_) => this._readUntilEndMark(markName));
   }
 
-  _readUntilEndMark(markName: string, loopCount: int = 0, startEvent = null) {
+  _readUntilEndMark(markName: string, loopCount: number = 0, startEvent = null) {
     if (loopCount > _MAX_RETRY_COUNT) {
       throw new BaseException(`Tried too often to get the ending mark: ${loopCount}`);
     }

@@ -5,11 +5,11 @@ import {NgFor} from 'angular2/directives';
 import {Component, Directive, View} from 'angular2/angular2';
 
 export class HasStyle {
-  cellWidth: int;
+  cellWidth: number;
 
   constructor() {}
 
-  set width(w: int) { this.cellWidth = w; }
+  set width(w: number) { this.cellWidth = w; }
 }
 
 @Component({selector: 'company-name', properties: ['width: cell-width', 'company']})

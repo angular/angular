@@ -378,8 +378,9 @@ export class ProtoElementInjector {
 
 
 
-  constructor(public parent: ProtoElementInjector, public index: int, bwv: BindingWithVisibility[],
-              public distanceToParent: number, public _firstBindingIsComponent: boolean,
+  constructor(public parent: ProtoElementInjector, public index: number,
+              bwv: BindingWithVisibility[], public distanceToParent: number,
+              public _firstBindingIsComponent: boolean,
               public directiveVariableBindings: Map<string, number>) {
     var length = bwv.length;
 

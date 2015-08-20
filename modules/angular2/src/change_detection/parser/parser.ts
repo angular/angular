@@ -122,24 +122,24 @@ export class Parser {
 }
 
 export class _ParseAST {
-  index: int = 0;
+  index: number = 0;
   constructor(public input: string, public location: any, public tokens: List<any>,
               public reflector: Reflector, public parseAction: boolean) {}
 
-  peek(offset: int): Token {
+  peek(offset: number): Token {
     var i = this.index + offset;
     return i < this.tokens.length ? this.tokens[i] : EOF;
   }
 
   get next(): Token { return this.peek(0); }
 
-  get inputIndex(): int {
+  get inputIndex(): number {
     return (this.index < this.tokens.length) ? this.next.index : this.input.length;
   }
 
   advance() { this.index++; }
 
-  optionalCharacter(code: int): boolean {
+  optionalCharacter(code: number): boolean {
     if (this.next.isCharacter(code)) {
       this.advance();
       return true;
@@ -159,7 +159,7 @@ export class _ParseAST {
 
   peekKeywordVar(): boolean { return this.next.isKeywordVar() || this.next.isOperator('#'); }
 
-  expectCharacter(code: int) {
+  expectCharacter(code: number) {
     if (this.optionalCharacter(code)) return;
     this.error(`Missing expected ${StringWrapper.fromCharCode(code)}`);
   }
@@ -453,7 +453,7 @@ export class _ParseAST {
     throw new BaseException("Fell through all cases in parsePrimary");
   }
 
-  parseExpressionList(terminator: int): List<any> {
+  parseExpressionList(terminator: number): List<any> {
     var result = [];
     if (!this.next.isCharacter(terminator)) {
       do {
@@ -606,7 +606,7 @@ export class _ParseAST {
     return bindings;
   }
 
-  error(message: string, index: int = null) {
+  error(message: string, index: number = null) {
     if (isBlank(index)) index = this.index;
 
     var location = (index < this.tokens.length) ? `at column ${this.tokens[index].index + 1} in` :

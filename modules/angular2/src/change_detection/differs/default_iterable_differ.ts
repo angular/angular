@@ -26,7 +26,7 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
 
 export class DefaultIterableDiffer implements IterableDiffer {
   private _collection = null;
-  private _length: int = null;
+  private _length: number = null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.
@@ -43,7 +43,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
   get collection() { return this._collection; }
 
-  get length(): int { return this._length; }
+  get length(): number { return this._length; }
 
   forEachItem(fn: Function) {
     var record: CollectionChangeRecord;
@@ -101,7 +101,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
     var record: CollectionChangeRecord = this._itHead;
     var mayBeDirty: boolean = false;
-    var index: int;
+    var index: number;
     var item;
 
     if (isArray(collection)) {
@@ -185,7 +185,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
    * - `item` is the current item in the collection
    * - `index` is the position of the item in the collection
    */
-  _mismatch(record: CollectionChangeRecord, item, index: int): CollectionChangeRecord {
+  _mismatch(record: CollectionChangeRecord, item, index: number): CollectionChangeRecord {
     // The previous record after which we will append the current one.
     var previousRecord: CollectionChangeRecord;
 
@@ -241,7 +241,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
    * better way to think of it is as insert of 'b' rather then switch 'a' with 'b' and then add 'a'
    * at the end.
    */
-  _verifyReinsertion(record: CollectionChangeRecord, item, index: int): CollectionChangeRecord {
+  _verifyReinsertion(record: CollectionChangeRecord, item, index: number): CollectionChangeRecord {
     var reinsertRecord: CollectionChangeRecord =
         this._unlinkedRecords === null ? null : this._unlinkedRecords.get(item);
     if (reinsertRecord !== null) {
@@ -284,7 +284,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   }
 
   _reinsertAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
-                 index: int): CollectionChangeRecord {
+                 index: number): CollectionChangeRecord {
     if (this._unlinkedRecords !== null) {
       this._unlinkedRecords.remove(record);
     }
@@ -308,7 +308,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   }
 
   _moveAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
-             index: int): CollectionChangeRecord {
+             index: number): CollectionChangeRecord {
     this._unlink(record);
     this._insertAfter(record, prevRecord, index);
     this._addToMoves(record, index);
@@ -316,7 +316,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   }
 
   _addAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
-            index: int): CollectionChangeRecord {
+            index: number): CollectionChangeRecord {
     this._insertAfter(record, prevRecord, index);
 
     if (this._additionsTail === null) {
@@ -333,7 +333,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   }
 
   _insertAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
-               index: int): CollectionChangeRecord {
+               index: number): CollectionChangeRecord {
     // todo(vicb)
     // assert(record != prevRecord);
     // assert(record._next === null);
@@ -395,7 +395,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
-  _addToMoves(record: CollectionChangeRecord, toIndex: int): CollectionChangeRecord {
+  _addToMoves(record: CollectionChangeRecord, toIndex: number): CollectionChangeRecord {
     // todo(vicb)
     // assert(record._nextMoved === null);
 
@@ -473,8 +473,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
 }
 
 export class CollectionChangeRecord {
-  currentIndex: int = null;
-  previousIndex: int = null;
+  currentIndex: number = null;
+  previousIndex: number = null;
 
   _nextPrevious: CollectionChangeRecord = null;
   _prev: CollectionChangeRecord = null;
@@ -524,7 +524,7 @@ class _DuplicateItemRecordList {
 
   // Returns a CollectionChangeRecord having CollectionChangeRecord.item == item and
   // CollectionChangeRecord.currentIndex >= afterIndex
-  get(item: any, afterIndex: int): CollectionChangeRecord {
+  get(item: any, afterIndex: number): CollectionChangeRecord {
     var record: CollectionChangeRecord;
     for (record = this._head; record !== null; record = record._nextDup) {
       if ((afterIndex === null || afterIndex < record.currentIndex) &&
@@ -588,7 +588,7 @@ class _DuplicateMap {
    * Use case: `[a, b, c, a, a]` if we are at index `3` which is the second `a` then asking if we
    * have any more `a`s needs to return the last `a` not the first or second.
    */
-  get(value: any, afterIndex: int = null): CollectionChangeRecord {
+  get(value: any, afterIndex: number = null): CollectionChangeRecord {
     var key = getMapKey(value);
 
     var recordList = this.map.get(key);

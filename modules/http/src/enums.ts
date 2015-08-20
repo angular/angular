@@ -51,7 +51,7 @@ export enum RequestMethods {
 export class RequestMethodsMap {
   private _methods: List<string>;
   constructor() { this._methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH']; }
-  getMethod(method: int): string { return this._methods[method]; }
+  getMethod(method: number): string { return this._methods[method]; }
 }
 /**
  * All possible states in which a connection can be, based on

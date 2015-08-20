@@ -25,9 +25,9 @@ import {Component, Directive, View} from 'angular2/angular2';
   </div>`
 })
 export class App {
-  scrollAreas: List<int>;
-  iterationCount: int;
-  scrollIncrement: int;
+  scrollAreas: List<number>;
+  iterationCount: number;
+  scrollIncrement: number;
 
   constructor() {
     var appSize = getIntParameter('appSize');
@@ -50,7 +50,7 @@ export class App {
 
   runBenchmark() {
     var scrollDiv = this._getScrollDiv();
-    var n: int = this.iterationCount;
+    var n: number = this.iterationCount;
     var scheduleScroll;
     scheduleScroll = () => {
       TimerWrapper.setTimeout(() => {

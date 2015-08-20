@@ -4,7 +4,6 @@
 
 /// <reference path="typings/zone/zone.d.ts"/>
 declare var assert: any;
-declare type int = number;
 
 interface List<T> extends Array<T> {}
 

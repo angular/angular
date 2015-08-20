@@ -42,24 +42,24 @@ import {
 
 @Injectable()
 export class Serializer {
-  private _enumRegistry: Map<any, Map<int, any>>;
+  private _enumRegistry: Map<any, Map<number, any>>;
   constructor(private _parser: Parser, private _protoViewStore: RenderProtoViewRefStore,
               private _renderViewStore: RenderViewWithFragmentsStore) {
-    this._enumRegistry = new Map<any, Map<int, any>>();
+    this._enumRegistry = new Map<any, Map<number, any>>();
 
-    var viewTypeMap = new Map<int, any>();
+    var viewTypeMap = new Map<number, any>();
     viewTypeMap[0] = ViewType.HOST;
     viewTypeMap[1] = ViewType.COMPONENT;
     viewTypeMap[2] = ViewType.EMBEDDED;
     this._enumRegistry.set(ViewType, viewTypeMap);
 
-    var viewEncapsulationMap = new Map<int, any>();
+    var viewEncapsulationMap = new Map<number, any>();
     viewEncapsulationMap[0] = ViewEncapsulation.EMULATED;
     viewEncapsulationMap[1] = ViewEncapsulation.NATIVE;
     viewEncapsulationMap[2] = ViewEncapsulation.NONE;
     this._enumRegistry.set(ViewEncapsulation, viewEncapsulationMap);
 
-    var propertyBindingTypeMap = new Map<int, any>();
+    var propertyBindingTypeMap = new Map<number, any>();
     propertyBindingTypeMap[0] = PropertyBindingType.PROPERTY;
     propertyBindingTypeMap[1] = PropertyBindingType.ATTRIBUTE;
     propertyBindingTypeMap[2] = PropertyBindingType.CLASS;

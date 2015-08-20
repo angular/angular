@@ -53,13 +53,13 @@ export function main() {
   describe('lexer', function() {
     describe('token', function() {
       it('should tokenize a simple identifier', function() {
-        var tokens: List<int> = lex("j");
+        var tokens: List<number> = lex("j");
         expect(tokens.length).toEqual(1);
         expectIdentifierToken(tokens[0], 0, 'j');
       });
 
       it('should tokenize a dotted identifier', function() {
-        var tokens: List<int> = lex("j.k");
+        var tokens: List<number> = lex("j.k");
         expect(tokens.length).toEqual(3);
         expectIdentifierToken(tokens[0], 0, 'j');
         expectCharacterToken(tokens[1], 1, '.');
@@ -67,20 +67,20 @@ export function main() {
       });
 
       it('should tokenize an operator', function() {
-        var tokens: List<int> = lex("j-k");
+        var tokens: List<number> = lex("j-k");
         expect(tokens.length).toEqual(3);
         expectOperatorToken(tokens[1], 1, '-');
       });
 
       it('should tokenize an indexed operator', function() {
-        var tokens: List<int> = lex("j[k]");
+        var tokens: List<number> = lex("j[k]");
         expect(tokens.length).toEqual(4);
         expectCharacterToken(tokens[1], 1, "[");
         expectCharacterToken(tokens[3], 3, "]");
       });
 
       it('should tokenize numbers', function() {
-        var tokens: List<int> = lex("88");
+        var tokens: List<number> = lex("88");
         expect(tokens.length).toEqual(1);
         expectNumberToken(tokens[0], 0, 88);
       });

@@ -7,7 +7,7 @@ export class ElementBinder {
   // updated later, so we are able to resolve cycles
   nestedProtoView: viewModule.AppProtoView = null;
 
-  constructor(public index: int, public parent: ElementBinder, public distanceToParent: int,
+  constructor(public index: number, public parent: ElementBinder, public distanceToParent: number,
               public protoElementInjector: eiModule.ProtoElementInjector,
               public componentDirective: DirectiveBinding) {
     if (isBlank(index)) {

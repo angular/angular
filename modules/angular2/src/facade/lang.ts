@@ -53,7 +53,7 @@ _global.assert = function assert(condition) {
   }
 };
 
-export function ENUM_INDEX(value: int): int {
+export function ENUM_INDEX(value: number): number {
   return value;
 }
 
@@ -139,18 +139,18 @@ export function stringify(token): string {
 // serialize / deserialize enum exist only for consistency with dart API
 // enums in typescript don't need to be serialized
 
-export function serializeEnum(val): int {
+export function serializeEnum(val): number {
   return val;
 }
 
-export function deserializeEnum(val, values: Map<int, any>): any {
+export function deserializeEnum(val, values: Map<number, any>): any {
   return val;
 }
 
 export class StringWrapper {
-  static fromCharCode(code: int): string { return String.fromCharCode(code); }
+  static fromCharCode(code: number): string { return String.fromCharCode(code); }
 
-  static charCodeAt(s: string, index: int): number { return s.charCodeAt(index); }
+  static charCodeAt(s: string, index: number): number { return s.charCodeAt(index); }
 
   static split(s: string, regExp: RegExp): List<string> { return s.split(regExp); }
 
@@ -170,7 +170,7 @@ export class StringWrapper {
 
   static startsWith(s: string, start: string): boolean { return s.startsWith(start); }
 
-  static substring(s: string, start: int, end: int = null): string {
+  static substring(s: string, start: number, end: number = null): string {
     return s.substring(start, end === null ? undefined : end);
   }
 
@@ -185,7 +185,7 @@ export class StringWrapper {
 
   static contains(s: string, substr: string): boolean { return s.indexOf(substr) != -1; }
 
-  static compare(a: string, b: string): int {
+  static compare(a: string, b: string): number {
     if (a < b) {
       return -1;
     } else if (a > b) {
@@ -214,19 +214,19 @@ export class NumberParseError extends BaseException {
 
 
 export class NumberWrapper {
-  static toFixed(n: number, fractionDigits: int): string { return n.toFixed(fractionDigits); }
+  static toFixed(n: number, fractionDigits: number): string { return n.toFixed(fractionDigits); }
 
   static equal(a: number, b: number): boolean { return a === b; }
 
-  static parseIntAutoRadix(text: string): int {
-    var result: int = parseInt(text);
+  static parseIntAutoRadix(text: string): number {
+    var result: number = parseInt(text);
     if (isNaN(result)) {
       throw new NumberParseError("Invalid integer literal when parsing " + text);
     }
     return result;
   }
 
-  static parseInt(text: string, radix: int): int {
+  static parseInt(text: string, radix: number): number {
     if (radix == 10) {
       if (/^(\-|\+)?[0-9]+$/.test(text)) {
         return parseInt(text, radix);
@@ -236,7 +236,7 @@ export class NumberWrapper {
         return parseInt(text, radix);
       }
     } else {
-      var result: int = parseInt(text, radix);
+      var result: number = parseInt(text, radix);
       if (!isNaN(result)) {
         return result;
       }
@@ -338,12 +338,12 @@ export class Json {
 }
 
 export class DateWrapper {
-  static create(year: int, month: int = 1, day: int = 1, hour: int = 0, minutes: int = 0,
-                seconds: int = 0, milliseconds: int = 0): Date {
+  static create(year: number, month: number = 1, day: number = 1, hour: number = 0,
+                minutes: number = 0, seconds: number = 0, milliseconds: number = 0): Date {
     return new Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
   }
-  static fromMillis(ms: int): Date { return new Date(ms); }
-  static toMillis(date: Date): int { return date.getTime(); }
+  static fromMillis(ms: number): Date { return new Date(ms); }
+  static toMillis(date: Date): number { return date.getTime(); }
   static now(): Date { return new Date(); }
   static toJson(date: Date): string { return date.toJSON(); }
 }

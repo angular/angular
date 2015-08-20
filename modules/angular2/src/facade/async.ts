@@ -58,11 +58,13 @@ export class PromiseWrapper {
 }
 
 export class TimerWrapper {
-  static setTimeout(fn: Function, millis: int): int { return global.setTimeout(fn, millis); }
-  static clearTimeout(id: int): void { global.clearTimeout(id); }
+  static setTimeout(fn: Function, millis: number): number { return global.setTimeout(fn, millis); }
+  static clearTimeout(id: number): void { global.clearTimeout(id); }
 
-  static setInterval(fn: Function, millis: int): int { return global.setInterval(fn, millis); }
-  static clearInterval(id: int): void { global.clearInterval(id); }
+  static setInterval(fn: Function, millis: number): number {
+    return global.setInterval(fn, millis);
+  }
+  static clearInterval(id: number): void { global.clearInterval(id); }
 }
 
 export class ObservableWrapper {

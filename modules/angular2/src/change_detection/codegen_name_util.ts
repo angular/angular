@@ -83,13 +83,13 @@ export class CodegenNameUtil {
     return this._addFieldPrefix(_FIRST_PROTO_IN_CURRENT_BINDING);
   }
 
-  getLocalName(idx: int): string { return `l_${this._sanitizedNames[idx]}`; }
+  getLocalName(idx: number): string { return `l_${this._sanitizedNames[idx]}`; }
 
-  getEventLocalName(eb: EventBinding, idx: int): string {
+  getEventLocalName(eb: EventBinding, idx: number): string {
     return `l_${MapWrapper.get(this._sanitizedEventNames, eb)[idx]}`;
   }
 
-  getChangeName(idx: int): string { return `c_${this._sanitizedNames[idx]}`; }
+  getChangeName(idx: number): string { return `c_${this._sanitizedNames[idx]}`; }
 
   /**
    * Generate a statement initializing local variables used when detecting changes.
@@ -133,9 +133,9 @@ export class CodegenNameUtil {
 
   getPreventDefaultAccesor(): string { return "preventDefault"; }
 
-  getFieldCount(): int { return this._sanitizedNames.length; }
+  getFieldCount(): number { return this._sanitizedNames.length; }
 
-  getFieldName(idx: int): string { return this._addFieldPrefix(this._sanitizedNames[idx]); }
+  getFieldName(idx: number): string { return this._addFieldPrefix(this._sanitizedNames[idx]); }
 
   getAllFieldNames(): List<string> {
     var fieldList = [];
@@ -188,7 +188,7 @@ export class CodegenNameUtil {
         '\n');
   }
 
-  getPipeName(idx: int): string {
+  getPipeName(idx: number): string {
     return this._addFieldPrefix(`${this._sanitizedNames[idx]}_pipe`);
   }
 
