@@ -269,8 +269,8 @@ function commonTests() {
                .toEqual(
                    'onTurnStart; start run; nested run; end run; nested run microtask; onTurnDone');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
 
     it('should not run onTurnStart and onTurnDone for nested Zone.run invoked from onTurnDone',
        inject([AsyncTestCompleter], (async) => {
@@ -512,7 +512,7 @@ function commonTests() {
          macroTask(() => { _zone.run(() => { completerA.resolve(null); }); }, 20);
 
 
-         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 60);
+         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 100);
 
          macroTask(() => {
            expect(_log.result())
@@ -524,8 +524,8 @@ function commonTests() {
                    // Third VM turn
                    'onTurnStart; b then; onTurnDone');
            async.done();
-         }, 90);
-       }));
+         }, 180);
+       }), 200);
 
     it('should call onTurnStart and onTurnDone before and after (respectively) all turns in a chain',
        inject([AsyncTestCompleter], (async) => {
@@ -597,8 +597,8 @@ function commonTests() {
            expect(_errors.length).toBe(1);
            expect(_errors[0]).toEqual(exception);
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
 
     it('should call onError when onTurnDone throws and the zone is sync',
        inject([AsyncTestCompleter], (async) => {
