@@ -1,6 +1,6 @@
 library angular.core.facade.lang;
 
-export 'dart:core' show Type, RegExp, print, DateTime;
+export 'dart:core' show DateTime, RegExp, Type, print;
 import 'dart:math' as math;
 import 'dart:convert' as convert;
 import 'dart:async' show Future;
@@ -291,6 +291,22 @@ class DateWrapper {
   static String toJson(DateTime date) {
     return date.toUtc().toIso8601String();
   }
+}
+
+class ExpandoWrapper<T> {
+  static int _counter = 0;
+  final Expando<T> _expando;
+
+  ExpandoWrapper([String name]) : _expando = new Expando<T>(name);
+
+  String getName() => _expando.name;
+
+  T set(Object o, T v) {
+    _expando[o] = v;
+    return v;
+  }
+
+  T get(Object o) => _expando[o];
 }
 
 // needed to match the exports from lang.js

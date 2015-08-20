@@ -1,6 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
 import {
   isPresent,
+  ExpandoWrapper,
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper,
@@ -59,6 +60,38 @@ export function main() {
       var str = StringWrapper.toLowerCase(upper);
 
       expect(str).toEqual(lower);
+    });
+  });
+
+  describe('ExpandoWrapper', () => {
+    var wrapper = new ExpandoWrapper<string>('test');
+
+    it('should store and retrieve values', () => {
+      var obj = {};
+
+      expect(wrapper.set(obj, 'value')).toEqual('value');
+      expect(wrapper.get(obj)).toEqual('value');
+    });
+
+    it('should return `null` for unset keys', () => { expect(wrapper.get({})).toEqual(null); });
+
+    it('should not confuse different expandos with the same name', () => {
+      var confusing = new ExpandoWrapper<string>('test');
+      var obj = {};
+
+      wrapper.set(obj, 'original');
+      confusing.set(obj, 'different');
+
+      expect(wrapper.get(obj)).toEqual('original');
+      expect(confusing.get(obj)).toEqual('different');
+    });
+
+    it('should tolerate unnamed creation', () => {
+      var nameless = new ExpandoWrapper<string>();
+      var obj = {};
+
+      expect(nameless.set(obj, 'value')).toEqual('value');
+      expect(nameless.get(obj)).toEqual('value');
     });
   });
 }

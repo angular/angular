@@ -347,3 +347,19 @@ export class DateWrapper {
   static now(): Date { return new Date(); }
   static toJson(date: Date): string { return date.toJSON(); }
 }
+
+export class ExpandoWrapper<T> {
+  static _counter: int = 0;
+  _name: string;
+  _propName: string;
+
+  constructor(private _name: string = null) {
+    var name = this._name || 'prop';
+    this._propName = `${name}${ExpandoWrapper._counter++}`;
+  }
+
+  getName(): string { return this._name; }
+
+  set(o: Object, v: T): T { return o[this._propName] = v; }
+  get(o: Object): T { return o.hasOwnProperty(this._propName) ? o[this._propName] : null; }
+}
