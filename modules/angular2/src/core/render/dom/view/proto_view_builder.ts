@@ -1,4 +1,4 @@
-import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
 import {
   ListWrapper,
   MapWrapper,
@@ -6,8 +6,8 @@ import {
   SetWrapper,
   List,
   StringMapWrapper
-} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+} from 'angular2/src/core/facade/collection';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {
   ASTWithSource,
@@ -16,7 +16,7 @@ import {
   PropertyRead,
   LiteralArray,
   ImplicitReceiver
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder, Event, HostAction} from './element_binder';

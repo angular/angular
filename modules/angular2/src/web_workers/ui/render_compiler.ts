@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di/decorators';
 import {
   RenderDirectiveMetadata,
   ProtoViewDto,
@@ -6,7 +6,7 @@ import {
   RenderProtoViewRef,
   RenderProtoViewMergeMapping,
   RenderCompiler
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 import {RENDER_COMPILER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {bind} from './bind';
 import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';

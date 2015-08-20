@@ -1,4 +1,4 @@
-import {List, ListWrapper, StringMap} from 'angular2/src/facade/collection';
+import {List, ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/di';
 
 import {Validator} from '../validator';

@@ -13,7 +13,7 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {DirectiveMetadata, LifecycleEvent} from '../../../src/core/metadata';
+import {DirectiveMetadata, LifecycleEvent} from 'angular2/src/core/metadata';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 
 export function main() {

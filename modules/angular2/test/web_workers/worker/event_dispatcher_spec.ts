@@ -10,7 +10,7 @@ import {
   SpyObject,
   proxy
 } from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
@@ -20,10 +20,10 @@ import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {RenderEventDispatcher, RenderViewRef} from 'angular2/src/render/api';
+import {RenderEventDispatcher, RenderViewRef} from 'angular2/src/core/render/api';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 
 export function main() {

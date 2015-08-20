@@ -1,5 +1,5 @@
 import {AsyncTestCompleter, inject, describe, it, expect} from "angular2/test_lib";
-import {RenderProtoViewRef} from "angular2/src/render/api";
+import {RenderProtoViewRef} from "angular2/src/core/render/api";
 import {RenderProtoViewRefStore} from "angular2/src/web_workers/shared/render_proto_view_ref_store";
 
 export function main() {

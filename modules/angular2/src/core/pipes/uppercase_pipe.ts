@@ -1,10 +1,10 @@
-import {isString, StringWrapper, CONST, isBlank} from 'angular2/src/facade/lang';
+import {isString, StringWrapper, CONST, isBlank} from 'angular2/src/core/facade/lang';
 import {Injectable} from 'angular2/di';
 
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-import {Pipe} from '../core/metadata';
+import {Pipe} from '../metadata';
 
 /**
  * Implements uppercase transforms to text.

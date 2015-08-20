@@ -699,7 +699,7 @@ gulp.task('test.unit.dart/ci', function (done) {
 
 
 gulp.task('test.unit.cjs/ci', function(done) {
-  runJasmineTests(['dist/js/cjs/{angular2,benchpress,http}/test/**/*_spec.js'], done);
+  runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
 
@@ -1020,7 +1020,7 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
       then(function(){
         return bundler.bundle(
           bundleConfig,
-          'http/http',
+          'angular2/http',
           './dist/build/http.js',
           {
             sourceMaps: true
@@ -1042,7 +1042,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
       then(function(){
         return bundler.bundle(
           bundleConfig,
-          'http/http',
+          'angular2/http',
           './dist/build/http.min.js',
           {
             sourceMaps: true,
@@ -1067,7 +1067,7 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
       then(function() {
         return bundler.bundle(
           devBundleConfig,
-          'http/http',
+          'angular2/http',
           './dist/build/http.dev.js',
           { sourceMaps: true });
       });
@@ -1115,15 +1115,7 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
       'angular2/angular2_sfx',
       './dist/build/angular2.sfx.dev.js',
       { sourceMaps: true },
-      /* self-executing */ true).
-      then(function() {
-        return bundler.bundle(
-          devBundleConfig,
-          'http/http_sfx',
-          './dist/build/http.sfx.dev.js',
-          { sourceMaps: true },
-          true)
-      });
+      /* self-executing */ true);
 });
 
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
@@ -1221,7 +1213,7 @@ gulp.task('build.change_detect.dart', function(done) {
 
 gulp.task('!build/change_detect.dart', function(done) {
   var fs = require('fs');
-  var changeDetectDir = path.join(CONFIG.dest.dart, 'angular2/test/change_detection/');
+  var changeDetectDir = path.join(CONFIG.dest.dart, 'angular2/test/core/change_detection/');
   var srcDir = path.join(changeDetectDir, 'generator');
   var destDir = path.join(changeDetectDir, 'generated');
 

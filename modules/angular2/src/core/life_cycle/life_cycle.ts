@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/di';
-import {ChangeDetector} from 'angular2/src/change_detection/change_detection';
+import {ChangeDetector} from 'angular2/src/core/change_detection/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {isPresent, BaseException} from 'angular2/src/facade/lang';
-import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../../profile/profile';
+import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
 /**
  * Provides access to explicitly trigger change detection in an application.

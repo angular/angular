@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/di';
-import {StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
-import {isPresent, isArray} from 'angular2/src/facade/lang';
+import {StringMapWrapper, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {isPresent, isArray} from 'angular2/src/core/facade/lang';
 import * as modelModule from './model';
 
 

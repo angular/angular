@@ -13,8 +13,8 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {isBlank, IMPLEMENTS, stringify} from 'angular2/src/facade/lang';
-import {MapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, IMPLEMENTS, stringify} from 'angular2/src/core/facade/lang';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   ChangeDetection,
@@ -22,7 +22,7 @@ import {
   BindingRecord,
   DirectiveIndex,
   Parser
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 import {
   BindingRecordsCreator,
   ProtoViewFactory,
@@ -41,7 +41,7 @@ import {
   ViewType,
   ProtoViewDto,
   DirectiveBinder
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 
 export function main() {
   // TODO(tbosch): add missing tests

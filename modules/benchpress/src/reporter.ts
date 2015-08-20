@@ -1,8 +1,8 @@
 import {bind, Binding} from 'angular2/di';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {ABSTRACT, BaseException} from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {ABSTRACT, BaseException} from 'angular2/src/core/facade/lang';
 import {MeasureValues} from './measure_values';
-import {List} from 'angular2/src/facade/collection';
+import {List} from 'angular2/src/core/facade/collection';
 
 /**
  * A reporter reports measure values and the valid sample.

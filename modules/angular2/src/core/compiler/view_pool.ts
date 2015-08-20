@@ -1,7 +1,7 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/di';
 
-import {ListWrapper, MapWrapper, Map, List} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, Map, List} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 import * as viewModule from './view';
 

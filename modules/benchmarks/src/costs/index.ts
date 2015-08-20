@@ -7,7 +7,7 @@ import {
   View
 } from 'angular2/bootstrap';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {NgIf, NgFor} from 'angular2/directives';
 

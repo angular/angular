@@ -11,9 +11,9 @@ import {
   containsRegexp
 } from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {IMPLEMENTS, RegExpWrapper} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {IMPLEMENTS, RegExpWrapper} from 'angular2/src/core/facade/lang';
 
 class TestObj {
   prop;

@@ -34,8 +34,8 @@ import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
 import {APP_COMPONENT} from './src/core/application_tokens';
 import {Binding} from './di';
-import {CONST_EXPR} from './src/facade/lang';
-import {List} from './src/facade/collection';
+import {CONST_EXPR} from './src/core/facade/lang';
+import {List} from './src/core/facade/collection';
 
 export const ROUTER_DIRECTIVES: List<any> = CONST_EXPR([RouterOutlet, RouterLink]);
 

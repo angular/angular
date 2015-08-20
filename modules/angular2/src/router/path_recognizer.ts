@@ -6,7 +6,7 @@ import {
   isPresent,
   isBlank,
   BaseException
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {
   Map,
   MapWrapper,
@@ -14,8 +14,8 @@ import {
   StringMapWrapper,
   List,
   ListWrapper
-} from 'angular2/src/facade/collection';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/collection';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';

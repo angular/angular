@@ -1,7 +1,11 @@
 import {Injectable, Inject} from "angular2/di";
-import {RenderViewRef, RenderFragmentRef, RenderViewWithFragments} from "angular2/src/render/api";
+import {
+  RenderViewRef,
+  RenderFragmentRef,
+  RenderViewWithFragments
+} from "angular2/src/core/render/api";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
-import {List, ListWrapper} from "angular2/src/facade/collection";
+import {List, ListWrapper} from "angular2/src/core/facade/collection";
 
 @Injectable()
 export class RenderViewWithFragmentsStore {

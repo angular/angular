@@ -1,12 +1,12 @@
 import {Inject, Injectable} from 'angular2/di';
-import {isPresent} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper, List, Map} from 'angular2/src/facade/collection';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {MapWrapper, ListWrapper, List, Map} from 'angular2/src/core/facade/collection';
+import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
-import {DOCUMENT} from 'angular2/src/render/dom/dom_tokens';
-import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
+import {DOCUMENT} from 'angular2/src/core/render/dom/dom_tokens';
+import {DefaultDomCompiler} from 'angular2/src/core/render/dom/compiler/compiler';
 import {
   RenderViewWithFragments,
   RenderFragmentRef,
@@ -18,9 +18,9 @@ import {
   RenderElementRef,
   RenderProtoViewMergeMapping,
   RenderProtoViewRef
-} from 'angular2/src/render/api';
-import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
-import {resolveInternalDomFragment} from 'angular2/src/render/dom/view/fragment';
+} from 'angular2/src/core/render/api';
+import {resolveInternalDomView} from 'angular2/src/core/render/dom/view/view';
+import {resolveInternalDomFragment} from 'angular2/src/core/render/dom/view/fragment';
 import {el, dispatchEvent} from 'angular2/test_lib';
 
 export class TestRootView {

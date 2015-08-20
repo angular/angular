@@ -37,6 +37,6 @@ export {NgValidator, NgRequiredValidator} from './src/forms/directives/validator
 export {FormBuilder} from './src/forms/form_builder';
 
 import {FormBuilder} from './src/forms/form_builder';
-import {CONST_EXPR, Type} from './src/facade/lang';
+import {CONST_EXPR, Type} from './src/core/facade/lang';
 
 export const FORM_BINDINGS: List<Type> = CONST_EXPR([FormBuilder]);

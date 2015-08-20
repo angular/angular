@@ -15,9 +15,9 @@ import {
   stringifyElement
 } from 'angular2/test_lib';
 
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
 
-import {DomTestbed} from '../dom_testbed';
+import {DomTestbed} from '../../../../core/render/dom/dom_testbed';
 
 import {
   ViewDefinition,
@@ -25,14 +25,17 @@ import {
   RenderProtoViewMergeMapping,
   ViewEncapsulation,
   ViewType
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {cloneAndQueryProtoView} from 'angular2/src/render/dom/util';
-import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
-import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
-import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
-import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {cloneAndQueryProtoView} from 'angular2/src/core/render/dom/util';
+import {TemplateCloner} from 'angular2/src/core/render/dom/template_cloner';
+import {
+  resolveInternalDomProtoView,
+  DomProtoView
+} from 'angular2/src/core/render/dom/view/proto_view';
+import {ProtoViewBuilder} from 'angular2/src/core/render/dom/view/proto_view_builder';
+import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
 
 export function main() {
   describe('ProtoViewMerger integration test', () => {

@@ -4,8 +4,8 @@ import {
   BaseException,
   FunctionWrapper,
   StringWrapper
-} from 'angular2/src/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {EventBinding} from './event_binding';

@@ -5,8 +5,8 @@ import {
   global,
   stringify,
   BaseException
-} from 'angular2/src/facade/lang';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
 

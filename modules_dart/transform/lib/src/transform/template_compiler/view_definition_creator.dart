@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/render/api.dart';
+import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';

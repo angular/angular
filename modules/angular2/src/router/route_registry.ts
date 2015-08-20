@@ -8,8 +8,8 @@ import {
   MapWrapper,
   StringMap,
   StringMapWrapper
-} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+} from 'angular2/src/core/facade/collection';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {
   isPresent,
   isBlank,
@@ -21,7 +21,7 @@ import {
   BaseException,
   Type,
   getTypeNameForDebugging
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {
   RouteConfig,
   AsyncRoute,
@@ -30,7 +30,7 @@ import {
   Redirect,
   RouteDefinition
 } from './route_config_impl';
-import {reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable} from 'angular2/di';
 import {normalizeRouteConfig} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';

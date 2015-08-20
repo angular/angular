@@ -1,4 +1,4 @@
-import {Type, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from 'angular2/src/core/facade/lang';
 import {LifecycleEvent, DirectiveMetadata} from 'angular2/metadata';
 
 export function hasLifecycleHook(e: LifecycleEvent, type, annotation: DirectiveMetadata): boolean {

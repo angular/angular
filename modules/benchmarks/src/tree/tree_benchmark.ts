@@ -8,10 +8,10 @@ import {
 } from 'angular2/bootstrap';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isPresent} from 'angular2/src/facade/lang';
-import {List} from 'angular2/src/facade/collection';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {List} from 'angular2/src/core/facade/collection';
+import {window, document, gc} from 'angular2/src/core/facade/browser';
 import {
   getIntParameter,
   getStringParameter,
@@ -20,7 +20,7 @@ import {
   windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
 import {NgIf} from 'angular2/directives';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind, Binding} from 'angular2/di';
 

@@ -1,7 +1,7 @@
 import {Component, LifecycleEvent, View, ViewEncapsulation, Attribute} from 'angular2/angular2';
-import {CONST} from 'angular2/src/facade/lang';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {Math} from 'angular2/src/facade/math';
+import {CONST} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {Math} from 'angular2/src/core/facade/math';
 
 
 /** Different display / behavior modes for progress-linear. */

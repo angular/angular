@@ -13,8 +13,8 @@ import {
   SpyObject,
 } from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {TemplateCloner} from 'angular2/src/core/render/dom/template_cloner';
 
 export function main() {
   describe('TemplateCloner', () => {

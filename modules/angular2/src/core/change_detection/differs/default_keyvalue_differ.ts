@@ -1,4 +1,4 @@
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   stringify,
   looseIdentical,
@@ -6,7 +6,7 @@ import {
   CONST,
   isBlank,
   BaseException
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {KeyValueDiffer, KeyValueDifferFactory} from '../differs/keyvalue_differs';
 

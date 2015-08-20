@@ -1,5 +1,5 @@
 import {NgIf, bootstrap, Component, View} from 'angular2/bootstrap';
-import {TimerWrapper} from 'angular2/src/facade/async';
+import {TimerWrapper} from 'angular2/src/core/facade/async';
 
 
 @Component({selector: 'async-app'})

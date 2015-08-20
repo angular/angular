@@ -8,15 +8,15 @@ import {
   el,
   stringifyElement
 } from 'angular2/test_lib';
-import {MapWrapper} from 'angular2/src/facade/collection';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 
-import {ViewSplitter} from 'angular2/src/render/dom/compiler/view_splitter';
-import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
-import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
-import {ProtoViewDto, ViewType, ViewDefinition} from 'angular2/src/render/api';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {ViewSplitter} from 'angular2/src/core/render/dom/compiler/view_splitter';
+import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
+import {CompileElement} from 'angular2/src/core/render/dom/compiler/compile_element';
+import {ProtoViewDto, ViewType, ViewDefinition} from 'angular2/src/core/render/api';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
+import {Lexer, Parser} from 'angular2/src/core/change_detection/change_detection';
 
 export function main() {
   describe('ViewSplitter', () => {

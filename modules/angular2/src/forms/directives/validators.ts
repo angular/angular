@@ -1,5 +1,5 @@
 import {forwardRef, Binding} from 'angular2/di';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Directive} from 'angular2/metadata';
 import {Validators} from '../validators';
 

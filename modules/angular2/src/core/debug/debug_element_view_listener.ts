@@ -1,10 +1,10 @@
-import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {MapWrapper, Map, ListWrapper, List} from 'angular2/src/facade/collection';
+import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
+import {MapWrapper, Map, ListWrapper, List} from 'angular2/src/core/facade/collection';
 import {Injectable, bind, Binding} from 'angular2/di';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {AppView} from 'angular2/src/core/compiler/view';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Renderer} from 'angular2/src/render/api';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {Renderer} from 'angular2/src/core/render/api';
 import {DebugElement} from './debug_element';
 
 const NG_ID_PROPERTY = 'ngid';

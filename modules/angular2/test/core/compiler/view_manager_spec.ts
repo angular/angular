@@ -16,7 +16,7 @@ import {
   proxy
 } from 'angular2/test_lib';
 import {Injector, bind} from 'angular2/di';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 import {
   AppProtoView,
@@ -35,7 +35,7 @@ import {
   ViewType,
   RenderProtoViewMergeMapping,
   RenderViewWithFragments
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';

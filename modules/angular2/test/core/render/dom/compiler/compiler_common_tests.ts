@@ -10,27 +10,33 @@ import {
   it,
 } from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Type, isBlank, stringify, isPresent, BaseException} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {
+  List,
+  ListWrapper,
+  Map,
+  MapWrapper,
+  StringMapWrapper
+} from 'angular2/src/core/facade/collection';
+import {Type, isBlank, stringify, isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
-import {DomCompiler} from 'angular2/src/render/dom/compiler/compiler';
+import {DomCompiler} from 'angular2/src/core/render/dom/compiler/compiler';
 import {
   ProtoViewDto,
   ViewDefinition,
   RenderDirectiveMetadata,
   ViewType,
   ViewEncapsulation
-} from 'angular2/src/render/api';
-import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
-import {CompileStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
-import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
-import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/view_loader';
+} from 'angular2/src/core/render/api';
+import {CompileStep} from 'angular2/src/core/render/dom/compiler/compile_step';
+import {CompileStepFactory} from 'angular2/src/core/render/dom/compiler/compile_step_factory';
+import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ViewLoader, TemplateAndStyles} from 'angular2/src/core/render/dom/compiler/view_loader';
 
-import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
-import {SharedStylesHost} from 'angular2/src/render/dom/view/shared_styles_host';
-import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
+import {resolveInternalDomProtoView} from 'angular2/src/core/render/dom/view/proto_view';
+import {SharedStylesHost} from 'angular2/src/core/render/dom/view/shared_styles_host';
+import {TemplateCloner} from 'angular2/src/core/render/dom/template_cloner';
 
 import {MockStep} from './pipeline_spec';
 

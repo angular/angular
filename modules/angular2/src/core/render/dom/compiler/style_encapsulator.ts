@@ -3,8 +3,8 @@ import {CompileElement} from '../compiler/compile_element';
 import {CompileControl} from '../compiler/compile_control';
 import {ViewDefinition, ViewEncapsulation, ViewType} from '../../api';
 import {NG_CONTENT_ELEMENT_NAME, isElementWithTag} from '../util';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {ShadowCss} from './shadow_css';
 
 export class StyleEncapsulator implements CompileStep {

@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/di';
 
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-import {BaseException, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {BaseException, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {
   ViewDefinition,
@@ -15,10 +15,10 @@ import {
   ViewEncapsulation
 } from '../../api';
 import {CompilePipeline} from './compile_pipeline';
-import {ViewLoader, TemplateAndStyles} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewLoader, TemplateAndStyles} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {Parser} from 'angular2/src/change_detection/change_detection';
+import {Parser} from 'angular2/src/core/change_detection/change_detection';
 import * as pvm from '../view/proto_view_merger';
 import {CssSelector} from './selector';
 import {DOCUMENT, APP_ID} from '../dom_tokens';

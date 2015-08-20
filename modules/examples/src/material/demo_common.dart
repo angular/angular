@@ -1,7 +1,7 @@
 library angular2_examples.material.demo_common;
 
-import 'package:angular2/src/dom/browser_adapter.dart';
-import 'package:angular2/src/services/url_resolver.dart';
+import 'package:angular2/src/core/dom/browser_adapter.dart';
+import 'package:angular2/src/core/services/url_resolver.dart';
 
 void commonDemoSetup() {
   BrowserDomAdapter.makeCurrent();

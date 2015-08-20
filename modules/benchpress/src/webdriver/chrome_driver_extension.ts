@@ -1,5 +1,5 @@
 import {bind, Binding} from 'angular2/di';
-import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
+import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {
   Json,
   isPresent,
@@ -8,11 +8,11 @@ import {
   StringWrapper,
   BaseException,
   NumberWrapper
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {Promise} from 'angular2/src/facade/async';
+import {Promise} from 'angular2/src/core/facade/async';
 
 /**
  * Set the following 'traceCategories' to collect metrics in Chrome:

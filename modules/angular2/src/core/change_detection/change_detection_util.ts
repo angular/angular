@@ -5,8 +5,8 @@ import {
   BaseException,
   Type,
   StringWrapper
-} from 'angular2/src/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {
   CHECK_ALWAYS,

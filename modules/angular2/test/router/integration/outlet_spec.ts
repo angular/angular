@@ -17,8 +17,8 @@ import {
 
 import {Injector, Inject, bind} from 'angular2/di';
 import {Component, View} from 'angular2/metadata';
-import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';

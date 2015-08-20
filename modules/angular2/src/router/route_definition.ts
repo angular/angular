@@ -1,4 +1,4 @@
-import {CONST, Type} from 'angular2/src/facade/lang';
+import {CONST, Type} from 'angular2/src/core/facade/lang';
 
 export interface RouteDefinition {
   path: string;

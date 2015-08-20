@@ -1,8 +1,8 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/di";
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Parser,
   Lexer,
@@ -10,16 +10,16 @@ import {
   DynamicChangeDetection,
   JitChangeDetection,
   PreGeneratedChangeDetection
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
-import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
+import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
-import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
-import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
+import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {Renderer, RenderCompiler} from 'angular2/src/render/api';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
+import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {
   DomRenderer,
   DOCUMENT,
@@ -27,38 +27,40 @@ import {
   APP_ID_RANDOM_BINDING,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
   TemplateCloner
-} from 'angular2/src/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
-import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/render/render';
+import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {
+  DomElementSchemaRegistry
+} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
-} from 'angular2/src/render/dom/view/shared_styles_host';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+} from 'angular2/src/core/render/dom/view/shared_styles_host';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
+import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
+import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {XHR} from 'angular2/src/render/xhr';
-import {XHRImpl} from 'angular2/src/render/xhr_impl';
+import {XHR} from 'angular2/src/core/render/xhr';
+import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
 import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';

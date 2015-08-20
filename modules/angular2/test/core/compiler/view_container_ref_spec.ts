@@ -16,7 +16,7 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 import {AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';

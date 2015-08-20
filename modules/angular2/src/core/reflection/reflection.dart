@@ -4,7 +4,7 @@ import 'reflector.dart';
 import 'types.dart';
 export 'reflector.dart';
 import 'platform_reflection_capabilities.dart';
-import 'package:angular2/src/facade/lang.dart';
+import 'package:angular2/src/core/facade/lang.dart';
 
 class NoReflectionCapabilities implements PlatformReflectionCapabilities {
   bool isReflectionEnabled() {

@@ -1,13 +1,13 @@
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {DateWrapper, Type, print} from 'angular2/src/facade/lang';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {DateWrapper, Type, print} from 'angular2/src/core/facade/lang';
 
 import {
   Parser,
   Lexer,
   DynamicChangeDetection
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
@@ -15,12 +15,12 @@ import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 
 import {Component, Directive, View, ViewMetadata} from 'angular2/metadata';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
-import {reflector} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+import {reflector} from 'angular2/src/core/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
@@ -29,8 +29,10 @@ import {
   DefaultDomCompiler,
   SharedStylesHost,
   TemplateCloner
-} from 'angular2/src/render/render';
-import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/render/render';
+import {
+  DomElementSchemaRegistry
+} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 
 export function main() {
   BrowserDomAdapter.makeCurrent();

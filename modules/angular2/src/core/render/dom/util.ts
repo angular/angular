@@ -1,6 +1,6 @@
-import {StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {DomProtoView} from './view/proto_view';
 import {DomElementBinder} from './view/element_binder';
 import {TemplateCloner} from './template_cloner';

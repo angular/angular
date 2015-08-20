@@ -10,7 +10,7 @@ module.exports = new Package('angular-v2-public-docs', [basePackage])
     'angular2/core.ts',
     'angular2/di.ts',
     'angular2/directives.ts',
-    'http/http.ts',
+    'angular2/http.ts',
     'angular2/forms.ts',
     'angular2/router.ts',
     'angular2/test.ts',

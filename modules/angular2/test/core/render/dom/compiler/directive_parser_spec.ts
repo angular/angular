@@ -1,12 +1,12 @@
 import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent, isBlank, assertionsEnabled, IMPLEMENTS} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {DirectiveParser} from 'angular2/src/render/dom/compiler/directive_parser';
-import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
-import {ViewDefinition, RenderDirectiveMetadata, ViewType} from 'angular2/src/render/api';
-import {Lexer, Parser} from 'angular2/src/change_detection/change_detection';
-import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {isPresent, isBlank, assertionsEnabled, IMPLEMENTS} from 'angular2/src/core/facade/lang';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DirectiveParser} from 'angular2/src/core/render/dom/compiler/directive_parser';
+import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
+import {ViewDefinition, RenderDirectiveMetadata, ViewType} from 'angular2/src/core/render/api';
+import {Lexer, Parser} from 'angular2/src/core/change_detection/change_detection';
+import {ElementBinderBuilder} from 'angular2/src/core/render/dom/view/proto_view_builder';
 import {MockStep} from './pipeline_spec';
 
 export function main() {

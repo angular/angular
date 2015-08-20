@@ -5,9 +5,9 @@ import {
   StringMapWrapper,
   List,
   ListWrapper
-} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, normalizeBlank, Type} from 'angular2/src/facade/lang';
-import {Promise} from 'angular2/src/facade/async';
+} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, normalizeBlank, Type} from 'angular2/src/core/facade/lang';
+import {Promise} from 'angular2/src/core/facade/async';
 
 import {PathRecognizer} from './path_recognizer';
 import {Url} from './url_parser';

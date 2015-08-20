@@ -13,9 +13,22 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {IMPLEMENTS, Type, isBlank, stringify, isPresent, isArray} from 'angular2/src/facade/lang';
-import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {
+  List,
+  ListWrapper,
+  Map,
+  MapWrapper,
+  StringMapWrapper
+} from 'angular2/src/core/facade/collection';
+import {
+  IMPLEMENTS,
+  Type,
+  isBlank,
+  stringify,
+  isPresent,
+  isArray
+} from 'angular2/src/core/facade/lang';
+import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView} from 'angular2/src/core/compiler/view';
@@ -32,8 +45,8 @@ import {
 } from 'angular2/src/core/compiler/component_url_mapper';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 
-import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {
   ProtoViewDto,
   ViewType,
@@ -43,9 +56,9 @@ import {
   RenderDirectiveMetadata,
   DirectiveBinder,
   RenderElementBinder
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 // TODO(tbosch): Spys don't support named modules...
-import {RenderCompiler} from 'angular2/src/render/api';
+import {RenderCompiler} from 'angular2/src/core/render/api';
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
 
 

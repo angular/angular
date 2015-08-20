@@ -3,9 +3,9 @@ import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
-import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
-import {isPresent} from 'angular2/src/facade/lang';
-import {IMPLEMENTS, BaseException} from 'angular2/src/facade/lang';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {IMPLEMENTS, BaseException} from 'angular2/src/core/facade/lang';
 
 /**
  *
@@ -107,7 +107,7 @@ export class MockConnection {
  * #Example
  *
  * ```
- * import {MockBackend, DefaultOptions, Http} from 'http/http';
+ * import {MockBackend, DefaultOptions, Http} from 'angular2/http';
  * it('should get some data', inject([AsyncTestCompleter], (async) => {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
@@ -140,7 +140,7 @@ export class MockBackend {
    * #Example
    *
    * ```
-   * import {MockBackend, Http, BaseRequestOptions} from 'http/http';
+   * import {MockBackend, Http, BaseRequestOptions} from 'angular2/http';
    * import {Injector} from 'angular2/di';
    *
    * it('should get a response', () => {

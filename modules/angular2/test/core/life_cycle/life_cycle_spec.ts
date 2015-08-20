@@ -15,7 +15,7 @@ import {
   SpyChangeDetector,
 } from 'angular2/test_lib';
 import {LifeCycle} from 'angular2/core';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 export function main() {
   describe("LifeCycle", () => {

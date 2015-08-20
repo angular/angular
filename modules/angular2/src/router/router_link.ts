@@ -1,5 +1,5 @@
 import {Directive} from '../core/metadata';
-import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {List, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {Router} from './router';
 import {Location} from './location';

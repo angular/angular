@@ -8,13 +8,13 @@ import {
   it,
 } from 'angular2/test_lib';
 
-import {stringify} from 'angular2/src/facade/lang';
+import {stringify} from 'angular2/src/core/facade/lang';
 
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 
 import {Component, View, ViewMetadata} from 'angular2/metadata';
 
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/core/facade/lang';
 
 export function main() {
   describe('MockViewResolver', () => {

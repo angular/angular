@@ -1,4 +1,4 @@
-import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * Acceptable origin modes to be associated with a {@link Request}, based on

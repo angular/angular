@@ -1,5 +1,5 @@
-import {StringMap} from 'angular2/src/facade/collection';
-import {global} from 'angular2/src/facade/lang';
+import {StringMap} from 'angular2/src/core/facade/collection';
+import {global} from 'angular2/src/core/facade/lang';
 
 // This is here only so that after TS transpilation the file is not empty.
 // TODO(rado): find a better way to fix this, or remove if likely culprit

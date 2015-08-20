@@ -1,6 +1,6 @@
-import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
-import {List} from 'angular2/src/facade/collection';
-import {InjectableMetadata} from 'angular2/src/di/metadata';
+import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {List} from 'angular2/src/core/facade/collection';
+import {InjectableMetadata} from 'angular2/src/core/di/metadata';
 import {DEFAULT} from 'angular2/change_detection';
 
 /**

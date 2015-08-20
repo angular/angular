@@ -1,5 +1,16 @@
-import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {Map, StringMapWrapper, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
+import {
+  Promise,
+  PromiseWrapper,
+  EventEmitter,
+  ObservableWrapper
+} from 'angular2/src/core/facade/async';
+import {
+  Map,
+  StringMapWrapper,
+  MapWrapper,
+  List,
+  ListWrapper
+} from 'angular2/src/core/facade/collection';
 import {
   isBlank,
   isString,
@@ -8,7 +19,7 @@ import {
   Type,
   isArray,
   BaseException
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 
 import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';

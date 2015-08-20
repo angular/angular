@@ -13,10 +13,10 @@ import {
   EventManager,
   EventManagerPlugin,
   DomEventsPlugin
-} from 'angular2/src/render/dom/events/event_manager';
+} from 'angular2/src/core/render/dom/events/event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
   var domEventPlugin;

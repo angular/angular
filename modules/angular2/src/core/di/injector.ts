@@ -1,4 +1,4 @@
-import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {ResolvedBinding, Binding, Dependency, BindingBuilder, bind} from './binding';
 import {
   AbstractBindingError,
@@ -8,7 +8,7 @@ import {
   InvalidBindingError,
   OutOfBoundsError
 } from './exceptions';
-import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';

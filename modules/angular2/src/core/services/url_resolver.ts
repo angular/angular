@@ -5,8 +5,8 @@ import {
   RegExpWrapper,
   BaseException,
   normalizeBlank
-} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.

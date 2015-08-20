@@ -5,7 +5,7 @@ import {Self} from 'angular2/di';
 
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
 /**

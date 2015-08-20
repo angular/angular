@@ -18,4 +18,4 @@ export {
   DOCUMENT,
   APP_ID,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE
-} from './src/render/render';
+} from './src/core/render/render';

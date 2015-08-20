@@ -1,4 +1,4 @@
-import {List} from 'angular2/src/facade/collection';
+import {List} from 'angular2/src/core/facade/collection';
 import {BindingRecord} from './binding_record';
 import {DirectiveIndex} from './directive_record';
 

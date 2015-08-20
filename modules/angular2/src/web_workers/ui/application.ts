@@ -4,7 +4,7 @@ import {
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {BaseException} from "angular2/src/facade/lang";
+import {BaseException} from "angular2/src/core/facade/lang";
 import {bootstrapUICommon} from "angular2/src/web_workers/ui/impl";
 
 /**

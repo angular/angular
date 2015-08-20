@@ -1,5 +1,5 @@
-import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   PropertyRead,

@@ -1,4 +1,4 @@
-import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {
   isPresent,
   isBlank,
@@ -6,7 +6,7 @@ import {
   RegExpMatcherWrapper,
   StringWrapper,
   BaseException
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 
 const _EMPTY_ATTR_VALUE = '';
 

@@ -1,7 +1,7 @@
 import {Component, View, LifecycleEvent, ViewEncapsulation} from 'angular2/angular2';
 
-import {TimerWrapper} from 'angular2/src/facade/async';
-import {isPresent} from 'angular2/src/facade/lang';
+import {TimerWrapper} from 'angular2/src/core/facade/async';
+import {isPresent} from 'angular2/src/core/facade/lang';
 
 // TODO(jelbourn): Ink ripples.
 // TODO(jelbourn): Make the `isMosueDown` stuff done with one global listener.

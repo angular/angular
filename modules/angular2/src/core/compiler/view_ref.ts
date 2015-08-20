@@ -1,6 +1,6 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
-import {RenderViewRef, RenderFragmentRef} from 'angular2/src/render/api';
+import {RenderViewRef, RenderFragmentRef} from 'angular2/src/core/render/api';
 
 // This is a workaround for privacy in Dart as we don't have library parts
 export function internalView(viewRef: ViewRef): viewModule.AppView {

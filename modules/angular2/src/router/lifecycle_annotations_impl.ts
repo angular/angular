@@ -1,4 +1,4 @@
-import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 @CONST()
 export class RouteLifecycleHook {

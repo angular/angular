@@ -2,8 +2,8 @@
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
 import {Injectable} from 'angular2/di';
-import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 
 /**
  * Rewrites URLs by resolving '@import' and 'url()' URLs from the given base URL.

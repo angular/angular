@@ -1,7 +1,7 @@
 import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
 import {ChangeDetectorRef, IterableDiffer, IterableDiffers} from 'angular2/change_detection';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for

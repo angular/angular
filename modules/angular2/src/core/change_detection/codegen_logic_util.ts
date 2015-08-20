@@ -1,5 +1,11 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException, Json, StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {
+  BaseException,
+  Json,
+  StringWrapper,
+  isPresent,
+  isBlank
+} from 'angular2/src/core/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';

@@ -1,14 +1,18 @@
-import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {ElementRef} from 'angular2/core';
-import {Renderer} from 'angular2/src/render/api';
+import {Renderer} from 'angular2/src/core/render/api';
 import {
   KeyValueDiffer,
   IterableDiffer,
   IterableDiffers,
   KeyValueDiffers
 } from 'angular2/change_detection';
-import {ListWrapper, StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
+import {
+  ListWrapper,
+  StringMapWrapper,
+  isListLikeIterable
+} from 'angular2/src/core/facade/collection';
 
 /**
  * Adds and removes CSS classes based on an {expression} value.

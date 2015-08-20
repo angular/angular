@@ -10,14 +10,14 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {XHRImpl} from 'angular2/src/render/xhr_impl';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 export function main() {
   describe('XHRImpl', () => {
     var xhr: XHRImpl;
-    var url200 = '/base/modules/angular2/test/services/static_assets/200.html';
-    var url404 = '/base/modules/angular2/test/services/static_assets/404.html';
+    var url200 = '/base/modules/angular2/test/core/services/static_assets/200.html';
+    var url404 = '/base/modules/angular2/test/core/services/static_assets/404.html';
 
     beforeEach(() => { xhr = new XHRImpl(); });
 

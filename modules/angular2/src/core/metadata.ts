@@ -34,8 +34,8 @@ import {
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
-import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from '../util/decorators';
-import {Type} from 'angular2/src/facade/lang';
+import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from './util/decorators';
+import {Type} from 'angular2/src/core/facade/lang';
 
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.

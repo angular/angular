@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/di';
-import {Type, isPresent} from 'angular2/src/facade/lang';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent} from 'angular2/src/core/facade/lang';
+import {Map, MapWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * Resolve a `Type` from a {@link ComponentMetadata} into a URL.

@@ -1,4 +1,4 @@
-import {BaseException} from "angular2/src/facade/lang";
+import {BaseException} from "angular2/src/core/facade/lang";
 
 /**
  * An error thrown if application changes model breaking the top-down data flow.

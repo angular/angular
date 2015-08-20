@@ -1,4 +1,4 @@
-import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/facade/lang';
+import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/core/facade/lang';
 import {Headers} from './headers';
 import {RequestModesOpts, RequestMethods, RequestCacheOpts, RequestCredentialsOpts} from './enums';
 import {RequestOptionsArgs} from './interfaces';

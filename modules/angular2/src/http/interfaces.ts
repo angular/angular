@@ -1,4 +1,4 @@
-/// <reference path="../../angular2/typings/rx/rx.d.ts" />
+/// <reference path="../../typings/rx/rx.d.ts" />
 
 import {
   ReadyStates,
@@ -9,8 +9,8 @@ import {
   ResponseTypes
 } from './enums';
 import {Headers} from './headers';
-import {BaseException} from 'angular2/src/facade/lang';
-import {EventEmitter} from 'angular2/src/facade/async';
+import {BaseException} from 'angular2/src/core/facade/lang';
+import {EventEmitter} from 'angular2/src/core/facade/async';
 import {Request} from './static_request';
 import {URLSearchParamsUnionFixer, URLSearchParams} from './url_search_params';
 

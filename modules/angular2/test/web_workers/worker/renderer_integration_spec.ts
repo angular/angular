@@ -8,8 +8,8 @@ import {
   createTestInjector,
   beforeEachBindings
 } from "angular2/test_lib";
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {DomTestbed, TestRootView, elRef} from '../../render/dom/dom_testbed';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DomTestbed, TestRootView, elRef} from '../../core/render/dom/dom_testbed';
 import {bind} from 'angular2/di';
 import {WebWorkerCompiler, WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
@@ -18,8 +18,8 @@ import {
   FnArg
 } from "angular2/src/web_workers/shared/client_message_broker";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {isPresent, isBlank, BaseException, Type} from "angular2/src/facade/lang";
-import {MapWrapper, ListWrapper} from "angular2/src/facade/collection";
+import {isPresent, isBlank, BaseException, Type} from "angular2/src/core/facade/lang";
+import {MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
 import {
   RenderDirectiveMetadata,
   ProtoViewDto,
@@ -29,7 +29,7 @@ import {
   RenderProtoViewMergeMapping,
   RenderViewRef,
   RenderFragmentRef
-} from "angular2/src/render/api";
+} from "angular2/src/core/render/api";
 import {
   RenderProtoViewRefStore,
   WebWorkerRenderProtoViewRef
@@ -38,8 +38,11 @@ import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {resolveInternalDomProtoView, DomProtoView} from 'angular2/src/render/dom/view/proto_view';
-import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
+import {
+  resolveInternalDomProtoView,
+  DomProtoView
+} from 'angular2/src/core/render/dom/view/proto_view';
+import {someComponent} from '../../core/render/dom/dom_renderer_integration_spec';
 import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';

@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   ProtoChangeDetector,
   DynamicChangeDetector
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 import {DependencyProvider} from 'angular2/di';
 

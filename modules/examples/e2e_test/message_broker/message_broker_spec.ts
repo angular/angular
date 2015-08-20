@@ -1,5 +1,5 @@
 import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
-import {PromiseWrapper} from "angular2/src/facade/async";
+import {PromiseWrapper} from "angular2/src/core/facade/async";
 
 var URL = 'examples/src/message_broker/index.html';
 

@@ -5,34 +5,34 @@
  * class.
  */
 import {bind, Binding} from 'angular2/di';
-import {Http, Jsonp} from './src/http';
-import {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
-import {JSONPBackend, JSONPConnection} from './src/backends/jsonp_backend';
-import {BrowserXhr} from './src/backends/browser_xhr';
-import {BrowserJsonp} from './src/backends/browser_jsonp';
-import {BaseRequestOptions, RequestOptions} from './src/base_request_options';
-import {ConnectionBackend} from './src/interfaces';
-import {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
+import {Http, Jsonp} from './src/http/http';
+import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
+import {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
+import {BrowserXhr} from './src/http/backends/browser_xhr';
+import {BrowserJsonp} from './src/http/backends/browser_jsonp';
+import {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
+import {ConnectionBackend} from './src/http/interfaces';
+import {BaseResponseOptions, ResponseOptions} from './src/http/base_response_options';
 
-export {MockConnection, MockBackend} from './src/backends/mock_backend';
-export {Request} from './src/static_request';
-export {Response} from './src/static_response';
+export {MockConnection, MockBackend} from './src/http/backends/mock_backend';
+export {Request} from './src/http/static_request';
+export {Response} from './src/http/static_response';
 
 export {
   RequestOptionsArgs,
   ResponseOptionsArgs,
   Connection,
   ConnectionBackend
-} from './src/interfaces';
+} from './src/http/interfaces';
 
-export {BrowserXhr} from './src/backends/browser_xhr';
-export {BaseRequestOptions, RequestOptions} from './src/base_request_options';
-export {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
-export {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
-export {JSONPBackend, JSONPConnection} from './src/backends/jsonp_backend';
-export {Http, Jsonp} from './src/http';
+export {BrowserXhr} from './src/http/backends/browser_xhr';
+export {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
+export {BaseResponseOptions, ResponseOptions} from './src/http/base_response_options';
+export {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
+export {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
+export {Http, Jsonp} from './src/http/http';
 
-export {Headers} from './src/headers';
+export {Headers} from './src/http/headers';
 
 export {
   ResponseTypes,

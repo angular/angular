@@ -1,7 +1,7 @@
 import {bind, Binding} from 'angular2/di';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {ABSTRACT, BaseException} from 'angular2/src/facade/lang';
-import {StringMap} from 'angular2/src/facade/collection';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {ABSTRACT, BaseException} from 'angular2/src/core/facade/lang';
+import {StringMap} from 'angular2/src/core/facade/collection';
 
 /**
  * A metric is measures values

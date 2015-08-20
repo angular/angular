@@ -1,11 +1,11 @@
-import {List, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {List, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   isPresent,
   isBlank,
   BaseException,
   RegExpWrapper,
   CONST_EXPR
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 
 
 export class Url {

@@ -1,6 +1,6 @@
 import {bootstrap, Component, View, ViewEncapsulation} from 'angular2/bootstrap';
 import {MdSwitch} from 'angular2_material/src/components/switcher/switch';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
 

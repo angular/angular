@@ -1,6 +1,6 @@
 import {bind, Binding} from 'angular2/di';
-import {List, StringMap} from 'angular2/src/facade/collection';
-import {ABSTRACT, BaseException} from 'angular2/src/facade/lang';
+import {List, StringMap} from 'angular2/src/core/facade/collection';
+import {ABSTRACT, BaseException} from 'angular2/src/core/facade/lang';
 
 import {MeasureValues} from './measure_values';
 

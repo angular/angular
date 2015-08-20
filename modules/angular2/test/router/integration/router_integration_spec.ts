@@ -16,12 +16,12 @@ import {
 
 import {bootstrap} from 'angular2/src/core/application';
 import {Component, Directive, View} from 'angular2/metadata';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {bind} from 'angular2/di';
-import {DOCUMENT} from 'angular2/src/render/render';
+import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {BaseException} from 'angular2/src/core/facade/lang';
 import {
   ROUTER_BINDINGS,
   RouteParams,

@@ -1,8 +1,8 @@
 import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {ElementRef} from 'angular2/core';
 import {KeyValueDiffer, KeyValueDiffers} from 'angular2/change_detection';
-import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {Renderer} from 'angular2/src/render/api';
+import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
+import {Renderer} from 'angular2/src/core/render/api';
 
 /**
  * Adds or removes styles based on an {expression}.

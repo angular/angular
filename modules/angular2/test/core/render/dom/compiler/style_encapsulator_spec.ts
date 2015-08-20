@@ -12,17 +12,17 @@ import {
   SpyObject,
 } from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
 
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   ProtoViewBuilder,
   ElementBinderBuilder
-} from 'angular2/src/render/dom/view/proto_view_builder';
-import {ViewDefinition, ViewType, ViewEncapsulation} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/dom/view/proto_view_builder';
+import {ViewDefinition, ViewType, ViewEncapsulation} from 'angular2/src/core/render/api';
 
-import {StyleEncapsulator} from 'angular2/src/render/dom/compiler/style_encapsulator';
+import {StyleEncapsulator} from 'angular2/src/core/render/dom/compiler/style_encapsulator';
 import {MockStep} from './pipeline_spec';
 
 export function main() {

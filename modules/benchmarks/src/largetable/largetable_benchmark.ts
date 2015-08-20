@@ -2,8 +2,8 @@ import {bootstrap, Component, Directive, View} from 'angular2/bootstrap';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {window, document, gc} from 'angular2/src/core/facade/browser';
 import {
   getIntParameter,
   getStringParameter,
@@ -13,14 +13,14 @@ import {
 } from 'angular2/src/test_lib/benchmark_util';
 
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {bind} from 'angular2/di';
-import {Inject} from 'angular2/src/di/decorators';
-import {reflector} from 'angular2/src/reflection/reflection';
+import {Inject} from 'angular2/src/core/di/decorators';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';

@@ -1,6 +1,6 @@
 library angular2.test.transform.integration;
 
-import 'package:angular2/src/dom/html_adapter.dart';
+import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/transformer.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
@@ -42,11 +42,11 @@ void allTests() {
     'angular2|lib/src/core/metadata.dart':
         '../../../lib/src/core/metadata.dart',
     'angular2|lib/src/core/application.dart': '../common/application.dart',
-    'angular2|lib/src/reflection/reflection_capabilities.dart':
+    'angular2|lib/src/core/reflection/reflection_capabilities.dart':
         '../common/reflection_capabilities.dart',
     'angular2|lib/di.dart': '../../../lib/di.dart',
-    'angular2|lib/src/di/decorators.dart':
-        '../../../lib/src/di/decorators.dart',
+    'angular2|lib/src/core/di/decorators.dart':
+        '../../../lib/src/core/di/decorators.dart',
   };
 
   var tests = [

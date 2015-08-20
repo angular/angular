@@ -121,7 +121,7 @@ function angularFactory(name, deps, body) {
 
 function isFacadeModule(modulePath) {
   return modulePath.indexOf('facade') > -1 ||
-    modulePath === 'angular2/src/reflection/reflection';
+    modulePath === 'angular2/src/core/reflection/reflection';
 }
 
 module.exports = function () {

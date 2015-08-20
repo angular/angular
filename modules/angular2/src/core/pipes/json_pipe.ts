@@ -1,9 +1,9 @@
-import {isBlank, isPresent, Json, CONST} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Json, CONST} from 'angular2/src/core/facade/lang';
 import {Injectable} from 'angular2/di';
 
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 
-import {Pipe} from '../core/metadata';
+import {Pipe} from '../metadata';
 
 /**
  * Implements json transforms to any object.

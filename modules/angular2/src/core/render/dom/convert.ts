@@ -1,6 +1,6 @@
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isArray} from 'angular2/src/facade/lang';
-import {RenderDirectiveMetadata} from 'angular2/src/render/api';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {isPresent, isArray} from 'angular2/src/core/facade/lang';
+import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 
 /**
  * Converts a [DirectiveMetadata] to a map representation. This creates a copy,

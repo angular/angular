@@ -3,9 +3,9 @@
  * to be used by the decorator versions of these annotations.
  */
 
-import {makeDecorator} from 'angular2/src/util/decorators';
+import {makeDecorator} from 'angular2/src/core/util/decorators';
 import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
-import {Promise} from 'angular2/src/facade/async';
+import {Promise} from 'angular2/src/core/facade/async';
 import {ComponentInstruction} from 'angular2/src/router/instruction';
 
 export {

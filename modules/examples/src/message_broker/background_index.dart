@@ -7,7 +7,7 @@ import "package:angular2/src/web_workers/shared/serializer.dart"
 import "package:angular2/src/web_workers/shared/isolate_message_bus.dart";
 import "package:angular2/src/web_workers/worker/application.dart"
     show WebWorkerMessageBusSink;
-import "package:angular2/src/facade/async.dart";
+import "package:angular2/src/core/facade/async.dart";
 import "dart:isolate";
 
 main(List<String> args, SendPort replyTo) {

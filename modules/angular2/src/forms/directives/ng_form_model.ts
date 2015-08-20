@@ -1,6 +1,6 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {forwardRef, Binding} from 'angular2/di';

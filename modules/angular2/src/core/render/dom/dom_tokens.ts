@@ -1,5 +1,5 @@
 import {OpaqueToken, Binding} from 'angular2/di';
-import {CONST_EXPR, StringWrapper, Math} from 'angular2/src/facade/lang';
+import {CONST_EXPR, StringWrapper, Math} from 'angular2/src/core/facade/lang';
 
 export const DOCUMENT: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
 

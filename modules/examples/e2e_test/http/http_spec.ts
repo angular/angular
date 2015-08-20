@@ -11,7 +11,7 @@ describe('http', function() {
 
     it('should fetch and display people', function() {
       browser.get(URL);
-
+      browser.sleep(200);
       expect(getComponentText('http-app', '.people')).toEqual('hello, Jeff');
     });
   });

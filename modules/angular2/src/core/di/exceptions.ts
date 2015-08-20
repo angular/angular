@@ -1,5 +1,5 @@
-import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {stringify, BaseException, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {stringify, BaseException, isBlank} from 'angular2/src/core/facade/lang';
 import {Key} from './key';
 import {Injector} from './injector';
 

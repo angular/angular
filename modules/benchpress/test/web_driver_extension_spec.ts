@@ -11,9 +11,9 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {StringMap, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {StringMap, ListWrapper} from 'angular2/src/core/facade/collection';
+import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {WebDriverExtension, bind, Injector, Options} from 'benchpress/common';
 

@@ -1,14 +1,14 @@
 library angular2.transform.template_compiler.compile_step_factory;
 
-import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
-import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/render/dom/compiler/compile_step.dart';
-import 'package:angular2/src/render/dom/compiler/compile_step_factory.dart'
+import 'package:angular2/src/core/change_detection/parser/parser.dart' as ng;
+import 'package:angular2/src/core/render/api.dart';
+import 'package:angular2/src/core/render/dom/compiler/compile_step.dart';
+import 'package:angular2/src/core/render/dom/compiler/compile_step_factory.dart'
     as base;
-import 'package:angular2/src/render/dom/compiler/directive_parser.dart';
-import 'package:angular2/src/render/dom/compiler/property_binding_parser.dart';
-import 'package:angular2/src/render/dom/compiler/text_interpolation_parser.dart';
-import 'package:angular2/src/render/dom/compiler/view_splitter.dart';
+import 'package:angular2/src/core/render/dom/compiler/directive_parser.dart';
+import 'package:angular2/src/core/render/dom/compiler/property_binding_parser.dart';
+import 'package:angular2/src/core/render/dom/compiler/text_interpolation_parser.dart';
+import 'package:angular2/src/core/render/dom/compiler/view_splitter.dart';
 
 class CompileStepFactory implements base.CompileStepFactory {
   final ng.Parser _parser;

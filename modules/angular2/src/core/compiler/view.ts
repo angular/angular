@@ -5,7 +5,7 @@ import {
   StringMapWrapper,
   List,
   StringMap
-} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/collection';
 import {
   AST,
   ChangeDetector,
@@ -16,8 +16,8 @@ import {
   BindingTarget,
   Locals,
   ProtoChangeDetector
-} from 'angular2/src/change_detection/change_detection';
-import {DebugContext} from 'angular2/src/change_detection/interfaces';
+} from 'angular2/src/core/change_detection/change_detection';
+import {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
 import {
   ProtoElementInjector,
@@ -26,15 +26,15 @@ import {
   DirectiveBinding
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import * as renderApi from 'angular2/src/render/api';
-import {RenderEventDispatcher} from 'angular2/src/render/api';
+import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
+import * as renderApi from 'angular2/src/core/render/api';
+import {RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
-import {camelCaseToDashCase} from 'angular2/src/render/dom/util';
+import {camelCaseToDashCase} from 'angular2/src/core/render/dom/util';
 
-export {DebugContext} from 'angular2/src/change_detection/interfaces';
+export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 

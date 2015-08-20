@@ -1,17 +1,17 @@
 library angular2.transform.template_compiler.change_detector_codegen;
 
-import 'package:angular2/src/change_detection/change_detection_util.dart';
-import 'package:angular2/src/change_detection/codegen_facade.dart';
-import 'package:angular2/src/change_detection/codegen_logic_util.dart';
-import 'package:angular2/src/change_detection/codegen_name_util.dart';
-import 'package:angular2/src/change_detection/directive_record.dart';
-import 'package:angular2/src/change_detection/interfaces.dart';
-import 'package:angular2/src/change_detection/proto_change_detector.dart';
-import 'package:angular2/src/change_detection/proto_record.dart';
-import 'package:angular2/src/change_detection/event_binding.dart';
-import 'package:angular2/src/change_detection/binding_record.dart';
-import 'package:angular2/src/change_detection/codegen_facade.dart' show codify;
-import 'package:angular2/src/facade/lang.dart' show BaseException;
+import 'package:angular2/src/core/change_detection/change_detection_util.dart';
+import 'package:angular2/src/core/change_detection/codegen_facade.dart';
+import 'package:angular2/src/core/change_detection/codegen_logic_util.dart';
+import 'package:angular2/src/core/change_detection/codegen_name_util.dart';
+import 'package:angular2/src/core/change_detection/directive_record.dart';
+import 'package:angular2/src/core/change_detection/interfaces.dart';
+import 'package:angular2/src/core/change_detection/proto_change_detector.dart';
+import 'package:angular2/src/core/change_detection/proto_record.dart';
+import 'package:angular2/src/core/change_detection/event_binding.dart';
+import 'package:angular2/src/core/change_detection/binding_record.dart';
+import 'package:angular2/src/core/change_detection/codegen_facade.dart' show codify;
+import 'package:angular2/src/core/facade/lang.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
 ///
@@ -493,5 +493,5 @@ const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
 const _NOT_IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseNotIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
-    'package:angular2/src/change_detection/pregen_proto_change_detector.dart';
+    'package:angular2/src/core/change_detection/pregen_proto_change_detector.dart';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';

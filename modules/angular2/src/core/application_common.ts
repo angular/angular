@@ -8,11 +8,11 @@ import {
   assertionsEnabled,
   print,
   stringify
-} from 'angular2/src/facade/lang';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+} from 'angular2/src/core/facade/lang';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
   Lexer,
@@ -24,28 +24,28 @@ import {
   defaultIterableDiffers,
   KeyValueDiffers,
   defaultKeyValueDiffers
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from './exception_handler';
-import {ViewLoader} from 'angular2/src/render/dom/compiler/view_loader';
-import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
-import {StyleInliner} from 'angular2/src/render/dom/compiler/style_inliner';
+import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {PipeResolver} from './compiler/pipe_resolver';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {XHR} from 'angular2/src/render/xhr';
-import {XHRImpl} from 'angular2/src/render/xhr_impl';
-import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
-import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
-import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';
+import {XHR} from 'angular2/src/core/render/xhr';
+import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
+import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
+import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/services/anchor_based_app_root_url';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -56,7 +56,7 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {Renderer, RenderCompiler} from 'angular2/src/render/api';
+import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
 import {
   DomRenderer,
   DOCUMENT,
@@ -64,16 +64,18 @@ import {
   APP_ID_RANDOM_BINDING,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
   TemplateCloner
-} from 'angular2/src/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
-import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/render/render';
+import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {
+  DomElementSchemaRegistry
+} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
-} from 'angular2/src/render/dom/view/shared_styles_host';
+} from 'angular2/src/core/render/dom/view/shared_styles_host';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from './application_tokens';
-import {wtfInit} from '../profile/wtf_init';
+import {wtfInit} from './profile/wtf_init';
 import {EXCEPTION_BINDING} from './platform_bindings';
 import {ApplicationRef} from './application_ref';
 

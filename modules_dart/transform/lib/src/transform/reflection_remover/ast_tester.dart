@@ -14,7 +14,7 @@ class AstTester {
 
   bool isReflectionCapabilitiesImport(ImportDirective node) {
     return node.uri.stringValue ==
-        "package:angular2/src/reflection/reflection_capabilities.dart";
+        "package:angular2/src/core/reflection/reflection_capabilities.dart";
   }
 
   bool isBootstrapImport(ImportDirective node) {

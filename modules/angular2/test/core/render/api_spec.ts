@@ -1,6 +1,6 @@
-import {RenderDirectiveMetadata} from 'angular2/src/render/api';
+import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 
-import {MapWrapper} from 'angular2/src/facade/collection';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {ddescribe, describe, expect, it} from 'angular2/test_lib';
 
 export function main() {

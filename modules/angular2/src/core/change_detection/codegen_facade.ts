@@ -1,4 +1,4 @@
-import {List} from 'angular2/src/facade/collection';
+import {List} from 'angular2/src/core/facade/collection';
 
 /**
  * Converts `funcOrValue` to a string which can be used in generated code.

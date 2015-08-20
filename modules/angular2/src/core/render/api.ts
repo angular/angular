@@ -1,7 +1,13 @@
-import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/facade/lang';
-import {Promise} from 'angular2/src/facade/async';
-import {List, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-import {ASTWithSource} from 'angular2/src/change_detection/change_detection';
+import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/core/facade/lang';
+import {Promise} from 'angular2/src/core/facade/async';
+import {
+  List,
+  Map,
+  MapWrapper,
+  StringMap,
+  StringMapWrapper
+} from 'angular2/src/core/facade/collection';
+import {ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 
 /**
  * General notes:

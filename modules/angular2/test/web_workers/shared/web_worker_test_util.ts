@@ -1,4 +1,4 @@
-import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   MessageBusSink,
   MessageBusSource,

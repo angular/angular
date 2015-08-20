@@ -1,9 +1,9 @@
 import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
-import {Reflector, ReflectionInfo} from 'angular2/src/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+import {Reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
-import {List} from 'angular2/src/facade/collection';
-import {IS_DART} from '../platform';
+import {List} from 'angular2/src/core/facade/collection';
+import {IS_DART} from '../../platform';
 
 class AType {
   value;

@@ -2,10 +2,10 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '
 import {
   DefaultKeyValueDiffer,
   DefaultKeyValueDifferFactory
-} from 'angular2/src/change_detection/differs/default_keyvalue_differ';
-import {NumberWrapper, isJsObject} from 'angular2/src/facade/lang';
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {kvChangesAsString} from '../util';
+} from 'angular2/src/core/change_detection/differs/default_keyvalue_differ';
+import {NumberWrapper, isJsObject} from 'angular2/src/core/facade/lang';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {kvChangesAsString} from '../../../core/change_detection/util';
 
 // todo(vicb): Update the code & tests for object equality
 export function main() {

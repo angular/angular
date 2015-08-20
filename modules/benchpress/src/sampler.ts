@@ -1,6 +1,6 @@
-import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper, StringMap, List, ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {StringMapWrapper, StringMap, List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/di';
 
 import {Metric} from './metric';

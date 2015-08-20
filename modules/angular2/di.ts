@@ -12,12 +12,12 @@ export {
   HostMetadata,
   SkipSelfMetadata,
   DependencyMetadata
-} from './src/di/metadata';
+} from './src/core/di/metadata';
 
 // we have to reexport * because Dart and TS export two different sets of types
-export * from './src/di/decorators';
+export * from './src/core/di/decorators';
 
-export {forwardRef, resolveForwardRef, ForwardRefFn} from './src/di/forward_ref';
+export {forwardRef, resolveForwardRef, ForwardRefFn} from './src/core/di/forward_ref';
 export {
   Injector,
   ProtoInjector,
@@ -25,9 +25,9 @@ export {
   DependencyProvider,
   Visibility,
   UNDEFINED
-} from './src/di/injector';
-export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/di/binding';
-export {Key, KeyRegistry, TypeLiteral} from './src/di/key';
+} from './src/core/di/injector';
+export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/core/di/binding';
+export {Key, KeyRegistry, TypeLiteral} from './src/core/di/key';
 export {
   NoBindingError,
   AbstractBindingError,
@@ -36,5 +36,5 @@ export {
   InvalidBindingError,
   NoAnnotationError,
   OutOfBoundsError
-} from './src/di/exceptions';
-export {OpaqueToken} from './src/di/opaque_token';
+} from './src/core/di/exceptions';
+export {OpaqueToken} from './src/core/di/opaque_token';

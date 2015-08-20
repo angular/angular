@@ -1,4 +1,4 @@
-import {isBlank, BaseException, stringify} from 'angular2/src/facade/lang';
+import {isBlank, BaseException, stringify} from 'angular2/src/core/facade/lang';
 import {
   describe,
   ddescribe,
@@ -27,7 +27,7 @@ import {
   Visibility
 } from 'angular2/di';
 
-import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/di/injector';
+import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/core/di/injector';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
 

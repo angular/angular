@@ -6,9 +6,9 @@ import {
   stringify,
   CONST_EXPR,
   StringWrapper
-} from 'angular2/src/facade/lang';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   Injector,
   ProtoInjector,
@@ -29,7 +29,7 @@ import {
   InjectorInlineStrategy,
   InjectorDynamicStrategy,
   BindingWithVisibility
-} from 'angular2/src/di/injector';
+} from 'angular2/src/core/di/injector';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
@@ -40,11 +40,14 @@ import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
 import {DirectiveMetadata, ComponentMetadata, LifecycleEvent} from '../metadata/directives';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {ChangeDetector, ChangeDetectorRef} from 'angular2/src/change_detection/change_detection';
+import {
+  ChangeDetector,
+  ChangeDetectorRef
+} from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from './query_list';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {RenderDirectiveMetadata} from 'angular2/src/render/api';
-import {EventConfig} from 'angular2/src/render/dom/util';
+import {reflector} from 'angular2/src/core/reflection/reflection';
+import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
+import {EventConfig} from 'angular2/src/core/render/dom/util';
 import {PipeBinding} from '../pipes/pipe_binding';
 
 var _staticKeys;

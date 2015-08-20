@@ -7,10 +7,10 @@ var cssParse = require('css').parse;
 
 var url = require('url');
 
-import {List, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {List, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
-import {BaseException, isPresent, isBlank, global} from 'angular2/src/facade/lang';
-import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
+import {BaseException, isPresent, isBlank, global} from 'angular2/src/core/facade/lang';
+import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
 
 var _attrToPropMap = {
   'class': 'className',

@@ -1,10 +1,10 @@
-import {isString, isPresent, isBlank, makeTypeError} from 'angular2/src/facade/lang';
-import {Injectable} from 'angular2/src/di/decorators';
+import {isString, isPresent, isBlank, makeTypeError} from 'angular2/src/core/facade/lang';
+import {Injectable} from 'angular2/src/core/di/decorators';
 import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethods} from './enums';
-import {EventEmitter} from 'angular2/src/facade/async';
+import {EventEmitter} from 'angular2/src/core/facade/async';
 
 function httpRequest(backend: ConnectionBackend, request: Request): EventEmitter {
   return backend.createConnection(request).response;

@@ -1,6 +1,6 @@
 library angular2.src.web_workers.event_serializer;
 
-import 'package:angular2/src/facade/collection.dart';
+import 'package:angular2/src/core/facade/collection.dart';
 // TODO(jteplitz602): Remove Mirrors from serialization #3348
 @MirrorsUsed(
     symbols: "altKey, bubbles, button, cancelable, client, ctrlKey, " +

@@ -27,8 +27,8 @@ const indexContents = '''
 library examples.src.hello_world.index;
 
 import "index_common.dart" as app;
-import "package:angular2/src/reflection/reflection.dart" show reflector;
-import "package:angular2/src/reflection/reflection_capabilities.dart"
+import "package:angular2/src/core/reflection/reflection.dart" show reflector;
+import "package:angular2/src/core/reflection/reflection_capabilities.dart"
     show ReflectionCapabilities;
 
 main() {

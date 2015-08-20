@@ -1,4 +1,4 @@
-import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {NgControlName} from './directives/ng_control_name';
 import {NgFormControl} from './directives/ng_form_control';
 import {NgModel} from './directives/ng_model';

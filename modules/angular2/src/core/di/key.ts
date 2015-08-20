@@ -1,5 +1,5 @@
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {stringify, CONST, Type, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {stringify, CONST, Type, isBlank, BaseException} from 'angular2/src/core/facade/lang';
 import {TypeLiteral} from './type_literal';
 import {resolveForwardRef} from './forward_ref';
 

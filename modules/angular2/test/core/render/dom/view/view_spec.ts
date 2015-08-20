@@ -15,14 +15,14 @@ import {
   SpyObject,
   proxy
 } from 'angular2/test_lib';
-import {isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {isBlank} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
-import {DomElementBinder} from 'angular2/src/render/dom/view/element_binder';
-import {DomView} from 'angular2/src/render/dom/view/view';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {TemplateCloner} from 'angular2/src/render/dom/template_cloner';
+import {DomProtoView} from 'angular2/src/core/render/dom/view/proto_view';
+import {DomElementBinder} from 'angular2/src/core/render/dom/view/element_binder';
+import {DomView} from 'angular2/src/core/render/dom/view/view';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {TemplateCloner} from 'angular2/src/core/render/dom/template_cloner';
 
 export function main() {
   describe('DomView', () => {

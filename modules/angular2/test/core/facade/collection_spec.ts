@@ -6,7 +6,7 @@ import {
   StringMap,
   StringMapWrapper,
   MapWrapper
-} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/collection';
 
 export function main() {
   describe('ListWrapper', () => {

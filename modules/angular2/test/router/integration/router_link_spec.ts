@@ -17,7 +17,7 @@ import {
   By
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS, NumberWrapper} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, NumberWrapper} from 'angular2/src/core/facade/lang';
 
 import {bind, Component, View} from 'angular2/angular2';
 
@@ -36,7 +36,7 @@ import {
 } from 'angular2/router';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
   describe('router-link directive', function() {

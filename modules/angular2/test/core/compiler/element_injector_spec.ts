@@ -17,14 +17,14 @@ import {
   el,
   containsRegexp
 } from 'angular2/test_lib';
-import {isBlank, isPresent, IMPLEMENTS, stringify} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, IMPLEMENTS, stringify} from 'angular2/src/core/facade/lang';
 import {
   ListWrapper,
   MapWrapper,
   List,
   StringMapWrapper,
   iterateListLike
-} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/collection';
 import {
   ProtoElementInjector,
   ElementInjector,
@@ -45,7 +45,7 @@ import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/change_detection/change_detection';
+import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 @proxy

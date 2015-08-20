@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/di';
 
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, BaseException, assertionsEnabled} from 'angular2/src/facade/lang';
-import {reflector} from 'angular2/src/reflection/reflection';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, BaseException, assertionsEnabled} from 'angular2/src/core/facade/lang';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 import {
   ChangeDetection,
@@ -14,7 +14,7 @@ import {
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig,
   ASTWithSource
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
@@ -26,7 +26,7 @@ import {
   DirectiveBinder,
   ProtoViewDto,
   ViewType
-} from 'angular2/src/render/api';
+} from 'angular2/src/core/render/api';
 import {AppProtoView} from './view';
 import {ElementBinder} from './element_binder';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';

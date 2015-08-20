@@ -1,6 +1,6 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {List, StringMap} from 'angular2/src/facade/collection';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {List, StringMap} from 'angular2/src/core/facade/collection';
 
 import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/metadata';

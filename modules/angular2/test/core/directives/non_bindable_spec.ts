@@ -12,13 +12,13 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {Component, Directive, View} from 'angular2/angular2';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {NgNonBindable} from 'angular2/src/directives/ng_non_bindable';
+import {NgNonBindable} from 'angular2/src/core/directives/ng_non_bindable';
 
 export function main() {
   describe('non-bindable', () => {

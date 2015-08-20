@@ -8,9 +8,9 @@ import {
   assertionsEnabled,
   print,
   stringify
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
   Lexer,
@@ -22,22 +22,22 @@ import {
   defaultIterableDiffers,
   KeyValueDiffers,
   defaultKeyValueDiffers
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
-import {StyleUrlResolver} from 'angular2/src/render/dom/compiler/style_url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
+import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {XHR} from 'angular2/src/render/xhr';
+import {XHR} from 'angular2/src/core/render/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/services/app_root_url';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -49,7 +49,7 @@ import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
-import {Renderer, RenderCompiler} from 'angular2/src/render/api';
+import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
@@ -62,7 +62,7 @@ import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 

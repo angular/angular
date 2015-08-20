@@ -1,11 +1,15 @@
 import {AsyncTestCompleter, beforeEach, inject, describe, it, expect} from "angular2/test_lib";
-import {RenderViewWithFragments, RenderViewRef, RenderFragmentRef} from "angular2/src/render/api";
+import {
+  RenderViewWithFragments,
+  RenderViewRef,
+  RenderFragmentRef
+} from "angular2/src/core/render/api";
 import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef,
   WebWorkerRenderFragmentRef
 } from "angular2/src/web_workers/shared/render_view_with_fragments_store";
-import {List, ListWrapper} from "angular2/src/facade/collection";
+import {List, ListWrapper} from "angular2/src/core/facade/collection";
 
 export function main() {
   describe("RenderViewWithFragmentsStore", () => {

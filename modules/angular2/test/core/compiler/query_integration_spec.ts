@@ -21,7 +21,7 @@ import {Query, ViewQuery, Component, Directive, View} from 'angular2/metadata';
 
 import {NgIf, NgFor} from 'angular2/angular2';
 
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
 export function main() {
   BrowserDomAdapter.makeCurrent();

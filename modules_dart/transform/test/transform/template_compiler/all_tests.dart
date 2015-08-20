@@ -2,7 +2,7 @@ library angular2.test.transform.template_compiler.all_tests;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
-import 'package:angular2/src/dom/html_adapter.dart';
+import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';

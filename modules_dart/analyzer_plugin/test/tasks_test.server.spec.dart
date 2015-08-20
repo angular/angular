@@ -11,7 +11,7 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/task/driver.dart';
 import 'package:analyzer/task/dart.dart';
 import 'package:analyzer/task/model.dart';
-import 'package:angular2/src/render/api.dart';
+import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2_analyzer_plugin/src/tasks.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 import 'package:unittest/unittest.dart';

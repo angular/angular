@@ -3,7 +3,7 @@ import {
   PostMessageBusSink,
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 
 var webWorker = new Worker("loader.js");
 var sink = new PostMessageBusSink(webWorker);

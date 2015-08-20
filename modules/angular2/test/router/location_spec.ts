@@ -13,7 +13,7 @@ import {
 } from 'angular2/test_lib';
 
 import {Injector, bind} from 'angular2/di';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Location, APP_BASE_HREF} from 'angular2/src/router/location';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';

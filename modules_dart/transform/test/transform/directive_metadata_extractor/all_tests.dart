@@ -1,8 +1,8 @@
 library angular2.test.transform.directive_metadata_extractor.all_tests;
 
 import 'dart:async';
-import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/render/dom/convert.dart';
+import 'package:angular2/src/core/render/api.dart';
+import 'package:angular2/src/core/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';

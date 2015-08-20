@@ -1,6 +1,6 @@
-import {Math} from 'angular2/src/facade/math';
-import {StringWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Math} from 'angular2/src/core/facade/math';
+import {StringWrapper} from 'angular2/src/core/facade/lang';
+import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 
 export var ITEMS = 1000;
 export var ITEM_HEIGHT = 40;

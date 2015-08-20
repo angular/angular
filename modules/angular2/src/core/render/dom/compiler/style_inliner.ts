@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/di';
-import {XHR} from 'angular2/src/render/xhr';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {XHR} from 'angular2/src/core/render/xhr';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {UrlResolver} from 'angular2/src/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {StyleUrlResolver} from './style_url_resolver';
 
 import {
@@ -13,11 +13,11 @@ import {
   StringWrapper,
   normalizeBlank,
   isPromise
-} from 'angular2/src/facade/lang';
+} from 'angular2/src/core/facade/lang';
 import {
   Promise,
   PromiseWrapper,
-} from 'angular2/src/facade/async';
+} from 'angular2/src/core/facade/async';
 
 /**
  * Inline @import rules in the given CSS.

@@ -13,10 +13,10 @@ import {
 
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/metadata';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {bind} from 'angular2/di';
-import {DOCUMENT} from 'angular2/src/render/render';
-import {Type} from 'angular2/src/facade/lang';
+import {DOCUMENT} from 'angular2/src/core/render/render';
+import {Type} from 'angular2/src/core/facade/lang';
 
 import {
   ROUTER_BINDINGS,

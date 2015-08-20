@@ -17,7 +17,7 @@ import {
   By
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 import {bind, Component, View} from 'angular2/angular2';
 
@@ -34,7 +34,7 @@ import {
 } from 'angular2/router';
 import {Instruction, ComponentInstruction} from 'angular2/src/router/instruction';
 
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 var dummyInstruction = new Instruction(new ComponentInstruction('detail', [], null), null, {});
 

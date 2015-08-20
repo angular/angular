@@ -10,7 +10,7 @@ import {
   SpyObject,
   proxy
 } from 'angular2/test_lib';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {createConnectedMessageBus} from './message_bus_util';
 

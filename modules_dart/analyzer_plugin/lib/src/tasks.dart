@@ -5,7 +5,7 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/task/general.dart';
 import 'package:analyzer/task/dart.dart';
 import 'package:analyzer/task/model.dart';
-import 'package:angular2/src/render/api.dart';
+import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 
 

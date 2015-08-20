@@ -1,6 +1,9 @@
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {RenderDirectiveMetadata} from 'angular2/src/render/api';
-import {directiveMetadataFromMap, directiveMetadataToMap} from 'angular2/src/render/dom/convert';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
+import {
+  directiveMetadataFromMap,
+  directiveMetadataToMap
+} from 'angular2/src/core/render/dom/convert';
 import {ddescribe, describe, expect, it} from 'angular2/test_lib';
 
 export function main() {

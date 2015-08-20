@@ -1,4 +1,4 @@
-///<reference path="../../src/change_detection/pipe_transform.ts"/>
+///<reference path="../../../src/core/change_detection/pipe_transform.ts"/>
 import {
   ddescribe,
   describe,
@@ -19,8 +19,8 @@ import {
   isJsObject,
   BaseException,
   FunctionWrapper
-} from 'angular2/src/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+} from 'angular2/src/core/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   ChangeDispatcher,
@@ -45,15 +45,15 @@ import {
   Parser,
   Locals,
   ProtoChangeDetector
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
-import {Pipes} from 'angular2/src/change_detection/pipes';
-import {JitProtoChangeDetector} from 'angular2/src/change_detection/jit_proto_change_detector';
+import {Pipes} from 'angular2/src/core/change_detection/pipes';
+import {JitProtoChangeDetector} from 'angular2/src/core/change_detection/jit_proto_change_detector';
 
 import {getDefinition} from './change_detector_config';
 import {createObservableModel} from './change_detector_spec_util';
 import {getFactoryById} from './generated/change_detector_classes';
-import {IS_DART} from '../platform';
+import {IS_DART} from '../../platform';
 
 const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 

@@ -14,7 +14,7 @@ import {
   PreGeneratedChangeDetection,
   ChangeDetectorDefinition,
   DynamicProtoChangeDetector
-} from 'angular2/src/change_detection/change_detection';
+} from 'angular2/src/core/change_detection/change_detection';
 
 export function main() {
   describe("PreGeneratedChangeDetection", () => {

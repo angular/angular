@@ -5,7 +5,7 @@ import {
   serializeEnum,
   deserializeEnum,
   BaseException
-} from "angular2/src/facade/lang";
+} from "angular2/src/core/facade/lang";
 import {
   List,
   ListWrapper,
@@ -13,7 +13,7 @@ import {
   StringMap,
   StringMapWrapper,
   MapWrapper
-} from "angular2/src/facade/collection";
+} from "angular2/src/core/facade/collection";
 import {
   ProtoViewDto,
   RenderDirectiveMetadata,
@@ -30,10 +30,10 @@ import {
   ViewType,
   ViewEncapsulation,
   PropertyBindingType
-} from "angular2/src/render/api";
+} from "angular2/src/core/render/api";
 import {WebWorkerElementRef} from 'angular2/src/web_workers/shared/api';
-import {AST, ASTWithSource} from 'angular2/src/change_detection/change_detection';
-import {Parser} from "angular2/src/change_detection/parser/parser";
+import {AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
+import {Parser} from "angular2/src/core/change_detection/parser/parser";
 import {Injectable} from "angular2/di";
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {

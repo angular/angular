@@ -40,7 +40,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   readTypeScriptModules.sourceFiles = [
     'angular2/angular2.ts',
     'angular2/router.ts',
-    'http/http.ts'
+    'angular2/http.ts'
   ];
   readTypeScriptModules.basePath = path.resolve(path.resolve(__dirname, '../../modules'));
 
@@ -62,10 +62,10 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
         }
       },
       {
-        id: 'http/http',
+        id: 'angular2/http',
         namespace: 'ngHttp',
         modules: {
-          'http/http':'http/http'
+          'angular2/http':'angular2/http'
         }
       }
   ];

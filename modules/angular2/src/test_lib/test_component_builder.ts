@@ -1,8 +1,8 @@
 import {Injector, bind, Injectable} from 'angular2/di';
 
-import {Type, isPresent, BaseException, isBlank} from 'angular2/src/facade/lang';
-import {Promise} from 'angular2/src/facade/async';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {Promise} from 'angular2/src/core/facade/async';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {ViewMetadata} from '../core/metadata';
 
@@ -16,10 +16,10 @@ import {
 
 import {el} from './utils';
 
-import {DOCUMENT} from 'angular2/src/render/render';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DOCUMENT} from 'angular2/src/core/render/render';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {DebugElement} from 'angular2/src/debug/debug_element';
+import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
 export class RootTestComponent extends DebugElement {
   _componentRef: ComponentRef;

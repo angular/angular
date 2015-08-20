@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST} from 'angular2/src/core/facade/lang';
 
 @CONST()
 export class OpaqueToken {

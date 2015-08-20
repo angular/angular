@@ -1,8 +1,8 @@
-import {SelectorMatcher} from "angular2/src/render/dom/compiler/selector";
-import {CssSelector} from "angular2/src/render/dom/compiler/selector";
-import {StringWrapper, Math} from 'angular2/src/facade/lang';
+import {SelectorMatcher} from "angular2/src/core/render/dom/compiler/selector";
+import {CssSelector} from "angular2/src/core/render/dom/compiler/selector";
+import {StringWrapper, Math} from 'angular2/src/core/facade/lang';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
 export function main() {
   BrowserDomAdapter.makeCurrent();

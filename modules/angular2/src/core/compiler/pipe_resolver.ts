@@ -1,7 +1,7 @@
 import {resolveForwardRef, Injectable} from 'angular2/di';
-import {Type, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
+import {Type, isPresent, BaseException, stringify} from 'angular2/src/core/facade/lang';
 import {PipeMetadata} from '../metadata/directives';
-import {reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 /**
  * Resolve a `Type` for {@link PipeMetadata}.

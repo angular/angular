@@ -12,8 +12,8 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 import {Injector, bind} from 'angular2/di';
-import {MockBackend, MockConnection} from 'http/src/backends/mock_backend';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {
   BaseRequestOptions,
   ConnectionBackend,
@@ -29,7 +29,7 @@ import {
   JSONPBackend,
   Http,
   Jsonp
-} from 'http/http';
+} from 'angular2/http';
 
 class SpyObserver extends SpyObject {
   onNext: Function;

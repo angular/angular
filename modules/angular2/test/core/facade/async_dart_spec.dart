@@ -2,7 +2,7 @@
 library angular2.test.facade.async_dart_spec;
 
 import 'package:angular2/test_lib.dart';
-import 'package:angular2/src/facade/async.dart';
+import 'package:angular2/src/core/facade/async.dart';
 
 class MockException implements Error {
   var message;

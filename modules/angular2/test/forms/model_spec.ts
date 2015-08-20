@@ -14,7 +14,7 @@ import {
   inject
 } from 'angular2/test_lib';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/forms';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 
 export function main() {
   describe("Form Model", () => {
