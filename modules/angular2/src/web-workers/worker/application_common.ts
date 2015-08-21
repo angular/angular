@@ -55,8 +55,7 @@ import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {MessageBrokerFactory} from 'angular2/src/web-workers/worker/broker';
 import {MessageBus, MessageBusInterface} from 'angular2/src/web-workers/shared/message_bus';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from 'angular2/src/core/application_tokens';
-import {ApplicationRef} from 'angular2/src/core/application';
-import {createNgZone} from 'angular2/src/core/application_common';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Serializer} from "angular2/src/web-workers/shared/serializer";
 import {ON_WEB_WORKER} from "angular2/src/web-workers/shared/api";
 import {RenderProtoViewRefStore} from 'angular2/src/web-workers/shared/render_proto_view_ref_store';
@@ -147,7 +146,7 @@ export function bootstrapWebWorkerCommon(
     componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
-  var zone = createNgZone();
+  var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.

@@ -1,7 +1,7 @@
 library angular2.core;
 
 export 'package:angular2/src/core/application_tokens.dart' show APP_COMPONENT;
-export 'package:angular2/src/core/application_common.dart' show ApplicationRef;
+export 'package:angular2/src/core/application_ref.dart' show ApplicationRef;
 
 // Compiler Related Dependencies.
 export 'package:angular2/src/services/app_root_url.dart' show AppRootUrl;

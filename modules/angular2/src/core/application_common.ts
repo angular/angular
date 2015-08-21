@@ -76,6 +76,7 @@ import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from './application_tokens';
 import {wtfInit} from '../profile/wtf_init';
 import {EXCEPTION_BINDING} from './platform_bindings';
+import {ApplicationRef} from './application_ref';
 
 var _rootInjector: Injector;
 
@@ -335,51 +336,6 @@ export function commonBootstrap(
     }
   });
   return bootstrapProcess.promise;
-}
-
-/**
- * Represents a Angular's representation of an Application.
- *
- * `ApplicationRef` represents a running application instance. Use it to retrieve the host
- * component, injector,
- * or dispose of an application.
- */
-export class ApplicationRef {
-  _hostComponent: ComponentRef;
-  _injector: Injector;
-  _hostComponentType: Type;
-
-  /**
-   * @private
-   */
-  constructor(hostComponent: ComponentRef, hostComponentType: Type, injector: Injector) {
-    this._hostComponent = hostComponent;
-    this._injector = injector;
-    this._hostComponentType = hostComponentType;
-  }
-
-  /**
-   * Returns the current {@link ComponentMetadata} type.
-   */
-  get hostComponentType(): Type { return this._hostComponentType; }
-
-  /**
-   * Returns the current {@link ComponentMetadata} instance.
-   */
-  get hostComponent(): any { return this._hostComponent.instance; }
-
-  /**
-   * Dispose (un-load) the application.
-   */
-  dispose(): void {
-    // TODO: We also need to clean up the Zone, ... here!
-    this._hostComponent.dispose();
-  }
-
-  /**
-   * Returns the root application {@link Injector}.
-   */
-  get injector(): Injector { return this._injector; }
 }
 
 function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,

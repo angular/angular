@@ -4,8 +4,9 @@
  * Define angular core API here.
  */
 export {APP_COMPONENT} from 'angular2/src/core/application_tokens';
-export {ApplicationRef, commonBootstrap as bootstrap} from 'angular2/src/core/application_common';
+export {commonBootstrap as bootstrap} from 'angular2/src/core/application_common';
 export {Type} from 'angular2/src/facade/lang';
+export {ApplicationRef} from 'angular2/src/core/application_ref';
 
 
 // Compiler Related Dependencies.

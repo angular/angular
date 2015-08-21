@@ -6,8 +6,9 @@ import 'package:angular2/src/reflection/reflection.dart' show reflector;
 import 'package:angular2/src/reflection/reflection_capabilities.dart'
     show ReflectionCapabilities;
 import 'application_common.dart';
+import 'application_ref.dart';
 
-export 'application_common.dart' show ApplicationRef;
+export 'application_ref.dart' show ApplicationRef;
 
 /// Starts an application from a root component. This implementation uses
 /// mirrors. Angular 2 transformer automatically replaces this method with a

@@ -2,6 +2,7 @@ library angular2.application_static;
 
 import 'dart:async';
 import 'application_common.dart';
+import 'application_ref.dart';
 
 /// Starts an application from a root component.
 ///

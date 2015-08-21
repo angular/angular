@@ -1,1 +1,2 @@
-export {ApplicationRef, commonBootstrap as bootstrap} from './application_common';
+export {commonBootstrap as bootstrap} from './application_common';
+export {ApplicationRef} from './application_ref';
