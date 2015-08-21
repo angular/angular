@@ -8,7 +8,7 @@ import {Binding} from "angular2/di";
 import {Map} from 'angular2/src/facade/collection';
 import {Promise} from 'angular2/src/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web-workers/worker/application_common";
-import {ApplicationRef} from "angular2/src/core/application";
+import {ApplicationRef} from "angular2/src/core/application_ref";
 import {Injectable} from "angular2/di";
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
