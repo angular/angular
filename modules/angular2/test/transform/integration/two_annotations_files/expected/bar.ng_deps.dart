@@ -29,7 +29,7 @@ class _MyComponent_ChangeDetector0
   _MyComponent_ChangeDetector0(dispatcher) : super(
           "MyComponent_comp_0", dispatcher, 2,
           _MyComponent_ChangeDetector0.gen_propertyBindingTargets,
-          _MyComponent_ChangeDetector0.gen_directiveIndices, 'ALWAYS_CHECK') {
+          _MyComponent_ChangeDetector0.gen_directiveIndices,null) {
     dehydrateDirectives(false);
   }
 

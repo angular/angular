@@ -5,11 +5,7 @@ import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';
 import {BindingTarget} from './binding_record';
 import {DirectiveRecord} from './directive_record';
-
-/**
- * This is an experimental feature. Works only in Dart.
- */
-const ON_PUSH_OBSERVE = "ON_PUSH_OBSERVE";
+import {ON_PUSH_OBSERVE} from './constants';
 
 /**
  * Class responsible for providing change detection logic for chagne detector classes.
@@ -118,7 +114,7 @@ export class CodegenLogicUtil {
   _observe(exp: string, rec: ProtoRecord): string {
     // This is an experimental feature. Works only in Dart.
     if (StringWrapper.equals(this._changeDetection, ON_PUSH_OBSERVE)) {
-      return `this.observe(${exp}, ${rec.selfIndex})`;
+      return `this.observeValue(${exp}, ${rec.selfIndex})`;
     } else {
       return exp;
     }
@@ -150,6 +146,24 @@ export class CodegenLogicUtil {
     }
     iVals.push(codify(protoRec.fixedArgs[protoRec.args.length]));
     return combineGeneratedStrings(iVals);
+  }
+
+  genHydrateDirectives(directiveRecords: DirectiveRecord[]): string {
+    var res = [];
+    for (var i = 0; i < directiveRecords.length; ++i) {
+      var r = directiveRecords[i];
+      res.push(`${this._names.getDirectiveName(r.directiveIndex)} = ${this._genReadDirective(i)};`);
+    }
+    return res.join("\n");
+  }
+
+  private _genReadDirective(index: number) {
+    // This is an experimental feature. Works only in Dart.
+    if (StringWrapper.equals(this._changeDetection, ON_PUSH_OBSERVE)) {
+      return `this.observeDirective(this.getDirectiveFor(directives, ${index}), ${index})`;
+    } else {
+      return `this.getDirectiveFor(directives, ${index})`;
+    }
   }
 
   genHydrateDetectors(directiveRecords: DirectiveRecord[]): string {

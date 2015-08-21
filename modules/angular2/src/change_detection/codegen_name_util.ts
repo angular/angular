@@ -190,10 +190,6 @@ export class CodegenNameUtil {
     return this._addFieldPrefix(`${this._sanitizedNames[idx]}_pipe`);
   }
 
-  getAllDirectiveNames(): List<string> {
-    return ListWrapper.map(this.directiveRecords, d => this.getDirectiveName(d.directiveIndex));
-  }
-
   getDirectiveName(d: DirectiveIndex): string {
     return this._addFieldPrefix(`directive_${d.name}`);
   }

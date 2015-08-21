@@ -14,7 +14,7 @@ import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
 import {ChangeDetectorGenConfig} from './interfaces';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
-
+import {ON_PUSH_OBSERVE} from './constants';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicChangeDetector extends AbstractChangeDetector<any> {
@@ -26,11 +26,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
               propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
-              modeOnHydrate: string, private records: ProtoRecord[],
+              strategy: string, private records: ProtoRecord[],
               private eventBindings: EventBinding[], private directiveRecords: DirectiveRecord[],
               private genConfig: ChangeDetectorGenConfig) {
     super(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices,
-          modeOnHydrate);
+          strategy);
     var len = records.length + 1;
     this.values = ListWrapper.createFixedSize(len);
     this.localPipes = ListWrapper.createFixedSize(len);
@@ -87,6 +87,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   hydrateDirectives(directives: any): void {
     this.values[0] = this.context;
     this.directives = directives;
+
+    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+      for (var i = 0; i < this.directiveIndices.length; ++i) {
+        var index = this.directiveIndices[i];
+        super.observeDirective(directives.getDirectiveFor(index), i);
+      }
+    }
   }
 
   dehydrateDirectives(destroyPipes: boolean) {
@@ -211,7 +218,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       return null;
     }
 
-    var currValue = this.observe(this._calculateCurrValue(proto, values, locals), proto.selfIndex);
+    var currValue = this._calculateCurrValue(proto, values, locals);
+    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+      super.observeValue(currValue, proto.selfIndex);
+    }
+
     if (proto.shouldBeChecked()) {
       var prevValue = this._readSelf(proto, values);
       if (!isSame(prevValue, currValue)) {

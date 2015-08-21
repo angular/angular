@@ -15,6 +15,8 @@ import {Locals} from './parser/locals';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {isObservable} from './observable_facade';
+import {ON_PUSH_OBSERVE} from './constants';
+
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
 
@@ -44,7 +46,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   constructor(public id: string, public dispatcher: ChangeDispatcher,
               public numberOfPropertyProtoRecords: number, public bindingTargets: BindingTarget[],
-              public directiveIndices: DirectiveIndex[], public modeOnHydrate: string) {
+              public directiveIndices: DirectiveIndex[], public strategy: string) {
     this.ref = new ChangeDetectorRef(this);
   }
 
@@ -116,8 +118,13 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // This method is not intended to be overridden. Subclasses should instead provide an
   // implementation of `hydrateDirectives`.
   hydrate(context: T, locals: Locals, directives: any, pipes: any): void {
-    this.mode = this.modeOnHydrate;
+    this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
     this.context = context;
+
+    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+      this.observeComponent(context);
+    }
+
     this.locals = locals;
     this.pipes = pipes;
     this.hydrateDirectives(directives);
@@ -133,7 +140,9 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.dehydrateDirectives(true);
 
     // This is an experimental feature. Works only in Dart.
-    this.unsubsribeFromObservables();
+    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+      this._unsubsribeFromObservables();
+    }
 
     this.context = null;
     this.locals = null;
@@ -172,7 +181,8 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
-  private unsubsribeFromObservables(): void {
+  // This is an experimental feature. Works only in Dart.
+  private _unsubsribeFromObservables(): void {
     if (isPresent(this.subscriptions)) {
       for (var i = 0; i < this.subscriptions.length; ++i) {
         var s = this.subscriptions[i];
@@ -185,12 +195,9 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   }
 
   // This is an experimental feature. Works only in Dart.
-  protected observe(value: any, index: number): any {
+  protected observeValue(value: any, index: number): any {
     if (isObservable(value)) {
-      if (isBlank(this.subscriptions)) {
-        this.subscriptions = ListWrapper.createFixedSize(this.numberOfPropertyProtoRecords + 1);
-        this.streams = ListWrapper.createFixedSize(this.numberOfPropertyProtoRecords + 1);
-      }
+      this._createArrayToStoreObservables();
       if (isBlank(this.subscriptions[index])) {
         this.streams[index] = value.changes;
         this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
@@ -201,6 +208,41 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       }
     }
     return value;
+  }
+
+  // This is an experimental feature. Works only in Dart.
+  protected observeDirective(value: any, index: number): any {
+    if (isObservable(value)) {
+      this._createArrayToStoreObservables();
+      var arrayIndex = this.numberOfPropertyProtoRecords + index + 2;  // +1 is component
+      this.streams[arrayIndex] = value.changes;
+      this.subscriptions[arrayIndex] = value.changes.listen((_) => this.ref.requestCheck());
+    }
+    return value;
+  }
+
+  // This is an experimental feature. Works only in Dart.
+  protected observeComponent(value: any): any {
+    if (isObservable(value)) {
+      this._createArrayToStoreObservables();
+      var index = this.numberOfPropertyProtoRecords + 1;
+      this.streams[index] = value.changes;
+      this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+    }
+    return value;
+  }
+
+  private _createArrayToStoreObservables(): void {
+    if (isBlank(this.subscriptions)) {
+      this.subscriptions = ListWrapper.createFixedSize(this.numberOfPropertyProtoRecords +
+                                                       this.directiveIndices.length + 2);
+      this.streams = ListWrapper.createFixedSize(this.numberOfPropertyProtoRecords +
+                                                 this.directiveIndices.length + 2);
+    }
+  }
+
+  protected getDirectiveFor(directives: any, index: number): any {
+    return directives.getDirectiveFor(this.directiveIndices[index]);
   }
 
   protected getDetectorFor(directives: any, index: number): ChangeDetector {

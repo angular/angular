@@ -10,6 +10,7 @@ import 'package:angular2/src/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/change_detection/proto_record.dart';
 import 'package:angular2/src/change_detection/event_binding.dart';
 import 'package:angular2/src/change_detection/binding_record.dart';
+import 'package:angular2/src/change_detection/codegen_facade.dart' show codify;
 import 'package:angular2/src/facade/lang.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
@@ -74,7 +75,7 @@ class _CodegenState {
   /// The name of the generated change detector class. This is an implementation
   /// detail and should not be visible to users.
   final String _changeDetectorTypeName;
-  final String _changeDetectionMode;
+  final String _changeDetectionStrategy;
   final List<DirectiveRecord> _directiveRecords;
   final List<ProtoRecord> _records;
   final List<EventBinding> _eventBindings;
@@ -87,16 +88,14 @@ class _CodegenState {
       this._changeDetectorDefId,
       this._contextTypeName,
       this._changeDetectorTypeName,
-      String changeDetectionStrategy,
+      this._changeDetectionStrategy,
       this._records,
       this._propertyBindingTargets,
       this._eventBindings,
       this._directiveRecords,
       this._logic,
       this._names,
-      this._genConfig)
-      : _changeDetectionMode =
-            ChangeDetectionUtil.changeDetectionMode(changeDetectionStrategy);
+      this._genConfig);
 
   factory _CodegenState(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
@@ -130,7 +129,7 @@ class _CodegenState {
               dispatcher, ${_records.length},
               ${_changeDetectorTypeName}.gen_propertyBindingTargets,
               ${_changeDetectorTypeName}.gen_directiveIndices,
-              '$_changeDetectionMode') {
+              ${codify(_changeDetectionStrategy)}) {
           dehydrateDirectives(false);
         }
 
@@ -248,23 +247,13 @@ class _CodegenState {
   }
 
   String _maybeGenHydrateDirectives() {
-    var hydrateDirectivesCode = _genHydrateDirectives();
+    var hydrateDirectivesCode = _logic.genHydrateDirectives(_directiveRecords);
     var hydrateDetectorsCode = _logic.genHydrateDetectors(_directiveRecords);
     if (hydrateDirectivesCode.isEmpty && hydrateDetectorsCode.isEmpty) {
       return '';
     }
     return 'void hydrateDirectives(directives) '
         '{ $hydrateDirectivesCode $hydrateDetectorsCode }';
-  }
-
-  String _genHydrateDirectives() {
-    var buf = new StringBuffer();
-    var directiveFieldNames = _names.getAllDirectiveNames();
-    for (var i = 0; i < directiveFieldNames.length; ++i) {
-      buf.writeln('${directiveFieldNames[i]} = directives.getDirectiveFor('
-          '${_names.getDirectivesAccessorName()}[$i]);');
-    }
-    return '$buf';
   }
 
   /// Generates calls to `onAllChangesDone` for all `Directive`s that request

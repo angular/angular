@@ -781,64 +781,100 @@ export function main() {
           });
 
           if (IS_DART) {
-            it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable fires an event',
-               fakeAsync(() => {
-                 var context = new TestDirective();
-                 context.a = createObservableModel();
+            describe('ON_PUSH_OBSERVE', () => {
+              it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable fires an event',
+                 fakeAsync(() => {
+                   var context = new TestDirective();
+                   context.a = createObservableModel();
 
-                 var cd = _createWithoutHydrate('onPushObserve').changeDetector;
-                 cd.hydrate(context, null, directives, null);
-                 cd.detectChanges();
+                   var cd = _createWithoutHydrate('onPushObserveBinding').changeDetector;
+                   cd.hydrate(context, null, directives, null);
+                   cd.detectChanges();
 
-                 expect(cd.mode).toEqual(CHECKED);
+                   expect(cd.mode).toEqual(CHECKED);
 
-                 context.a.pushUpdate();
-                 tick();
+                   context.a.pushUpdate();
+                   tick();
 
-                 expect(cd.mode).toEqual(CHECK_ONCE);
-               }));
+                   expect(cd.mode).toEqual(CHECK_ONCE);
+                 }));
 
-            it('should unsubscribe from an old observable when an object changes', fakeAsync(() => {
-                 var originalModel = createObservableModel();
-                 var context = new TestDirective();
-                 context.a = originalModel;
+              it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable context fires an event',
+                 fakeAsync(() => {
+                   var context = createObservableModel();
 
-                 var cd = _createWithoutHydrate('onPushObserve').changeDetector;
-                 cd.hydrate(context, null, directives, null);
-                 cd.detectChanges();
+                   var cd = _createWithoutHydrate('onPushObserveComponent').changeDetector;
+                   cd.hydrate(context, null, directives, null);
+                   cd.detectChanges();
 
-                 context.a = createObservableModel();
-                 cd.mode = CHECK_ONCE;
-                 cd.detectChanges();
+                   expect(cd.mode).toEqual(CHECKED);
 
-                 // Updating this model will not reenable the detector. This model is not longer
-                 // used.
-                 originalModel.pushUpdate();
-                 tick();
-                 expect(cd.mode).toEqual(CHECKED);
-               }));
+                   context.pushUpdate();
+                   tick();
 
-            it('should unsubscribe from observables when dehydrating', fakeAsync(() => {
-                 var originalModel = createObservableModel();
-                 var context = new TestDirective();
-                 context.a = originalModel;
+                   expect(cd.mode).toEqual(CHECK_ONCE);
+                 }));
 
-                 var cd = _createWithoutHydrate('onPushObserve').changeDetector;
-                 cd.hydrate(context, null, directives, null);
-                 cd.detectChanges();
+              it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable directive fires an event',
+                 fakeAsync(() => {
+                   var dir = createObservableModel();
+                   var directives = new FakeDirectives([dir], []);
 
-                 cd.dehydrate();
+                   var cd = _createWithoutHydrate('onPushObserveDirective').changeDetector;
+                   cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
+                   cd.detectChanges();
 
-                 context.a = "not an observable model";
-                 cd.hydrate(context, null, directives, null);
-                 cd.detectChanges();
+                   expect(cd.mode).toEqual(CHECKED);
 
-                 // Updating this model will not reenable the detector. This model is not longer
-                 // used.
-                 originalModel.pushUpdate();
-                 tick();
-                 expect(cd.mode).toEqual(CHECKED);
-               }));
+                   dir.pushUpdate();
+                   tick();
+
+                   expect(cd.mode).toEqual(CHECK_ONCE);
+                 }));
+
+              it('should unsubscribe from an old observable when an object changes',
+                 fakeAsync(() => {
+                   var originalModel = createObservableModel();
+                   var context = new TestDirective();
+                   context.a = originalModel;
+
+                   var cd = _createWithoutHydrate('onPushObserveBinding').changeDetector;
+                   cd.hydrate(context, null, directives, null);
+                   cd.detectChanges();
+
+                   context.a = createObservableModel();
+                   cd.mode = CHECK_ONCE;
+                   cd.detectChanges();
+
+                   // Updating this model will not reenable the detector. This model is not longer
+                   // used.
+                   originalModel.pushUpdate();
+                   tick();
+                   expect(cd.mode).toEqual(CHECKED);
+                 }));
+
+              it('should unsubscribe from observables when dehydrating', fakeAsync(() => {
+                   var originalModel = createObservableModel();
+                   var context = new TestDirective();
+                   context.a = originalModel;
+
+                   var cd = _createWithoutHydrate('onPushObserveBinding').changeDetector;
+                   cd.hydrate(context, null, directives, null);
+                   cd.detectChanges();
+
+                   cd.dehydrate();
+
+                   context.a = "not an observable model";
+                   cd.hydrate(context, null, directives, null);
+                   cd.detectChanges();
+
+                   // Updating this model will not reenable the detector. This model is not longer
+                   // used.
+                   originalModel.pushUpdate();
+                   tick();
+                   expect(cd.mode).toEqual(CHECKED);
+                 }));
+            });
           }
         });
       });

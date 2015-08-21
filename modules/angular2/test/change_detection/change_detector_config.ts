@@ -12,6 +12,7 @@ import {
   Parser,
   ChangeDetectorGenConfig
 } from 'angular2/src/change_detection/change_detection';
+import {ON_PUSH_OBSERVE} from 'angular2/src/change_detection/constants';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
@@ -106,18 +107,25 @@ export function getDefinition(id: string): TestDefinition {
                                              [_DirectiveUpdating.basicRecords[0]], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
-  } else if (id == "onPushObserve") {
+  } else if (id == "onPushObserveBinding") {
     var records = _createBindingRecords("a");
-    let cdDef = new ChangeDetectorDefinition(id, "ON_PUSH_OBSERVE", [], records, [], [], genConfig);
+    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], records, [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
+  } else if (id == "onPushObserveComponent") {
+    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], [], [], [], genConfig);
+    testDef = new TestDefinition(id, cdDef, null);
+
+  } else if (id == "onPushObserveDirective") {
+    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], [], [],
+                                             [_DirectiveUpdating.recordNoCallbacks], genConfig);
+    testDef = new TestDefinition(id, cdDef, null);
   } else if (id == "updateElementProduction") {
     var genConfig = new ChangeDetectorGenConfig(false, false, false);
     var records = _createBindingRecords("name");
     let cdDef = new ChangeDetectorDefinition(id, null, [], records, [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   }
-
 
   if (isBlank(testDef)) {
     throw `No ChangeDetectorDefinition for ${id} available. Please modify this file if necessary.`;
@@ -144,7 +152,12 @@ export function getAllDefinitions(): List<TestDefinition> {
       ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
   allDefs = ListWrapper.concat(allDefs, _availableEventDefinitions);
   allDefs = ListWrapper.concat(allDefs, _availableHostEventDefinitions);
-  allDefs = ListWrapper.concat(allDefs, ["onPushObserve", "updateElementProduction"]);
+  allDefs = ListWrapper.concat(allDefs, [
+    "onPushObserveBinding",
+    "onPushObserveComponent",
+    "onPushObserveDirective",
+    "updateElementProduction"
+  ]);
   return ListWrapper.map(allDefs, (id) => getDefinition(id));
 }
 

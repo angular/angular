@@ -38,3 +38,9 @@ export const DEFAULT: string = "DEFAULT";
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: string): boolean {
   return isBlank(changeDetectionStrategy) || StringWrapper.equals(changeDetectionStrategy, DEFAULT);
 }
+
+
+/**
+ * This is an experimental feature. Works only in Dart.
+ */
+export const ON_PUSH_OBSERVE = "ON_PUSH_OBSERVE";

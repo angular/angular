@@ -8,6 +8,7 @@ import {DirectiveIndex, DirectiveRecord} from './directive_record';
 import {ProtoRecord, RecordType} from './proto_record';
 import {CodegenNameUtil, sanitizeName} from './codegen_name_util';
 import {CodegenLogicUtil} from './codegen_logic_util';
+import {codify} from './codegen_facade';
 import {EventBinding} from './event_binding';
 import {BindingTarget} from './binding_record';
 import {ChangeDetectorGenConfig} from './interfaces';
@@ -48,7 +49,7 @@ export class ChangeDetectorJITGenerator {
         ${ABSTRACT_CHANGE_DETECTOR}.call(
             this, ${JSON.stringify(this.id)}, dispatcher, ${this.records.length},
             ${this._typeName}.gen_propertyBindingTargets, ${this._typeName}.gen_directiveIndices,
-            "${ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy)}");
+            ${codify(this.changeDetectionStrategy)});
         this.dehydrateDirectives(false);
       }
 
@@ -160,23 +161,13 @@ export class ChangeDetectorJITGenerator {
   }
 
   _maybeGenHydrateDirectives(): string {
-    var hydrateDirectivesCode = this._genHydrateDirectives();
+    var hydrateDirectivesCode = this._logic.genHydrateDirectives(this.directiveRecords);
     var hydrateDetectorsCode = this._logic.genHydrateDetectors(this.directiveRecords);
     if (!hydrateDirectivesCode && !hydrateDetectorsCode) return '';
     return `${this._typeName}.prototype.hydrateDirectives = function(directives) {
       ${hydrateDirectivesCode}
       ${hydrateDetectorsCode}
     }`;
-  }
-
-  _genHydrateDirectives(): string {
-    var directiveFieldNames = this._names.getAllDirectiveNames();
-    var lines = ListWrapper.createFixedSize(directiveFieldNames.length);
-    for (var i = 0, iLen = directiveFieldNames.length; i < iLen; ++i) {
-      lines[i] = `${directiveFieldNames[i]} = directives.getDirectiveFor(
-          ${this._names.getDirectivesAccessorName()}[${i}]);`;
-    }
-    return lines.join('\n');
   }
 
   _maybeGenCallOnAllChangesDone(): string {
