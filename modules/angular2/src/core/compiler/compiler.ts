@@ -183,7 +183,10 @@ export class Compiler {
     var directives = this._flattenDirectives(view);
 
     for (var i = 0; i < directives.length; i++) {
-      if (!Compiler._isValidDirective(directives[i])) {
+      if (!directives[i]) {
+        throw new BaseException(
+          `View annotation on '${stringify(component)}' points to non existent directive: [${directives.map(stringify).join(', ')}]`);
+      } else if (!Compiler._isValidDirective(directives[i])) {
         throw new BaseException(
             `Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
       }
