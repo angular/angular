@@ -149,6 +149,26 @@ export function main() {
                });
          }));
 
+      it('should not fill templateAbsUrl given template url with empty string',
+         inject([AsyncTestCompleter], (async) => {
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
+           captureTemplate(new ViewMetadata({template: null, templateUrl: ''}))
+               .then((renderTpl) => {
+                 expect(renderTpl.templateAbsUrl).toBe(null);
+                 async.done();
+               });
+         }));
+
+      it('should not fill templateAbsUrl given template url with blank string',
+         inject([AsyncTestCompleter], (async) => {
+           cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
+           captureTemplate(new ViewMetadata({template: null, templateUrl: '   '}))
+               .then((renderTpl) => {
+                 expect(renderTpl.templateAbsUrl).toBe(null);
+                 async.done();
+               });
+         }));
+
       it('should fill templateAbsUrl given url template', inject([AsyncTestCompleter], (async) => {
            cmpUrlMapper.setComponentUrl(MainComponent, '/cmp/main.js');
            captureTemplate(new ViewMetadata({templateUrl: 'tpl/main.html'}))
