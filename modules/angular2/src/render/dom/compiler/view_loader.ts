@@ -36,7 +36,7 @@ export class ViewLoader {
   load(viewDef: ViewDefinition): Promise<TemplateAndStyles> {
     var r = wtfStartTimeRange('ViewLoader#load()', stringify(viewDef.componentId));
     let tplAndStyles: List<Promise<TemplateAndStyles>| Promise<string>| string> =
-        [this._loadHtml(viewDef.template, viewDef.templateAbsUrl)];
+        [this._loadHtml(viewDef.template, viewDef.templateAbsUrl, viewDef.componentId)];
     if (isPresent(viewDef.styles)) {
       viewDef.styles.forEach((cssText: string) => {
         let textOrPromise = this._resolveAndInlineCssText(cssText, viewDef.templateAbsUrl);
@@ -83,7 +83,8 @@ export class ViewLoader {
   }
 
   // Load the html and inline any style tags
-  private _loadHtml(template: string, templateAbsUrl: string): Promise<TemplateAndStyles> {
+  private _loadHtml(template: string, templateAbsUrl: string,
+                    componentId: string): Promise<TemplateAndStyles> {
     let html;
 
     // Load the HTML
@@ -92,7 +93,8 @@ export class ViewLoader {
     } else if (isPresent(templateAbsUrl)) {
       html = this._loadText(templateAbsUrl);
     } else {
-      throw new BaseException('View should have either the templateUrl or template property set');
+      throw new BaseException(
+          `View should have either the templateUrl or template property set but none was found for the '${componentId}' component`);
     }
 
     return html.then(html => {

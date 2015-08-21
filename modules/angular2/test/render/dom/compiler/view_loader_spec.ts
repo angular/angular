@@ -83,8 +83,10 @@ export function main() {
          }));
 
       it('should throw when no template is defined', () => {
-        expect(() => loader.load(new ViewDefinition({template: null, templateAbsUrl: null})))
-            .toThrowError('View should have either the templateUrl or template property set');
+        expect(() => loader.load(new ViewDefinition(
+                   {componentId: 'TestComponent', template: null, templateAbsUrl: null})))
+            .toThrowError(
+                'View should have either the templateUrl or template property set but none was found for the \'TestComponent\' component');
       });
 
       it('should return a rejected Promise when XHR loading fails',
