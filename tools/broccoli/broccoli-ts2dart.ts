@@ -20,7 +20,8 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
   }
 
   rebuild(treeDiff: DiffResult) {
-    let toEmit = [];
+    // replace with toEmit = [] once https://github.com/angular/angular/issues/3770 is fixed
+    let toEmit = [path.resolve(this.inputPath, 'angular2/traceur-runtime.d.ts')];
     let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedPath) => {
