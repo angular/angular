@@ -301,7 +301,7 @@ export class Compiler {
         this._urlResolver.resolve(this._appUrl, this._componentUrlMapper.getUrl(component));
     var templateAbsUrl = null;
     var styleAbsUrls = null;
-    if (isPresent(view.templateUrl)) {
+    if (isPresent(view.templateUrl) && view.templateUrl.trim().length > 0) {
       templateAbsUrl = this._urlResolver.resolve(componentUrl, view.templateUrl);
     } else if (isPresent(view.template)) {
       // Note: If we have an inline template, we also need to send
