@@ -10,11 +10,8 @@ config.exclude.push(
   // TODO: remove this line when largetable dart has been added
   'dist/js/cjs/benchmarks_external/e2e_test/largetable_perf.js',
   'dist/js/cjs/benchmarks_external/e2e_test/polymer_tree_perf.js',
-  'dist/js/cjs/benchmarks_external/e2e_test/react_tree_perf.js',
-  // TODO: remove once https://github.com/angular/angular/issues/3757 is resolved
-  'dist/js/cjs/benchmarks_external/e2e_test/compiler_perf.js',
-  'dist/js/cjs/benchmarks_external/e2e_test/naive_infinite_scroll.js',
-  'dist/js/cjs/benchmarks_external/e2e_test/tree.js'
+  'dist/js/cjs/benchmarks_external/e2e_test/react_tree_perf.js'
+
 );
 
 data.createBenchpressRunner({ lang: 'dart' });
