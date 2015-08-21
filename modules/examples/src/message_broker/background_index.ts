@@ -2,10 +2,10 @@ import {
   PostMessageBus,
   PostMessageBusSink,
   PostMessageBusSource
-} from 'angular2/src/web-workers/shared/post_message_bus';
+} from 'angular2/src/web_workers/shared/post_message_bus';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {MessageBroker, UiArguments} from "angular2/src/web-workers/worker/broker";
-import {Serializer} from "angular2/src/web-workers/shared/serializer";
+import {MessageBroker, UiArguments} from "angular2/src/web_workers/worker/broker";
+import {Serializer} from "angular2/src/web_workers/shared/serializer";
 
 interface PostMessageInterface {
   (message: any, transferrables?:[ArrayBuffer]): void;

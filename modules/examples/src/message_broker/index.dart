@@ -1,6 +1,6 @@
 library angular2.examples.message_broker.index;
 
-import "package:angular2/src/web-workers/ui/application.dart"
+import "package:angular2/src/web_workers/ui/application.dart"
     show spawnWebWorker;
 import "package:angular2/src/facade/async.dart";
 import "dart:html";

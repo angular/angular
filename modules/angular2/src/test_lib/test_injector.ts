@@ -63,7 +63,7 @@ import {
 } from 'angular2/src/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/render/dom/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/render/dom/schema/dom_element_schema_registry';
-import {Serializer} from "angular2/src/web-workers/shared/serializer";
+import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 
 /**

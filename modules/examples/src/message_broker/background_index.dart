@@ -1,11 +1,11 @@
 library angular2.examples.message_broker.background_index;
 
-import "package:angular2/src/web-workers/worker/broker.dart"
+import "package:angular2/src/web_workers/worker/broker.dart"
     show MessageBroker, UiArguments;
-import "package:angular2/src/web-workers/shared/serializer.dart"
+import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
-import "package:angular2/src/web-workers/shared/isolate_message_bus.dart";
-import "package:angular2/src/web-workers/worker/application.dart"
+import "package:angular2/src/web_workers/shared/isolate_message_bus.dart";
+import "package:angular2/src/web_workers/worker/application.dart"
     show WebWorkerMessageBusSink;
 import "package:angular2/src/facade/async.dart";
 import "dart:isolate";

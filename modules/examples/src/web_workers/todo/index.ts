@@ -1,2 +1,2 @@
-import {bootstrap} from "angular2/src/web-workers/ui/application";
+import {bootstrap} from "angular2/src/web_workers/ui/application";
 bootstrap("loader.js");
