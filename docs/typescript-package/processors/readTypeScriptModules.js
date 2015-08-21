@@ -64,6 +64,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
           log.debug('>>>> EXPORT: ' + exportDoc.name + ' (' + exportDoc.docType + ') from ' + moduleDoc.id);
 
           exportDoc.members = [];
+          exportDoc.statics = [];
 
           // Generate docs for each of the export's members
           if (resolvedExport.flags & ts.SymbolFlags.HasMembers) {
@@ -101,6 +102,16 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
               var memberDoc = createMemberDoc(memberSymbol, exportDoc, basePath, parseInfo.typeChecker);
               docs.push(memberDoc);
               exportDoc.members.push(memberDoc);
+            }
+          } else if (resolvedExport.flags & ts.SymbolFlags.HasExports) {
+            for (var exported in resolvedExport.exports) {
+              if (exported === 'prototype') continue;
+              if (hidePrivateMembers && exported.charAt(0) === '_') continue;
+              var memberSymbol = resolvedExport.exports[exported];
+              var memberDoc = createMemberDoc(memberSymbol, exportDoc, basePath, parseInfo.typeChecker);
+              memberDoc.isStatic = true;
+              docs.push(memberDoc);
+              exportDoc.statics.push(memberDoc);
             }
           }
 

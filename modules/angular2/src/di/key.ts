@@ -16,9 +16,6 @@ export {TypeLiteral} from './type_literal';
  * injector to index in arrays rather than looking up items in maps.
  */
 export class Key {
-  /**
-   * @private
-   */
   constructor(public token: Object, public id: number) {
     if (isBlank(token)) {
       throw new BaseException('Token must be defined!');

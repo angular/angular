@@ -10,7 +10,7 @@
 
 {%- macro memberInfo(member) -%}
 {$ commentBlock(member, 5) $}
-     {$ member.name $}{% if member.optional %}?{% endif -%}
+     {% if member.isStatic -%}static {% endif -%}{$ member.name $}{% if member.optional %}?{% endif -%}
 {% if member.typeParameters %}<{% for typeParam in member.typeParameters %}{$ typeParam $}{% if not loop.last %}, {% endif %}{% endfor %}>{% endif -%}
 {%- if member.parameters -%}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif -%}
 {%- if member.returnType -%}
@@ -58,6 +58,9 @@ declare module {$ module.namespace $} {
   {%- if export.callMember %}
     {$ memberInfo(export.callMember) $}
   {% endif -%}
+  {%- for static in export.statics %}
+    {$ memberInfo(static) $}
+  {%- endfor -%}
   {%- for member in export.members %}
     {$ memberInfo(member) $}
   {%- endfor %}
