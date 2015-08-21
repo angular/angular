@@ -21,6 +21,7 @@ import {
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {DomElementBinder, Event, HostAction} from './element_binder';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
+import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {TemplateCloner} from '../template_cloner';
 
 import {
@@ -368,10 +369,13 @@ function buildElementPropertyBindings(
   return propertyBindings;
 }
 
-function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
+function isValidElementPropertyBinding(schemaRegistry: DomElementSchemaRegistry,
                                        protoElement: /*element*/ any, isNgComponent: boolean,
                                        binding: ElementPropertyBinding): boolean {
   if (binding.type === PropertyBindingType.PROPERTY) {
+    if (!schemaRegistry.hasEvent(protoElement, binding.property)) {
+      throw new BaseException(`Can't bind to '${binding.property}' since it isn' a valid custom event name`);
+    }
     if (!isNgComponent) {
       return schemaRegistry.hasProperty(protoElement, binding.property);
     } else {

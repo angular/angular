@@ -71,6 +71,14 @@ export function main() {
                   `Can't bind to 'unknownProperty' since it isn't a known property of the '<some-custom>' element and there are no matching directives with a corresponding property`);
         });
 
+        it('should throw for invalid JS field names', () => {
+          var binder = builder.bindElement(el('<some-custom/>'));
+          binder.bindProperty('invalid-[]', emptyExpr());
+          binder.setComponentId('someComponent');
+          expect(() => builder.build(new DomElementSchemaRegistry(), templateCloner))
+            .toThrowError(
+              `Can't bind to 'invalid-[]' since it isn' a valid custom event name`);
+        });
       });
     } else {
       describe('verification of properties', () => {
