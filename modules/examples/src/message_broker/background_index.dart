@@ -1,7 +1,7 @@
 library angular2.examples.message_broker.background_index;
 
-import "package:angular2/src/web_workers/worker/broker.dart"
-    show MessageBroker, UiArguments;
+import "package:angular2/src/web_workers/shared/client_message_broker.dart"
+    show ClientMessageBroker, UiArguments;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "package:angular2/src/web_workers/shared/isolate_message_bus.dart";
@@ -20,8 +20,8 @@ main(List<String> args, SendPort replyTo) {
     ObservableWrapper.callNext(bus.to("echo"), value);
   });
 
-  MessageBroker broker =
-      new MessageBroker(bus, new Serializer(null, null, null), "test");
+  ClientMessageBroker broker =
+      new ClientMessageBroker(bus, new Serializer(null, null, null), "test");
   var args = new UiArguments("tester");
   broker.runOnUiThread(args, String).then((data) {
     ObservableWrapper.callNext(bus.to("result"), data);

@@ -40,6 +40,10 @@ import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 
+// PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
+// We set it to String so that it is considered a Type.
+export const PRIMITIVE: Type = String;
+
 @Injectable()
 export class Serializer {
   private _enumRegistry: Map<any, Map<number, any>>;
@@ -76,7 +80,7 @@ export class Serializer {
       ListWrapper.forEach(obj, (val) => { serializedObj.push(this.serialize(val, type)); });
       return serializedObj;
     }
-    if (type == String) {
+    if (type == PRIMITIVE) {
       return obj;
     }
     if (type == ViewDefinition) {
@@ -119,7 +123,7 @@ export class Serializer {
       ListWrapper.forEach(map, (val) => { obj.push(this.deserialize(val, type, data)); });
       return obj;
     }
-    if (type == String) {
+    if (type == PRIMITIVE) {
       return map;
     }
 

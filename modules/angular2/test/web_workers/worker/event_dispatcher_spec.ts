@@ -21,7 +21,7 @@ import {
   WebWorkerRenderViewRef
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import {RenderEventDispatcher, RenderViewRef} from 'angular2/src/render/api';
-import {createPairedMessageBuses} from './worker_test_util';
+import {createPairedMessageBuses} from '../shared/web_worker_test_util';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';

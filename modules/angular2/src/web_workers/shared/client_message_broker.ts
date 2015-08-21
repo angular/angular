@@ -14,15 +14,15 @@ import {Injectable} from "angular2/di";
 import {Type} from "angular2/src/facade/lang";
 
 @Injectable()
-export class MessageBrokerFactory {
+export class ClientMessageBrokerFactory {
   constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
 
-  createMessageBroker(channel: string): MessageBroker {
-    return new MessageBroker(this._messageBus, this._serializer, channel);
+  createMessageBroker(channel: string): ClientMessageBroker {
+    return new ClientMessageBroker(this._messageBus, this._serializer, channel);
   }
 }
 
-export class MessageBroker {
+export class ClientMessageBroker {
   private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
   private _sink: EventEmitter;
 

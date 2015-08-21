@@ -14,11 +14,11 @@ import {
 } from 'angular2/src/render/api';
 import {Promise, PromiseWrapper} from "angular2/src/facade/async";
 import {
-  MessageBroker,
-  MessageBrokerFactory,
+  ClientMessageBroker,
+  ClientMessageBrokerFactory,
   FnArg,
   UiArguments
-} from "angular2/src/web_workers/worker/broker";
+} from "angular2/src/web_workers/shared/client_message_broker";
 import {isPresent, print, BaseException} from "angular2/src/facade/lang";
 import {Injectable} from "angular2/di";
 import {
@@ -35,7 +35,7 @@ import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_di
 @Injectable()
 export class WebWorkerCompiler implements RenderCompiler {
   private _messageBroker;
-  constructor(messageBrokerFactory: MessageBrokerFactory) {
+  constructor(messageBrokerFactory: ClientMessageBrokerFactory) {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
   }
   /**
@@ -79,7 +79,7 @@ export class WebWorkerCompiler implements RenderCompiler {
 @Injectable()
 export class WebWorkerRenderer implements Renderer {
   private _messageBroker;
-  constructor(messageBrokerFactory: MessageBrokerFactory,
+  constructor(messageBrokerFactory: ClientMessageBrokerFactory,
               private _renderViewStore: RenderViewWithFragmentsStore,
               private _eventDispatcher: WebWorkerEventDispatcher) {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
