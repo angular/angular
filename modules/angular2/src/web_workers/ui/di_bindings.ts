@@ -65,6 +65,7 @@ import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_com
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
+import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
 
 var _rootInjector: Injector;
 
@@ -135,7 +136,8 @@ function _injectorBindings(): List<any> {
     WebWorkerSetup,
     MessageBasedRenderCompiler,
     MessageBasedXHRImpl,
-    MessageBasedRenderer
+    MessageBasedRenderer,
+    ServiceMessageBrokerFactory
   ];
 }
 

@@ -52,7 +52,7 @@ import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
-import {MessageBrokerFactory} from 'angular2/src/web_workers/worker/broker';
+import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from 'angular2/src/core/application_tokens';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
@@ -103,7 +103,7 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
                               [ExceptionHandler]),
     Serializer,
     bind(MessageBus).toValue(bus),
-    MessageBrokerFactory,
+    ClientMessageBrokerFactory,
     WebWorkerRenderer,
     bind(Renderer).toAlias(WebWorkerRenderer),
     WebWorkerCompiler,

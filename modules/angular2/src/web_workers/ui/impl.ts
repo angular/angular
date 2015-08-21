@@ -37,17 +37,3 @@ export class WebWorkerMain {
               public renderer: MessageBasedRenderer, public xhr: MessageBasedXHRImpl,
               public setup: WebWorkerSetup) {}
 }
-
-export class ReceivedMessage {
-  method: string;
-  args: List<any>;
-  id: string;
-  type: string;
-
-  constructor(data: StringMap<string, any>) {
-    this.method = data['method'];
-    this.args = data['args'];
-    this.id = data['id'];
-    this.type = data['type'];
-  }
-}

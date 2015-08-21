@@ -12,10 +12,10 @@ import {
 } from 'angular2/test_lib';
 import {IMPLEMENTS, Type} from 'angular2/src/facade/lang';
 import {
-  MessageBroker,
+  ClientMessageBroker,
   UiArguments,
-  MessageBrokerFactory
-} from 'angular2/src/web_workers/worker/broker';
+  ClientMessageBrokerFactory
+} from 'angular2/src/web_workers/shared/client_message_broker';
 import {WebWorkerXHRImpl} from "angular2/src/web_workers/worker/xhr_impl";
 import {PromiseWrapper} from "angular2/src/facade/async";
 
@@ -45,13 +45,13 @@ export function main() {
 }
 
 @proxy
-@IMPLEMENTS(MessageBroker)
+@IMPLEMENTS(ClientMessageBroker)
 class SpyMessageBroker extends SpyObject {
-  constructor() { super(MessageBroker); }
+  constructor() { super(ClientMessageBroker); }
   noSuchMethod(m) { return super.noSuchMethod(m); }
 }
 
-class MockMessageBrokerFactory extends MessageBrokerFactory {
-  constructor(private _messageBroker: MessageBroker) { super(null, null); }
+class MockMessageBrokerFactory extends ClientMessageBrokerFactory {
+  constructor(private _messageBroker: ClientMessageBroker) { super(null, null); }
   createMessageBroker(channel: string) { return this._messageBroker; }
 }

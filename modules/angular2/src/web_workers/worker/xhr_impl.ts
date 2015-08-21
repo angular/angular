@@ -4,9 +4,9 @@ import {XHR} from 'angular2/src/render/xhr';
 import {
   FnArg,
   UiArguments,
-  MessageBroker,
-  MessageBrokerFactory
-} from 'angular2/src/web_workers/worker/broker';
+  ClientMessageBroker,
+  ClientMessageBrokerFactory
+} from 'angular2/src/web_workers/shared/client_message_broker';
 import {XHR_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 
 /**
@@ -15,9 +15,9 @@ import {XHR_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
  */
 @Injectable()
 export class WebWorkerXHRImpl extends XHR {
-  private _messageBroker: MessageBroker;
+  private _messageBroker: ClientMessageBroker;
 
-  constructor(messageBrokerFactory: MessageBrokerFactory) {
+  constructor(messageBrokerFactory: ClientMessageBrokerFactory) {
     super();
     this._messageBroker = messageBrokerFactory.createMessageBroker(XHR_CHANNEL);
   }

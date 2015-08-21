@@ -12,7 +12,11 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DomTestbed, TestRootView, elRef} from '../../render/dom/dom_testbed';
 import {bind} from 'angular2/di';
 import {WebWorkerCompiler, WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
-import {MessageBrokerFactory, UiArguments, FnArg} from "angular2/src/web_workers/worker/broker";
+import {
+  ClientMessageBrokerFactory,
+  UiArguments,
+  FnArg
+} from "angular2/src/web_workers/shared/client_message_broker";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {isPresent, isBlank, BaseException, Type} from "angular2/src/facade/lang";
 import {MapWrapper, ListWrapper} from "angular2/src/facade/collection";
@@ -39,44 +43,44 @@ import {someComponent} from '../../render/dom/dom_renderer_integration_spec';
 import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
-import {
-  createPairedMessageBuses
-} from './worker_test_util'
+import {createPairedMessageBuses} from '../shared/web_worker_test_util';
+import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
 
-    export function
-    main() {
-  function createBrokerFactory(workerSerializer: Serializer, uiSerializer: Serializer,
-                               tb: DomTestbed, uiRenderViewStore: RenderViewWithFragmentsStore,
-                               workerRenderViewStore: RenderViewWithFragmentsStore):
-      MessageBrokerFactory {
+export function main() {
+  function createWebWorkerBrokerFactory(
+      workerSerializer: Serializer, uiSerializer: Serializer, tb: DomTestbed,
+      uiRenderViewStore: RenderViewWithFragmentsStore,
+      workerRenderViewStore: RenderViewWithFragmentsStore): ClientMessageBrokerFactory {
     var messageBuses = createPairedMessageBuses();
     var uiMessageBus = messageBuses.ui;
     var workerMessageBus = messageBuses.worker;
 
     // set up the worker side
-    var brokerFactory = new MessageBrokerFactory(workerMessageBus, workerSerializer);
+    var webWorkerBrokerFactory = new ClientMessageBrokerFactory(workerMessageBus, workerSerializer);
 
     // set up the ui side
-    var renderCompiler = new MessageBasedRenderCompiler(uiMessageBus, uiSerializer, tb.compiler);
-    var renderer =
-        new MessageBasedRenderer(uiMessageBus, uiSerializer, uiRenderViewStore, tb.renderer);
+    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
+    var renderCompiler = new MessageBasedRenderCompiler(uiMessageBrokerFactory, tb.compiler);
+    var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
+                                            uiRenderViewStore, tb.renderer);
     new WebWorkerMain(renderCompiler, renderer, null, null);
 
-    return brokerFactory;
+    return webWorkerBrokerFactory;
   }
 
   function createWorkerRenderer(workerSerializer: Serializer, uiSerializer: Serializer,
                                 tb: DomTestbed, uiRenderViewStore: RenderViewWithFragmentsStore,
                                 workerRenderViewStore: RenderViewWithFragmentsStore):
       WebWorkerRenderer {
-    var brokerFactory = createBrokerFactory(workerSerializer, uiSerializer, tb, uiRenderViewStore,
-                                            workerRenderViewStore);
+    var brokerFactory = createWebWorkerBrokerFactory(workerSerializer, uiSerializer, tb,
+                                                     uiRenderViewStore, workerRenderViewStore);
     return new WebWorkerRenderer(brokerFactory, workerRenderViewStore, null);
   }
 
   function createWorkerCompiler(workerSerializer: Serializer, uiSerializer: Serializer,
                                 tb: DomTestbed): WebWorkerCompiler {
-    var brokerFactory = createBrokerFactory(workerSerializer, uiSerializer, tb, null, null);
+    var brokerFactory =
+        createWebWorkerBrokerFactory(workerSerializer, uiSerializer, tb, null, null);
     return new WebWorkerCompiler(brokerFactory);
   }
 
@@ -227,6 +231,34 @@ import {
                // nested elements
                checkSetters(elRef(rootViewWithFragments.viewRef, 1),
                             DOM.firstChild(rootView.hostElement));
+
+               async.done();
+             });
+       }));
+
+    it('should add and remove fragments', inject([AsyncTestCompleter], (async) => {
+         tb.compileAndMerge(someComponent,
+                            [
+                              new ViewDefinition({
+                                componentId: 'someComponent',
+                                template: '<template>hello</template>',
+                                directives: []
+                              })
+                            ])
+             .then((protoViewMergeMappings) => {
+               protoViewMergeMappings =
+                   serialize(protoViewMergeMappings, RenderProtoViewMergeMapping);
+               var rootViewWithFragments =
+                   renderer.createView(protoViewMergeMappings.mergedProtoViewRef, 2);
+
+               var elr = elRef(rootViewWithFragments.viewRef, 1);
+               var rootView = new WorkerTestRootView(rootViewWithFragments, uiRenderViewStore);
+               expect(rootView.hostElement).toHaveText('');
+               var fragment = rootViewWithFragments.fragmentRefs[1];
+               renderer.attachFragmentAfterElement(elr, fragment);
+               expect(rootView.hostElement).toHaveText('hello');
+               renderer.detachFragment(fragment);
+               expect(rootView.hostElement).toHaveText('');
 
                async.done();
              });
