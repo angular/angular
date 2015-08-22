@@ -139,14 +139,14 @@ export class NgZone {
    */
   run(fn: () => any): any {
     if (this._disabled) {
+      return fn();
+    } else {
       var s = this._zone_run_scope();
       try {
-        return fn();
+        return this._innerZone.run(fn);
       } finally {
         wtfLeave(s);
       }
-    } else {
-      return this._innerZone.run(fn);
     }
   }
 
