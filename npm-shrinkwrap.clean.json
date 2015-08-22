@@ -3,6 +3,12 @@
     "angular": {
       "version": "1.3.5"
     },
+    "angular-animate": {
+      "version": "1.3.5"
+    },
+    "angular-mocks": {
+      "version": "1.3.5"
+    },
     "base64-js": {
       "version": "0.0.8"
     },
@@ -10824,9 +10830,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.2"
+      "version": "0.5.3"
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.34"
+  "version": "2.0.0-alpha.35"
 }

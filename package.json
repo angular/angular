@@ -31,7 +31,7 @@
     "reflect-metadata": "0.1.0",
     "rx": "2.5.1",
     "traceur": "0.0.87",
-    "zone.js": "0.5.2"
+    "zone.js": "0.5.3"
   },
   "devDependencies": {
     "angular": "1.3.5",
