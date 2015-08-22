@@ -27,7 +27,7 @@ export * from './src/directives/ng_switch';
  * instead of writing:
  *
  * ```
- * import {If, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
  * import {OtherDirective} from 'myDirectives';
  *
  * @Component({
@@ -35,16 +35,16 @@ export * from './src/directives/ng_switch';
  * })
  * @View({
  *   templateUrl: 'myComponent.html',
- *   directives: [If, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
+ *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
  * }
  * ```
- * one could enumerate all the core directives at once:
+ * one could import all the core directives at once:
  *
  * ```
- * import {coreDirectives} from 'angular2/angular2';
+ * import {CORE_DIRECTIVES} from 'angular2/angular2';
  * import {OtherDirective} from 'myDirectives';
  *
  * @Component({
@@ -52,7 +52,7 @@ export * from './src/directives/ng_switch';
  * })
  * @View({
  *   templateUrl: 'myComponent.html',
- *   directives: [coreDirectives, OtherDirective]
+ *   directives: [CORE_DIRECTIVES, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
