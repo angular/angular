@@ -10,8 +10,7 @@ echo '---------------------'
 echo '-- WAIT FOR OTHERS --'
 echo '---------------------'
 
-curl -Lo travis_after_all.py https://raw.github.com/jbdeboer/travis_after_all/master/travis_after_all.py
-python travis_after_all.py
+python ./scripts/ci/travis_after_all.py
 . .to_export_back
 
 echo BUILD_LEADER=$BUILD_LEADER
