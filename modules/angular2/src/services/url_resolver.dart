@@ -4,6 +4,16 @@ import 'package:angular2/di.dart' show Injectable;
 
 @Injectable()
 class UrlResolver {
+  /// This will be the location where 'package:' Urls will resolve. Default is
+  /// '/packages'
+  final String packagePrefix;
+
+  const UrlResolver() : packagePrefix = '/packages';
+
+  /// Creates a UrlResolver that will resolve 'package:' Urls to a different
+  /// prefixed location.
+  const UrlResolver.withUrlPrefix(this.packagePrefix);
+
   /**
    * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,
@@ -20,7 +30,7 @@ class UrlResolver {
     Uri uri = Uri.parse(url);
 
     if (uri.scheme == 'package') {
-      return '/packages/${uri.path}';
+      return '$packagePrefix/${uri.path}';
     }
 
     if (uri.isAbsolute) return uri.toString();
