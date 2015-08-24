@@ -69,6 +69,7 @@ class HelloRootDirectiveIsNotCmp {
 class _ArrayLogger {
   res: any[] = [];
   log(s: any): void { this.res.push(s); }
+  logError(s: any): void { this.res.push(s); }
   logGroup(s: any): void { this.res.push(s); }
   logGroupEnd(){};
 }

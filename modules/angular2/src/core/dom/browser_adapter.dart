@@ -157,6 +157,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   logGroup(error) {
     window.console.group(error);
+    this.logError(error);
   }
 
   logGroupEnd() {

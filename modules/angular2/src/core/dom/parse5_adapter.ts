@@ -52,7 +52,7 @@ export class Parse5DomAdapter extends DomAdapter {
 
   log(error) { console.log(error); }
 
-  logGroup(error) { console.log(error); }
+  logGroup(error) { console.error(error); }
 
   logGroupEnd() {}
 
