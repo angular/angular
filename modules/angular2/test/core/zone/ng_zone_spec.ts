@@ -11,9 +11,7 @@ import {
   xit,
   Log,
   isInInnerZone,
-  isAndroid,
-  isEdge,
-  isIE
+  browserDetection
 } from 'angular2/test_lib';
 
 import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
@@ -21,7 +19,8 @@ import {BaseException} from 'angular2/src/core/facade/lang';
 
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-var needsLongerTimers = isAndroid() || isEdge() || isIE();
+var needsLongerTimers =
+    browserDetection.isAndroid || browserDetection.isEdge || browserDetection.isIE;
 // Schedules a macrotask (using a timer)
 function macroTask(fn: Function, timer = 1): void {
   // adds longer timers for passing tests in IE and Edge

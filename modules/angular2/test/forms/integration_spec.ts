@@ -15,7 +15,7 @@ import {
   inject,
   iit,
   xit,
-  isFirefox
+  browserDetection
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -740,7 +740,7 @@ export function main() {
 
                   // In Firefox, effective text selection in the real DOM requires an actual focus
                   // of the field. This is not an issue in a new HTML document.
-                  if (isFirefox()) {
+                  if (browserDetection.isFirefox) {
                     var fakeDoc = DOM.createHtmlDocument();
                     DOM.appendChild(fakeDoc.body, rootTC.nativeElement);
                   }

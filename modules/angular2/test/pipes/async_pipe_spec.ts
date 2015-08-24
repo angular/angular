@@ -9,7 +9,8 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  SpyObject
+  SpyObject,
+  browserDetection
 } from 'angular2/test_lib';
 import {SpyChangeDetectorRef} from './spies';
 
@@ -120,7 +121,7 @@ export function main() {
       var completer;
       var ref;
       // adds longer timers for passing tests in IE
-      var timer = (!isBlank(DOM) && DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
+      var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 0;
 
       beforeEach(() => {
         completer = PromiseWrapper.completer();

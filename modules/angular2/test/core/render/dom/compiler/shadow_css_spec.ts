@@ -7,7 +7,8 @@ import {
   iit,
   SpyObject,
   el,
-  normalizeCSS
+  normalizeCSS,
+  browserDetection
 } from 'angular2/test_lib';
 import {ShadowCss} from 'angular2/src/core/render/dom/compiler/shadow_css';
 
@@ -66,8 +67,7 @@ export function main() {
       });
     }
 
-    if (DOM.getUserAgent().indexOf('AppleWebKit') > -1 &&
-        DOM.getUserAgent().indexOf('Edge') == -1) {
+    if (browserDetection.isWebkit) {
       it('should handle -webkit-keyframes rules', () => {
         var css = '@-webkit-keyframes foo {0% {-webkit-transform: translate(-50%) scaleX(0);}}';
         var passRe =
