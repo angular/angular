@@ -9,6 +9,7 @@ describe('message bus', function() {
 
   it('should receive a response from the worker', function() {
     browser.get(URL);
+    browser.sleep(5000);
 
     var VALUE = "hi there";
     var input = element.all(by.css("#echo_input")).first();
