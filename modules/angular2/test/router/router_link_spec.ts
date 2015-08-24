@@ -21,7 +21,17 @@ import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {bind, Component, View} from 'angular2/angular2';
 
-import {Location, Router, RouterLink} from 'angular2/router';
+import {
+  Location,
+  Router,
+  RootRouter,
+  RouteRegistry,
+  Pipeline,
+  RouterLink,
+  RouterOutlet,
+  Route,
+  RouteParams
+} from 'angular2/router';
 import {Instruction, ComponentInstruction} from 'angular2/src/router/instruction';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -30,14 +40,15 @@ var dummyInstruction = new Instruction(new ComponentInstruction('detail', [], nu
 
 export function main() {
   describe('router-link directive', function() {
+    var tcb: TestComponentBuilder;
 
     beforeEachBindings(
         () =>
             [bind(Location).toValue(makeDummyLocation()), bind(Router).toValue(makeDummyRouter())]);
 
+    beforeEach(inject([TestComponentBuilder], (tcBuilder) => { tcb = tcBuilder; }));
 
-    it('should update a[href] attribute',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+    it('should update a[href] attribute', inject([AsyncTestCompleter], (async) => {
 
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
@@ -50,13 +61,13 @@ export function main() {
 
 
     it('should call router.navigate when a link is clicked',
-       inject([TestComponentBuilder, AsyncTestCompleter, Router], (tcb, async, router) => {
+       inject([AsyncTestCompleter, Router], (async, router) => {
 
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
-               testComponent.query(By.css('a')).triggerEventHandler('^click', {});
+               testComponent.query(By.css('a')).triggerEventHandler('^click', null);
                expect(router.spy('navigateInstruction')).toHaveBeenCalledWith(dummyInstruction);
                async.done();
              });
@@ -64,6 +75,17 @@ export function main() {
   });
 }
 
+@Component({selector: 'my-comp'})
+class MyComp {
+  name;
+}
+
+@Component({selector: 'user-cmp'})
+@View({template: "hello {{user}}"})
+class UserCmp {
+  user: string;
+  constructor(params: RouteParams) { this.user = params.get('name'); }
+}
 
 @Component({selector: 'test-component'})
 @View({
