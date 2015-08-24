@@ -67,14 +67,14 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
     'text: tooltip'          |  - DOM element tooltip property should be
   ],                         |    mapped to the directive text property.
   host: {                    | List which events need to be mapped.
-    '(mouseover)': 'show()'    |  - Invoke the show() method every time
+    '(mouseover)': 'show()'  |  - Invoke the show() method every time
   }                          |    the mouseover event is fired.
 })                           |
 class Form {                 | Directive controller class, instantiated
                              | when CSS matches.
   text:string;               | text property on the Directive Controller.
                              |
-  show(event) {              | Show method which implements the show action.
+  show() {                   | Show method which implements the show action.
     console.log(this.text);  |
   }
 }
