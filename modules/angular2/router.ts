@@ -12,7 +12,7 @@ export {RouteParams} from './src/router/instruction';
 export {RouteRegistry} from './src/router/route_registry';
 export {LocationStrategy} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';
-export {HTML5LocationStrategy} from './src/router/html5_location_strategy';
+export {PathLocationStrategy} from './src/router/path_location_strategy';
 export {Location, APP_BASE_HREF} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
@@ -25,7 +25,7 @@ export {OpaqueToken, Type} from 'angular2/angular2';
 export {ROUTE_DATA} from './src/router/route_data';
 
 import {LocationStrategy} from './src/router/location_strategy';
-import {HTML5LocationStrategy} from './src/router/html5_location_strategy';
+import {PathLocationStrategy} from './src/router/path_location_strategy';
 import {Router, RootRouter} from './src/router/router';
 import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
@@ -42,7 +42,7 @@ export const ROUTER_DIRECTIVES: List<any> = CONST_EXPR([RouterOutlet, RouterLink
 export const ROUTER_BINDINGS: List<any> = CONST_EXPR([
   RouteRegistry,
   Pipeline,
-  CONST_EXPR(new Binding(LocationStrategy, {toClass: HTML5LocationStrategy})),
+  CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),
   Location,
   CONST_EXPR(
       new Binding(Router,

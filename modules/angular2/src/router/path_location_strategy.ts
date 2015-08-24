@@ -4,7 +4,7 @@ import {EventListener, History, Location} from 'angular2/src/facade/browser';
 import {LocationStrategy} from './location_strategy';
 
 @Injectable()
-export class HTML5LocationStrategy extends LocationStrategy {
+export class PathLocationStrategy extends LocationStrategy {
   private _location: Location;
   private _history: History;
   private _baseHref: string;
