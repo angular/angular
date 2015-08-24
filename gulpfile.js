@@ -545,8 +545,10 @@ function getBrowsersFromCLI() {
   var outputList = [];
   for (var i = 0; i < inputList.length; i++) {
     var input = inputList[i];
-    if (sauceConf.customLaunchers.hasOwnProperty(input)) {
-      //Non-sauce browsers case: overrides everything, ignoring other options
+    var karmaChromeLauncher = require('karma-chrome-launcher');
+    if (sauceConf.customLaunchers.hasOwnProperty(input) || karmaChromeLauncher.hasOwnProperty("launcher:" + input)) {
+      // In case of non-sauce browsers, or browsers defined in karma-chrome-launcher (Chrome, ChromeCanary and Dartium):
+      // overrides everything, ignoring other options
       outputList = [input];
       isSauce = false;
       break;
