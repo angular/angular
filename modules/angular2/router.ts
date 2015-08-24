@@ -14,7 +14,6 @@ export {LocationStrategy} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';
 export {PathLocationStrategy} from './src/router/path_location_strategy';
 export {Location, APP_BASE_HREF} from './src/router/location';
-export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
 export * from './src/router/route_definition';
 export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/router/interfaces';
@@ -30,7 +29,6 @@ import {Router, RootRouter} from './src/router/router';
 import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
-import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
 import {APP_COMPONENT} from './src/core/application_tokens';
 import {Binding} from './core';
@@ -62,17 +60,13 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  */
 export const ROUTER_BINDINGS: any[] = CONST_EXPR([
   RouteRegistry,
-  Pipeline,
   CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),
   Location,
-  CONST_EXPR(
-      new Binding(Router,
-                  {
-                    toFactory: routerFactory,
-                    deps: CONST_EXPR([RouteRegistry, Pipeline, Location, APP_COMPONENT])
-                  }))
+  CONST_EXPR(new Binding(
+      Router,
+      {toFactory: routerFactory, deps: CONST_EXPR([RouteRegistry, Location, APP_COMPONENT])}))
 ]);
 
-function routerFactory(registry, pipeline, location, appRoot) {
-  return new RootRouter(registry, pipeline, location, appRoot);
+function routerFactory(registry, location, appRoot) {
+  return new RootRouter(registry, location, appRoot);
 }

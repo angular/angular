@@ -16,7 +16,6 @@ import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/core/faca
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
-import {Pipeline} from 'angular2/src/router/pipeline';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
@@ -32,14 +31,12 @@ export function main() {
     var router, location;
 
     beforeEachBindings(() => [
-      Pipeline,
       RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)
-          .toFactory((registry, pipeline,
-                      location) => { return new RootRouter(registry, pipeline, location, AppCmp); },
-                     [RouteRegistry, Pipeline, Location])
+          .toFactory((registry, location) => { return new RootRouter(registry, location, AppCmp); },
+                     [RouteRegistry, Location])
     ]);
 
 

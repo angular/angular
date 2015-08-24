@@ -20,7 +20,6 @@ import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/core/facade/la
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
-import {Pipeline} from 'angular2/src/router/pipeline';
 import {Router, RouterOutlet, RouterLink, RouteParams, ROUTE_DATA} from 'angular2/router';
 import {
   RouteConfig,
@@ -47,14 +46,12 @@ export function main() {
     var rtr;
 
     beforeEachBindings(() => [
-      Pipeline,
       RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)
-          .toFactory((registry, pipeline,
-                      location) => { return new RootRouter(registry, pipeline, location, MyComp); },
-                     [RouteRegistry, Pipeline, Location])
+          .toFactory((registry, location) => { return new RootRouter(registry, location, MyComp); },
+                     [RouteRegistry, Location])
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {

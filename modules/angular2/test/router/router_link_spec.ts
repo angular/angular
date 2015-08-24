@@ -24,7 +24,6 @@ import {
   Router,
   RootRouter,
   RouteRegistry,
-  Pipeline,
   RouterLink,
   RouterOutlet,
   Route,

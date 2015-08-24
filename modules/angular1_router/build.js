@@ -75,7 +75,7 @@ function main() {
       "}",
     "});",
 
-    "var router = new RootRouter(registry, undefined, location, new Object());",
+    "var router = new RootRouter(registry, location, new Object());",
     "$rootScope.$watch(function () { return $location.path(); }, function (path) {",
       "if (router.lastNavigationAttempt !== path) {",
         "router.navigateByUrl(path);",

@@ -28,7 +28,6 @@ import {
   Router,
   RootRouter,
   RouteRegistry,
-  Pipeline,
   RouterLink,
   RouterOutlet,
   AsyncRoute,
@@ -47,14 +46,12 @@ export function main() {
     var router, location;
 
     beforeEachBindings(() => [
-      Pipeline,
       RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)
-          .toFactory((registry, pipeline,
-                      location) => { return new RootRouter(registry, pipeline, location, MyComp); },
-                     [RouteRegistry, Pipeline, Location])
+          .toFactory((registry, location) => { return new RootRouter(registry, location, MyComp); },
+                     [RouteRegistry, Location])
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router, Location], (tcBuilder, rtr, loc) => {

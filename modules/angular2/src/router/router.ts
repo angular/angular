@@ -15,7 +15,6 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
-import {Pipeline} from './pipeline';
 import {ComponentInstruction, Instruction, stringifyInstruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
@@ -57,8 +56,7 @@ export class Router {
   private _subject: EventEmitter = new EventEmitter();
 
 
-  constructor(public registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
-              public hostComponent: any) {}
+  constructor(public registry: RouteRegistry, public parent: Router, public hostComponent: any) {}
 
 
   /**
@@ -459,9 +457,8 @@ export class Router {
 export class RootRouter extends Router {
   _location: Location;
 
-  constructor(registry: RouteRegistry, pipeline: Pipeline, location: Location,
-              hostComponent: Type) {
-    super(registry, pipeline, null, hostComponent);
+  constructor(registry: RouteRegistry, location: Location, hostComponent: Type) {
+    super(registry, null, hostComponent);
     this._location = location;
     this._location.subscribe((change) =>
                                  this.navigateByUrl(change['url'], isPresent(change['pop'])));
@@ -485,7 +482,7 @@ export class RootRouter extends Router {
 
 class ChildRouter extends Router {
   constructor(parent: Router, hostComponent) {
-    super(parent.registry, parent._pipeline, parent, hostComponent);
+    super(parent.registry, parent, hostComponent);
     this.parent = parent;
   }
 
