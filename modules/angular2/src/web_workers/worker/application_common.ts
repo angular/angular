@@ -71,6 +71,7 @@ var _rootBindings = [bind(Reflector).toValue(reflector)];
 
 class PrintLogger {
   log = print;
+  logError = print;
   logGroup = print;
   logGroupEnd() {}
 }

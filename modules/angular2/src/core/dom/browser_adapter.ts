@@ -64,13 +64,20 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   // TODO(tbosch): move this into a separate environment class once we have it
-  logError(error) { window.console.error(error); }
+  logError(error) {
+    if (window.console.error) {
+      window.console.error(error);
+    } else {
+      window.console.log(error);
+    }
+  }
 
   log(error) { window.console.log(error); }
 
   logGroup(error) {
     if (window.console.group) {
       window.console.group(error);
+      this.logError(error);
     } else {
       window.console.log(error);
     }

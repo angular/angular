@@ -5,6 +5,7 @@ import {ListWrapper, isListLikeIterable} from 'angular2/src/core/facade/collecti
 class _ArrayLogger {
   res: any[] = [];
   log(s: any): void { this.res.push(s); }
+  logError(s: any): void { this.res.push(s); }
   logGroup(s: any): void { this.res.push(s); }
   logGroupEnd(){};
 }
@@ -49,26 +50,26 @@ export class ExceptionHandler {
     this.logger.logGroup(`EXCEPTION: ${exception}`);
 
     if (isPresent(stackTrace) && isBlank(originalStack)) {
-      this.logger.log("STACKTRACE:");
-      this.logger.log(this._longStackTrace(stackTrace));
+      this.logger.logError("STACKTRACE:");
+      this.logger.logError(this._longStackTrace(stackTrace));
     }
 
     if (isPresent(reason)) {
-      this.logger.log(`REASON: ${reason}`);
+      this.logger.logError(`REASON: ${reason}`);
     }
 
     if (isPresent(originalException)) {
-      this.logger.log(`ORIGINAL EXCEPTION: ${originalException}`);
+      this.logger.logError(`ORIGINAL EXCEPTION: ${originalException}`);
     }
 
     if (isPresent(originalStack)) {
-      this.logger.log("ORIGINAL STACKTRACE:");
-      this.logger.log(this._longStackTrace(originalStack));
+      this.logger.logError("ORIGINAL STACKTRACE:");
+      this.logger.logError(this._longStackTrace(originalStack));
     }
 
     if (isPresent(context)) {
-      this.logger.log("ERROR CONTEXT:");
-      this.logger.log(context);
+      this.logger.logError("ERROR CONTEXT:");
+      this.logger.logError(context);
     }
 
     this.logger.logGroupEnd();
