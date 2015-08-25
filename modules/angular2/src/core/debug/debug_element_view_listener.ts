@@ -10,7 +10,7 @@ import {DebugElement} from './debug_element';
 const NG_ID_PROPERTY = 'ngid';
 const INSPECT_GLOBAL_NAME = 'ng.probe';
 
-var NG_ID_SEPARATOR = '#';
+const NG_ID_SEPARATOR = '#';
 
 // Need to keep the views in a global Map so that multiple angular apps are supported
 var _allIdsByView = new Map<AppView, number>();

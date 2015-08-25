@@ -327,7 +327,6 @@ class EventBuilder extends AstTransformer {
   }
 }
 
-var PROPERTY_PARTS_SEPARATOR = new RegExp('\\.');
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
@@ -379,7 +378,7 @@ function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
 
 function createElementPropertyBinding(schemaRegistry: ElementSchemaRegistry, ast: ASTWithSource,
                                       propertyNameInTemplate: string): ElementPropertyBinding {
-  var parts = StringWrapper.split(propertyNameInTemplate, PROPERTY_PARTS_SEPARATOR);
+  var parts = propertyNameInTemplate.split('.');
   if (parts.length === 1) {
     var propName = schemaRegistry.getMappedPropName(parts[0]);
     return new ElementPropertyBinding(PropertyBindingType.PROPERTY, ast, propName);

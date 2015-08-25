@@ -2,7 +2,7 @@ import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/cor
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-var BUBBLE_SYMBOL = '^';
+const BUBBLE_SYMBOL = '^';
 
 export class EventManager {
   constructor(public _plugins: EventManagerPlugin[], public _zone: NgZone) {
