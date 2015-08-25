@@ -42,7 +42,9 @@ export class Connection {
  * Interface for options to construct a Request, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  */
-export type RequestOptionsArgs = {
+// TODO(jeffbcross): Change to type declaration when #3828 is fixed
+// https://github.com/angular/angular/issues/3828
+export interface RequestOptionsArgs {
   url?: string;
   method?: RequestMethods;
   search?: string | URLSearchParams;
@@ -58,7 +60,7 @@ export type RequestOptionsArgs = {
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  */
-export type ResponseOptionsArgs = {
+export interface ResponseOptionsArgs {
   // TODO: Support Blob, ArrayBuffer, JSON
   body?: string | Object | FormData;
   status?: number;
