@@ -48,7 +48,7 @@ module.exports = function(config) {
       }
     },
 
-    browsers: ['ChromeCanary'],
+    browsers: ['Chrome'],
 
     port: 9876
   });

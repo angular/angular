@@ -642,6 +642,7 @@ gulp.task('test.unit.dart', function (done) {
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     '!build/remove-pub-symlinks',
+    'build.dart.material.css',
     '!test.unit.dart/karma-server',
     '!test.unit.dart/karma-run',
     function(error) {
@@ -955,6 +956,7 @@ gulp.task('!broccoli.js.prod', function() {
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
     'broccoli.js.dev',
+    'build.css.material',
     sequenceComplete(done)
   );
 });
