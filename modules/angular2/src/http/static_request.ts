@@ -1,4 +1,4 @@
-import {RequestMethods, RequestModesOpts, RequestCredentialsOpts, RequestCacheOpts} from './enums';
+import {RequestMethods} from './enums';
 import {RequestOptions} from './base_request_options';
 import {Headers} from './headers';
 import {
@@ -26,8 +26,6 @@ export class Request {
    * Defaults to GET.
    */
   method: RequestMethods;
-  mode: RequestModesOpts;
-  credentials: RequestCredentialsOpts;
   /**
    * Headers object based on the `Headers` class in the [Fetch
    * Spec](https://fetch.spec.whatwg.org/#headers-class). {@link Headers} class reference.
@@ -37,7 +35,6 @@ export class Request {
   url: string;
   // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
   private _body: string;
-  cache: RequestCacheOpts;
   constructor(requestOptions: RequestOptions) {
     // TODO: assert that url is present
     let url = requestOptions.url;
@@ -56,12 +53,9 @@ export class Request {
     this._body = requestOptions.body;
     this.method = requestOptions.method;
     // TODO(jeffbcross): implement behavior
-    this.mode = requestOptions.mode;
     // Defaults to 'omit', consistent with browser
     // TODO(jeffbcross): implement behavior
-    this.credentials = requestOptions.credentials;
     this.headers = new Headers(requestOptions.headers);
-    this.cache = requestOptions.cache;
   }
 
 
