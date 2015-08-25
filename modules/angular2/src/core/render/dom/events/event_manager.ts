@@ -3,7 +3,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-var BUBBLE_SYMBOL = '^';
+const BUBBLE_SYMBOL = '^';
 
 export class EventManager {
   constructor(public _plugins: List<EventManagerPlugin>, public _zone: NgZone) {

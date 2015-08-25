@@ -59,7 +59,7 @@ function _convertLocalsToVariableBindings(locals: Locals): List<any> {
   return variableBindings;
 }
 
-export var PROP_NAME = 'propName';
+export const PROP_NAME = 'propName';
 
 /**
  * In this case, we expect `id` and `expression` to be the same string.

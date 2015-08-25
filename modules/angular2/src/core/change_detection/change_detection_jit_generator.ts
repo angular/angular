@@ -25,10 +25,10 @@ import {ChangeDetectionStrategy} from './constants';
  * `angular2.transform.template_compiler.change_detector_codegen` library. If you make updates
  * here, please make equivalent changes there.
 */
-var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
-var UTIL = "ChangeDetectionUtil";
-var IS_CHANGED_LOCAL = "isChanged";
-var CHANGES_LOCAL = "changes";
+const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
+const UTIL = "ChangeDetectionUtil";
+const IS_CHANGED_LOCAL = "isChanged";
+const CHANGES_LOCAL = "changes";
 
 export class ChangeDetectorJITGenerator {
   _logic: CodegenLogicUtil;
