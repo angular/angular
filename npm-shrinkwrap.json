@@ -9,12 +9,12 @@
     },
     "angular-animate": {
       "version": "1.3.5",
-      "from": "angular-animate@1.3.5",
+      "from": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.3.5.tgz",
       "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.3.5.tgz"
     },
     "angular-mocks": {
       "version": "1.3.5",
-      "from": "angular-mocks@1.3.5",
+      "from": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.3.5.tgz",
       "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.3.5.tgz"
     },
     "base64-js": {
@@ -15773,9 +15773,8 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.1",
-      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.1.tgz",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.1.tgz",
+      "version": "0.7.3",
+      "from": "ts2dart@0.7.3",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -16746,7 +16745,7 @@
     },
     "zone.js": {
       "version": "0.5.3",
-      "from": "zone.js@0.5.3",
+      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.3.tgz",
       "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.3.tgz"
     }
   }
