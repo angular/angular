@@ -211,7 +211,7 @@ export class RouteRegistry {
       } else if (segment == '' || segment == '.' || segment == '..') {
         throw new BaseException(`"${segment}/" is only allowed at the beginning of a link DSL.`);
       }
-      let params = null;
+      let params = {};
       if (i + 1 < linkParams.length) {
         let nextSegment = linkParams[i + 1];
         if (isStringMap(nextSegment)) {
