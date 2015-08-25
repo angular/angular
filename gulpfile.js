@@ -639,6 +639,7 @@ gulp.task('buildRouter.dev', function () {
 gulp.task('test.unit.dart', function (done) {
   runSequence(
     'build/tree.dart',
+    'build/pure-packages.dart',
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     '!build/remove-pub-symlinks',
@@ -718,6 +719,7 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
 gulp.task('test.unit.dartvm', function (done) {
   runSequence(
     'build/tree.dart',
+    'build/pure-packages.dart',
     'build/pubspec.dart',
     '!build/change_detect.dart',
     '!test.unit.dartvm/run',
