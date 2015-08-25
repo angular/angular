@@ -84,6 +84,7 @@ export class NgFormControl extends NgControl implements OnChanges {
     }
     if (isPropertyUpdated(c, this.viewModel)) {
       this.form.updateValue(this.model);
+      this.viewModel = this.model;
     }
   }
 
