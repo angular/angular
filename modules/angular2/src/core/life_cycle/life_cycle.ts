@@ -32,7 +32,7 @@ import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
  */
 @Injectable()
 export class LifeCycle {
-  static _scope_tick: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
+  static _tickScope: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
 
   _changeDetector: ChangeDetector;
   _enforceNoNewChanges: boolean;
@@ -74,7 +74,7 @@ export class LifeCycle {
       throw new BaseException("LifeCycle.tick is called recursively");
     }
 
-    var s = LifeCycle._scope_tick();
+    var s = LifeCycle._tickScope();
     try {
       this._runningTick = true;
       this._changeDetector.detectChanges();
