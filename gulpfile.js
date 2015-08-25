@@ -422,7 +422,7 @@ var webserver = require('gulp-webserver');
 gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
-    console.log('bower:', result.id, result.data.endpoint.name);
+    console.log('bower:', result.id, result.data);
   });
   bowerTask.on('error', function(error) {
     console.log(error);
