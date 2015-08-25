@@ -3,6 +3,7 @@ import {Component, View, LifecycleEvent, ViewEncapsulation, OnChanges} from 'ang
 import {TimerWrapper} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
 
+
 // TODO(jelbourn): Ink ripples.
 // TODO(jelbourn): Make the `isMosueDown` stuff done with one global listener.
 
@@ -17,6 +18,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
+  styleUrls: ['package:angular2_material/src/components/button/button.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class MdButton {
@@ -55,7 +57,7 @@ export class MdButton {
     '(blur)': 'onBlur()',
     '[tabIndex]': 'tabIndex',
     '[class.md-button-focus]': 'isKeyboardFocused',
-    '[attr.aria-disabled]': 'disabled',
+    '[attr.aria-disabled]': 'isAriaDisabled',
   },
 })
 @View({
@@ -64,8 +66,6 @@ export class MdButton {
 })
 export class MdAnchor extends MdButton implements OnChanges {
   tabIndex: number;
-
-  /** Whether the component is disabled. */
   disabled_: boolean;
 
   get disabled(): boolean {
@@ -88,5 +88,10 @@ export class MdAnchor extends MdButton implements OnChanges {
   onChanges(_) {
     // A disabled anchor should not be in the tab flow.
     this.tabIndex = this.disabled ? -1 : 0;
+  }
+
+  /** Gets the aria-disabled value for the component, which must be a string for Dart. */
+  get isAriaDisabled(): string {
+    return this.disabled ? 'true' : 'false';
   }
 }
