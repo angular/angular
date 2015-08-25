@@ -128,7 +128,7 @@ export class ProtoViewBuilder {
             buildElementPropertyBindings(schemaRegistry, ebb.element, isPresent(ebb.componentId),
                                          ebb.propertyBindings, directiveTemplatePropertyNames),
         variableBindings: ebb.variableBindings,
-        eventBindings: ebb.eventBindings,
+        eventBindings: validateEvents(ebb.eventBindings, schemaRegistry, ebb.element),
         readAttributes: ebb.readAttributes
       }));
       domElementBinders.push(new DomElementBinder({
@@ -336,6 +336,18 @@ var PROPERTY_PARTS_SEPARATOR = new RegExp('\\.');
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
+
+function validateEvents(
+  eventBindings: List<EventBinding>, schemaRegistry: ElementSchemaRegistry,
+  protoElement: /*element*/ any):
+  List<EventBinding> {
+  ListWrapper.forEach(eventBindings, (eb) => {
+    if (!schemaRegistry.hasEvent(protoElement, eb.fullName)) {
+      throw new BaseException(`Can't listen to the event '${eb.fullName}' in the element '<${DOM.tagName(protoElement).toLowerCase()}>' since it isn' a valid custom event name`);
+    }
+  });
+  return eventBindings;
+}
 
 function buildElementPropertyBindings(
     schemaRegistry: ElementSchemaRegistry, protoElement: /*element*/ any, isNgComponent: boolean,
