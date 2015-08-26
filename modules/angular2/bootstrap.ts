@@ -12,4 +12,3 @@ export * from './change_detection';
 export * from './core';
 export * from './directives';
 export * from './forms';
-export * from './render';

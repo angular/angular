@@ -39,3 +39,9 @@ export 'package:angular2/src/core/compiler/dynamic_component_loader.dart'
 
 export 'package:angular2/src/core/zone/ng_zone.dart' show NgZone;
 export 'package:angular2/src/core/facade/async.dart' show Stream, EventEmitter;
+
+// Render
+export 'package:angular2/src/core/render/render.dart'
+    show RenderDirectiveMetadata, DomRenderer, RenderEventDispatcher, Renderer,
+    RenderElementRef, RenderViewRef, RenderProtoViewRef, RenderFragmentRef,
+    RenderViewWithFragments, ViewDefinition, DOCUMENT, APP_ID, MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE;

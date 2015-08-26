@@ -64,3 +64,20 @@ export {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader'
 
 export {NgZone} from 'angular2/src/core/zone/ng_zone';
 export {Observable, EventEmitter} from 'angular2/src/core/facade/async';
+
+// Render
+export {
+  RenderDirectiveMetadata,
+  DomRenderer,
+  RenderEventDispatcher,
+  Renderer,
+  RenderElementRef,
+  RenderViewRef,
+  RenderProtoViewRef,
+  RenderFragmentRef,
+  RenderViewWithFragments,
+  ViewDefinition,
+  DOCUMENT,
+  APP_ID,
+  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE
+} from './src/core/render/render';
