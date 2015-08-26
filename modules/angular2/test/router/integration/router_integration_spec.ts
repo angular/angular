@@ -62,7 +62,7 @@ export function main() {
                    async.done();
                  });
                });
-         }));
+         }), 1000);
     });
 
     describe('broken app', () => {
@@ -78,7 +78,7 @@ export function main() {
                async.done();
              });
            });
-         }));
+         }), 1000);
     });
 
     describe('back button app', () => {
@@ -148,26 +148,27 @@ export function main() {
                  });
                  router.navigate('/parent/child');
                });
-         }));
+         }), 1000);
 
       describe('custom app base ref', () => {
         beforeEachBindings(() => { return [bind(APP_BASE_HREF).toValue('/my/app')]; });
-        it('should bootstrap', inject([AsyncTestCompleter, TestComponentBuilder],
-                                      (async, tcb: TestComponentBuilder) => {
+        it('should bootstrap',
+           inject([AsyncTestCompleter, TestComponentBuilder],
+                  (async, tcb: TestComponentBuilder) => {
 
-                                        tcb.createAsync(HierarchyAppCmp)
-                                            .then((rootTC) => {
-                                              var router = rootTC.componentInstance.router;
-                                              router.subscribe((_) => {
-                                                expect(rootTC.nativeElement)
-                                                    .toHaveText('root { parent { hello } }');
-                                                expect(rootTC.componentInstance.location.path())
-                                                    .toEqual('/my/app/parent/child');
-                                                async.done();
-                                              });
-                                              router.navigate('/parent/child');
-                                            });
-                                      }));
+                    tcb.createAsync(HierarchyAppCmp)
+                        .then((rootTC) => {
+                          var router = rootTC.componentInstance.router;
+                          router.subscribe((_) => {
+                            expect(rootTC.nativeElement).toHaveText('root { parent { hello } }');
+                            expect(rootTC.componentInstance.location.path())
+                                .toEqual('/my/app/parent/child');
+                            async.done();
+                          });
+                          router.navigate('/parent/child');
+                        });
+                  }),
+           1000);
       });
     });
     // TODO: add a test in which the child component has bindings
@@ -192,7 +193,7 @@ export function main() {
                  router.navigate('/qs?q=search-for-something');
                  rootTC.detectChanges();
                });
-         }));
+         }), 1000);
     });
   });
 }
