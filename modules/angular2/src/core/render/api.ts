@@ -163,15 +163,13 @@ export class RenderDirectiveMetadata {
   hostListeners: Map<string, string>;
   hostProperties: Map<string, string>;
   hostAttributes: Map<string, string>;
-  hostActions: Map<string, string>;
   // group 1: "property" from "[property]"
   // group 2: "event" from "(event)"
-  // group 3: "action" from "@action"
-  private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\))|(?:@(.+)))$/g;
+  private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
-               hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
-               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
+               properties, readAttributes, type, callOnDestroy, callOnChange, callOnCheck,
+               callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -179,7 +177,6 @@ export class RenderDirectiveMetadata {
     hostListeners?: Map<string, string>,
     hostProperties?: Map<string, string>,
     hostAttributes?: Map<string, string>,
-    hostActions?: Map<string, string>,
     properties?: List<string>,
     readAttributes?: List<string>,
     type?: number,
@@ -198,7 +195,6 @@ export class RenderDirectiveMetadata {
     this.hostListeners = hostListeners;
     this.hostAttributes = hostAttributes;
     this.hostProperties = hostProperties;
-    this.hostActions = hostActions;
     this.properties = properties;
     this.readAttributes = readAttributes;
     this.type = type;
@@ -233,7 +229,6 @@ export class RenderDirectiveMetadata {
     let hostListeners = new Map();
     let hostProperties = new Map();
     let hostAttributes = new Map();
-    let hostActions = new Map();
 
     if (isPresent(host)) {
       MapWrapper.forEach(host, (value: string, key: string) => {
@@ -244,8 +239,6 @@ export class RenderDirectiveMetadata {
           hostProperties.set(matches[1], value);
         } else if (isPresent(matches[2])) {
           hostListeners.set(matches[2], value);
-        } else if (isPresent(matches[3])) {
-          hostActions.set(matches[3], value);
         }
       });
     }
@@ -258,7 +251,6 @@ export class RenderDirectiveMetadata {
       hostListeners: hostListeners,
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
-      hostActions: hostActions,
       properties: properties,
       readAttributes: readAttributes,
       type: type,

@@ -841,31 +841,6 @@ export function main() {
                });
          }));
 
-      if (DOM.supportsDOMEvents()) {
-        it("should support invoking methods on the host element via hostActions",
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-                 tcb.overrideView(MyComp, new ViewMetadata({
-                                    template: '<div update-host-actions></div>',
-                                    directives: [DirectiveUpdatingHostActions]
-                                  }))
-
-                     .createAsync(MyComp)
-                     .then((rootTC) => {
-                       var tc = rootTC.componentViewChildren[0];
-                       var nativeElement = tc.nativeElement;
-                       var updateHost = tc.inject(DirectiveUpdatingHostActions);
-
-                       ObservableWrapper.subscribe(updateHost.setAttr, (_) => {
-                         expect(DOM.hasAttribute(nativeElement, 'update-host-actions')).toBe(true);
-                         async.done();
-                       });
-
-                       updateHost.triggerSetAttr('value');
-                     });
-               }));
-      }
-
       it('should support render events',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(

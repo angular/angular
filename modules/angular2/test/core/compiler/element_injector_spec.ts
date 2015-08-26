@@ -117,11 +117,6 @@ class HasEventEmitter {
   constructor() { this.emitter = "emitter"; }
 }
 
-class HasHostAction {
-  hostActionName;
-  constructor() { this.hostActionName = "hostAction"; }
-}
-
 class NeedsAttribute {
   typeAttribute;
   titleAttribute;
@@ -432,18 +427,6 @@ export function main() {
         var accessor = inj.eventEmitterAccessors[0][0];
         expect(accessor.eventName).toEqual('publicEmitter');
         expect(accessor.getter(new HasEventEmitter())).toEqual('emitter');
-      });
-
-      it('should return a list of hostAction accessors', () => {
-        var binding = DirectiveBinding.createFromType(
-            HasEventEmitter, new DirectiveMetadata({host: {'@hostActionName': 'onAction'}}));
-
-        var inj = createPei(null, 0, [binding]);
-        expect(inj.hostActionAccessors.length).toEqual(1);
-
-        var accessor = inj.hostActionAccessors[0][0];
-        expect(accessor.methodName).toEqual('onAction');
-        expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });
 

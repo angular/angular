@@ -214,12 +214,6 @@ export class DirectiveBinding extends ResolvedBinding {
     return isPresent(this.metadata) && isPresent(this.metadata.events) ? this.metadata.events : [];
   }
 
-  get hostActions(): Map<string, string> {
-    return isPresent(this.metadata) && isPresent(this.metadata.hostActions) ?
-               this.metadata.hostActions :
-               new Map();
-  }
-
   get changeDetection() { return this.metadata.changeDetection; }
 
   static createFromBinding(binding: Binding, ann: DirectiveMetadata): DirectiveBinding {
@@ -312,22 +306,10 @@ function _createEventEmitterAccessors(bwv: BindingWithVisibility): EventEmitterA
   });
 }
 
-function _createHostActionAccessors(bwv: BindingWithVisibility): HostActionAccessor[] {
-  var binding = bwv.binding;
-  if (!(binding instanceof DirectiveBinding)) return [];
-  var res = [];
-  var db = <DirectiveBinding>binding;
-  MapWrapper.forEach(db.hostActions, (actionExpression, actionName) => {
-    res.push(new HostActionAccessor(actionExpression, reflector.getter(actionName)));
-  });
-  return res;
-}
-
 export class ProtoElementInjector {
   view: viewModule.AppView;
   attributes: Map<string, string>;
   eventEmitterAccessors: List<List<EventEmitterAccessor>>;
-  hostActionAccessors: List<List<HostActionAccessor>>;
   protoInjector: ProtoInjector;
 
   static create(parent: ProtoElementInjector, index: number, bindings: List<ResolvedBinding>,
@@ -386,15 +368,10 @@ export class ProtoElementInjector {
               public _firstBindingIsComponent: boolean,
               public directiveVariableBindings: Map<string, number>) {
     var length = bwv.length;
-
     this.protoInjector = new ProtoInjector(bwv);
-
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
-    this.hostActionAccessors = ListWrapper.createFixedSize(length);
-
     for (var i = 0; i < length; ++i) {
       this.eventEmitterAccessors[i] = _createEventEmitterAccessors(bwv[i]);
-      this.hostActionAccessors[i] = _createHostActionAccessors(bwv[i]);
     }
   }
 
@@ -561,10 +538,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   getEventEmitterAccessors(): List<List<EventEmitterAccessor>> {
     return this._proto.eventEmitterAccessors;
-  }
-
-  getHostActionAccessors(): List<List<HostActionAccessor>> {
-    return this._proto.hostActionAccessors;
   }
 
   getDirectiveVariableBindings(): Map<string, number> {
