@@ -252,42 +252,42 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
     switch (proto.mode) {
-      case RecordType.SELF:
+      case RecordType.Self:
         return this._readContext(proto, values);
 
-      case RecordType.CONST:
+      case RecordType.Const:
         return proto.funcOrValue;
 
-      case RecordType.PROPERTY_READ:
+      case RecordType.PropertyRead:
         var context = this._readContext(proto, values);
         return proto.funcOrValue(context);
 
-      case RecordType.SAFE_PROPERTY:
+      case RecordType.SafeProperty:
         var context = this._readContext(proto, values);
         return isBlank(context) ? null : proto.funcOrValue(context);
 
-      case RecordType.PROPERTY_WRITE:
+      case RecordType.PropertyWrite:
         var context = this._readContext(proto, values);
         var value = this._readArgs(proto, values)[0];
         proto.funcOrValue(context, value);
         return value;
 
-      case RecordType.KEYED_WRITE:
+      case RecordType.KeyedWrite:
         var context = this._readContext(proto, values);
         var key = this._readArgs(proto, values)[0];
         var value = this._readArgs(proto, values)[1];
         context[key] = value;
         return value;
 
-      case RecordType.LOCAL:
+      case RecordType.Local:
         return locals.get(proto.name);
 
-      case RecordType.INVOKE_METHOD:
+      case RecordType.InvokeMethod:
         var context = this._readContext(proto, values);
         var args = this._readArgs(proto, values);
         return proto.funcOrValue(context, args);
 
-      case RecordType.SAFE_INVOKE_METHOD:
+      case RecordType.SafeMethodInvoke:
         var context = this._readContext(proto, values);
         if (isBlank(context)) {
           return null;
@@ -295,21 +295,21 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         var args = this._readArgs(proto, values);
         return proto.funcOrValue(context, args);
 
-      case RecordType.KEYED_READ:
+      case RecordType.KeyedRead:
         var arg = this._readArgs(proto, values)[0];
         return this._readContext(proto, values)[arg];
 
-      case RecordType.CHAIN:
+      case RecordType.Chain:
         var args = this._readArgs(proto, values);
         return args[args.length - 1];
 
-      case RecordType.INVOKE_CLOSURE:
+      case RecordType.InvokeClosure:
         return FunctionWrapper.apply(this._readContext(proto, values),
                                      this._readArgs(proto, values));
 
-      case RecordType.INTERPOLATE:
-      case RecordType.PRIMITIVE_OP:
-      case RecordType.COLLECTION_LITERAL:
+      case RecordType.Interpolate:
+      case RecordType.PrimitiveOp:
+      case RecordType.CollectionLiteral:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto, values));
 
       default:

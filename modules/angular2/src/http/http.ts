@@ -116,7 +116,7 @@ export class Http {
     if (isString(url)) {
       responseObservable = httpRequest(
           this._backend,
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethods.GET, url)));
+          new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url)));
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     }
@@ -128,7 +128,7 @@ export class Http {
    */
   get(url: string, options?: RequestOptionsArgs): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
-                                                               RequestMethods.GET, url)));
+                                                               RequestMethods.Get, url)));
   }
 
   /**
@@ -138,7 +138,7 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
-                                 options, RequestMethods.POST, url)));
+                                 options, RequestMethods.Post, url)));
   }
 
   /**
@@ -148,7 +148,7 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
-                                 options, RequestMethods.PUT, url)));
+                                 options, RequestMethods.Put, url)));
   }
 
   /**
@@ -156,7 +156,7 @@ export class Http {
    */
   delete (url: string, options?: RequestOptionsArgs): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
-                                                               RequestMethods.DELETE, url)));
+                                                               RequestMethods.Delete, url)));
   }
 
   /**
@@ -166,7 +166,7 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
-                                 options, RequestMethods.PATCH, url)));
+                                 options, RequestMethods.Patch, url)));
   }
 
   /**
@@ -174,7 +174,7 @@ export class Http {
    */
   head(url: string, options?: RequestOptionsArgs): EventEmitter {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
-                                                               RequestMethods.HEAD, url)));
+                                                               RequestMethods.Head, url)));
   }
 }
 
@@ -193,10 +193,10 @@ export class Jsonp extends Http {
   request(url: string | Request, options?: RequestOptionsArgs): EventEmitter {
     var responseObservable: EventEmitter;
     if (isString(url)) {
-      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethods.GET, url));
+      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url));
     }
     if (url instanceof Request) {
-      if (url.method !== RequestMethods.GET) {
+      if (url.method !== RequestMethods.Get) {
         makeTypeError('JSONP requests must use GET request method.');
       }
       responseObservable = httpRequest(this._backend, url);

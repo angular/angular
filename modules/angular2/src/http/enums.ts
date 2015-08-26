@@ -37,13 +37,13 @@ export enum RequestCredentialsOpts {
  * Supported http methods.
  */
 export enum RequestMethods {
-  GET,
-  POST,
-  PUT,
-  DELETE,
-  OPTIONS,
-  HEAD,
-  PATCH
+  Get,
+  Post,
+  Put,
+  Delete,
+  Options,
+  Head,
+  Patch
 }
 
 /**
@@ -52,12 +52,12 @@ export enum RequestMethods {
  * additional "CANCELLED" state.
  */
 export enum ReadyStates {
-  UNSENT,
-  OPEN,
-  HEADERS_RECEIVED,
-  LOADING,
-  DONE,
-  CANCELLED
+  Unsent,
+  Open,
+  HeadersReceived,
+  Loading,
+  Done,
+  Cancelled
 }
 
 /**

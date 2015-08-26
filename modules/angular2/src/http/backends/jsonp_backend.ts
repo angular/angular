@@ -19,12 +19,12 @@ export class JSONPConnection implements Connection {
 
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
-    if (req.method !== RequestMethods.GET) {
+    if (req.method !== RequestMethods.Get) {
       throw makeTypeError("JSONP requests must use GET request method.");
     }
     this.request = req;
     this.response = new EventEmitter();
-    this.readyState = ReadyStates.LOADING;
+    this.readyState = ReadyStates.Loading;
     this._id = _dom.nextRequestID();
 
     _dom.exposeConnection(this._id, this);
@@ -42,8 +42,8 @@ export class JSONPConnection implements Connection {
     let script = this._script = _dom.build(url);
 
     script.addEventListener('load', (event) => {
-      if (this.readyState === ReadyStates.CANCELLED) return;
-      this.readyState = ReadyStates.DONE;
+      if (this.readyState === ReadyStates.Cancelled) return;
+      this.readyState = ReadyStates.Done;
       _dom.cleanup(script);
       if (!this._finished) {
         ObservableWrapper.callThrow(
@@ -60,8 +60,8 @@ export class JSONPConnection implements Connection {
     });
 
     script.addEventListener('error', (error) => {
-      if (this.readyState === ReadyStates.CANCELLED) return;
-      this.readyState = ReadyStates.DONE;
+      if (this.readyState === ReadyStates.Cancelled) return;
+      this.readyState = ReadyStates.Done;
       _dom.cleanup(script);
       ObservableWrapper.callThrow(this.response, error);
     });
@@ -73,12 +73,12 @@ export class JSONPConnection implements Connection {
     // Don't leak connections
     this._finished = true;
     this._dom.removeConnection(this._id);
-    if (this.readyState === ReadyStates.CANCELLED) return;
+    if (this.readyState === ReadyStates.Cancelled) return;
     this._responseData = data;
   }
 
   dispose(): void {
-    this.readyState = ReadyStates.CANCELLED;
+    this.readyState = ReadyStates.Cancelled;
     let script = this._script;
     this._script = null;
     if (isPresent(script)) {

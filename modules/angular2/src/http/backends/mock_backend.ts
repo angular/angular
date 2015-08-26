@@ -34,7 +34,7 @@ export class MockConnection implements Connection {
 
   constructor(req: Request) {
     this.response = new EventEmitter();
-    this.readyState = ReadyStates.OPEN;
+    this.readyState = ReadyStates.Open;
     this.request = req;
   }
 
@@ -42,8 +42,8 @@ export class MockConnection implements Connection {
    * Changes the `readyState` of the connection to a custom state of 5 (cancelled).
    */
   dispose() {
-    if (this.readyState !== ReadyStates.DONE) {
-      this.readyState = ReadyStates.CANCELLED;
+    if (this.readyState !== ReadyStates.Done) {
+      this.readyState = ReadyStates.Cancelled;
     }
   }
 
@@ -62,10 +62,10 @@ export class MockConnection implements Connection {
    *
    */
   mockRespond(res: Response) {
-    if (this.readyState === ReadyStates.DONE || this.readyState === ReadyStates.CANCELLED) {
+    if (this.readyState === ReadyStates.Done || this.readyState === ReadyStates.Cancelled) {
       throw new BaseException('Connection has already been resolved');
     }
-    this.readyState = ReadyStates.DONE;
+    this.readyState = ReadyStates.Done;
     ObservableWrapper.callNext(this.response, res);
     ObservableWrapper.callReturn(this.response);
   }
@@ -91,7 +91,7 @@ export class MockConnection implements Connection {
    */
   mockError(err?: Error) {
     // Matches XHR semantics
-    this.readyState = ReadyStates.DONE;
+    this.readyState = ReadyStates.Done;
     ObservableWrapper.callThrow(this.response, err);
     ObservableWrapper.callReturn(this.response);
   }

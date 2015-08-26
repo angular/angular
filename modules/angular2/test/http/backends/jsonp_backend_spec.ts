@@ -106,7 +106,7 @@ export function main() {
 
            ObservableWrapper.subscribe(connection.response, loadSpy, errorSpy, returnSpy);
            connection.dispose();
-           expect(connection.readyState).toBe(ReadyStates.CANCELLED);
+           expect(connection.readyState).toBe(ReadyStates.Cancelled);
 
            connection.finished('Fake data');
            existingScripts[0].dispatchEvent('load');
@@ -153,8 +153,8 @@ export function main() {
          }));
 
       it('should throw if request method is not GET', () => {
-        [RequestMethods.POST, RequestMethods.PUT, RequestMethods.DELETE, RequestMethods.OPTIONS,
-         RequestMethods.HEAD, RequestMethods.PATCH]
+        [RequestMethods.Post, RequestMethods.Put, RequestMethods.Delete, RequestMethods.Options,
+         RequestMethods.Head, RequestMethods.Patch]
             .forEach(method => {
               let base = new BaseRequestOptions();
               let req = new Request(

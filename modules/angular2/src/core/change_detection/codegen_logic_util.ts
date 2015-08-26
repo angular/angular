@@ -47,67 +47,67 @@ export class CodegenLogicUtil {
 
     var rhs: string;
     switch (protoRec.mode) {
-      case RecordType.SELF:
+      case RecordType.Self:
         rhs = context;
         break;
 
-      case RecordType.CONST:
+      case RecordType.Const:
         rhs = codify(protoRec.funcOrValue);
         break;
 
-      case RecordType.PROPERTY_READ:
+      case RecordType.PropertyRead:
         rhs = this._observe(`${context}.${protoRec.name}`, protoRec);
         break;
 
-      case RecordType.SAFE_PROPERTY:
+      case RecordType.SafeProperty:
         var read = this._observe(`${context}.${protoRec.name}`, protoRec);
         rhs =
             `${this._utilName}.isValueBlank(${context}) ? null : ${this._observe(read, protoRec)}`;
         break;
 
-      case RecordType.PROPERTY_WRITE:
+      case RecordType.PropertyWrite:
         rhs = `${context}.${protoRec.name} = ${getLocalName(protoRec.args[0])}`;
         break;
 
-      case RecordType.LOCAL:
+      case RecordType.Local:
         rhs = this._observe(`${localsAccessor}.get(${rawString(protoRec.name)})`, protoRec);
         break;
 
-      case RecordType.INVOKE_METHOD:
+      case RecordType.InvokeMethod:
         rhs = this._observe(`${context}.${protoRec.name}(${argString})`, protoRec);
         break;
 
-      case RecordType.SAFE_INVOKE_METHOD:
+      case RecordType.SafeMethodInvoke:
         var invoke = `${context}.${protoRec.name}(${argString})`;
         rhs =
             `${this._utilName}.isValueBlank(${context}) ? null : ${this._observe(invoke, protoRec)}`;
         break;
 
-      case RecordType.INVOKE_CLOSURE:
+      case RecordType.InvokeClosure:
         rhs = `${context}(${argString})`;
         break;
 
-      case RecordType.PRIMITIVE_OP:
+      case RecordType.PrimitiveOp:
         rhs = `${this._utilName}.${protoRec.name}(${argString})`;
         break;
 
-      case RecordType.COLLECTION_LITERAL:
+      case RecordType.CollectionLiteral:
         rhs = `${this._utilName}.${protoRec.name}(${argString})`;
         break;
 
-      case RecordType.INTERPOLATE:
+      case RecordType.Interpolate:
         rhs = this._genInterpolation(protoRec);
         break;
 
-      case RecordType.KEYED_READ:
+      case RecordType.KeyedRead:
         rhs = this._observe(`${context}[${getLocalName(protoRec.args[0])}]`, protoRec);
         break;
 
-      case RecordType.KEYED_WRITE:
+      case RecordType.KeyedWrite:
         rhs = `${context}[${getLocalName(protoRec.args[0])}] = ${getLocalName(protoRec.args[1])}`;
         break;
 
-      case RecordType.CHAIN:
+      case RecordType.Chain:
         rhs = 'null';
         break;
 

@@ -92,6 +92,6 @@ export class RequestOptions {
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {
   constructor() {
-    super({method: RequestMethods.GET, headers: new Headers(), mode: RequestModesOpts.Cors});
+    super({method: RequestMethods.Get, headers: new Headers(), mode: RequestModesOpts.Cors});
   }
 }
