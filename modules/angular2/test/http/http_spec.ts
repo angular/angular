@@ -166,7 +166,7 @@ export function main() {
       describe('.get()', () => {
         it('should perform a get request for given url', inject([AsyncTestCompleter], async => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
-               expect(c.request.method).toBe(RequestMethods.GET);
+               expect(c.request.method).toBe(RequestMethods.Get);
                backend.resolveAllConnections();
                async.done();
              });
@@ -178,7 +178,7 @@ export function main() {
       describe('.post()', () => {
         it('should perform a post request for given url', inject([AsyncTestCompleter], async => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
-               expect(c.request.method).toBe(RequestMethods.POST);
+               expect(c.request.method).toBe(RequestMethods.Post);
                backend.resolveAllConnections();
                async.done();
              });
@@ -201,7 +201,7 @@ export function main() {
       describe('.put()', () => {
         it('should perform a put request for given url', inject([AsyncTestCompleter], async => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
-               expect(c.request.method).toBe(RequestMethods.PUT);
+               expect(c.request.method).toBe(RequestMethods.Put);
                backend.resolveAllConnections();
                async.done();
              });
@@ -223,7 +223,7 @@ export function main() {
       describe('.delete()', () => {
         it('should perform a delete request for given url', inject([AsyncTestCompleter], async => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
-               expect(c.request.method).toBe(RequestMethods.DELETE);
+               expect(c.request.method).toBe(RequestMethods.Delete);
                backend.resolveAllConnections();
                async.done();
              });
@@ -235,7 +235,7 @@ export function main() {
       describe('.patch()', () => {
         it('should perform a patch request for given url', inject([AsyncTestCompleter], async => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
-               expect(c.request.method).toBe(RequestMethods.PATCH);
+               expect(c.request.method).toBe(RequestMethods.Patch);
                backend.resolveAllConnections();
                async.done();
              });
@@ -257,7 +257,7 @@ export function main() {
       describe('.head()', () => {
         it('should perform a head request for given url', inject([AsyncTestCompleter], async => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
-               expect(c.request.method).toBe(RequestMethods.HEAD);
+               expect(c.request.method).toBe(RequestMethods.Head);
                backend.resolveAllConnections();
                async.done();
              });

@@ -14,7 +14,7 @@ export function main() {
                    referencedBySelf?: boolean
                  } = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
-    if (isBlank(mode)) mode = RecordType.PROPERTY_READ;
+    if (isBlank(mode)) mode = RecordType.PropertyRead;
     if (isBlank(name)) name = "name";
     if (isBlank(directiveIndex)) directiveIndex = null;
     if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;
@@ -26,21 +26,20 @@ export function main() {
 
   describe("ProtoRecord", () => {
     describe('shouldBeChecked', () => {
-      it('should be true for pure functions', () => {
-        expect(r({mode: RecordType.COLLECTION_LITERAL}).shouldBeChecked()).toBeTruthy();
-      });
+      it('should be true for pure functions',
+         () => { expect(r({mode: RecordType.CollectionLiteral}).shouldBeChecked()).toBeTruthy(); });
 
       it('should be true for args of pure functions', () => {
-        expect(r({mode: RecordType.CONST, argumentToPureFunction: true}).shouldBeChecked())
+        expect(r({mode: RecordType.Const, argumentToPureFunction: true}).shouldBeChecked())
             .toBeTruthy();
       });
 
       it('should be true for last in binding records', () => {
-        expect(r({mode: RecordType.CONST, lastInBinding: true}).shouldBeChecked()).toBeTruthy();
+        expect(r({mode: RecordType.Const, lastInBinding: true}).shouldBeChecked()).toBeTruthy();
       });
 
       it('should be false otherwise',
-         () => { expect(r({mode: RecordType.CONST}).shouldBeChecked()).toBeFalsy(); });
+         () => { expect(r({mode: RecordType.Const}).shouldBeChecked()).toBeFalsy(); });
     });
 
     describe('isUsedByOtherRecord', () => {

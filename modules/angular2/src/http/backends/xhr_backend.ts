@@ -31,7 +31,7 @@ export class XHRConnection implements Connection {
     this.response = new EventEmitter();
     this._xhr = browserXHR.build();
     // TODO(jeffbcross): implement error listening/propagation
-    this._xhr.open(RequestMethods[req.method], req.url);
+    this._xhr.open(RequestMethods[req.method].toUpperCase(), req.url);
     this._xhr.addEventListener('load', (_) => {
       // responseText is the old-school way of retrieving response (supported by IE8 & 9)
       // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
