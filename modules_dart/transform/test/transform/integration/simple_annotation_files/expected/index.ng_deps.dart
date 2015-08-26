@@ -4,7 +4,7 @@ import 'index.dart';
 export 'index.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/bootstrap_static.dart';
-import 'index.ng_deps.dart' as ngStaticInit0;
+import 'index.ng_deps.dart' as ngStaticInit;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'bar.dart';
 import 'bar.ng_deps.dart' as i0;

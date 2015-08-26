@@ -14,7 +14,6 @@ main() {
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
     ['web/index.dart'],
-    reflectionEntryPoints: ['web/index.dart'],
     formatCode: true));
 
 class IntegrationTestConfig {

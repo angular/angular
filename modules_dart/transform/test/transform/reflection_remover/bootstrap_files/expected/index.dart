@@ -11,9 +11,9 @@ library angular2.test.transform.reflection_remover.reflection_remover_files;
 var code = """
 library web_foo;
 
-import 'package:angular2/bootstrap_static.dart';import 'index.ng_deps.dart' as ngStaticInit0;
+import 'package:angular2/bootstrap_static.dart';import 'index.ng_deps.dart' as ngStaticInit;
 
 void main() async {
-  var appRef = await bootstrapStatic(MyComponent, null, () { ngStaticInit0.initReflector(); });
+  var appRef = await bootstrapStatic(MyComponent, null, () { ngStaticInit.initReflector(); });
 }
 """;

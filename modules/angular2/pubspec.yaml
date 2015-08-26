@@ -13,6 +13,7 @@ dependencies:
   barback: '^0.15.2+2'
   code_transformers: '^0.2.8'
   dart_style: '>=0.1.8 <0.3.0'
+  glob: '^1.0.0'
   html: '^0.12.0'
   intl: '^0.12.4'
   logging: '>=0.9.0 <0.12.0'
