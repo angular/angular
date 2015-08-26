@@ -208,8 +208,9 @@ function commonTests() {
          macroTask(() => {
            expect(_log.result()).toEqual('run; onTurnDone; onEventDone');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should run async tasks scheduled inside onEventDone outside Angular zone',
        inject([AsyncTestCompleter], (async) => {
@@ -230,7 +231,8 @@ function commonTests() {
            TimerWrapper.setTimeout(() => {
              expect(_log.result()).toEqual('run; onTurnDone; onEventDone; asyncTask');
              async.done();
-           }, 10);
+           }, 20);
+           // Timeout increased for slower browsers (IEs, Androids)
          });
        }));
 
@@ -272,6 +274,7 @@ function commonTests() {
            async.done();
          }, 150);
        }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should not run onTurnStart and onTurnDone for nested Zone.run invoked from onTurnDone',
        inject([AsyncTestCompleter], (async) => {
@@ -402,8 +405,9 @@ function commonTests() {
                    // Second VM Turn => microtask enqueued from onTurnDone
                    'onTurnStart; executedMicrotask; onTurnDone(begin); onTurnDone(end)');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should call onTurnStart and onTurnDone for a scheduleMicrotask in onTurnDone triggered by ' +
            'a scheduleMicrotask in run',
@@ -437,8 +441,9 @@ function commonTests() {
                    // Second VM Turn => the microtask enqueued from onTurnDone
                    'onTurnStart; onTurnDone(executeMicrotask); onTurnDone(begin); onTurnDone(end)');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should execute promises scheduled in onTurnStart before promises scheduled in run',
        inject([AsyncTestCompleter], (async) => {
@@ -492,8 +497,9 @@ function commonTests() {
                    // Second VM turn: execute the microtask from onTurnEnd
                    'onTurnStart(begin); onTurnStart(end); onTurnDone(executePromise); onTurnDone(begin); onTurnDone(end)');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should call onTurnStart and onTurnDone before and after each turn, respectively',
        inject([AsyncTestCompleter], (async) => {
@@ -513,7 +519,7 @@ function commonTests() {
          macroTask(() => { _zone.run(() => { completerA.resolve(null); }); }, 20);
 
 
-         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 100);
+         macroTask(() => { _zone.run(() => { completerB.resolve(null); }); }, 120);
 
          macroTask(() => {
            expect(_log.result())
@@ -527,6 +533,7 @@ function commonTests() {
            async.done();
          }, 180);
        }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should call onTurnStart and onTurnDone before and after (respectively) all turns in a chain',
        inject([AsyncTestCompleter], (async) => {
@@ -545,8 +552,9 @@ function commonTests() {
            expect(_log.result())
                .toEqual('onTurnStart; run start; run end; async1; async2; onTurnDone');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should call onTurnStart and onTurnDone for promises created outside of run body',
        inject([AsyncTestCompleter], (async) => {
@@ -567,8 +575,9 @@ function commonTests() {
            expect(_log.result())
                .toEqual('onTurnStart; zone run; onTurnDone; onTurnStart; promise then; onTurnDone');
            async.done();
-         }, 80);
-       }));
+         }, 150);
+       }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
   });
 
   describe('exceptions', () => {
@@ -600,6 +609,7 @@ function commonTests() {
            async.done();
          }, 150);
        }), 200);
+    // Timeouts extended for slower browsers (IEs, Androids)
 
     it('should call onError when onTurnDone throws and the zone is sync',
        inject([AsyncTestCompleter], (async) => {

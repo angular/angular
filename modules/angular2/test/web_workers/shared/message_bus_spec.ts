@@ -35,7 +35,7 @@ export function main() {
          });
          var toEmitter = bus.to(CHANNEL);
          ObservableWrapper.callNext(toEmitter, MESSAGE);
-       }));
+       }), 1000);
 
     it("should broadcast", inject([AsyncTestCompleter], (async) => {
          const CHANNEL = "CHANNEL 1";
