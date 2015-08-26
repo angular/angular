@@ -52,7 +52,7 @@ class LoggingEventDispatcher implements RenderEventDispatcher {
 
   constructor(log: List<List<any>>) { this.log = log; }
 
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {
     this.log.push([elementIndex, eventName, locals]);
     return true;
   }

@@ -510,6 +510,7 @@ export interface RenderEventDispatcher {
    * Called when an event was triggered for a on-* attribute on an element.
    * @param {Map<string, any>} locals Locals to be used to evaluate the
    *   event expressions
+   * @return {boolean} False if `preventDefault` should be called on the DOM event.
    */
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>);
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean;
 }

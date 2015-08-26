@@ -69,7 +69,8 @@ export function main() {
 class SpyEventDispatcher implements RenderEventDispatcher {
   constructor(private _callback: Function) {}
 
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {
     this._callback(elementIndex, eventName, locals);
+    return false;
   }
 }
