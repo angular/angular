@@ -46,7 +46,7 @@ var _observableStrategy = new ObservableStrategy();
  *  ```
  * @Component({
  *   selector: "task-cmp",
- *   changeDetection: ON_PUSH
+ *   changeDetection: ChangeDetectionStrategy.OnPush
  * })
  * @View({
  *   template: "Task Description {{ description | async }}"

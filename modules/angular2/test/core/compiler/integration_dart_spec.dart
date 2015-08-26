@@ -7,6 +7,7 @@ import 'package:angular2/test_lib.dart';
 import 'package:observe/observe.dart';
 import 'package:angular2/src/core/directives/observable_list_diff.dart';
 import 'package:angular2/src/core/change_detection/differs/default_iterable_differ.dart';
+import 'package:angular2/src/core/change_detection/change_detection.dart';
 
 class MockException implements Error {
   var message;
@@ -281,7 +282,7 @@ class OnChangeComponent implements OnChange {
 
 @Component(
     selector: 'component-with-observable-list',
-    changeDetection: ON_PUSH,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     properties: const ['list'],
     bindings: const [
       const Binding(IterableDiffers,

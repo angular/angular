@@ -1,7 +1,7 @@
 import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {List} from 'angular2/src/core/facade/collection';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
-import {DEFAULT} from 'angular2/change_detection';
+import {ChangeDetectionStrategy} from 'angular2/change_detection';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -795,14 +795,12 @@ export class ComponentMetadata extends DirectiveMetadata {
    * Defines the used change detection strategy.
    *
    * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating
-   * the component's bindings.
+   * propagating the component's bindings.
    *
    * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component
-   * tells it to do so.
+   * or only when the component tells it to do so.
    */
-  changeDetection: string;
+  changeDetection: ChangeDetectionStrategy;
 
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
@@ -847,7 +845,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   viewBindings: List<any>;
 
   constructor({selector, properties, events, host, exportAs, lifecycle, bindings, viewBindings,
-               changeDetection = DEFAULT, compileChildren = true}: {
+               changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
     selector?: string,
     properties?: List<string>,
     events?: List<string>,
@@ -857,7 +855,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     exportAs?: string,
     compileChildren?: boolean,
     viewBindings?: List<any>,
-    changeDetection?: string,
+    changeDetection?: ChangeDetectionStrategy,
   } = {}) {
     super({
       selector: selector,

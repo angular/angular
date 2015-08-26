@@ -16,7 +16,7 @@ import {
   BindingRecord,
   DirectiveRecord,
   ProtoChangeDetector,
-  DEFAULT,
+  ChangeDetectionStrategy,
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig,
   ASTWithSource
@@ -305,7 +305,7 @@ function _getChangeDetectorDefinitions(
         bindingRecordsCreator.getEventBindingRecords(elementBinders, allRenderDirectiveMetadata);
     var directiveRecords =
         bindingRecordsCreator.getDirectiveRecords(elementBinders, allRenderDirectiveMetadata);
-    var strategyName = DEFAULT;
+    var strategyName = ChangeDetectionStrategy.Default;
     if (pvWithIndex.renderProtoView.type === ViewType.COMPONENT) {
       strategyName = hostComponentMetadata.changeDetection;
     }

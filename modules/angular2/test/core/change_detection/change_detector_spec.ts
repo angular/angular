@@ -32,12 +32,7 @@ import {
   DirectiveIndex,
   PipeTransform,
   PipeOnDestroy,
-  CHECK_ALWAYS,
-  CHECK_ONCE,
-  CHECKED,
-  DETACHED,
-  ON_PUSH,
-  DEFAULT,
+  ChangeDetectionStrategy,
   WrappedValue,
   DynamicProtoChangeDetector,
   ChangeDetectorDefinition,
@@ -673,26 +668,26 @@ export function main() {
       });
 
       describe('mode', () => {
-        it('should set the mode to CHECK_ALWAYS when the default change detection is used', () => {
+        it('should set the mode to CheckAlways when the default change detection is used', () => {
           var cd = _createWithoutHydrate('emptyUsingDefaultStrategy').changeDetector;
           expect(cd.mode).toEqual(null);
 
           cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
-          expect(cd.mode).toEqual(CHECK_ALWAYS);
+          expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckAlways);
         });
 
-        it('should set the mode to CHECK_ONCE when the push change detection is used', () => {
+        it('should set the mode to CheckOnce when the push change detection is used', () => {
           var cd = _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
           cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
 
-          expect(cd.mode).toEqual(CHECK_ONCE);
+          expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
         });
 
         it('should not check a detached change detector', () => {
           var val = _createChangeDetector('a', new TestData('value'));
 
           val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null, null);
-          val.changeDetector.mode = DETACHED;
+          val.changeDetector.mode = ChangeDetectionStrategy.Detached;
           val.changeDetector.detectChanges();
 
           expect(val.dispatcher.log).toEqual([]);
@@ -702,33 +697,33 @@ export function main() {
           var val = _createChangeDetector('a', new TestData('value'));
 
           val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, null, null);
-          val.changeDetector.mode = CHECKED;
+          val.changeDetector.mode = ChangeDetectionStrategy.Checked;
           val.changeDetector.detectChanges();
 
           expect(val.dispatcher.log).toEqual([]);
         });
 
-        it('should change CHECK_ONCE to CHECKED', () => {
+        it('should change CheckOnce to Checked', () => {
           var cd = _createChangeDetector('10').changeDetector;
           cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
-          cd.mode = CHECK_ONCE;
+          cd.mode = ChangeDetectionStrategy.CheckOnce;
 
           cd.detectChanges();
 
-          expect(cd.mode).toEqual(CHECKED);
+          expect(cd.mode).toEqual(ChangeDetectionStrategy.Checked);
         });
 
-        it('should not change the CHECK_ALWAYS', () => {
+        it('should not change the CheckAlways', () => {
           var cd = _createChangeDetector('10').changeDetector;
           cd.hydrate(_DEFAULT_CONTEXT, null, null, null);
-          cd.mode = CHECK_ALWAYS;
+          cd.mode = ChangeDetectionStrategy.CheckAlways;
 
           cd.detectChanges();
 
-          expect(cd.mode).toEqual(CHECK_ALWAYS);
+          expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckAlways);
         });
 
-        describe('marking ON_PUSH detectors as CHECK_ONCE after an update', () => {
+        describe('marking OnPush detectors as CheckOnce after an update', () => {
           var childDirectiveDetectorRegular;
           var childDirectiveDetectorOnPush;
           var directives;
@@ -736,53 +731,53 @@ export function main() {
           beforeEach(() => {
             childDirectiveDetectorRegular = _createWithoutHydrate('10').changeDetector;
             childDirectiveDetectorRegular.hydrate(_DEFAULT_CONTEXT, null, null, null);
-            childDirectiveDetectorRegular.mode = CHECK_ALWAYS;
+            childDirectiveDetectorRegular.mode = ChangeDetectionStrategy.CheckAlways;
 
             childDirectiveDetectorOnPush =
                 _createWithoutHydrate('emptyUsingOnPushStrategy').changeDetector;
             childDirectiveDetectorOnPush.hydrate(_DEFAULT_CONTEXT, null, null, null);
-            childDirectiveDetectorOnPush.mode = CHECKED;
+            childDirectiveDetectorOnPush.mode = ChangeDetectionStrategy.Checked;
 
             directives =
                 new FakeDirectives([new TestData(null), new TestData(null)],
                                    [childDirectiveDetectorRegular, childDirectiveDetectorOnPush]);
           });
 
-          it('should set the mode to CHECK_ONCE when a binding is updated', () => {
+          it('should set the mode to CheckOnce when a binding is updated', () => {
             var parentDetector =
                 _createWithoutHydrate('onPushRecordsUsingDefaultStrategy').changeDetector;
             parentDetector.hydrate(_DEFAULT_CONTEXT, null, directives, null);
 
             parentDetector.detectChanges();
 
-            // making sure that we only change the status of ON_PUSH components
-            expect(childDirectiveDetectorRegular.mode).toEqual(CHECK_ALWAYS);
+            // making sure that we only change the status of OnPush components
+            expect(childDirectiveDetectorRegular.mode).toEqual(ChangeDetectionStrategy.CheckAlways);
 
-            expect(childDirectiveDetectorOnPush.mode).toEqual(CHECK_ONCE);
+            expect(childDirectiveDetectorOnPush.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
           });
 
-          it('should mark ON_PUSH detectors as CHECK_ONCE after an event', () => {
+          it('should mark OnPush detectors as CheckOnce after an event', () => {
             var cd = _createWithoutHydrate('onPushWithEvent').changeDetector;
             cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
-            cd.mode = CHECKED;
+            cd.mode = ChangeDetectionStrategy.Checked;
 
             cd.handleEvent("event", 0, null);
 
-            expect(cd.mode).toEqual(CHECK_ONCE);
+            expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
           });
 
-          it('should mark ON_PUSH detectors as CHECK_ONCE after a host event', () => {
+          it('should mark OnPush detectors as CheckOnce after a host event', () => {
             var cd = _createWithoutHydrate('onPushWithHostEvent').changeDetector;
             cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
 
             cd.handleEvent("host-event", 0, null);
 
-            expect(childDirectiveDetectorOnPush.mode).toEqual(CHECK_ONCE);
+            expect(childDirectiveDetectorOnPush.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
           });
 
           if (IS_DART) {
-            describe('ON_PUSH_OBSERVE', () => {
-              it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable fires an event',
+            describe('OnPushObserve', () => {
+              it('should mark OnPushObserve detectors as CheckOnce when an observable fires an event',
                  fakeAsync(() => {
                    var context = new TestDirective();
                    context.a = createObservableModel();
@@ -791,15 +786,15 @@ export function main() {
                    cd.hydrate(context, null, directives, null);
                    cd.detectChanges();
 
-                   expect(cd.mode).toEqual(CHECKED);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.Checked);
 
                    context.a.pushUpdate();
                    tick();
 
-                   expect(cd.mode).toEqual(CHECK_ONCE);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
                  }));
 
-              it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable context fires an event',
+              it('should mark OnPushObserve detectors as CheckOnce when an observable context fires an event',
                  fakeAsync(() => {
                    var context = createObservableModel();
 
@@ -807,15 +802,15 @@ export function main() {
                    cd.hydrate(context, null, directives, null);
                    cd.detectChanges();
 
-                   expect(cd.mode).toEqual(CHECKED);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.Checked);
 
                    context.pushUpdate();
                    tick();
 
-                   expect(cd.mode).toEqual(CHECK_ONCE);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
                  }));
 
-              it('should mark ON_PUSH_OBSERVE detectors as CHECK_ONCE when an observable directive fires an event',
+              it('should mark OnPushObserve detectors as CheckOnce when an observable directive fires an event',
                  fakeAsync(() => {
                    var dir = createObservableModel();
                    var directives = new FakeDirectives([dir], []);
@@ -824,12 +819,12 @@ export function main() {
                    cd.hydrate(_DEFAULT_CONTEXT, null, directives, null);
                    cd.detectChanges();
 
-                   expect(cd.mode).toEqual(CHECKED);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.Checked);
 
                    dir.pushUpdate();
                    tick();
 
-                   expect(cd.mode).toEqual(CHECK_ONCE);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
                  }));
 
               it('should unsubscribe from an old observable when an object changes',
@@ -843,14 +838,14 @@ export function main() {
                    cd.detectChanges();
 
                    context.a = createObservableModel();
-                   cd.mode = CHECK_ONCE;
+                   cd.mode = ChangeDetectionStrategy.CheckOnce;
                    cd.detectChanges();
 
                    // Updating this model will not reenable the detector. This model is not longer
                    // used.
                    originalModel.pushUpdate();
                    tick();
-                   expect(cd.mode).toEqual(CHECKED);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.Checked);
                  }));
 
               it('should unsubscribe from observables when dehydrating', fakeAsync(() => {
@@ -872,7 +867,7 @@ export function main() {
                    // used.
                    originalModel.pushUpdate();
                    tick();
-                   expect(cd.mode).toEqual(CHECKED);
+                   expect(cd.mode).toEqual(ChangeDetectionStrategy.Checked);
                  }));
             });
           }
@@ -887,22 +882,22 @@ export function main() {
           return val.changeDetector;
         }
 
-        it('should mark all checked detectors as CHECK_ONCE until reaching a detached one', () => {
-          var root = changeDetector(CHECK_ALWAYS, null);
-          var disabled = changeDetector(DETACHED, root);
-          var parent = changeDetector(CHECKED, disabled);
-          var checkAlwaysChild = changeDetector(CHECK_ALWAYS, parent);
-          var checkOnceChild = changeDetector(CHECK_ONCE, checkAlwaysChild);
-          var checkedChild = changeDetector(CHECKED, checkOnceChild);
+        it('should mark all checked detectors as CheckOnce until reaching a detached one', () => {
+          var root = changeDetector(ChangeDetectionStrategy.CheckAlways, null);
+          var disabled = changeDetector(ChangeDetectionStrategy.Detached, root);
+          var parent = changeDetector(ChangeDetectionStrategy.Checked, disabled);
+          var checkAlwaysChild = changeDetector(ChangeDetectionStrategy.CheckAlways, parent);
+          var checkOnceChild = changeDetector(ChangeDetectionStrategy.CheckOnce, checkAlwaysChild);
+          var checkedChild = changeDetector(ChangeDetectionStrategy.Checked, checkOnceChild);
 
           checkedChild.markPathToRootAsCheckOnce();
 
-          expect(root.mode).toEqual(CHECK_ALWAYS);
-          expect(disabled.mode).toEqual(DETACHED);
-          expect(parent.mode).toEqual(CHECK_ONCE);
-          expect(checkAlwaysChild.mode).toEqual(CHECK_ALWAYS);
-          expect(checkOnceChild.mode).toEqual(CHECK_ONCE);
-          expect(checkedChild.mode).toEqual(CHECK_ONCE);
+          expect(root.mode).toEqual(ChangeDetectionStrategy.CheckAlways);
+          expect(disabled.mode).toEqual(ChangeDetectionStrategy.Detached);
+          expect(parent.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
+          expect(checkAlwaysChild.mode).toEqual(ChangeDetectionStrategy.CheckAlways);
+          expect(checkOnceChild.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
+          expect(checkedChild.mode).toEqual(ChangeDetectionStrategy.CheckOnce);
         });
       });
 

@@ -3,6 +3,7 @@ library angular2.transform.common.directive_metadata_reader;
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:angular2/src/core/render/api.dart';
+import 'package:angular2/src/core/change_detection/change_detection.dart';
 
 /// Reads [RenderDirectiveMetadata] from the `node`. `node` is expected to be an
 /// instance of [Annotation], [NodeList<Annotation>], ListLiteral, or
@@ -63,7 +64,7 @@ class _DirectiveMetadataVisitor extends Object
   bool _callOnCheck;
   bool _callOnInit;
   bool _callOnAllChangesDone;
-  String _changeDetection;
+  ChangeDetectionStrategy _changeDetection;
   List<String> _events;
 
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
@@ -283,6 +284,9 @@ class _DirectiveMetadataVisitor extends Object
 
   void _populateChangeDetection(Expression value) {
     _checkMeta();
-    _changeDetection = _expressionToString(value, 'Directive#changeDetection');
+    _changeDetection = changeDetectionStrategies[value.toSource()];
   }
 }
+
+final Map<String, ChangeDetectionStrategy> changeDetectionStrategies
+  = new Map.fromIterable(ChangeDetectionStrategy.values, key: (v) => v.toString());

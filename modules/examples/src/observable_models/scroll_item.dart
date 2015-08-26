@@ -8,7 +8,7 @@ import "cells.dart"
         StageButtonsComponent,
         AccountCellComponent,
         FormattedCellComponent;
-import "package:angular2/angular2.dart" show Component, Directive, View;
+import "package:angular2/angular2.dart" show Component, Directive, View, ChangeDetectionStrategy;
 import "common.dart"
     show
         Offering,
@@ -25,7 +25,8 @@ import "common.dart"
         END_DATE_WIDTH,
         AAT_STATUS_WIDTH;
 
-@Component(selector: "scroll-item", properties: const ["offering"], changeDetection: "ON_PUSH_OBSERVE")
+@Component(selector: "scroll-item", properties: const ["offering"],
+  changeDetection: ChangeDetectionStrategy.OnPushObserve)
 @View(
     directives: const [
   CompanyNameComponent,

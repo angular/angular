@@ -3,6 +3,7 @@ import {CONST} from 'angular2/src/core/facade/lang';
 import {Locals} from './parser/locals';
 import {BindingTarget, BindingRecord} from './binding_record';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
+import {ChangeDetectionStrategy} from './constants';
 import {ChangeDetectorRef} from './change_detector_ref';
 
 /**
@@ -55,7 +56,7 @@ export interface ChangeDispatcher {
 
 export interface ChangeDetector {
   parent: ChangeDetector;
-  mode: string;
+  mode: ChangeDetectionStrategy;
   ref: ChangeDetectorRef;
 
   addChild(cd: ChangeDetector): void;
@@ -80,8 +81,8 @@ export class ChangeDetectorGenConfig {
 }
 
 export class ChangeDetectorDefinition {
-  constructor(public id: string, public strategy: string, public variableNames: List<string>,
-              public bindingRecords: BindingRecord[], public eventRecords: BindingRecord[],
-              public directiveRecords: DirectiveRecord[],
+  constructor(public id: string, public strategy: ChangeDetectionStrategy,
+              public variableNames: List<string>, public bindingRecords: BindingRecord[],
+              public eventRecords: BindingRecord[], public directiveRecords: DirectiveRecord[],
               public genConfig: ChangeDetectorGenConfig) {}
 }

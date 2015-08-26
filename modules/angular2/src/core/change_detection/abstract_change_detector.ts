@@ -12,10 +12,9 @@ import {
 } from './exceptions';
 import {BindingTarget} from './binding_record';
 import {Locals} from './parser/locals';
-import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './constants';
+import {ChangeDetectionStrategy} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {isObservable} from './observable_facade';
-import {ON_PUSH_OBSERVE} from './constants';
 
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
@@ -36,7 +35,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   alreadyChecked: any = false;
   context: T;
   locals: Locals = null;
-  mode: string = null;
+  mode: ChangeDetectionStrategy = null;
   pipes: Pipes = null;
   propertyBindingIndex: number;
 
@@ -46,7 +45,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   constructor(public id: string, public dispatcher: ChangeDispatcher,
               public numberOfPropertyProtoRecords: number, public bindingTargets: BindingTarget[],
-              public directiveIndices: DirectiveIndex[], public strategy: string) {
+              public directiveIndices: DirectiveIndex[], public strategy: ChangeDetectionStrategy) {
     this.ref = new ChangeDetectorRef(this);
   }
 
@@ -79,14 +78,16 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   checkNoChanges(): void { throw new BaseException("Not implemented"); }
 
   runDetectChanges(throwOnChange: boolean): void {
-    if (StringWrapper.equals(this.mode, DETACHED) || StringWrapper.equals(this.mode, CHECKED))
+    if (this.mode === ChangeDetectionStrategy.Detached ||
+        this.mode === ChangeDetectionStrategy.Checked)
       return;
     var s = _scope_check(this.id, throwOnChange);
     this.detectChangesInRecords(throwOnChange);
     this._detectChangesInLightDomChildren(throwOnChange);
     if (throwOnChange === false) this.callOnAllChangesDone();
     this._detectChangesInShadowDomChildren(throwOnChange);
-    if (StringWrapper.equals(this.mode, CHECK_ONCE)) this.mode = CHECKED;
+    if (this.mode === ChangeDetectionStrategy.CheckOnce)
+      this.mode = ChangeDetectionStrategy.Checked;
     wtfLeave(s);
   }
 
@@ -121,7 +122,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
     this.context = context;
 
-    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
       this.observeComponent(context);
     }
 
@@ -140,7 +141,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.dehydrateDirectives(true);
 
     // This is an experimental feature. Works only in Dart.
-    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
       this._unsubsribeFromObservables();
     }
 
@@ -171,12 +172,12 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
-  markAsCheckOnce(): void { this.mode = CHECK_ONCE; }
+  markAsCheckOnce(): void { this.mode = ChangeDetectionStrategy.CheckOnce; }
 
   markPathToRootAsCheckOnce(): void {
     var c: ChangeDetector = this;
-    while (isPresent(c) && !StringWrapper.equals(c.mode, DETACHED)) {
-      if (StringWrapper.equals(c.mode, CHECKED)) c.mode = CHECK_ONCE;
+    while (isPresent(c) && c.mode !== ChangeDetectionStrategy.Detached) {
+      if (c.mode === ChangeDetectionStrategy.Checked) c.mode = ChangeDetectionStrategy.CheckOnce;
       c = c.parent;
     }
   }

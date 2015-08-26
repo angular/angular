@@ -5,12 +5,7 @@
  */
 
 export {
-  CHECK_ONCE,
-  CHECK_ALWAYS,
-  DETACHED,
-  CHECKED,
-  ON_PUSH,
-  DEFAULT,
+  ChangeDetectionStrategy,
 
   ExpressionChangedAfterItHasBeenCheckedException,
   ChangeDetectionError,

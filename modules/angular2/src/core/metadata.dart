@@ -1,6 +1,7 @@
 library angular2.src.core.metadata;
 
 import "package:angular2/src/core/facade/collection.dart" show List;
+import 'package:angular2/src/core/change_detection/change_detection.dart';
 import "./metadata/di.dart";
 import "./metadata/directives.dart";
 import "./metadata/view.dart";
@@ -35,7 +36,7 @@ class Component extends ComponentMetadata {
   const Component({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
   List<LifecycleEvent> lifecycle, List bindings, String exportAs,
-  bool compileChildren, List viewBindings, String changeDetection})
+  bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
     properties: properties,

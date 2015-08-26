@@ -1,5 +1,5 @@
 import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/core/facade/lang';
-import {isDefaultChangeDetectionStrategy} from './constants';
+import {isDefaultChangeDetectionStrategy, ChangeDetectionStrategy} from './constants';
 
 export class DirectiveIndex {
   constructor(public elementIndex: number, public directiveIndex: number) {}
@@ -13,7 +13,7 @@ export class DirectiveRecord {
   callOnChange: boolean;
   callOnCheck: boolean;
   callOnInit: boolean;
-  changeDetection: string;
+  changeDetection: ChangeDetectionStrategy;
 
   constructor({directiveIndex, callOnAllChangesDone, callOnChange, callOnCheck, callOnInit,
                changeDetection}: {
@@ -22,7 +22,7 @@ export class DirectiveRecord {
     callOnChange?: boolean,
     callOnCheck?: boolean,
     callOnInit?: boolean,
-    changeDetection?: string
+    changeDetection?: ChangeDetectionStrategy
   } = {}) {
     this.directiveIndex = directiveIndex;
     this.callOnAllChangesDone = normalizeBool(callOnAllChangesDone);

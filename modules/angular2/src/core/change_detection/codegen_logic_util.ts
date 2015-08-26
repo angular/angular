@@ -11,14 +11,14 @@ import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';
 import {BindingTarget} from './binding_record';
 import {DirectiveRecord} from './directive_record';
-import {ON_PUSH_OBSERVE} from './constants';
+import {ChangeDetectionStrategy} from './constants';
 
 /**
  * Class responsible for providing change detection logic for chagne detector classes.
  */
 export class CodegenLogicUtil {
   constructor(private _names: CodegenNameUtil, private _utilName: string,
-              private _changeDetection: string) {}
+              private _changeDetection: ChangeDetectionStrategy) {}
 
   /**
    * Generates a statement which updates the local variable representing `protoRec` with the current
@@ -119,7 +119,7 @@ export class CodegenLogicUtil {
 
   _observe(exp: string, rec: ProtoRecord): string {
     // This is an experimental feature. Works only in Dart.
-    if (StringWrapper.equals(this._changeDetection, ON_PUSH_OBSERVE)) {
+    if (this._changeDetection === ChangeDetectionStrategy.OnPushObserve) {
       return `this.observeValue(${exp}, ${rec.selfIndex})`;
     } else {
       return exp;
@@ -165,7 +165,7 @@ export class CodegenLogicUtil {
 
   private _genReadDirective(index: number) {
     // This is an experimental feature. Works only in Dart.
-    if (StringWrapper.equals(this._changeDetection, ON_PUSH_OBSERVE)) {
+    if (this._changeDetection === ChangeDetectionStrategy.OnPushObserve) {
       return `this.observeDirective(this.getDirectiveFor(directives, ${index}), ${index})`;
     } else {
       return `this.getDirectiveFor(directives, ${index})`;

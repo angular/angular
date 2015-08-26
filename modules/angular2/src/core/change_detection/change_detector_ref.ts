@@ -1,5 +1,5 @@
 import {ChangeDetector} from './interfaces';
-import {CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './constants';
+import {ChangeDetectionStrategy} from './constants';
 
 /**
  * Controls change detection.
@@ -14,7 +14,7 @@ export class ChangeDetectorRef {
   constructor(private _cd: ChangeDetector) {}
 
   /**
-   * Request to check all ON_PUSH ancestors.
+   * Request to check all OnPush ancestors.
    */
   requestCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
 
@@ -23,7 +23,7 @@ export class ChangeDetectorRef {
    *
    * The detached change detector will not be checked until it is reattached.
    */
-  detach(): void { this._cd.mode = DETACHED; }
+  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
 
   /**
    * Reattach the change detector to the change detector tree.
@@ -33,7 +33,7 @@ export class ChangeDetectorRef {
    * next change detection run.
    */
   reattach(): void {
-    this._cd.mode = CHECK_ALWAYS;
+    this._cd.mode = ChangeDetectionStrategy.CheckAlways;
     this.requestCheck();
   }
 }

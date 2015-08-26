@@ -1,8 +1,7 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {
-  DEFAULT,
-  ON_PUSH,
+  ChangeDetectionStrategy,
   BindingRecord,
   ChangeDetectorDefinition,
   DirectiveIndex,
@@ -12,7 +11,6 @@ import {
   Parser,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {ON_PUSH_OBSERVE} from 'angular2/src/core/change_detection/constants';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
@@ -109,15 +107,17 @@ export function getDefinition(id: string): TestDefinition {
 
   } else if (id == "onPushObserveBinding") {
     var records = _createBindingRecords("a");
-    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], records, [], [], genConfig);
+    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], records,
+                                             [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (id == "onPushObserveComponent") {
-    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], [], [], [], genConfig);
+    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], [], [],
+                                             [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (id == "onPushObserveDirective") {
-    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], [], [],
+    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], [], [],
                                              [_DirectiveUpdating.recordNoCallbacks], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   } else if (id == "updateElementProduction") {
@@ -196,7 +196,7 @@ class _ExpressionWithLocals {
 }
 
 class _ExpressionWithMode {
-  constructor(private _strategy: string, private _withRecords: boolean,
+  constructor(private _strategy: ChangeDetectionStrategy, private _withRecords: boolean,
               private _withEvents: boolean) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
@@ -205,10 +205,14 @@ class _ExpressionWithMode {
     var directiveRecords = [];
     var eventRecords = [];
 
-    var dirRecordWithDefault =
-        new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: DEFAULT});
-    var dirRecordWithOnPush =
-        new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 1), changeDetection: ON_PUSH});
+    var dirRecordWithDefault = new DirectiveRecord({
+      directiveIndex: new DirectiveIndex(0, 0),
+      changeDetection: ChangeDetectionStrategy.Default
+    });
+    var dirRecordWithOnPush = new DirectiveRecord({
+      directiveIndex: new DirectiveIndex(0, 1),
+      changeDetection: ChangeDetectionStrategy.OnPush
+    });
 
     if (this._withRecords) {
       var updateDirWithOnDefaultRecord =
@@ -240,11 +244,14 @@ class _ExpressionWithMode {
    * Definitions in this map define conditions which allow testing various change detector modes.
    */
   static availableDefinitions: StringMap<string, _ExpressionWithMode> = {
-    'emptyUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, false, false),
-    'emptyUsingOnPushStrategy': new _ExpressionWithMode(ON_PUSH, false, false),
-    'onPushRecordsUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, true, false),
-    'onPushWithEvent': new _ExpressionWithMode(ON_PUSH, false, true),
-    'onPushWithHostEvent': new _ExpressionWithMode(ON_PUSH, false, true)
+    'emptyUsingDefaultStrategy':
+        new _ExpressionWithMode(ChangeDetectionStrategy.Default, false, false),
+    'emptyUsingOnPushStrategy':
+        new _ExpressionWithMode(ChangeDetectionStrategy.OnPush, false, false),
+    'onPushRecordsUsingDefaultStrategy':
+        new _ExpressionWithMode(ChangeDetectionStrategy.Default, true, false),
+    'onPushWithEvent': new _ExpressionWithMode(ChangeDetectionStrategy.OnPush, false, true),
+    'onPushWithHostEvent': new _ExpressionWithMode(ChangeDetectionStrategy.OnPush, false, true)
   };
 }
 

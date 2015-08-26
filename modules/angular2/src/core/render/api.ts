@@ -7,7 +7,10 @@ import {
   StringMap,
   StringMapWrapper
 } from 'angular2/src/core/facade/collection';
-import {ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
+import {
+  ASTWithSource,
+  ChangeDetectionStrategy
+} from 'angular2/src/core/change_detection/change_detection';
 
 /**
  * General notes:
@@ -155,7 +158,7 @@ export class RenderDirectiveMetadata {
   callOnCheck: boolean;
   callOnInit: boolean;
   callOnAllChangesDone: boolean;
-  changeDetection: string;
+  changeDetection: ChangeDetectionStrategy;
   exportAs: string;
   hostListeners: Map<string, string>;
   hostProperties: Map<string, string>;
@@ -185,7 +188,7 @@ export class RenderDirectiveMetadata {
     callOnCheck?: boolean,
     callOnInit?: boolean,
     callOnAllChangesDone?: boolean,
-    changeDetection?: string,
+    changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }) {
     this.id = id;
@@ -224,7 +227,7 @@ export class RenderDirectiveMetadata {
     callOnCheck?: boolean,
     callOnInit?: boolean,
     callOnAllChangesDone?: boolean,
-    changeDetection?: string,
+    changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }): RenderDirectiveMetadata {
     let hostListeners = new Map();

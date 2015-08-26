@@ -5,7 +5,7 @@ import "package:angular2/src/core/facade/collection.dart"
 import "common.dart"
     show Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST;
 import "package:angular2/directives.dart" show NgFor;
-import "package:angular2/angular2.dart" show Component, Directive, View;
+import "package:angular2/angular2.dart" show Component, Directive, View, ChangeDetectionStrategy;
 
 class HasStyle {
   int cellWidth;
@@ -17,7 +17,7 @@ class HasStyle {
 @Component(
     selector: "company-name",
     properties: const ["width: cell-width", "company"],
-    changeDetection: "ON_PUSH_OBSERVE"
+    changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
     directives: const [],
@@ -29,7 +29,7 @@ class CompanyNameComponent extends HasStyle {
 @Component(
     selector: "opportunity-name",
     properties: const ["width: cell-width", "opportunity"],
-    changeDetection: "ON_PUSH_OBSERVE"
+    changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
     directives: const [],
@@ -41,7 +41,7 @@ class OpportunityNameComponent extends HasStyle {
 @Component(
     selector: "offering-name",
     properties: const ["width: cell-width", "offering"],
-    changeDetection: "ON_PUSH_OBSERVE"
+    changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
     directives: const [],
@@ -59,7 +59,7 @@ class Stage {
 @Component(
     selector: "stage-buttons",
     properties: const ["width: cell-width", "offering"],
-    changeDetection: "ON_PUSH_OBSERVE"
+    changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(directives: const [NgFor], template: '''
       <div [style.width.px]="cellWidth">
@@ -103,7 +103,7 @@ class StageButtonsComponent extends HasStyle {
 @Component(
     selector: "account-cell",
     properties: const ["width: cell-width", "account"],
-    changeDetection: "ON_PUSH_OBSERVE"
+    changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(directives: const [], template: '''
       <div [style.width.px]="cellWidth">
@@ -117,7 +117,7 @@ class AccountCellComponent extends HasStyle {
 @Component(
     selector: "formatted-cell",
     properties: const ["width: cell-width", "value"],
-    changeDetection: "ON_PUSH_OBSERVE"
+    changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
     directives: const [],

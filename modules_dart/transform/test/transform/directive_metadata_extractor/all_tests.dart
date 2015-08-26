@@ -2,7 +2,8 @@ library angular2.test.transform.directive_metadata_extractor.all_tests;
 
 import 'dart:async';
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/render/dom/convert.dart';
+import 'package:angular2/src/core/change_detection/change_detection.dart';
+import 'package:angular2/src/transform/common/convert.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
@@ -122,7 +123,7 @@ void allTests() {
     it('should parse changeDetection.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/changeDetection.ng_deps.dart');
-      expect(metadata.changeDetection).toEqual('CHECK_ONCE');
+      expect(metadata.changeDetection).toEqual(ChangeDetectionStrategy.CheckOnce);
     });
 
     it('should fail when a class is annotated with multiple Directives.',

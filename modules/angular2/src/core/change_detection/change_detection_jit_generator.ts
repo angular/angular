@@ -12,6 +12,8 @@ import {codify} from './codegen_facade';
 import {EventBinding} from './event_binding';
 import {BindingTarget} from './binding_record';
 import {ChangeDetectorGenConfig} from './interfaces';
+import {ChangeDetectionStrategy} from './constants';
+
 
 
 /**
@@ -33,7 +35,7 @@ export class ChangeDetectorJITGenerator {
   _names: CodegenNameUtil;
   _typeName: string;
 
-  constructor(private id: string, private changeDetectionStrategy: string,
+  constructor(private id: string, private changeDetectionStrategy: ChangeDetectionStrategy,
               private records: List<ProtoRecord>, private propertyBindingTargets: BindingTarget[],
               private eventBindings: EventBinding[], private directiveRecords: List<any>,
               private genConfig: ChangeDetectorGenConfig) {

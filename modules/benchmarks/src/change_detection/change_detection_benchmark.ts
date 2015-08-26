@@ -15,8 +15,7 @@ import {
   ChangeDetectorGenConfig,
   BindingRecord,
   DirectiveRecord,
-  DirectiveIndex,
-  DEFAULT
+  DirectiveIndex
 } from 'angular2/src/core/change_detection/change_detection';
 
 

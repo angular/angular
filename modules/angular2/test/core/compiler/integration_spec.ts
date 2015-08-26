@@ -58,7 +58,7 @@ import {
 import {
   PipeTransform,
   ChangeDetectorRef,
-  ON_PUSH,
+  ChangeDetectionStrategy,
   ChangeDetection,
   DynamicChangeDetection,
   ChangeDetectorGenConfig
@@ -635,7 +635,7 @@ export function main() {
            }));
       });
 
-      describe("ON_PUSH components", () => {
+      describe("OnPush components", () => {
         it("should use ChangeDetectorRef to manually request a check",
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
@@ -1672,7 +1672,8 @@ class DirectiveWithTitleAndHostProperty {
   title: string;
 }
 
-@Component({selector: 'push-cmp', properties: ['prop'], changeDetection: ON_PUSH})
+@Component(
+    {selector: 'push-cmp', properties: ['prop'], changeDetection: ChangeDetectionStrategy.OnPush})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmp {
@@ -1687,7 +1688,11 @@ class PushCmp {
   }
 }
 
-@Component({selector: 'push-cmp-with-ref', properties: ['prop'], changeDetection: ON_PUSH})
+@Component({
+  selector: 'push-cmp-with-ref',
+  properties: ['prop'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmpWithRef {
@@ -1708,7 +1713,7 @@ class PushCmpWithRef {
   propagate() { this.ref.requestCheck(); }
 }
 
-@Component({selector: 'push-cmp-with-async', changeDetection: ON_PUSH})
+@Component({selector: 'push-cmp-with-async', changeDetection: ChangeDetectionStrategy.OnPush})
 @View({template: '{{field | async}}'})
 @Injectable()
 class PushCmpWithAsyncPipe {
