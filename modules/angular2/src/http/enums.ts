@@ -46,13 +46,6 @@ export enum RequestMethods {
   PATCH
 }
 
-// TODO: Remove this when enum lookups are available in ts2dart
-// https://github.com/angular/ts2dart/issues/221
-export class RequestMethodsMap {
-  private _methods: List<string>;
-  constructor() { this._methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH']; }
-  getMethod(method: number): string { return this._methods[method]; }
-}
 /**
  * All possible states in which a connection can be, based on
  * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
