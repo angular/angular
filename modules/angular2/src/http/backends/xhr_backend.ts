@@ -1,5 +1,5 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyStates, RequestMethods, RequestMethodsMap, ResponseTypes} from '../enums';
+import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
@@ -27,14 +27,11 @@ export class XHRConnection implements Connection {
   private _xhr;  // TODO: make type XMLHttpRequest, pending resolution of
                  // https://github.com/angular/ts2dart/issues/230
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
-    // TODO: get rid of this when enum lookups are available in ts2dart
-    // https://github.com/angular/ts2dart/issues/221
-    var requestMethodsMap = new RequestMethodsMap();
     this.request = req;
     this.response = new EventEmitter();
     this._xhr = browserXHR.build();
     // TODO(jeffbcross): implement error listening/propagation
-    this._xhr.open(requestMethodsMap.getMethod(ENUM_INDEX(req.method)), req.url);
+    this._xhr.open(RequestMethods[ENUM_INDEX(req.method)], req.url);
     this._xhr.addEventListener('load', (_) => {
       // responseText is the old-school way of retrieving response (supported by IE8 & 9)
       // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
