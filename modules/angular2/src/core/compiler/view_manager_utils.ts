@@ -211,7 +211,6 @@ export class AppViewManagerUtils {
                                     currView.preBuiltObjects[boundElementIndex]);
             this._populateViewLocals(currView, elementInjector, boundElementIndex);
             this._setUpEventEmitters(currView, elementInjector, boundElementIndex);
-            this._setUpHostActions(currView, elementInjector, boundElementIndex);
           }
         }
         var pipes = isPresent(hostElementInjector) ?
@@ -246,20 +245,6 @@ export class AppViewManagerUtils {
       for (var eventIndex = 0; eventIndex < directiveEmitters.length; ++eventIndex) {
         var eventEmitterAccessor = directiveEmitters[eventIndex];
         eventEmitterAccessor.subscribe(view, boundElementIndex, directive);
-      }
-    }
-  }
-
-  _setUpHostActions(view: viewModule.AppView, elementInjector: eli.ElementInjector,
-                    boundElementIndex: number) {
-    var hostActions = elementInjector.getHostActionAccessors();
-    for (var directiveIndex = 0; directiveIndex < hostActions.length; ++directiveIndex) {
-      var directiveHostActions = hostActions[directiveIndex];
-      var directive = elementInjector.getDirectiveAtIndex(directiveIndex);
-
-      for (var index = 0; index < directiveHostActions.length; ++index) {
-        var hostActionAccessor = directiveHostActions[index];
-        hostActionAccessor.subscribe(view, boundElementIndex, directive);
       }
     }
   }

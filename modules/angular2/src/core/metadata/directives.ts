@@ -628,31 +628,6 @@ export class DirectiveMetadata extends InjectableMetadata {
    * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
    * (here: `<div>` ) will ensure that this element will get the "button" role.
    *
-   * ## Actions
-   *
-   * Specifies which DOM methods a directive can invoke.
-   *
-   * ## Syntax
-   *
-   * ```
-   * @Directive({
-   *   selector: 'input',
-   *   host: {
-   *     '@emitFocus': 'focus()'
-   *   }
-   * })
-   * class InputDirective {
-   *   constructor() {
-   *     this.emitFocus = new EventEmitter();
-   *   }
-   *
-   *   focus() {
-   *     this.emitFocus.next();
-   *   }
-   * }
-   * ```
-   *
-   * In this example calling focus on InputDirective will result in calling focus on the input.
    */
   host: StringMap<string, string>;
 

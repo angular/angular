@@ -87,47 +87,18 @@ export function main() {
             createHostPv([createNestedElBinder(createComponentPv()), createEmptyElBinder()]);
         var hostView = createViewWithChildren(hostPv);
         var spyEventAccessor1 = SpyObject.stub({"subscribe": null});
-        SpyObject.stub(hostView.elementInjectors[0], {
-          'getHostActionAccessors': [],
-          'getEventEmitterAccessors': [[spyEventAccessor1]],
-          'getDirectiveAtIndex': dir
-        });
+        SpyObject.stub(
+            hostView.elementInjectors[0],
+            {'getEventEmitterAccessors': [[spyEventAccessor1]], 'getDirectiveAtIndex': dir});
         var spyEventAccessor2 = SpyObject.stub({"subscribe": null});
-        SpyObject.stub(hostView.elementInjectors[1], {
-          'getHostActionAccessors': [],
-          'getEventEmitterAccessors': [[spyEventAccessor2]],
-          'getDirectiveAtIndex': dir
-        });
+        SpyObject.stub(
+            hostView.elementInjectors[1],
+            {'getEventEmitterAccessors': [[spyEventAccessor2]], 'getDirectiveAtIndex': dir});
 
         utils.hydrateRootHostView(hostView, createInjector());
 
         expect(spyEventAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
         expect(spyEventAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
-      });
-
-      it("should set up host action listeners", () => {
-        var dir = new Object();
-
-        var hostPv =
-            createHostPv([createNestedElBinder(createComponentPv()), createEmptyElBinder()]);
-        var hostView = createViewWithChildren(hostPv);
-        var spyActionAccessor1 = SpyObject.stub({"subscribe": null});
-        SpyObject.stub(hostView.elementInjectors[0], {
-          'getHostActionAccessors': [[spyActionAccessor1]],
-          'getEventEmitterAccessors': [],
-          'getDirectiveAtIndex': dir
-        });
-        var spyActionAccessor2 = SpyObject.stub({"subscribe": null});
-        SpyObject.stub(hostView.elementInjectors[1], {
-          'getHostActionAccessors': [[spyActionAccessor2]],
-          'getEventEmitterAccessors': [],
-          'getDirectiveAtIndex': dir
-        });
-
-        utils.hydrateRootHostView(hostView, createInjector());
-
-        expect(spyActionAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
-        expect(spyActionAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
       });
 
       it("should not hydrate element injectors of component views inside of embedded fragments",

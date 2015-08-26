@@ -380,7 +380,6 @@ export class Serializer {
       'exportAs': meta.exportAs,
       'hostProperties': this.mapToObject(meta.hostProperties),
       'hostListeners': this.mapToObject(meta.hostListeners),
-      'hostActions': this.mapToObject(meta.hostActions),
       'hostAttributes': this.mapToObject(meta.hostAttributes)
     };
     return obj;
@@ -392,7 +391,6 @@ export class Serializer {
       compileChildren: obj['compileChildren'],
       hostProperties: this.objectToMap(obj['hostProperties']),
       hostListeners: this.objectToMap(obj['hostListeners']),
-      hostActions: this.objectToMap(obj['hostActions']),
       hostAttributes: this.objectToMap(obj['hostAttributes']),
       properties: obj['properties'],
       readAttributes: obj['readAttributes'],

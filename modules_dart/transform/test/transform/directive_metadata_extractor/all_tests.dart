@@ -97,11 +97,6 @@ void allTests() {
       expect(metadata.hostAttributes.length).toBe(1);
       expect(metadata.hostAttributes).toContain('attName');
       expect(metadata.hostAttributes['attName']).toEqual('attValue');
-
-      expect(metadata.hostActions).toBeNotNull();
-      expect(metadata.hostActions.length).toBe(1);
-      expect(metadata.hostActions).toContain('actionName');
-      expect(metadata.hostActions['actionName']).toEqual('actionValue');
     });
 
     it('should parse lifecycle events.', () async {
