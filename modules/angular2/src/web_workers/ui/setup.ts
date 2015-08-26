@@ -3,6 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
 import {Injectable} from 'angular2/di';
+import {StringWrapper} from 'angular2/src/core/facade/lang';
 
 @Injectable()
 export class WebWorkerSetup {
@@ -12,7 +13,7 @@ export class WebWorkerSetup {
     var source = bus.from(SETUP_CHANNEL);
 
     ObservableWrapper.subscribe(source, (message: string) => {
-      if (message === "ready") {
+      if (StringWrapper.equals(message, "ready")) {
         ObservableWrapper.callNext(sink, {"rootUrl": rootUrl});
       }
     });

@@ -1,7 +1,13 @@
 import {Injectable} from 'angular2/di';
 
 import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isBlank, BaseException, assertionsEnabled} from 'angular2/src/core/facade/lang';
+import {
+  StringWrapper,
+  isPresent,
+  isBlank,
+  BaseException,
+  assertionsEnabled
+} from 'angular2/src/core/facade/lang';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
 import {
@@ -505,7 +511,7 @@ function _findDirectiveIndexByExportAs(renderElementBinder, directiveBindings, e
     }
   }
 
-  if (isBlank(matchedDirective) && exportAs !== "$implicit") {
+  if (isBlank(matchedDirective) && !StringWrapper.equals(exportAs, "$implicit")) {
     throw new BaseException(`Cannot find directive with exportAs = '${exportAs}'`);
   }
 
