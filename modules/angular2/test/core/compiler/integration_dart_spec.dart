@@ -2,7 +2,7 @@
 library angular2.test.di.integration_dart_spec;
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2/di.dart';
+import 'package:angular2/core.dart';
 import 'package:angular2/test_lib.dart';
 import 'package:observe/observe.dart';
 import 'package:angular2/src/core/directives/observable_list_diff.dart';

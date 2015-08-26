@@ -33,7 +33,7 @@ import {RouteRegistry} from './src/router/route_registry';
 import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
 import {APP_COMPONENT} from './src/core/application_tokens';
-import {Binding} from './di';
+import {Binding} from './core';
 import {CONST_EXPR} from './src/core/facade/lang';
 
 export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);

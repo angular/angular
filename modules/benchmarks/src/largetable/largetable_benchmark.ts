@@ -18,7 +18,7 @@ import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

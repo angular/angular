@@ -33,7 +33,7 @@ import {
 import {WebWorkerElementRef} from 'angular2/src/web_workers/shared/api';
 import {AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {Parser} from "angular2/src/core/change_detection/parser/parser";
-import {Injectable} from "angular2/di";
+import {Injectable} from "angular2/core";
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore

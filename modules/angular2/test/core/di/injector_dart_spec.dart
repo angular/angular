@@ -2,7 +2,7 @@
 library angular2.test.di.injector_dart_spec;
 
 import 'package:angular2/test_lib.dart';
-import 'package:angular2/di.dart';
+import 'package:angular2/core.dart';
 
 main() {
   describe('Injector', () {

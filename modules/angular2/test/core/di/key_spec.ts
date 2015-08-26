@@ -1,5 +1,5 @@
 import {describe, iit, it, expect, beforeEach} from 'angular2/test_lib';
-import {Key, KeyRegistry} from 'angular2/di';
+import {Key, KeyRegistry} from 'angular2/core';
 
 export function main() {
   describe("key", function() {

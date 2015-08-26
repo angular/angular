@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 

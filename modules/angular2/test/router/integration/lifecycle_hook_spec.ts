@@ -15,7 +15,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {Injector, Inject, bind} from 'angular2/di';
+import {Injector, Inject, bind} from 'angular2/core';
 import {Component, View} from 'angular2/metadata';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {

@@ -10,7 +10,7 @@ import {
   ComponentRef,
   DomRenderer
 } from 'angular2/angular2';
-import {bind, Injectable, forwardRef, ResolvedBinding, Injector} from 'angular2/di';
+import {bind, Injectable, forwardRef, ResolvedBinding, Injector} from 'angular2/core';
 
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {isPresent, Type} from 'angular2/src/core/facade/lang';

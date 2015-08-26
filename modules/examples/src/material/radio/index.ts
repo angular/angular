@@ -3,7 +3,7 @@ import {MdRadioButton, MdRadioGroup} from 'angular2_material/src/components/radi
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 
 @Component({
   selector: 'demo-app',

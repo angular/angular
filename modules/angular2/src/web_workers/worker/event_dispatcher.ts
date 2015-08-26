@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {RenderViewRef, RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';

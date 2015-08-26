@@ -10,7 +10,6 @@ export {bootstrap} from 'angular2/src/core/application';
 export * from './metadata';
 export * from './change_detection';
 export * from './core';
-export * from './di';
 export * from './directives';
 export * from './forms';
 export * from './render';

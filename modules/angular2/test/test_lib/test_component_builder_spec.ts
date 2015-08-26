@@ -14,7 +14,7 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 
 import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
 

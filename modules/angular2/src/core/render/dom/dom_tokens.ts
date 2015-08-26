@@ -1,4 +1,4 @@
-import {OpaqueToken, Binding} from 'angular2/di';
+import {OpaqueToken, Binding} from 'angular2/core';
 import {CONST_EXPR, StringWrapper, Math} from 'angular2/src/core/facade/lang';
 
 export const DOCUMENT: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));

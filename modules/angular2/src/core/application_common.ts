@@ -1,4 +1,4 @@
-import {Injector, bind, OpaqueToken, Binding} from 'angular2/di';
+import {Injector, bind, OpaqueToken, Binding} from 'angular2/core';
 import {
   NumberWrapper,
   Type,

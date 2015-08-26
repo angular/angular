@@ -1,5 +1,15 @@
 library angular2.core;
 
+// DI
+export 'package:angular2/src/core/di/decorators.dart';
+export 'package:angular2/src/core/di/metadata.dart' show InjectMetadata, OptionalMetadata, InjectableMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata;
+export 'package:angular2/src/core/di/forward_ref.dart' show forwardRef, resolveForwardRef, ForwardRefFn;
+export 'package:angular2/src/core/di/injector.dart' show Injector, ProtoInjector, BindingWithVisibility, DependencyProvider, Visibility, UNDEFINED;
+export 'package:angular2/src/core/di/binding.dart' show Binding, BindingBuilder, ResolvedBinding, Dependency, bind;
+export 'package:angular2/src/core/di/key.dart' show Key, KeyRegistry, TypeLiteral;
+export 'package:angular2/src/core/di/exceptions.dart' show NoBindingError, AbstractBindingError, CyclicDependencyError, InstantiationError, InvalidBindingError, NoAnnotationError, OutOfBoundsError;
+export 'package:angular2/src/core/di/opaque_token.dart' show OpaqueToken;
+
 export 'package:angular2/src/core/application_tokens.dart' show APP_COMPONENT;
 export 'package:angular2/src/core/application_ref.dart' show ApplicationRef;
 

@@ -1,7 +1,7 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Instruction} from './instruction';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 
 /**
  * Responsible for performing each step of navigation.

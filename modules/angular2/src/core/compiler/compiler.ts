@@ -1,4 +1,4 @@
-import {Binding, resolveForwardRef, Injectable, Inject} from 'angular2/di';
+import {Binding, resolveForwardRef, Injectable, Inject} from 'angular2/core';
 import {
   Type,
   isBlank,

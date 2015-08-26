@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ReadyStates} from '../enums';
@@ -139,7 +139,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * ```
    * import {MockBackend, Http, BaseRequestOptions} from 'angular2/http';
-   * import {Injector} from 'angular2/di';
+   * import {Injector} from 'angular2/core';
    *
    * it('should get a response', () => {
    *   var connection; //this will be set when a new connection is emitted from the backend.

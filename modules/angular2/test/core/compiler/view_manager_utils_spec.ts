@@ -24,7 +24,7 @@ import {
   SpyPreBuiltObjects
 } from '../spies';
 
-import {Injector, bind} from 'angular2/di';
+import {Injector, bind} from 'angular2/core';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 

@@ -1,4 +1,4 @@
-import {Inject, Injectable, OpaqueToken} from 'angular2/di';
+import {Inject, Injectable, OpaqueToken} from 'angular2/core';
 import {
   isPresent,
   isBlank,

@@ -7,7 +7,7 @@ import {
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Directive} from 'angular2/metadata';
-import {forwardRef, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';

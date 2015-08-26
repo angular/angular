@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/core';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -40,7 +40,7 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestComponentBuilder} from './test_component_builder';
 
-import {Injector} from 'angular2/di';
+import {Injector} from 'angular2/core';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';

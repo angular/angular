@@ -18,7 +18,7 @@ import {
   By
 } from 'angular2/test_lib';
 
-import {Injector} from 'angular2/di';
+import {Injector} from 'angular2/core';
 import {NgIf} from 'angular2/directives';
 import {Component, View, ViewMetadata, LifecycleEvent} from 'angular2/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {ViewMetadata} from '../metadata/view';
 
 import {Type, stringify, isBlank, BaseException} from 'angular2/src/core/facade/lang';

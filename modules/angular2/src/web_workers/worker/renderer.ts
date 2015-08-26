@@ -20,7 +20,7 @@ import {
   UiArguments
 } from "angular2/src/web_workers/shared/client_message_broker";
 import {isPresent, print, BaseException} from "angular2/src/core/facade/lang";
-import {Injectable} from "angular2/di";
+import {Injectable} from "angular2/core";
 import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef

@@ -53,7 +53,7 @@ import {
   Host,
   SkipSelf,
   SkipSelfMetadata
-} from 'angular2/di';
+} from 'angular2/core';
 
 import {
   PipeTransform,

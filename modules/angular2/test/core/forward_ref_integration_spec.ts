@@ -13,7 +13,7 @@ import {
 } from 'angular2/test_lib';
 import {Directive, Component, Query, View} from 'angular2/metadata';
 import {QueryList, NgFor} from 'angular2/angular2';
-import {forwardRef, resolveForwardRef, bind, Inject} from 'angular2/di';
+import {forwardRef, resolveForwardRef, bind, Inject} from 'angular2/core';
 import {Type} from 'angular2/src/core/facade/lang';
 
 export function main() {

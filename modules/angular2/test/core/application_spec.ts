@@ -15,7 +15,7 @@ import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
 import {Component, Directive, View} from 'angular2/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {bind, Inject, Injector} from 'angular2/di';
+import {bind, Inject, Injector} from 'angular2/core';
 import {LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';

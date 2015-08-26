@@ -10,7 +10,7 @@ import {
 } from "angular2/src/core/facade/async";
 import {ListWrapper, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {Injectable} from "angular2/di";
+import {Injectable} from "angular2/core";
 import {Type, StringWrapper} from "angular2/src/core/facade/lang";
 
 @Injectable()

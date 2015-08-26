@@ -1,4 +1,4 @@
-import {bind, Binding, Injector, OpaqueToken} from 'angular2/di';
+import {bind, Binding, Injector, OpaqueToken} from 'angular2/core';
 
 import {BaseException, ABSTRACT, isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';

@@ -11,7 +11,7 @@ import {
   Binding
 } from 'angular2/bootstrap';
 
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 
 import {FORM_DIRECTIVES} from 'angular2/forms';
 

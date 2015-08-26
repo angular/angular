@@ -1,5 +1,10 @@
-import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
-import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/core';
+import {
+  ListWrapper,
+  MapWrapper,
+  Map,
+  StringMapWrapper
+} from 'angular2/src/core/facade/collection';
 import * as eli from './element_injector';
 import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';

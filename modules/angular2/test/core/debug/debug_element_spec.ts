@@ -21,7 +21,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 
 import {
   Directive,

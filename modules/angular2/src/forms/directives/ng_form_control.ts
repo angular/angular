@@ -3,7 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
 import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
-import {forwardRef, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/core';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';
