@@ -34,12 +34,8 @@ import {
   PropertyBindingType
 } from '../../api';
 
-import {
-  NG_BINDING_CLASS,
-  EVENT_TARGET_SEPARATOR,
-  queryBoundTextNodeIndices,
-  camelCaseToDashCase
-} from '../util';
+import {NG_BINDING_CLASS, queryBoundTextNodeIndices, camelCaseToDashCase} from '../util';
+import {EVENT_TARGET_SEPARATOR} from "../../event_config";
 
 export class ProtoViewBuilder {
   variableBindings: Map<string, string> = new Map();

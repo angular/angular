@@ -10,7 +10,8 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 import {RenderDirectiveMetadata} from '../../api';
-import {EventConfig, dashCaseToCamelCase, camelCaseToDashCase} from '../util';
+import {dashCaseToCamelCase, camelCaseToDashCase} from '../util';
+import {EventConfig} from '../../event_config';
 import {DirectiveBuilder, ElementBinderBuilder} from '../view/proto_view_builder';
 
 /**

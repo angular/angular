@@ -24,9 +24,9 @@ import {
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
-import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {List, ListWrapper} from 'angular2/src/core/facade/collection';
@@ -42,7 +42,6 @@ import {
   ComponentRef,
   DynamicComponentLoader
 } from 'angular2/src/core/compiler/dynamic_component_loader';
-import {Testability} from 'angular2/src/core/testability/testability';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
@@ -51,7 +50,6 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
 import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
-
 import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from 'angular2/src/core/application_tokens';
@@ -125,6 +123,8 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toValue(bestChangeDetection),
     DirectiveResolver,
+    UrlResolver,
+    StyleUrlResolver,
     PipeResolver,
     Parser,
     Lexer,
@@ -132,10 +132,7 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     WebWorkerXHRImpl,
     bind(XHR).toAlias(WebWorkerXHRImpl),
     ComponentUrlMapper,
-    UrlResolver,
-    StyleUrlResolver,
     DynamicComponentLoader,
-    Testability,
     bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl'])),
     WebWorkerEventDispatcher
   ];

@@ -47,7 +47,7 @@ import {
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
-import {EventConfig} from 'angular2/src/core/render/dom/util';
+import {EventConfig} from 'angular2/src/core/render/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
 
 var _staticKeys;

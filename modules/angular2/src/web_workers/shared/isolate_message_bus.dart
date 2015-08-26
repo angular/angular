@@ -51,7 +51,7 @@ class IsolateMessageBusSource extends MessageBusSource {
   IsolateMessageBusSource(ReceivePort port)
       : rawDataStream = port.asBroadcastStream() {
     rawDataStream.listen((message) {
-      if (message is SendPort){
+      if (message is SendPort) {
         return;
       }
 
