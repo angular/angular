@@ -8,11 +8,9 @@ import {
   expect,
   iit,
   inject,
-  it,
-  SpyObject,
-  proxy
+  it
 } from 'angular2/test_lib';
-
+import {SpyRenderCompiler, SpyDirectiveResolver} from '../spies';
 import {
   List,
   ListWrapper,
@@ -20,14 +18,7 @@ import {
   MapWrapper,
   StringMapWrapper
 } from 'angular2/src/core/facade/collection';
-import {
-  IMPLEMENTS,
-  Type,
-  isBlank,
-  stringify,
-  isPresent,
-  isArray
-} from 'angular2/src/core/facade/lang';
+import {Type, isBlank, stringify, isPresent, isArray} from 'angular2/src/core/facade/lang';
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -58,7 +49,6 @@ import {
   RenderElementBinder
 } from 'angular2/src/core/render/api';
 // TODO(tbosch): Spys don't support named modules...
-import {RenderCompiler} from 'angular2/src/core/render/api';
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
 
 
@@ -716,20 +706,6 @@ class SomePipe {
 @Directive({selector: 'directive-with-accts'})
 class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr: String) {}
-}
-
-@proxy
-@IMPLEMENTS(RenderCompiler)
-class SpyRenderCompiler extends SpyObject {
-  constructor() { super(RenderCompiler); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(DirectiveResolver)
-class SpyDirectiveResolver extends SpyObject {
-  constructor() { super(DirectiveResolver); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
 class FakeViewResolver extends ViewResolver {

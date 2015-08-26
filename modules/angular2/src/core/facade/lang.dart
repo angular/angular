@@ -23,11 +23,6 @@ class ABSTRACT {
   const ABSTRACT();
 }
 
-class IMPLEMENTS {
-  final interfaceClass;
-  const IMPLEMENTS(this.interfaceClass);
-}
-
 bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;

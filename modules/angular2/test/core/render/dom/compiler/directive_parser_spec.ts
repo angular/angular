@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent, isBlank, assertionsEnabled, IMPLEMENTS} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, assertionsEnabled} from 'angular2/src/core/facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DirectiveParser} from 'angular2/src/core/render/dom/compiler/directive_parser';

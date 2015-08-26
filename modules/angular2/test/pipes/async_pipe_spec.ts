@@ -8,12 +8,12 @@ import {
   beforeEach,
   afterEach,
   AsyncTestCompleter,
-  SpyChangeDetectorRef,
   inject,
   SpyObject
 } from 'angular2/test_lib';
+import {SpyChangeDetectorRef} from './spies';
 
-import {IMPLEMENTS, isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank} from 'angular2/src/core/facade/lang';
 import {WrappedValue} from 'angular2/change_detection';
 import {AsyncPipe} from 'angular2/pipes';
 import {

@@ -8,16 +8,15 @@ import {
   expect,
   inject,
   beforeEach,
-  beforeEachBindings,
-  SpyObject
+  beforeEachBindings
 } from 'angular2/test_lib';
-import {IMPLEMENTS, Type} from 'angular2/src/core/facade/lang';
+import {SpyRouterOutlet} from './spies';
+import {Type} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
-import {RouterOutlet} from 'angular2/src/router/router_outlet';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
@@ -203,12 +202,6 @@ function loader(): Promise<Type> {
   return PromiseWrapper.resolve(DummyComponent);
 }
 
-@proxy
-@IMPLEMENTS(RouterOutlet)
-class DummyOutlet extends SpyObject {
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
 class DummyComponent {}
 
 @RouteConfig([new Route({path: '/second', component: DummyComponent, as: 'secondCmp'})])
@@ -216,7 +209,7 @@ class DummyParentComp {
 }
 
 function makeDummyOutlet() {
-  var ref = new DummyOutlet();
+  var ref = new SpyRouterOutlet();
   ref.spy('canActivate').andCallFake((_) => PromiseWrapper.resolve(true));
   ref.spy('canReuse').andCallFake((_) => PromiseWrapper.resolve(false));
   ref.spy('canDeactivate').andCallFake((_) => PromiseWrapper.resolve(true));

@@ -11,12 +11,11 @@ import {
   inject,
   beforeEachBindings,
   it,
-  xit,
-  SpyObject,
-  proxy
+  xit
 } from 'angular2/test_lib';
+
+import {SpyRenderer, SpyAppViewPool, SpyAppViewListener} from '../spies';
 import {Injector, bind} from 'angular2/di';
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 import {
   AppProtoView,
@@ -38,8 +37,6 @@ import {
 } from 'angular2/src/core/render/api';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {AppViewPool} from 'angular2/src/core/compiler/view_pool';
 
 import {
   createHostPv,
@@ -505,25 +502,4 @@ export function main() {
 
                                       });
   });
-}
-
-@proxy
-@IMPLEMENTS(Renderer)
-class SpyRenderer extends SpyObject {
-  constructor() { super(Renderer); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(AppViewPool)
-class SpyAppViewPool extends SpyObject {
-  constructor() { super(AppViewPool); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(AppViewListener)
-class SpyAppViewListener extends SpyObject {
-  constructor() { super(AppViewListener); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }

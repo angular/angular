@@ -71,13 +71,6 @@ export function ABSTRACT(): ClassDecorator {
   return (t) => t;
 }
 
-// Note: This is only a marker annotation needed for ts2dart.
-// This is written so that is can be used as a Traceur annotation
-// or a Typescript decorator.
-export function IMPLEMENTS(_): ClassDecorator {
-  return (t) => t;
-}
-
 export function isPresent(obj: any): boolean {
   return obj !== undefined && obj !== null;
 }

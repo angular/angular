@@ -10,7 +10,6 @@ import {
   SpyObject,
   proxy
 } from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';

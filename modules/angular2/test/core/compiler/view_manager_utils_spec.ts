@@ -12,15 +12,20 @@ import {
   beforeEachBindings,
   it,
   xit,
-  SpyObject,
-  SpyChangeDetector,
-  SpyProtoChangeDetector,
-  proxy,
-  Log
+  Log,
+  SpyObject
 } from 'angular2/test_lib';
 
+import {
+  SpyChangeDetector,
+  SpyProtoChangeDetector,
+  SpyProtoElementInjector,
+  SpyElementInjector,
+  SpyPreBuiltObjects
+} from '../spies';
+
 import {Injector, bind} from 'angular2/di';
-import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AppProtoView, AppView, AppProtoViewMergeMapping} from 'angular2/src/core/compiler/view';
@@ -231,22 +236,26 @@ export function createInjector() {
 }
 
 function createElementInjector(parent = null) {
-  var host = new SpyElementInjector(null);
-  var elementInjector = new SpyElementInjector(parent);
-  return SpyObject.stub(elementInjector,
-                        {
-                          'isExportingComponent': false,
-                          'isExportingElement': false,
-                          'getEventEmitterAccessors': [],
-                          'getHostActionAccessors': [],
-                          'getComponent': new Object(),
-                          'getHost': host
-                        },
-                        {});
+  var host = new SpyElementInjector();
+  var elementInjector = new SpyElementInjector();
+  var res = SpyObject.stub(elementInjector,
+                           {
+                             'isExportingComponent': false,
+                             'isExportingElement': false,
+                             'getEventEmitterAccessors': [],
+                             'getHostActionAccessors': [],
+                             'getComponent': new Object(),
+                             'getHost': host
+                           },
+                           {});
+  res.prop('parent', parent);
+  return res;
 }
 
 export function createProtoElInjector(parent: ProtoElementInjector = null): ProtoElementInjector {
-  var pei = new SpyProtoElementInjector(parent);
+  var pei = new SpyProtoElementInjector();
+  pei.prop("parent", parent);
+  pei.prop("index", 0);
   pei.spy('instantiate').andCallFake((parentEli) => createElementInjector(parentEli));
   return <any>pei;
 }
@@ -352,33 +361,4 @@ export function createEmbeddedPv(binders: ElementBinder[] = null) {
 
 @Component({selector: 'someComponent'})
 class SomeComponent {
-}
-
-@proxy
-@IMPLEMENTS(ProtoElementInjector)
-class SpyProtoElementInjector extends SpyObject {
-  index: number;
-  constructor(public parent: ProtoElementInjector) { super(ProtoElementInjector); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(ElementInjector)
-class SpyElementInjector extends SpyObject {
-  constructor(public parent: ElementInjector) { super(ElementInjector); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(PreBuiltObjects)
-class SpyPreBuiltObjects extends SpyObject {
-  constructor() { super(PreBuiltObjects); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(Injector)
-class SpyInjector extends SpyObject {
-  constructor() { super(Injector); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }

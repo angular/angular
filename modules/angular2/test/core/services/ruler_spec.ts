@@ -7,16 +7,14 @@ import {
   iit,
   xit,
   expect,
-  SpyObject,
-  proxy
+  SpyObject
 } from 'angular2/test_lib';
+import {SpyElementRef, SpyDomAdapter} from '../spies';
 
 import {DOM, DomAdapter} from 'angular2/src/core/dom/dom_adapter';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 import {Ruler, Rectangle} from 'angular2/src/core/services/ruler';
 import {createRectangle} from './rectangle_mock';
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 function assertDimensions(rect: Rectangle, left, right, top, bottom, width, height) {
   expect(rect.left).toEqual(left);
@@ -33,7 +31,6 @@ export function main() {
     it('should allow measuring ElementRefs', inject([AsyncTestCompleter], (async) => {
          var ruler = new Ruler(SpyObject.stub(
              new SpyDomAdapter(), {'getBoundingClientRect': createRectangle(10, 20, 200, 100)}));
-
          var elRef = <any>new SpyElementRef();
          ruler.measure(elRef).then((rect) => {
            assertDimensions(rect, 10, 210, 20, 120, 200, 100);
@@ -46,7 +43,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var ruler = new Ruler(DOM);
          var elRef = <any>new SpyElementRef();
-         elRef.nativeElement = DOM.createElement('div');
+         elRef.prop("nativeElement", DOM.createElement('div'));
          ruler.measure(elRef).then((rect) => {
            // here we are using an element created in a doc fragment so all the measures will come
            // back as 0
@@ -56,19 +53,4 @@ export function main() {
        }));
 
   });
-}
-
-@proxy
-@IMPLEMENTS(ElementRef)
-class SpyElementRef extends SpyObject {
-  nativeElement;
-  constructor() { super(ElementRef); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(DomAdapter)
-class SpyDomAdapter extends SpyObject {
-  constructor() { super(DomAdapter); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }

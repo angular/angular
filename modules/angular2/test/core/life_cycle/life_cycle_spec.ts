@@ -11,11 +11,10 @@ import {
   AsyncTestCompleter,
   fakeAsync,
   tick,
-  inject,
-  SpyChangeDetector,
+  inject
 } from 'angular2/test_lib';
 import {LifeCycle} from 'angular2/core';
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
+import {SpyChangeDetector} from '../spies';
 
 export function main() {
   describe("LifeCycle", () => {

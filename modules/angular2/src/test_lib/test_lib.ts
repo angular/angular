@@ -353,6 +353,8 @@ export class SpyObject {
     return this[name];
   }
 
+  prop(name, value) { this[name] = value; }
+
   static stub(object = null, config = null, overrides = null) {
     if (!(object instanceof SpyObject)) {
       overrides = config;

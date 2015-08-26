@@ -6,11 +6,10 @@ import {
   expect,
   beforeEach,
   createTestInjector,
-  beforeEachBindings,
-  SpyObject,
-  proxy
+  beforeEachBindings
 } from 'angular2/test_lib';
-import {IMPLEMENTS, Type} from 'angular2/src/core/facade/lang';
+import {SpyMessageBroker} from './spies';
+import {Type} from 'angular2/src/core/facade/lang';
 import {
   ClientMessageBroker,
   UiArguments,
@@ -42,13 +41,6 @@ export function main() {
          });
        }));
   });
-}
-
-@proxy
-@IMPLEMENTS(ClientMessageBroker)
-class SpyMessageBroker extends SpyObject {
-  constructor() { super(ClientMessageBroker); }
-  noSuchMethod(m) { return super.noSuchMethod(m); }
 }
 
 class MockMessageBrokerFactory extends ClientMessageBrokerFactory {

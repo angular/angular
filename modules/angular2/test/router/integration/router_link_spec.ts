@@ -17,7 +17,7 @@ import {
   By
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS, NumberWrapper} from 'angular2/src/core/facade/lang';
+import {NumberWrapper} from 'angular2/src/core/facade/lang';
 
 import {bind, Component, View} from 'angular2/angular2';
 

@@ -10,14 +10,13 @@ import {
   xdescribe,
   expect,
   beforeEach,
-  SpyObject,
-  proxy,
   inject,
   AsyncTestCompleter,
   el,
   containsRegexp
 } from 'angular2/test_lib';
-import {isBlank, isPresent, IMPLEMENTS, stringify} from 'angular2/src/core/facade/lang';
+import {SpyView, SpyElementRef} from '../spies';
+import {isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {
   ListWrapper,
   MapWrapper,
@@ -41,32 +40,17 @@ import {
   LifecycleEvent
 } from 'angular2/metadata';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/di';
-import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
-@proxy
-@IMPLEMENTS(AppView)
-class DummyView extends SpyObject {
-  changeDetector;
-  elementOffset: number;
-  constructor() {
-    super(AppView);
-    this.changeDetector = null;
-    this.elementOffset = 0;
-  }
-  noSuchMethod(m) { return super.noSuchMethod(m); }
-}
-
-@proxy
-@IMPLEMENTS(ElementRef)
-class DummyElementRef extends SpyObject {
-  boundElementIndex: number = 0;
-  constructor() { super(ElementRef); }
-  noSuchMethod(m) { return super.noSuchMethod(m); }
+function createDummyView(detector = null) {
+  var res = new SpyView();
+  res.prop("changeDetector", detector);
+  res.prop("elementOffset", 0);
+  return res;
 }
 
 @Injectable()
@@ -245,7 +229,7 @@ class TestNode extends TreeNode<TestNode> {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>new DummyView(), <any>new DummyElementRef(), null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>createDummyView(), <any>new SpyElementRef(), null);
 
   // An injector with more than 10 bindings will switch to the dynamic strategy
   var dynamicBindings = [];
@@ -773,7 +757,7 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var templateRef = new TemplateRef(<any>new DummyElementRef());
+            var templateRef = new TemplateRef(<any>new SpyElementRef());
             var bindings = ListWrapper.concat([NeedsTemplateRef], extraBindings);
             var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, null, templateRef));
 
@@ -987,24 +971,22 @@ export function main() {
 
           it("should inject ChangeDetectorRef of the component's view into the component", () => {
             var cd = new DynamicChangeDetector(null, null, 0, [], [], null, [], [], [], null);
-            var view = <any>new DummyView();
-            var childView = new DummyView();
-            childView.changeDetector = cd;
+            var view = <any>createDummyView();
+            var childView = createDummyView(cd);
             view.spy('getNestedView').andReturn(childView);
             var binding = DirectiveBinding.createFromType(ComponentNeedsChangeDetectorRef, new ComponentMetadata());
             var inj = injector(ListWrapper.concat([binding], extraBindings), null, true,
-                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
+                               new PreBuiltObjects(null, view, <any>new SpyElementRef(), null));
 
             expect(inj.get(ComponentNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
 
           it("should inject ChangeDetectorRef of the containing component into directives", () => {
             var cd = new DynamicChangeDetector(null, null, 0, [], [], null, [], [], [], null);
-            var view = <any>new DummyView();
-            view.changeDetector =cd;
+            var view = <any>createDummyView(cd);
             var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new DirectiveMetadata());
             var inj = injector(ListWrapper.concat([binding], extraBindings), null, false,
-                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
+                               new PreBuiltObjects(null, view, <any>new SpyElementRef(), null));
 
             expect(inj.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
@@ -1015,7 +997,7 @@ export function main() {
           });
 
           it("should inject TemplateRef", () => {
-            var templateRef = new TemplateRef(<any>new DummyElementRef());
+            var templateRef = new TemplateRef(<any>new SpyElementRef());
             var inj = injector(ListWrapper.concat([NeedsTemplateRef], extraBindings), null, false,
                                new PreBuiltObjects(null, null, null, templateRef));
 
@@ -1065,7 +1047,7 @@ export function main() {
           })
 
           it('should contain PreBuiltObjects on the same injector', () => {
-            var preBuiltObjects = new PreBuiltObjects(null, null, null, new TemplateRef(<any>new DummyElementRef()));
+            var preBuiltObjects = new PreBuiltObjects(null, null, null, new TemplateRef(<any>new SpyElementRef()));
             var inj = injector(ListWrapper.concat([
                 NeedsTemplateRefQuery
               ], extraBindings), null,

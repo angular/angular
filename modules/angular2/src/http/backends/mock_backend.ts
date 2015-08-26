@@ -5,15 +5,14 @@ import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {IMPLEMENTS, BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/lang';
 
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
  **/
-@IMPLEMENTS(Connection)
-export class MockConnection {
+export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than XHR states.
   /**
@@ -130,8 +129,7 @@ export class MockConnection {
  * This method only exists in the mock implementation, not in real Backends.
  **/
 @Injectable()
-@IMPLEMENTS(ConnectionBackend)
-export class MockBackend {
+export class MockBackend implements ConnectionBackend {
   /**
    * {@link EventEmitter}
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
