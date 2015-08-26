@@ -4,6 +4,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/transform/common/mirror_mode.dart';
 import 'package:angular2/src/transform/reflection_remover/codegen.dart';
 import 'package:angular2/src/transform/reflection_remover/rewriter.dart';
+import 'package:barback/barback.dart';
 import 'package:guinness/guinness.dart';
 
 import 'reflection_remover_files/expected/index.dart' as expected;
@@ -16,7 +17,8 @@ import '../common/read_file.dart';
 main() => allTests();
 
 void allTests() {
-  var codegen = new Codegen('web/index.dart', ['web/index.ng_deps.dart']);
+  var assetId = new AssetId('a', 'web/index.dart');
+  var codegen = new Codegen(assetId);
   var code = readFile('reflection_remover/index.dart').replaceAll('\r\n', '\n');
   var bootstrapCode = readFile('reflection_remover/bootstrap_files/index.dart')
       .replaceAll('\r\n', '\n');
