@@ -1,4 +1,4 @@
-import {TypeMeta, TemplateMeta, ViewEncapsulation} from './api';
+import {TypeMetadata, TemplateMetadata, ViewEncapsulation} from './api';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
@@ -28,8 +28,9 @@ export class TemplateLoader {
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver,
               private _styleUrlResolver: StyleUrlResolver, private _domParser: HtmlParser) {}
 
-  loadTemplate(directiveType: TypeMeta, encapsulation: ViewEncapsulation, template: string,
-               templateUrl: string, styles: string[], styleUrls: string[]): Promise<TemplateMeta> {
+  loadTemplate(directiveType: TypeMetadata, encapsulation: ViewEncapsulation, template: string,
+               templateUrl: string, styles: string[],
+               styleUrls: string[]): Promise<TemplateMetadata> {
     if (isPresent(template)) {
       return PromiseWrapper.resolve(this.createTemplateFromString(
           directiveType, encapsulation, template, directiveType.typeUrl, styles, styleUrls));
@@ -42,9 +43,9 @@ export class TemplateLoader {
     }
   }
 
-  createTemplateFromString(directiveType: TypeMeta, encapsulation: ViewEncapsulation,
+  createTemplateFromString(directiveType: TypeMetadata, encapsulation: ViewEncapsulation,
                            template: string, templateSourceUrl: string, styles: string[],
-                           styleUrls: string[]): TemplateMeta {
+                           styleUrls: string[]): TemplateMetadata {
     var domNodes = this._domParser.parse(template, directiveType.typeName);
     var visitor = new TemplatePreparseVisitor();
     var remainingNodes = htmlVisitAll(visitor, domNodes);
@@ -60,7 +61,7 @@ export class TemplateLoader {
         allStyles.map(style => this._styleUrlResolver.resolveUrls(style, templateSourceUrl));
     var allStyleAbsUrls =
         allStyleUrls.map(styleUrl => this._urlResolver.resolve(templateSourceUrl, styleUrl));
-    return new TemplateMeta({
+    return new TemplateMetadata({
       encapsulation: encapsulation,
       nodes: remainingNodes,
       styles: allResolvedStyles,

@@ -22,13 +22,15 @@ export class AttrAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor): any { return visitor.visitAttr(this); }
 }
 
-export class BoundPropertyAst implements TemplateAst {
-  constructor(public name: string, public value: AST, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitProperty(this); }
+export class BoundElementPropertyAst implements TemplateAst {
+  constructor(public name: string, public type: PropertyBindingType, public value: AST,
+              public unit: string, public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor): any { return visitor.visitElementProperty(this); }
 }
 
 export class BoundEventAst implements TemplateAst {
-  constructor(public name: string, public handler: AST, public sourceInfo: string) {}
+  constructor(public name: string, public target: string, public handler: AST,
+              public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor): any { return visitor.visitEvent(this); }
 }
 
@@ -38,23 +40,43 @@ export class VariableAst implements TemplateAst {
 }
 
 export class ElementAst implements TemplateAst {
-  constructor(public attrs: AttrAst[], public properties: BoundPropertyAst[],
+  constructor(public attrs: AttrAst[], public properties: BoundElementPropertyAst[],
               public events: BoundEventAst[], public vars: VariableAst[],
-              public directives: DirectiveMetadata[], public children: TemplateAst[],
+              public directives: DirectiveAst[], public children: TemplateAst[],
               public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor): any { return visitor.visitElement(this); }
 }
 
 export class EmbeddedTemplateAst implements TemplateAst {
-  constructor(public attrs: AttrAst[], public properties: BoundPropertyAst[],
-              public vars: VariableAst[], public directives: DirectiveMetadata[],
-              public children: TemplateAst[], public sourceInfo: string) {}
+  constructor(public attrs: AttrAst[], public vars: VariableAst[],
+              public directives: DirectiveAst[], public children: TemplateAst[],
+              public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor): any { return visitor.visitEmbeddedTemplate(this); }
+}
+
+export class BoundDirectivePropertyAst implements TemplateAst {
+  constructor(public directiveName: string, public templateName: string, public value: AST,
+              public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor): any { return visitor.visitDirectiveProperty(this); }
+}
+
+export class DirectiveAst implements TemplateAst {
+  constructor(public directive: DirectiveMetadata, public properties: BoundDirectivePropertyAst[],
+              public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
+              public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor): any { return visitor.visitDirective(this); }
 }
 
 export class NgContentAst implements TemplateAst {
   constructor(public select: string, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor): any { return visitor.visitNgContent(this); }
+}
+
+export enum PropertyBindingType {
+  Property,
+  Attribute,
+  Class,
+  Style
 }
 
 export interface TemplateAstVisitor {
@@ -63,10 +85,12 @@ export interface TemplateAstVisitor {
   visitElement(ast: ElementAst): any;
   visitVariable(ast: VariableAst): any;
   visitEvent(ast: BoundEventAst): any;
-  visitProperty(ast: BoundPropertyAst): any;
+  visitElementProperty(ast: BoundElementPropertyAst): any;
   visitAttr(ast: AttrAst): any;
   visitBoundText(ast: BoundTextAst): any;
   visitText(ast: TextAst): any;
+  visitDirective(ast: DirectiveAst): any;
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst): any;
 }
 
 

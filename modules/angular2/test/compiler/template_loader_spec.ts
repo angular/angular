@@ -15,7 +15,7 @@ import {
 } from 'angular2/test_lib';
 
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {TypeMeta, ViewEncapsulation, TemplateMeta} from 'angular2/src/compiler/api';
+import {TypeMetadata, ViewEncapsulation, TemplateMetadata} from 'angular2/src/compiler/api';
 
 import {TemplateLoader} from 'angular2/src/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
@@ -28,21 +28,21 @@ import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 export function main() {
   describe('TemplateLoader', () => {
     var loader: TemplateLoader;
-    var dirType: TypeMeta;
+    var dirType: TypeMetadata;
     var xhr: MockXHR;
     beforeEach(inject([XHR], (mockXhr) => {
       xhr = mockXhr;
       var urlResolver = new UrlResolver();
       loader =
           new TemplateLoader(xhr, urlResolver, new StyleUrlResolver(urlResolver), new HtmlParser());
-      dirType = new TypeMeta({typeUrl: 'http://sometypeurl', typeName: 'SomeComp'});
+      dirType = new TypeMetadata({typeUrl: 'http://sometypeurl', typeName: 'SomeComp'});
     }));
 
     describe('loadTemplate', () => {
       describe('inline template', () => {
         it('should parse the template', inject([AsyncTestCompleter], (async) => {
              loader.loadTemplate(dirType, null, 'a', null, [], ['test.css'])
-                 .then((template: TemplateMeta) => {
+                 .then((template: TemplateMetadata) => {
                    expect(humanizeDom(template.nodes))
                        .toEqual([[HtmlTextAst, 'a', 'SomeComp > #text(a):nth-child(0)']])
                            async.done();
@@ -51,7 +51,7 @@ export function main() {
 
         it('should resolve styles against the typeUrl', inject([AsyncTestCompleter], (async) => {
              loader.loadTemplate(dirType, null, 'a', null, [], ['test.css'])
-                 .then((template: TemplateMeta) => {
+                 .then((template: TemplateMetadata) => {
                    expect(template.styleAbsUrls).toEqual(['http://sometypeurl/test.css']);
                    async.done();
                  });
@@ -64,7 +64,7 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              xhr.expect('http://sometypeurl/sometplurl', 'a');
              loader.loadTemplate(dirType, null, null, 'sometplurl', [], ['test.css'])
-                 .then((template: TemplateMeta) => {
+                 .then((template: TemplateMetadata) => {
                    expect(humanizeDom(template.nodes))
                        .toEqual([[HtmlTextAst, 'a', 'SomeComp > #text(a):nth-child(0)']])
                            async.done();
@@ -76,7 +76,7 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              xhr.expect('http://sometypeurl/tpl/sometplurl', 'a');
              loader.loadTemplate(dirType, null, null, 'tpl/sometplurl', [], ['test.css'])
-                 .then((template: TemplateMeta) => {
+                 .then((template: TemplateMetadata) => {
                    expect(template.styleAbsUrls).toEqual(['http://sometypeurl/tpl/test.css']);
                    async.done();
                  });

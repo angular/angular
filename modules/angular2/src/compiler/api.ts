@@ -1,7 +1,8 @@
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent, normalizeBool} from 'angular2/src/core/facade/lang';
 import {HtmlAst} from './html_ast';
+import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
 
-export class TypeMeta {
+export class TypeMetadata {
   type: any;
   typeName: string;
   typeUrl: string;
@@ -13,7 +14,28 @@ export class TypeMeta {
   }
 }
 
-export class TemplateMeta {
+export class ChangeDetectionMetadata {
+  changeDetection: ChangeDetectionStrategy;
+  properties: string[];
+  events: string[];
+  hostListeners: StringMap<string, string>;
+  hostProperties: StringMap<string, string>;
+  constructor({changeDetection, properties, events, hostListeners, hostProperties}: {
+    changeDetection?: ChangeDetectionStrategy,
+    properties?: string[],
+    events?: string[],
+    hostListeners?: StringMap<string, string>,
+    hostProperties?: StringMap<string, string>
+  }) {
+    this.changeDetection = changeDetection;
+    this.properties = properties;
+    this.events = events;
+    this.hostListeners = hostListeners;
+    this.hostProperties = hostProperties;
+  }
+}
+
+export class TemplateMetadata {
   encapsulation: ViewEncapsulation;
   nodes: HtmlAst[];
   styles: string[];
@@ -54,19 +76,25 @@ export enum ViewEncapsulation {
 }
 
 export class DirectiveMetadata {
-  type: TypeMeta;
+  type: TypeMetadata;
   isComponent: boolean;
   selector: string;
-  template: TemplateMeta;
-  constructor({type, isComponent, selector, template}: {
-    type?: TypeMeta,
+  hostAttributes: Map<string, string>;
+  changeDetection: ChangeDetectionMetadata;
+  template: TemplateMetadata;
+  constructor({type, isComponent, selector, hostAttributes, changeDetection, template}: {
+    type?: TypeMetadata,
     isComponent?: boolean,
     selector?: string,
-    template?: TemplateMeta
+    hostAttributes?: Map<string, string>,
+    changeDetection?: ChangeDetectionMetadata,
+    template?: TemplateMetadata
   } = {}) {
     this.type = type;
-    this.isComponent = isPresent(isComponent) ? isComponent : false;
+    this.isComponent = normalizeBool(isComponent);
     this.selector = selector;
+    this.hostAttributes = hostAttributes;
+    this.changeDetection = changeDetection;
     this.template = template;
   }
 }
