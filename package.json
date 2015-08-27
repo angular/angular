@@ -57,7 +57,6 @@
     "del": "~1",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.10.11",
-    "es6-module-loader": "^0.9.2",
     "event-stream": "^3.1.5",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.18.0",
