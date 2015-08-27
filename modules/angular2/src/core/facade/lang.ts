@@ -53,10 +53,6 @@ _global.assert = function assert(condition) {
   }
 };
 
-export function ENUM_INDEX(value: number): number {
-  return value;
-}
-
 // This function is needed only to properly support Dart's const expressions
 // see https://github.com/angular/ts2dart/pull/151 for more info
 export function CONST_EXPR<T>(expr: T): T {
