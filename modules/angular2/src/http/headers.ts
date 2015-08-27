@@ -47,7 +47,7 @@ export class Headers {
    */
   append(name: string, value: string): void {
     var mapName = this._headersMap.get(name);
-    var list = isListLikeIterable(mapName) ? mapName : [];
+    var list: List<string> = isListLikeIterable(mapName) ? mapName : [];
     list.push(value);
     this._headersMap.set(name, list);
   }
