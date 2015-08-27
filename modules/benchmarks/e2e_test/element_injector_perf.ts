@@ -12,7 +12,8 @@ describe('ng2 element injector benchmark', function() {
       buttons: ['#instantiate'],
       id: 'ng2.elementInjector.instantiate',
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
-      microMetrics: {'instantiateAvg': 'avg time for injection (in ms)'}
+      microMetrics: {'instantiateAvg': 'avg time for injection (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -22,7 +23,8 @@ describe('ng2 element injector benchmark', function() {
       buttons: ['#hydrate'],
       id: 'ng2.elementInjector.hydrate',
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
-      microMetrics: {'instantiateAvg': 'avg time for injection (in ms)'}
+      microMetrics: {'instantiateAvg': 'avg time for injection (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

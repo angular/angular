@@ -4,17 +4,19 @@ import {Promise} from 'angular2/src/core/facade/async';
 describe('WebWorkers Kitchen Sink', function() {
   afterEach(verifyNoBrowserErrors);
   var selector = "hello-app .greeting";
-  var URL = "examples/src/web_workers/kitchen_sink/index.html";
+  var URL = browser.baseUrl + "examples/src/web_workers/kitchen_sink/index.html";
 
   it('should greet', () => {
-    browser.get(URL);
+    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    browser.driver.get(URL);
 
     browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
     expect(element.all(by.css(selector)).first().getText()).toEqual("hello world!");
   });
 
   it('should change greeting', () => {
-    browser.get(URL);
+    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    browser.driver.get(URL);
 
     browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
     element(by.css("hello-app .changeButton")).click();
@@ -24,7 +26,8 @@ describe('WebWorkers Kitchen Sink', function() {
   });
 
   it("should display correct key names", () => {
-    browser.get(URL);
+    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    browser.driver.get(URL);
     browser.wait(protractor.until.elementLocated(by.css(".sample-area")), 15000);
 
     var area = element.all(by.css(".sample-area")).first();

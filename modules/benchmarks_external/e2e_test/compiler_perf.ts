@@ -11,7 +11,8 @@ describe('ng1.x compiler benchmark', function() {
       url: URL,
       buttons: ['#compileWithBindings'],
       id: 'ng1.compile.withBindings',
-      params: [{name: 'elements', value: 150, scale: 'linear'}]
+      params: [{name: 'elements', value: 150, scale: 'linear'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -20,7 +21,8 @@ describe('ng1.x compiler benchmark', function() {
       url: URL,
       buttons: ['#compileNoBindings'],
       id: 'ng1.compile.noBindings',
-      params: [{name: 'elements', value: 150, scale: 'linear'}]
+      params: [{name: 'elements', value: 150, scale: 'linear'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

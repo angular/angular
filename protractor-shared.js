@@ -188,11 +188,26 @@ var config = exports.config = {
 // and the sleeps in all tests.
 function patchProtractorWait(browser) {
   browser.ignoreSynchronization = true;
+  // Benchmarks never need to wait for Angular 2 to be ready
   var _get = browser.get;
   var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 14000 : 8000;
   browser.get = function() {
     var result = _get.apply(this, arguments);
-    browser.driver.wait(protractor.until.elementLocated(By.js('var cs = document.body.children; var isLoading = false; for (var i = 0; i < cs.length; i++) {if (cs[i].textContent.indexOf("Loading...") > -1) isLoading = true; } return !isLoading ? document.body.children : null')), sleepInterval);
+    browser.driver.wait(protractor.until.elementLocated(By.js(function() {
+      var isLoading = true;
+      if (window.getAllAngularTestabilities) {
+        var testabilities = window.getAllAngularTestabilities();
+        if (testabilities && testabilities.length > 0) {
+          isLoading = false;
+          testabilities.forEach(function(testability) {
+            if (!testability.isStable()) {
+              isLoading = true;
+            }
+          });
+        }
+      }
+      return !isLoading ? document.body.children : null;
+    })), sleepInterval);
     return result;
   }
 }
