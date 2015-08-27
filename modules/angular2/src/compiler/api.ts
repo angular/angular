@@ -1,3 +1,4 @@
+import {isPresent} from 'angular2/src/core/facade/lang';
 import {HtmlAst} from './html_ast';
 
 export class TypeMeta {
@@ -54,18 +55,18 @@ export enum ViewEncapsulation {
 
 export class DirectiveMetadata {
   type: TypeMeta;
+  isComponent: boolean;
   selector: string;
-  constructor({type, selector}: {type?: TypeMeta, selector?: string} = {}) {
-    this.type = type;
-    this.selector = selector;
-  }
-}
-
-export class ComponentMetadata extends DirectiveMetadata {
   template: TemplateMeta;
-  constructor({type, selector, template}:
-                  {type?: TypeMeta, selector?: string, template?: TemplateMeta}) {
-    super({type: type, selector: selector});
+  constructor({type, isComponent, selector, template}: {
+    type?: TypeMeta,
+    isComponent?: boolean,
+    selector?: string,
+    template?: TemplateMeta
+  } = {}) {
+    this.type = type;
+    this.isComponent = isPresent(isComponent) ? isComponent : false;
+    this.selector = selector;
     this.template = template;
   }
 }

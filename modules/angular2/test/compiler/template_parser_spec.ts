@@ -3,7 +3,7 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '
 import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {TemplateParser, splitClasses} from 'angular2/src/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {DirectiveMetadata, ComponentMetadata, TypeMeta} from 'angular2/src/compiler/api';
+import {DirectiveMetadata, TypeMeta} from 'angular2/src/compiler/api';
 import {
   templateVisitAll,
   TemplateAstVisitor,
@@ -192,8 +192,8 @@ export function main() {
               new DirectiveMetadata({selector: '[a=b]', type: new TypeMeta({typeName: 'DirA'})});
           var dirB =
               new DirectiveMetadata({selector: '[a]', type: new TypeMeta({typeName: 'DirB'})});
-          var comp =
-              new ComponentMetadata({selector: 'div', type: new TypeMeta({typeName: 'ZComp'})});
+          var comp = new DirectiveMetadata(
+              {selector: 'div', isComponent: true, type: new TypeMeta({typeName: 'ZComp'})});
           expect(humanizeTemplateAsts(parse('<div a="b">', [dirB, dirA, comp])))
               .toEqual([
                 [ElementAst, [comp, dirA, dirB], 'TestComp > div:nth-child(0)'],

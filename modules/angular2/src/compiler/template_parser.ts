@@ -12,7 +12,7 @@ import {
 
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 
-import {DirectiveMetadata, ComponentMetadata} from './api';
+import {DirectiveMetadata} from './api';
 import {
   ElementAst,
   BoundPropertyAst,
@@ -279,8 +279,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     // as selectorMatcher uses Maps inside.
     // Also need to make components the first directive in the array
     ListWrapper.sort(directives, (dir1: DirectiveMetadata, dir2: DirectiveMetadata) => {
-      var dir1Comp = dir1 instanceof ComponentMetadata;
-      var dir2Comp = dir2 instanceof ComponentMetadata;
+      var dir1Comp = dir1.isComponent;
+      var dir2Comp = dir2.isComponent;
       if (dir1Comp && !dir2Comp) {
         return -1;
       } else if (!dir1Comp && dir2Comp) {
