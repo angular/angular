@@ -6,6 +6,7 @@ import {
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {BaseException} from "angular2/src/core/facade/lang";
 import {bootstrapUICommon} from "angular2/src/web_workers/ui/impl";
+export * from 'angular2/src/web_workers/shared/message_bus';
 
 /**
  * Bootstrapping a WebWorker

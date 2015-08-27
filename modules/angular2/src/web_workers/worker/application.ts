@@ -10,6 +10,7 @@ import {Promise} from 'angular2/src/core/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
 import {ApplicationRef} from "angular2/src/core/application_ref";
 import {Injectable} from "angular2/di";
+export * from "angular2/src/web_workers/shared/message_bus";
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
 interface PostMessageInterface {

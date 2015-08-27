@@ -1,5 +1,6 @@
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {BaseException} from 'angular2/src/core/facade/lang';
+export {EventEmitter, Observable} from 'angular2/src/core/facade/async';
 
 function _abstract() {
   throw new BaseException("This method is abstract");
