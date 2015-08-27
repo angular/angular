@@ -290,7 +290,11 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
         ' at line ' + location.start.line);
     }
     return declaration.parameters.map(function(parameter) {
-      var paramText = getText(sourceFile, parameter.name);
+      var paramText = '';
+      if (parameter.dotDotDotToken) {
+        paramText += '...';
+      }
+      paramText += getText(sourceFile, parameter.name);
       if (parameter.questionToken || parameter.initializer) {
         paramText += '?';
       }
@@ -298,6 +302,9 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
         paramText += ':' + getType(sourceFile, parameter.type);
       } else {
         paramText += ': any';
+        if (parameter.dotDotDotToken) {
+          paramText += '[]';
+        }
       }
       return paramText.trim();
     });

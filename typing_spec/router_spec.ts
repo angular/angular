@@ -11,6 +11,7 @@ import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_BINDINGS} from 'angular2/router';
   template: '<h1>Hello</h1>',
 })
 class FooCmp {
+  constructor(a: string, b: number) {}
 }
 
 
