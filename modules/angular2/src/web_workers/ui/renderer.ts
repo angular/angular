@@ -29,8 +29,7 @@ export class MessageBasedRenderer {
                           bind(this._createRootHostView, this));
     broker.registerMethod("createView", [RenderProtoViewRef, PRIMITIVE, PRIMITIVE],
                           bind(this._createView, this));
-    broker.registerMethod("destroyView", [RenderViewRef],
-                          bind(this._renderer.destroyView, this._renderer));
+    broker.registerMethod("destroyView", [RenderViewRef], bind(this._destroyView, this));
     broker.registerMethod("attachFragmentAfterFragment", [RenderFragmentRef, RenderFragmentRef],
                           bind(this._renderer.attachFragmentAfterFragment, this._renderer));
     broker.registerMethod("attachFragmentAfterElement", [WebWorkerElementRef, RenderFragmentRef],
@@ -55,6 +54,11 @@ export class MessageBasedRenderer {
                           bind(this._renderer.invokeElementMethod, this._renderer));
     broker.registerMethod("setEventDispatcher", [RenderViewRef],
                           bind(this._setEventDispatcher, this));
+  }
+
+  private _destroyView(viewRef: RenderViewRef): void {
+    this._renderer.destroyView(viewRef);
+    this._renderViewWithFragmentsStore.remove(viewRef);
   }
 
   private _createRootHostView(ref: RenderProtoViewRef, fragmentCount: number, selector: string,

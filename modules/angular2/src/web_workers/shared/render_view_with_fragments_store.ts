@@ -5,7 +5,7 @@ import {
   RenderViewWithFragments
 } from "angular2/src/core/render/api";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
-import {List, ListWrapper} from "angular2/src/core/facade/collection";
+import {List, MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
 
 @Injectable()
 export class RenderViewWithFragmentsStore {
@@ -13,11 +13,13 @@ export class RenderViewWithFragmentsStore {
   private _onWebWorker: boolean;
   private _lookupByIndex: Map<number, RenderViewRef | RenderFragmentRef>;
   private _lookupByView: Map<RenderViewRef | RenderFragmentRef, number>;
+  private _viewFragments: Map<RenderViewRef, List<RenderFragmentRef>>;
 
   constructor(@Inject(ON_WEB_WORKER) onWebWorker) {
     this._onWebWorker = onWebWorker;
     this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
     this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
+    this._viewFragments = new Map<RenderViewRef, List<RenderFragmentRef>>();
   }
 
   allocate(fragmentCount: number): RenderViewWithFragments {
@@ -34,7 +36,7 @@ export class RenderViewWithFragmentsStore {
     return renderViewWithFragments;
   }
 
-  store(view: RenderViewWithFragments, startIndex: number) {
+  store(view: RenderViewWithFragments, startIndex: number): void {
     this._lookupByIndex.set(startIndex, view.viewRef);
     this._lookupByView.set(view.viewRef, startIndex);
     startIndex++;
@@ -44,13 +46,21 @@ export class RenderViewWithFragmentsStore {
       this._lookupByView.set(ref, startIndex);
       startIndex++;
     });
+
+    this._viewFragments.set(view.viewRef, view.fragmentRefs);
   }
 
-  retreive(ref: number): RenderViewRef | RenderFragmentRef {
-    if (ref == null) {
-      return null;
-    }
-    return this._lookupByIndex.get(ref);
+  remove(view: RenderViewRef): void {
+    this._removeRef(view);
+    var fragments = this._viewFragments.get(view);
+    fragments.forEach((fragment) => { this._removeRef(fragment); });
+    MapWrapper.delete(this._viewFragments, view);
+  }
+
+  private _removeRef(ref: RenderViewRef | RenderFragmentRef) {
+    var index = this._lookupByView.get(ref);
+    MapWrapper.delete(this._lookupByView, ref);
+    MapWrapper.delete(this._lookupByIndex, index);
   }
 
   serializeRenderViewRef(viewRef: RenderViewRef): number {
@@ -66,7 +76,7 @@ export class RenderViewWithFragmentsStore {
       return null;
     }
 
-    return this.retreive(ref);
+    return this._retrieve(ref);
   }
 
   deserializeRenderFragmentRef(ref: number): RenderFragmentRef {
@@ -74,8 +84,21 @@ export class RenderViewWithFragmentsStore {
       return null;
     }
 
-    return this.retreive(ref);
+    return this._retrieve(ref);
   }
+
+  private _retrieve(ref: number): RenderViewRef | RenderFragmentRef {
+    if (ref == null) {
+      return null;
+    }
+
+    if (!this._lookupByIndex.has(ref)) {
+      return null;
+    }
+
+    return this._lookupByIndex.get(ref);
+  }
+
 
   private _serializeRenderFragmentOrViewRef(ref: RenderViewRef | RenderFragmentRef): number {
     if (ref == null) {

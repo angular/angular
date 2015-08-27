@@ -328,12 +328,14 @@ export function main() {
 }
 
 class WorkerTestRootView extends TestRootView {
-  constructor(workerViewWithFragments: RenderViewWithFragments, uiRenderViewStore) {
+  constructor(workerViewWithFragments: RenderViewWithFragments,
+              uiRenderViewStore: RenderViewWithFragmentsStore) {
     super(new RenderViewWithFragments(
-        uiRenderViewStore.retreive(
+        uiRenderViewStore.deserializeRenderViewRef(
             (<WebWorkerRenderViewRef>workerViewWithFragments.viewRef).refNumber),
-        ListWrapper.map(workerViewWithFragments.fragmentRefs,
-                        (val) => { return uiRenderViewStore.retreive(val.refNumber); })));
+        ListWrapper.map(workerViewWithFragments.fragmentRefs, (val) => {
+          return uiRenderViewStore.deserializeRenderFragmentRef(val.refNumber);
+        })));
   }
 }
 
