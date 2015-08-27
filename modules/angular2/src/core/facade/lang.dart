@@ -13,8 +13,6 @@ class Math {
   static double random() => _random.nextDouble();
 }
 
-int ENUM_INDEX(value) => value.index;
-
 class CONST {
   const CONST();
 }

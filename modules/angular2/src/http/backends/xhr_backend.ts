@@ -6,7 +6,7 @@ import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/di';
 import {BrowserXhr} from './browser_xhr';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {isPresent, ENUM_INDEX} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -31,7 +31,7 @@ export class XHRConnection implements Connection {
     this.response = new EventEmitter();
     this._xhr = browserXHR.build();
     // TODO(jeffbcross): implement error listening/propagation
-    this._xhr.open(RequestMethods[ENUM_INDEX(req.method)], req.url);
+    this._xhr.open(RequestMethods[req.method], req.url);
     this._xhr.addEventListener('load', (_) => {
       // responseText is the old-school way of retrieving response (supported by IE8 & 9)
       // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
