@@ -369,7 +369,7 @@ function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
                                        binding: ElementPropertyBinding): boolean {
   if (binding.type === PropertyBindingType.PROPERTY) {
     if (!isNgComponent) {
-      return schemaRegistry.hasProperty(protoElement, binding.property);
+      return schemaRegistry.hasProperty(DOM.tagName(protoElement), binding.property);
     } else {
       // TODO(pk): change this logic as soon as we can properly detect custom elements
       return DOM.hasProperty(protoElement, binding.property);
