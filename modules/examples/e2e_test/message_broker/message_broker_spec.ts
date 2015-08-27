@@ -1,15 +1,16 @@
 import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 import {PromiseWrapper} from "angular2/src/core/facade/async";
 
-var URL = 'examples/src/message_broker/index.html';
+var URL = browser.baseUrl + 'examples/src/message_broker/index.html';
 
 describe('message bus', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   it('should receive a response from the worker', function() {
-    browser.get(URL);
-    browser.sleep(5000);
+    // This test doesn't need to wait for Angular 2, so not using the patched .get() from Protractor
+    browser.driver.get(URL);
+    browser.sleep(2000);
 
     var VALUE = "hi there";
     var input = element.all(by.css("#echo_input")).first();
@@ -28,7 +29,8 @@ describe('message broker', function() {
   it('should be able to run tasks on the UI thread after init', () => {
     var VALUE = '5';
 
-    browser.get(URL);
+    // This test doesn't need to wait for Angular 2, so not using the patched .get() from Protractor
+    browser.driver.get(URL);
     browser.wait(protractor.until.elementLocated(protractor.By.css("#ui_result .result")), 5000);
     expect(getComponentText("#ui_result", ".result")).toEqual(VALUE);
   });
