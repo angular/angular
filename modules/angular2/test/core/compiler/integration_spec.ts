@@ -68,8 +68,8 @@ import {Directive, Component, View, ViewMetadata, Attribute, Query, Pipe} from '
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
-import {NgIf} from 'angular2/src/core/directives/ng_if';
-import {NgFor} from 'angular2/src/core/directives/ng_for';
+import {NgIf} from 'angular2/src/directives/ng_if';
+import {NgFor} from 'angular2/src/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ViewRef} from 'angular2/src/core/compiler/view_ref';

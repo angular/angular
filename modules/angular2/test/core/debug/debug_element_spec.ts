@@ -29,7 +29,7 @@ import {
   View,
 } from 'angular2/metadata';
 
-import {NgFor} from 'angular2/src/core/directives/ng_for';
+import {NgFor} from 'angular2/src/directives/ng_for';
 
 @Injectable()
 class Logger {

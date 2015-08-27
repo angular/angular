@@ -18,7 +18,7 @@ import {Injectable} from 'angular2/core';
 
 import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
 
-import {NgIf} from 'angular2/src/core/directives/ng_if';
+import {NgIf} from 'angular2/src/directives/ng_if';
 
 @Component({selector: 'child-comp'})
 @View({template: `<span>Original {{childBinding}}</span>`, directives: []})
