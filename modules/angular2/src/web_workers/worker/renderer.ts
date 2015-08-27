@@ -138,6 +138,7 @@ export class WebWorkerRenderer implements Renderer {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
     var args = new UiArguments("destroyView", fnArgs);
     this._messageBroker.runOnUiThread(args, null);
+    this._renderViewStore.remove(viewRef);
   }
 
   /**
