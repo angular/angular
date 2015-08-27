@@ -37,7 +37,8 @@ module.exports = function makeNodeTree(destinationPath) {
     module: 'commonjs',
     noEmitOnError: true,
     rootDir: '.',
-    rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
+    rootFilePaths:
+        ['angular2/manual_typings/traceur-runtime.d.ts', 'angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
     target: 'ES5'

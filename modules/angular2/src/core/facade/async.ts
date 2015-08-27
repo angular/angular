@@ -1,5 +1,4 @@
-/// <reference path="../../../typings/rx/rx.d.ts" />
-
+///<reference path="../../../typings/tsd.d.ts" />
 import {global, isPresent} from 'angular2/src/core/facade/lang';
 import * as Rx from 'rx';
 
