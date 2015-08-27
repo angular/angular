@@ -1171,7 +1171,6 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
       JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']),
       'angular2.dev.js')
         .pipe(insert.transform(insertRXLicense))
-        .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
         .pipe(gulp.dest('dist/js/bundle')),
     bundler.modify(
       ['dist/build/http.dev.js'], 'http.dev.js')
