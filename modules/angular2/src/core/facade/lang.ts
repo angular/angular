@@ -1,5 +1,23 @@
 /// <reference path="../../../globals.d.ts" />
-var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : window);
+
+// TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
+declare var WorkerGlobalScope;
+var globalScope: BrowserNodeGlobal;
+if (typeof window === 'undefined') {
+  if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+    // TODO: Replace any with WorkerGlobalScope from lib.webworker.d.ts #3492
+    globalScope = <any>self;
+  } else {
+    globalScope = <any>global;
+  }
+} else {
+  globalScope = <any>window;
+};
+
+// Need to declare a new variable for global here since TypeScript
+// exports the original value of the symbol.
+var _global: BrowserNodeGlobal = globalScope;
+
 export {_global as global};
 
 export var Type = Function;

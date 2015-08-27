@@ -5,7 +5,8 @@ interface List<T> extends Array<T> {}
 interface Map<K,V> {}
 interface StringMap<K,V> extends Map<K,V> {}
 
-declare module ng {
+{% for alias, module in doc.moduleDocs %}
+declare module {$ module.namespace $} {
   // See https://github.com/Microsoft/TypeScript/issues/1168
   class BaseException /* extends Error */ {
     message: string;
@@ -14,4 +15,5 @@ declare module ng {
   }
   interface InjectableReference {}
 }
+{% endfor %}
 {% endblock %}
