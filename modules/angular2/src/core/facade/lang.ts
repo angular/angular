@@ -65,9 +65,10 @@ export function CONST_EXPR<T>(expr: T): T {
 
 // type ClassAndPropertyDecorator = ClassDecorator & PropertyDecorator;
 type ClassAndPropertyDecorator = {
-  <TFunction extends Function>(target: TFunction): TFunction | void;
-  (target: any, propertyKey: string | symbol): void;
+  <TFunction extends Function>(target: TFunction): TFunction | void,
+  (target: any, propertyKey: string | symbol): void
 };
+
 
 export function CONST(): ClassAndPropertyDecorator {
   return (target) => target;

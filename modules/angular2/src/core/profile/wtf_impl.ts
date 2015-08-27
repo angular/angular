@@ -19,9 +19,7 @@ interface Events {
   createScope(signature: string, flags: any): Scope;
 }
 
-export interface Scope {
-  (...args): any;
-}
+export interface Scope { (...args): any; }
 
 var trace: Trace;
 var events: Events;
