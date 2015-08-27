@@ -11,6 +11,18 @@
         "noLib": false,
         "outDir": "dist/js/cjs"
     },
+    "exclude" : [
+        "node_modules",
+        "bower_components",
+        "modules_dart",
+        "packages",
+        "dist",
+        "temp",
+        "tmp",
+        "docs",
+        "scripts",
+        "typing_spec"
+    ],
     "fileGlobs": [
         "./modules/**/*.ts",
         "./tools/**/*.ts",
