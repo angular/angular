@@ -12,7 +12,8 @@ describe('ng2 di benchmark', function() {
       buttons: ['#getByToken'],
       id: 'ng2.di.getByToken',
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
-      microMetrics: {'injectAvg': 'avg time for injection (in ms)'}
+      microMetrics: {'injectAvg': 'avg time for injection (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -22,7 +23,8 @@ describe('ng2 di benchmark', function() {
       buttons: ['#getByKey'],
       id: 'ng2.di.getByKey',
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
-      microMetrics: {'injectAvg': 'avg time for injection (in ms)'}
+      microMetrics: {'injectAvg': 'avg time for injection (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -32,7 +34,8 @@ describe('ng2 di benchmark', function() {
       buttons: ['#getChild'],
       id: 'ng2.di.getChild',
       params: [{name: 'iterations', value: 20000, scale: 'linear'}],
-      microMetrics: {'injectAvg': 'avg time for getChild (in ms)'}
+      microMetrics: {'injectAvg': 'avg time for getChild (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -42,7 +45,8 @@ describe('ng2 di benchmark', function() {
       buttons: ['#instantiate'],
       id: 'ng2.di.instantiate',
       params: [{name: 'iterations', value: 10000, scale: 'linear'}],
-      microMetrics: {'injectAvg': 'avg time for instantiate (in ms)'}
+      microMetrics: {'injectAvg': 'avg time for instantiate (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -56,7 +60,8 @@ describe('ng2 di benchmark', function() {
       buttons: ['#createVariety'],
       id: 'ng2.di.createVariety',
       params: [{name: 'iterations', value: 10000, scale: 'linear'}],
-      microMetrics: {'injectAvg': 'avg time for createVariety (in ms)'}
+      microMetrics: {'injectAvg': 'avg time for createVariety (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -69,7 +74,8 @@ describe('ng2 di benchmark', function() {
       buttons: ['#createVarietyResolved'],
       id: 'ng2.di.createVarietyResolved',
       params: [{name: 'iterations', value: 10000, scale: 'linear'}],
-      microMetrics: {'injectAvg': 'avg time for createVarietyResolved (in ms)'}
+      microMetrics: {'injectAvg': 'avg time for createVarietyResolved (in ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

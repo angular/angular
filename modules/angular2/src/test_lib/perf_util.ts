@@ -24,7 +24,9 @@ export function runBenchmark(config) {
           });
         }
         var url = encodeURI(config.url + '?' + urlParams.join('&'));
-        return browser.get(url).then(function() {
+        var getter = config.waitForAngular2 !== false ? browser.get(url) :
+                                                        browser.driver.get(browser.baseUrl + url);
+        return getter.then(function() {
           return global['benchpressRunner'].sample({
             id: config.id,
             execute: config.work,

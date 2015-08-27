@@ -11,7 +11,8 @@ describe('ng1.x tree benchmark', function() {
       url: URL,
       buttons: ['#destroyDom', '#createDom'],
       id: 'ng1.tree',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+      params: [{name: 'depth', value: 9, scale: 'log2'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

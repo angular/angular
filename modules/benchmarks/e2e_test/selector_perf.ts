@@ -11,7 +11,8 @@ describe('ng2 selector benchmark', function() {
       url: URL,
       buttons: ['#parse'],
       id: 'ng2.selector.parse',
-      params: [{name: 'selectors', value: 10000, scale: 'linear'}]
+      params: [{name: 'selectors', value: 10000, scale: 'linear'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -20,7 +21,8 @@ describe('ng2 selector benchmark', function() {
       url: URL,
       buttons: ['#addSelectable'],
       id: 'ng2.selector.addSelectable',
-      params: [{name: 'selectors', value: 10000, scale: 'linear'}]
+      params: [{name: 'selectors', value: 10000, scale: 'linear'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -29,7 +31,8 @@ describe('ng2 selector benchmark', function() {
       url: URL,
       buttons: ['#match'],
       id: 'ng2.selector.match',
-      params: [{name: 'selectors', value: 10000, scale: 'linear'}]
+      params: [{name: 'selectors', value: 10000, scale: 'linear'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

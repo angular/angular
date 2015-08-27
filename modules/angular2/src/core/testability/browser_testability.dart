@@ -63,6 +63,10 @@ class PublicTestability implements _JsObjectProxyable {
     this._testability = testability;
   }
 
+  bool isStable() {
+    return this._testability.isStable();
+  }
+
   whenStable(Function callback) {
     return this._testability.whenStable(callback);
   }
@@ -75,7 +79,8 @@ class PublicTestability implements _JsObjectProxyable {
     return _jsify({
       'findBindings': (bindingString, [exactMatch, allowNonElementNodes]) =>
           findBindings(bindingString, exactMatch, allowNonElementNodes),
-      'whenStable': (callback) => whenStable(() => callback.apply([])),
+      'isStable': () => isStable(),
+      'whenStable': (callback) => whenStable(() => callback.apply([]))
     })..['_dart_'] = this;
   }
 }
