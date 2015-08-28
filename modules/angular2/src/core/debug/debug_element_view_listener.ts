@@ -8,7 +8,7 @@ import {Renderer} from 'angular2/src/core/render/api';
 import {DebugElement} from './debug_element';
 
 const NG_ID_PROPERTY = 'ngid';
-const INSPECT_GLOBAL_NAME = 'ngProbe';
+const INSPECT_GLOBAL_NAME = 'ng.probe';
 
 var NG_ID_SEPARATOR = '#';
 
