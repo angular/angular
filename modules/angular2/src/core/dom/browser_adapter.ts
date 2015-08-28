@@ -317,8 +317,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     this.setAttribute(element, 'data-' + name, value);
   }
   getData(element, name: string): string { return this.getAttribute(element, 'data-' + name); }
+  getComputedStyle(element): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
+  requestAnimationFrame(callback): number { return window.requestAnimationFrame(callback); }
+  cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
 }
 
 

@@ -451,6 +451,8 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return element.dataset[name];
   }
 
+  getComputedStyle(elem) => elem.getComputedStyle();
+
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(String path, value) {
     var parts = path.split('.');
@@ -464,6 +466,14 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
       }
     }
     obj[parts.removeAt(0)] = value;
+  }
+
+  requestAnimationFrame(callback) {
+    return window.requestAnimationFrame(callback);
+  }
+
+  cancelAnimationFrame(id) {
+    window.cancelAnimationFrame(id);
   }
 }
 

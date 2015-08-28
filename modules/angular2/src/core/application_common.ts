@@ -86,6 +86,8 @@ import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from './application_tokens';
 import {wtfInit} from './profile/wtf_init';
 import {EXCEPTION_BINDING} from './platform_bindings';
 import {ApplicationRef} from './application_ref';
+import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {BrowserDetails} from 'angular2/src/animate/browser_details';
 
 var _rootInjector: Injector;
 
@@ -161,6 +163,8 @@ function _injectorBindings(appComponentType): Array<Type | Binding | any[]> {
     Testability,
     AnchorBasedAppRootUrl,
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    BrowserDetails,
+    AnimationBuilder,
     FORM_BINDINGS
   ];
 }

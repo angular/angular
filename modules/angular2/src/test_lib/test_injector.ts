@@ -1,5 +1,7 @@
 import {bind, Binding} from 'angular2/src/core/di';
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
+import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -149,6 +151,7 @@ function _getAppBindings() {
     StyleInliner,
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
+    bind(AnimationBuilder).toClass(MockAnimationBuilder),
     EventManager,
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true})
   ];

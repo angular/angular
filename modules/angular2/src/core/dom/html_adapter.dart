@@ -412,6 +412,10 @@ class Html5LibDomAdapter implements DomAdapter {
     this.setAttribute(element, 'data-${name}', value);
   }
 
+  getComputedStyle(element) {
+    throw 'not implemented';
+  }
+
   String getData(Element element, String name) {
     return this.getAttribute(element, 'data-${name}');
   }
@@ -419,5 +423,12 @@ class Html5LibDomAdapter implements DomAdapter {
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(String name, value) {
     // noop on the server
+  }
+
+  requestAnimationFrame(callback) {
+    throw 'not implemented';
+  }
+  cancelAnimationFrame(id) {
+    throw 'not implemented';
   }
 }
