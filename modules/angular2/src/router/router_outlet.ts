@@ -154,9 +154,9 @@ export class RouterOutlet {
     var componentInstruction = isPresent(outletInstruction) ? outletInstruction.component : null;
 
     return (<Promise<any>>(isPresent(this.childRouter) ?
-                this.childRouter.deactivate(isPresent(outletInstruction) ? outletInstruction.child :
-                                                                           null) :
-                PromiseWrapper.resolve(true)))
+                               this.childRouter.deactivate(
+                                   isPresent(outletInstruction) ? outletInstruction.child : null) :
+                               PromiseWrapper.resolve(true)))
         .then((_) => {
           if (isPresent(this._componentRef) && isPresent(this._currentInstruction) &&
               hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
