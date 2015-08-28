@@ -220,11 +220,11 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       this._createArrayToStoreObservables();
       if (isBlank(this.subscriptions[index])) {
         this.streams[index] = value.changes;
-        this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+        this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
       } else if (this.streams[index] !== value.changes) {
         this.subscriptions[index].cancel();
         this.streams[index] = value.changes;
-        this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+        this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
       }
     }
     return value;
@@ -236,7 +236,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       this._createArrayToStoreObservables();
       var arrayIndex = this.numberOfPropertyProtoRecords + index + 2;  // +1 is component
       this.streams[arrayIndex] = value.changes;
-      this.subscriptions[arrayIndex] = value.changes.listen((_) => this.ref.requestCheck());
+      this.subscriptions[arrayIndex] = value.changes.listen((_) => this.ref.markForCheck());
     }
     return value;
   }
@@ -247,7 +247,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       this._createArrayToStoreObservables();
       var index = this.numberOfPropertyProtoRecords + 1;
       this.streams[index] = value.changes;
-      this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+      this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
     }
     return value;
   }

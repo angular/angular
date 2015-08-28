@@ -16,7 +16,7 @@ export class ChangeDetectorRef {
   /**
    * Request to check all OnPush ancestors.
    */
-  requestCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
+  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
 
   /**
    * Detaches the change detector from the change detector tree.
@@ -29,11 +29,10 @@ export class ChangeDetectorRef {
    * Reattach the change detector to the change detector tree.
    *
    * This also requests a check of this change detector. This reattached change detector will be
-   *checked during the
-   * next change detection run.
+   * checked during the next change detection run.
    */
   reattach(): void {
     this._cd.mode = ChangeDetectionStrategy.CheckAlways;
-    this.requestCheck();
+    this.markForCheck();
   }
 }

@@ -73,7 +73,7 @@ main() {
       c.add(3);
       flushMicrotasks();
 
-      expect(changeDetectorRef.spy("requestCheck")).toHaveBeenCalledOnce();
+      expect(changeDetectorRef.spy("markForCheck")).toHaveBeenCalledOnce();
     }));
 
     it("should return the wrapped value after changing a collection", () {

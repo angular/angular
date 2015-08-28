@@ -124,7 +124,7 @@ export class AsyncPipe implements PipeTransform, PipeOnDestroy {
   _updateLatestValue(async: any, value: Object) {
     if (async === this._obj) {
       this._latestValue = value;
-      this._ref.requestCheck();
+      this._ref.markForCheck();
     }
   }
 }
