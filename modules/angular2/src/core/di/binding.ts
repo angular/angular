@@ -8,7 +8,7 @@ import {
   stringify,
   isArray
 } from 'angular2/src/core/facade/lang';
-import {List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Key} from './key';
 import {
@@ -28,7 +28,7 @@ import {resolveForwardRef} from './forward_ref';
  */
 export class Dependency {
   constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
-              public upperBoundVisibility: any, public properties: List<any>) {}
+              public upperBoundVisibility: any, public properties: any[]) {}
 
   static fromKey(key: Key): Dependency { return new Dependency(key, false, null, null, []); }
 }
@@ -174,12 +174,12 @@ export class Binding {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  dependencies: List<any>;
+  dependencies: any[];
 
   constructor(
       token,
       {toClass, toValue, toAlias, toFactory, deps}:
-          {toClass?: Type, toValue?: any, toAlias?: any, toFactory?: Function, deps?: List<any>}) {
+          {toClass?: Type, toValue?: any, toAlias?: any, toFactory?: Function, deps?: any[]}) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;
@@ -238,7 +238,7 @@ export class ResolvedBinding {
       /**
        * Arguments (dependencies) to the `factory` function.
        */
-      public dependencies: List<Dependency>) {}
+      public dependencies: Dependency[]) {}
 }
 
 /**
@@ -365,32 +365,30 @@ export class BindingBuilder {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  toFactory(factoryFunction: Function, dependencies?: List<any>): Binding {
+  toFactory(factoryFunction: Function, dependencies?: any[]): Binding {
     return new Binding(this.token, {toFactory: factoryFunction, deps: dependencies});
   }
 }
 
-function _constructDependencies(factoryFunction: Function, dependencies: List<any>):
-    List<Dependency> {
+function _constructDependencies(factoryFunction: Function, dependencies: any[]): Dependency[] {
   if (isBlank(dependencies)) {
     return _dependenciesFor(factoryFunction);
   } else {
-    var params: List<List<any>> = ListWrapper.map(dependencies, (t) => [t]);
+    var params: any[][] = ListWrapper.map(dependencies, (t) => [t]);
     return ListWrapper.map(dependencies, (t) => _extractToken(factoryFunction, t, params));
   }
 }
 
-function _dependenciesFor(typeOrFunc): List<Dependency> {
+function _dependenciesFor(typeOrFunc): Dependency[] {
   var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
   if (ListWrapper.any(params, (p) => isBlank(p))) {
     throw new NoAnnotationError(typeOrFunc, params);
   }
-  return ListWrapper.map(params, (p: List<any>) => _extractToken(typeOrFunc, p, params));
+  return ListWrapper.map(params, (p: any[]) => _extractToken(typeOrFunc, p, params));
 }
 
-function _extractToken(typeOrFunc, metadata /*List<any> | any*/, params: List<List<any>>):
-    Dependency {
+function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): Dependency {
   var depProps = [];
   var token = null;
   var optional = false;

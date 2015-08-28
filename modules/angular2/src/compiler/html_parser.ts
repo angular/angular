@@ -1,4 +1,3 @@
-import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   isPresent,
   StringWrapper,
@@ -56,8 +55,8 @@ function parseAttrs(element: Element, elementSourceInfo: string): HtmlAttrAst[] 
   // in DOM parsers!
   var attrMap = DOM.attributeMap(element);
   var attrList: string[][] = [];
-  MapWrapper.forEach(attrMap, (value, name) => { attrList.push([name, value]); });
-  ListWrapper.sort(attrList, (entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
+  attrMap.forEach((value, name) => attrList.push([name, value]));
+  attrList.sort((entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
   return attrList.map(entry => parseAttr(element, elementSourceInfo, entry[0], entry[1]));
 }
 

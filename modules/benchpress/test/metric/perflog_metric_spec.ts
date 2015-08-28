@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {List, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
@@ -641,7 +641,7 @@ export function main() {
 }
 
 class MockDriverExtension extends WebDriverExtension {
-  constructor(private _perfLogs: List<any>, private _commandLog: List<any>,
+  constructor(private _perfLogs: any[], private _commandLog: any[],
               private _perfLogFeatures: PerfLogFeatures) {
     super();
   }

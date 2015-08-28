@@ -15,7 +15,7 @@ import {
   DomEventsPlugin
 } from 'angular2/src/core/render/dom/events/event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
@@ -120,10 +120,10 @@ export function main() {
 }
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
-  _supports: List<string>;
+  _supports: string[];
   _nonBubbleEventHandlers: Map<string, Function>;
   _bubbleEventHandlers: Map<string, Function>;
-  constructor(supports: List<string>) {
+  constructor(supports: string[]) {
     super();
     this._supports = supports;
     this._nonBubbleEventHandlers = new Map();

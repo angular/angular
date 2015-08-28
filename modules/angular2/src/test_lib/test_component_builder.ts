@@ -2,7 +2,7 @@ import {Injector, bind, Injectable} from 'angular2/di';
 
 import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {ViewMetadata} from '../core/metadata';
 

@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Instruction} from './instruction';
 import {Injectable} from 'angular2/di';
 
@@ -9,7 +9,7 @@ import {Injectable} from 'angular2/di';
  */
 @Injectable()
 export class Pipeline {
-  steps: List<Function>;
+  steps: Function[];
 
   constructor() { this.steps = [instruction => instruction.router.activateOutlets(instruction)]; }
 

@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {List, ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 import {Metric, MultiMetric, bind, Injector} from 'benchpress/common';

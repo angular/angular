@@ -1,7 +1,6 @@
 /// <reference path="../../../typings/rx/rx.d.ts" />
 
 import {global, isPresent} from 'angular2/src/core/facade/lang';
-import {List} from 'angular2/src/core/facade/collection';
 import * as Rx from 'rx';
 
 export {Promise};
@@ -24,7 +23,7 @@ export class PromiseWrapper {
     return promise.catch(onError);
   }
 
-  static all(promises: List<any>): Promise<any> {
+  static all(promises: any[]): Promise<any> {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }

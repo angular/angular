@@ -2,7 +2,6 @@ import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_li
 import {Reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
-import {List} from 'angular2/src/core/facade/collection';
 import {IS_DART} from '../../platform';
 
 class AType {
@@ -216,122 +215,122 @@ export function main() {
 
 
 class TestObjWith00Args {
-  args: List<any>;
+  args: any[];
   constructor() { this.args = []; }
 }
 
 class TestObjWith01Args {
-  args: List<any>;
+  args: any[];
   constructor(a1) { this.args = [a1]; }
 }
 
 class TestObjWith02Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2) { this.args = [a1, a2]; }
 }
 
 class TestObjWith03Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3) { this.args = [a1, a2, a3]; }
 }
 
 class TestObjWith04Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4) { this.args = [a1, a2, a3, a4]; }
 }
 
 class TestObjWith05Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5) { this.args = [a1, a2, a3, a4, a5]; }
 }
 
 class TestObjWith06Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6) { this.args = [a1, a2, a3, a4, a5, a6]; }
 }
 
 class TestObjWith07Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7) { this.args = [a1, a2, a3, a4, a5, a6, a7]; }
 }
 
 class TestObjWith08Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8) { this.args = [a1, a2, a3, a4, a5, a6, a7, a8]; }
 }
 
 class TestObjWith09Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9];
   }
 }
 
 class TestObjWith10Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10];
   }
 }
 
 class TestObjWith11Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11];
   }
 }
 
 class TestObjWith12Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12];
   }
 }
 
 class TestObjWith13Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13];
   }
 }
 
 class TestObjWith14Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14];
   }
 }
 
 class TestObjWith15Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15];
   }
 }
 
 class TestObjWith16Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16];
   }
 }
 
 class TestObjWith17Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17];
   }
 }
 
 class TestObjWith18Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18];
   }
 }
 
 class TestObjWith19Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18,
               a19) {
     this.args =
@@ -340,7 +339,7 @@ class TestObjWith19Args {
 }
 
 class TestObjWith20Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
               a20) {
     this.args =
@@ -349,7 +348,7 @@ class TestObjWith20Args {
 }
 
 class TestObjWith21Args {
-  args: List<any>;
+  args: any[];
   constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
               a20, a21) {
     this.args = [

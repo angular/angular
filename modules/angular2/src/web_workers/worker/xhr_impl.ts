@@ -23,7 +23,7 @@ export class WebWorkerXHRImpl extends XHR {
   }
 
   get(url: string): Promise<string> {
-    var fnArgs: List<FnArg> = [new FnArg(url, null)];
+    var fnArgs: FnArg[] = [new FnArg(url, null)];
     var args: UiArguments = new UiArguments("get", fnArgs);
     return this._messageBroker.runOnUiThread(args, String);
   }

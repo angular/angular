@@ -1,5 +1,4 @@
 import {isBlank} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {CompileElement} from './compile_element';
 import {CompileStep} from './compile_step';
 
@@ -14,7 +13,7 @@ export class CompileControl {
   _additionalChildren: CompileElement[] = null;
   _ignoreCurrentElement: boolean;
 
-  constructor(public _steps: List<CompileStep>) {}
+  constructor(public _steps: CompileStep[]) {}
 
   // only public so that it can be used by compile_pipeline
   internalProcess(results: any[], startStepIndex: number, parent: CompileElement,

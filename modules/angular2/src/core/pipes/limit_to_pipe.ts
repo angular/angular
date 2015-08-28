@@ -16,7 +16,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 import {Pipe} from '../metadata';
 
 /**
- * Creates a new List or String containing only a prefix/suffix of the
+ * Creates a new Array or String containing only a prefix/suffix of the
  * elements.
  *
  * The number of elements to return is specified by the `limitTo` parameter.
@@ -25,19 +25,19 @@ import {Pipe} from '../metadata';
  *
  *     expression | limitTo:number
  *
- * Where the input expression is a [List] or [String], and `limitTo` is:
+ * Where the input expression is a [Array] or [String], and `limitTo` is:
  *
  * - **a positive integer**: return _number_ items from the beginning of the list or string
  * expression.
  * - **a negative integer**: return _number_ items from the end of the list or string expression.
  * - **`|limitTo|` greater than the size of the expression**: return the entire expression.
  *
- * When operating on a [List], the returned list is always a copy even when all
+ * When operating on a [Array], the returned list is always a copy even when all
  * the elements are being returned.
  *
  * # Examples
  *
- * ## List Example
+ * ## Array Example
  *
  * Assuming `var collection = ['a', 'b', 'c']`, this `ng-for` directive:
  *
@@ -59,7 +59,7 @@ import {Pipe} from '../metadata';
 export class LimitToPipe implements PipeTransform {
   supports(obj: any): boolean { return isString(obj) || isArray(obj); }
 
-  transform(value: any, args: List<any> = null): any {
+  transform(value: any, args: any[] = null): any {
     if (isBlank(args) || args.length == 0) {
       throw new BaseException('limitTo pipe requires one argument');
     }

@@ -1,5 +1,5 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 import {Directive, LifecycleEvent} from 'angular2/metadata';
@@ -93,7 +93,7 @@ const formDirectiveBinding =
 })
 export class NgFormModel extends ControlContainer implements Form {
   form: ControlGroup = null;
-  directives: List<NgControl> = [];
+  directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
 
   onChanges(_) { this._updateDomValue(); }
@@ -102,7 +102,7 @@ export class NgFormModel extends ControlContainer implements Form {
 
   get control(): ControlGroup { return this.form; }
 
-  get path(): List<string> { return []; }
+  get path(): string[] { return []; }
 
   addControl(dir: NgControl): void {
     var c: any = this.form.find(dir.path);

@@ -35,11 +35,10 @@ import {Location} from './src/router/location';
 import {APP_COMPONENT} from './src/core/application_tokens';
 import {Binding} from './di';
 import {CONST_EXPR} from './src/core/facade/lang';
-import {List} from './src/core/facade/collection';
 
-export const ROUTER_DIRECTIVES: List<any> = CONST_EXPR([RouterOutlet, RouterLink]);
+export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
 
-export const ROUTER_BINDINGS: List<any> = CONST_EXPR([
+export const ROUTER_BINDINGS: any[] = CONST_EXPR([
   RouteRegistry,
   Pipeline,
   CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),

@@ -5,9 +5,9 @@ import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 var _scheduler;
-var _microtasks: List<Function> = [];
-var _pendingPeriodicTimers: List<number> = [];
-var _pendingTimers: List<number> = [];
+var _microtasks: Function[] = [];
+var _pendingPeriodicTimers: number[] = [];
+var _pendingTimers: number[] = [];
 var _error = null;
 
 interface FakeAsyncZone extends NgZoneZone {

@@ -105,7 +105,7 @@ class InboxDetailCmp {
 @Component({selector: 'inbox'})
 @View({templateUrl: "inbox.html", directives: [NgFor, RouterLink]})
 class InboxCmp {
-  items: List<InboxRecord> = [];
+  items: InboxRecord[] = [];
   ready: boolean = false;
 
   constructor(public router: Router, db: DbService) {
@@ -120,7 +120,7 @@ class InboxCmp {
 @Component({selector: 'drafts'})
 @View({templateUrl: "drafts.html", directives: [NgFor, RouterLink]})
 class DraftsCmp {
-  items: List<InboxRecord> = [];
+  items: InboxRecord[] = [];
   ready: boolean = false;
 
   constructor(public router: Router, db: DbService) {

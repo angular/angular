@@ -12,7 +12,7 @@ import {
   ChangeDetectorGenConfig
 } from './interfaces';
 import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/di';
-import {List, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   CONST,
   CONST_EXPR,

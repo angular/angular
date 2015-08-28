@@ -1,12 +1,12 @@
 import {XHR} from 'angular2/src/core/render/xhr';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent, normalizeBlank, BaseException} from 'angular2/src/core/facade/lang';
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 export class MockXHR extends XHR {
-  private _expectations: List<_Expectation>;
+  private _expectations: _Expectation[];
   private _definitions: Map<string, string>;
-  private _requests: List<_PendingRequest>;
+  private _requests: _PendingRequest[];
 
   constructor() {
     super();

@@ -83,8 +83,7 @@ export class NgFor {
     view.setLocal('index', record.currentIndex);
   }
 
-  static bulkRemove(tuples: List<RecordViewTuple>,
-                    viewContainer: ViewContainerRef): List<RecordViewTuple> {
+  static bulkRemove(tuples: RecordViewTuple[], viewContainer: ViewContainerRef): RecordViewTuple[] {
     tuples.sort((a, b) => a.record.previousIndex - b.record.previousIndex);
     var movedTuples = [];
     for (var i = tuples.length - 1; i >= 0; i--) {
@@ -100,8 +99,8 @@ export class NgFor {
     return movedTuples;
   }
 
-  static bulkInsert(tuples: List<RecordViewTuple>, viewContainer: ViewContainerRef,
-                    templateRef: TemplateRef): List<RecordViewTuple> {
+  static bulkInsert(tuples: RecordViewTuple[], viewContainer: ViewContainerRef,
+                    templateRef: TemplateRef): RecordViewTuple[] {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
     for (var i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];

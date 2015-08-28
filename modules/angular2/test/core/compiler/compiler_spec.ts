@@ -11,13 +11,7 @@ import {
   it
 } from 'angular2/test_lib';
 import {SpyRenderCompiler, SpyDirectiveResolver} from '../spies';
-import {
-  List,
-  ListWrapper,
-  Map,
-  MapWrapper,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Type, isBlank, stringify, isPresent, isArray} from 'angular2/src/core/facade/lang';
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
@@ -59,8 +53,8 @@ export function main() {
         cmpUrlMapper, rootProtoView;
     var renderCompileRequests: any[];
 
-    function createCompiler(renderCompileResults: List<ProtoViewDto | Promise<ProtoViewDto>>,
-                            protoViewFactoryResults: List<AppProtoView>) {
+    function createCompiler(renderCompileResults: Array<ProtoViewDto | Promise<ProtoViewDto>>,
+                            protoViewFactoryResults: AppProtoView[]) {
       var urlResolver = new UrlResolver();
       renderCompileRequests = [];
       renderCompileResults = ListWrapper.clone(renderCompileResults);
@@ -87,7 +81,7 @@ export function main() {
                 createRenderProtoView([createRenderComponentElementBinder(0)], ViewType.HOST));
           });
       renderCompiler.spy('mergeProtoViewsRecursively')
-          .andCallFake((protoViewRefs: List<RenderProtoViewRef | List<any>>) => {
+          .andCallFake((protoViewRefs: Array<RenderProtoViewRef | any[]>) => {
             return PromiseWrapper.resolve(new RenderProtoViewMergeMapping(
                 new MergedRenderProtoViewRef(protoViewRefs), 1, [], 0, [], [], [null]));
           });
@@ -722,15 +716,15 @@ class FakeViewResolver extends ViewResolver {
 }
 
 class FakeProtoViewFactory extends ProtoViewFactory {
-  requests: List<List<any>>;
+  requests: any[][];
 
-  constructor(public results: List<AppProtoView>) {
+  constructor(public results: AppProtoView[]) {
     super(null);
     this.requests = [];
   }
 
   createAppProtoViews(componentBinding: DirectiveBinding, renderProtoView: ProtoViewDto,
-                      directives: List<DirectiveBinding>, pipes: PipeBinding[]): AppProtoView[] {
+                      directives: DirectiveBinding[], pipes: PipeBinding[]): AppProtoView[] {
     this.requests.push([componentBinding, renderProtoView, directives, pipes]);
     return collectEmbeddedPvs(ListWrapper.removeAt(this.results, 0));
   }

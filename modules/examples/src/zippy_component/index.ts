@@ -14,7 +14,7 @@ import {Zippy} from './zippy';
   directives: [Zippy, NgFor]
 })
 class ZippyApp {
-  logs: Array<string> = [];
+  logs: string[] = [];
 
   pushLog(log: string) { this.logs.push(log); }
 }

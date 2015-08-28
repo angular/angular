@@ -35,7 +35,7 @@ export {NgValidator, NgRequiredValidator} from './directives/validators';
  *
  *  This is a shorthand for importing them each individually.
  */
-export const FORM_DIRECTIVES: List<Type> = CONST_EXPR([
+export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
   NgControlName,
   NgControlGroup,
 

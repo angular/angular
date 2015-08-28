@@ -69,7 +69,7 @@ function addTarget(e: Event, serializedEvent: StringMap<string, any>): StringMap
   return serializedEvent;
 }
 
-function serializeEvent(e: any, properties: List<string>): StringMap<string, any> {
+function serializeEvent(e: any, properties: string[]): StringMap<string, any> {
   var serialized = {};
   for (var i = 0; i < properties.length; i++) {
     var prop = properties[i];

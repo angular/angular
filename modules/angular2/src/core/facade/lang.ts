@@ -159,7 +159,7 @@ export class StringWrapper {
 
   static charCodeAt(s: string, index: number): number { return s.charCodeAt(index); }
 
-  static split(s: string, regExp: RegExp): List<string> { return s.split(regExp); }
+  static split(s: string, regExp: RegExp): string[] { return s.split(regExp); }
 
   static equals(s: string, s2: string): boolean { return s === s2; }
 
@@ -269,7 +269,7 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp: RegExp, input: string): List<string> {
+  static firstMatch(regExp: RegExp, input: string): string[] {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);

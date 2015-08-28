@@ -11,13 +11,7 @@ import {
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {
-  List,
-  ListWrapper,
-  Map,
-  MapWrapper,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Type, isBlank, stringify, isPresent, BaseException} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
@@ -296,15 +290,15 @@ function templateRoot(protoViewDto: ProtoViewDto): Element {
 }
 
 class MockStepFactory extends CompileStepFactory {
-  steps: List<CompileStep>;
-  subTaskPromises: List<Promise<any>>;
+  steps: CompileStep[];
+  subTaskPromises: Array<Promise<any>>;
   viewDef: ViewDefinition;
 
   constructor(steps) {
     super();
     this.steps = steps;
   }
-  createSteps(viewDef): List<CompileStep> {
+  createSteps(viewDef): CompileStep[] {
     this.viewDef = viewDef;
     return this.steps;
   }

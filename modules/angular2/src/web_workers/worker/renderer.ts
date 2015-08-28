@@ -42,7 +42,7 @@ export class WebWorkerCompiler implements RenderCompiler {
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
    */
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
-    var fnArgs: List<FnArg> = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
+    var fnArgs: FnArg[] = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
     var args: UiArguments = new UiArguments("compileHost", fnArgs);
     return this._messageBroker.runOnUiThread(args, ProtoViewDto);
   }
@@ -53,7 +53,7 @@ export class WebWorkerCompiler implements RenderCompiler {
    * but only the needed ones based on previous calls.
    */
   compile(view: ViewDefinition): Promise<ProtoViewDto> {
-    var fnArgs: List<FnArg> = [new FnArg(view, ViewDefinition)];
+    var fnArgs: FnArg[] = [new FnArg(view, ViewDefinition)];
     var args: UiArguments = new UiArguments("compile", fnArgs);
     return this._messageBroker.runOnUiThread(args, ProtoViewDto);
   }
@@ -64,12 +64,12 @@ export class WebWorkerCompiler implements RenderCompiler {
    * should be merged.
    * If the array contains other arrays, they will be merged before processing the parent array.
    * The array must contain an entry for every component and embedded ProtoView of the first entry.
-   * @param protoViewRefs List of ProtoViewRefs or nested
+   * @param protoViewRefs Array of ProtoViewRefs or nested
    * @return the merge result for every input array in depth first order.
    */
   mergeProtoViewsRecursively(
-      protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping> {
-    var fnArgs: List<FnArg> = [new FnArg(protoViewRefs, RenderProtoViewRef)];
+      protoViewRefs: Array<RenderProtoViewRef | any[]>): Promise<RenderProtoViewMergeMapping> {
+    var fnArgs: FnArg[] = [new FnArg(protoViewRefs, RenderProtoViewRef)];
     var args: UiArguments = new UiArguments("mergeProtoViewsRecursively", fnArgs);
     return this._messageBroker.runOnUiThread(args, RenderProtoViewMergeMapping);
   }
@@ -114,7 +114,7 @@ export class WebWorkerRenderer implements Renderer {
     var renderViewWithFragments = this._renderViewStore.allocate(fragmentCount);
 
     var startIndex = (<WebWorkerRenderViewRef>(renderViewWithFragments.viewRef)).refNumber;
-    var fnArgs: List<FnArg> = [
+    var fnArgs: FnArg[] = [
       new FnArg(protoViewRef, RenderProtoViewRef),
       new FnArg(fragmentCount, null),
     ];
@@ -255,7 +255,7 @@ export class WebWorkerRenderer implements Renderer {
    * Calls a method on an element.
    * Note: For now we're assuming that everything in the args list are primitive
    */
-  invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>) {
+  invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]) {
     var fnArgs = [
       new FnArg(location, WebWorkerElementRef),
       new FnArg(methodName, null),

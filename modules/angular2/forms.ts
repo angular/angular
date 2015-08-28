@@ -39,4 +39,4 @@ export {FormBuilder} from './src/forms/form_builder';
 import {FormBuilder} from './src/forms/form_builder';
 import {CONST_EXPR, Type} from './src/core/facade/lang';
 
-export const FORM_BINDINGS: List<Type> = CONST_EXPR([FormBuilder]);
+export const FORM_BINDINGS: Type[] = CONST_EXPR([FormBuilder]);

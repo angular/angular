@@ -20,11 +20,11 @@ import {Options} from '../common_options';
  */
 export class PerflogMetric extends Metric {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 
-  private _remainingEvents: List<StringMap<string, any>>;
+  private _remainingEvents: Array<StringMap<string, any>>;
   private _measureCount: number;
   _perfLogFeatures: PerfLogFeatures;
 
@@ -171,7 +171,7 @@ export class PerflogMetric extends Metric {
     }
   }
 
-  _aggregateEvents(events: List<StringMap<string, any>>, markName): StringMap<string, any> {
+  _aggregateEvents(events: Array<StringMap<string, any>>, markName): StringMap<string, any> {
     var result = {'scriptTime': 0, 'pureScriptTime': 0};
     if (this._perfLogFeatures.gc) {
       result['gcTime'] = 0;
@@ -310,7 +310,7 @@ export class PerflogMetric extends Metric {
   _addFrameMetrics(result: StringMap<string, any>, frameTimes: any[]) {
     result['frameTime.mean'] =
         ListWrapper.reduce(frameTimes, (a, b) => a + b, 0) / frameTimes.length;
-    var firstFrame = ListWrapper.get(frameTimes, 0);
+    var firstFrame = frameTimes[0];
     result['frameTime.worst'] = ListWrapper.reduce(frameTimes, (a, b) => a > b ? a : b, firstFrame);
     result['frameTime.best'] = ListWrapper.reduce(frameTimes, (a, b) => a < b ? a : b, firstFrame);
     result['frameTime.smooth'] =

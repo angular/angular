@@ -19,7 +19,7 @@ import {
   BaseException,
   FunctionWrapper
 } from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   ChangeDispatcher,
@@ -1343,8 +1343,8 @@ class TestData {
 }
 
 class FakeDirectives {
-  constructor(public directives: List<TestData | TestDirective>,
-              public detectors: List<ProtoChangeDetector>) {}
+  constructor(public directives: Array<TestData | TestDirective>,
+              public detectors: ProtoChangeDetector[]) {}
 
   getDirectiveFor(di: DirectiveIndex) { return this.directives[di.directiveIndex]; }
 
@@ -1354,7 +1354,7 @@ class FakeDirectives {
 class TestDispatcher implements ChangeDispatcher {
   log: string[];
   debugLog: string[];
-  loggedValues: List<any>;
+  loggedValues: any[];
   afterContentCheckedCalled: boolean = false;
   afterViewCheckedCalled: boolean = false;
 

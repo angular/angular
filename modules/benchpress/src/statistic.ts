@@ -1,5 +1,5 @@
 import {Math} from 'angular2/src/core/facade/math';
-import {ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export class Statistic {
   static calculateCoefficientOfVariation(sample, mean) {
@@ -20,7 +20,7 @@ export class Statistic {
     return deviation;
   }
 
-  static calculateRegressionSlope(xValues: List<number>, xMean: number, yValues: List<number>,
+  static calculateRegressionSlope(xValues: number[], xMean: number, yValues: number[],
                                   yMean: number) {
     // See http://en.wikipedia.org/wiki/Simple_linear_regression
     var dividendSum = 0;

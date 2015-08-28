@@ -6,13 +6,6 @@ import {
   RegExpWrapper,
   CONST_EXPR
 } from 'angular2/src/core/facade/lang';
-import {
-  ListWrapper,
-  MapWrapper,
-  Map,
-  StringMapWrapper,
-  List
-} from 'angular2/src/core/facade/collection';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
@@ -96,9 +89,7 @@ export class DomRenderer extends Renderer {
         .boundElements[location.renderBoundElementIndex];
   }
 
-  getRootNodes(fragment: RenderFragmentRef): List<Node> {
-    return resolveInternalDomFragment(fragment);
-  }
+  getRootNodes(fragment: RenderFragmentRef): Node[] { return resolveInternalDomFragment(fragment); }
 
   attachFragmentAfterFragment(previousFragmentRef: RenderFragmentRef,
                               fragmentRef: RenderFragmentRef) {
@@ -194,7 +185,7 @@ export class DomRenderer extends Renderer {
     view.setElementStyle(location.renderBoundElementIndex, styleName, styleValue);
   }
 
-  invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>): void {
+  invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]): void {
     if (isBlank(location.renderBoundElementIndex)) {
       return;
     }

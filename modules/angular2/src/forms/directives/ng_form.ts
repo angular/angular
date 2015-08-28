@@ -4,7 +4,7 @@ import {
   EventEmitter,
   PromiseCompleter
 } from 'angular2/src/core/facade/async';
-import {StringMapWrapper, List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Directive} from 'angular2/metadata';
 import {forwardRef, Binding} from 'angular2/di';
@@ -72,7 +72,7 @@ export class NgForm extends ControlContainer implements Form {
 
   get control(): ControlGroup { return this.form; }
 
-  get path(): List<string> { return []; }
+  get path(): string[] { return []; }
 
   get controls(): StringMap<string, AbstractControl> { return this.form.controls; }
 
@@ -133,7 +133,7 @@ export class NgForm extends ControlContainer implements Form {
     return false;
   }
 
-  _findContainer(path: List<string>): ControlGroup {
+  _findContainer(path: string[]): ControlGroup {
     ListWrapper.removeLast(path);
     return ListWrapper.isEmpty(path) ? this.form : <ControlGroup>this.form.find(path);
   }

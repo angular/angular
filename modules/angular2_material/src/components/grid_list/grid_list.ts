@@ -35,8 +35,8 @@ class RowHeightMode {
   encapsulation: ViewEncapsulation.NONE
 })
 export class MdGridList {
-  /** List of tiles that are being rendered. */
-  tiles: List<MdGridTile>;
+  /** Array of tiles that are being rendered. */
+  tiles: MdGridTile[];
 
   /** Number of columns being rendered. */
   _cols: number;
@@ -302,7 +302,7 @@ export class MdGridTile {
  */
 class TileCoordinator {
   // Tracking array (see class description).
-  tracker: List<number>;
+  tracker: number[];
 
   // Index at which the search for the next gap will start.
   columnIndex: number;
@@ -311,9 +311,9 @@ class TileCoordinator {
   rowIndex: number;
 
   // The computed (row, col) position of each tile (the output).
-  positions: List<Position>;
+  positions: Position[];
 
-  constructor(numColumns: number, tiles: List<MdGridTile>) {
+  constructor(numColumns: number, tiles: MdGridTile[]) {
     this.columnIndex = 0;
     this.rowIndex = 0;
 

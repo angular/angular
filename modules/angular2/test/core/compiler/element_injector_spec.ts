@@ -20,7 +20,6 @@ import {isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {
   ListWrapper,
   MapWrapper,
-  List,
   StringMapWrapper,
   iterateListLike
 } from 'angular2/src/core/facade/collection';
@@ -242,7 +241,7 @@ export function main() {
     return ProtoElementInjector.create(parent, index, directiveBinding, hasShadowRoot, distance, dirVariableBindings);
   }
 
-  function humanize(tree: TreeNode<any>, names: List<List<any>>) {
+  function humanize(tree: TreeNode<any>, names: any[][]) {
     var lookupName = (item) =>
         ListWrapper.last(ListWrapper.find(names, (pair) => pair[0] === item));
 
@@ -277,8 +276,8 @@ export function main() {
     return child;
   }
 
-  function hostShadowInjectors(hostBindings: List<any>,
-                               shadowBindings: List<any>, imperativelyCreatedInjector = null): ElementInjector {
+  function hostShadowInjectors(hostBindings: any[],
+                               shadowBindings: any[], imperativelyCreatedInjector = null): ElementInjector {
     var protoHost = createPei(null, 0, hostBindings, 0, true);
     var host = protoHost.instantiate(null);
     host.hydrate(null, null, defaultPreBuiltObjects);
@@ -1078,7 +1077,7 @@ export function main() {
               "one": null // element
             });
 
-            var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
+            var inj = injector(dirs.concat(extraBindings), null,
                                false, preBuildObjects, null, dirVariableBindings);
 
             expect(inj.get(NeedsQueryByVarBindings).query.first).toBe(defaultPreBuiltObjects.elementRef);
@@ -1093,7 +1092,7 @@ export function main() {
               "two": 1 // 1 is the index of NeedsDirective
             });
 
-            var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
+            var inj = injector(dirs.concat(extraBindings), null,
                                false, preBuildObjects, null, dirVariableBindings);
 
             // NeedsQueryByVarBindings queries "one,two", so SimpleDirective should be before NeedsDirective

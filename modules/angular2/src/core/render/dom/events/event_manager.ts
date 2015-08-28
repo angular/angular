@@ -1,12 +1,11 @@
 import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 var BUBBLE_SYMBOL = '^';
 
 export class EventManager {
-  constructor(public _plugins: List<EventManagerPlugin>, public _zone: NgZone) {
+  constructor(public _plugins: EventManagerPlugin[], public _zone: NgZone) {
     for (var i = 0; i < _plugins.length; i++) {
       _plugins[i].manager = this;
     }

@@ -1,5 +1,5 @@
 import {bind, Binding} from 'angular2/di';
-import {List, StringMap} from 'angular2/src/core/facade/collection';
+import {StringMap} from 'angular2/src/core/facade/collection';
 import {ABSTRACT, BaseException} from 'angular2/src/core/facade/lang';
 
 import {MeasureValues} from './measure_values';
@@ -18,9 +18,7 @@ export class Validator {
   /**
    * Calculates a valid sample out of the complete sample
    */
-  validate(completeSample: List<MeasureValues>): List<MeasureValues> {
-    throw new BaseException('NYI');
-  }
+  validate(completeSample: MeasureValues[]): MeasureValues[] { throw new BaseException('NYI'); }
 
   /**
    * Returns a Map that describes the properties of the validator

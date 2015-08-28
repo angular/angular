@@ -1,11 +1,5 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {
-  ListWrapper,
-  MapWrapper,
-  Map,
-  StringMapWrapper,
-  List
-} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, BaseException, stringify} from 'angular2/src/core/facade/lang';
 
 import {DomProtoView} from './proto_view';
@@ -27,9 +21,9 @@ export class DomViewRef extends RenderViewRef {
 export class DomView {
   hydrated: boolean = false;
   eventDispatcher: RenderEventDispatcher = null;
-  eventHandlerRemovers: List<Function> = [];
+  eventHandlerRemovers: Function[] = [];
 
-  constructor(public proto: DomProtoView, public boundTextNodes: List<Node>,
+  constructor(public proto: DomProtoView, public boundTextNodes: Node[],
               public boundElements: Element[]) {}
 
   setElementProperty(elementIndex: number, propertyName: string, value: any) {
@@ -65,7 +59,7 @@ export class DomView {
     }
   }
 
-  invokeElementMethod(elementIndex: number, methodName: string, args: List<any>) {
+  invokeElementMethod(elementIndex: number, methodName: string, args: any[]) {
     var element = this.boundElements[elementIndex];
     DOM.invoke(element, methodName, args);
   }

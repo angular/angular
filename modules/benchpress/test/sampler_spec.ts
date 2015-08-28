@@ -19,7 +19,6 @@ import {
   Date,
   DateWrapper
 } from 'angular2/src/core/facade/lang';
-import {ListWrapper, List} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 import {
@@ -251,7 +250,7 @@ function createCountingMetric(log = null) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  private _log: List<any>;
+  private _log: any[];
   private _waitFor: Function;
   constructor(log = null, waitFor = null) {
     super();
@@ -272,7 +271,7 @@ class MockDriverAdapter extends WebDriverAdapter {
 
 
 class MockValidator extends Validator {
-  private _log: List<any>;
+  private _log: any[];
   constructor(log = null, private _validate: Function = null) {
     super();
     if (isBlank(log)) {
@@ -280,7 +279,7 @@ class MockValidator extends Validator {
     }
     this._log = log;
   }
-  validate(completeSample: List<MeasureValues>): List<MeasureValues> {
+  validate(completeSample: MeasureValues[]): MeasureValues[] {
     var stableSample = isPresent(this._validate) ? this._validate(completeSample) : completeSample;
     this._log.push(['validate', completeSample, stableSample]);
     return stableSample;
@@ -288,7 +287,7 @@ class MockValidator extends Validator {
 }
 
 class MockMetric extends Metric {
-  private _log: List<any>;
+  private _log: any[];
   constructor(log = null, private _endMeasure: Function = null) {
     super();
     if (isBlank(log)) {
@@ -308,7 +307,7 @@ class MockMetric extends Metric {
 }
 
 class MockReporter extends Reporter {
-  _log: List<any>;
+  _log: any[];
   constructor(log = null) {
     super();
     if (isBlank(log)) {

@@ -37,7 +37,7 @@ import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 var cmpInstanceCount;
-var log: List<string>;
+var log: string[];
 
 export function main() {
   describe('Outlet Directive', () => {

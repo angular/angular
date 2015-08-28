@@ -1,5 +1,4 @@
 import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {List} from 'angular2/src/core/facade/collection';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
 import {ChangeDetectionStrategy} from 'angular2/change_detection';
 
@@ -482,7 +481,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  properties: List<string>;
+  properties: string[];
 
   /**
    * Enumerates the set of emitted events.
@@ -527,7 +526,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  events: List<string>;
+  events: string[];
 
   /**
    * Specifiy the events, actions, properties and attributes related to the host element.
@@ -636,7 +635,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    * See {@link LifecycleEvent} for details.
    */
-  lifecycle: List<LifecycleEvent>;
+  lifecycle: LifecycleEvent[];
 
   /**
    * If set to false the compiler does not compile the children of this directive.
@@ -674,7 +673,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    */
-  bindings: List<any>;
+  bindings: any[];
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -708,11 +707,11 @@ export class DirectiveMetadata extends InjectableMetadata {
                   compileChildren = true,
               }: {
     selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    bindings?: List<any>,
+    lifecycle?: LifecycleEvent[],
+    bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
   } = {}) {
@@ -817,19 +816,19 @@ export class ComponentMetadata extends DirectiveMetadata {
    *
    * ```
    */
-  viewBindings: List<any>;
+  viewBindings: any[];
 
   constructor({selector, properties, events, host, exportAs, lifecycle, bindings, viewBindings,
                changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
     selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    bindings?: List<any>,
+    lifecycle?: LifecycleEvent[],
+    bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
-    viewBindings?: List<any>,
+    viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   } = {}) {
     super({

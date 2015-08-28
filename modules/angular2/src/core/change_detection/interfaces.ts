@@ -1,4 +1,3 @@
-import {List} from 'angular2/src/core/facade/collection';
 import {CONST} from 'angular2/src/core/facade/lang';
 import {Locals} from './parser/locals';
 import {BindingTarget, BindingRecord} from './binding_record';
@@ -83,7 +82,7 @@ export class ChangeDetectorGenConfig {
 
 export class ChangeDetectorDefinition {
   constructor(public id: string, public strategy: ChangeDetectionStrategy,
-              public variableNames: List<string>, public bindingRecords: BindingRecord[],
+              public variableNames: string[], public bindingRecords: BindingRecord[],
               public eventRecords: BindingRecord[], public directiveRecords: DirectiveRecord[],
               public genConfig: ChangeDetectorGenConfig) {}
 }

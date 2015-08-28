@@ -53,12 +53,12 @@ export class ViewMetadata {
   /**
    * Specifies stylesheet URLs for an angular component.
    */
-  styleUrls: List<string>;
+  styleUrls: string[];
 
   /**
    * Specifies an inline stylesheet for an angular component.
    */
-  styles: List<string>;
+  styles: string[];
 
   /**
    * Specifies a list of directives that can be used within a template.
@@ -82,12 +82,12 @@ export class ViewMetadata {
    * }
    * ```
    */
-  // TODO(tbosch): use Type | Binding | List<any> when Dart supports union types,
+  // TODO(tbosch): use Type | Binding | any[] when Dart supports union types,
   // as otherwise we would need to import Binding type and Dart would warn
   // for an unused import.
-  directives: List<Type | any | List<any>>;
+  directives: Array<Type | any | any[]>;
 
-  pipes: List<Type | any | List<any>>;
+  pipes: Array<Type | any | any[]>;
 
   /**
    * Specify how the template and the styles should be encapsulated.
@@ -100,11 +100,11 @@ export class ViewMetadata {
   constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls}: {
     templateUrl?: string,
     template?: string,
-    directives?: List<Type | any | List<any>>,
-    pipes?: List<Type | any | List<any>>,
+    directives?: Array<Type | any | any[]>,
+    pipes?: Array<Type | any | any[]>,
     encapsulation?: ViewEncapsulation,
-    styles?: List<string>,
-    styleUrls?: List<string>,
+    styles?: string[],
+    styleUrls?: string[],
   } = {}) {
     this.templateUrl = templateUrl;
     this.template = template;

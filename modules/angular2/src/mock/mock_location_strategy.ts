@@ -1,5 +1,4 @@
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {List} from 'angular2/src/core/facade/collection';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
 
@@ -7,7 +6,7 @@ export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
   internalPath: string = '/';
   internalTitle: string = '';
-  urlChanges: List<string> = [];
+  urlChanges: string[] = [];
   _subject: EventEmitter = new EventEmitter();
   constructor() { super(); }
 

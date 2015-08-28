@@ -197,7 +197,7 @@ class PersonsComponent {
 @View({
   template: `
     <button (click)="switchToEditName()">Edit Full Name</button>
-    <button (click)="switchToPersonList()">Person List</button>
+    <button (click)="switchToPersonList()">Person Array</button>
 
     <full-name-cmp *ng-if="mode == 'editName'"></full-name-cmp>
     <persons-cmp *ng-if="mode == 'personList'"></persons-cmp>

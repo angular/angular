@@ -30,7 +30,7 @@ import {Pipe} from '../metadata';
 @Pipe({name: 'uppercase'})
 @Injectable()
 export class UpperCasePipe implements PipeTransform {
-  transform(value: string, args: List<any> = null): string {
+  transform(value: string, args: any[] = null): string {
     if (isBlank(value)) return value;
     if (!isString(value)) {
       throw new InvalidPipeArgumentException(UpperCasePipe, value);

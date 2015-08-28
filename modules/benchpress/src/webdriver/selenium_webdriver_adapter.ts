@@ -8,7 +8,7 @@ import * as webdriver from 'selenium-webdriver';
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static get PROTRACTOR_BINDINGS(): List<Binding> { return _PROTRACTOR_BINDINGS; }
+  static get PROTRACTOR_BINDINGS(): Binding[] { return _PROTRACTOR_BINDINGS; }
 
   constructor(private _driver: any) { super(); }
 
