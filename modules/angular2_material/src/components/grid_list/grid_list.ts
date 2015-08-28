@@ -28,7 +28,7 @@ class RowHeightMode {
 @Component({
   selector: 'md-grid-list',
   properties: ['cols', 'rowHeight', 'gutterSize'],
-  lifecycle: [LifecycleEvent.onAllChangesDone]
+  lifecycle: [LifecycleEvent.AfterContentChecked]
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
@@ -88,7 +88,7 @@ export class MdGridList {
     }
   }
 
-  onAllChangesDone() {
+  afterContentChecked() {
     this.layoutTiles();
   }
 
@@ -226,7 +226,7 @@ export class MdGridList {
     '[style.marginTop]': 'style.marginTop',
     '[style.paddingTop]': 'style.paddingTop',
   },
-  lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange]
+  lifecycle: [LifecycleEvent.OnDestroy, LifecycleEvent.OnChanges]
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html',
@@ -269,7 +269,7 @@ export class MdGridTile {
    * Change handler invoked when bindings are resolved or when bindings have changed.
    * Notifies grid-list that a re-layout is required.
    */
-  onChange(_) {
+  onChanges(_) {
     if (!this.isRegisteredWithGridList) {
       this.gridList.addTile(this);
       this.isRegisteredWithGridList = true;

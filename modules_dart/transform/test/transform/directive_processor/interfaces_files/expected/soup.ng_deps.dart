@@ -16,5 +16,5 @@ void initReflector() {
             const [const Component(selector: '[soup]')],
             const [],
             () => new ChangingSoupComponent(),
-            const [OnChange, AnotherInterface]));
+            const [OnChanges, AnotherInterface]));
 }

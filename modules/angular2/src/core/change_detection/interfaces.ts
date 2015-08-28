@@ -51,7 +51,7 @@ export interface ChangeDispatcher {
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext;
   notifyOnBinding(bindingTarget: BindingTarget, value: any): void;
   logBindingUpdate(bindingTarget: BindingTarget, value: any): void;
-  notifyOnAllChangesDone(): void;
+  notifyAfterContentChecked(): void;
 }
 
 export interface ChangeDetector {

@@ -133,12 +133,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       }
 
       if (proto.isLifeCycleRecord()) {
-        if (proto.name === "onCheck" && !throwOnChange) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).onCheck();
-        } else if (proto.name === "onInit" && !throwOnChange && !this.alreadyChecked) {
+        if (proto.name === "DoCheck" && !throwOnChange) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
+        } else if (proto.name === "OnInit" && !throwOnChange && !this.alreadyChecked) {
           this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
-        } else if (proto.name === "onChange" && isPresent(changes) && !throwOnChange) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).onChange(changes);
+        } else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
         }
 
       } else {
@@ -168,13 +168,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
   }
 
-  callOnAllChangesDone() {
-    super.callOnAllChangesDone();
+  callAfterContentChecked() {
+    super.callAfterContentChecked();
     var dirs = this.directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
-      if (dir.callOnAllChangesDone) {
-        this._getDirectiveFor(dir.directiveIndex).onAllChangesDone();
+      if (dir.callAfterContentChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
       }
     }
   }
@@ -193,7 +193,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   _addChange(bindingRecord: BindingRecord, change, changes) {
-    if (bindingRecord.callOnChange()) {
+    if (bindingRecord.callOnChanges()) {
       return super.addChange(changes, change.previousValue, change.currentValue);
     } else {
       return changes;

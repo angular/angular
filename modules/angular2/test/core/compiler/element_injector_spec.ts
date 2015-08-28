@@ -871,7 +871,7 @@ export function main() {
           it("should call onDestroy on directives subscribed to this event", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(DirectiveWithDestroy,
-                                                 new DirectiveMetadata({lifecycle: [LifecycleEvent.onDestroy]}))],
+                                                 new DirectiveMetadata({lifecycle: [LifecycleEvent.OnDestroy]}))],
                 extraBindings));
             var destroy = inj.get(DirectiveWithDestroy);
             inj.dehydrate();
@@ -893,7 +893,7 @@ export function main() {
 
             query.onChange(() => async.done());
 
-            inj.onAllChangesDone();
+            inj.afterContentChecked();
           }));
 
           it("should not notify inherited queries", inject([AsyncTestCompleter], (async) => {
@@ -912,10 +912,10 @@ export function main() {
             });
 
             query.add(new CountingDirective());
-            child.onAllChangesDone(); // this does not notify the query
+            child.afterContentChecked(); // this does not notify the query
 
             query.add(new CountingDirective());
-            child.parent.onAllChangesDone();
+            child.parent.afterContentChecked();
           }));
         });
 

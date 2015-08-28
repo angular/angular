@@ -84,7 +84,7 @@ const formDirectiveBinding =
   selector: '[ng-form-model]',
   bindings: [formDirectiveBinding],
   properties: ['form: ng-form-model'],
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   host: {
     '(submit)': 'onSubmit()',
   },
@@ -96,7 +96,7 @@ export class NgFormModel extends ControlContainer implements Form {
   directives: List<NgControl> = [];
   ngSubmit = new EventEmitter();
 
-  onChange(_) { this._updateDomValue(); }
+  onChanges(_) { this._updateDomValue(); }
 
   get formDirective(): Form { return this; }
 

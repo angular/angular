@@ -52,7 +52,7 @@ const controlGroupBinding =
   selector: '[ng-control-group]',
   bindings: [controlGroupBinding],
   properties: ['name: ng-control-group'],
-  lifecycle: [LifecycleEvent.onInit, LifecycleEvent.onDestroy],
+  lifecycle: [LifecycleEvent.OnInit, LifecycleEvent.OnDestroy],
   exportAs: 'form'
 })
 export class NgControlGroup extends ControlContainer {

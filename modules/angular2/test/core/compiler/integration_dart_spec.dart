@@ -267,15 +267,15 @@ class NoPropertyAccess {
 @Component(
     selector: 'on-change',
     // TODO: needed because of https://github.com/angular/angular/issues/2120
-    lifecycle: const [LifecycleEvent.onChange],
+    lifecycle: const [LifecycleEvent.OnChanges],
     properties: const ['prop'])
 @View(template: '')
-class OnChangeComponent implements OnChange {
+class OnChangeComponent implements OnChanges {
   Map changes;
   String prop;
 
   @override
-  void onChange(Map changes) {
+  void onChanges(Map changes) {
     this.changes = changes;
   }
 }
@@ -301,11 +301,11 @@ class ComponentWithObservableList {
 
 @Directive(
     selector: 'directive-logging-checks',
-    lifecycle: const [LifecycleEvent.onCheck])
-class DirectiveLoggingChecks implements OnCheck {
+    lifecycle: const [LifecycleEvent.DoCheck])
+class DirectiveLoggingChecks implements DoCheck {
   Log log;
 
   DirectiveLoggingChecks(this.log);
 
-  onCheck() => log.add("check");
+  doCheck() => log.add("check");
 }

@@ -39,8 +39,8 @@ export class BindingRecord {
 
   isDirectiveLifecycle(): boolean { return this.mode === DIRECTIVE_LIFECYCLE; }
 
-  callOnChange(): boolean {
-    return isPresent(this.directiveRecord) && this.directiveRecord.callOnChange;
+  callOnChanges(): boolean {
+    return isPresent(this.directiveRecord) && this.directiveRecord.callOnChanges;
   }
 
   isDefaultChangeDetection(): boolean {
@@ -48,16 +48,17 @@ export class BindingRecord {
   }
 
 
-  static createDirectiveOnCheck(directiveRecord: DirectiveRecord): BindingRecord {
-    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "onCheck", directiveRecord);
+  static createDirectiveDoCheck(directiveRecord: DirectiveRecord): BindingRecord {
+    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "DoCheck", directiveRecord);
   }
 
   static createDirectiveOnInit(directiveRecord: DirectiveRecord): BindingRecord {
-    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "onInit", directiveRecord);
+    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "OnInit", directiveRecord);
   }
 
-  static createDirectiveOnChange(directiveRecord: DirectiveRecord): BindingRecord {
-    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "onChange", directiveRecord);
+  static createDirectiveOnChanges(directiveRecord: DirectiveRecord): BindingRecord {
+    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "OnChanges",
+                             directiveRecord);
   }
 
 

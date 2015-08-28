@@ -364,7 +364,7 @@ export function main() {
         it('should notify the dispatcher on all changes done', () => {
           var val = _createChangeDetector('name', new Person('bob'));
           val.changeDetector.detectChanges();
-          expect(val.dispatcher.onAllChangesDoneCalled).toEqual(true);
+          expect(val.dispatcher.afterContentCheckedCalled).toEqual(true);
         });
 
         describe('updating directives', () => {
@@ -385,7 +385,7 @@ export function main() {
             expect(directive1.a).toEqual(42);
           });
 
-          describe('onChange', () => {
+          describe('onChanges', () => {
             it('should notify the directive when a group of records changes', () => {
               var cd = _createWithoutHydrate('groupChanges').changeDetector;
               cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -396,28 +396,28 @@ export function main() {
             });
           });
 
-          describe('onCheck', () => {
+          describe('doCheck', () => {
             it('should notify the directive when it is checked', () => {
-              var cd = _createWithoutHydrate('directiveOnCheck').changeDetector;
+              var cd = _createWithoutHydrate('directiveDoCheck').changeDetector;
 
               cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
               cd.detectChanges();
 
-              expect(directive1.onCheckCalled).toBe(true);
-              directive1.onCheckCalled = false;
+              expect(directive1.doCheckCalled).toBe(true);
+              directive1.doCheckCalled = false;
 
               cd.detectChanges();
-              expect(directive1.onCheckCalled).toBe(true);
+              expect(directive1.doCheckCalled).toBe(true);
             });
 
-            it('should not call onCheck in detectNoChanges', () => {
-              var cd = _createWithoutHydrate('directiveOnCheck').changeDetector;
+            it('should not call doCheck in detectNoChanges', () => {
+              var cd = _createWithoutHydrate('directiveDoCheck').changeDetector;
 
               cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
               cd.checkNoChanges();
 
-              expect(directive1.onCheckCalled).toBe(false);
+              expect(directive1.doCheckCalled).toBe(false);
             });
           });
 
@@ -449,7 +449,7 @@ export function main() {
             });
           });
 
-          describe('onAllChangesDone', () => {
+          describe('afterContentChecked', () => {
             it('should be called after processing all the children', () => {
               var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
               cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -457,35 +457,35 @@ export function main() {
 
               cd.detectChanges();
 
-              expect(directive1.onChangesDoneCalled).toBe(true);
-              expect(directive2.onChangesDoneCalled).toBe(true);
+              expect(directive1.afterContentCheckedCalled).toBe(true);
+              expect(directive2.afterContentCheckedCalled).toBe(true);
 
               // reset directives
-              directive1.onChangesDoneCalled = false;
-              directive2.onChangesDoneCalled = false;
+              directive1.afterContentCheckedCalled = false;
+              directive2.afterContentCheckedCalled = false;
 
               // Verify that checking should not call them.
               cd.checkNoChanges();
 
-              expect(directive1.onChangesDoneCalled).toBe(false);
-              expect(directive2.onChangesDoneCalled).toBe(false);
+              expect(directive1.afterContentCheckedCalled).toBe(false);
+              expect(directive2.afterContentCheckedCalled).toBe(false);
 
               // re-verify that changes are still detected
               cd.detectChanges();
 
-              expect(directive1.onChangesDoneCalled).toBe(true);
-              expect(directive2.onChangesDoneCalled).toBe(true);
+              expect(directive1.afterContentCheckedCalled).toBe(true);
+              expect(directive2.afterContentCheckedCalled).toBe(true);
             });
 
 
-            it('should not be called when onAllChangesDone is false', () => {
+            it('should not be called when afterContentChecked is false', () => {
               var cd = _createWithoutHydrate('noCallbacks').changeDetector;
 
               cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
               cd.detectChanges();
 
-              expect(directive1.onChangesDoneCalled).toEqual(false);
+              expect(directive1.afterContentCheckedCalled).toEqual(false);
             });
 
             it('should be called in reverse order so the child is always notified before the parent',
@@ -1104,17 +1104,17 @@ class TestDirective {
   a;
   b;
   changes;
-  onChangesDoneCalled;
-  onChangesDoneSpy;
-  onCheckCalled;
+  afterContentCheckedCalled;
+  afterContentCheckedSpy;
+  doCheckCalled;
   onInitCalled;
   event;
 
   constructor(onChangesDoneSpy = null) {
-    this.onChangesDoneCalled = false;
-    this.onCheckCalled = false;
+    this.afterContentCheckedCalled = false;
+    this.doCheckCalled = false;
     this.onInitCalled = false;
-    this.onChangesDoneSpy = onChangesDoneSpy;
+    this.afterContentCheckedSpy = onChangesDoneSpy;
     this.a = null;
     this.b = null;
     this.changes = null;
@@ -1122,20 +1122,20 @@ class TestDirective {
 
   onEvent(event) { this.event = event; }
 
-  onCheck() { this.onCheckCalled = true; }
+  doCheck() { this.doCheckCalled = true; }
 
   onInit() { this.onInitCalled = true; }
 
-  onChange(changes) {
+  onChanges(changes) {
     var r = {};
     StringMapWrapper.forEach(changes, (c, key) => r[key] = c.currentValue);
     this.changes = r;
   }
 
-  onAllChangesDone() {
-    this.onChangesDoneCalled = true;
-    if (isPresent(this.onChangesDoneSpy)) {
-      this.onChangesDoneSpy();
+  afterContentChecked() {
+    this.afterContentCheckedCalled = true;
+    if (isPresent(this.afterContentCheckedSpy)) {
+      this.afterContentCheckedSpy();
     }
   }
 }
@@ -1182,7 +1182,7 @@ class TestDispatcher implements ChangeDispatcher {
   log: string[];
   debugLog: string[];
   loggedValues: List<any>;
-  onAllChangesDoneCalled: boolean = false;
+  afterContentCheckedCalled: boolean = false;
 
   constructor() { this.clear(); }
 
@@ -1190,7 +1190,7 @@ class TestDispatcher implements ChangeDispatcher {
     this.log = [];
     this.debugLog = [];
     this.loggedValues = [];
-    this.onAllChangesDoneCalled = true;
+    this.afterContentCheckedCalled = true;
   }
 
   notifyOnBinding(target, value) {
@@ -1200,7 +1200,7 @@ class TestDispatcher implements ChangeDispatcher {
 
   logBindingUpdate(target, value) { this.debugLog.push(`${target.name}=${this._asString(value)}`); }
 
-  notifyOnAllChangesDone() { this.onAllChangesDoneCalled = true; }
+  notifyAfterContentChecked() { this.afterContentCheckedCalled = true; }
 
   getDebugContext(a, b) { return null; }
 

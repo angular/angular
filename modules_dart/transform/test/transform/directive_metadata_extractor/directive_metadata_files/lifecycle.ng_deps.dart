@@ -13,11 +13,11 @@ void initReflector(reflector) {
         HelloCmp,
         new ReflectionInfo(const [
           const Component(lifecycle: [
-            LifecycleEvent.onChange,
-            LifecycleEvent.onDestroy,
-            LifecycleEvent.onInit,
-            LifecycleEvent.onCheck,
-            LifecycleEvent.onAllChangesDone
+            LifecycleEvent.OnChanges,
+            LifecycleEvent.OnDestroy,
+            LifecycleEvent.OnInit,
+            LifecycleEvent.DoCheck,
+            LifecycleEvent.AfterContentChecked
           ])
         ], const [
           const []

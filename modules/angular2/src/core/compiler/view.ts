@@ -204,11 +204,11 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     }
   }
 
-  notifyOnAllChangesDone(): void {
+  notifyAfterContentChecked(): void {
     var eiCount = this.proto.elementBinders.length;
     var ei = this.elementInjectors;
     for (var i = eiCount - 1; i >= 0; i--) {
-      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].onAllChangesDone();
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].afterContentChecked();
     }
   }
 

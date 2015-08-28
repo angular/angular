@@ -34,7 +34,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
 @Directive(
-    {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.onCheck]})
+    {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.DoCheck]})
 export class NgFor {
   _ngForOf: any;
   private _differ: IterableDiffer;
@@ -49,7 +49,7 @@ export class NgFor {
     }
   }
 
-  onCheck() {
+  doCheck() {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._ngForOf);
       if (isPresent(changes)) this._applyChanges(changes);

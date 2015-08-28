@@ -151,7 +151,7 @@ class _CodegenState {
 
         ${_genCheckNoChanges()}
 
-        ${_maybeGenCallOnAllChangesDone()}
+        ${_maybeGenCallAfterContentChecked()}
 
         ${_maybeGenHydrateDirectives()}
 
@@ -260,19 +260,19 @@ class _CodegenState {
         '{ $hydrateDirectivesCode $hydrateDetectorsCode }';
   }
 
-  /// Generates calls to `onAllChangesDone` for all `Directive`s that request
+  /// Generates calls to `afterContentChecked` for all `Directive`s that request
   /// them.
-  String _maybeGenCallOnAllChangesDone() {
+  String _maybeGenCallAfterContentChecked() {
     // NOTE(kegluneq): Order is important!
     var directiveNotifications = _directiveRecords.reversed
-        .where((rec) => rec.callOnAllChangesDone)
+        .where((rec) => rec.callAfterContentChecked)
         .map((rec) =>
-            '${_names.getDirectiveName(rec.directiveIndex)}.onAllChangesDone();');
+            '${_names.getDirectiveName(rec.directiveIndex)}.afterContentChecked();');
 
     if (directiveNotifications.isNotEmpty) {
       return '''
-        void callOnAllChangesDone() {
-          ${_names.getDispatcherName()}.notifyOnAllChangesDone();
+        void callAfterContentChecked() {
+          ${_names.getDispatcherName()}.notifyAfterContentChecked();
           ${directiveNotifications.join('')}
         }
       ''';
@@ -309,12 +309,12 @@ class _CodegenState {
   }
 
   String _genDirectiveLifecycle(ProtoRecord r) {
-    if (r.name == 'onCheck') {
-      return _genOnCheck(r);
-    } else if (r.name == 'onInit') {
+    if (r.name == 'DoCheck') {
+      return _genDoCheck(r);
+    } else if (r.name == 'OnInit') {
       return _genOnInit(r);
-    } else if (r.name == 'onChange') {
-      return _genOnChange(r);
+    } else if (r.name == 'OnChanges') {
+      return _genOnChanges(r);
     } else {
       throw new BaseException("Unknown lifecycle event '${r.name}'");
     }
@@ -444,7 +444,7 @@ class _CodegenState {
   String _genAddToChanges(ProtoRecord r) {
     var newValue = _names.getLocalName(r.selfIndex);
     var oldValue = _names.getFieldName(r.selfIndex);
-    if (!r.bindingRecord.callOnChange()) return '';
+    if (!r.bindingRecord.callOnChanges()) return '';
     return "$_CHANGES_LOCAL = addChange($_CHANGES_LOCAL, $oldValue, $newValue);";
   }
 
@@ -457,10 +457,10 @@ class _CodegenState {
     ''';
   }
 
-  String _genOnCheck(ProtoRecord r) {
+  String _genDoCheck(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange) '
-        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onCheck();';
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.doCheck();';
   }
 
   String _genOnInit(ProtoRecord r) {
@@ -469,11 +469,11 @@ class _CodegenState {
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();';
   }
 
-  String _genOnChange(ProtoRecord r) {
+  String _genOnChanges(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange && $_CHANGES_LOCAL != null) '
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}'
-        '.onChange($_CHANGES_LOCAL);';
+        '.onChanges($_CHANGES_LOCAL);';
   }
 
   String _genNotifyOnPushDetectors(ProtoRecord r) {

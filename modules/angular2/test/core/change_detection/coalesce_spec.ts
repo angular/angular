@@ -75,8 +75,8 @@ export function main() {
 
     it("should not coalesce directive lifecycle records", () => {
       var rs = coalesce([
-        r("onCheck", [], 0, 1, {mode: RecordType.DirectiveLifecycle}),
-        r("onCheck", [], 0, 1, {mode: RecordType.DirectiveLifecycle})
+        r("doCheck", [], 0, 1, {mode: RecordType.DirectiveLifecycle}),
+        r("doCheck", [], 0, 1, {mode: RecordType.DirectiveLifecycle})
       ]);
 
       expect(rs.length).toEqual(2);

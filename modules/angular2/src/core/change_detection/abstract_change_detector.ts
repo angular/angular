@@ -84,7 +84,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     var s = _scope_check(this.id, throwOnChange);
     this.detectChangesInRecords(throwOnChange);
     this._detectChangesInLightDomChildren(throwOnChange);
-    if (throwOnChange === false) this.callOnAllChangesDone();
+    if (throwOnChange === false) this.callAfterContentChecked();
     this._detectChangesInShadowDomChildren(throwOnChange);
     if (this.mode === ChangeDetectionStrategy.CheckOnce)
       this.mode = ChangeDetectionStrategy.Checked;
@@ -156,7 +156,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   hydrated(): boolean { return this.context !== null; }
 
-  callOnAllChangesDone(): void { this.dispatcher.notifyOnAllChangesDone(); }
+  callAfterContentChecked(): void { this.dispatcher.notifyAfterContentChecked(); }
 
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;

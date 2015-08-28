@@ -23,10 +23,10 @@ main() {
           type: RenderDirectiveMetadata.COMPONENT_TYPE,
           exportAs: "aaa",
           callOnDestroy: true,
-          callOnChange: true,
-          callOnCheck: true,
+          callOnChanges: true,
+          callDoCheck: true,
           callOnInit: true,
-          callOnAllChangesDone: true,
+          callAfterContentChecked: true,
           events: ["onFoo", "onBar"],
           changeDetection: ChangeDetectionStrategy.CheckOnce);
       var map = directiveMetadataToMap(someComponent);
@@ -43,10 +43,10 @@ main() {
       expect(map["selector"]).toEqual("some-comp");
       expect(map["type"]).toEqual(RenderDirectiveMetadata.COMPONENT_TYPE);
       expect(map["callOnDestroy"]).toEqual(true);
-      expect(map["callOnCheck"]).toEqual(true);
-      expect(map["callOnChange"]).toEqual(true);
+      expect(map["callDoCheck"]).toEqual(true);
+      expect(map["callOnChanges"]).toEqual(true);
       expect(map["callOnInit"]).toEqual(true);
-      expect(map["callOnAllChangesDone"]).toEqual(true);
+      expect(map["callAfterContentChecked"]).toEqual(true);
       expect(map["exportAs"]).toEqual("aaa");
       expect(map["events"]).toEqual(["onFoo", "onBar"]);
       expect(map["changeDetection"]).toEqual(ChangeDetectionStrategy.CheckOnce.index);
@@ -64,10 +64,10 @@ main() {
         ["type", RenderDirectiveMetadata.DIRECTIVE_TYPE],
         ["exportAs", "aaa"],
         ["callOnDestroy", true],
-        ["callOnCheck", true],
+        ["callDoCheck", true],
         ["callOnInit", true],
-        ["callOnChange", true],
-        ["callOnAllChangesDone", true],
+        ["callOnChanges", true],
+        ["callAfterContentChecked", true],
         ["events", ["onFoo", "onBar"]],
         ["changeDetection", ChangeDetectionStrategy.CheckOnce.index]
       ]);
@@ -86,10 +86,10 @@ main() {
       expect(meta.type).toEqual(RenderDirectiveMetadata.DIRECTIVE_TYPE);
       expect(meta.exportAs).toEqual("aaa");
       expect(meta.callOnDestroy).toEqual(true);
-      expect(meta.callOnCheck).toEqual(true);
+      expect(meta.callDoCheck).toEqual(true);
       expect(meta.callOnInit).toEqual(true);
-      expect(meta.callOnChange).toEqual(true);
-      expect(meta.callOnAllChangesDone).toEqual(true);
+      expect(meta.callOnChanges).toEqual(true);
+      expect(meta.callAfterContentChecked).toEqual(true);
       expect(meta.events).toEqual(["onFoo", "onBar"]);
       expect(meta.changeDetection).toEqual(ChangeDetectionStrategy.CheckOnce);
     });

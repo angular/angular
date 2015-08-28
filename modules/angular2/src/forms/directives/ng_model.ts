@@ -33,7 +33,7 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   bindings: [formControlBinding],
   properties: ['model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   exportAs: 'form'
 })
 export class NgModel extends NgControl {
@@ -50,7 +50,7 @@ export class NgModel extends NgControl {
     this.ngValidators = ngValidators;
   }
 
-  onChange(c: StringMap<string, any>) {
+  onChanges(c: StringMap<string, any>) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValidity();

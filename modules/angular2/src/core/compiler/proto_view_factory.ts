@@ -150,14 +150,14 @@ export class BindingRecordsCreator {
             BindingRecord.createForDirective(astWithSource, propertyName, setter, directiveRecord));
       });
 
-      if (directiveRecord.callOnChange) {
-        bindings.push(BindingRecord.createDirectiveOnChange(directiveRecord));
+      if (directiveRecord.callOnChanges) {
+        bindings.push(BindingRecord.createDirectiveOnChanges(directiveRecord));
       }
       if (directiveRecord.callOnInit) {
         bindings.push(BindingRecord.createDirectiveOnInit(directiveRecord));
       }
-      if (directiveRecord.callOnCheck) {
-        bindings.push(BindingRecord.createDirectiveOnCheck(directiveRecord));
+      if (directiveRecord.callDoCheck) {
+        bindings.push(BindingRecord.createDirectiveDoCheck(directiveRecord));
       }
     }
 
@@ -191,9 +191,9 @@ export class BindingRecordsCreator {
       this._directiveRecordsMap.set(
           id, new DirectiveRecord({
             directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),
-            callOnAllChangesDone: directiveMetadata.callOnAllChangesDone,
-            callOnChange: directiveMetadata.callOnChange,
-            callOnCheck: directiveMetadata.callOnCheck,
+            callAfterContentChecked: directiveMetadata.callAfterContentChecked,
+            callOnChanges: directiveMetadata.callOnChanges,
+            callDoCheck: directiveMetadata.callDoCheck,
             callOnInit: directiveMetadata.callOnInit,
             changeDetection: directiveMetadata.changeDetection
           }));

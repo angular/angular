@@ -68,13 +68,13 @@ export function main() {
           expect(c.value).toEqual("newValue");
         });
 
-        it("should invoke onChange if it is present", () => {
-          var onChange;
-          c.registerOnChange((v) => onChange = ["invoked", v]);
+        it("should invoke onChanges if it is present", () => {
+          var onChanges;
+          c.registerOnChange((v) => onChanges = ["invoked", v]);
 
           c.updateValue("newValue");
 
-          expect(onChange).toEqual(["invoked", "newValue"]);
+          expect(onChanges).toEqual(["invoked", "newValue"]);
         });
 
         it("should not invoke on change when explicitly specified", () => {

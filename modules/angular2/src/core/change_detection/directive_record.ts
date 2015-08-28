@@ -9,25 +9,25 @@ export class DirectiveIndex {
 
 export class DirectiveRecord {
   directiveIndex: DirectiveIndex;
-  callOnAllChangesDone: boolean;
-  callOnChange: boolean;
-  callOnCheck: boolean;
+  callAfterContentChecked: boolean;
+  callOnChanges: boolean;
+  callDoCheck: boolean;
   callOnInit: boolean;
   changeDetection: ChangeDetectionStrategy;
 
-  constructor({directiveIndex, callOnAllChangesDone, callOnChange, callOnCheck, callOnInit,
+  constructor({directiveIndex, callAfterContentChecked, callOnChanges, callDoCheck, callOnInit,
                changeDetection}: {
     directiveIndex?: DirectiveIndex,
-    callOnAllChangesDone?: boolean,
-    callOnChange?: boolean,
-    callOnCheck?: boolean,
+    callAfterContentChecked?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
     callOnInit?: boolean,
     changeDetection?: ChangeDetectionStrategy
   } = {}) {
     this.directiveIndex = directiveIndex;
-    this.callOnAllChangesDone = normalizeBool(callOnAllChangesDone);
-    this.callOnChange = normalizeBool(callOnChange);
-    this.callOnCheck = normalizeBool(callOnCheck);
+    this.callAfterContentChecked = normalizeBool(callAfterContentChecked);
+    this.callOnChanges = normalizeBool(callOnChanges);
+    this.callDoCheck = normalizeBool(callDoCheck);
     this.callOnInit = normalizeBool(callOnInit);
     this.changeDetection = changeDetection;
   }

@@ -10,10 +10,10 @@ export 'class_matcher_base.dart' show ClassDescriptor;
 /// implemented by a class. These classes are re-exported in many places so this
 /// covers all libraries which provide them.
 const _ON_CHANGE_INTERFACES = const [
-  const ClassDescriptor('OnChange', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnChange', 'package:angular2/metadata.dart'),
+  const ClassDescriptor('OnChanges', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('OnChanges', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
-      'OnChange', 'package:angular2/src/core/compiler/interfaces.dart'),
+      'OnChanges', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_DESTROY_INTERFACES = const [
   const ClassDescriptor('OnDestroy', 'package:angular2/angular2.dart'),
@@ -22,10 +22,10 @@ const _ON_DESTROY_INTERFACES = const [
       'OnDestroy', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_CHECK_INTERFACES = const [
-  const ClassDescriptor('OnCheck', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnCheck', 'package:angular2/metadata.dart'),
+  const ClassDescriptor('DoCheck', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('DoCheck', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
-      'OnCheck', 'package:angular2/src/core/compiler/interfaces.dart'),
+      'DoCheck', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_INIT_INTERFACES = const [
   const ClassDescriptor('OnInit', 'package:angular2/angular2.dart'),
@@ -34,11 +34,11 @@ const _ON_INIT_INTERFACES = const [
       'OnInit', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_ALL_CHANGES_DONE_INTERFACES = const [
-  const ClassDescriptor('OnAllChangesDone', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('AfterContentChecked', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
-      'OnAllChangesDone', 'package:angular2/metadata.dart'),
+      'AfterContentChecked', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
-      'OnAllChangesDone', 'package:angular2/src/core/compiler/interfaces.dart')
+      'AfterContentChecked', 'package:angular2/src/core/compiler/interfaces.dart')
 ];
 
 /// Checks if a given [Annotation] matches any of the given
@@ -55,7 +55,7 @@ class InterfaceMatcher extends ClassMatcherBase {
       ..addAll(_ON_ALL_CHANGES_DONE_INTERFACES));
   }
 
-  /// Checks if an [Identifier] implements [OnChange].
+  /// Checks if an [Identifier] implements [OnChanges].
   bool isOnChange(Identifier typeName, AssetId assetId) =>
       implements(firstMatch(typeName, assetId), _ON_CHANGE_INTERFACES);
 
@@ -63,7 +63,7 @@ class InterfaceMatcher extends ClassMatcherBase {
   bool isOnDestroy(Identifier typeName, AssetId assetId) =>
       implements(firstMatch(typeName, assetId), _ON_DESTROY_INTERFACES);
 
-  /// Checks if an [Identifier] implements [OnCheck].
+  /// Checks if an [Identifier] implements [DoCheck].
   bool isOnCheck(Identifier typeName, AssetId assetId) =>
       implements(firstMatch(typeName, assetId), _ON_CHECK_INTERFACES);
 
@@ -71,7 +71,7 @@ class InterfaceMatcher extends ClassMatcherBase {
   bool isOnInit(Identifier typeName, AssetId assetId) =>
       implements(firstMatch(typeName, assetId), _ON_INIT_INTERFACES);
 
-  /// Checks if an [Identifier] implements [OnAllChangesDone].
-  bool isOnAllChangesDone(Identifier typeName, AssetId assetId) => implements(
+  /// Checks if an [Identifier] implements [AfterContentChecked].
+  bool isAfterContentChecked(Identifier typeName, AssetId assetId) => implements(
       firstMatch(typeName, assetId), _ON_ALL_CHANGES_DONE_INTERFACES);
 }

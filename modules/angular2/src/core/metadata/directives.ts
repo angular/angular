@@ -850,12 +850,37 @@ export class ComponentMetadata extends DirectiveMetadata {
 
 /**
  * Lifecycle events are guaranteed to be called in the following order:
- * - `onChange` (optional if any bindings have changed),
- * - `onInit` (optional after the first check only),
- * - `onCheck`,
- * - `onAllChangesDone`
+ * - `OnChanges` (if any bindings have changed),
+ * - `OnInit` (after the first check only),
+ * - `DoCheck`,
+ * - `AfterContentChecked`
+ * - `AfterContentChecked`
+ * - `OnDestroy` (at the very end before destruction)
  */
 export enum LifecycleEvent {
+  /**
+   * Notify a directive when it has been checked the first time.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked only once.
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.OnInit]
+   * })
+   * class ClassSet {
+   *   onInit() {
+   *   }
+   * }
+   *  ```
+   */
+  OnInit,
+
   /**
    * Notify a directive whenever a {@link ViewMetadata} that contains it is destroyed.
    *
@@ -864,7 +889,7 @@ export enum LifecycleEvent {
    * ```
    * @Directive({
    *   ...,
-   *   lifecycle: [LifecycleEvent.onDestroy]
+   *   lifecycle: [LifecycleEvent.OnDestroy]
    * })
    * class ClassSet {
    *   onDestroy() {
@@ -873,7 +898,7 @@ export enum LifecycleEvent {
    * }
    * ```
    */
-  onDestroy,
+  OnDestroy,
 
 
   /**
@@ -893,12 +918,12 @@ export enum LifecycleEvent {
    *     'propA',
    *     'propB'
    *   ],
-   *   lifecycle: [LifecycleEvent.onChange]
+   *   lifecycle: [LifecycleEvent.OnChanges]
    * })
    * class ClassSet {
    *   propA;
    *   propB;
-   *   onChange(changes:{[idx: string, PropertyUpdate]}) {
+   *   onChanges(changes:{[idx: string, PropertyUpdate]}) {
    *     // This will get called after any of the properties have been updated.
    *     if (changes['propA']) {
    *       // if propA was updated
@@ -910,7 +935,7 @@ export enum LifecycleEvent {
    * }
    *  ```
    */
-  onChange,
+  OnChanges,
 
   /**
    * Notify a directive when it has been checked.
@@ -925,59 +950,36 @@ export enum LifecycleEvent {
    * ```
    * @Directive({
    *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.onCheck]
+   *   lifecycle: [LifecycleEvent.DoCheck]
    * })
    * class ClassSet {
-   *   onCheck() {
+   *   doCheck() {
    *   }
    * }
    *  ```
    */
-  onCheck,
+  DoCheck,
 
   /**
-   * Notify a directive when it has been checked the first itme.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked only once.
+   * Notify a directive when the bindings of all its view children have been checked (whether they
+   * have changed or not).
    *
    * ## Example
    *
    * ```
    * @Directive({
    *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.onInit]
-   * })
-   * class ClassSet {
-   *   onInit() {
-   *   }
-   * }
-   *  ```
-   */
-  onInit,
-
-  /**
-   * Notify a directive when the bindings of all its children have been checked (whether they have
-   * changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.onAllChangesDone]
+   *   lifecycle: [LifecycleEvent.AfterContentChecked]
    * })
    * class ClassSet {
    *
-   *   onAllChangesDone() {
+   *   afterContentChecked() {
    *   }
    *
    * }
    *  ```
    */
-  onAllChangesDone
+  AfterContentChecked
 }
 
 /**
