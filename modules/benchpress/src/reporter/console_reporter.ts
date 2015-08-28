@@ -1,5 +1,5 @@
 import {print, isPresent, isBlank, NumberWrapper} from 'angular2/src/core/facade/lang';
-import {StringMapWrapper, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Math} from 'angular2/src/core/facade/math';
 import {bind, Binding, OpaqueToken} from 'angular2/di';
@@ -18,7 +18,7 @@ export class ConsoleReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get COLUMN_WIDTH(): OpaqueToken { return _COLUMN_WIDTH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
 
 
   static _lpad(value, columnWidth, fill = ' ') {
@@ -38,7 +38,7 @@ export class ConsoleReporter extends Reporter {
     return props;
   }
 
-  private _metricNames: List<string>;
+  private _metricNames: string[];
 
   constructor(private _columnWidth: number, sampleDescription, private _print: Function) {
     super();
@@ -69,8 +69,7 @@ export class ConsoleReporter extends Reporter {
     return PromiseWrapper.resolve(null);
   }
 
-  reportSample(completeSample: List<MeasureValues>,
-               validSample: List<MeasureValues>): Promise<any> {
+  reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
     this._printStringRow(this._metricNames.map((_) => ''), '=');
     this._printStringRow(ListWrapper.map(this._metricNames, (metricName) => {
       var sample =

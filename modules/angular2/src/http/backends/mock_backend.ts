@@ -170,7 +170,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connectionsArray: Array<MockConnection>;
+  connectionsArray: MockConnection[];
   /**
    * {@link EventEmitter} of {@link MockConnection} instances that haven't yet been resolved (i.e.
    * with a `readyState`

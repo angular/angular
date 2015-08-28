@@ -57,11 +57,11 @@ export interface ComponentDecorator extends TypeDecorator {
   View(obj: {
     templateUrl?: string,
     template?: string,
-    directives?: List<Type | any | List<any>>,
-    pipes?: List<Type | any | List<any>>,
+    directives?: Array<Type | any | any[]>,
+    pipes?: Array<Type | any | any[]>,
     renderer?: string,
-    styles?: List<string>,
-    styleUrls?: List<string>,
+    styles?: string[],
+    styleUrls?: string[],
   }): ViewDecorator;
 }
 
@@ -77,11 +77,11 @@ export interface ViewDecorator extends TypeDecorator {
   View(obj: {
     templateUrl?: string,
     template?: string,
-    directives?: List<Type | any | List<any>>,
-    pipes?: List<Type | any | List<any>>,
+    directives?: Array<Type | any | any[]>,
+    pipes?: Array<Type | any | any[]>,
     renderer?: string,
-    styles?: List<string>,
-    styleUrls?: List<string>,
+    styles?: string[],
+    styleUrls?: string[],
   }): ViewDecorator;
 }
 
@@ -127,14 +127,14 @@ export interface ViewDecorator extends TypeDecorator {
  */
 export interface DirectiveFactory {
   (obj: {
-    selector?: string, properties?: List<string>, events?: List<string>,
-        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>, bindings?: List<any>,
-        exportAs?: string, compileChildren?: boolean;
+    selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
+        lifecycle?: LifecycleEvent[], bindings?: any[], exportAs?: string,
+        compileChildren?: boolean;
   }): DirectiveDecorator;
   new (obj: {
-    selector?: string, properties?: List<string>, events?: List<string>,
-        host?: StringMap<string, string>, lifecycle?: List<LifecycleEvent>, bindings?: List<any>,
-        exportAs?: string, compileChildren?: boolean;
+    selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
+        lifecycle?: LifecycleEvent[], bindings?: any[], exportAs?: string,
+        compileChildren?: boolean;
   }): DirectiveMetadata;
 }
 
@@ -184,26 +184,26 @@ export interface DirectiveFactory {
 export interface ComponentFactory {
   (obj: {
     selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    bindings?: List<any>,
+    lifecycle?: LifecycleEvent[],
+    bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
-    viewBindings?: List<any>,
+    viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   }): ComponentDecorator;
   new (obj: {
     selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    bindings?: List<any>,
+    lifecycle?: LifecycleEvent[],
+    bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
-    viewBindings?: List<any>,
+    viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   }): ComponentMetadata;
 }
@@ -255,18 +255,18 @@ export interface ViewFactory {
   (obj: {
     templateUrl?: string,
     template?: string,
-    directives?: List<Type | any | List<any>>,
+    directives?: Array<Type | any | any[]>,
     encapsulation?: ViewEncapsulation,
-    styles?: List<string>,
-    styleUrls?: List<string>,
+    styles?: string[],
+    styleUrls?: string[],
   }): ViewDecorator;
   new (obj: {
     templateUrl?: string,
     template?: string,
-    directives?: List<Type | any | List<any>>,
+    directives?: Array<Type | any | any[]>,
     encapsulation?: ViewEncapsulation,
-    styles?: List<string>,
-    styleUrls?: List<string>,
+    styles?: string[],
+    styleUrls?: string[],
   }): ViewMetadata;
 }
 

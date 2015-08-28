@@ -22,7 +22,7 @@ export class DomAdapter {
   hasProperty(element, name: string): boolean { throw _abstract(); }
   setProperty(el: Element, name: string, value: any) { throw _abstract(); }
   getProperty(el: Element, name: string): any { throw _abstract(); }
-  invoke(el: Element, methodName: string, args: List<any>): any { throw _abstract(); }
+  invoke(el: Element, methodName: string, args: any[]): any { throw _abstract(); }
 
   logError(error) { throw _abstract(); }
   log(error) { throw _abstract(); }
@@ -38,7 +38,7 @@ export class DomAdapter {
   parse(templateHtml: string) { throw _abstract(); }
   query(selector: string): any { throw _abstract(); }
   querySelector(el, selector: string): HTMLElement { throw _abstract(); }
-  querySelectorAll(el, selector: string): List<any> { throw _abstract(); }
+  querySelectorAll(el, selector: string): any[] { throw _abstract(); }
   on(el, evt, listener) { throw _abstract(); }
   onAndCancel(el, evt, listener): Function { throw _abstract(); }
   dispatchEvent(el, evt) { throw _abstract(); }
@@ -55,8 +55,8 @@ export class DomAdapter {
   firstChild(el): Node { throw _abstract(); }
   nextSibling(el): Node { throw _abstract(); }
   parentElement(el): Node { throw _abstract(); }
-  childNodes(el): List<Node> { throw _abstract(); }
-  childNodesAsList(el): List<Node> { throw _abstract(); }
+  childNodes(el): Node[] { throw _abstract(); }
+  childNodesAsList(el): Node[] { throw _abstract(); }
   clearNodes(el) { throw _abstract(); }
   appendChild(el, node) { throw _abstract(); }
   removeChild(el, node) { throw _abstract(); }
@@ -83,11 +83,11 @@ export class DomAdapter {
   createShadowRoot(el): any { throw _abstract(); }
   getShadowRoot(el): any { throw _abstract(); }
   getHost(el): any { throw _abstract(); }
-  getDistributedNodes(el): List<Node> { throw _abstract(); }
+  getDistributedNodes(el): Node[] { throw _abstract(); }
   clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/ { throw _abstract(); }
-  getElementsByClassName(element, name: string): List<HTMLElement> { throw _abstract(); }
-  getElementsByTagName(element, name: string): List<HTMLElement> { throw _abstract(); }
-  classList(element): List<any> { throw _abstract(); }
+  getElementsByClassName(element, name: string): HTMLElement[] { throw _abstract(); }
+  getElementsByTagName(element, name: string): HTMLElement[] { throw _abstract(); }
+  classList(element): any[] { throw _abstract(); }
   addClass(element, classname: string) { throw _abstract(); }
   removeClass(element, classname: string) { throw _abstract(); }
   hasClass(element, classname: string): boolean { throw _abstract(); }
@@ -122,7 +122,7 @@ export class DomAdapter {
   getHref(element): string { throw _abstract(); }
   getEventKey(event): string { throw _abstract(); }
   resolveAndSetHref(element, baseUrl: string, href: string) { throw _abstract(); }
-  cssToRules(css: string): List<any> { throw _abstract(); }
+  cssToRules(css: string): any[] { throw _abstract(); }
   supportsDOMEvents(): boolean { throw _abstract(); }
   supportsNativeShadowDOM(): boolean { throw _abstract(); }
   getGlobalEventTarget(target: string): any { throw _abstract(); }

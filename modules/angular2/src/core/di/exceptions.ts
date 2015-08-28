@@ -1,9 +1,9 @@
-import {ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {stringify, BaseException, isBlank} from 'angular2/src/core/facade/lang';
 import {Key} from './key';
 import {Injector} from './injector';
 
-function findFirstClosedCycle(keys: List<any>): List<any> {
+function findFirstClosedCycle(keys: any[]): any[] {
   var res = [];
   for (var i = 0; i < keys.length; ++i) {
     if (ListWrapper.contains(res, keys[i])) {
@@ -16,7 +16,7 @@ function findFirstClosedCycle(keys: List<any>): List<any> {
   return res;
 }
 
-function constructResolvingPath(keys: List<any>): string {
+function constructResolvingPath(keys: any[]): string {
   if (keys.length > 1) {
     var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
     var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
@@ -33,8 +33,8 @@ function constructResolvingPath(keys: List<any>): string {
 export class AbstractBindingError extends BaseException {
   name: string;
   message: string;
-  keys: List<Key>;
-  injectors: List<Injector>;
+  keys: Key[];
+  injectors: Injector[];
   constructResolvingMessage: Function;
 
   constructor(injector: Injector, key: Key, constructResolvingMessage: Function, originalException?,
@@ -63,7 +63,7 @@ export class AbstractBindingError extends BaseException {
  */
 export class NoBindingError extends AbstractBindingError {
   constructor(injector: Injector, key: Key) {
-    super(injector, key, function(keys: List<any>) {
+    super(injector, key, function(keys: any[]) {
       var first = stringify(ListWrapper.first(keys).token);
       return `No provider for ${first}!${constructResolvingPath(keys)}`;
     });
@@ -88,7 +88,7 @@ export class NoBindingError extends AbstractBindingError {
  */
 export class CyclicDependencyError extends AbstractBindingError {
   constructor(injector: Injector, key: Key) {
-    super(injector, key, function(keys: List<any>) {
+    super(injector, key, function(keys: any[]) {
       return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
     });
   }
@@ -103,7 +103,7 @@ export class CyclicDependencyError extends AbstractBindingError {
 export class InstantiationError extends AbstractBindingError {
   causeKey: Key;
   constructor(injector: Injector, originalException, originalStack, key: Key) {
-    super(injector, key, function(keys: List<any>) {
+    super(injector, key, function(keys: any[]) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
     }, originalException, originalStack);
@@ -136,7 +136,7 @@ export class InvalidBindingError extends BaseException {
 export class NoAnnotationError extends BaseException {
   name: string;
   message: string;
-  constructor(typeOrFunc, params: List<List<any>>) {
+  constructor(typeOrFunc, params: any[][]) {
     super();
     var signature = [];
     for (var i = 0, ii = params.length; i < ii; i++) {

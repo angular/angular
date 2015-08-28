@@ -200,7 +200,7 @@ enum _ComponentIndex {
  *     on the browser's regular expression implementation.  Never null, since
  *     arbitrary strings may still look like path names.
  */
-function _split(uri: string): List<string | any> {
+function _split(uri: string): Array<string | any> {
   return RegExpWrapper.firstMatch(_splitRe, uri);
 }
 
@@ -255,7 +255,7 @@ function _removeDotSegments(path: string): string {
  * @param {Array.<string?>} parts
  * @return {string}
  */
-function _joinAndCanonicalizePath(parts: List<any>): string {
+function _joinAndCanonicalizePath(parts: any[]): string {
   var path = parts[_ComponentIndex.Path];
   path = isBlank(path) ? '' : _removeDotSegments(path);
   parts[_ComponentIndex.Path] = path;

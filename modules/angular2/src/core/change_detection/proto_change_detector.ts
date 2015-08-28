@@ -1,5 +1,5 @@
 import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   PropertyRead,
@@ -76,7 +76,7 @@ export function createEventRecords(definition: ChangeDetectorDefinition): EventB
 }
 
 export class ProtoRecordBuilder {
-  records: List<ProtoRecord>;
+  records: ProtoRecord[];
 
   constructor() { this.records = []; }
 
@@ -117,16 +117,16 @@ export class ProtoRecordBuilder {
 }
 
 class _ConvertAstIntoProtoRecords implements AstVisitor {
-  constructor(private _records: List<ProtoRecord>, private _bindingRecord: BindingRecord,
+  constructor(private _records: ProtoRecord[], private _bindingRecord: BindingRecord,
               private _variableNames: string[], private _bindingIndex: number) {}
 
-  static append(records: List<ProtoRecord>, b: BindingRecord, variableNames: string[],
+  static append(records: ProtoRecord[], b: BindingRecord, variableNames: string[],
                 bindingIndex: number) {
     var c = new _ConvertAstIntoProtoRecords(records, b, variableNames, bindingIndex);
     b.ast.visit(c);
   }
 
-  static create(b: BindingRecord, variableNames: List<any>): ProtoRecord[] {
+  static create(b: BindingRecord, variableNames: any[]): ProtoRecord[] {
     var rec = [];
     _ConvertAstIntoProtoRecords.append(rec, b, variableNames, null);
     rec[rec.length - 1].lastInBinding = true;
@@ -256,7 +256,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
 
   visitIf(ast: If) { throw new BaseException('Not supported'); }
 
-  _visitAll(asts: List<any>) {
+  _visitAll(asts: any[]) {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);
@@ -307,7 +307,7 @@ function _arrayFn(length: number): Function {
   }
 }
 
-function _mapPrimitiveName(keys: List<any>) {
+function _mapPrimitiveName(keys: any[]) {
   var stringifiedKeys =
       ListWrapper.join(ListWrapper.map(keys, (k) => isString(k) ? `"${k}"` : `${k}`), ", ");
   return `mapFn([${stringifiedKeys}])`;
@@ -391,7 +391,7 @@ function s(v): string {
   return isPresent(v) ? `${v}` : '';
 }
 
-function _interpolationFn(strings: List<any>) {
+function _interpolationFn(strings: any[]) {
   var length = strings.length;
   var c0 = length > 0 ? strings[0] : null;
   var c1 = length > 1 ? strings[1] : null;

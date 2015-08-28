@@ -13,7 +13,7 @@ import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/core/facade/lan
  * }
  * ```
  */
-export interface PipeTransform { transform(value: any, args: List<any>): any; }
+export interface PipeTransform { transform(value: any, args: any[]): any; }
 
 /**
  * An interface that stateful pipes should implement.

@@ -39,7 +39,7 @@ function creditCardValidator(c): StringMap<string, boolean> {
 class ShowError {
   formDir;
   controlPath: string;
-  errorTypes: List<string>;
+  errorTypes: string[];
 
   constructor(@Host() formDir: NgFormModel) { this.formDir = formDir; }
 

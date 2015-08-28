@@ -25,7 +25,7 @@ import {
 import {TemplateCloner} from '../template_cloner';
 
 export function mergeProtoViewsRecursively(templateCloner: TemplateCloner,
-                                           protoViewRefs: List<RenderProtoViewRef | List<any>>):
+                                           protoViewRefs: Array<RenderProtoViewRef | any[]>):
     RenderProtoViewMergeMapping {
   // clone
   var clonedProtoViews = [];
@@ -77,7 +77,7 @@ export function mergeProtoViewsRecursively(templateCloner: TemplateCloner,
 }
 
 function cloneProtoViews(
-    templateCloner: TemplateCloner, protoViewRefs: List<RenderProtoViewRef | List<any>>,
+    templateCloner: TemplateCloner, protoViewRefs: Array<RenderProtoViewRef | any[]>,
     targetClonedProtoViews: ClonedProtoView[], targetHostViewAndBinderIndices: number[][]) {
   var hostProtoView = resolveInternalDomProtoView(protoViewRefs[0]);
   var hostPvIdx = targetClonedProtoViews.length;

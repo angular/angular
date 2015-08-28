@@ -13,7 +13,7 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {List, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Component, View, NgFor, bind} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
@@ -172,7 +172,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 var arrExpr: List<string> = rootTC.componentInstance.arrExpr;
+                 var arrExpr: string[] = rootTC.componentInstance.arrExpr;
                  detectChangesAndCheck(rootTC, 'ng-binding foo');
 
                  arrExpr.push('bar');
@@ -405,7 +405,7 @@ export function main() {
 class TestComponent {
   condition: boolean = true;
   items: any[];
-  arrExpr: List<string> = ['foo'];
+  arrExpr: string[] = ['foo'];
   objExpr = {'foo': true, 'bar': false};
   strExpr = 'foo';
 }

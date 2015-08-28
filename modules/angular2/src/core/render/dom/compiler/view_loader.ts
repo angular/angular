@@ -7,7 +7,7 @@ import {
   isPromise,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
-import {Map, MapWrapper, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ViewDefinition} from '../../api';
@@ -35,7 +35,7 @@ export class ViewLoader {
 
   load(viewDef: ViewDefinition): Promise<TemplateAndStyles> {
     var r = wtfStartTimeRange('ViewLoader#load()', stringify(viewDef.componentId));
-    let tplAndStyles: List<Promise<TemplateAndStyles>| Promise<string>| string> =
+    let tplAndStyles: Array<Promise<TemplateAndStyles>| Promise<string>| string> =
         [this._loadHtml(viewDef.template, viewDef.templateAbsUrl, viewDef.componentId)];
     if (isPresent(viewDef.styles)) {
       viewDef.styles.forEach((cssText: string) => {
@@ -54,7 +54,7 @@ export class ViewLoader {
 
     // Inline the styles from the @View annotation
     return PromiseWrapper.all(tplAndStyles)
-        .then((res: List<TemplateAndStyles | string>) => {
+        .then((res: Array<TemplateAndStyles | string>) => {
           let loadedTplAndStyles = <TemplateAndStyles>res[0];
           let styles = <string[]>ListWrapper.slice(res, 1);
 

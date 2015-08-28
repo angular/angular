@@ -5,7 +5,7 @@ import {
   RenderViewWithFragments
 } from "angular2/src/core/render/api";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
-import {List, MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
+import {MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
 
 @Injectable()
 export class RenderViewWithFragmentsStore {
@@ -13,13 +13,13 @@ export class RenderViewWithFragmentsStore {
   private _onWebWorker: boolean;
   private _lookupByIndex: Map<number, RenderViewRef | RenderFragmentRef>;
   private _lookupByView: Map<RenderViewRef | RenderFragmentRef, number>;
-  private _viewFragments: Map<RenderViewRef, List<RenderFragmentRef>>;
+  private _viewFragments: Map<RenderViewRef, RenderFragmentRef[]>;
 
   constructor(@Inject(ON_WEB_WORKER) onWebWorker) {
     this._onWebWorker = onWebWorker;
     this._lookupByIndex = new Map<number, RenderViewRef | RenderFragmentRef>();
     this._lookupByView = new Map<RenderViewRef | RenderFragmentRef, number>();
-    this._viewFragments = new Map<RenderViewRef, List<RenderFragmentRef>>();
+    this._viewFragments = new Map<RenderViewRef, RenderFragmentRef[]>();
   }
 
   allocate(fragmentCount: number): RenderViewWithFragments {

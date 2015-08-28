@@ -1,4 +1,4 @@
-import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {Map, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {
   isPresent,
   isBlank,
@@ -322,7 +322,7 @@ export class SelectorMatcher {
     var selectables = map.get(name);
     var starSelectables = map.get("*");
     if (isPresent(starSelectables)) {
-      selectables = ListWrapper.concat(selectables, starSelectables);
+      selectables = selectables.concat(starSelectables);
     }
     if (isBlank(selectables)) {
       return false;

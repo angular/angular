@@ -93,7 +93,7 @@ export class DatePipe implements PipeTransform {
   };
 
 
-  transform(value: any, args: List<any>): string {
+  transform(value: any, args: any[]): string {
     if (isBlank(value)) return null;
 
     if (!this.supports(value)) {

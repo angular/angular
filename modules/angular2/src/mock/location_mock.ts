@@ -1,9 +1,9 @@
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Location} from 'angular2/src/router/location';
 
 export class SpyLocation implements Location {
-  urlChanges: List<string> = [];
+  urlChanges: string[] = [];
   _path: string = '';
   _subject: EventEmitter = new EventEmitter();
   _baseHref: string = '';

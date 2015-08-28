@@ -1,22 +1,21 @@
 import {AST} from 'angular2/src/core/change_detection/change_detection';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent} from 'angular2/src/core/facade/lang';
 
 export class DomElementBinder {
-  textNodeIndices: List<number>;
+  textNodeIndices: number[];
   hasNestedProtoView: boolean;
   eventLocals: AST;
-  localEvents: List<Event>;
-  globalEvents: List<Event>;
+  localEvents: Event[];
+  globalEvents: Event[];
   hasNativeShadowRoot: boolean;
 
   constructor({textNodeIndices, hasNestedProtoView, eventLocals, localEvents, globalEvents,
                hasNativeShadowRoot}: {
-    textNodeIndices?: List<number>,
+    textNodeIndices?: number[],
     hasNestedProtoView?: boolean,
     eventLocals?: AST,
-    localEvents?: List<Event>,
-    globalEvents?: List<Event>,
+    localEvents?: Event[],
+    globalEvents?: Event[],
     hasNativeShadowRoot?: boolean
   } = {}) {
     this.textNodeIndices = textNodeIndices;

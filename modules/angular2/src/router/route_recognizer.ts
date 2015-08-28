@@ -12,7 +12,6 @@ import {
 import {
   Map,
   MapWrapper,
-  List,
   ListWrapper,
   StringMap,
   StringMapWrapper
@@ -37,10 +36,10 @@ export class RouteRecognizer {
   auxRoutes: Map<string, PathRecognizer> = new Map();
 
   // TODO: optimize this into a trie
-  matchers: List<PathRecognizer> = [];
+  matchers: PathRecognizer[] = [];
 
   // TODO: optimize this into a trie
-  redirects: List<Redirector> = [];
+  redirects: Redirector[] = [];
 
   config(config: RouteDefinition): boolean {
     var handler;
@@ -83,7 +82,7 @@ export class RouteRecognizer {
    * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
    *
    */
-  recognize(urlParse: Url): List<PathMatch> {
+  recognize(urlParse: Url): PathMatch[] {
     var solutions = [];
 
     urlParse = this._redirect(urlParse);
@@ -131,8 +130,8 @@ export class RouteRecognizer {
 }
 
 export class Redirector {
-  segments: List<string> = [];
-  toSegments: List<string> = [];
+  segments: string[] = [];
+  toSegments: string[] = [];
 
   constructor(path: string, redirectTo: string) {
     if (path.startsWith('/')) {

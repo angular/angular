@@ -91,7 +91,7 @@ export class NgFormControl extends NgControl {
     }
   }
 
-  get path(): List<string> { return []; }
+  get path(): string[] { return []; }
 
   get control(): Control { return this.form; }
 

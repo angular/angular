@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
-import {List, ListWrapper, SetWrapper} from "angular2/src/core/facade/collection";
+import {ListWrapper, SetWrapper} from "angular2/src/core/facade/collection";
 import {
   NumberWrapper,
   StringJoiner,
@@ -19,7 +19,7 @@ export enum TokenType {
 
 @Injectable()
 export class Lexer {
-  tokenize(text: string): List<any> {
+  tokenize(text: string): any[] {
     var scanner = new _Scanner(text);
     var tokens = [];
     var token = scanner.scanToken();

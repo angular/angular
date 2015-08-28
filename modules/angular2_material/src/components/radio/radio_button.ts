@@ -59,8 +59,8 @@ export class MdRadioGroup {
   /** Dispatcher for coordinating radio unique-selection by name. */
   radioDispatcher: MdRadioDispatcher;
 
-  /** List of child radio buttons. */
-  radios_: List<MdRadioButton>;
+  /** Array of child radio buttons. */
+  radios_: MdRadioButton[];
 
   activedescendant: any;
 

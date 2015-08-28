@@ -2,7 +2,6 @@ import {PathMatch} from './path_recognizer';
 import {RouteRecognizer} from './route_recognizer';
 import {Instruction, ComponentInstruction, PrimaryInstruction} from './instruction';
 import {
-  List,
   ListWrapper,
   Map,
   MapWrapper,
@@ -198,7 +197,7 @@ export class RouteRegistry {
    * Given a normalized list with component names and params like: `['user', {id: 3 }]`
    * generates a url with a leading slash relative to the provided `parentComponent`.
    */
-  generate(linkParams: List<any>, parentComponent: any): Instruction {
+  generate(linkParams: any[], parentComponent: any): Instruction {
     let segments = [];
     let componentCursor = parentComponent;
 
@@ -283,7 +282,7 @@ export class RouteRegistry {
 /*
  * Given a list of instructions, returns the most specific instruction
  */
-function mostSpecific(instructions: List<PrimaryInstruction>): PrimaryInstruction {
+function mostSpecific(instructions: PrimaryInstruction[]): PrimaryInstruction {
   return ListWrapper.maximum(
       instructions, (instruction: PrimaryInstruction) => instruction.component.specificity);
 }

@@ -132,5 +132,5 @@ export class FnArg {
 }
 
 export class UiArguments {
-  constructor(public method: string, public args?: List<FnArg>) {}
+  constructor(public method: string, public args?: FnArg[]) {}
 }

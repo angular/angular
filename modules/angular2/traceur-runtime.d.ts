@@ -53,8 +53,8 @@ interface Map<K, V> {
   clear(): void;
   delete (key: K): boolean;
   forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void;
-  keys(): List<K>;
-  values(): List<V>;
+  keys(): Array<K>;
+  values(): Array<V>;
   get(key: K): V;
   has(key: K): boolean;
   set(key: K, value: V): Map<K, V>;
@@ -65,7 +65,7 @@ declare var Map: {
   new<K, V>(): Map<K, V>;
   // alexeagle: PATCHED
   new<K, V>(m: Map<K, V>): Map<any, any>;
-  new<K, V>(l: List<any>): Map<any, any>;
+  new<K, V>(l: Array<any>): Map<any, any>;
   prototype: Map<any, any>;
 };
 
@@ -82,7 +82,7 @@ declare var Set: {
   new<T>(): Set<T>;
   // alexeagle PATCHED
   new<T>(s: Set<T>): Set<T>;
-  new<T>(l: List<T>): Set<T>;
+  new<T>(l: Array<T>): Set<T>;
   prototype: Set<any>;
 };
 

@@ -12,7 +12,6 @@ import {
   MapWrapper,
   StringMap,
   StringMapWrapper,
-  List,
   ListWrapper
 } from 'angular2/src/core/facade/collection';
 
@@ -149,7 +148,7 @@ function parsePathString(route: string): StringMap<string, any> {
 
 // this function is used to determine whether a route config path like `/foo/:id` collides with
 // `/foo/:name`
-function pathDslHash(segments: List<Segment>): string {
+function pathDslHash(segments: Segment[]): string {
   return segments.map((segment) => {
                    if (segment instanceof StarSegment) {
                      return '*';
@@ -164,7 +163,7 @@ function pathDslHash(segments: List<Segment>): string {
       .join('/');
 }
 
-function splitBySlash(url: string): List<string> {
+function splitBySlash(url: string): string[] {
   return url.split('/');
 }
 
@@ -183,12 +182,12 @@ function assertPath(path: string) {
 
 export class PathMatch {
   constructor(public instruction: ComponentInstruction, public remaining: Url,
-              public remainingAux: List<Url>) {}
+              public remainingAux: Url[]) {}
 }
 
 // represents something like '/foo/:bar'
 export class PathRecognizer {
-  private _segments: List<Segment>;
+  private _segments: Segment[];
   specificity: number;
   terminal: boolean = true;
   hash: string;
@@ -297,7 +296,7 @@ export class PathRecognizer {
     return this._getInstruction(urlPath, urlParams, this, params);
   }
 
-  private _getInstruction(urlPath: string, urlParams: List<string>, _recognizer: PathRecognizer,
+  private _getInstruction(urlPath: string, urlParams: string[], _recognizer: PathRecognizer,
                           params: StringMap<string, any>): ComponentInstruction {
     var hashKey = urlPath + '?' + urlParams.join('?');
     if (this.cache.has(hashKey)) {

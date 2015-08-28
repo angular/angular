@@ -1,5 +1,5 @@
 import {isPresent, isBlank, looseIdentical} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, Map} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
 import {RecordType, ProtoRecord} from './proto_record';
 
 /**
@@ -13,7 +13,7 @@ import {RecordType, ProtoRecord} from './proto_record';
  * replaced with very cheap SELF records.
  */
 export function coalesce(records: ProtoRecord[]): ProtoRecord[] {
-  var res: List<ProtoRecord> = [];
+  var res: ProtoRecord[] = [];
   var indexMap: Map<number, number> = new Map<number, number>();
 
   for (var i = 0; i < records.length; ++i) {
@@ -48,7 +48,7 @@ function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): P
                          r.lastInDirective, false, false, r.propertyBindingIndex);
 }
 
-function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
+function _findMatching(r: ProtoRecord, rs: ProtoRecord[]) {
   return ListWrapper.find(
       rs, (rr) => rr.mode !== RecordType.DirectiveLifecycle && _sameDirIndex(rr, r) &&
                   rr.mode === r.mode && looseIdentical(rr.funcOrValue, r.funcOrValue) &&

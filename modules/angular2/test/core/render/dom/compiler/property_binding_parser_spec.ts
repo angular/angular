@@ -26,7 +26,7 @@ export function main() {
       return new ViewDefinition({componentId: 'someComponent'});
     }
 
-    function process(element, hasNestedProtoView = false): List<ElementBinderBuilder> {
+    function process(element, hasNestedProtoView = false): ElementBinderBuilder[] {
       return ListWrapper.map(
           createPipeline(hasNestedProtoView)
               .processElements(element, ViewType.COMPONENT, createViewDefinition()),

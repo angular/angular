@@ -1,5 +1,5 @@
 import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
-import {List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Parser} from 'angular2/src/core/change_detection/change_detection';
 
@@ -21,7 +21,7 @@ import {DirectiveBuilder, ElementBinderBuilder} from '../view/proto_view_builder
 export class DirectiveParser implements CompileStep {
   _selectorMatcher: SelectorMatcher = new SelectorMatcher();
 
-  constructor(public _parser: Parser, public _directives: List<RenderDirectiveMetadata>) {
+  constructor(public _parser: Parser, public _directives: RenderDirectiveMetadata[]) {
     for (var i = 0; i < _directives.length; i++) {
       var directive = _directives[i];
       var selector = CssSelector.parse(directive.selector);
@@ -114,7 +114,7 @@ export class DirectiveParser implements CompileStep {
     let dirProperty: string;
     // Name of the property on the element
     let elProp: string;
-    let pipes: List<string>;
+    let pipes: string[];
     let assignIndex: number = bindConfig.indexOf(':');
 
     if (assignIndex > -1) {

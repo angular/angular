@@ -1,4 +1,4 @@
-import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {Map, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
   isBlank,
@@ -17,7 +17,7 @@ import {ProtoViewBuilder, ElementBinderBuilder} from '../view/proto_view_builder
  */
 export class CompileElement {
   _attrs: Map<string, string> = null;
-  _classList: List<string> = null;
+  _classList: string[] = null;
   isViewRoot: boolean = false;
   // inherited down to children if they don't have an own protoView
   inheritedProtoView: ProtoViewBuilder = null;
@@ -63,7 +63,7 @@ export class CompileElement {
     return this._attrs;
   }
 
-  classList(): List<string> {
+  classList(): string[] {
     if (isBlank(this._classList)) {
       this._classList = [];
       var elClassList = DOM.classList(this.element);

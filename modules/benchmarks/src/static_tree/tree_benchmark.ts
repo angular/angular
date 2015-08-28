@@ -11,7 +11,6 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {List} from 'angular2/src/core/facade/collection';
 import {window, document, gc} from 'angular2/src/core/facade/browser';
 import {
   getIntParameter,
@@ -25,7 +24,7 @@ import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind, Binding} from 'angular2/di';
 
-function createBindings(): List<Binding> {
+function createBindings(): Binding[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 0;
   return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
 }

@@ -11,7 +11,7 @@ import {
   isPromise
 } from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {DirectiveResolver} from './directive_resolver';
 
@@ -212,7 +212,7 @@ export class Compiler {
     return resultPromise;
   }
 
-  private _removeDuplicatedDirectives(directives: List<DirectiveBinding>): List<DirectiveBinding> {
+  private _removeDuplicatedDirectives(directives: DirectiveBinding[]): DirectiveBinding[] {
     var directivesMap: Map<number, DirectiveBinding> = new Map();
     directives.forEach((dirBinding) => { directivesMap.set(dirBinding.key.id, dirBinding); });
     return MapWrapper.values(directivesMap);
@@ -270,7 +270,7 @@ export class Compiler {
   }
 
   private _collectMergeRenderProtoViews(appProtoView:
-                                            AppProtoView): List<RenderProtoViewRef | List<any>> {
+                                            AppProtoView): Array<RenderProtoViewRef | any[]> {
     var result = [appProtoView.render];
     for (var i = 0; i < appProtoView.elementBinders.length; i++) {
       var binder = appProtoView.elementBinders[i];
@@ -330,14 +330,14 @@ export class Compiler {
     return pipes;
   }
 
-  private _flattenDirectives(view: ViewMetadata): List<Type> {
+  private _flattenDirectives(view: ViewMetadata): Type[] {
     if (isBlank(view.directives)) return [];
     var directives = [];
     this._flattenList(view.directives, directives);
     return directives;
   }
 
-  private _flattenList(tree: List<any>, out: List<Type | Binding | List<any>>): void {
+  private _flattenList(tree: any[], out: Array<Type | Binding | any[]>): void {
     for (var i = 0; i < tree.length; i++) {
       var item = resolveForwardRef(tree[i]);
       if (isArray(item)) {

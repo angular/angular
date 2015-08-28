@@ -1,7 +1,6 @@
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {TimerWrapper} from 'angular2/src/core/facade/async';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';
 import {NgIf, NgFor} from 'angular2/directives';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -25,7 +24,7 @@ import {Component, Directive, View} from 'angular2/angular2';
   </div>`
 })
 export class App {
-  scrollAreas: List<number>;
+  scrollAreas: number[];
   iterationCount: number;
   scrollIncrement: number;
 

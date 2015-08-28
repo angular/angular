@@ -1,5 +1,5 @@
 import {BaseException, Type, isBlank, isPresent} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {ChangeDetectionUtil} from './change_detection_util';
@@ -36,8 +36,8 @@ export class ChangeDetectorJITGenerator {
   _typeName: string;
 
   constructor(private id: string, private changeDetectionStrategy: ChangeDetectionStrategy,
-              private records: List<ProtoRecord>, private propertyBindingTargets: BindingTarget[],
-              private eventBindings: EventBinding[], private directiveRecords: List<any>,
+              private records: ProtoRecord[], private propertyBindingTargets: BindingTarget[],
+              private eventBindings: EventBinding[], private directiveRecords: any[],
               private genConfig: ChangeDetectorGenConfig) {
     this._names =
         new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);

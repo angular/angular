@@ -1,4 +1,4 @@
-import {List, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {normalizeBlank, isPresent, global} from 'angular2/src/core/facade/lang';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
@@ -45,7 +45,7 @@ export class NgZone {
 
   _inVmTurnDone: boolean = false;
 
-  _pendingTimeouts: List<number> = [];
+  _pendingTimeouts: number[] = [];
 
   /**
    * Associates with this

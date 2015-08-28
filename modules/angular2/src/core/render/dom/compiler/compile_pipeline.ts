@@ -1,5 +1,4 @@
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
@@ -13,7 +12,7 @@ import {ProtoViewDto, ViewType, ViewDefinition} from '../../api';
  */
 export class CompilePipeline {
   _control: CompileControl;
-  constructor(public steps: List<CompileStep>) { this._control = new CompileControl(steps); }
+  constructor(public steps: CompileStep[]) { this._control = new CompileControl(steps); }
 
   processStyles(styles: string[]): string[] {
     return styles.map(style => {

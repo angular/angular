@@ -1,4 +1,4 @@
-import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
   isPresent,
@@ -9,7 +9,7 @@ import {
 } from 'angular2/src/core/facade/lang';
 
 export class Log {
-  _result: List<any>;
+  _result: any[];
 
   constructor() { this._result = []; }
 

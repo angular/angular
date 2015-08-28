@@ -1,5 +1,5 @@
 import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';
@@ -25,8 +25,8 @@ class _Context {
 }
 
 export class AbstractChangeDetector<T> implements ChangeDetector {
-  lightDomChildren: List<any> = [];
-  shadowDomChildren: List<any> = [];
+  lightDomChildren: any[] = [];
+  shadowDomChildren: any[] = [];
   parent: ChangeDetector;
   ref: ChangeDetectorRef;
 

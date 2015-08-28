@@ -190,7 +190,7 @@ export function main() {
 
         var b = 'b';
         var oo = 'oo';
-        ListWrapper.set(l, 1, b + oo);
+        l[1] = b + oo;
         differ.check(l);
         expect(differ.toString())
             .toEqual(iterableChangesAsString({collection: ['a', 'boo'], previous: ['a', 'boo']}));

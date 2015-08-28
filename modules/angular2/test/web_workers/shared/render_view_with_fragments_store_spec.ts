@@ -9,7 +9,7 @@ import {
   WebWorkerRenderViewRef,
   WebWorkerRenderFragmentRef
 } from "angular2/src/web_workers/shared/render_view_with_fragments_store";
-import {List, ListWrapper} from "angular2/src/core/facade/collection";
+import {ListWrapper} from "angular2/src/core/facade/collection";
 
 export function main() {
   describe("RenderViewWithFragmentsStore", () => {
@@ -23,8 +23,8 @@ export function main() {
         var viewRef: WebWorkerRenderViewRef = <WebWorkerRenderViewRef>view.viewRef;
         expect(viewRef.refNumber).toEqual(0);
 
-        var fragmentRefs: List<WebWorkerRenderFragmentRef> =
-            <List<WebWorkerRenderFragmentRef>>view.fragmentRefs;
+        var fragmentRefs: WebWorkerRenderFragmentRef[] =
+            <WebWorkerRenderFragmentRef[]>view.fragmentRefs;
         expect(fragmentRefs.length).toEqual(10);
 
         for (var i = 0; i < fragmentRefs.length; i++) {

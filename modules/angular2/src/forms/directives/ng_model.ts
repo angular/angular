@@ -64,7 +64,7 @@ export class NgModel extends NgControl {
 
   get control(): Control { return this._control; }
 
-  get path(): List<string> { return []; }
+  get path(): string[] { return []; }
 
   get validator(): Function { return composeNgValidator(this.ngValidators); }
 

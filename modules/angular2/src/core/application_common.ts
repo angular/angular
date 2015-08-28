@@ -33,7 +33,7 @@ import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner'
 import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {PipeResolver} from './compiler/pipe_resolver';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -84,7 +84,7 @@ var _rootInjector: Injector;
 // Contains everything that is safe to share between applications.
 var _rootBindings = [bind(Reflector).toValue(reflector), TestabilityRegistry];
 
-function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
+function _injectorBindings(appComponentType): Array<Type | Binding | any[]> {
   var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
     bestChangeDetection = new PreGeneratedChangeDetection();
@@ -290,9 +290,9 @@ export function createNgZone(): NgZone {
  *
  * Returns a `Promise` of {@link ApplicationRef}.
  */
-export function commonBootstrap(
-    appComponentType: /*Type*/ any,
-    componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
+export function commonBootstrap(appComponentType: /*Type*/ any,
+                                componentInjectableBindings: Array<Type | Binding | any[]> = null):
+    Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   var bootstrapProcess = PromiseWrapper.completer();
@@ -338,7 +338,7 @@ export function commonBootstrap(
   return bootstrapProcess.promise;
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,
+function _createAppInjector(appComponentType: Type, bindings: Array<Type | Binding | any[]>,
                             zone: NgZone): Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);
   var mergedBindings: any[] =

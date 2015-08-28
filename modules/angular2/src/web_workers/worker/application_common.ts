@@ -29,7 +29,7 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -77,7 +77,7 @@ class PrintLogger {
 }
 
 function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMap<string, any>):
-    List<Type | Binding | List<any>> {
+    Array<Type | Binding | any[]> {
   var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
     bestChangeDetection = new PreGeneratedChangeDetection();
@@ -141,7 +141,7 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
 
 export function bootstrapWebWorkerCommon(
     appComponentType: Type, bus: MessageBus,
-    componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
+    componentInjectableBindings: Array<Type | Binding | any[]> = null): Promise<ApplicationRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
   var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
@@ -184,7 +184,7 @@ export function bootstrapWebWorkerCommon(
   return bootstrapProcess.promise;
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,
+function _createAppInjector(appComponentType: Type, bindings: Array<Type | Binding | any[]>,
                             zone: NgZone, bus: MessageBus, initData: StringMap<string, any>):
     Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);

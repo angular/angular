@@ -18,7 +18,7 @@ export interface ClassDefinition {
    *
    * See {@link Class} for example of usage.
    */
-  constructor: (Function | Array<any>);
+  constructor: (Function | any[]);
 }
 
 /**
@@ -60,7 +60,7 @@ export interface TypeDecorator {
    *
    * Used by {@link Class} to annotate the generated class.
    */
-  annotations: Array<any>;
+  annotations: any[];
 
   /**
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
@@ -76,7 +76,7 @@ function extractAnnotation(annotation: any): any {
   return annotation;
 }
 
-function applyParams(fnOrArray: (Function | Array<any>), key: string): Function {
+function applyParams(fnOrArray: (Function | any[]), key: string): Function {
   if (fnOrArray === Object || fnOrArray === String || fnOrArray === Function ||
       fnOrArray === Number || fnOrArray === Array) {
     throw new Error(`Can not use native ${stringify(fnOrArray)} as constructor`);
@@ -84,7 +84,7 @@ function applyParams(fnOrArray: (Function | Array<any>), key: string): Function 
   if (isFunction(fnOrArray)) {
     return <Function>fnOrArray;
   } else if (fnOrArray instanceof Array) {
-    var annotations: Array<any> = fnOrArray;
+    var annotations: any[] = fnOrArray;
     var fn: Function = fnOrArray[fnOrArray.length - 1];
     if (!isFunction(fn)) {
       throw new Error(
@@ -95,9 +95,9 @@ function applyParams(fnOrArray: (Function | Array<any>), key: string): Function 
       throw new Error(
           `Number of annotations (${annoLength}) does not match number of arguments (${fn.length}) in the function: ${stringify(fn)}`);
     }
-    var paramsAnnotations: Array<Array<any>> = [];
+    var paramsAnnotations: any[][] = [];
     for (var i = 0, ii = annotations.length - 1; i < ii; i++) {
-      var paramAnnotations: Array<any> = [];
+      var paramAnnotations: any[] = [];
       paramsAnnotations.push(paramAnnotations);
       var annotation = annotations[i];
       if (annotation instanceof Array) {
@@ -270,7 +270,7 @@ export function makeParamDecorator(annotationCls): any {
 
 
     function ParamDecorator(cls, unusedKey, index): any {
-      var parameters: Array<Array<any>> = Reflect.getMetadata('parameters', cls);
+      var parameters: any[][] = Reflect.getMetadata('parameters', cls);
       parameters = parameters || [];
 
       // there might be gaps if some in between parameters do not have annotations.
@@ -280,7 +280,7 @@ export function makeParamDecorator(annotationCls): any {
       }
 
       parameters[index] = parameters[index] || [];
-      var annotationsForParam: Array<any> = parameters[index];
+      var annotationsForParam: any[] = parameters[index];
       annotationsForParam.push(annotationInstance);
 
       Reflect.defineMetadata('parameters', parameters, cls);

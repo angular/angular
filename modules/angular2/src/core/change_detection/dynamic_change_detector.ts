@@ -5,7 +5,7 @@ import {
   FunctionWrapper,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {EventBinding} from './event_binding';
@@ -18,10 +18,10 @@ import {ChangeDetectionStrategy} from './constants';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicChangeDetector extends AbstractChangeDetector<any> {
-  values: List<any>;
-  changes: List<any>;
-  localPipes: List<any>;
-  prevContexts: List<any>;
+  values: any[];
+  changes: any[];
+  localPipes: any[];
+  prevContexts: any[];
   directives: any = null;
 
   constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,

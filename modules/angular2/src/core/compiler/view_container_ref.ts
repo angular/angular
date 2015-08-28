@@ -1,4 +1,4 @@
-import {ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ResolvedBinding} from 'angular2/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
@@ -22,7 +22,7 @@ export class ViewContainerRef {
    */
   constructor(public viewManager: avmModule.AppViewManager, public element: ElementRef) {}
 
-  private _getViews(): List<viewModule.AppView> {
+  private _getViews(): Array<viewModule.AppView> {
     var vc = internalView(this.element.parentView).viewContainers[this.element.boundElementIndex];
     return isPresent(vc) ? vc.views : [];
   }

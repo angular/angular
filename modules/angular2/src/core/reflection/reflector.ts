@@ -1,6 +1,5 @@
 import {Type, isPresent, stringify, BaseException} from 'angular2/src/core/facade/lang';
 import {
-  List,
   ListWrapper,
   Map,
   MapWrapper,
@@ -16,12 +15,11 @@ export {PlatformReflectionCapabilities} from './platform_reflection_capabilities
 
 export class ReflectionInfo {
   _factory: Function;
-  _annotations: List<any>;
-  _parameters: List<List<any>>;
-  _interfaces: List<any>;
+  _annotations: any[];
+  _parameters: any[][];
+  _interfaces: any[];
 
-  constructor(annotations?: List<any>, parameters?: List<List<any>>, factory?: Function,
-              interfaces?: List<any>) {
+  constructor(annotations?: any[], parameters?: any[][], factory?: Function, interfaces?: any[]) {
     this._annotations = annotations;
     this._parameters = parameters;
     this._factory = factory;
@@ -59,7 +57,7 @@ export class Reflector {
    * {@link #trackUsage} was called. This list could later be audited as
    * potential dead code.
    */
-  listUnusedKeys(): List<any> {
+  listUnusedKeys(): any[] {
     if (this._usedKeys == null) {
       throw new BaseException('Usage tracking is disabled');
     }
@@ -96,7 +94,7 @@ export class Reflector {
     }
   }
 
-  parameters(typeOrFunc: /*Type*/ any): List<any> {
+  parameters(typeOrFunc: /*Type*/ any): any[] {
     if (this._injectableInfo.has(typeOrFunc)) {
       var res = this._getReflectionInfo(typeOrFunc)._parameters;
       return isPresent(res) ? res : [];
@@ -105,7 +103,7 @@ export class Reflector {
     }
   }
 
-  annotations(typeOrFunc: /*Type*/ any): List<any> {
+  annotations(typeOrFunc: /*Type*/ any): any[] {
     if (this._injectableInfo.has(typeOrFunc)) {
       var res = this._getReflectionInfo(typeOrFunc)._annotations;
       return isPresent(res) ? res : [];
@@ -114,7 +112,7 @@ export class Reflector {
     }
   }
 
-  interfaces(type: Type): List<any> {
+  interfaces(type: Type): any[] {
     if (this._injectableInfo.has(type)) {
       var res = this._getReflectionInfo(type)._interfaces;
       return isPresent(res) ? res : [];

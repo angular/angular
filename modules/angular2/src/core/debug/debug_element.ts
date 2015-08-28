@@ -1,5 +1,5 @@
 import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, Predicate} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/core/facade/collection';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
@@ -42,9 +42,9 @@ export class DebugElement {
   /**
    * Get child DebugElements from within the Light DOM.
    *
-   * @return {List<DebugElement>}
+   * @return {DebugElement[]}
    */
-  get children(): List<DebugElement> {
+  get children(): DebugElement[] {
     return this._getChildElements(this._parentView, this._boundElementIndex);
   }
 
@@ -52,9 +52,9 @@ export class DebugElement {
    * Get the root DebugElement children of a component. Returns an empty
    * list if the current DebugElement is not a component root.
    *
-   * @return {List<DebugElement>}
+   * @return {DebugElement[]}
    */
-  get componentViewChildren(): List<DebugElement> {
+  get componentViewChildren(): DebugElement[] {
     var shadowView = this._parentView.getNestedView(this._boundElementIndex);
 
     if (!isPresent(shadowView)) {
@@ -106,15 +106,15 @@ export class DebugElement {
    * @param {Function: boolean} predicate
    * @param {Scope} scope
    *
-   * @return {List<DebugElement>}
+   * @return {DebugElement[]}
    */
-  queryAll(predicate: Predicate<DebugElement>, scope: Function = Scope.all): List<DebugElement> {
+  queryAll(predicate: Predicate<DebugElement>, scope: Function = Scope.all): DebugElement[] {
     var elementsInScope = scope(this);
 
     return ListWrapper.filter(elementsInScope, predicate);
   }
 
-  _getChildElements(view: AppView, parentBoundElementIndex: number): List<DebugElement> {
+  _getChildElements(view: AppView, parentBoundElementIndex: number): DebugElement[] {
     var els = [];
     var parentElementBinder = null;
     if (isPresent(parentBoundElementIndex)) {
@@ -128,7 +128,7 @@ export class DebugElement {
         var views = view.viewContainers[view.elementOffset + i];
         if (isPresent(views)) {
           ListWrapper.forEach(views.views, (nextView) => {
-            els = ListWrapper.concat(els, this._getChildElements(nextView, null));
+            els = els.concat(this._getChildElements(nextView, null));
           });
         }
       }
@@ -141,38 +141,38 @@ export function inspectElement(elementRef: ElementRef): DebugElement {
   return DebugElement.create(elementRef);
 }
 
-export function asNativeElements(arr: List<DebugElement>): List<any> {
+export function asNativeElements(arr: DebugElement[]): any[] {
   return arr.map((debugEl) => debugEl.nativeElement);
 }
 
 export class Scope {
-  static all(debugElement: DebugElement): List<DebugElement> {
+  static all(debugElement: DebugElement): DebugElement[] {
     var scope = [];
     scope.push(debugElement);
 
     ListWrapper.forEach(debugElement.children,
-                        (child) => { scope = ListWrapper.concat(scope, Scope.all(child)); });
+                        (child) => { scope = scope.concat(Scope.all(child)); });
 
     ListWrapper.forEach(debugElement.componentViewChildren,
-                        (child) => { scope = ListWrapper.concat(scope, Scope.all(child)); });
+                        (child) => { scope = scope.concat(Scope.all(child)); });
 
     return scope;
   }
-  static light(debugElement: DebugElement): List<DebugElement> {
+  static light(debugElement: DebugElement): DebugElement[] {
     var scope = [];
     ListWrapper.forEach(debugElement.children, (child) => {
       scope.push(child);
-      scope = ListWrapper.concat(scope, Scope.light(child));
+      scope = scope.concat(Scope.light(child));
     });
     return scope;
   }
 
-  static view(debugElement: DebugElement): List<DebugElement> {
+  static view(debugElement: DebugElement): DebugElement[] {
     var scope = [];
 
     ListWrapper.forEach(debugElement.componentViewChildren, (child) => {
       scope.push(child);
-      scope = ListWrapper.concat(scope, Scope.light(child));
+      scope = scope.concat(Scope.light(child));
     });
     return scope;
   }

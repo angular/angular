@@ -49,7 +49,7 @@ export function main() {
       return new ViewDefinition({componentId: 'someComponent'});
     }
 
-    function process(el, propertyBindings = null, directives = null): List<ElementBinderBuilder> {
+    function process(el, propertyBindings = null, directives = null): ElementBinderBuilder[] {
       var pipeline = createPipeline(propertyBindings, directives);
       return ListWrapper.map(
           pipeline.processElements(el, ViewType.COMPONENT, createViewDefinition()),

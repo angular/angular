@@ -16,7 +16,7 @@ class DemoApp {
   previousClick: string;
   action: string;
   clickCount: number;
-  items: List<number>;
+  items: number[];
 
   constructor() {
     this.previousClick = 'Nothing';

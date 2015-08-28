@@ -52,7 +52,7 @@ import {ComponentInstruction} from 'angular2/src/router/instruction';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 var cmpInstanceCount;
-var log: List<string>;
+var log: string[];
 var eventBus: EventEmitter;
 var completer: PromiseCompleter<any>;
 

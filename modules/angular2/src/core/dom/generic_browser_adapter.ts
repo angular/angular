@@ -1,4 +1,4 @@
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isFunction} from 'angular2/src/core/facade/lang';
 import {DomAdapter} from './dom_adapter';
 
@@ -6,11 +6,11 @@ import {DomAdapter} from './dom_adapter';
  * Provides DOM operations in any browser environment.
  */
 export class GenericBrowserDomAdapter extends DomAdapter {
-  getDistributedNodes(el: HTMLElement): List<Node> { return (<any>el).getDistributedNodes(); }
+  getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
   resolveAndSetHref(el: HTMLAnchorElement, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;
   }
-  cssToRules(css: string): List<any> {
+  cssToRules(css: string): any[] {
     var style = this.createStyleElement(css);
     this.appendChild(this.defaultDoc().head, style);
     var rules = [];

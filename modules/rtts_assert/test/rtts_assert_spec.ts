@@ -1,7 +1,6 @@
 // # Assert.js
 // A run-time type assertion library for JavaScript. Designed to be used with
 // [Traceur](https://github.com/google/traceur-compiler).
-import {} from '../../angular2/src/test_lib/e2e_util';
 import {assert} from '../rtts_assert';
 
 // - [Basic Type Check](#basic-type-check)
@@ -358,7 +357,7 @@ export function main() {
 
     describe('generics', function() {
 
-      it('should pass', function() { var list: Array<string> = []; });
+      it('should pass', function() { var list: string[] = []; });
 
       // TODO(tbosch): add assertions based on generics to rtts_assert
 
