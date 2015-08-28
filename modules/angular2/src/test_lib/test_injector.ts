@@ -195,13 +195,7 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
 }
 
 export class FunctionWithParamTokens {
-  _tokens: any[];
-  _fn: Function;
-
-  constructor(tokens: any[], fn: Function) {
-    this._tokens = tokens;
-    this._fn = fn;
-  }
+  constructor(private _tokens: any[], private _fn: Function) {}
 
   /**
    * Returns the value of the executed function.
@@ -210,4 +204,6 @@ export class FunctionWithParamTokens {
     var params = ListWrapper.map(this._tokens, (t) => injector.get(t));
     return FunctionWrapper.apply(this._fn, params);
   }
+
+  hasToken(token: any): boolean { return this._tokens.indexOf(token) > -1; }
 }
