@@ -91,7 +91,7 @@ export function main() {
              ObservableWrapper.callNext(emitter, message);
 
              TimerWrapper.setTimeout(() => {
-               expect(ref.spy('requestCheck')).toHaveBeenCalled();
+               expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
              }, 0)
            }));
@@ -178,7 +178,7 @@ export function main() {
              completer.resolve(message);
 
              TimerWrapper.setTimeout(() => {
-               expect(ref.spy('requestCheck')).toHaveBeenCalled();
+               expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
              }, timer)
            }));

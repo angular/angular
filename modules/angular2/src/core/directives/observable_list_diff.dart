@@ -35,7 +35,7 @@ class ObservableListDiff extends DefaultIterableDiffer {
       if (_subscription != null) _subscription.cancel();
       _subscription = collection.changes.listen((_) {
         _updated = true;
-        _ref.requestCheck();
+        _ref.markForCheck();
       });
       _updated = false;
       return super.diff(collection);

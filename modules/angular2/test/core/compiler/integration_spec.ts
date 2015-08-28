@@ -1685,7 +1685,7 @@ class PushCmpWithRef {
     return "fixed";
   }
 
-  propagate() { this.ref.requestCheck(); }
+  propagate() { this.ref.markForCheck(); }
 }
 
 @Component({selector: 'push-cmp-with-async', changeDetection: ChangeDetectionStrategy.OnPush})
