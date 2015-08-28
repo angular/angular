@@ -5,7 +5,7 @@ environment:
   sdk: '>=1.9.0 <2.0.0'
 dependencies:
   angular2: '0.0.0'
-  analyzer: '>=0.25.1 <0.27.0'
+  analyzer: '>=0.25.1 <0.26.1+2'
   plugin: "^0.1.0"
 dev_dependencies:
   test_reflective_loader: '^0.0.3'
