@@ -20,7 +20,7 @@ Interfaces:
 
   
 Methods and functions:
-  - Example: `bootstrap`, `ngProbe`
+  - Example: `bootstrap`, `someMethod`
   - Should be camel case with first lower case
 
 

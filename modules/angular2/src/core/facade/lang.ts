@@ -354,3 +354,17 @@ export class DateWrapper {
   static now(): Date { return new Date(); }
   static toJson(date: Date): string { return date.toJSON(); }
 }
+
+export function setValueOnPath(global: any, path: string, value: any) {
+  var parts = path.split('.');
+  var obj: any = global;
+  while (parts.length > 1) {
+    var name = parts.shift();
+    if (obj.hasOwnProperty(name)) {
+      obj = obj[name];
+    } else {
+      obj = obj[name] = {};
+    }
+  }
+  obj[parts.shift()] = value;
+}

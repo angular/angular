@@ -1,5 +1,5 @@
 import {List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent, global} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, global, setValueOnPath} from 'angular2/src/core/facade/lang';
 import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -320,7 +320,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getData(element, name: string): string { return this.getAttribute(element, 'data-' + name); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(name: string, value: any) { global[name] = value; }
+  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
 }
 
 
