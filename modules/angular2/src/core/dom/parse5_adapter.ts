@@ -539,9 +539,12 @@ export class Parse5DomAdapter extends DomAdapter {
   getLocation(): Location { throw 'not implemented'; }
   getUserAgent(): string { return "Fake user agent"; }
   getData(el, name: string): string { return this.getAttribute(el, 'data-' + name); }
+  getComputedStyle(el): any { throw 'not implemented'; }
   setData(el, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
+  requestAnimationFrame(callback): number { return setTimeout(callback, 0); }
+  cancelAnimationFrame(id: number) { clearTimeout(id); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

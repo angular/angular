@@ -40,6 +40,7 @@ const kServedPaths = [
   'benchmarks_external/src/static_tree',
 
   // Relative (to /modules) paths to example directories
+  'examples/src/animate',
   'examples/src/benchpress',
   'examples/src/model_driven_forms',
   'examples/src/template_driven_forms',

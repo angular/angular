@@ -2,6 +2,8 @@
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/src/core/di";
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
+import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
@@ -140,7 +142,9 @@ function _injectorBindings(): any[] {
     MessageBasedXHRImpl,
     MessageBasedRenderer,
     ServiceMessageBrokerFactory,
-    ClientMessageBrokerFactory
+    ClientMessageBrokerFactory,
+    BrowserDetails,
+    AnimationBuilder,
   ];
 }
 

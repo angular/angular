@@ -19,4 +19,6 @@ class Math {
   static num ceil(num a) => a.ceil();
 
   static num sqrt(num x) => math.sqrt(x);
+
+  static num round(num x) => x.round();
 }

@@ -20,6 +20,7 @@ module.exports = function makeNodeTree(destinationPath) {
     include: ['angular2/**', 'benchpress/**', '**/e2e_test/**'],
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
+      'angular2/test/animate/**',
       'angular2/test/core/zone/**',
       'angular2/test/test_lib/fake_async_spec.ts',
       'angular2/test/core/render/xhr_impl_spec.ts',
