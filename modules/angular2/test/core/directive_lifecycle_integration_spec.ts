@@ -17,7 +17,7 @@ import {Directive, Component, View, ViewMetadata, LifecycleEvent} from 'angular2
 export function main() {
   describe('directive lifecycle integration spec', () => {
 
-    it('should invoke lifecycle methods onChange > onInit > onCheck > onAllChangesDone',
+    it('should invoke lifecycle methods onChanges > onInit > doCheck > afterContentChecked',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(
                 MyComp,
@@ -28,17 +28,17 @@ export function main() {
                var dir = tc.componentViewChildren[0].inject(LifecycleDir);
                tc.detectChanges();
 
-               expect(dir.log).toEqual(["onChange", "onInit", "onCheck", "onAllChangesDone"]);
+               expect(dir.log).toEqual(["onChanges", "onInit", "doCheck", "afterContentChecked"]);
 
                tc.detectChanges();
 
                expect(dir.log).toEqual([
-                 "onChange",
+                 "onChanges",
                  "onInit",
-                 "onCheck",
-                 "onAllChangesDone",
-                 "onCheck",
-                 "onAllChangesDone"
+                 "doCheck",
+                 "afterContentChecked",
+                 "doCheck",
+                 "afterContentChecked"
                ]);
 
                async.done();
@@ -52,10 +52,10 @@ export function main() {
   selector: "[lifecycle]",
   properties: ['field'],
   lifecycle: [
-    LifecycleEvent.onChange,
-    LifecycleEvent.onCheck,
-    LifecycleEvent.onInit,
-    LifecycleEvent.onAllChangesDone
+    LifecycleEvent.OnChanges,
+    LifecycleEvent.DoCheck,
+    LifecycleEvent.OnInit,
+    LifecycleEvent.AfterContentChecked
   ]
 })
 class LifecycleDir {
@@ -64,13 +64,13 @@ class LifecycleDir {
 
   constructor() { this.log = []; }
 
-  onChange(_) { this.log.push("onChange"); }
+  onChanges(_) { this.log.push("onChanges"); }
 
   onInit() { this.log.push("onInit"); }
 
-  onCheck() { this.log.push("onCheck"); }
+  doCheck() { this.log.push("doCheck"); }
 
-  onAllChangesDone() { this.log.push("onAllChangesDone"); }
+  afterContentChecked() { this.log.push("afterContentChecked"); }
 }
 
 @Component({selector: 'my-comp'})

@@ -27,7 +27,7 @@ import {Renderer} from 'angular2/src/core/render/api';
  */
 @Directive({
   selector: '[ng-style]',
-  lifecycle: [LifecycleEvent.onCheck],
+  lifecycle: [LifecycleEvent.DoCheck],
   properties: ['rawStyle: ng-style']
 })
 export class NgStyle {
@@ -44,7 +44,7 @@ export class NgStyle {
     }
   }
 
-  onCheck() {
+  doCheck() {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._rawStyle);
       if (isPresent(changes)) {

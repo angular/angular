@@ -17,14 +17,14 @@ void initReflector() {
               const Component(
                   selector: '[soup]',
                   lifecycle: const [
-                    LifecycleEvent.onChange,
-                    LifecycleEvent.onDestroy,
-                    LifecycleEvent.onInit
+                    LifecycleEvent.OnChanges,
+                    LifecycleEvent.OnDestroy,
+                    LifecycleEvent.OnInit
                   ])
             ],
             const [],
             () => new MultiSoupComponent(),
-            const [OnChange, OnDestroy, OnInit]))
+            const [OnChanges, OnDestroy, OnInit]))
     ..registerType(
         MixedSoupComponent,
         new _ngRef.ReflectionInfo(
@@ -32,22 +32,22 @@ void initReflector() {
               const Component(
                   selector: '[soup]',
                   lifecycle: const [
-                    LifecycleEvent.onChange,
-                    LifecycleEvent.onCheck
+                    LifecycleEvent.DoCheck,
+                    LifecycleEvent.OnChanges
                   ])
             ],
             const [],
             () => new MixedSoupComponent(),
-            const [OnChange]))
+            const [OnChanges]))
     ..registerType(
         MatchedSoupComponent,
         new _ngRef.ReflectionInfo(
             const [
               const Component(
                   selector: '[soup]',
-                  lifecycle: const [LifecycleEvent.onChange])
+                  lifecycle: const [LifecycleEvent.OnChanges])
             ],
             const [],
             () => new MatchedSoupComponent(),
-            const [OnChange]));
+            const [OnChanges]));
 }

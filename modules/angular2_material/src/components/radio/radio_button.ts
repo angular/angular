@@ -33,7 +33,7 @@ var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   events: ['change'],
   properties: ['disabled', 'value'],
   host: {
@@ -103,7 +103,7 @@ export class MdRadioGroup {
   }
 
   /** Change handler invoked when bindings are resolved or when bindings have changed. */
-  onChange(_) {
+  onChanges(_) {
     // If the component has a disabled attribute with no value, it will set disabled = ''.
     this.disabled = isPresent(this.disabled) && this.disabled !== false;
 
@@ -191,7 +191,7 @@ export class MdRadioGroup {
 
 @Component({
   selector: 'md-radio-button',
-  lifecycle: [LifecycleEvent.onInit],
+  lifecycle: [LifecycleEvent.OnInit],
   properties: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
     'role': 'radio',

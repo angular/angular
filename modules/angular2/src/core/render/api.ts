@@ -154,10 +154,10 @@ export class RenderDirectiveMetadata {
   readAttributes: List<string>;
   type: number;
   callOnDestroy: boolean;
-  callOnChange: boolean;
-  callOnCheck: boolean;
+  callOnChanges: boolean;
+  callDoCheck: boolean;
   callOnInit: boolean;
-  callOnAllChangesDone: boolean;
+  callAfterContentChecked: boolean;
   changeDetection: ChangeDetectionStrategy;
   exportAs: string;
   hostListeners: Map<string, string>;
@@ -168,8 +168,8 @@ export class RenderDirectiveMetadata {
   private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
-               properties, readAttributes, type, callOnDestroy, callOnChange, callOnCheck,
-               callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
+               properties, readAttributes, type, callOnDestroy, callOnChanges, callDoCheck,
+               callOnInit, callAfterContentChecked, changeDetection, exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -181,10 +181,10 @@ export class RenderDirectiveMetadata {
     readAttributes?: List<string>,
     type?: number,
     callOnDestroy?: boolean,
-    callOnChange?: boolean,
-    callOnCheck?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
     callOnInit?: boolean,
-    callOnAllChangesDone?: boolean,
+    callAfterContentChecked?: boolean,
     changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }) {
@@ -199,16 +199,16 @@ export class RenderDirectiveMetadata {
     this.readAttributes = readAttributes;
     this.type = type;
     this.callOnDestroy = callOnDestroy;
-    this.callOnChange = callOnChange;
-    this.callOnCheck = callOnCheck;
+    this.callOnChanges = callOnChanges;
+    this.callDoCheck = callDoCheck;
     this.callOnInit = callOnInit;
-    this.callOnAllChangesDone = callOnAllChangesDone;
+    this.callAfterContentChecked = callAfterContentChecked;
     this.changeDetection = changeDetection;
     this.exportAs = exportAs;
   }
 
   static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
-                 callOnDestroy, callOnChange, callOnCheck, callOnInit, callOnAllChangesDone,
+                 callOnDestroy, callOnChanges, callDoCheck, callOnInit, callAfterContentChecked,
                  changeDetection, exportAs}: {
     id?: string,
     selector?: string,
@@ -219,10 +219,10 @@ export class RenderDirectiveMetadata {
     readAttributes?: List<string>,
     type?: number,
     callOnDestroy?: boolean,
-    callOnChange?: boolean,
-    callOnCheck?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
     callOnInit?: boolean,
-    callOnAllChangesDone?: boolean,
+    callAfterContentChecked?: boolean,
     changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }): RenderDirectiveMetadata {
@@ -255,10 +255,10 @@ export class RenderDirectiveMetadata {
       readAttributes: readAttributes,
       type: type,
       callOnDestroy: callOnDestroy,
-      callOnChange: callOnChange,
-      callOnCheck: callOnCheck,
+      callOnChanges: callOnChanges,
+      callDoCheck: callDoCheck,
       callOnInit: callOnInit,
-      callOnAllChangesDone: callOnAllChangesDone,
+      callAfterContentChecked: callAfterContentChecked,
       changeDetection: changeDetection,
       exportAs: exportAs
     });

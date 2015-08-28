@@ -76,7 +76,7 @@ const controlNameBinding =
   bindings: [controlNameBinding],
   properties: ['name: ngControl', 'model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnDestroy, LifecycleEvent.OnChanges],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl {
@@ -95,7 +95,7 @@ export class NgControlName extends NgControl {
     this.ngValidators = ngValidators;
   }
 
-  onChange(c: StringMap<string, any>) {
+  onChanges(c: StringMap<string, any>) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;

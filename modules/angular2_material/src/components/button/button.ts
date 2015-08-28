@@ -48,7 +48,7 @@ export class MdButton {
 @Component({
   selector: 'a[md-button], a[md-raised-button], a[md-fab]',
   properties: ['disabled'],
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   host: {
     '(^click)': 'onClick($event)',
     '(^mousedown)': 'onMousedown()',
@@ -86,7 +86,7 @@ export class MdAnchor extends MdButton {
   }
 
   /** Invoked when a change is detected. */
-  onChange(_) {
+  onChanges(_) {
     // A disabled anchor should not be in the tab flow.
     this.tabIndex = this.disabled ? -1 : 0;
   }

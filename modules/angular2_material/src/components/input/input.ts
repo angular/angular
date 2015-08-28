@@ -9,7 +9,7 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 @Directive({
   selector: 'md-input-container',
-  lifecycle: [LifecycleEvent.onAllChangesDone],
+  lifecycle: [LifecycleEvent.AfterContentChecked],
   host: {
     '[class.md-input-has-value]': 'inputHasValue',
     '[class.md-input-focused]': 'inputHasFocus',
@@ -31,7 +31,7 @@ export class MdInputContainer {
     this.inputHasFocus = false;
   }
 
-  onAllChangesDone() {
+  afterContentChecked() {
     // Enforce that this directive actually contains a text input.
     if (this._input == null) {
       throw 'No <input> or <textarea> found inside of <md-input-container>';

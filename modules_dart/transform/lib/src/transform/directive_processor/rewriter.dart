@@ -279,7 +279,7 @@ class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
   final AnnotationMatcher _annotationMatcher;
 
   /// Responsible for testing whether interfaces are recognized by Angular2,
-  /// for example `OnChange`.
+  /// for example `OnChanges`.
   final InterfaceMatcher _interfaceMatcher;
 
   /// Used to fetch linked files.

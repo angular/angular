@@ -117,13 +117,13 @@ export function main() {
         });
       });
 
-      describe("onChange", () => {
+      describe("onChanges", () => {
         it("should update dom values of all the directives", () => {
           form.addControl(loginControlDir);
 
           formModel.find(["login"]).updateValue("new value");
 
-          form.onChange(null);
+          form.onChanges(null);
 
           expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual("new value");
         });
@@ -244,7 +244,7 @@ export function main() {
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        controlDir.onChange({});
+        controlDir.onChanges({});
 
         expect(control.valid).toBe(false);
       });
@@ -276,7 +276,7 @@ export function main() {
         expect(ngModel.control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        ngModel.onChange({});
+        ngModel.onChanges({});
 
         expect(ngModel.control.valid).toBe(false);
       });

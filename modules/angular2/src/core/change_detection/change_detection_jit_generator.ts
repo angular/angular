@@ -71,7 +71,7 @@ export class ChangeDetectorJITGenerator {
 
       ${this._genCheckNoChanges()}
 
-      ${this._maybeGenCallOnAllChangesDone()}
+      ${this._maybeGenCallAfterContentChecked()}
 
       ${this._maybeGenHydrateDirectives()}
 
@@ -172,23 +172,23 @@ export class ChangeDetectorJITGenerator {
     }`;
   }
 
-  _maybeGenCallOnAllChangesDone(): string {
+  _maybeGenCallAfterContentChecked(): string {
     var notifications = [];
     var dirs = this.directiveRecords;
 
     // NOTE(kegluneq): Order is important!
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
-      if (dir.callOnAllChangesDone) {
+      if (dir.callAfterContentChecked) {
         notifications.push(
-            `${this._names.getDirectiveName(dir.directiveIndex)}.onAllChangesDone();`);
+            `${this._names.getDirectiveName(dir.directiveIndex)}.afterContentChecked();`);
       }
     }
     if (notifications.length > 0) {
       var directiveNotifications = notifications.join("\n");
       return `
-        ${this._typeName}.prototype.callOnAllChangesDone = function() {
-          ${ABSTRACT_CHANGE_DETECTOR}.prototype.callOnAllChangesDone.call(this);
+        ${this._typeName}.prototype.callAfterContentChecked = function() {
+          ${ABSTRACT_CHANGE_DETECTOR}.prototype.callAfterContentChecked.call(this);
           ${directiveNotifications}
         }
       `;
@@ -214,11 +214,11 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genDirectiveLifecycle(r: ProtoRecord): string {
-    if (r.name === "onCheck") {
+    if (r.name === "DoCheck") {
       return this._genOnCheck(r);
-    } else if (r.name === "onInit") {
+    } else if (r.name === "OnInit") {
       return this._genOnInit(r);
-    } else if (r.name === "onChange") {
+    } else if (r.name === "OnChanges") {
       return this._genOnChange(r);
     } else {
       throw new BaseException(`Unknown lifecycle event '${r.name}'`);
@@ -337,7 +337,7 @@ export class ChangeDetectorJITGenerator {
   _genAddToChanges(r: ProtoRecord): string {
     var newValue = this._names.getLocalName(r.selfIndex);
     var oldValue = this._names.getFieldName(r.selfIndex);
-    if (!r.bindingRecord.callOnChange()) return "";
+    if (!r.bindingRecord.callOnChanges()) return "";
     return `${CHANGES_LOCAL} = this.addChange(${CHANGES_LOCAL}, ${oldValue}, ${newValue});`;
   }
 
@@ -360,7 +360,7 @@ export class ChangeDetectorJITGenerator {
 
   _genOnCheck(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onCheck();`;
+    return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.doCheck();`;
   }
 
   _genOnInit(r: ProtoRecord): string {
@@ -370,7 +370,7 @@ export class ChangeDetectorJITGenerator {
 
   _genOnChange(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onChange(${CHANGES_LOCAL});`;
+    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onChanges(${CHANGES_LOCAL});`;
   }
 
   _genNotifyOnPushDetectors(r: ProtoRecord): string {

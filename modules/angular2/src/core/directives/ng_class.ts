@@ -36,7 +36,7 @@ import {
  */
 @Directive({
   selector: '[ng-class]',
-  lifecycle: [LifecycleEvent.onCheck, LifecycleEvent.onDestroy],
+  lifecycle: [LifecycleEvent.DoCheck, LifecycleEvent.OnDestroy],
   properties: ['rawClass: ng-class', 'initialClasses: class']
 })
 export class NgClass {
@@ -76,7 +76,7 @@ export class NgClass {
     }
   }
 
-  onCheck(): void {
+  doCheck(): void {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._rawClass);
       if (isPresent(changes)) {

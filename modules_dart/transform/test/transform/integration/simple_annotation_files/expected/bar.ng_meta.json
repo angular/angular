@@ -13,10 +13,10 @@
       "type": 1,
       "exportAs": null,
       "callOnDestroy": false,
-      "callOnCheck": false,
+      "callDoCheck": false,
       "callOnInit": false,
-      "callOnChange": false,
-      "callOnAllChangesDone": false,
+      "callOnChanges": false,
+      "callAfterContentChecked": false,
       "events": [],
       "changeDetection": null,
       "version": 1

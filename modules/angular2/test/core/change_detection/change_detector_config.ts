@@ -282,23 +282,23 @@ class _DirectiveUpdating {
   static basicRecords: List<DirectiveRecord> = [
     new DirectiveRecord({
       directiveIndex: new DirectiveIndex(0, 0),
-      callOnChange: true,
-      callOnCheck: true,
-      callOnAllChangesDone: true
+      callOnChanges: true,
+      callDoCheck: true,
+      callAfterContentChecked: true
     }),
     new DirectiveRecord({
       directiveIndex: new DirectiveIndex(0, 1),
-      callOnChange: true,
-      callOnCheck: true,
-      callOnAllChangesDone: true
+      callOnChanges: true,
+      callDoCheck: true,
+      callAfterContentChecked: true
     })
   ];
 
   static recordNoCallbacks = new DirectiveRecord({
     directiveIndex: new DirectiveIndex(0, 0),
-    callOnChange: false,
-    callOnCheck: false,
-    callOnAllChangesDone: false
+    callOnChanges: false,
+    callDoCheck: false,
+    callAfterContentChecked: false
   });
 
   /**
@@ -315,13 +315,13 @@ class _DirectiveUpdating {
                 [
                   _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
                   _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
-                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
+                  BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[0]),
                   _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
-                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
+                  BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[1])
                 ],
                 [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
-        'directiveOnCheck': new _DirectiveUpdating(
-            [BindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
+        'directiveDoCheck': new _DirectiveUpdating(
+            [BindingRecord.createDirectiveDoCheck(_DirectiveUpdating.basicRecords[0])],
             [_DirectiveUpdating.basicRecords[0]]),
         'directiveOnInit': new _DirectiveUpdating(
             [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],

@@ -204,9 +204,9 @@ export class DirectiveBinding extends ResolvedBinding {
 
   get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
 
-  get callOnChange(): boolean { return this.metadata.callOnChange; }
+  get callOnChanges(): boolean { return this.metadata.callOnChanges; }
 
-  get callOnAllChangesDone(): boolean { return this.metadata.callOnAllChangesDone; }
+  get callAfterContentChecked(): boolean { return this.metadata.callAfterContentChecked; }
 
   get displayName(): string { return this.key.displayName; }
 
@@ -238,11 +238,12 @@ export class DirectiveBinding extends ResolvedBinding {
       properties: ann.properties,
       readAttributes: DirectiveBinding._readAttributes(deps),
 
-      callOnDestroy: hasLifecycleHook(LifecycleEvent.onDestroy, rb.key.token, ann),
-      callOnChange: hasLifecycleHook(LifecycleEvent.onChange, rb.key.token, ann),
-      callOnCheck: hasLifecycleHook(LifecycleEvent.onCheck, rb.key.token, ann),
-      callOnInit: hasLifecycleHook(LifecycleEvent.onInit, rb.key.token, ann),
-      callOnAllChangesDone: hasLifecycleHook(LifecycleEvent.onAllChangesDone, rb.key.token, ann),
+      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, rb.key.token, ann),
+      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, rb.key.token, ann),
+      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, rb.key.token, ann),
+      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, rb.key.token, ann),
+      callAfterContentChecked:
+          hasLifecycleHook(LifecycleEvent.AfterContentChecked, rb.key.token, ann),
 
       changeDetection: ann instanceof ComponentMetadata ? ann.changeDetection : null,
 
@@ -431,7 +432,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._strategy.dehydrate();
   }
 
-  onAllChangesDone(): void {
+  afterContentChecked(): void {
     if (isPresent(this._query0) && this._query0.originator === this) {
       this._query0.list.fireCallbacks();
     }

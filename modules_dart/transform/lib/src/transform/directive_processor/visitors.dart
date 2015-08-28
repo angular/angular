@@ -256,23 +256,23 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
 
     namesToTest.forEach((name) {
       if (_interfaceMatcher.isOnChange(name, _assetId)) {
-        _ifaceLifecycleEntries.add('${LifecycleEvent.onChange}');
+        _ifaceLifecycleEntries.add('${LifecycleEvent.OnChanges}');
         populateImport(name);
       }
       if (_interfaceMatcher.isOnDestroy(name, _assetId)) {
-        _ifaceLifecycleEntries.add('${LifecycleEvent.onDestroy}');
+        _ifaceLifecycleEntries.add('${LifecycleEvent.OnDestroy}');
         populateImport(name);
       }
       if (_interfaceMatcher.isOnCheck(name, _assetId)) {
-        _ifaceLifecycleEntries.add('${LifecycleEvent.onCheck}');
+        _ifaceLifecycleEntries.add('${LifecycleEvent.DoCheck}');
         populateImport(name);
       }
       if (_interfaceMatcher.isOnInit(name, _assetId)) {
-        _ifaceLifecycleEntries.add('${LifecycleEvent.onInit}');
+        _ifaceLifecycleEntries.add('${LifecycleEvent.OnInit}');
         populateImport(name);
       }
-      if (_interfaceMatcher.isOnAllChangesDone(name, _assetId)) {
-        _ifaceLifecycleEntries.add('${LifecycleEvent.onAllChangesDone}');
+      if (_interfaceMatcher.isAfterContentChecked(name, _assetId)) {
+        _ifaceLifecycleEntries.add('${LifecycleEvent.AfterContentChecked}');
         populateImport(name);
       }
     });
