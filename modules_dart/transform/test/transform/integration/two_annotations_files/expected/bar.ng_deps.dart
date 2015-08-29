@@ -66,8 +66,6 @@ class _MyComponent_ChangeDetector0
     changes = null;
 
     isChanged = false;
-
-    this.alreadyChecked = true;
   }
 
   void checkNoChanges() {

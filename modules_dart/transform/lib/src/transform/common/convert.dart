@@ -27,7 +27,10 @@ Map<String, dynamic> directiveMetadataToMap(RenderDirectiveMetadata meta) {
     ["callDoCheck", meta.callDoCheck],
     ["callOnInit", meta.callOnInit],
     ["callOnChanges", meta.callOnChanges],
+    ["callAfterContentInit", meta.callAfterContentInit],
     ["callAfterContentChecked", meta.callAfterContentChecked],
+    ["callAfterViewInit", meta.callAfterViewInit],
+    ["callAfterViewChecked", meta.callAfterViewChecked],
     ["events", meta.events],
     ["changeDetection", meta.changeDetection == null ? null : meta.changeDetection.index],
     ["version", 1]
@@ -57,7 +60,10 @@ RenderDirectiveMetadata directiveMetadataFromMap(Map<String, dynamic> map) {
       callDoCheck: (map["callDoCheck"] as bool),
       callOnChanges: (map["callOnChanges"] as bool),
       callOnInit: (map["callOnInit"] as bool),
+      callAfterContentInit: (map["callAfterContentInit"] as bool),
       callAfterContentChecked: (map["callAfterContentChecked"] as bool),
+      callAfterViewInit: (map["callAfterViewInit"] as bool),
+      callAfterViewChecked: (map["callAfterViewChecked"] as bool),
       events: (_cloneIfPresent(map["events"]) as List<String>),
       changeDetection: map["changeDetection"] == null ? null
           : ChangeDetectionStrategy.values[map["changeDetection"] as int]);

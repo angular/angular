@@ -157,7 +157,10 @@ export class RenderDirectiveMetadata {
   callOnChanges: boolean;
   callDoCheck: boolean;
   callOnInit: boolean;
+  callAfterContentInit: boolean;
   callAfterContentChecked: boolean;
+  callAfterViewInit: boolean;
+  callAfterViewChecked: boolean;
   changeDetection: ChangeDetectionStrategy;
   exportAs: string;
   hostListeners: Map<string, string>;
@@ -169,7 +172,8 @@ export class RenderDirectiveMetadata {
 
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
                properties, readAttributes, type, callOnDestroy, callOnChanges, callDoCheck,
-               callOnInit, callAfterContentChecked, changeDetection, exportAs}: {
+               callOnInit, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
+               callAfterViewChecked, changeDetection, exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -184,7 +188,10 @@ export class RenderDirectiveMetadata {
     callOnChanges?: boolean,
     callDoCheck?: boolean,
     callOnInit?: boolean,
+    callAfterContentInit?: boolean,
     callAfterContentChecked?: boolean,
+    callAfterViewInit?: boolean,
+    callAfterViewChecked?: boolean,
     changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }) {
@@ -202,14 +209,18 @@ export class RenderDirectiveMetadata {
     this.callOnChanges = callOnChanges;
     this.callDoCheck = callDoCheck;
     this.callOnInit = callOnInit;
+    this.callAfterContentInit = callAfterContentInit;
     this.callAfterContentChecked = callAfterContentChecked;
+    this.callAfterViewInit = callAfterViewInit;
+    this.callAfterViewChecked = callAfterViewChecked;
     this.changeDetection = changeDetection;
     this.exportAs = exportAs;
   }
 
   static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
-                 callOnDestroy, callOnChanges, callDoCheck, callOnInit, callAfterContentChecked,
-                 changeDetection, exportAs}: {
+                 callOnDestroy, callOnChanges, callDoCheck, callOnInit, callAfterContentInit,
+                 callAfterContentChecked, callAfterViewInit, callAfterViewChecked, changeDetection,
+                 exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -222,7 +233,10 @@ export class RenderDirectiveMetadata {
     callOnChanges?: boolean,
     callDoCheck?: boolean,
     callOnInit?: boolean,
+    callAfterContentInit?: boolean,
     callAfterContentChecked?: boolean,
+    callAfterViewInit?: boolean,
+    callAfterViewChecked?: boolean,
     changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }): RenderDirectiveMetadata {
@@ -258,7 +272,10 @@ export class RenderDirectiveMetadata {
       callOnChanges: callOnChanges,
       callDoCheck: callDoCheck,
       callOnInit: callOnInit,
+      callAfterContentInit: callAfterContentInit,
       callAfterContentChecked: callAfterContentChecked,
+      callAfterViewInit: callAfterViewInit,
+      callAfterViewChecked: callAfterViewChecked,
       changeDetection: changeDetection,
       exportAs: exportAs
     });

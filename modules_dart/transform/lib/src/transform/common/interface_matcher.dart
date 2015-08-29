@@ -33,12 +33,33 @@ const _ON_INIT_INTERFACES = const [
   const ClassDescriptor(
       'OnInit', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
-const _ON_ALL_CHANGES_DONE_INTERFACES = const [
+const _ON_AFTER_CONTENT_INIT_INTERFACES = const [
+  const ClassDescriptor('AfterContentInit', 'package:angular2/angular2.dart'),
+  const ClassDescriptor(
+      'AfterContentInit', 'package:angular2/metadata.dart'),
+  const ClassDescriptor(
+      'AfterContentInit', 'package:angular2/src/core/compiler/interfaces.dart')
+];
+const _ON_AFTER_CONTENT_CHECKED_INTERFACES = const [
   const ClassDescriptor('AfterContentChecked', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
       'AfterContentChecked', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
       'AfterContentChecked', 'package:angular2/src/core/compiler/interfaces.dart')
+];
+const _ON_AFTER_VIEW_INIT_INTERFACES = const [
+  const ClassDescriptor('AfterViewInit', 'package:angular2/angular2.dart'),
+  const ClassDescriptor(
+      'AfterViewInit', 'package:angular2/metadata.dart'),
+  const ClassDescriptor(
+      'AfterViewInit', 'package:angular2/src/core/compiler/interfaces.dart')
+];
+const _ON_AFTER_VIEW_CHECKED_INTERFACES = const [
+  const ClassDescriptor('AfterViewChecked', 'package:angular2/angular2.dart'),
+  const ClassDescriptor(
+      'AfterViewChecked', 'package:angular2/metadata.dart'),
+  const ClassDescriptor(
+      'AfterViewChecked', 'package:angular2/src/core/compiler/interfaces.dart')
 ];
 
 /// Checks if a given [Annotation] matches any of the given
@@ -52,7 +73,10 @@ class InterfaceMatcher extends ClassMatcherBase {
       ..addAll(_ON_DESTROY_INTERFACES)
       ..addAll(_ON_CHECK_INTERFACES)
       ..addAll(_ON_INIT_INTERFACES)
-      ..addAll(_ON_ALL_CHANGES_DONE_INTERFACES));
+      ..addAll(_ON_AFTER_CONTENT_INIT_INTERFACES)
+      ..addAll(_ON_AFTER_CONTENT_CHECKED_INTERFACES)
+      ..addAll(_ON_AFTER_VIEW_INIT_INTERFACES)
+      ..addAll(_ON_AFTER_VIEW_CHECKED_INTERFACES));
   }
 
   /// Checks if an [Identifier] implements [OnChanges].
@@ -71,7 +95,19 @@ class InterfaceMatcher extends ClassMatcherBase {
   bool isOnInit(Identifier typeName, AssetId assetId) =>
       implements(firstMatch(typeName, assetId), _ON_INIT_INTERFACES);
 
+  /// Checks if an [Identifier] implements [AfterContentInit].
+  bool isAfterContentInit(Identifier typeName, AssetId assetId) => implements(
+      firstMatch(typeName, assetId), _ON_AFTER_CONTENT_INIT_INTERFACES);
+
   /// Checks if an [Identifier] implements [AfterContentChecked].
   bool isAfterContentChecked(Identifier typeName, AssetId assetId) => implements(
-      firstMatch(typeName, assetId), _ON_ALL_CHANGES_DONE_INTERFACES);
+      firstMatch(typeName, assetId), _ON_AFTER_CONTENT_CHECKED_INTERFACES);
+
+  /// Checks if an [Identifier] implements [AfterViewInit].
+  bool isAfterViewInit(Identifier typeName, AssetId assetId) => implements(
+      firstMatch(typeName, assetId), _ON_AFTER_VIEW_INIT_INTERFACES);
+
+  /// Checks if an [Identifier] implements [AfterViewChecked].
+  bool isAfterViewChecked(Identifier typeName, AssetId assetId) => implements(
+      firstMatch(typeName, assetId), _ON_AFTER_VIEW_CHECKED_INTERFACES);
 }

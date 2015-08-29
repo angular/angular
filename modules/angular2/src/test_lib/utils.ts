@@ -19,6 +19,8 @@ export class Log {
     return (a1 = null, a2 = null, a3 = null, a4 = null, a5 = null) => { this._result.push(value); }
   }
 
+  clear(): void { this._result = []; }
+
   result(): string { return ListWrapper.join(this._result, "; "); }
 }
 

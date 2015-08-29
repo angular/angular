@@ -212,6 +212,10 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     }
   }
 
+  notifyAfterViewChecked(): void {
+    // required for query
+  }
+
   getDirectiveFor(directive: DirectiveIndex): any {
     var elementInjector = this.elementInjectors[this.elementOffset + directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);

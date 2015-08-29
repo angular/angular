@@ -389,4 +389,5 @@ class DummyDispatcher implements ChangeDispatcher {
   notifyOnBinding(bindingTarget, newValue) { throw "Should not be used"; }
   logBindingUpdate(bindingTarget, newValue) { throw "Should not be used"; }
   notifyAfterContentChecked() {}
+  notifyAfterViewChecked() {}
 }

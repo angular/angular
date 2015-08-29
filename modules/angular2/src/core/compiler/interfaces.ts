@@ -31,7 +31,28 @@ export interface OnDestroy { onDestroy(): void; }
 
 /**
  * Defines lifecycle method
+ * {@link metadata/LifeCycleEvent#AfterContentInit `LifeCycleEvent.afterContentInit`}
+ * called when the bindings of all its content children have been checked the first time.
+ */
+export interface AfterContentInit { afterContentInit(): void; }
+
+/**
+ * Defines lifecycle method
  * {@link metadata/LifeCycleEvent#AfterContentChecked `LifeCycleEvent.afterContentChecked`}
- * called when the bindings of all its view children have been changed.
+ * called when the bindings of all its content children have been checked.
  */
 export interface AfterContentChecked { afterContentChecked(): void; }
+
+/**
+ * Defines lifecycle method
+ * {@link metadata/LifeCycleEvent#AfterViewInit `LifeCycleEvent.afterViewInit`}
+ * called when the bindings of all its view children have been checked the first time.
+ */
+export interface AfterViewInit { afterViewInit(): void; }
+
+/**
+ * Defines lifecycle method
+ * {@link metadata/LifeCycleEvent#AfterViewChecked `LifeCycleEvent.afterViewChecked`}
+ * called when the bindings of all its view children have been checked.
+ */
+export interface AfterViewChecked { afterViewChecked(): void; }

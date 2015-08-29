@@ -271,8 +271,20 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
         _ifaceLifecycleEntries.add('${LifecycleEvent.OnInit}');
         populateImport(name);
       }
+      if (_interfaceMatcher.isAfterContentInit(name, _assetId)) {
+        _ifaceLifecycleEntries.add('${LifecycleEvent.AfterContentInit}');
+        populateImport(name);
+      }
       if (_interfaceMatcher.isAfterContentChecked(name, _assetId)) {
         _ifaceLifecycleEntries.add('${LifecycleEvent.AfterContentChecked}');
+        populateImport(name);
+      }
+      if (_interfaceMatcher.isAfterViewInit(name, _assetId)) {
+        _ifaceLifecycleEntries.add('${LifecycleEvent.AfterViewInit}');
+        populateImport(name);
+      }
+      if (_interfaceMatcher.isAfterViewChecked(name, _assetId)) {
+        _ifaceLifecycleEntries.add('${LifecycleEvent.AfterViewChecked}');
         populateImport(name);
       }
     });

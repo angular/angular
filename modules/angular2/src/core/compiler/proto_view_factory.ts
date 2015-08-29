@@ -191,7 +191,10 @@ export class BindingRecordsCreator {
       this._directiveRecordsMap.set(
           id, new DirectiveRecord({
             directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),
+            callAfterContentInit: directiveMetadata.callAfterContentInit,
             callAfterContentChecked: directiveMetadata.callAfterContentChecked,
+            callAfterViewInit: directiveMetadata.callAfterViewInit,
+            callAfterViewChecked: directiveMetadata.callAfterViewChecked,
             callOnChanges: directiveMetadata.callOnChanges,
             callDoCheck: directiveMetadata.callDoCheck,
             callOnInit: directiveMetadata.callOnInit,

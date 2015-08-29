@@ -82,12 +82,19 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
         this.mode === ChangeDetectionStrategy.Checked)
       return;
     var s = _scope_check(this.id, throwOnChange);
+
     this.detectChangesInRecords(throwOnChange);
+
     this._detectChangesInLightDomChildren(throwOnChange);
-    if (throwOnChange === false) this.callAfterContentChecked();
+    if (!throwOnChange) this.afterContentLifecycleCallbacks();
+
     this._detectChangesInShadowDomChildren(throwOnChange);
+    if (!throwOnChange) this.afterViewLifecycleCallbacks();
+
     if (this.mode === ChangeDetectionStrategy.CheckOnce)
       this.mode = ChangeDetectionStrategy.Checked;
+
+    this.alreadyChecked = true;
     wtfLeave(s);
   }
 
@@ -156,7 +163,19 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   hydrated(): boolean { return this.context !== null; }
 
-  callAfterContentChecked(): void { this.dispatcher.notifyAfterContentChecked(); }
+  afterContentLifecycleCallbacks(): void {
+    this.dispatcher.notifyAfterContentChecked();
+    this.afterContentLifecycleCallbacksInternal();
+  }
+
+  afterContentLifecycleCallbacksInternal(): void {}
+
+  afterViewLifecycleCallbacks(): void {
+    this.dispatcher.notifyAfterViewChecked();
+    this.afterViewLifecycleCallbacksInternal();
+  }
+
+  afterViewLifecycleCallbacksInternal(): void {}
 
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;

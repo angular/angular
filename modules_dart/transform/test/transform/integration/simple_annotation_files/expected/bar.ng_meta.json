@@ -16,7 +16,10 @@
       "callDoCheck": false,
       "callOnInit": false,
       "callOnChanges": false,
+      "callAfterContentInit": false,
       "callAfterContentChecked": false,
+      "callAfterViewInit": false,
+      "callAfterViewChecked": false,
       "events": [],
       "changeDetection": null,
       "version": 1

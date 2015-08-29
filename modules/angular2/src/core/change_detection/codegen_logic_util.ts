@@ -183,4 +183,38 @@ export class CodegenLogicUtil {
     }
     return res.join("\n");
   }
+
+  genContentLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {
+    var res = [];
+    // NOTE(kegluneq): Order is important!
+    for (var i = directiveRecords.length - 1; i >= 0; --i) {
+      var dir = directiveRecords[i];
+      if (dir.callAfterContentInit) {
+        res.push(
+            `if(! ${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(dir.directiveIndex)}.afterContentInit();`);
+      }
+
+      if (dir.callAfterContentChecked) {
+        res.push(`${this._names.getDirectiveName(dir.directiveIndex)}.afterContentChecked();`);
+      }
+    }
+    return res;
+  }
+
+  genViewLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {
+    var res = [];
+    // NOTE(kegluneq): Order is important!
+    for (var i = directiveRecords.length - 1; i >= 0; --i) {
+      var dir = directiveRecords[i];
+      if (dir.callAfterViewInit) {
+        res.push(
+            `if(! ${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(dir.directiveIndex)}.afterViewInit();`);
+      }
+
+      if (dir.callAfterViewChecked) {
+        res.push(`${this._names.getDirectiveName(dir.directiveIndex)}.afterViewChecked();`);
+      }
+    }
+    return res;
+  }
 }

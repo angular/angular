@@ -102,6 +102,26 @@ export function main() {
         });
       });
 
+      describe("afterContentInit", () => {
+        it("should be true when the directive has the afterContentInit method", () => {
+          expect(metadata(DirectiveWithAfterContentInitMethod, new DirectiveMetadata({}))
+                     .callAfterContentInit)
+              .toBe(true);
+        });
+
+        it("should be true when the lifecycle includes afterContentInit", () => {
+          expect(metadata(DirectiveNoHooks,
+                          new DirectiveMetadata({lifecycle: [LifecycleEvent.AfterContentInit]}))
+                     .callAfterContentInit)
+              .toBe(true);
+        });
+
+        it("should be false otherwise", () => {
+          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterContentInit)
+              .toBe(false);
+        });
+      });
+
       describe("afterContentChecked", () => {
         it("should be true when the directive has the afterContentChecked method", () => {
           expect(metadata(DirectiveWithAfterContentCheckedMethod, new DirectiveMetadata({}))
@@ -118,6 +138,46 @@ export function main() {
 
         it("should be false otherwise", () => {
           expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterContentChecked)
+              .toBe(false);
+        });
+      });
+
+
+      describe("afterViewInit", () => {
+        it("should be true when the directive has the afterViewInit method", () => {
+          expect(metadata(DirectiveWithAfterViewInitMethod, new DirectiveMetadata({}))
+                     .callAfterViewInit)
+              .toBe(true);
+        });
+
+        it("should be true when the lifecycle includes afterViewInit", () => {
+          expect(metadata(DirectiveNoHooks,
+                          new DirectiveMetadata({lifecycle: [LifecycleEvent.AfterViewInit]}))
+                     .callAfterViewInit)
+              .toBe(true);
+        });
+
+        it("should be false otherwise", () => {
+          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterViewInit).toBe(false);
+        });
+      });
+
+      describe("afterViewChecked", () => {
+        it("should be true when the directive has the afterViewChecked method", () => {
+          expect(metadata(DirectiveWithAfterViewCheckedMethod, new DirectiveMetadata({}))
+                     .callAfterViewChecked)
+              .toBe(true);
+        });
+
+        it("should be true when the lifecycle includes afterViewChecked", () => {
+          expect(metadata(DirectiveNoHooks,
+                          new DirectiveMetadata({lifecycle: [LifecycleEvent.AfterViewChecked]}))
+                     .callAfterViewChecked)
+              .toBe(true);
+        });
+
+        it("should be false otherwise", () => {
+          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterViewChecked)
               .toBe(false);
         });
       });
@@ -143,6 +203,18 @@ class DirectiveWithOnDestroyMethod {
   onDestroy(_) {}
 }
 
+class DirectiveWithAfterContentInitMethod {
+  afterContentInit() {}
+}
+
 class DirectiveWithAfterContentCheckedMethod {
   afterContentChecked() {}
+}
+
+class DirectiveWithAfterViewInitMethod {
+  afterViewInit() {}
+}
+
+class DirectiveWithAfterViewCheckedMethod {
+  afterViewChecked() {}
 }

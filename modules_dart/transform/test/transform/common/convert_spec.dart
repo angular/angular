@@ -26,7 +26,10 @@ main() {
           callOnChanges: true,
           callDoCheck: true,
           callOnInit: true,
+          callAfterContentInit: true,
           callAfterContentChecked: true,
+          callAfterViewInit: true,
+          callAfterViewChecked: true,
           events: ["onFoo", "onBar"],
           changeDetection: ChangeDetectionStrategy.CheckOnce);
       var map = directiveMetadataToMap(someComponent);
@@ -46,7 +49,10 @@ main() {
       expect(map["callDoCheck"]).toEqual(true);
       expect(map["callOnChanges"]).toEqual(true);
       expect(map["callOnInit"]).toEqual(true);
+      expect(map["callAfterContentInit"]).toEqual(true);
       expect(map["callAfterContentChecked"]).toEqual(true);
+      expect(map["callAfterViewInit"]).toEqual(true);
+      expect(map["callAfterViewChecked"]).toEqual(true);
       expect(map["exportAs"]).toEqual("aaa");
       expect(map["events"]).toEqual(["onFoo", "onBar"]);
       expect(map["changeDetection"]).toEqual(ChangeDetectionStrategy.CheckOnce.index);
@@ -67,7 +73,10 @@ main() {
         ["callDoCheck", true],
         ["callOnInit", true],
         ["callOnChanges", true],
+        ["callAfterContentInit", true],
         ["callAfterContentChecked", true],
+        ["callAfterViewInit", true],
+        ["callAfterViewChecked", true],
         ["events", ["onFoo", "onBar"]],
         ["changeDetection", ChangeDetectionStrategy.CheckOnce.index]
       ]);
@@ -89,7 +98,10 @@ main() {
       expect(meta.callDoCheck).toEqual(true);
       expect(meta.callOnInit).toEqual(true);
       expect(meta.callOnChanges).toEqual(true);
+      expect(meta.callAfterContentInit).toEqual(true);
       expect(meta.callAfterContentChecked).toEqual(true);
+      expect(meta.callAfterViewInit).toEqual(true);
+      expect(meta.callAfterViewChecked).toEqual(true);
       expect(meta.events).toEqual(["onFoo", "onBar"]);
       expect(meta.changeDetection).toEqual(ChangeDetectionStrategy.CheckOnce);
     });
