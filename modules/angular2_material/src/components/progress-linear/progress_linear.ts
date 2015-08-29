@@ -27,7 +27,7 @@ class ProgressMode {
 @View({
   templateUrl: 'package:angular2_material/src/components/progress-linear/progress_linear.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdProgressLinear {
   /** Value for the primary bar. */

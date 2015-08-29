@@ -29,7 +29,7 @@ export function main() {
     beforeEach(() => {
       templateCloner = new TemplateCloner(-1);
       builder =
-          new ProtoViewBuilder(DOM.createTemplate(''), ViewType.EMBEDDED, ViewEncapsulation.NONE);
+          new ProtoViewBuilder(DOM.createTemplate(''), ViewType.EMBEDDED, ViewEncapsulation.None);
     });
 
     if (!IS_DART) {

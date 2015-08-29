@@ -191,14 +191,14 @@ export function runCompilerCommonTests() {
                });
          }));
 
-      it('should store the styles in the SharedStylesHost for ViewEncapsulation.NONE',
+      it('should store the styles in the SharedStylesHost for ViewEncapsulation.None',
          inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler();
            compiler.compile(new ViewDefinition({
                      componentId: 'someComponent',
                      template: '',
                      styles: ['a {};'],
-                     encapsulation: ViewEncapsulation.NONE
+                     encapsulation: ViewEncapsulation.None
                    }))
                .then((protoViewDto) => {
                  expect(DOM.getInnerHTML(templateRoot(protoViewDto))).toEqual('');
@@ -207,14 +207,14 @@ export function runCompilerCommonTests() {
                });
          }));
 
-      it('should store the styles in the SharedStylesHost for ViewEncapsulation.EMULATED',
+      it('should store the styles in the SharedStylesHost for ViewEncapsulation.Emulated',
          inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler();
            compiler.compile(new ViewDefinition({
                      componentId: 'someComponent',
                      template: '',
                      styles: ['a {};'],
-                     encapsulation: ViewEncapsulation.EMULATED
+                     encapsulation: ViewEncapsulation.Emulated
                    }))
                .then((protoViewDto) => {
                  expect(DOM.getInnerHTML(templateRoot(protoViewDto))).toEqual('');
@@ -224,14 +224,14 @@ export function runCompilerCommonTests() {
          }));
 
       if (DOM.supportsNativeShadowDOM()) {
-        it('should store the styles in the template for ViewEncapsulation.NATIVE',
+        it('should store the styles in the template for ViewEncapsulation.Native',
            inject([AsyncTestCompleter], (async) => {
              var compiler = createCompiler();
              compiler.compile(new ViewDefinition({
                        componentId: 'someComponent',
                        template: '',
                        styles: ['a {};'],
-                       encapsulation: ViewEncapsulation.NATIVE
+                       encapsulation: ViewEncapsulation.Native
                      }))
                  .then((protoViewDto) => {
                    expect(DOM.getInnerHTML(templateRoot(protoViewDto)))
@@ -242,24 +242,24 @@ export function runCompilerCommonTests() {
            }));
       }
 
-      it('should default to ViewEncapsulation.NONE if no styles are specified',
+      it('should default to ViewEncapsulation.None if no styles are specified',
          inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler();
            compiler.compile(
                        new ViewDefinition({componentId: 'someComponent', template: '', styles: []}))
                .then((protoView) => {
-                 expect(mockStepFactory.viewDef.encapsulation).toBe(ViewEncapsulation.NONE);
+                 expect(mockStepFactory.viewDef.encapsulation).toBe(ViewEncapsulation.None);
                  async.done();
                });
          }));
 
-      it('should default to ViewEncapsulation.EMULATED if styles are specified',
+      it('should default to ViewEncapsulation.Emulated if styles are specified',
          inject([AsyncTestCompleter], (async) => {
            var compiler = createCompiler();
            compiler.compile(new ViewDefinition(
                                 {componentId: 'someComponent', template: '', styles: ['a {};']}))
                .then((protoView) => {
-                 expect(mockStepFactory.viewDef.encapsulation).toBe(ViewEncapsulation.EMULATED);
+                 expect(mockStepFactory.viewDef.encapsulation).toBe(ViewEncapsulation.Emulated);
                  async.done();
                });
          }));

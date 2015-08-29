@@ -15,7 +15,7 @@ export class StyleEncapsulator implements CompileStep {
     if (isElementWithTag(current.element, NG_CONTENT_ELEMENT_NAME)) {
       current.inheritedProtoView.bindNgContent();
     } else {
-      if (this._view.encapsulation === ViewEncapsulation.EMULATED) {
+      if (this._view.encapsulation === ViewEncapsulation.Emulated) {
         this._processEmulatedScopedElement(current, parent);
       }
     }
@@ -23,7 +23,7 @@ export class StyleEncapsulator implements CompileStep {
 
   processStyle(style: string): string {
     var encapsulation = this._view.encapsulation;
-    if (encapsulation === ViewEncapsulation.EMULATED) {
+    if (encapsulation === ViewEncapsulation.Emulated) {
       return this._shimCssForComponent(style, this._view.componentId);
     } else {
       return style;

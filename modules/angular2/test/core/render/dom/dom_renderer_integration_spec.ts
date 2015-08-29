@@ -215,7 +215,7 @@ export function main() {
                                     componentId: 'someComponent',
                                     template: 'hello',
                                     directives: [],
-                                    encapsulation: ViewEncapsulation.NATIVE
+                                    encapsulation: ViewEncapsulation.Native
                                   })
                                 ])
                  .then((protoViewMergeMappings) => {
@@ -234,7 +234,7 @@ export function main() {
                                     componentId: 'someComponent',
                                     template: '',
                                     directives: [],
-                                    encapsulation: ViewEncapsulation.NATIVE,
+                                    encapsulation: ViewEncapsulation.Native,
                                     styles: ['a {};']
                                   })
                                 ])
@@ -244,7 +244,7 @@ export function main() {
                                 componentId: 'someComponent',
                                 template: '',
                                 directives: [],
-                                encapsulation: ViewEncapsulation.NONE,
+                                encapsulation: ViewEncapsulation.None,
                                 styles: ['b {};']
                               }))
                        .then(_ => {
@@ -254,7 +254,7 @@ export function main() {
                                       componentId: 'someComponent',
                                       template: '',
                                       directives: [],
-                                      encapsulation: ViewEncapsulation.NONE,
+                                      encapsulation: ViewEncapsulation.None,
                                       styles: ['c {};']
                                     }))
                              .then(_ => {

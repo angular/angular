@@ -47,7 +47,7 @@ var _uniqueIdCounter: number = 0;
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/radio/radio_group.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdRadioGroup {
   /** The selected value for the radio group. The value comes from the options. */
@@ -205,7 +205,7 @@ export class MdRadioGroup {
 @View({
   templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdRadioButton {
   /** Whether this radio is checked. */

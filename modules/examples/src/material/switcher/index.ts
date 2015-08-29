@@ -10,7 +10,7 @@ import {bind} from 'angular2/di';
 @View({
   templateUrl: './demo_app.html',
   directives: [MdSwitch],
-  encapsulation: ViewEncapsulation.NONE,
+  encapsulation: ViewEncapsulation.None,
 })
 class DemoApp {
   toggleCount: number;

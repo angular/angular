@@ -18,7 +18,7 @@ import {NumberWrapper} from 'angular2/src/core/facade/lang';
 @View({
   templateUrl: 'package:angular2_material/src/components/checkbox/checkbox.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdCheckbox {
   /** Whether this checkbox is checked. */

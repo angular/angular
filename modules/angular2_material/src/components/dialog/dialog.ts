@@ -210,7 +210,7 @@ export class MdDialogConfig {
   },
 })
 @View({
-  encapsulation: ViewEncapsulation.NONE,
+  encapsulation: ViewEncapsulation.None,
   templateUrl: 'package:angular2_material/src/components/dialog/dialog.html',
   directives: [forwardRef(() => MdDialogContent)]
 })
@@ -258,7 +258,7 @@ class MdDialogContent {
     '(click)': 'onClick()',
   },
 })
-@View({template: '', encapsulation: ViewEncapsulation.NONE})
+@View({template: '', encapsulation: ViewEncapsulation.None})
 class MdBackdrop {
   dialogRef: MdDialogRef;
 
