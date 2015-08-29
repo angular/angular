@@ -159,8 +159,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         isChanged = false;
       }
     }
-
-    this.alreadyChecked = true;
   }
 
   _firstInBinding(r: ProtoRecord): boolean {
@@ -168,13 +166,29 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
   }
 
-  callAfterContentChecked() {
-    super.callAfterContentChecked();
+  afterContentLifecycleCallbacksInternal() {
     var dirs = this.directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
+      if (dir.callAfterContentInit && !this.alreadyChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterContentInit();
+      }
+
       if (dir.callAfterContentChecked) {
         this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
+      }
+    }
+  }
+
+  afterViewLifecycleCallbacksInternal() {
+    var dirs = this.directiveRecords;
+    for (var i = dirs.length - 1; i >= 0; --i) {
+      var dir = dirs[i];
+      if (dir.callAfterViewInit && !this.alreadyChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterViewInit();
+      }
+      if (dir.callAfterViewChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
       }
     }
   }

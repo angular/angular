@@ -17,7 +17,10 @@ void initReflector(reflector) {
             LifecycleEvent.OnDestroy,
             LifecycleEvent.OnInit,
             LifecycleEvent.DoCheck,
-            LifecycleEvent.AfterContentChecked
+            LifecycleEvent.AfterContentInit,
+            LifecycleEvent.AfterContentChecked,
+            LifecycleEvent.AfterViewInit,
+            LifecycleEvent.AfterViewChecked
           ])
         ], const [
           const []

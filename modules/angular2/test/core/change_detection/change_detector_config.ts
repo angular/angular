@@ -284,13 +284,21 @@ class _DirectiveUpdating {
       directiveIndex: new DirectiveIndex(0, 0),
       callOnChanges: true,
       callDoCheck: true,
-      callAfterContentChecked: true
+      callOnInit: true,
+      callAfterContentInit: true,
+      callAfterContentChecked: true,
+      callAfterViewInit: true,
+      callAfterViewChecked: true
     }),
     new DirectiveRecord({
       directiveIndex: new DirectiveIndex(0, 1),
       callOnChanges: true,
       callDoCheck: true,
-      callAfterContentChecked: true
+      callOnInit: true,
+      callAfterContentInit: true,
+      callAfterContentChecked: true,
+      callAfterViewInit: true,
+      callAfterViewChecked: true
     })
   ];
 
@@ -298,7 +306,11 @@ class _DirectiveUpdating {
     directiveIndex: new DirectiveIndex(0, 0),
     callOnChanges: false,
     callDoCheck: false,
-    callAfterContentChecked: false
+    callOnInit: false,
+    callAfterContentInit: false,
+    callAfterContentChecked: false,
+    callAfterViewInit: false,
+    callAfterViewChecked: false
   });
 
   /**

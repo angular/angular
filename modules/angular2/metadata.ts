@@ -38,7 +38,10 @@ export {
 } from './src/core/metadata';
 
 export {
+  AfterContentInit,
   AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked,
   OnChanges,
   OnDestroy,
   OnInit,

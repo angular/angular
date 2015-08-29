@@ -63,23 +63,23 @@ export class ChangeDetectorJITGenerator {
         var ${CHANGES_LOCAL} = null;
 
         ${this.records.map((r) => this._genRecord(r)).join("\n")}
-
-        ${this._names.getAlreadyCheckedName()} = true;
       }
 
       ${this._maybeGenHandleEventInternal()}
 
       ${this._genCheckNoChanges()}
 
-      ${this._maybeGenCallAfterContentChecked()}
+      ${this._maybeGenAfterContentLifecycleCallbacks()}
+
+      ${this._maybeGenAfterViewLifecycleCallbacks()}
 
       ${this._maybeGenHydrateDirectives()}
 
       ${this._maybeGenDehydrateDirectives()}
 
-      ${this._genPropertyBindingTargets()};
+      ${this._genPropertyBindingTargets()}
 
-      ${this._genDirectiveIndices()};
+      ${this._genDirectiveIndices()}
 
       return function(dispatcher) {
         return new ${this._typeName}(dispatcher);
@@ -172,23 +172,26 @@ export class ChangeDetectorJITGenerator {
     }`;
   }
 
-  _maybeGenCallAfterContentChecked(): string {
-    var notifications = [];
-    var dirs = this.directiveRecords;
-
-    // NOTE(kegluneq): Order is important!
-    for (var i = dirs.length - 1; i >= 0; --i) {
-      var dir = dirs[i];
-      if (dir.callAfterContentChecked) {
-        notifications.push(
-            `${this._names.getDirectiveName(dir.directiveIndex)}.afterContentChecked();`);
-      }
-    }
+  _maybeGenAfterContentLifecycleCallbacks(): string {
+    var notifications = this._logic.genContentLifecycleCallbacks(this.directiveRecords);
     if (notifications.length > 0) {
       var directiveNotifications = notifications.join("\n");
       return `
-        ${this._typeName}.prototype.callAfterContentChecked = function() {
-          ${ABSTRACT_CHANGE_DETECTOR}.prototype.callAfterContentChecked.call(this);
+        ${this._typeName}.prototype.afterContentLifecycleCallbacksInternal = function() {
+          ${directiveNotifications}
+        }
+      `;
+    } else {
+      return '';
+    }
+  }
+
+  _maybeGenAfterViewLifecycleCallbacks(): string {
+    var notifications = this._logic.genViewLifecycleCallbacks(this.directiveRecords);
+    if (notifications.length > 0) {
+      var directiveNotifications = notifications.join("\n");
+      return `
+        ${this._typeName}.prototype.afterViewLifecycleCallbacksInternal = function() {
           ${directiveNotifications}
         }
       `;

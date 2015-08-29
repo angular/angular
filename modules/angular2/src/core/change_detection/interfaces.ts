@@ -52,6 +52,7 @@ export interface ChangeDispatcher {
   notifyOnBinding(bindingTarget: BindingTarget, value: any): void;
   logBindingUpdate(bindingTarget: BindingTarget, value: any): void;
   notifyAfterContentChecked(): void;
+  notifyAfterViewChecked(): void;
 }
 
 export interface ChangeDetector {

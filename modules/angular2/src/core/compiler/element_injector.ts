@@ -216,38 +216,41 @@ export class DirectiveBinding extends ResolvedBinding {
 
   get changeDetection() { return this.metadata.changeDetection; }
 
-  static createFromBinding(binding: Binding, ann: DirectiveMetadata): DirectiveBinding {
-    if (isBlank(ann)) {
-      ann = new DirectiveMetadata();
+  static createFromBinding(binding: Binding, meta: DirectiveMetadata): DirectiveBinding {
+    if (isBlank(meta)) {
+      meta = new DirectiveMetadata();
     }
 
     var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    var resolvedBindings = isPresent(ann.bindings) ? Injector.resolve(ann.bindings) : [];
-    var resolvedViewBindings = ann instanceof ComponentMetadata && isPresent(ann.viewBindings) ?
-                                   Injector.resolve(ann.viewBindings) :
+    var resolvedBindings = isPresent(meta.bindings) ? Injector.resolve(meta.bindings) : [];
+    var resolvedViewBindings = meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ?
+                                   Injector.resolve(meta.viewBindings) :
                                    [];
     var metadata = RenderDirectiveMetadata.create({
       id: stringify(rb.key.token),
-      type: ann instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
-                                               RenderDirectiveMetadata.DIRECTIVE_TYPE,
-      selector: ann.selector,
-      compileChildren: ann.compileChildren,
-      events: ann.events,
-      host: isPresent(ann.host) ? MapWrapper.createFromStringMap(ann.host) : null,
-      properties: ann.properties,
+      type: meta instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
+                                                RenderDirectiveMetadata.DIRECTIVE_TYPE,
+      selector: meta.selector,
+      compileChildren: meta.compileChildren,
+      events: meta.events,
+      host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
+      properties: meta.properties,
       readAttributes: DirectiveBinding._readAttributes(deps),
 
-      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, rb.key.token, ann),
-      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, rb.key.token, ann),
-      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, rb.key.token, ann),
-      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, rb.key.token, ann),
+      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, rb.key.token, meta),
+      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, rb.key.token, meta),
+      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, rb.key.token, meta),
+      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, rb.key.token, meta),
+      callAfterContentInit: hasLifecycleHook(LifecycleEvent.AfterContentInit, rb.key.token, meta),
       callAfterContentChecked:
-          hasLifecycleHook(LifecycleEvent.AfterContentChecked, rb.key.token, ann),
+          hasLifecycleHook(LifecycleEvent.AfterContentChecked, rb.key.token, meta),
+      callAfterViewInit: hasLifecycleHook(LifecycleEvent.AfterViewInit, rb.key.token, meta),
+      callAfterViewChecked: hasLifecycleHook(LifecycleEvent.AfterViewChecked, rb.key.token, meta),
 
-      changeDetection: ann instanceof ComponentMetadata ? ann.changeDetection : null,
+      changeDetection: meta instanceof ComponentMetadata ? meta.changeDetection : null,
 
-      exportAs: ann.exportAs
+      exportAs: meta.exportAs
     });
     return new DirectiveBinding(rb.key, rb.factory, deps, resolvedBindings, resolvedViewBindings,
                                 metadata);

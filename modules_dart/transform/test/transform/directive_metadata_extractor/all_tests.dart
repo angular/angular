@@ -106,7 +106,10 @@ void allTests() {
       expect(metadata.callOnChanges).toBe(true);
       expect(metadata.callDoCheck).toBe(true);
       expect(metadata.callOnInit).toBe(true);
+      expect(metadata.callAfterContentInit).toBe(true);
       expect(metadata.callAfterContentChecked).toBe(true);
+      expect(metadata.callAfterViewInit).toBe(true);
+      expect(metadata.callAfterViewChecked).toBe(true);
     });
 
     it('should parse events.', () async {

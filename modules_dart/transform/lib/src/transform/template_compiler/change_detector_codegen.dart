@@ -143,15 +143,15 @@ class _CodegenState {
           var $_CHANGES_LOCAL = null;
 
           ${_records.map(_genRecord).join('')}
-
-          ${_names.getAlreadyCheckedName()} = true;
         }
 
         ${_maybeGenHandleEventInternal()}
 
         ${_genCheckNoChanges()}
 
-        ${_maybeGenCallAfterContentChecked()}
+        ${_maybeGenAfterContentLifecycleCallbacks()}
+
+        ${_maybeGenAfterViewLifecycleCallbacks()}
 
         ${_maybeGenHydrateDirectives()}
 
@@ -260,19 +260,24 @@ class _CodegenState {
         '{ $hydrateDirectivesCode $hydrateDetectorsCode }';
   }
 
-  /// Generates calls to `afterContentChecked` for all `Directive`s that request
-  /// them.
-  String _maybeGenCallAfterContentChecked() {
-    // NOTE(kegluneq): Order is important!
-    var directiveNotifications = _directiveRecords.reversed
-        .where((rec) => rec.callAfterContentChecked)
-        .map((rec) =>
-            '${_names.getDirectiveName(rec.directiveIndex)}.afterContentChecked();');
-
+  String _maybeGenAfterContentLifecycleCallbacks() {
+    var directiveNotifications = _logic.genContentLifecycleCallbacks(_directiveRecords);
     if (directiveNotifications.isNotEmpty) {
       return '''
-        void callAfterContentChecked() {
-          ${_names.getDispatcherName()}.notifyAfterContentChecked();
+        void afterContentLifecycleCallbacksInternal() {
+          ${directiveNotifications.join('')}
+        }
+      ''';
+    } else {
+      return '';
+    }
+  }
+
+  String _maybeGenAfterViewLifecycleCallbacks() {
+    var directiveNotifications = _logic.genViewLifecycleCallbacks(_directiveRecords);
+    if (directiveNotifications.isNotEmpty) {
+      return '''
+        void afterViewLifecycleCallbacksInternal() {
           ${directiveNotifications.join('')}
         }
       ''';

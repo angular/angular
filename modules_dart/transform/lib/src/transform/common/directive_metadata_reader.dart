@@ -63,7 +63,10 @@ class _DirectiveMetadataVisitor extends Object
   bool _callOnChange;
   bool _callOnCheck;
   bool _callOnInit;
+  bool _callAfterContentInit;
   bool _callAfterContentChecked;
+  bool _callAfterViewInit;
+  bool _callAfterViewChecked;
   ChangeDetectionStrategy _changeDetection;
   List<String> _events;
 
@@ -83,7 +86,10 @@ class _DirectiveMetadataVisitor extends Object
     _callOnChange = false;
     _callOnCheck = false;
     _callOnInit = false;
+    _callAfterContentInit = false;
     _callAfterContentChecked = false;
+    _callAfterViewInit = false;
+    _callAfterViewChecked = false;
     _changeDetection = null;
     _events = [];
   }
@@ -100,7 +106,10 @@ class _DirectiveMetadataVisitor extends Object
       callOnChanges: _callOnChange,
       callDoCheck: _callOnCheck,
       callOnInit: _callOnInit,
+      callAfterContentInit: _callAfterContentInit,
       callAfterContentChecked: _callAfterContentChecked,
+      callAfterViewInit: _callAfterViewInit,
+      callAfterViewChecked: _callAfterViewChecked,
       changeDetection: _changeDetection,
       events: _events);
 
@@ -274,7 +283,10 @@ class _DirectiveMetadataVisitor extends Object
     _callOnChange = lifecycleEvents.contains("OnChanges");
     _callOnCheck = lifecycleEvents.contains("DoCheck");
     _callOnInit = lifecycleEvents.contains("OnInit");
+    _callAfterContentInit = lifecycleEvents.contains("AfterContentInit");
     _callAfterContentChecked = lifecycleEvents.contains("AfterContentChecked");
+    _callAfterViewInit = lifecycleEvents.contains("AfterViewInit");
+    _callAfterViewChecked = lifecycleEvents.contains("AfterViewChecked");
   }
 
   void _populateEvents(Expression eventsValue) {

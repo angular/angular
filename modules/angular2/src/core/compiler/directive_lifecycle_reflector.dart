@@ -17,8 +17,14 @@ bool hasLifecycleHook(LifecycleEvent e, type, DirectiveMetadata annotation) {
       interface = OnChanges;
     } else if (e == LifecycleEvent.OnDestroy) {
       interface = OnDestroy;
+    } else if (e == LifecycleEvent.AfterContentInit) {
+      interface = AfterContentInit;
     } else if (e == LifecycleEvent.AfterContentChecked) {
       interface = AfterContentChecked;
+    } else if (e == LifecycleEvent.AfterViewInit) {
+      interface = AfterViewInit;
+    } else if (e == LifecycleEvent.AfterViewChecked) {
+      interface = AfterViewChecked;
     } else if (e == LifecycleEvent.DoCheck) {
       interface = DoCheck;
     } else if (e == LifecycleEvent.OnInit) {

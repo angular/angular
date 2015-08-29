@@ -15,4 +15,13 @@ class OnCheckSoupComponent implements DoCheck {}
 class OnInitSoupComponent implements OnInit {}
 
 @Component(selector: '[soup]')
+class AfterContentInitSoupComponent implements AfterContentInit {}
+
+@Component(selector: '[soup]')
 class AfterContentCheckedSoupComponent implements AfterContentChecked {}
+
+@Component(selector: '[soup]')
+class AfterViewInitSoupComponent implements AfterViewInit {}
+
+@Component(selector: '[soup]')
+class AfterViewCheckedSoupComponent implements AfterViewChecked {}

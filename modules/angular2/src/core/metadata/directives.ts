@@ -961,7 +961,30 @@ export enum LifecycleEvent {
   DoCheck,
 
   /**
-   * Notify a directive when the bindings of all its view children have been checked (whether they
+   * Notify a directive when the bindings of all its content children have been checked the first
+   * time (whether they
+   * have changed or not).
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.AfterContentInit]
+   * })
+   * class ClassSet {
+   *
+   *   afterContentInit() {
+   *   }
+   *
+   * }
+   *  ```
+   */
+  AfterContentInit,
+
+  /**
+   * Notify a directive when the bindings of all its content children have been checked (whether
+   * they
    * have changed or not).
    *
    * ## Example
@@ -979,7 +1002,50 @@ export enum LifecycleEvent {
    * }
    *  ```
    */
-  AfterContentChecked
+  AfterContentChecked,
+
+  /**
+   * Notify a directive when the bindings of all its view children have been checked the first time
+   * (whether they
+   * have changed or not).
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.AfterViewInit]
+   * })
+   * class ClassSet {
+   *
+   *   afterViewInit() {
+   *   }
+   *
+   * }
+   *  ```
+   */
+  AfterViewInit,
+
+  /**
+   * Notify a directive when the bindings of all its view children have been checked (whether they
+   * have changed or not).
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.AfterViewChecked]
+   * })
+   * class ClassSet {
+   *
+   *   afterViewChecked() {
+   *   }
+   *
+   * }
+   *  ```
+   */
+  AfterViewChecked
 }
 
 /**

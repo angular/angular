@@ -16,7 +16,10 @@
       "callDoCheck": null,
       "callOnInit": null,
       "callOnChanges": null,
+      "callAfterContentInit": null,
       "callAfterContentChecked": null,
+      "callAfterViewInit": null,
+      "callAfterViewChecked": null,
       "events": ["dependencyEventName"],
       "changeDetection": null,
       "version": 1
@@ -39,7 +42,10 @@
       "callDoCheck": null,
       "callOnInit": null,
       "callOnChanges": null,
+      "callAfterContentInit": null,
       "callAfterContentChecked": null,
+      "callAfterViewInit": null,
+      "callAfterViewChecked": null,
       "events": null,
       "changeDetection": null,
       "version": 1
@@ -62,7 +68,10 @@
       "callDoCheck": null,
       "callOnInit": null,
       "callOnChanges": null,
+      "callAfterContentInit": null,
       "callAfterContentChecked": null,
+      "callAfterViewInit": null,
+      "callAfterViewChecked": null,
       "events": null,
       "changeDetection": null,
       "version": 1
@@ -85,7 +94,10 @@
       "callDoCheck": true,
       "callOnInit": null,
       "callOnChanges": null,
+      "callAfterContentInit": null,
       "callAfterContentChecked": null,
+      "callAfterViewInit": null,
+      "callAfterViewChecked": null,
       "events": null,
       "changeDetection": null,
       "version": 1
