@@ -189,7 +189,7 @@ export class ElementBinderBuilder {
       throw new BaseException('Only one nested view per element is allowed');
     }
     this.nestedProtoView =
-        new ProtoViewBuilder(rootElement, ViewType.EMBEDDED, ViewEncapsulation.NONE);
+        new ProtoViewBuilder(rootElement, ViewType.EMBEDDED, ViewEncapsulation.None);
     return this.nestedProtoView;
   }
 

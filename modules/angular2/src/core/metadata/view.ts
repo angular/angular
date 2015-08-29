@@ -91,9 +91,9 @@ export class ViewMetadata {
 
   /**
    * Specify how the template and the styles should be encapsulated.
-   * The default is {@link ViewEncapsulation#EMULATED `ViewEncapsulation.EMULATED`} if the view
+   * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
    * has styles,
-   * otherwise {@link ViewEncapsulation#NONE `ViewEncapsulation.NONE`}.
+   * otherwise {@link ViewEncapsulation#None `ViewEncapsulation.None`}.
    */
   encapsulation: ViewEncapsulation;
 

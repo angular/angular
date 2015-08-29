@@ -57,7 +57,7 @@ export class DomCompiler extends RenderCompiler {
       styles: null,
       styleAbsUrls: null,
       directives: [directiveMetadata],
-      encapsulation: ViewEncapsulation.NONE
+      encapsulation: ViewEncapsulation.None
     });
 
     let selector = CssSelector.parse(directiveMetadata.selector)[0];
@@ -75,7 +75,7 @@ export class DomCompiler extends RenderCompiler {
 
   _compileView(viewDef: ViewDefinition, templateAndStyles: TemplateAndStyles,
                protoViewType: ViewType): Promise<ProtoViewDto> {
-    if (viewDef.encapsulation === ViewEncapsulation.EMULATED &&
+    if (viewDef.encapsulation === ViewEncapsulation.Emulated &&
         templateAndStyles.styles.length === 0) {
       viewDef = this._normalizeViewEncapsulationIfThereAreNoStyles(viewDef);
     }
@@ -84,7 +84,7 @@ export class DomCompiler extends RenderCompiler {
     var compiledStyles = pipeline.processStyles(templateAndStyles.styles);
     var compileElements = pipeline.processElements(
         this._createTemplateElm(templateAndStyles.template), protoViewType, viewDef);
-    if (viewDef.encapsulation === ViewEncapsulation.NATIVE) {
+    if (viewDef.encapsulation === ViewEncapsulation.Native) {
       prependAll(DOM.content(compileElements[0].element),
                  compiledStyles.map(style => DOM.createStyleElement(style)));
     } else {
@@ -107,14 +107,14 @@ export class DomCompiler extends RenderCompiler {
   }
 
   _normalizeViewEncapsulationIfThereAreNoStyles(viewDef: ViewDefinition): ViewDefinition {
-    if (viewDef.encapsulation === ViewEncapsulation.EMULATED) {
+    if (viewDef.encapsulation === ViewEncapsulation.Emulated) {
       return new ViewDefinition({
         componentId: viewDef.componentId,
         templateAbsUrl: viewDef.templateAbsUrl, template: viewDef.template,
         styleAbsUrls: viewDef.styleAbsUrls,
         styles: viewDef.styles,
         directives: viewDef.directives,
-        encapsulation: ViewEncapsulation.NONE
+        encapsulation: ViewEncapsulation.None
       });
     } else {
       return viewDef;

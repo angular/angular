@@ -53,7 +53,7 @@ export function main() {
         new MockStep((parent, current, control) => {
           if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
             current.inheritedProtoView =
-                new ProtoViewBuilder(current.element, ViewType.EMBEDDED, ViewEncapsulation.NONE);
+                new ProtoViewBuilder(current.element, ViewType.EMBEDDED, ViewEncapsulation.None);
           }
         })
       ]);

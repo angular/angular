@@ -193,7 +193,7 @@ function mergeComponent(hostProtoView: ClonedProtoView, binderIdx: number,
 
   // unwrap the fragment elements into arrays of nodes after projecting
   var fragments = extractFragmentNodesFromElements(fragmentElements);
-  var useNativeShadowRoot = nestedProtoView.original.encapsulation === ViewEncapsulation.NATIVE;
+  var useNativeShadowRoot = nestedProtoView.original.encapsulation === ViewEncapsulation.Native;
   if (useNativeShadowRoot) {
     targetElementsWithNativeShadowRoot.add(hostElement);
   }

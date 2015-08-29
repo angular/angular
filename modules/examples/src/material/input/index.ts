@@ -8,7 +8,7 @@ import {bind} from 'angular2/di';
 @View({
   templateUrl: './demo_app.html',
   directives: [MdInputContainer, MdInput],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 class DemoApp {
   constructor() {}

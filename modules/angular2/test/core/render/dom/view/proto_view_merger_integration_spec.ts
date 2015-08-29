@@ -264,7 +264,7 @@ export function main() {
            tb.compiler.compileHost(rootDirective('root'))
                .then((rootProtoViewDto) => {
                  var builder = new ProtoViewBuilder(DOM.createTemplate(''), ViewType.COMPONENT,
-                                                    ViewEncapsulation.NONE);
+                                                    ViewEncapsulation.None);
                  builder.setHostAttribute('a', 'b');
                  var componentProtoViewDto = builder.build(new ElementSchemaRegistry(), cloner);
                  tb.merge([rootProtoViewDto, componentProtoViewDto])
@@ -294,8 +294,8 @@ function runAndAssert(hostElementName: string, componentTemplates: string[],
                                                                    cloner: TemplateCloner) => {
     tb.compileAndMerge(rootComp, componentTemplates.map(template => componentView(
                                                             template, useNativeEncapsulation ?
-                                                                          ViewEncapsulation.NATIVE :
-                                                                          ViewEncapsulation.NONE)))
+                                                                          ViewEncapsulation.Native :
+                                                                          ViewEncapsulation.None)))
         .then((mergeMappings) => {
           expect(stringify(cloner, mergeMappings)).toEqual(expectedFragments);
           async.done();
@@ -309,7 +309,7 @@ function rootDirective(hostElementName: string) {
 }
 
 function componentView(template: string,
-                       encapsulation: ViewEncapsulation = ViewEncapsulation.NONE) {
+                       encapsulation: ViewEncapsulation = ViewEncapsulation.None) {
   return new ViewDefinition({
     componentId: 'someComp',
     template: template,

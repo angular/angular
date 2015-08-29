@@ -17,7 +17,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
-  encapsulation: ViewEncapsulation.NONE,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdButton {
   /** Whether a mousedown has occured on this element in the last 100ms. */
@@ -61,7 +61,7 @@ export class MdButton {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
   tabIndex: number;

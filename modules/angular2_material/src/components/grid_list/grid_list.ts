@@ -32,7 +32,7 @@ class RowHeightMode {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdGridList {
   /** Array of tiles that are being rendered. */
@@ -230,7 +230,7 @@ export class MdGridList {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdGridTile {
   gridList: MdGridList;

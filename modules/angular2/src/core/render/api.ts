@@ -293,15 +293,15 @@ export enum ViewEncapsulation {
    * Emulate scoping of styles by preprocessing the style rules
    * and adding additional attributes to elements. This is the default.
    */
-  EMULATED,
+  Emulated,
   /**
    * Uses the native mechanism of the renderer. For the DOM this means creating a ShadowRoot.
    */
-  NATIVE,
+  Native,
   /**
    * Don't scope the template nor the styles.
    */
-  NONE
+  None
 }
 
 export class ViewDefinition {
@@ -329,7 +329,7 @@ export class ViewDefinition {
     this.styleAbsUrls = styleAbsUrls;
     this.styles = styles;
     this.directives = directives;
-    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.EMULATED;
+    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
   }
 }
 

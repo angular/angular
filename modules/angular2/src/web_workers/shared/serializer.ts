@@ -57,9 +57,9 @@ export class Serializer {
     this._enumRegistry.set(ViewType, viewTypeMap);
 
     var viewEncapsulationMap = new Map<number, any>();
-    viewEncapsulationMap[0] = ViewEncapsulation.EMULATED;
-    viewEncapsulationMap[1] = ViewEncapsulation.NATIVE;
-    viewEncapsulationMap[2] = ViewEncapsulation.NONE;
+    viewEncapsulationMap[0] = ViewEncapsulation.Emulated;
+    viewEncapsulationMap[1] = ViewEncapsulation.Native;
+    viewEncapsulationMap[2] = ViewEncapsulation.None;
     this._enumRegistry.set(ViewEncapsulation, viewEncapsulationMap);
 
     var propertyBindingTypeMap = new Map<number, any>();
