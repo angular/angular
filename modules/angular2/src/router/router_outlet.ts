@@ -152,7 +152,6 @@ export class RouterOutlet {
   deactivate(nextInstruction: Instruction): Promise<any> {
     var outletInstruction = this._getInstruction(nextInstruction);
     var componentInstruction = isPresent(outletInstruction) ? outletInstruction.component : null;
-
     return (isPresent(this.childRouter) ?
                 this.childRouter.deactivate(isPresent(outletInstruction) ? outletInstruction.child :
                                                                            null) :
