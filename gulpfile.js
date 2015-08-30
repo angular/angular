@@ -531,8 +531,8 @@ gulp.task('versions.dart', function() {
 
 // Reuse the Travis scripts
 // TODO: rename test_*.sh to test_all_*.sh
-gulp.task('test.all.js', shell.task(['./scripts/ci/test_js.sh']))
-gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']))
+gulp.task('test.all.js', shell.task(['./scripts/ci/test_js.sh']));
+gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 
 // karma tests
 //     These tests run in the browser and are allowed to access
@@ -590,7 +590,7 @@ gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
         captureTimeout: 120000,
         reporters: ['dots'],
         browsers: browserConf.browsersToRun},
-      function(err) {done(); process.exit(err ? 1 : 0)});
+      function(err) {done(); process.exit(err ? 1 : 0);});
   } else {
     throw new Error('ERROR: no Saucelabs browsers provided, add them with the --browsers option');
   }
@@ -688,7 +688,7 @@ gulp.task('test.unit.js/ci', function (done) {
 gulp.task('test.unit.js.sauce/ci', function (done) {
   karma.server.start({configFile: __dirname + '/karma-js.conf.js',
     singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000, reporters: ['dots', 'saucelabs'], browsers: sauceConf.aliases.CI},
-    function(err) {done(); process.exit(err ? 1 : 0)});
+    function(err) {done(); process.exit(err ? 1 : 0);});
 });
 
 gulp.task('test.unit.dart/ci', function (done) {
@@ -864,12 +864,12 @@ gulp.task('build/pure-packages.dart', function() {
         //     path: ../angular2
         //
         var pubspec = yaml.safeLoad(file.contents.toString());
-        var overrides = pubspec['dependency_overrides'];
+        var overrides = pubspec.dependency_overrides;
         if (overrides) {
           Object.keys(overrides).forEach(function(pkg) {
-            var overridePath = overrides[pkg]['path'];
+            var overridePath = overrides[pkg].path;
             if (overridePath.startsWith(originalPrefix)) {
-              overrides[pkg]['path'] = overridePath.replace(originalPrefix, '../');
+              overrides[pkg].path = overridePath.replace(originalPrefix, '../');
             }
           });
           file.contents = new Buffer(yaml.safeDump(pubspec));
@@ -1025,7 +1025,7 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
           {
             sourceMaps: true
           }
-        )
+        );
       });
 });
 
@@ -1048,7 +1048,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
             sourceMaps: true,
             minify: true
           }
-        )
+        );
       });
 });
 
@@ -1288,7 +1288,7 @@ gulp.task('build.dart.material.css', function() {
 });
 
 gulp.task('build.dart.material', ['build/packages.dart'], function(done) {
-  runSequence('build/packages.dart', 'build.dart.material.css', sequenceComplete(done))
+  runSequence('build/packages.dart', 'build.dart.material.css', sequenceComplete(done));
 });
 
 gulp.task('cleanup.builder', function() {
