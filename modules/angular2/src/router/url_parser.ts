@@ -7,7 +7,9 @@ import {
   CONST_EXPR
 } from 'angular2/src/core/facade/lang';
 
-
+/**
+ * This class represents a parsed URL
+ */
 export class Url {
   constructor(public path: string, public child: Url = null,
               public auxiliary: List<Url> = CONST_EXPR([]),
