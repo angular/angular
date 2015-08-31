@@ -105,6 +105,7 @@ function makeDummyLocation() {
 function makeDummyRouter() {
   var dr = new SpyRouter();
   dr.spy('generate').andCallFake((routeParams) => dummyInstruction);
+  dr.spy('isRouteActive').andCallFake((_) => false);
   dr.spy('navigateInstruction');
   return dr;
 }
