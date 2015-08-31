@@ -95,11 +95,13 @@ class StringWrapper {
   }
 
   static String slice(String s, [int start = 0, int end]) {
+    start = _startOffset(s, start);
+    end = _endOffset(s, end);
     //in JS if start > end an empty string is returned
     if(end != null && start > end) {
       return "";
     }
-    return s.substring(_startOffset(s, start), _endOffset(s, end));
+    return s.substring(start, end);
   }
 
   static String substring(String s, int start, [int end]) {
@@ -120,7 +122,7 @@ class StringWrapper {
   // the end of the string
   static int _startOffset(String s, int start) {
     int len = s.length;
-    return start = start < 0 ? math.max(len + start, 0) : math.min(start, len);
+    return start < 0 ? math.max(len + start, 0) : math.min(start, len);
   }
 
   // JS slice function can take end < 0 which indicates a position relative to

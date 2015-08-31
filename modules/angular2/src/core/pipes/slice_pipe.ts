@@ -3,9 +3,9 @@ import {
   isString,
   isArray,
   StringWrapper,
-  BaseException,
   CONST
 } from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable} from 'angular2/di';
 
@@ -76,7 +76,7 @@ import {Pipe} from '../metadata';
 @Pipe({name: 'slice'})
 @Injectable()
 export class SlicePipe implements PipeTransform {
-  transform(value: any, args: List<any> = null): any {
+  transform(value: any, args: any[] = null): any {
     if (isBlank(args) || args.length == 0) {
       throw new BaseException('Slice pipe requires one argument');
     }
@@ -85,7 +85,7 @@ export class SlicePipe implements PipeTransform {
     }
     if (isBlank(value)) return value;
     var start: number = args[0];
-    var end: number = args.length > 1 ? args[1] : value.length;
+    var end: number = args.length > 1 ? args[1] : null;
     if (isString(value)) {
       return StringWrapper.slice(value, start, end);
     }

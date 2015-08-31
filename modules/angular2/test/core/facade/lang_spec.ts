@@ -76,8 +76,10 @@ export function main() {
       it('should support negative end',
          () => { expect(StringWrapper.slice(s, -3, -1)).toEqual("hi"); });
 
-      it('should return empty string if start is greater than end',
-         () => { expect(StringWrapper.slice(s, 4, 2)).toEqual(""); });
+      it('should return empty string if start is greater than end', () => {
+        expect(StringWrapper.slice(s, 4, 2)).toEqual("");
+        expect(StringWrapper.slice(s, -2, -4)).toEqual("");
+      });
     });
 
   });
