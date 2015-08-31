@@ -6,6 +6,8 @@ class PublicTestability {
 
   constructor(testability: Testability) { this._testability = testability; }
 
+  isStable(): boolean { return this._testability.isStable(); }
+
   whenStable(callback: Function) { this._testability.whenStable(callback); }
 
   findBindings(using: any, binding: string, exactMatch: boolean): any[] {
