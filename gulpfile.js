@@ -2,6 +2,7 @@
 
 var autoprefixer = require('gulp-autoprefixer');
 var clangFormat = require('clang-format');
+var conventionalChangelog = require('gulp-conventional-changelog');
 var del = require('del');
 var exec = require('child_process').exec;
 var fork = require('child_process').fork;
@@ -1289,6 +1290,16 @@ gulp.task('build.dart.material.css', function() {
 
 gulp.task('build.dart.material', ['build/packages.dart'], function(done) {
   runSequence('build/packages.dart', 'build.dart.material.css', sequenceComplete(done))
+});
+
+gulp.task('changelog', function () {
+  return gulp.src('CHANGELOG.md', {
+    buffer: false
+  })
+    .pipe(conventionalChangelog({
+      preset: 'angular'
+    }))
+    .pipe(gulp.dest('./'));
 });
 
 gulp.task('cleanup.builder', function() {
