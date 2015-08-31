@@ -32,7 +32,8 @@ import {
   RouterOutlet,
   Route,
   RouteParams,
-  RouteConfig
+  RouteConfig,
+  ROUTER_DIRECTIVES
 } from 'angular2/router';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
@@ -50,7 +51,7 @@ export function main() {
       bind(Location).toClass(SpyLocation),
       bind(Router)
           .toFactory((registry, pipeline,
-                      location) => { return new RootRouter(registry, pipeline, location, AppCmp); },
+                      location) => { return new RootRouter(registry, pipeline, location, MyComp); },
                      [RouteRegistry, Pipeline, Location])
     ]);
 
@@ -153,6 +154,80 @@ export function main() {
        }));
 
 
+    describe('router-link-active CSS class', () => {
+      it('should be added to the associated element', inject([AsyncTestCompleter], (async) => {
+           router.config([
+                   new Route({path: '/child', component: HelloCmp, as: 'child'}),
+                   new Route({path: '/better-child', component: Hello2Cmp, as: 'better-child'})
+                 ])
+               .then((_) => compile(`<a [router-link]="['./child']" class="child-link">Child</a>
+                                <a [router-link]="['./better-child']" class="better-child-link">Better Child</a>
+                                <router-outlet></router-outlet>`))
+               .then((_) => {
+                 var element = rootTC.nativeElement;
+
+                 rootTC.detectChanges();
+
+                 var link1 = DOM.querySelector(element, '.child-link');
+                 var link2 = DOM.querySelector(element, '.better-child-link');
+
+                 expect(link1).not.toHaveCssClass('router-link-active');
+                 expect(link2).not.toHaveCssClass('router-link-active');
+
+                 router.subscribe((_) => {
+                   rootTC.detectChanges();
+
+                   expect(link1).not.toHaveCssClass('router-link-active');
+                   expect(link2).toHaveCssClass('router-link-active');
+
+                   async.done();
+                 });
+                 router.navigate('/better-child');
+               });
+         }));
+
+      it('should be added to links in child routes', inject([AsyncTestCompleter], (async) => {
+           router.config([
+                   new Route({path: '/child', component: HelloCmp, as: 'child'}),
+                   new Route({
+                     path: '/child-with-grandchild/...',
+                     component: ParentCmp,
+                     as: 'child-with-grandchild'
+                   })
+                 ])
+               .then((_) => compile(`<a [router-link]="['./child']" class="child-link">Child</a>
+                                <a [router-link]="['./child-with-grandchild/grandchild']" class="child-with-grandchild-link">Better Child</a>
+                                <router-outlet></router-outlet>`))
+               .then((_) => {
+                 var element = rootTC.nativeElement;
+
+                 rootTC.detectChanges();
+
+                 var link1 = DOM.querySelector(element, '.child-link');
+                 var link2 = DOM.querySelector(element, '.child-with-grandchild-link');
+
+                 expect(link1).not.toHaveCssClass('router-link-active');
+                 expect(link2).not.toHaveCssClass('router-link-active');
+
+                 router.subscribe((_) => {
+                   rootTC.detectChanges();
+
+                   expect(link1).not.toHaveCssClass('router-link-active');
+                   expect(link2).toHaveCssClass('router-link-active');
+
+                   var link3 = DOM.querySelector(element, '.grandchild-link');
+                   var link4 = DOM.querySelector(element, '.better-grandchild-link');
+
+                   expect(link3).toHaveCssClass('router-link-active');
+                   expect(link4).not.toHaveCssClass('router-link-active');
+
+                   async.done();
+                 });
+                 router.navigate('/child-with-grandchild/grandchild');
+               });
+         }));
+    });
+
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
@@ -209,8 +284,6 @@ function getHref(tc) {
   return DOM.getAttribute(tc.componentViewChildren[0].nativeElement, 'href');
 }
 
-class AppCmp {}
-
 @Component({selector: 'my-comp'})
 class MyComp {
   name;
@@ -238,11 +311,36 @@ class SiblingPageCmp {
   }
 }
 
+@Component({selector: 'hello-cmp'})
+@View({template: 'hello'})
+class HelloCmp {
+}
+
+@Component({selector: 'hello2-cmp'})
+@View({template: 'hello2'})
+class Hello2Cmp {
+}
+
+@Component({selector: 'parent-cmp'})
+@View({
+  template: `{ <a [router-link]="['./grandchild']" class="grandchild-link">Grandchild</a>
+               <a [router-link]="['./better-grandchild']" class="better-grandchild-link">Better Grandchild</a>
+               <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
+@RouteConfig([
+  new Route({path: '/grandchild', component: HelloCmp, as: 'grandchild'}),
+  new Route({path: '/better-grandchild', component: Hello2Cmp, as: 'better-grandchild'})
+])
+class ParentCmp {
+  constructor(public router: Router) {}
+}
+
 @Component({selector: 'book-cmp'})
 @View({
   template: `<a href="hello" [router-link]="[\'./page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>`,
-  directives: [RouterLink, RouterOutlet]
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, as: 'page'})])
 class BookCmp {

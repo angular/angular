@@ -37,7 +37,11 @@ import {Instruction, stringifyInstruction} from './instruction';
 @Directive({
   selector: '[router-link]',
   properties: ['routeParams: routerLink'],
-  host: {'(^click)': 'onClick()', '[attr.href]': 'visibleHref'}
+  host: {
+    '(^click)': 'onClick()',
+    '[attr.href]': 'visibleHref',
+    '[class.router-link-active]': 'isRouteActive'
+  }
 })
 export class RouterLink {
   private _routeParams: List<any>;
@@ -49,6 +53,8 @@ export class RouterLink {
   private _navigationInstruction: Instruction;
 
   constructor(private _router: Router, private _location: Location) {}
+
+  get isRouteActive(): boolean { return this._router.isRouteActive(this._navigationInstruction); }
 
   set routeParams(changes: List<any>) {
     this._routeParams = changes;
