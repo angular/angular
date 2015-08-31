@@ -83,6 +83,12 @@ function stringifyAux(instruction: Instruction): string {
  *
  * `ComponentInstructions` is a public API. Instances of `ComponentInstruction` are passed
  * to route lifecycle hooks, like {@link CanActivate}.
+ *
+ * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
+ * never construct one yourself with "new." Instead, rely on {@link PathRecognizer} to construct
+ * `ComponentInstruction`s.
+ *
+ * You should not modify this object. It should be treated as immutable.
  */
 export class ComponentInstruction {
   reuse: boolean = false;
