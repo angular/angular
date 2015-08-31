@@ -40,6 +40,10 @@ export class RouterOutlet {
     }
   }
 
+  /**
+   * Called by the Router to instantiate a new component during the commit phase of a navigation.
+   * This method in turn is responsible for calling the `onActivate` hook of its child.
+   */
   activate(nextInstruction: ComponentInstruction): Promise<any> {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = nextInstruction;
@@ -61,6 +65,11 @@ export class RouterOutlet {
         });
   }
 
+  /**
+   * Called by the {@link Router} during the commit phase of a navigation when an outlet
+   * reuses a component between different routes.
+   * This method in turn is responsible for calling the `onReuse` hook of its child.
+   */
   reuse(nextInstruction: ComponentInstruction): Promise<any> {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = nextInstruction;
@@ -74,6 +83,10 @@ export class RouterOutlet {
             true);
   }
 
+  /**
+   * Called by the {@link Router} when an outlet reuses a component across navigations.
+   * This method in turn is responsible for calling the `onReuse` hook of its child.
+   */
   deactivate(nextInstruction: ComponentInstruction): Promise<any> {
     var next = _resolveToTrue;
     if (isPresent(this._componentRef) && isPresent(this._currentInstruction) &&
@@ -90,7 +103,12 @@ export class RouterOutlet {
   }
 
   /**
-   * Called by Router during recognition phase
+   * Called by the {@link Router} during recognition phase of a navigation.
+   *
+   * If this resolves to `false`, the given navigation is cancelled.
+   *
+   * This method delegates to the child component's `canDeactivate` hook if it exists,
+   * and otherwise resolves to true.
    */
   canDeactivate(nextInstruction: ComponentInstruction): Promise<boolean> {
     if (isBlank(this._currentInstruction)) {
@@ -103,9 +121,15 @@ export class RouterOutlet {
     return _resolveToTrue;
   }
 
-
   /**
-   * Called by Router during recognition phase
+   * Called by the {@link Router} during recognition phase of a navigation.
+   *
+   * If the new child component has a different Type than the existing child component,
+   * this will resolve to `false`. You can't reuse an old component when the new component
+   * is of a different Type.
+   *
+   * Otherwise, this method delegates to the child component's `canReuse` hook if it exists,
+   * or resolves to true if the hook is not present.
    */
   canReuse(nextInstruction: ComponentInstruction): Promise<boolean> {
     var result;
