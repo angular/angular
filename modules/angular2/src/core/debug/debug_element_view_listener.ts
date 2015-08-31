@@ -50,7 +50,7 @@ export class DebugElementViewListener implements AppViewListener {
     DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   }
 
-  viewCreated(view: AppView) {
+  onViewCreated(view: AppView) {
     var viewId = _nextId++;
     _allViewsById.set(viewId, view);
     _allIdsByView.set(view, viewId);
@@ -60,7 +60,7 @@ export class DebugElementViewListener implements AppViewListener {
     }
   }
 
-  viewDestroyed(view: AppView) {
+  onViewDestroyed(view: AppView) {
     var viewId = _allIdsByView.get(view);
     _allIdsByView.delete(view);
     _allViewsById.delete(viewId);
