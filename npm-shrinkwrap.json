@@ -16744,9 +16744,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.3",
-      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.3.tgz",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.3.tgz"
+      "version": "0.5.4",
+      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.4.tgz",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.4.tgz"
     }
   }
 }
