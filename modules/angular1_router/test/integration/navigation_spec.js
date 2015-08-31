@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ngOutlet', function () {
+describe('navigation', function () {
 
   var elt,
       $compile,

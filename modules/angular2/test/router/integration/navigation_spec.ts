@@ -40,7 +40,7 @@ var cmpInstanceCount;
 var log: string[];
 
 export function main() {
-  describe('Outlet Directive', () => {
+  describe('navigation', () => {
 
     var tcb: TestComponentBuilder;
     var rootTC, rtr;
