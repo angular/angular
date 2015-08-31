@@ -188,6 +188,14 @@ export function main() {
 
         // should update the form's value and validity
       });
+
+      describe("submit", () => {
+        it("should set `submitted` flag on submit.", fakeAsync(() => {
+          expect(form.submitted).toBe(false);
+          form.onSubmit();
+          expect(form.submitted).toBe(true);
+        }));
+      });
     });
 
     describe("NgControlGroup", () => {

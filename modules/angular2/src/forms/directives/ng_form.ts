@@ -62,6 +62,7 @@ const formDirectiveBinding =
 export class NgForm extends ControlContainer implements Form {
   form: ControlGroup;
   ngSubmit = new EventEmitter();
+  private _submitted = false;
 
   constructor() {
     super();
@@ -75,6 +76,8 @@ export class NgForm extends ControlContainer implements Form {
   get path(): List<string> { return []; }
 
   get controls(): StringMap<string, AbstractControl> { return this.form.controls; }
+
+  get submitted(): boolean { return this._submitted; }
 
   addControl(dir: NgControl): void {
     this._later(_ => {
@@ -129,8 +132,14 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   onSubmit(): boolean {
+    this._submitted = true;
     ObservableWrapper.callNext(this.ngSubmit, null);
     return false;
+  }
+
+  setPristine(): boolean {
+    this._submitted = false;
+    ObservableWrapper.callNext(this.setPristine, null);
   }
 
   _findContainer(path: List<string>): ControlGroup {
