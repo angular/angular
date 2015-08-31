@@ -19,23 +19,23 @@ module.exports = function(gulp, plugins, config) {
       if (supportedModules.indexOf(dir) === -1) {
         done();
       } else {
-        console.log('INFO: running dartdocgen for ', dir);
+        console.log('INFO: running dartdoc for ', dir);
 
-        var stream = spawn(config.command, ['.'], {
+        var stream = spawn(config.command, ['--input=.'], {
           stdio: [process.stdin, process.stdout, process.stderr],
           cwd: dir
         });
 
         stream.on('exit', function(code) {
           if (code !== 0) {
-            done('ERROR: dartdocgen exited with non-zero status ' + code);
+            done('ERROR: dartdoc exited with non-zero status ' + code);
           } else {
             done();
           }
         });
 
         stream.on('error', function(e) {
-          done('ERROR: dartdocgen reported error: ' + e);
+          done('ERROR: dartdoc reported error: ' + e);
         });
       }
       return defer.promise;
