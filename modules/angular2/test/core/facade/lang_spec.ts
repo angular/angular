@@ -42,7 +42,7 @@ export function main() {
   });
 
   describe('String', () => {
-    var upper, lower;
+    var upper, lower, s;
 
     beforeEach(() => {
       upper = 'SOMETHING';
@@ -60,5 +60,25 @@ export function main() {
 
       expect(str).toEqual(lower);
     });
+
+    describe('slice', () => {
+      beforeEach(() => { s = "abcdefghij"; });
+
+      it('should return the whole string if neither start nor end are specified',
+         () => { expect(StringWrapper.slice(s)).toEqual("abcdefghij"); });
+
+      it('should return up to the end if end is not specified',
+         () => { expect(StringWrapper.slice(s, 1)).toEqual("bcdefghij"); });
+
+      it('should support negative start',
+         () => { expect(StringWrapper.slice(s, -1)).toEqual("j"); });
+
+      it('should support negative end',
+         () => { expect(StringWrapper.slice(s, -3, -1)).toEqual("hi"); });
+
+      it('should return empty string if start is greater than end',
+         () => { expect(StringWrapper.slice(s, 4, 2)).toEqual(""); });
+    });
+
   });
 }
