@@ -6,6 +6,6 @@ import * as viewModule from './view';
  */
 @Injectable()
 export class AppViewListener {
-  viewCreated(view: viewModule.AppView) {}
-  viewDestroyed(view: viewModule.AppView) {}
+  onViewCreated(view: viewModule.AppView) {}
+  onViewDestroyed(view: viewModule.AppView) {}
 }
