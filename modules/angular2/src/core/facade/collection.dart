@@ -182,6 +182,10 @@ class ListWrapper {
   }
 
   static List slice(List l, [int from = 0, int to]) {
+    //in JS if from > to an empty array is returned
+    if(to != null && from > to) {
+      return [];
+    }
     return l.sublist(_startOffset(l, from), _endOffset(l, to));
   }
 

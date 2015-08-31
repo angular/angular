@@ -62,6 +62,9 @@ export function main() {
 
       it('should support negative end',
          () => { expect(ListWrapper.slice(l, -3, -1)).toEqual([2, 3]); });
+
+      it('should return empty list if start is greater than end',
+         () => { expect(ListWrapper.slice(l, 4, 2)).toEqual([]); });
     });
 
     describe('indexOf', () => {
