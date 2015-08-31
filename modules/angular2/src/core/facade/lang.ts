@@ -151,6 +151,10 @@ export class StringWrapper {
     return s.replace(from, replace);
   }
 
+  static slice<T>(s: string, from: number = 0, to: number = null): string {
+    return s.slice(from, to === null ? undefined : to);
+  }
+
   static toUpperCase(s: string): string { return s.toUpperCase(); }
 
   static toLowerCase(s: string): string { return s.toLowerCase(); }
