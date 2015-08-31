@@ -120,10 +120,6 @@ export class RouterOutlet {
                (isPresent(nextInstruction.params) && isPresent(this._currentInstruction.params) &&
                 StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
     }
-    return PromiseWrapper.resolve(result).then((result) => {
-      // TODO: this is a hack
-      nextInstruction.reuse = result;
-      return result;
-    });
+    return PromiseWrapper.resolve(result);
   }
 }
