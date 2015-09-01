@@ -20,7 +20,7 @@ import {
 
 import {Injector} from 'angular2/di';
 import {NgIf} from 'angular2/directives';
-import {Component, View, ViewMetadata, LifecycleEvent} from 'angular2/metadata';
+import {Component, View, ViewMetadata, OnDestroy} from 'angular2/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DOCUMENT} from 'angular2/src/core/render/render';
@@ -262,13 +262,9 @@ class ChildComp {
 
 class DynamicallyCreatedComponentService {}
 
-@Component({
-  selector: 'hello-cmp',
-  viewBindings: [DynamicallyCreatedComponentService],
-  lifecycle: [LifecycleEvent.OnDestroy]
-})
+@Component({selector: 'hello-cmp', viewBindings: [DynamicallyCreatedComponentService]})
 @View({template: "{{greeting}}"})
-class DynamicallyCreatedCmp {
+class DynamicallyCreatedCmp implements OnDestroy {
   greeting: string;
   dynamicallyCreatedComponentService: DynamicallyCreatedComponentService;
   destroyed: boolean = false;

@@ -15,8 +15,7 @@ void initReflector() {
         new _ngRef.ReflectionInfo(
             const [
               const prefix.Component(
-                  selector: '[soup]',
-                  lifecycle: const [prefix.LifecycleEvent.OnChanges])
+                  selector: '[soup]')
             ],
             const [],
             () => new OnChangeSoupComponent(),

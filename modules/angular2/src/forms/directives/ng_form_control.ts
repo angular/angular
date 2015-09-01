@@ -1,7 +1,7 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
-import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
+import {Query, Directive, OnChanges} from 'angular2/metadata';
 import {forwardRef, Binding, Inject, Optional} from 'angular2/di';
 
 import {NgControl} from './ng_control';
@@ -62,10 +62,9 @@ const formControlBinding =
   bindings: [formControlBinding],
   properties: ['form: ngFormControl', 'model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [LifecycleEvent.OnChanges],
   exportAs: 'form'
 })
-export class NgFormControl extends NgControl {
+export class NgFormControl extends NgControl implements OnChanges {
   form: Control;
   update = new EventEmitter();
   _added = false;

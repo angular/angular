@@ -4,7 +4,9 @@ import {
   ViewEncapsulation,
   Host,
   SkipSelf,
-  LifecycleEvent
+  OnChanges,
+  OnDestroy,
+  AfterContentChecked
 } from 'angular2/angular2';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
@@ -25,16 +27,12 @@ class RowHeightMode {
 }
 
 
-@Component({
-  selector: 'md-grid-list',
-  properties: ['cols', 'rowHeight', 'gutterSize'],
-  lifecycle: [LifecycleEvent.AfterContentChecked]
-})
+@Component({selector: 'md-grid-list', properties: ['cols', 'rowHeight', 'gutterSize']})
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
   encapsulation: ViewEncapsulation.None
 })
-export class MdGridList {
+export class MdGridList implements AfterContentChecked {
   /** Array of tiles that are being rendered. */
   tiles: MdGridTile[];
 
@@ -225,14 +223,14 @@ export class MdGridList {
     '[style.left]': 'style.left',
     '[style.marginTop]': 'style.marginTop',
     '[style.paddingTop]': 'style.paddingTop',
-  },
-  lifecycle: [LifecycleEvent.OnDestroy, LifecycleEvent.OnChanges]
+  }
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html',
   encapsulation: ViewEncapsulation.None
 })
-export class MdGridTile {
+export class MdGridTile implements OnDestroy,
+    OnChanges {
   gridList: MdGridList;
   _rowspan: number;
   _colspan: number;

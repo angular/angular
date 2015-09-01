@@ -36,7 +36,7 @@ import {
   ViewQuery,
   ComponentMetadata,
   DirectiveMetadata,
-  LifecycleEvent
+  OnDestroy
 } from 'angular2/metadata';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/di';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
@@ -217,7 +217,7 @@ class B_Needs_A {
   constructor(dep) {}
 }
 
-class DirectiveWithDestroy {
+class DirectiveWithDestroy implements OnDestroy {
   onDestroyCounter: number;
 
   constructor() { this.onDestroyCounter = 0; }
@@ -832,7 +832,7 @@ export function main() {
           it("should call onDestroy on directives subscribed to this event", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(DirectiveWithDestroy,
-                                                 new DirectiveMetadata({lifecycle: [LifecycleEvent.OnDestroy]}))],
+                                                 new DirectiveMetadata())],
                 extraBindings));
             var destroy = inj.get(DirectiveWithDestroy);
             inj.dehydrate();

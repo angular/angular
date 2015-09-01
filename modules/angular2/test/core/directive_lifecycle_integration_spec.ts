@@ -13,7 +13,19 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Directive, Component, View, ViewMetadata, LifecycleEvent} from 'angular2/metadata';
+import {
+  Directive,
+  Component,
+  View,
+  ViewMetadata,
+  OnChanges,
+  OnInit,
+  DoCheck,
+  AfterContentInit,
+  AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked
+} from 'angular2/metadata';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
@@ -47,27 +59,16 @@ export function main() {
 }
 
 
-@Directive({selector: '[lifecycle-dir]', lifecycle: [LifecycleEvent.DoCheck]})
-class LifecycleDir {
+@Directive({selector: '[lifecycle-dir]'})
+class LifecycleDir implements DoCheck {
   constructor(private log: Log) {}
   doCheck() { this.log.add("child_doCheck"); }
 }
 
-@Component({
-  selector: "[lifecycle]",
-  properties: ['field'],
-  lifecycle: [
-    LifecycleEvent.OnChanges,
-    LifecycleEvent.OnInit,
-    LifecycleEvent.DoCheck,
-    LifecycleEvent.AfterContentInit,
-    LifecycleEvent.AfterContentChecked,
-    LifecycleEvent.AfterViewInit,
-    LifecycleEvent.AfterViewChecked
-  ]
-})
+@Component({selector: "[lifecycle]", properties: ['field']})
 @View({template: `<div lifecycle-dir></div>`, directives: [LifecycleDir]})
-class LifecycleCmp {
+class LifecycleCmp implements OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked,
+    AfterViewInit, AfterViewChecked {
   field;
   constructor(private log: Log) {}
 

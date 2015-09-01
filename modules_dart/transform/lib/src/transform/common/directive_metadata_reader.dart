@@ -61,7 +61,7 @@ class _DirectiveMetadataVisitor extends Object
   String _exportAs;
   bool _callOnDestroy;
   bool _callOnChange;
-  bool _callOnCheck;
+  bool _callDoCheck;
   bool _callOnInit;
   bool _callAfterContentInit;
   bool _callAfterContentChecked;
@@ -84,7 +84,7 @@ class _DirectiveMetadataVisitor extends Object
     _exportAs = null;
     _callOnDestroy = false;
     _callOnChange = false;
-    _callOnCheck = false;
+    _callDoCheck = false;
     _callOnInit = false;
     _callAfterContentInit = false;
     _callAfterContentChecked = false;
@@ -104,7 +104,7 @@ class _DirectiveMetadataVisitor extends Object
       exportAs: _exportAs,
       callOnDestroy: _callOnDestroy,
       callOnChanges: _callOnChange,
-      callDoCheck: _callOnCheck,
+      callDoCheck: _callDoCheck,
       callOnInit: _callOnInit,
       callAfterContentInit: _callAfterContentInit,
       callAfterContentChecked: _callAfterContentChecked,
@@ -170,6 +170,7 @@ class _DirectiveMetadataVisitor extends Object
       case 'host':
         _populateHost(node.expression);
         break;
+      // TODO(vicb) should come from the interfaces on the class
       case 'lifecycle':
         _populateLifecycle(node.expression);
         break;
@@ -281,7 +282,7 @@ class _DirectiveMetadataVisitor extends Object
     var lifecycleEvents = l.elements.map((s) => s.toSource().split('.').last);
     _callOnDestroy = lifecycleEvents.contains("OnDestroy");
     _callOnChange = lifecycleEvents.contains("OnChanges");
-    _callOnCheck = lifecycleEvents.contains("DoCheck");
+    _callDoCheck = lifecycleEvents.contains("DoCheck");
     _callOnInit = lifecycleEvents.contains("OnInit");
     _callAfterContentInit = lifecycleEvents.contains("AfterContentInit");
     _callAfterContentChecked = lifecycleEvents.contains("AfterContentChecked");

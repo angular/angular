@@ -298,8 +298,7 @@ class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
         _metaVisitor = new AnnotationsTransformVisitor(
-            writer, xhr, annotationMatcher, interfaceMatcher, assetId,
-            inlineViews: inlineViews),
+            writer, xhr, annotationMatcher, assetId, inlineViews: inlineViews),
         _annotationMatcher = annotationMatcher,
         _interfaceMatcher = interfaceMatcher,
         this.assetId = assetId,
