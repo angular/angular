@@ -9828,7 +9828,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.3",
+      "version": "0.7.4",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -10505,5 +10505,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.35"
+  "version": "2.0.0-alpha.36"
 }
