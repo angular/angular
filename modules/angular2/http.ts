@@ -43,7 +43,6 @@ export {
   RequestModesOpts
 } from './src/http/enums';
 export {URLSearchParams} from './src/http/url_search_params';
-export {EventEmitter, Observable} from './src/core/facade/async';
 
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.
