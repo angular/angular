@@ -83,7 +83,7 @@ export class RequestOptions {
  *   constructor(baseRequestOptions:BaseRequestOptions, http:Http) {
  *     var options = baseRequestOptions.merge({body: 'foobar', url: 'https://foo'});
  *     var request = new Request(options);
- *     http.request(request).subscribe(res => this.bars = res.json());
+ *     http.request(request).toRx().subscribe(res => this.bars = res.json());
  *   }
  * }
  *
