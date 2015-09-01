@@ -28,8 +28,3 @@ export {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader'
 
 export {NgZone} from 'angular2/src/core/zone/ng_zone';
 export {Observable, EventEmitter} from 'angular2/src/core/facade/async';
-
-// DI
-export {Injector} from 'angular2/src/core/di/injector';
-export {bind} from 'angular2/src/core/di/binding';
-export {Inject} from 'angular2/src/core/di/decorators';
