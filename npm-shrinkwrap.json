@@ -15224,6 +15224,11 @@
               }
             }
           }
+        },
+        "typescript": {
+          "version": "1.5.3",
+          "from": "microsoft/TypeScript#release-1.5",
+          "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
     },

@@ -1,4 +1,4 @@
-import {DEFAULT_PIPES, Injector, bind, OpaqueToken, Binding} from 'angular2/core';
+import {DEFAULT_PIPES, FORM_BINDINGS, Injector, bind, OpaqueToken, Binding} from 'angular2/core';
 import {
   NumberWrapper,
   Type,
@@ -134,7 +134,8 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     ComponentUrlMapper,
     DynamicComponentLoader,
     bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl'])),
-    WebWorkerEventDispatcher
+    WebWorkerEventDispatcher,
+    FORM_BINDINGS
   ];
 }
 

@@ -1,4 +1,4 @@
-import {DEFAULT_PIPES, Injector, bind, OpaqueToken, Binding} from 'angular2/core';
+import {DEFAULT_PIPES, FORM_BINDINGS, Injector, bind, OpaqueToken, Binding} from 'angular2/core';
 import {
   NumberWrapper,
   Type,
@@ -155,7 +155,8 @@ function _injectorBindings(appComponentType): Array<Type | Binding | any[]> {
     DynamicComponentLoader,
     Testability,
     AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl)
+    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    FORM_BINDINGS
   ];
 }
 

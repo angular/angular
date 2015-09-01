@@ -11,7 +11,7 @@ import * as modelModule from './model';
  *
  * ```
  * import {Component, View, bootstrap} from 'angular2/angular2';
- * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/forms';
+ * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/core';
  *
  * @Component({
  *   selector: 'login-comp',

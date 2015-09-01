@@ -19,17 +19,17 @@ import {
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {NgIf, NgFor} from 'angular2/core';
-
 import {
   Control,
   ControlGroup,
-  NgForm,
+  ControlValueAccessor,
   FORM_DIRECTIVES,
-  Validators,
   NgControl,
-  ControlValueAccessor
-} from 'angular2/forms';
+  NgIf,
+  NgFor,
+  NgForm,
+  Validators,
+} from 'angular2/core';
 
 export function main() {
   describe("integration tests", () => {

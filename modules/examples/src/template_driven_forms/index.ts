@@ -10,7 +10,7 @@ import {
   forwardRef,
   Binding
 } from 'angular2/bootstrap';
-import {FORM_DIRECTIVES, NgControl, Validators, NgForm} from 'angular2/forms';
+import {FORM_DIRECTIVES, NgControl, Validators, NgForm} from 'angular2/core';
 
 import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 

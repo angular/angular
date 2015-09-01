@@ -87,3 +87,32 @@ export * from './src/core/directives/ng_if';
 export * from './src/core/directives/ng_non_bindable';
 export * from './src/core/directives/ng_style';
 export * from './src/core/directives/ng_switch';
+
+// Forms
+export {AbstractControl, Control, ControlGroup, ControlArray} from './src/core/forms/model';
+export {AbstractControlDirective} from './src/core/forms/directives/abstract_control_directive';
+export {Form} from './src/core/forms/directives/form_interface';
+export {ControlContainer} from './src/core/forms/directives/control_container';
+export {NgControlName} from './src/core/forms/directives/ng_control_name';
+export {NgFormControl} from './src/core/forms/directives/ng_form_control';
+export {NgModel} from './src/core/forms/directives/ng_model';
+export {NgControl} from './src/core/forms/directives/ng_control';
+export {NgControlGroup} from './src/core/forms/directives/ng_control_group';
+export {NgFormModel} from './src/core/forms/directives/ng_form_model';
+export {NgForm} from './src/core/forms/directives/ng_form';
+export {ControlValueAccessor} from './src/core/forms/directives/control_value_accessor';
+export {DefaultValueAccessor} from './src/core/forms/directives/default_value_accessor';
+export {CheckboxControlValueAccessor} from './src/core/forms/directives/checkbox_value_accessor';
+export {
+  NgSelectOption,
+  SelectControlValueAccessor
+} from './src/core/forms/directives/select_control_value_accessor';
+export {FORM_DIRECTIVES} from './src/core/forms/directives';
+export {Validators} from './src/core/forms/validators';
+export {NgValidator, NgRequiredValidator} from './src/core/forms/directives/validators';
+export {FormBuilder} from './src/core/forms/form_builder';
+
+import {FormBuilder} from './src/core/forms/form_builder';
+import {CONST_EXPR, Type} from './src/core/facade/lang';
+
+export const FORM_BINDINGS: List<Type> = CONST_EXPR([FormBuilder]);
