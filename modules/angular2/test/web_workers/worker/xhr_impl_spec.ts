@@ -26,7 +26,7 @@ export function main() {
          const RESPONSE = "Example response text";
 
          var messageBroker: any = new SpyMessageBroker();
-         messageBroker.spy("runOnUiThread")
+         messageBroker.spy("runOnService")
              .andCallFake((args: UiArguments, returnType: Type) => {
                expect(args.method).toEqual("get");
                expect(args.args.length).toEqual(1);

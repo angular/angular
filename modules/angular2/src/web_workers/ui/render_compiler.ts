@@ -13,8 +13,11 @@ import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/servi
 
 @Injectable()
 export class MessageBasedRenderCompiler {
-  constructor(brokerFactory: ServiceMessageBrokerFactory, private _renderCompiler: RenderCompiler) {
-    var broker = brokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
+  constructor(private _brokerFactory: ServiceMessageBrokerFactory,
+              private _renderCompiler: RenderCompiler) {}
+
+  start(): void {
+    var broker = this._brokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
     broker.registerMethod("compileHost", [RenderDirectiveMetadata],
                           bind(this._renderCompiler.compileHost, this._renderCompiler),
                           ProtoViewDto);

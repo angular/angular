@@ -44,7 +44,7 @@ export class WebWorkerCompiler implements RenderCompiler {
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
     var fnArgs: FnArg[] = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
     var args: UiArguments = new UiArguments("compileHost", fnArgs);
-    return this._messageBroker.runOnUiThread(args, ProtoViewDto);
+    return this._messageBroker.runOnService(args, ProtoViewDto);
   }
 
   /**
@@ -55,7 +55,7 @@ export class WebWorkerCompiler implements RenderCompiler {
   compile(view: ViewDefinition): Promise<ProtoViewDto> {
     var fnArgs: FnArg[] = [new FnArg(view, ViewDefinition)];
     var args: UiArguments = new UiArguments("compile", fnArgs);
-    return this._messageBroker.runOnUiThread(args, ProtoViewDto);
+    return this._messageBroker.runOnService(args, ProtoViewDto);
   }
 
   /**
@@ -71,7 +71,7 @@ export class WebWorkerCompiler implements RenderCompiler {
       protoViewRefs: Array<RenderProtoViewRef | any[]>): Promise<RenderProtoViewMergeMapping> {
     var fnArgs: FnArg[] = [new FnArg(protoViewRefs, RenderProtoViewRef)];
     var args: UiArguments = new UiArguments("mergeProtoViewsRecursively", fnArgs);
-    return this._messageBroker.runOnUiThread(args, RenderProtoViewMergeMapping);
+    return this._messageBroker.runOnService(args, RenderProtoViewMergeMapping);
   }
 }
 
@@ -126,7 +126,7 @@ export class WebWorkerRenderer implements Renderer {
     fnArgs.push(new FnArg(startIndex, null));
 
     var args = new UiArguments(method, fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
 
     return renderViewWithFragments;
   }
@@ -137,7 +137,7 @@ export class WebWorkerRenderer implements Renderer {
   destroyView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
     var args = new UiArguments("destroyView", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
     this._renderViewStore.remove(viewRef);
   }
 
@@ -151,7 +151,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(fragmentRef, RenderFragmentRef)
     ];
     var args = new UiArguments("attachFragmentAfterFragment", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -161,7 +161,7 @@ export class WebWorkerRenderer implements Renderer {
     var fnArgs =
         [new FnArg(elementRef, WebWorkerElementRef), new FnArg(fragmentRef, RenderFragmentRef)];
     var args = new UiArguments("attachFragmentAfterElement", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -170,7 +170,7 @@ export class WebWorkerRenderer implements Renderer {
   detachFragment(fragmentRef: RenderFragmentRef) {
     var fnArgs = [new FnArg(fragmentRef, RenderFragmentRef)];
     var args = new UiArguments("detachFragment", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -180,7 +180,7 @@ export class WebWorkerRenderer implements Renderer {
   hydrateView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
     var args = new UiArguments("hydrateView", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -190,7 +190,7 @@ export class WebWorkerRenderer implements Renderer {
   dehydrateView(viewRef: RenderViewRef) {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
     var args = new UiArguments("dehydrateView", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -209,7 +209,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(propertyValue, null)
     ];
     var args = new UiArguments("setElementProperty", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -222,7 +222,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(attributeValue, null)
     ];
     var args = new UiArguments("setElementAttribute", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -235,7 +235,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(isAdd, null)
     ];
     var args = new UiArguments("setElementClass", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -248,7 +248,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(styleValue, null)
     ];
     var args = new UiArguments("setElementStyle", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -262,7 +262,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(args, null)
     ];
     var uiArgs = new UiArguments("invokeElementMethod", fnArgs);
-    this._messageBroker.runOnUiThread(uiArgs, null);
+    this._messageBroker.runOnService(uiArgs, null);
   }
 
   /**
@@ -272,7 +272,7 @@ export class WebWorkerRenderer implements Renderer {
     var fnArgs =
         [new FnArg(viewRef, RenderViewRef), new FnArg(textNodeIndex, null), new FnArg(text, null)];
     var args = new UiArguments("setText", fnArgs);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 
   /**
@@ -282,6 +282,6 @@ export class WebWorkerRenderer implements Renderer {
     var fnArgs = [new FnArg(viewRef, RenderViewRef)];
     var args = new UiArguments("setEventDispatcher", fnArgs);
     this._eventDispatcher.registerEventDispatcher(viewRef, dispatcher);
-    this._messageBroker.runOnUiThread(args, null);
+    this._messageBroker.runOnService(args, null);
   }
 }
