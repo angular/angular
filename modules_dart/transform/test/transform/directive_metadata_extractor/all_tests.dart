@@ -121,7 +121,8 @@ void allTests() {
     it('should parse changeDetection.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/changeDetection.ng_deps.dart');
-      expect(metadata.changeDetection).toEqual(ChangeDetectionStrategy.CheckOnce);
+      expect(metadata.changeDetection)
+          .toEqual(ChangeDetectionStrategy.CheckOnce);
     });
 
     it('should fail when a class is annotated with multiple Directives.',

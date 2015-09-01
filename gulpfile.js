@@ -638,6 +638,8 @@ gulp.task('buildRouter.dev', function () {
 gulp.task('test.unit.dart', function (done) {
   runSequence(
     'build/tree.dart',
+    '!build/pubget.source_gen.dart',
+    '!build/source_gen.dart',
     'build/pure-packages.dart',
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
@@ -833,7 +835,10 @@ gulp.task('build/pure-packages.dart', function() {
   var transformStream = gulp
     .src([
       'modules_dart/transform/**/*',
-      '!modules_dart/transform/pubspec.yaml'
+      '!modules_dart/transform/**/packages/**',
+      '!modules_dart/transform/**/packages',
+      '!modules_dart/transform/pubspec.*',
+      '!modules_dart/transform/bin/**/*'
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
 
@@ -887,6 +892,8 @@ gulp.task('build/pure-packages.dart', function() {
 gulp.task('build/packages.dart', function(done) {
   runSequence(
     'build/tree.dart',
+    '!build/pubget.source_gen.dart',
+    '!build/source_gen.dart',
     'build/pure-packages.dart',
     // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
     '!build/pubget.angular2.dart',
@@ -1231,6 +1238,40 @@ gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', '
 gulp.task('build', ['build.js', 'build.dart']);
 
 // ------------
+// transform codegen
+
+gulp.task('!build/pubget.source_gen.dart', pubget.dir(gulp, gulpPlugins, {
+  dir: 'modules_dart/transform',
+  command: DART_SDK.PUB
+}));
+
+gulp.task('!build/source_gen.dart', function(done) {
+  var cwd = 'modules_dart/transform';
+  var spawnArgs = ['run', 'angular2_dart_source_gen', '.'];
+  var proc = spawn(DART_SDK.PUB, spawnArgs, {
+    stdio: ['ignore', 2, 'inherit'],
+    cwd: cwd
+  });
+  var failed = false;
+  var failWithError = function(msg) {
+    if (failed) return;
+    failed = true;
+    done(new Error('Failed while generating transformer boilerplate. Check for output above.\n' +
+                   'Message: ' + msg + '\n' +
+                   'Please run manually from ' + cwd + ': ' +
+                   DART_SDK.PUB + ' ' + spawnArgs.join(' ')));
+  };
+  proc.on('error', function(err) { failWithError(String(err)); });
+  proc.on('exit', function(code, signal) {
+    if (!code) {
+      done();
+    } else {
+      failWithError('Exit code was ' + code);
+    }
+  });
+});
+
+// ------------
 // change detection codegen
 
 
@@ -1250,7 +1291,7 @@ gulp.task('!build/change_detect.dart', function(done) {
   var proc = spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
   proc.on('error', function(code) {
     done(new Error('Failed while generating change detector classes. Please run manually: ' +
-                   DART_SDK.VM + ' ' + dartArgs.join(' ')));
+                   DART_SDK.VM + ' ' + genMain));
   });
   proc.on('close', function() {
     dartStream.close();

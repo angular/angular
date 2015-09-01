@@ -19,6 +19,7 @@ dependencies:
   logging: '>=0.9.0 <0.12.0'
   observe: '^0.13.1'
   quiver: '^0.21.4'
+  source_gen: '^0.4.0'
   source_span: '^1.0.0'
   stack_trace: '^1.1.1'
 dev_dependencies:

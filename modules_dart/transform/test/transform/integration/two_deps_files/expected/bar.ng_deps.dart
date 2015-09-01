@@ -1,10 +1,10 @@
 library bar.ng_deps.dart;
 
 import 'bar.dart';
-export 'bar.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
 import 'foo.dart' as prefix;
+export 'bar.dart';
 
 var _visited = false;
 void initReflector() {
@@ -18,8 +18,8 @@ void initReflector() {
           const Component(selector: 'soup')
         ],
             const [
-          const [prefix.MyContext],
-          const [String]
+          const [prefix.MyContext,],
+          const [String,]
         ],
             (prefix.MyContext c, String inValue) =>
                 new MyComponent(c, inValue)));

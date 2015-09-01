@@ -13,9 +13,15 @@ main() {
     it("directiveMetadataToMap", () {
       var someComponent = new RenderDirectiveMetadata(
           compileChildren: false,
-          hostListeners: MapWrapper.createFromPairs([["LKey", "LVal"]]),
-          hostProperties: MapWrapper.createFromPairs([["PKey", "PVal"]]),
-          hostAttributes: MapWrapper.createFromPairs([["AtKey", "AtVal"]]),
+          hostListeners: MapWrapper.createFromPairs([
+            ["LKey", "LVal"]
+          ]),
+          hostProperties: MapWrapper.createFromPairs([
+            ["PKey", "PVal"]
+          ]),
+          hostAttributes: MapWrapper.createFromPairs([
+            ["AtKey", "AtVal"]
+          ]),
           id: "someComponent",
           properties: ["propKey: propVal"],
           readAttributes: ["read1", "read2"],
@@ -34,12 +40,15 @@ main() {
           changeDetection: ChangeDetectionStrategy.CheckOnce);
       var map = directiveMetadataToMap(someComponent);
       expect(map["compileChildren"]).toEqual(false);
-      expect(map["hostListeners"])
-          .toEqual(MapWrapper.createFromPairs([["LKey", "LVal"]]));
-      expect(map["hostProperties"])
-          .toEqual(MapWrapper.createFromPairs([["PKey", "PVal"]]));
-      expect(map["hostAttributes"])
-          .toEqual(MapWrapper.createFromPairs([["AtKey", "AtVal"]]));
+      expect(map["hostListeners"]).toEqual(MapWrapper.createFromPairs([
+        ["LKey", "LVal"]
+      ]));
+      expect(map["hostProperties"]).toEqual(MapWrapper.createFromPairs([
+        ["PKey", "PVal"]
+      ]));
+      expect(map["hostAttributes"]).toEqual(MapWrapper.createFromPairs([
+        ["AtKey", "AtVal"]
+      ]));
       expect(map["id"]).toEqual("someComponent");
       expect(map["properties"]).toEqual(["propKey: propVal"]);
       expect(map["readAttributes"]).toEqual(["read1", "read2"]);
@@ -55,17 +64,39 @@ main() {
       expect(map["callAfterViewChecked"]).toEqual(true);
       expect(map["exportAs"]).toEqual("aaa");
       expect(map["events"]).toEqual(["onFoo", "onBar"]);
-      expect(map["changeDetection"]).toEqual(ChangeDetectionStrategy.CheckOnce.index);
+      expect(map["changeDetection"])
+          .toEqual(ChangeDetectionStrategy.CheckOnce.index);
     });
     it("mapToDirectiveMetadata", () {
       var map = MapWrapper.createFromPairs([
         ["compileChildren", false],
-        ["hostProperties", MapWrapper.createFromPairs([["PKey", "testVal"]])],
-        ["hostListeners", MapWrapper.createFromPairs([["LKey", "testVal"]])],
-        ["hostAttributes", MapWrapper.createFromPairs([["AtKey", "testVal"]])],
+        [
+          "hostProperties",
+          MapWrapper.createFromPairs([
+            ["PKey", "testVal"]
+          ])
+        ],
+        [
+          "hostListeners",
+          MapWrapper.createFromPairs([
+            ["LKey", "testVal"]
+          ])
+        ],
+        [
+          "hostAttributes",
+          MapWrapper.createFromPairs([
+            ["AtKey", "testVal"]
+          ])
+        ],
         ["id", "testId"],
-        ["properties", ["propKey: propVal"]],
-        ["readAttributes", ["readTest1", "readTest2"]],
+        [
+          "properties",
+          ["propKey: propVal"]
+        ],
+        [
+          "readAttributes",
+          ["readTest1", "readTest2"]
+        ],
         ["selector", "testSelector"],
         ["type", RenderDirectiveMetadata.DIRECTIVE_TYPE],
         ["exportAs", "aaa"],
@@ -77,17 +108,23 @@ main() {
         ["callAfterContentChecked", true],
         ["callAfterViewInit", true],
         ["callAfterViewChecked", true],
-        ["events", ["onFoo", "onBar"]],
+        [
+          "events",
+          ["onFoo", "onBar"]
+        ],
         ["changeDetection", ChangeDetectionStrategy.CheckOnce.index]
       ]);
       var meta = directiveMetadataFromMap(map);
       expect(meta.compileChildren).toEqual(false);
-      expect(meta.hostProperties)
-          .toEqual(MapWrapper.createFromPairs([["PKey", "testVal"]]));
-      expect(meta.hostListeners)
-          .toEqual(MapWrapper.createFromPairs([["LKey", "testVal"]]));
-      expect(meta.hostAttributes)
-          .toEqual(MapWrapper.createFromPairs([["AtKey", "testVal"]]));
+      expect(meta.hostProperties).toEqual(MapWrapper.createFromPairs([
+        ["PKey", "testVal"]
+      ]));
+      expect(meta.hostListeners).toEqual(MapWrapper.createFromPairs([
+        ["LKey", "testVal"]
+      ]));
+      expect(meta.hostAttributes).toEqual(MapWrapper.createFromPairs([
+        ["AtKey", "testVal"]
+      ]));
       expect(meta.id).toEqual("testId");
       expect(meta.properties).toEqual(["propKey: propVal"]);
       expect(meta.readAttributes).toEqual(["readTest1", "readTest2"]);

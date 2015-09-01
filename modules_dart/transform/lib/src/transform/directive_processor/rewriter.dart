@@ -3,13 +3,11 @@ library angular2.transform.directive_processor.rewriter;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:analyzer/src/generated/java_core.dart';
-import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
+import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
@@ -17,7 +15,7 @@ import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
 
-import 'visitors.dart';
+import 'inliner.dart';
 
 /// Generates a file registering all Angular 2 `Directive`s found in `code` in
 /// ngDeps format [TODO(kegluneq): documentation reference needed]. `assetId` is
@@ -42,31 +40,35 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
   // parent, so it does not need its own `.ng_deps.dart` file.
   if (directivesVisitor.isPart) return null;
 
-  var writer = new AsyncStringWriter();
-  directivesVisitor.writeTo(writer, assetId);
-
-  writer
-    ..println('var _visited = false;')
-    ..println('void ${SETUP_METHOD_NAME}() {')
-    ..println('if (_visited) return; _visited = true;');
-
-  var declarationsCode =
+  var codeWithParts =
       await _getAllDeclarations(reader, assetId, code, directivesVisitor);
-  var declarationsVisitor = new _NgDepsDeclarationsVisitor(
-      assetId, writer, new XhrImpl(reader, assetId), annotationMatcher, ngMeta,
-      inlineViews: inlineViews);
-  parseCompilationUnit(declarationsCode, name: '${assetId.path} and parts')
-      .declarations
-      .accept(declarationsVisitor);
-  if (declarationsVisitor.shouldCreateNgDeps) {
-    writer.println(';');
+  var parsedCode =
+      parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
+
+  var ngDepsVisitor =
+      new NgDepsVisitor(assetId, annotationMatcher);
+  // TODO(kegluneq): Parse `declarations` in the NgDepsModel as well.
+  parsedCode.accept(ngDepsVisitor);
+  var ngDepsModel = ngDepsVisitor.model;
+
+  // If this file imports only dart: libraries and does not define any
+  // injectables of its own, it doesn't need a .ng_deps.dart file.
+  if (!directivesVisitor.usesNonLangLibs &&
+      (ngDepsModel.injectables == null || ngDepsModel.injectables.isEmpty)) {
+    return null;
   }
-  writer.println('}');
 
-  if (!directivesVisitor.shouldCreateNgDeps &&
-      !declarationsVisitor.shouldCreateNgDeps) return null;
+  var ngMetaVisitor = new _NgMetaVisitor(ngMeta);
+  parsedCode.accept(ngMetaVisitor);
 
-  return writer.asyncToString();
+  if (inlineViews) {
+    await inlineViewProps(new XhrImpl(reader, assetId), ngDepsModel);
+  }
+
+  var buffer = new StringBuffer();
+  var ngDepsWriter = new NgDepsWriter(buffer);
+  ngDepsWriter.writeNgDepsModel(ngDepsModel);
+  return '$buffer';
 }
 
 /// Processes `visitor.parts`, reading and appending their contents to the
@@ -78,8 +80,8 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
 /// part 'lib1.dart'
 /// part 'lib2.dart'
 /// ```
-/// The output will first have the entirety of the original file, followed by
-/// the contents of lib1.dart followed by the contents of lib2.dart.
+/// The output will first have the contents of lib1 followed by the contents of
+/// lib2.dart, followed by the original code in the library.
 Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
     String code, _NgDepsDirectivesVisitor visitor) {
   if (visitor.parts.isEmpty) return new Future<String>.value(code);
@@ -127,22 +129,7 @@ class _NgDepsDirectivesVisitor extends Object with SimpleAstVisitor<Object> {
   /// visited a `part of` directive.
   bool _isPart = false;
 
-  // TODO(kegluneq): Support an intermediate representation of NgDeps and use it
-  // instead of storing generated code.
-  LibraryDirective _library = null;
-  ScriptTag _scriptTag = null;
-  final List<NamespaceDirective> _importAndExports = <NamespaceDirective>[];
   final List<PartDirective> _parts = <PartDirective>[];
-
-  bool get shouldCreateNgDeps {
-    // If this library does not define an `@Injectable` and it does not import
-    // any libaries that could, then we do not need to generate a `.ng_deps
-    // .dart` file for it.
-    if (!_usesNonLangLibs) return false;
-    if (_isPart) return false;
-
-    return true;
-  }
 
   bool get usesNonLangLibs => _usesNonLangLibs;
   bool get isPart => _isPart;
@@ -150,218 +137,42 @@ class _NgDepsDirectivesVisitor extends Object with SimpleAstVisitor<Object> {
   /// In the order encountered in the source.
   Iterable<PartDirective> get parts => _parts;
 
-  @override
-  Object visitScriptTag(ScriptTag node) {
-    _scriptTag = node;
-    return null;
-  }
-
-  @override
-  Object visitCompilationUnit(CompilationUnit node) {
-    node.directives.accept(this);
-    return null;
-  }
-
-  void _updateUsesNonLangLibs(UriBasedDirective directive) {
+  Object _updateUsesNonLangLibs(UriBasedDirective directive) {
     _usesNonLangLibs = _usesNonLangLibs ||
         !stringLiteralToString(directive.uri).startsWith('dart:');
-  }
-
-  @override
-  Object visitImportDirective(ImportDirective node) {
-    _updateUsesNonLangLibs(node);
-    _importAndExports.add(node);
     return null;
   }
 
   @override
-  Object visitExportDirective(ExportDirective node) {
-    _updateUsesNonLangLibs(node);
-    _importAndExports.add(node);
-    return null;
-  }
+  Object visitExportDirective(ExportDirective node) =>
+      _updateUsesNonLangLibs(node);
 
   @override
-  Object visitLibraryDirective(LibraryDirective node) {
-    if (node != null) {
-      _library = node;
-    }
-    return null;
-  }
+  Object visitImportDirective(ImportDirective node) =>
+      _updateUsesNonLangLibs(node);
 
   @override
   Object visitPartDirective(PartDirective node) {
     _parts.add(node);
     return null;
   }
-
-  @override
-  Object visitPartOfDirective(PartOfDirective node) {
-    _isPart = true;
-    return null;
-  }
-
-  /// Write the directives for the .ng_deps.dart for `processedFile` to
-  /// `writer`. The .ng_deps.dart file has the same directives as
-  /// `processedFile` with some exceptions (mentioned below).
-  void writeTo(PrintWriter writer, AssetId processedFile) {
-    var copyVisitor = new ToSourceVisitor(writer);
-
-    if (_scriptTag != null) {
-      _scriptTag.accept(copyVisitor);
-      writer.newLine();
-    }
-
-    if (_library != null && _library.name != null) {
-      writer.print('library ');
-      _library.name.accept(copyVisitor);
-      writer.println('$DEPS_EXTENSION;');
-    }
-
-    // We do not output [PartDirective]s, which would not be valid now that we
-    // have changed the library.
-
-    // We need to import & export the original file.
-    var origDartFile = path.basename(processedFile.path);
-    writer.println('''import '$origDartFile';''');
-    writer.println('''export '$origDartFile';''');
-
-    // Used to register reflective information.
-    writer.println("import '$_REFLECTOR_IMPORT' as $_REF_PREFIX;");
-
-    _importAndExports.forEach((node) {
-      if (node.isSynthetic) return;
-
-      // Ignore deferred imports here so as to not load the deferred libraries
-      // code in the current library causing much of the code to not be
-      // deferred. Instead `DeferredRewriter` will rewrite the code as to load
-      // `ng_deps` in a deferred way.
-      if (node is ImportDirective && node.deferredKeyword != null) return;
-
-      node.accept(copyVisitor);
-    });
-  }
 }
 
 /// Visitor responsible for visiting a file's [Declaration]s and outputting the
 /// code necessary to register the file with the Angular 2 system.
-class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
-  final AsyncStringWriter writer;
-
-  /// The file we are processing.
-  final AssetId assetId;
-
+class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   /// Output ngMeta information about aliases.
   // TODO(sigmund): add more to ngMeta. Currently this only contains aliasing
   // information, but we could produce here all the metadata we need and avoid
   // parsing the ngdeps files later.
   final NgMeta ngMeta;
 
-  /// Whether an Angular 2 `Injectable` has been found.
-  bool _foundNgInjectable = false;
-
-  /// Visitor that writes out code for AstNodes visited.
-  final ToSourceVisitor _copyVisitor;
-  final FactoryTransformVisitor _factoryVisitor;
-  final ParameterTransformVisitor _paramsVisitor;
-  final AnnotationsTransformVisitor _metaVisitor;
-
-  /// Responsible for testing whether [Annotation]s are those recognized by
-  /// Angular 2, for example `@Component`.
-  final AnnotationMatcher _annotationMatcher;
-
-  /// Used to fetch linked files.
-  final XHR _xhr;
-
-  _NgDepsDeclarationsVisitor(AssetId assetId, AsyncStringWriter writer, XHR xhr,
-      AnnotationMatcher annotationMatcher, this.ngMeta,
-      {bool inlineViews})
-      : writer = writer,
-        _copyVisitor = new ToSourceVisitor(writer),
-        _factoryVisitor = new FactoryTransformVisitor(writer),
-        _paramsVisitor = new ParameterTransformVisitor(writer),
-        _metaVisitor = new AnnotationsTransformVisitor(
-            writer, xhr, annotationMatcher, assetId,
-            inlineViews: inlineViews),
-        _annotationMatcher = annotationMatcher,
-        this.assetId = assetId,
-        _xhr = xhr;
-
-  bool get shouldCreateNgDeps => _foundNgInjectable;
-
-  ConstructorDeclaration _getCtor(ClassDeclaration node) {
-    int numCtorsFound = 0;
-    var ctor = null;
-
-    for (ClassMember classMember in node.members) {
-      if (classMember is ConstructorDeclaration) {
-        numCtorsFound++;
-        ConstructorDeclaration constructor = classMember;
-
-        // Use the unnnamed constructor if it is present.
-        // Otherwise, use the first encountered.
-        if (ctor == null) {
-          ctor = constructor;
-        } else if (constructor.name == null) {
-          ctor = constructor;
-        }
-      }
-    }
-    if (numCtorsFound > 1) {
-      var ctorName = ctor.name;
-      ctorName = ctorName == null
-          ? 'the unnamed constructor'
-          : 'constructor "${ctorName}"';
-      logger.warning('Found ${numCtorsFound} ctors for class ${node.name},'
-          'Using ${ctorName}.');
-    }
-    return ctor;
-  }
-
-  void _generateEmptyFactory(String typeName) {
-    writer.print('() => new ${typeName}()');
-  }
-
-  void _generateEmptyParams() => writer.print('const []');
+  _NgMetaVisitor(this.ngMeta);
 
   @override
-  Object visitClassDeclaration(ClassDeclaration node) {
-    if (!node.metadata
-        .any((a) => _annotationMatcher.hasMatch(a.name, assetId))) {
-      return null;
-    }
-
-    var ctor = _getCtor(node);
-
-    _maybeWriteReflector();
-    writer.print('..registerType(');
-    node.name.accept(this);
-    writer.print(', new ${_REF_PREFIX}.ReflectionInfo(');
-    node.accept(_metaVisitor);
-    writer.print(', ');
-    if (ctor == null) {
-      _generateEmptyParams();
-    } else {
-      ctor.accept(_paramsVisitor);
-    }
-    writer.print(', ');
-    if (ctor == null) {
-      _generateEmptyFactory(node.name.toString());
-    } else {
-      ctor.accept(_factoryVisitor);
-    }
-    if (node.implementsClause != null &&
-        node.implementsClause.interfaces != null &&
-        node.implementsClause.interfaces.isNotEmpty) {
-      writer
-        ..print(', const [')
-        ..print(node.implementsClause.interfaces
-            .map((interface) => interface.name)
-            .join(', '))
-        ..print(']');
-    }
-    writer.print('))');
-    return null;
+  Object visitCompilationUnit(CompilationUnit node) {
+    if (node == null || node.declarations == null) return null;
+    return node.declarations.accept(this);
   }
 
   @override
@@ -386,47 +197,4 @@ class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
     }
     return null;
   }
-
-  Object _nodeToSource(AstNode node) {
-    if (node == null) return null;
-    return node.accept(_copyVisitor);
-  }
-
-  @override
-  Object visitPrefixedIdentifier(PrefixedIdentifier node) =>
-      _nodeToSource(node);
-
-  @override
-  Object visitSimpleIdentifier(SimpleIdentifier node) => _nodeToSource(node);
-
-  @override
-  bool visitFunctionDeclaration(FunctionDeclaration node) {
-    if (!node.metadata
-        .any((a) => _annotationMatcher.hasMatch(a.name, assetId))) {
-      return null;
-    }
-
-    _maybeWriteReflector();
-    writer.print('..registerFunction(');
-    node.name.accept(this);
-    writer.print(', new ${_REF_PREFIX}.ReflectionInfo(const [');
-    node.metadata.accept(_metaVisitor);
-    writer.print('], const [');
-    node.functionExpression.parameters.accept(_paramsVisitor);
-    writer.print(']))');
-    return null;
-  }
-
-  /// Writes out the reflector variable the first time it is called.
-  void _maybeWriteReflector() {
-    if (_foundNgInjectable) return;
-    _foundNgInjectable = true;
-
-    // The receiver for cascaded calls.
-    writer.print('$_REF_PREFIX.$REFLECTOR_VAR_NAME');
-  }
 }
-
-const _REF_PREFIX = '_ngRef';
-const _REFLECTOR_IMPORT =
-    'package:angular2/src/core/reflection/reflection.dart';

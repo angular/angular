@@ -1,10 +1,10 @@
 library dinner.soup.ng_deps.dart;
 
 import 'soup.dart';
-export 'soup.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
 import 'package:angular2/src/core/compiler.dart';
+export 'soup.dart';
 
 var _visited = false;
 void initReflector() {
@@ -14,9 +14,7 @@ void initReflector() {
     ..registerType(
         MultiSoupComponent,
         new _ngRef.ReflectionInfo(
-            const [
-              const Component(selector: '[soup]')
-            ],
+            const [const Component(selector: '[soup]')],
             const [],
             () => new MultiSoupComponent(),
             const [OnChanges, OnDestroy, OnInit]));
