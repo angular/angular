@@ -65,7 +65,7 @@ export function main() {
              .then((testComponent) => {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
-               testComponent.query(By.css('a')).triggerEventHandler('^click', null);
+               testComponent.query(By.css('a')).triggerEventHandler('click', null);
                expect(router.spy('navigateInstruction')).toHaveBeenCalledWith(dummyInstruction);
                async.done();
              });

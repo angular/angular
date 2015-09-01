@@ -9,7 +9,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 @Component({
   selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)',
   host: {
-    '(^mousedown)': 'onMousedown()',
+    '(mousedown)': 'onMousedown()',
     '(focus)': 'onFocus()',
     '(blur)': 'onBlur()',
     '[class.md-button-focus]': 'isKeyboardFocused',
@@ -50,8 +50,8 @@ export class MdButton {
   properties: ['disabled'],
   lifecycle: [LifecycleEvent.OnChanges],
   host: {
-    '(^click)': 'onClick($event)',
-    '(^mousedown)': 'onMousedown()',
+    '(click)': 'onClick($event)',
+    '(mousedown)': 'onMousedown()',
     '(focus)': 'onFocus()',
     '(blur)': 'onBlur()',
     '[tabIndex]': 'tabIndex',

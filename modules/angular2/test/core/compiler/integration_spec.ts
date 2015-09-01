@@ -856,7 +856,9 @@ export function main() {
 
                  dispatchEvent(tc.nativeElement, 'domEvent');
 
-                 expect(listener.eventType).toEqual('domEvent');
+                 expect(listener.eventTypes)
+                     .toEqual(
+                         ['domEvent', 'body_domEvent', 'document_domEvent', 'window_domEvent']);
 
                  async.done();
                });
@@ -874,16 +876,16 @@ export function main() {
                  var tc = rootTC.componentViewChildren[0];
                  var listener = tc.inject(DirectiveListeningDomEvent);
                  dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-                 expect(listener.eventType).toEqual('window_domEvent');
+                 expect(listener.eventTypes).toEqual(['window_domEvent']);
 
-                 listener = tc.inject(DirectiveListeningDomEvent);
+                 listener.eventTypes = [];
                  dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
-                 expect(listener.eventType).toEqual('document_domEvent');
+                 expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
 
                  rootTC.destroy();
-                 listener = tc.inject(DirectiveListeningDomEvent);
+                 listener.eventTypes = [];
                  dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
-                 expect(listener.eventType).toEqual('');
+                 expect(listener.eventTypes).toEqual([]);
 
                  async.done();
                });
@@ -983,7 +985,7 @@ export function main() {
                  var listener = tc.inject(DirectiveListeningDomEvent);
                  var listenerother = tc.inject(DirectiveListeningDomEventOther);
                  dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-                 expect(listener.eventType).toEqual('window_domEvent');
+                 expect(listener.eventTypes).toEqual(['window_domEvent']);
                  expect(listenerother.eventType).toEqual('other_domEvent');
                  expect(globalCounter).toEqual(1);
 
@@ -1851,12 +1853,11 @@ class DirectiveListeningEvent {
 })
 @Injectable()
 class DirectiveListeningDomEvent {
-  eventType: string;
-  constructor() { this.eventType = ''; }
-  onEvent(eventType: string) { this.eventType = eventType; }
-  onWindowEvent(eventType: string) { this.eventType = "window_" + eventType; }
-  onDocumentEvent(eventType: string) { this.eventType = "document_" + eventType; }
-  onBodyEvent(eventType: string) { this.eventType = "body_" + eventType; }
+  eventTypes: string[] = [];
+  onEvent(eventType: string) { this.eventTypes.push(eventType); }
+  onWindowEvent(eventType: string) { this.eventTypes.push("window_" + eventType); }
+  onDocumentEvent(eventType: string) { this.eventTypes.push("document_" + eventType); }
+  onBodyEvent(eventType: string) { this.eventTypes.push("body_" + eventType); }
 }
 
 var globalCounter = 0;
