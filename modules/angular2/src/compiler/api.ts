@@ -20,18 +20,41 @@ export class ChangeDetectionMetadata {
   events: string[];
   hostListeners: StringMap<string, string>;
   hostProperties: StringMap<string, string>;
-  constructor({changeDetection, properties, events, hostListeners, hostProperties}: {
+  callAfterContentInit: boolean;
+  callAfterContentChecked: boolean;
+  callAfterViewInit: boolean;
+  callAfterViewChecked: boolean;
+  callOnChanges: boolean;
+  callDoCheck: boolean;
+  callOnInit: boolean;
+  constructor({changeDetection, properties, events, hostListeners, hostProperties,
+               callAfterContentInit, callAfterContentChecked, callAfterViewInit,
+               callAfterViewChecked, callOnChanges, callDoCheck, callOnInit}: {
     changeDetection?: ChangeDetectionStrategy,
     properties?: string[],
     events?: string[],
     hostListeners?: StringMap<string, string>,
-    hostProperties?: StringMap<string, string>
+    hostProperties?: StringMap<string, string>,
+    callAfterContentInit?: boolean,
+    callAfterContentChecked?: boolean,
+    callAfterViewInit?: boolean,
+    callAfterViewChecked?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
+    callOnInit?: boolean
   }) {
     this.changeDetection = changeDetection;
     this.properties = properties;
     this.events = events;
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
+    this.callAfterContentInit = callAfterContentInit;
+    this.callAfterContentChecked = callAfterContentChecked;
+    this.callAfterViewInit = callAfterViewInit;
+    this.callAfterViewChecked = callAfterViewChecked;
+    this.callOnChanges = callOnChanges;
+    this.callDoCheck = callDoCheck;
+    this.callOnInit = callOnInit;
   }
 }
 
