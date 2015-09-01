@@ -32,6 +32,10 @@ export class CssSelector {
   notSelectors: CssSelector[] = [];
 
   static parse(selector: string): CssSelector[] {
+    if (StringWrapper.equals(selector, '')) {
+      throw new BaseException('Selectors must not be an empty string');
+    }
+
     var results: CssSelector[] = [];
     var _addResult = (res: CssSelector[], cssSel) => {
       if (cssSel.notSelectors.length > 0 && isBlank(cssSel.element) &&
