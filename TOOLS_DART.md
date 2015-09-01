@@ -40,6 +40,16 @@ each level. To reduce noise in the output (for very large apps) it also provides
 an option to hide libraries that are too small, so you can focus on the biggest
 contributors.
 
+#### Track unused reflection data
+
+Call `reflector.trackUsage()` to cause it to track reflection information used
+by the application. Reflection information (`ReflectionInfo`) is a data
+structure that stores information about your application that Angular uses for
+locating DI factories, generated change detectors and other code related to a
+given type. After exercising your application, call `reflector.listUnusedKeys()`
+to get a list of types and functions whose reflection information was retained
+but was never used by the application.
+
 #### Use code coverage to find dead code
 
 When running in Dartium (or in Dart VM in general) you can request code
