@@ -266,8 +266,6 @@ class NoPropertyAccess {
 
 @Component(
     selector: 'on-change',
-    // TODO: needed because of https://github.com/angular/angular/issues/2120
-    lifecycle: const [LifecycleEvent.OnChanges],
     properties: const ['prop'])
 @View(template: '')
 class OnChangeComponent implements OnChanges {
@@ -300,8 +298,7 @@ class ComponentWithObservableList {
 }
 
 @Directive(
-    selector: 'directive-logging-checks',
-    lifecycle: const [LifecycleEvent.DoCheck])
+    selector: 'directive-logging-checks')
 class DirectiveLoggingChecks implements DoCheck {
   Log log;
 

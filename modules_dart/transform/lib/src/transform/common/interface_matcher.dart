@@ -21,7 +21,7 @@ const _ON_DESTROY_INTERFACES = const [
   const ClassDescriptor(
       'OnDestroy', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
-const _ON_CHECK_INTERFACES = const [
+const _DO_CHECK_INTERFACES = const [
   const ClassDescriptor('DoCheck', 'package:angular2/angular2.dart'),
   const ClassDescriptor('DoCheck', 'package:angular2/metadata.dart'),
   const ClassDescriptor(
@@ -71,7 +71,7 @@ class InterfaceMatcher extends ClassMatcherBase {
     return new InterfaceMatcher._([]
       ..addAll(_ON_CHANGE_INTERFACES)
       ..addAll(_ON_DESTROY_INTERFACES)
-      ..addAll(_ON_CHECK_INTERFACES)
+      ..addAll(_DO_CHECK_INTERFACES)
       ..addAll(_ON_INIT_INTERFACES)
       ..addAll(_ON_AFTER_CONTENT_INIT_INTERFACES)
       ..addAll(_ON_AFTER_CONTENT_CHECKED_INTERFACES)
@@ -88,8 +88,8 @@ class InterfaceMatcher extends ClassMatcherBase {
       implements(firstMatch(typeName, assetId), _ON_DESTROY_INTERFACES);
 
   /// Checks if an [Identifier] implements [DoCheck].
-  bool isOnCheck(Identifier typeName, AssetId assetId) =>
-      implements(firstMatch(typeName, assetId), _ON_CHECK_INTERFACES);
+  bool isDoCheck(Identifier typeName, AssetId assetId) =>
+      implements(firstMatch(typeName, assetId), _DO_CHECK_INTERFACES);
 
   /// Checks if an [Identifier] implements [OnInit].
   bool isOnInit(Identifier typeName, AssetId assetId) =>

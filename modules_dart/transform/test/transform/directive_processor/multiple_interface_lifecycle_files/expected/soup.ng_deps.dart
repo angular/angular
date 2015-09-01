@@ -14,40 +14,9 @@ void initReflector() {
         MultiSoupComponent,
         new _ngRef.ReflectionInfo(
             const [
-              const Component(
-                  selector: '[soup]',
-                  lifecycle: const [
-                    LifecycleEvent.OnChanges,
-                    LifecycleEvent.OnDestroy,
-                    LifecycleEvent.OnInit
-                  ])
+              const Component(selector: '[soup]')
             ],
             const [],
             () => new MultiSoupComponent(),
-            const [OnChanges, OnDestroy, OnInit]))
-    ..registerType(
-        MixedSoupComponent,
-        new _ngRef.ReflectionInfo(
-            const [
-              const Component(
-                  selector: '[soup]',
-                  lifecycle: const [
-                    LifecycleEvent.DoCheck,
-                    LifecycleEvent.OnChanges
-                  ])
-            ],
-            const [],
-            () => new MixedSoupComponent(),
-            const [OnChanges]))
-    ..registerType(
-        MatchedSoupComponent,
-        new _ngRef.ReflectionInfo(
-            const [
-              const Component(
-                  selector: '[soup]',
-                  lifecycle: const [LifecycleEvent.OnChanges])
-            ],
-            const [],
-            () => new MatchedSoupComponent(),
-            const [OnChanges]));
+            const [OnChanges, OnDestroy, OnInit]));
 }

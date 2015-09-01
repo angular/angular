@@ -39,7 +39,7 @@ import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
-import {DirectiveMetadata, ComponentMetadata, LifecycleEvent} from '../metadata/directives';
+import {DirectiveMetadata, ComponentMetadata} from '../metadata/directives';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {
   ChangeDetector,
@@ -50,6 +50,8 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 import {EventConfig} from 'angular2/src/core/render/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
+
+import * as LifecycleHooks from './interfaces';
 
 var _staticKeys;
 
@@ -160,14 +162,14 @@ export class DirectiveBinding extends ResolvedBinding {
       properties: meta.properties,
       readAttributes: DirectiveBinding._readAttributes(<any>deps),
 
-      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, token, meta),
-      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, token, meta),
-      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, token, meta),
-      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, token, meta),
-      callAfterContentInit: hasLifecycleHook(LifecycleEvent.AfterContentInit, token, meta),
-      callAfterContentChecked: hasLifecycleHook(LifecycleEvent.AfterContentChecked, token, meta),
-      callAfterViewInit: hasLifecycleHook(LifecycleEvent.AfterViewInit, token, meta),
-      callAfterViewChecked: hasLifecycleHook(LifecycleEvent.AfterViewChecked, token, meta),
+      callOnDestroy: hasLifecycleHook(LifecycleHooks.OnDestroy, token),
+      callOnChanges: hasLifecycleHook(LifecycleHooks.OnChanges, token),
+      callDoCheck: hasLifecycleHook(LifecycleHooks.DoCheck, token),
+      callOnInit: hasLifecycleHook(LifecycleHooks.OnInit, token),
+      callAfterContentInit: hasLifecycleHook(LifecycleHooks.AfterContentInit, token),
+      callAfterContentChecked: hasLifecycleHook(LifecycleHooks.AfterContentChecked, token),
+      callAfterViewInit: hasLifecycleHook(LifecycleHooks.AfterViewInit, token),
+      callAfterViewChecked: hasLifecycleHook(LifecycleHooks.AfterViewChecked, token),
 
       changeDetection: meta instanceof ComponentMetadata ? meta.changeDetection : null,
 

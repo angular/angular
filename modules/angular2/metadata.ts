@@ -14,7 +14,6 @@ export {
   ComponentMetadata,
   DirectiveMetadata,
   PipeMetadata,
-  LifecycleEvent,
   ViewMetadata,
   ViewEncapsulation,
   QueryMetadata,
@@ -50,6 +49,8 @@ export {
 } from './src/core/metadata';
 
 export {
+  // todo(vbe): LifecycleHook should not be exposed (fails test.typings)
+  LifecycleHook,
   AfterContentInit,
   AfterContentChecked,
   AfterViewInit,

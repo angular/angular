@@ -2,7 +2,7 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement, LifecycleEvent, ChangeDetectionStrategy;
+    show Component, Directive, View, NgElement, ChangeDetectionStrategy;
 
 var _visited = false;
 void initReflector(reflector) {
