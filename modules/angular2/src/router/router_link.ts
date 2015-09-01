@@ -38,7 +38,7 @@ import {Instruction, stringifyInstruction} from './instruction';
   selector: '[router-link]',
   properties: ['routeParams: routerLink'],
   host: {
-    '(^click)': 'onClick()',
+    '(click)': 'onClick()',
     '[attr.href]': 'visibleHref',
     '[class.router-link-active]': 'isRouteActive'
   }

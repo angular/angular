@@ -206,7 +206,7 @@ export class MdDialogConfig {
   host: {
     'class': 'md-dialog',
     'tabindex': '0',
-    '(body:^keydown)': 'documentKeypress($event)',
+    '(body:keydown)': 'documentKeypress($event)',
   },
 })
 @View({

@@ -41,7 +41,7 @@ var _uniqueIdCounter: number = 0;
     '[attr.aria-disabled]': 'disabled',
     '[attr.aria-activedescendant]': 'activedescendant',
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
-    '(^keydown)': 'onKeydown($event)',
+    '(keydown)': 'onKeydown($event)',
     '[tabindex]': 'tabindex',
   }
 })

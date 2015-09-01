@@ -130,33 +130,6 @@ Example:
 
 Example:
 
-`<div on-click="doX()">`
-      </td>
-    </tr>
-    <tr>
-      <th>Event binding (bubbling)</th>
-      <td>
-`<div (^event)="statement">`
-
-Example:
-
-`<div (^mouseover)="hlite()">`
-      </td>
-      <td>
-`<div on-bubble-event="statement">`
-
-Example:
-
-`<div on-bubble-mouseover="hlite()">`
-      </td>
-    </tr>
-    <tr>
-      <th>Declare reference</th>
-      <td>
-`<div #symbol>`
-
-Example:
-
 <pre>
 ```
 <video #player>
@@ -420,7 +393,7 @@ of the templates occurs. One such example is `ng-for`.
 
 Where:
 * `[ng-for]` triggers the for directive.
-* `#person` exports the implicit `ng-for` item. 
+* `#person` exports the implicit `ng-for` item.
 * `[ng-for-of]="people"` binds an iterable object to the `ng-for` controller.
 * `#i=index` exports item index as `i`.
 
@@ -515,18 +488,16 @@ Where:
 * `statement` is a valid statement (as defined in section below).
 If the execution of the statement returns `false`, then `preventDefault`is applied on the DOM event.
 
-By default, angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
-events (as in the case of clicking on any child) use the bubble option (`(event)` or `on-bubble-event`) as shown
-below.
+Angular listens to bubbled DOM events (as in the case of clicking on any child), as shown below:
 
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (^some-event)="statement">`</td>
+    <td>`<some-element (some-event)="statement">`</td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-bubble-some-event="statement">`</td>
+    <td>`<some-element on-some-event="statement">`</td>
   </tr>
 </table>
 
