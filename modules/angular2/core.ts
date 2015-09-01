@@ -98,3 +98,11 @@ export {
   APP_ID,
   MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE
 } from './src/core/render/render';
+
+// Directives
+export * from './src/core/directives/ng_class';
+export * from './src/core/directives/ng_for';
+export * from './src/core/directives/ng_if';
+export * from './src/core/directives/ng_non_bindable';
+export * from './src/core/directives/ng_style';
+export * from './src/core/directives/ng_switch';

@@ -12,13 +12,12 @@ import {
   windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
 
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
+import {bind, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/core';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {bind} from 'angular2/core';
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

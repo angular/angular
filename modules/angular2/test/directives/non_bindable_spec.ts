@@ -18,7 +18,7 @@ import {Component, Directive, View} from 'angular2/angular2';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {NgNonBindable} from 'angular2/src/directives/ng_non_bindable';
+import {NgNonBindable} from 'angular2/core';
 
 export function main() {
   describe('non-bindable', () => {

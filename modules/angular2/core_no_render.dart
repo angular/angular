@@ -49,3 +49,13 @@ export 'package:angular2/src/core/pipes/limit_to_pipe.dart' show LimitToPipe;
 export 'package:angular2/src/core/pipes/lowercase_pipe.dart' show LowerCasePipe;
 export 'package:angular2/src/core/pipes/number_pipe.dart' show NumberPipe, DecimalPipe, PercentPipe, CurrencyPipe;
 export 'package:angular2/src/core/pipes/uppercase_pipe.dart' show UpperCasePipe;
+
+// Directives
+export 'package:angular2/src/core/directives/ng_class.dart';
+export 'package:angular2/src/core/directives/ng_for.dart';
+export 'package:angular2/src/core/directives/ng_if.dart';
+export 'package:angular2/src/core/directives/ng_non_bindable.dart';
+export 'package:angular2/src/core/directives/ng_style.dart';
+export 'package:angular2/src/core/directives/ng_switch.dart';
+//Dart-Only
+export 'package:angular2/src/core/directives/observable_list_diff.dart';

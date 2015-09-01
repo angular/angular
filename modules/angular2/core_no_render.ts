@@ -79,3 +79,11 @@ export {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader'
 
 export {NgZone} from 'angular2/src/core/zone/ng_zone';
 export {Observable, EventEmitter} from 'angular2/src/core/facade/async';
+
+// Directives
+export * from './src/core/directives/ng_class';
+export * from './src/core/directives/ng_for';
+export * from './src/core/directives/ng_if';
+export * from './src/core/directives/ng_non_bindable';
+export * from './src/core/directives/ng_style';
+export * from './src/core/directives/ng_switch';

@@ -55,3 +55,13 @@ export 'package:angular2/src/core/render/render.dart'
     show RenderDirectiveMetadata, DomRenderer, RenderEventDispatcher, Renderer,
     RenderElementRef, RenderViewRef, RenderProtoViewRef, RenderFragmentRef,
     RenderViewWithFragments, ViewDefinition, DOCUMENT, APP_ID, MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE;
+
+// Directives
+export 'package:angular2/src/core/directives/ng_class.dart';
+export 'package:angular2/src/core/directives/ng_for.dart';
+export 'package:angular2/src/core/directives/ng_if.dart';
+export 'package:angular2/src/core/directives/ng_non_bindable.dart';
+export 'package:angular2/src/core/directives/ng_style.dart';
+export 'package:angular2/src/core/directives/ng_switch.dart';
+//Dart-Only
+export 'package:angular2/src/core/directives/observable_list_diff.dart';

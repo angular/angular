@@ -17,7 +17,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {Component, View} from 'angular2/angular2';
 
-import {NgIf} from 'angular2/src/directives/ng_if';
+import {NgIf} from 'angular2/core';
 import {IS_DART} from '../platform';
 
 export function main() {
