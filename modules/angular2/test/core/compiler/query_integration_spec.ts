@@ -212,6 +212,34 @@ export function main() {
                  view.detectChanges();
                });
          }));
+
+      it('should correctly clean-up when destroyed together with the directives it is querying',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-query #q *ng-if="shouldShow"><div text="foo"></div></needs-query>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.componentInstance.shouldShow = true;
+                 view.detectChanges();
+
+                 var q: NeedsQuery = view.componentViewChildren[1].getLocal('q');
+                 expect(q.query.length).toEqual(1);
+
+                 view.componentInstance.shouldShow = false;
+                 view.detectChanges();
+
+                 view.componentInstance.shouldShow = true;
+                 view.detectChanges();
+
+                 var q2: NeedsQuery = view.componentViewChildren[1].getLocal('q');
+
+                 expect(q2.query.length).toEqual(1);
+
+                 async.done();
+               });
+         }));
     });
 
     describe("querying by var binding", () => {

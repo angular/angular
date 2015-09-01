@@ -433,6 +433,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._preBuiltObjects = null;
     this._strategy.callOnDestroy();
     this._strategy.dehydrate();
+    this._clearQueryLists();
   }
 
   afterContentChecked(): void {
@@ -837,6 +838,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
+
+  private _clearQueryLists(): void {
+    if (isPresent(this._query0) && this._query0.originator === this) this._query0.reset();
+    if (isPresent(this._query1) && this._query1.originator === this) this._query1.reset();
+    if (isPresent(this._query2) && this._query2.originator === this) this._query2.reset();
+  }
 }
 
 interface _ElementInjectorStrategy {
@@ -1162,5 +1169,10 @@ export class QueryRef {
 
   private _aggregateDirective(inj: ElementInjector, aggregator: any[]): void {
     inj.addDirectivesMatchingQuery(this.query, aggregator);
+  }
+
+  reset(): void {
+    this.list.reset([]);
+    this.list.removeAllCallbacks();
   }
 }

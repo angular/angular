@@ -89,13 +89,6 @@ class QueryList<T> extends Object
     _dirty = true;
   }
 
-  // TODO(rado): hook up with change detection after #995.
-  void fireCallbacks() {
-    if (_dirty) {
-      _callbacks.forEach((c) => c());
-      _dirty = false;
-    }
-  }
 
   void onChange(callback) {
     _callbacks.add(callback);
@@ -103,6 +96,10 @@ class QueryList<T> extends Object
 
   void removeCallback(callback) {
     _callbacks.remove(callback);
+  }
+
+  void removeAllCallbacks() {
+    this._callbacks = [];
   }
 
   int get length => _results.length;
@@ -115,5 +112,13 @@ class QueryList<T> extends Object
   List map(fn(T)) {
     // Note: we need to return a list instead of iterable to match JS.
     return this._results.map(fn).toList();
+  }
+
+  // Internal to the framework.
+  void fireCallbacks() {
+    if (_dirty) {
+      _callbacks.forEach((c) => c());
+      _dirty = false;
+    }
   }
 }
