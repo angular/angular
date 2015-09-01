@@ -230,6 +230,11 @@ export function main() {
       expect(matched.length).toEqual(2);
       expect(matched).toEqual([s1[0], 1]);
     });
+
+    it('should throw an error if the selector is an empty string', () => {
+      expect(function() { CssSelector.parse(''); })
+          .toThrowError('Selectors must not be an empty string');
+    });
   });
 
   describe('CssSelector.parse', () => {

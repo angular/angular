@@ -2,6 +2,7 @@ import {Map, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection'
 import {
   isPresent,
   isBlank,
+  isString,
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper
@@ -32,6 +33,10 @@ export class CssSelector {
   notSelectors: CssSelector[] = [];
 
   static parse(selector: string): CssSelector[] {
+    if (StringWrapper.equals(selector, '')) {
+      throw new BaseException('Selectors must not be an empty string');
+    }
+
     var results: CssSelector[] = [];
     var _addResult = (res: CssSelector[], cssSel) => {
       if (cssSel.notSelectors.length > 0 && isBlank(cssSel.element) &&
