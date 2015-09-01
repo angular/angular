@@ -39,3 +39,13 @@ export 'package:angular2/src/core/compiler/dynamic_component_loader.dart'
 
 export 'package:angular2/src/core/zone/ng_zone.dart' show NgZone;
 export 'package:angular2/src/core/facade/async.dart' show Stream, EventEmitter;
+
+// Pipes
+export 'package:angular2/src/core/pipes/async_pipe.dart' show AsyncPipe;
+export 'package:angular2/src/core/pipes/date_pipe.dart' show DatePipe;
+export 'package:angular2/src/core/pipes/default_pipes.dart' show DEFAULT_PIPES, DEFAULT_PIPES_TOKEN;
+export 'package:angular2/src/core/pipes/json_pipe.dart' show JsonPipe;
+export 'package:angular2/src/core/pipes/limit_to_pipe.dart' show LimitToPipe;
+export 'package:angular2/src/core/pipes/lowercase_pipe.dart' show LowerCasePipe;
+export 'package:angular2/src/core/pipes/number_pipe.dart' show NumberPipe, DecimalPipe, PercentPipe, CurrencyPipe;
+export 'package:angular2/src/core/pipes/uppercase_pipe.dart' show UpperCasePipe;

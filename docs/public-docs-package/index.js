@@ -13,8 +13,7 @@ module.exports = new Package('angular-v2-public-docs', [basePackage])
     'angular2/http.ts',
     'angular2/forms.ts',
     'angular2/router.ts',
-    'angular2/test.ts',
-    'angular2/pipes.ts'
+    'angular2/test.ts'
   ];
   readTypeScriptModules.hidePrivateMembers = true;
 })

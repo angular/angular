@@ -1,6 +1,6 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
-import {Injector, bind, Binding} from "angular2/core";
+import {DEFAULT_PIPES, Injector, bind, Binding} from "angular2/core";
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
@@ -11,7 +11,6 @@ import {
   JitChangeDetection,
   PreGeneratedChangeDetection
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';

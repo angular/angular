@@ -1,4 +1,4 @@
-import {Injector, bind, OpaqueToken, Binding} from 'angular2/core';
+import {DEFAULT_PIPES, Injector, bind, OpaqueToken, Binding} from 'angular2/core';
 import {
   NumberWrapper,
   Type,
@@ -25,7 +25,6 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from './exception_handler';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';

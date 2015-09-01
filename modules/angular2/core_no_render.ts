@@ -39,10 +39,25 @@ export {
 } from './src/core/di/exceptions';
 export {OpaqueToken} from './src/core/di/opaque_token';
 
+// Pipes
+export {AsyncPipe} from 'angular2/src/core/pipes/async_pipe';
+export {DatePipe} from 'angular2/src/core/pipes/date_pipe';
+export {DEFAULT_PIPES, DEFAULT_PIPES_TOKEN} from 'angular2/src/core/pipes/default_pipes';
+export {JsonPipe} from 'angular2/src/core/pipes/json_pipe';
+export {LimitToPipe} from 'angular2/src/core/pipes/limit_to_pipe';
+export {LowerCasePipe} from 'angular2/src/core/pipes/lowercase_pipe';
+export {
+  NumberPipe,
+  DecimalPipe,
+  PercentPipe,
+  CurrencyPipe
+} from 'angular2/src/core/pipes/number_pipe';
+export {UpperCasePipe} from 'angular2/src/core/pipes/uppercase_pipe';
+
+
 export {APP_COMPONENT} from 'angular2/src/core/application_tokens';
 export {Type} from 'angular2/src/core/facade/lang';
 export {ApplicationRef} from 'angular2/src/core/application_ref';
-
 
 // Compiler Related Dependencies.
 export {AppRootUrl} from 'angular2/src/core/services/app_root_url';

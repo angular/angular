@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/core';
+import {bind, Binding, DEFAULT_PIPES} from 'angular2/core';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -12,7 +12,6 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';

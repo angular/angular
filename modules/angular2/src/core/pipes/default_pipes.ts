@@ -21,7 +21,7 @@ const DEFAULT_PIPES_LIST = CONST_EXPR([
   DatePipe
 ]);
 
-export const DEFAULT_PIPES_TOKEN = CONST_EXPR(new OpaqueToken("Default Pipes"));
+export const DEFAULT_PIPES_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken("Default Pipes"));
 
-export const DEFAULT_PIPES =
+export const DEFAULT_PIPES: Binding =
     CONST_EXPR(new Binding(DEFAULT_PIPES_TOKEN, {toValue: DEFAULT_PIPES_LIST}));
