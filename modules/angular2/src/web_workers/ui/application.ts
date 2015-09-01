@@ -4,8 +4,9 @@ import {
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {BaseException} from "angular2/src/core/facade/lang";
-import {bootstrapUICommon} from "angular2/src/web_workers/ui/impl";
+import {BaseException} from 'angular2/src/core/facade/lang';
+import {bootstrapUICommon, WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
+export {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 export * from 'angular2/src/web_workers/shared/message_bus';
 
 /**
@@ -16,15 +17,24 @@ export * from 'angular2/src/web_workers/shared/message_bus';
  * Note: The WebWorker script must call bootstrapWebworker once it is set up to complete the
  * bootstrapping process
  */
-export function bootstrap(uri: string): MessageBus {
-  var messageBus = spawnWebWorker(uri);
-  bootstrapUICommon(messageBus);
-  return messageBus;
+export function bootstrap(uri: string): WebWorkerInstance {
+  var instance = spawnWebWorker(uri);
+  instance.app = bootstrapUICommon(instance.bus);
+  return instance;
 }
 
-export function spawnWebWorker(uri: string): MessageBus {
+export function spawnWebWorker(uri: string): WebWorkerInstance {
   var webWorker: Worker = new Worker(uri);
   var sink = new PostMessageBusSink(webWorker);
   var source = new PostMessageBusSource(webWorker);
-  return new PostMessageBus(sink, source);
+  var bus = new PostMessageBus(sink, source);
+  return new WebWorkerInstance(null, webWorker, bus);
+}
+
+/**
+ * Wrapper class that exposes the {@link WebWorkerApplication}
+ * Isolate instance and underyling {@link MessageBus} for lower level message passing.
+ */
+export class WebWorkerInstance {
+  constructor(public app: WebWorkerApplication, public worker: Worker, public bus: MessageBus) {}
 }

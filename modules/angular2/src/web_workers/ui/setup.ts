@@ -7,14 +7,19 @@ import {StringWrapper} from 'angular2/src/core/facade/lang';
 
 @Injectable()
 export class WebWorkerSetup {
-  constructor(bus: MessageBus, anchorBasedAppRootUrl: AnchorBasedAppRootUrl) {
-    var rootUrl = anchorBasedAppRootUrl.value;
-    var sink = bus.to(SETUP_CHANNEL);
-    var source = bus.from(SETUP_CHANNEL);
+  rootUrl: string;
+
+  constructor(private _bus: MessageBus, anchorBasedAppRootUrl: AnchorBasedAppRootUrl) {
+    this.rootUrl = anchorBasedAppRootUrl.value;
+  }
+
+  start(): void {
+    var sink = this._bus.to(SETUP_CHANNEL);
+    var source = this._bus.from(SETUP_CHANNEL);
 
     ObservableWrapper.subscribe(source, (message: string) => {
       if (StringWrapper.equals(message, "ready")) {
-        ObservableWrapper.callNext(sink, {"rootUrl": rootUrl});
+        ObservableWrapper.callNext(sink, {"rootUrl": this.rootUrl});
       }
     });
   }

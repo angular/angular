@@ -7,8 +7,10 @@ import {bind} from './bind';
 
 @Injectable()
 export class MessageBasedXHRImpl {
-  constructor(brokerFactory: ServiceMessageBrokerFactory, private _xhr: XHR) {
-    var broker = brokerFactory.createMessageBroker(XHR_CHANNEL);
+  constructor(private _brokerFactory: ServiceMessageBrokerFactory, private _xhr: XHR) {}
+
+  start(): void {
+    var broker = this._brokerFactory.createMessageBroker(XHR_CHANNEL);
     broker.registerMethod("get", [PRIMITIVE], bind(this._xhr.get, this._xhr), PRIMITIVE);
   }
 }

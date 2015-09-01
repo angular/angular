@@ -25,6 +25,6 @@ export class WebWorkerXHRImpl extends XHR {
   get(url: string): Promise<string> {
     var fnArgs: FnArg[] = [new FnArg(url, null)];
     var args: UiArguments = new UiArguments("get", fnArgs);
-    return this._messageBroker.runOnUiThread(args, String);
+    return this._messageBroker.runOnService(args, String);
   }
 }

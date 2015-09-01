@@ -19,11 +19,13 @@ import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/servi
 
 @Injectable()
 export class MessageBasedRenderer {
-  constructor(brokerFactory: ServiceMessageBrokerFactory, private _bus: MessageBus,
+  constructor(private _brokerFactory: ServiceMessageBrokerFactory, private _bus: MessageBus,
               private _serializer: Serializer,
               private _renderViewWithFragmentsStore: RenderViewWithFragmentsStore,
-              private _renderer: Renderer) {
-    var broker = brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+              private _renderer: Renderer) {}
+
+  start(): void {
+    var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     broker.registerMethod("createRootHostView",
                           [RenderProtoViewRef, PRIMITIVE, PRIMITIVE, PRIMITIVE],
                           bind(this._createRootHostView, this));

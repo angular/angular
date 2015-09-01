@@ -2,7 +2,6 @@
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/di";
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Parser,
   Lexer,
@@ -61,13 +60,14 @@ import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
-import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
+import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
 import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
+import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 
 var _rootInjector: Injector;
 
@@ -134,12 +134,13 @@ function _injectorBindings(): any[] {
     Testability,
     AnchorBasedAppRootUrl,
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
-    WebWorkerMain,
+    WebWorkerApplication,
     WebWorkerSetup,
     MessageBasedRenderCompiler,
     MessageBasedXHRImpl,
     MessageBasedRenderer,
-    ServiceMessageBrokerFactory
+    ServiceMessageBrokerFactory,
+    ClientMessageBrokerFactory
   ];
 }
 

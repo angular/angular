@@ -7,3 +7,6 @@ export * from '../forms';
 export * from '../render';
 export * from '../profile';
 export * from '../src/web_workers/worker/application';
+export * from "../src/web_workers/shared/client_message_broker";
+export * from "../src/web_workers/shared/service_message_broker";
+export * from "../src/web_workers/shared/serializer";

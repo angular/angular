@@ -43,7 +43,7 @@ import {
   DomProtoView
 } from 'angular2/src/core/render/dom/view/proto_view';
 import {someComponent} from '../../core/render/dom/dom_renderer_integration_spec';
-import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
+import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';
@@ -64,9 +64,11 @@ export function main() {
     // set up the ui side
     var uiMessageBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
     var renderCompiler = new MessageBasedRenderCompiler(uiMessageBrokerFactory, tb.compiler);
+    renderCompiler.start();
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
                                             uiRenderViewStore, tb.renderer);
-    new WebWorkerMain(renderCompiler, renderer, null, null);
+    renderer.start();
+    new WebWorkerApplication(null, null);
 
     return webWorkerBrokerFactory;
   }

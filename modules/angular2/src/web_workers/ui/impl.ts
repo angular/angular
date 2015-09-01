@@ -15,25 +15,43 @@ import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
+import {
+  ClientMessageBrokerFactory,
+  ClientMessageBroker,
+} from 'angular2/src/web_workers/shared/client_message_broker';
+import {
+  ServiceMessageBrokerFactory,
+  ServiceMessageBroker
+} from 'angular2/src/web_workers/shared/service_message_broker';
 
 /**
  * Creates a zone, sets up the DI bindings
  * And then creates a new WebWorkerMain object to handle messages from the worker
  */
-export function bootstrapUICommon(bus: MessageBus) {
+export function bootstrapUICommon(bus: MessageBus): WebWorkerApplication {
   BrowserDomAdapter.makeCurrent();
   var zone = createNgZone();
   wtfInit();
-  zone.run(() => {
+  return zone.run(() => {
     var injector = createInjector(zone, bus);
-    // necessary to kick off all the message based components
-    injector.get(WebWorkerMain);
+    injector.get(MessageBasedRenderCompiler).start();
+    injector.get(MessageBasedRenderer).start();
+    injector.get(MessageBasedXHRImpl).start();
+    injector.get(WebWorkerSetup).start();
+    return injector.get(WebWorkerApplication);
   });
 }
 
 @Injectable()
-export class WebWorkerMain {
-  constructor(public renderCompiler: MessageBasedRenderCompiler,
-              public renderer: MessageBasedRenderer, public xhr: MessageBasedXHRImpl,
-              public setup: WebWorkerSetup) {}
+export class WebWorkerApplication {
+  constructor(private _clientMessageBrokerFactory: ClientMessageBrokerFactory,
+              private _serviceMessageBrokerFactory: ServiceMessageBrokerFactory) {}
+
+  createClientMessageBroker(channel: string): ClientMessageBroker {
+    return this._clientMessageBrokerFactory.createMessageBroker(channel);
+  }
+
+  createServiceMessageBroker(channel: string): ServiceMessageBroker {
+    return this._serviceMessageBrokerFactory.createMessageBroker(channel);
+  }
 }
