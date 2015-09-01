@@ -352,6 +352,22 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should support querying the view by using a view query',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-query-by-var-binding #q></needs-view-query-by-var-binding>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsViewQueryByLabel = view.componentViewChildren[0].getLocal("q");
+                 view.detectChanges();
+
+                 expect(q.query.first.nativeElement).toHaveText("text");
+
+                 async.done();
+               });
+         }));
     });
 
     describe("querying in the view", () => {
@@ -545,6 +561,16 @@ class NeedsQueryByLabel {
   }
 }
 
+@Component({selector: 'needs-view-query-by-var-binding'})
+@View({directives: [], template: '<div #text-label>text</div>'})
+@Injectable()
+class NeedsViewQueryByLabel {
+  query: QueryList<any>;
+  constructor(@ViewQuery("textLabel", {descendants: true}) query: QueryList<any>) {
+    this.query = query;
+  }
+}
+
 @Component({selector: 'needs-query-by-var-bindings'})
 @View({directives: [], template: '<ng-content>'})
 @Injectable()
@@ -665,6 +691,7 @@ class NeedsTpl {
     NeedsViewQueryIf,
     NeedsViewQueryNestedIf,
     NeedsViewQueryOrder,
+    NeedsViewQueryByLabel,
     NeedsTpl,
     TextDirective,
     InertDirective,
