@@ -1,4 +1,4 @@
-import {List, ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/di';
 
 import {Validator} from '../validator';
@@ -15,7 +15,7 @@ export class RegressionSlopeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
   static get METRIC(): OpaqueToken { return _METRIC; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
 
   _sampleSize: number;
   _metric: string;
@@ -30,7 +30,7 @@ export class RegressionSlopeValidator extends Validator {
     return {'sampleSize': this._sampleSize, 'regressionSlopeMetric': this._metric};
   }
 
-  validate(completeSample: List<MeasureValues>): List<MeasureValues> {
+  validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
       var latestSample = ListWrapper.slice(completeSample, completeSample.length - this._sampleSize,
                                            completeSample.length);

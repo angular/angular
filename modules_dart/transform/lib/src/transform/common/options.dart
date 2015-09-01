@@ -1,5 +1,7 @@
 library angular2.transform.common.options;
 
+import 'package:glob/glob.dart';
+
 import 'annotation_matcher.dart';
 import 'mirror_mode.dart';
 
@@ -19,12 +21,10 @@ const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_points';
 
 /// Provides information necessary to transform an Angular2 app.
 class TransformerOptions {
+  final List<Glob> entryPointGlobs;
+
   /// The path to the files where the application's calls to `bootstrap` are.
   final List<String> entryPoints;
-
-  /// The paths to the files where the application's {@link ReflectionCapabilities}
-  /// are set.
-  final List<String> reflectionEntryPoints;
 
   /// The `BarbackMode#name` we are running in.
   final String modeName;
@@ -62,7 +62,7 @@ class TransformerOptions {
 
   TransformerOptions._internal(
       this.entryPoints,
-      this.reflectionEntryPoints,
+      this.entryPointGlobs,
       this.modeName,
       this.mirrorMode,
       this.initReflector,
@@ -74,8 +74,7 @@ class TransformerOptions {
       this.formatCode});
 
   factory TransformerOptions(List<String> entryPoints,
-      {List<String> reflectionEntryPoints,
-      String modeName: 'release',
+      {String modeName: 'release',
       MirrorMode mirrorMode: MirrorMode.none,
       bool initReflector: true,
       List<ClassDescriptor> customAnnotationDescriptors: const [],
@@ -84,15 +83,15 @@ class TransformerOptions {
       bool generateChangeDetectors: true,
       bool reflectPropertiesAsAttributes: true,
       bool formatCode: false}) {
-    if (reflectionEntryPoints == null || reflectionEntryPoints.isEmpty) {
-      reflectionEntryPoints = entryPoints;
-    }
     var annotationMatcher = new AnnotationMatcher()
       ..addAll(customAnnotationDescriptors);
     optimizationPhases = optimizationPhases.isNegative ? 0 : optimizationPhases;
+    var entryPointGlobs = entryPoints != null
+        ? entryPoints.map((path) => new Glob(path)).toList(growable: false)
+        : null;
     return new TransformerOptions._internal(
         entryPoints,
-        reflectionEntryPoints,
+        entryPointGlobs,
         modeName,
         mirrorMode,
         initReflector,

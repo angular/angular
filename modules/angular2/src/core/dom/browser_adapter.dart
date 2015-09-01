@@ -157,6 +157,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   logGroup(error) {
     window.console.group(error);
+    this.logError(error);
   }
 
   logGroupEnd() {
@@ -451,8 +452,18 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(String name, value) {
-    js.context[name] = value;
+  setGlobalVar(String path, value) {
+    var parts = path.split('.');
+    var obj = js.context;
+    while(parts.length > 1) {
+      var name = parts.removeAt(0);
+      if (obj.hasProperty(name)) {
+        obj = obj[name];
+      } else {
+        obj = obj[name] = new js.JsObject(js.context['Object']);
+      }
+    }
+    obj[parts.removeAt(0)] = value;
   }
 }
 

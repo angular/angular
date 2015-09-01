@@ -1,5 +1,6 @@
 library angular2.transform.template_compiler.change_detector_codegen;
 
+import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/change_detection/change_detection_util.dart';
 import 'package:angular2/src/core/change_detection/codegen_facade.dart';
 import 'package:angular2/src/core/change_detection/codegen_logic_util.dart';
@@ -75,7 +76,7 @@ class _CodegenState {
   /// The name of the generated change detector class. This is an implementation
   /// detail and should not be visible to users.
   final String _changeDetectorTypeName;
-  final String _changeDetectionStrategy;
+  final ChangeDetectionStrategy _changeDetectionStrategy;
   final List<DirectiveRecord> _directiveRecords;
   final List<ProtoRecord> _records;
   final List<EventBinding> _eventBindings;
@@ -83,6 +84,9 @@ class _CodegenState {
   final CodegenNameUtil _names;
   final ChangeDetectorGenConfig _genConfig;
   final List<BindingTarget> _propertyBindingTargets;
+
+  String get _changeDetectionStrategyAsCode =>
+    _changeDetectionStrategy == null ? 'null' : '${_GEN_PREFIX}.${_changeDetectionStrategy}';
 
   _CodegenState._(
       this._changeDetectorDefId,
@@ -129,7 +133,7 @@ class _CodegenState {
               dispatcher, ${_records.length},
               ${_changeDetectorTypeName}.gen_propertyBindingTargets,
               ${_changeDetectorTypeName}.gen_directiveIndices,
-              ${codify(_changeDetectionStrategy)}) {
+              ${_changeDetectionStrategyAsCode}) {
           dehydrateDirectives(false);
         }
 
@@ -139,15 +143,15 @@ class _CodegenState {
           var $_CHANGES_LOCAL = null;
 
           ${_records.map(_genRecord).join('')}
-
-          ${_names.getAlreadyCheckedName()} = true;
         }
 
         ${_maybeGenHandleEventInternal()}
 
         ${_genCheckNoChanges()}
 
-        ${_maybeGenCallOnAllChangesDone()}
+        ${_maybeGenAfterContentLifecycleCallbacks()}
+
+        ${_maybeGenAfterViewLifecycleCallbacks()}
 
         ${_maybeGenHydrateDirectives()}
 
@@ -256,19 +260,24 @@ class _CodegenState {
         '{ $hydrateDirectivesCode $hydrateDetectorsCode }';
   }
 
-  /// Generates calls to `onAllChangesDone` for all `Directive`s that request
-  /// them.
-  String _maybeGenCallOnAllChangesDone() {
-    // NOTE(kegluneq): Order is important!
-    var directiveNotifications = _directiveRecords.reversed
-        .where((rec) => rec.callOnAllChangesDone)
-        .map((rec) =>
-            '${_names.getDirectiveName(rec.directiveIndex)}.onAllChangesDone();');
-
+  String _maybeGenAfterContentLifecycleCallbacks() {
+    var directiveNotifications = _logic.genContentLifecycleCallbacks(_directiveRecords);
     if (directiveNotifications.isNotEmpty) {
       return '''
-        void callOnAllChangesDone() {
-          ${_names.getDispatcherName()}.notifyOnAllChangesDone();
+        void afterContentLifecycleCallbacksInternal() {
+          ${directiveNotifications.join('')}
+        }
+      ''';
+    } else {
+      return '';
+    }
+  }
+
+  String _maybeGenAfterViewLifecycleCallbacks() {
+    var directiveNotifications = _logic.genViewLifecycleCallbacks(_directiveRecords);
+    if (directiveNotifications.isNotEmpty) {
+      return '''
+        void afterViewLifecycleCallbacksInternal() {
           ${directiveNotifications.join('')}
         }
       ''';
@@ -305,12 +314,12 @@ class _CodegenState {
   }
 
   String _genDirectiveLifecycle(ProtoRecord r) {
-    if (r.name == 'onCheck') {
-      return _genOnCheck(r);
-    } else if (r.name == 'onInit') {
+    if (r.name == 'DoCheck') {
+      return _genDoCheck(r);
+    } else if (r.name == 'OnInit') {
       return _genOnInit(r);
-    } else if (r.name == 'onChange') {
-      return _genOnChange(r);
+    } else if (r.name == 'OnChanges') {
+      return _genOnChanges(r);
     } else {
       throw new BaseException("Unknown lifecycle event '${r.name}'");
     }
@@ -440,7 +449,7 @@ class _CodegenState {
   String _genAddToChanges(ProtoRecord r) {
     var newValue = _names.getLocalName(r.selfIndex);
     var oldValue = _names.getFieldName(r.selfIndex);
-    if (!r.bindingRecord.callOnChange()) return '';
+    if (!r.bindingRecord.callOnChanges()) return '';
     return "$_CHANGES_LOCAL = addChange($_CHANGES_LOCAL, $oldValue, $newValue);";
   }
 
@@ -453,10 +462,10 @@ class _CodegenState {
     ''';
   }
 
-  String _genOnCheck(ProtoRecord r) {
+  String _genDoCheck(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange) '
-        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onCheck();';
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.doCheck();';
   }
 
   String _genOnInit(ProtoRecord r) {
@@ -465,11 +474,11 @@ class _CodegenState {
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();';
   }
 
-  String _genOnChange(ProtoRecord r) {
+  String _genOnChanges(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange && $_CHANGES_LOCAL != null) '
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}'
-        '.onChange($_CHANGES_LOCAL);';
+        '.onChanges($_CHANGES_LOCAL);';
   }
 
   String _genNotifyOnPushDetectors(ProtoRecord r) {

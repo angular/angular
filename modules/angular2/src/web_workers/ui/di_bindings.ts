@@ -2,7 +2,7 @@
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, bind, Binding} from "angular2/di";
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Parser,
   Lexer,
@@ -76,7 +76,7 @@ var _rootBindings = [bind(Reflector).toValue(reflector)];
 
 // TODO: This code is nearly identitcal to core/application. There should be a way to only write it
 // once
-function _injectorBindings(): List<any> {
+function _injectorBindings(): any[] {
   var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
     bestChangeDetection = new PreGeneratedChangeDetection();

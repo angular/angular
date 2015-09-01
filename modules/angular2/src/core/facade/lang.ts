@@ -1,5 +1,23 @@
 /// <reference path="../../../globals.d.ts" />
-var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : window);
+
+// TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
+declare var WorkerGlobalScope;
+var globalScope: BrowserNodeGlobal;
+if (typeof window === 'undefined') {
+  if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+    // TODO: Replace any with WorkerGlobalScope from lib.webworker.d.ts #3492
+    globalScope = <any>self;
+  } else {
+    globalScope = <any>global;
+  }
+} else {
+  globalScope = <any>window;
+};
+
+// Need to declare a new variable for global here since TypeScript
+// exports the original value of the symbol.
+var _global: BrowserNodeGlobal = globalScope;
+
 export {_global as global};
 
 export var Type = Function;
@@ -53,10 +71,6 @@ _global.assert = function assert(condition) {
   }
 };
 
-export function ENUM_INDEX(value: number): number {
-  return value;
-}
-
 // This function is needed only to properly support Dart's const expressions
 // see https://github.com/angular/ts2dart/pull/151 for more info
 export function CONST_EXPR<T>(expr: T): T {
@@ -75,13 +89,6 @@ export function CONST(): ClassAndPropertyDecorator {
 }
 
 export function ABSTRACT(): ClassDecorator {
-  return (t) => t;
-}
-
-// Note: This is only a marker annotation needed for ts2dart.
-// This is written so that is can be used as a Traceur annotation
-// or a Typescript decorator.
-export function IMPLEMENTS(_): ClassDecorator {
   return (t) => t;
 }
 
@@ -159,7 +166,7 @@ export class StringWrapper {
 
   static charCodeAt(s: string, index: number): number { return s.charCodeAt(index); }
 
-  static split(s: string, regExp: RegExp): List<string> { return s.split(regExp); }
+  static split(s: string, regExp: RegExp): string[] { return s.split(regExp); }
 
   static equals(s: string, s2: string): boolean { return s === s2; }
 
@@ -269,7 +276,7 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp: RegExp, input: string): List<string> {
+  static firstMatch(regExp: RegExp, input: string): string[] {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);
@@ -353,4 +360,18 @@ export class DateWrapper {
   static toMillis(date: Date): number { return date.getTime(); }
   static now(): Date { return new Date(); }
   static toJson(date: Date): string { return date.toJSON(); }
+}
+
+export function setValueOnPath(global: any, path: string, value: any) {
+  var parts = path.split('.');
+  var obj: any = global;
+  while (parts.length > 1) {
+    var name = parts.shift();
+    if (obj.hasOwnProperty(name)) {
+      obj = obj[name];
+    } else {
+      obj = obj[name] = {};
+    }
+  }
+  obj[parts.shift()] = value;
 }

@@ -1,5 +1,5 @@
 import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
-import {MapWrapper, Map, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {MapWrapper, Map, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable, bind, Binding} from 'angular2/di';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {AppView} from 'angular2/src/core/compiler/view';
@@ -8,9 +8,9 @@ import {Renderer} from 'angular2/src/core/render/api';
 import {DebugElement} from './debug_element';
 
 const NG_ID_PROPERTY = 'ngid';
-const INSPECT_GLOBAL_NAME = 'ngProbe';
+const INSPECT_GLOBAL_NAME = 'ng.probe';
 
-var NG_ID_SEPARATOR = '#';
+const NG_ID_SEPARATOR = '#';
 
 // Need to keep the views in a global Map so that multiple angular apps are supported
 var _allIdsByView = new Map<AppView, number>();
@@ -18,13 +18,13 @@ var _allViewsById = new Map<number, AppView>();
 
 var _nextId = 0;
 
-function _setElementId(element, indices: List<number>) {
+function _setElementId(element, indices: number[]) {
   if (isPresent(element)) {
     DOM.setData(element, NG_ID_PROPERTY, ListWrapper.join(indices, NG_ID_SEPARATOR));
   }
 }
 
-function _getElementId(element): List<number> {
+function _getElementId(element): number[] {
   var elId = DOM.getData(element, NG_ID_PROPERTY);
   if (isPresent(elId)) {
     return ListWrapper.map(elId.split(NG_ID_SEPARATOR),

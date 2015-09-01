@@ -38,8 +38,8 @@ import {NgFor} from 'angular2/directives';
     </div>`
 })
 export class ScrollAreaComponent {
-  _fullList: List<Offering>;
-  visibleItems: List<Offering>;
+  _fullList: Offering[];
+  visibleItems: Offering[];
 
   viewPortHeight: number;
   paddingDiv;

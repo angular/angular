@@ -1,5 +1,5 @@
-import {List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent, global} from 'angular2/src/core/facade/lang';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {isBlank, isPresent, global, setValueOnPath} from 'angular2/src/core/facade/lang';
 import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -59,18 +59,25 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasProperty(element, name: string): boolean { return name in element; }
   setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
   getProperty(el: /*element*/ any, name: string): any { return el[name]; }
-  invoke(el: /*element*/ any, methodName: string, args: List<any>): any {
+  invoke(el: /*element*/ any, methodName: string, args: any[]): any {
     el[methodName].apply(el, args);
   }
 
   // TODO(tbosch): move this into a separate environment class once we have it
-  logError(error) { window.console.error(error); }
+  logError(error) {
+    if (window.console.error) {
+      window.console.error(error);
+    } else {
+      window.console.log(error);
+    }
+  }
 
   log(error) { window.console.log(error); }
 
   logGroup(error) {
     if (window.console.group) {
       window.console.group(error);
+      this.logError(error);
     } else {
       window.console.log(error);
     }
@@ -86,7 +93,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   query(selector: string): any { return document.querySelector(selector); }
   querySelector(el, selector: string): HTMLElement { return el.querySelector(selector); }
-  querySelectorAll(el, selector: string): List<any> { return el.querySelectorAll(selector); }
+  querySelectorAll(el, selector: string): any[] { return el.querySelectorAll(selector); }
   on(el, evt, listener) { el.addEventListener(evt, listener, false); }
   onAndCancel(el, evt, listener): Function {
     el.addEventListener(evt, listener, false);
@@ -127,8 +134,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   firstChild(el): Node { return el.firstChild; }
   nextSibling(el): Node { return el.nextSibling; }
   parentElement(el): Node { return el.parentNode; }
-  childNodes(el): List<Node> { return el.childNodes; }
-  childNodesAsList(el): List<any> {
+  childNodes(el): Node[] { return el.childNodes; }
+  childNodesAsList(el): any[] {
     var childNodes = el.childNodes;
     var res = ListWrapper.createFixedSize(childNodes.length);
     for (var i = 0; i < childNodes.length; i++) {
@@ -183,15 +190,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   clone(node: Node): Node { return node.cloneNode(true); }
-  getElementsByClassName(element, name: string): List<HTMLElement> {
+  getElementsByClassName(element, name: string): HTMLElement[] {
     return element.getElementsByClassName(name);
   }
-  getElementsByTagName(element, name: string): List<HTMLElement> {
+  getElementsByTagName(element, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  classList(element): List<any> {
-    return <List<any>>Array.prototype.slice.call(element.classList, 0);
-  }
+  classList(element): any[] { return <any[]>Array.prototype.slice.call(element.classList, 0); }
   addClass(element, classname: string) { element.classList.add(classname); }
   removeClass(element, classname: string) { element.classList.remove(classname); }
   hasClass(element, classname: string): boolean { return element.classList.contains(classname); }
@@ -313,7 +318,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getData(element, name: string): string { return this.getAttribute(element, 'data-' + name); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(name: string, value: any) { global[name] = value; }
+  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
 }
 
 

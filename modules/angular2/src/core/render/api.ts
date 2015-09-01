@@ -1,13 +1,10 @@
 import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
+import {Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
-  List,
-  Map,
-  MapWrapper,
-  StringMap,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
-import {ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
+  ASTWithSource,
+  ChangeDetectionStrategy
+} from 'angular2/src/core/change_detection/change_detection';
 
 /**
  * General notes:
@@ -46,14 +43,14 @@ export class RenderElementBinder {
   index: number;
   parentIndex: number;
   distanceToParent: number;
-  directives: List<DirectiveBinder>;
+  directives: DirectiveBinder[];
   nestedProtoView: ProtoViewDto;
-  propertyBindings: List<ElementPropertyBinding>;
+  propertyBindings: ElementPropertyBinding[];
   variableBindings: Map<string, string>;
   // Note: this contains a preprocessed AST
   // that replaced the values that should be extracted from the element
   // with a local name
-  eventBindings: List<EventBinding>;
+  eventBindings: EventBinding[];
   readAttributes: Map<string, string>;
 
   constructor({index, parentIndex, distanceToParent, directives, nestedProtoView, propertyBindings,
@@ -61,11 +58,11 @@ export class RenderElementBinder {
     index?: number,
     parentIndex?: number,
     distanceToParent?: number,
-    directives?: List<DirectiveBinder>,
+    directives?: DirectiveBinder[],
     nestedProtoView?: ProtoViewDto,
-    propertyBindings?: List<ElementPropertyBinding>,
+    propertyBindings?: ElementPropertyBinding[],
     variableBindings?: Map<string, string>,
-    eventBindings?: List<EventBinding>,
+    eventBindings?: EventBinding[],
     readAttributes?: Map<string, string>
   } = {}) {
     this.index = index;
@@ -87,13 +84,13 @@ export class DirectiveBinder {
   // Note: this contains a preprocessed AST
   // that replaced the values that should be extracted from the element
   // with a local name
-  eventBindings: List<EventBinding>;
-  hostPropertyBindings: List<ElementPropertyBinding>;
+  eventBindings: EventBinding[];
+  hostPropertyBindings: ElementPropertyBinding[];
   constructor({directiveIndex, propertyBindings, eventBindings, hostPropertyBindings}: {
     directiveIndex?: number,
     propertyBindings?: Map<string, ASTWithSource>,
-    eventBindings?: List<EventBinding>,
-    hostPropertyBindings?: List<ElementPropertyBinding>
+    eventBindings?: EventBinding[],
+    hostPropertyBindings?: ElementPropertyBinding[]
   }) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = propertyBindings;
@@ -116,19 +113,19 @@ export enum ViewType {
 
 export class ProtoViewDto {
   render: RenderProtoViewRef;
-  elementBinders: List<RenderElementBinder>;
+  elementBinders: RenderElementBinder[];
   variableBindings: Map<string, string>;
   type: ViewType;
-  textBindings: List<ASTWithSource>;
+  textBindings: ASTWithSource[];
   transitiveNgContentCount: number;
 
   constructor({render, elementBinders, variableBindings, type, textBindings,
                transitiveNgContentCount}: {
     render?: RenderProtoViewRef,
-    elementBinders?: List<RenderElementBinder>,
+    elementBinders?: RenderElementBinder[],
     variableBindings?: Map<string, string>,
     type?: ViewType,
-    textBindings?: List<ASTWithSource>,
+    textBindings?: ASTWithSource[],
     transitiveNgContentCount?: number
   }) {
     this.render = render;
@@ -146,46 +143,50 @@ export class RenderDirectiveMetadata {
   id: any;
   selector: string;
   compileChildren: boolean;
-  events: List<string>;
-  properties: List<string>;
-  readAttributes: List<string>;
+  events: string[];
+  properties: string[];
+  readAttributes: string[];
   type: number;
   callOnDestroy: boolean;
-  callOnChange: boolean;
-  callOnCheck: boolean;
+  callOnChanges: boolean;
+  callDoCheck: boolean;
   callOnInit: boolean;
-  callOnAllChangesDone: boolean;
-  changeDetection: string;
+  callAfterContentInit: boolean;
+  callAfterContentChecked: boolean;
+  callAfterViewInit: boolean;
+  callAfterViewChecked: boolean;
+  changeDetection: ChangeDetectionStrategy;
   exportAs: string;
   hostListeners: Map<string, string>;
   hostProperties: Map<string, string>;
   hostAttributes: Map<string, string>;
-  hostActions: Map<string, string>;
   // group 1: "property" from "[property]"
   // group 2: "event" from "(event)"
-  // group 3: "action" from "@action"
-  private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\))|(?:@(.+)))$/g;
+  private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
-               hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
-               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection, exportAs}: {
+               properties, readAttributes, type, callOnDestroy, callOnChanges, callDoCheck,
+               callOnInit, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
+               callAfterViewChecked, changeDetection, exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
-    events?: List<string>,
+    events?: string[],
     hostListeners?: Map<string, string>,
     hostProperties?: Map<string, string>,
     hostAttributes?: Map<string, string>,
-    hostActions?: Map<string, string>,
-    properties?: List<string>,
-    readAttributes?: List<string>,
+    properties?: string[],
+    readAttributes?: string[],
     type?: number,
     callOnDestroy?: boolean,
-    callOnChange?: boolean,
-    callOnCheck?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
     callOnInit?: boolean,
-    callOnAllChangesDone?: boolean,
-    changeDetection?: string,
+    callAfterContentInit?: boolean,
+    callAfterContentChecked?: boolean,
+    callAfterViewInit?: boolean,
+    callAfterViewChecked?: boolean,
+    changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }) {
     this.id = id;
@@ -195,42 +196,47 @@ export class RenderDirectiveMetadata {
     this.hostListeners = hostListeners;
     this.hostAttributes = hostAttributes;
     this.hostProperties = hostProperties;
-    this.hostActions = hostActions;
     this.properties = properties;
     this.readAttributes = readAttributes;
     this.type = type;
     this.callOnDestroy = callOnDestroy;
-    this.callOnChange = callOnChange;
-    this.callOnCheck = callOnCheck;
+    this.callOnChanges = callOnChanges;
+    this.callDoCheck = callDoCheck;
     this.callOnInit = callOnInit;
-    this.callOnAllChangesDone = callOnAllChangesDone;
+    this.callAfterContentInit = callAfterContentInit;
+    this.callAfterContentChecked = callAfterContentChecked;
+    this.callAfterViewInit = callAfterViewInit;
+    this.callAfterViewChecked = callAfterViewChecked;
     this.changeDetection = changeDetection;
     this.exportAs = exportAs;
   }
 
   static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
-                 callOnDestroy, callOnChange, callOnCheck, callOnInit, callOnAllChangesDone,
-                 changeDetection, exportAs}: {
+                 callOnDestroy, callOnChanges, callDoCheck, callOnInit, callAfterContentInit,
+                 callAfterContentChecked, callAfterViewInit, callAfterViewChecked, changeDetection,
+                 exportAs}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
-    events?: List<string>,
+    events?: string[],
     host?: Map<string, string>,
-    properties?: List<string>,
-    readAttributes?: List<string>,
+    properties?: string[],
+    readAttributes?: string[],
     type?: number,
     callOnDestroy?: boolean,
-    callOnChange?: boolean,
-    callOnCheck?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
     callOnInit?: boolean,
-    callOnAllChangesDone?: boolean,
-    changeDetection?: string,
+    callAfterContentInit?: boolean,
+    callAfterContentChecked?: boolean,
+    callAfterViewInit?: boolean,
+    callAfterViewChecked?: boolean,
+    changeDetection?: ChangeDetectionStrategy,
     exportAs?: string
   }): RenderDirectiveMetadata {
     let hostListeners = new Map();
     let hostProperties = new Map();
     let hostAttributes = new Map();
-    let hostActions = new Map();
 
     if (isPresent(host)) {
       MapWrapper.forEach(host, (value: string, key: string) => {
@@ -241,8 +247,6 @@ export class RenderDirectiveMetadata {
           hostProperties.set(matches[1], value);
         } else if (isPresent(matches[2])) {
           hostListeners.set(matches[2], value);
-        } else if (isPresent(matches[3])) {
-          hostActions.set(matches[3], value);
         }
       });
     }
@@ -255,15 +259,17 @@ export class RenderDirectiveMetadata {
       hostListeners: hostListeners,
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
-      hostActions: hostActions,
       properties: properties,
       readAttributes: readAttributes,
       type: type,
       callOnDestroy: callOnDestroy,
-      callOnChange: callOnChange,
-      callOnCheck: callOnCheck,
+      callOnChanges: callOnChanges,
+      callDoCheck: callDoCheck,
       callOnInit: callOnInit,
-      callOnAllChangesDone: callOnAllChangesDone,
+      callAfterContentInit: callAfterContentInit,
+      callAfterContentChecked: callAfterContentChecked,
+      callAfterViewInit: callAfterViewInit,
+      callAfterViewChecked: callAfterViewChecked,
       changeDetection: changeDetection,
       exportAs: exportAs
     });
@@ -287,24 +293,24 @@ export enum ViewEncapsulation {
    * Emulate scoping of styles by preprocessing the style rules
    * and adding additional attributes to elements. This is the default.
    */
-  EMULATED,
+  Emulated,
   /**
    * Uses the native mechanism of the renderer. For the DOM this means creating a ShadowRoot.
    */
-  NATIVE,
+  Native,
   /**
    * Don't scope the template nor the styles.
    */
-  NONE
+  None
 }
 
 export class ViewDefinition {
   componentId: string;
   templateAbsUrl: string;
   template: string;
-  directives: List<RenderDirectiveMetadata>;
-  styleAbsUrls: List<string>;
-  styles: List<string>;
+  directives: RenderDirectiveMetadata[];
+  styleAbsUrls: string[];
+  styles: string[];
   encapsulation: ViewEncapsulation;
 
   constructor({componentId, templateAbsUrl, template, styleAbsUrls, styles, directives,
@@ -312,9 +318,9 @@ export class ViewDefinition {
     componentId?: string,
     templateAbsUrl?: string,
     template?: string,
-    styleAbsUrls?: List<string>,
-    styles?: List<string>,
-    directives?: List<RenderDirectiveMetadata>,
+    styleAbsUrls?: string[],
+    styles?: string[],
+    directives?: RenderDirectiveMetadata[],
     encapsulation?: ViewEncapsulation
   } = {}) {
     this.componentId = componentId;
@@ -323,7 +329,7 @@ export class ViewDefinition {
     this.styleAbsUrls = styleAbsUrls;
     this.styles = styles;
     this.directives = directives;
-    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.EMULATED;
+    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
   }
 }
 
@@ -369,11 +375,11 @@ export class RenderCompiler {
    * should be merged.
    * If the array contains other arrays, they will be merged before processing the parent array.
    * The array must contain an entry for every component and embedded ProtoView of the first entry.
-   * @param protoViewRefs List of ProtoViewRefs or nested
+   * @param protoViewRefs Array of ProtoViewRefs or nested
    * @return the merge result
    */
   mergeProtoViewsRecursively(
-      protoViewRefs: List<RenderProtoViewRef | List<any>>): Promise<RenderProtoViewMergeMapping> {
+      protoViewRefs: Array<RenderProtoViewRef | any[]>): Promise<RenderProtoViewMergeMapping> {
     return null;
   }
 }
@@ -488,7 +494,7 @@ export class Renderer {
   /**
    * Calls a method on an element.
    */
-  invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>) {}
+  invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]) {}
 
   /**
    * Sets the value of a text node.
@@ -510,6 +516,7 @@ export interface RenderEventDispatcher {
    * Called when an event was triggered for a on-* attribute on an element.
    * @param {Map<string, any>} locals Locals to be used to evaluate the
    *   event expressions
+   * @return {boolean} False if `preventDefault` should be called on the DOM event.
    */
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>);
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean;
 }

@@ -1,13 +1,6 @@
 import {isBlank, BaseException, stringify} from 'angular2/src/core/facade/lang';
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  expect,
-  beforeEach,
-  SpyDependencyProvider
-} from 'angular2/test_lib';
+import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
+import {SpyDependencyProvider} from '../spies';
 import {
   Injector,
   ProtoInjector,

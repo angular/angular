@@ -42,7 +42,7 @@ import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/di';
 
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
 
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
@@ -156,7 +156,7 @@ function _getAppBindings() {
   ];
 }
 
-export function createTestInjector(bindings: List<Type | Binding | List<any>>): Injector {
+export function createTestInjector(bindings: Array<Type | Binding | any[]>): Injector {
   var rootInjector = Injector.resolveAndCreate(_getRootBindings());
   return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), bindings));
 }
@@ -190,15 +190,15 @@ export function createTestInjector(bindings: List<Type | Binding | List<any>>): 
  * @param {Function} fn
  * @return {FunctionWithParamTokens}
  */
-export function inject(tokens: List<any>, fn: Function): FunctionWithParamTokens {
+export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn);
 }
 
 export class FunctionWithParamTokens {
-  _tokens: List<any>;
+  _tokens: any[];
   _fn: Function;
 
-  constructor(tokens: List<any>, fn: Function) {
+  constructor(tokens: any[], fn: Function) {
     this._tokens = tokens;
     this._fn = fn;
   }

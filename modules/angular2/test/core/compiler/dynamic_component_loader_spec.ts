@@ -265,7 +265,7 @@ class DynamicallyCreatedComponentService {}
 @Component({
   selector: 'hello-cmp',
   viewBindings: [DynamicallyCreatedComponentService],
-  lifecycle: [LifecycleEvent.onDestroy]
+  lifecycle: [LifecycleEvent.OnDestroy]
 })
 @View({template: "{{greeting}}"})
 class DynamicallyCreatedCmp {

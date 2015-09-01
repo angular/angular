@@ -63,7 +63,7 @@ export class BitmapService {
     return imageData;
   }
 
-  private _swap(data: List<any>, index1: number, index2: number) {
+  private _swap(data: any[], index1: number, index2: number) {
     var temp = data[index1];
     data[index1] = data[index2];
     data[index2] = temp;

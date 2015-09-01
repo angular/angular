@@ -1,4 +1,4 @@
-import {IMPLEMENTS, print} from 'angular2/src/core/facade/lang';
+import {print} from 'angular2/src/core/facade/lang';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {
   isPresent,

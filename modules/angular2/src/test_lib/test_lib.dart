@@ -209,6 +209,10 @@ class SpyObject extends gns.SpyObject {
   SpyFunction spy(String funcName) =>
       _spyFuncs.putIfAbsent(funcName, () => new SpyFunction(funcName));
 
+  void prop(String funcName, value) {
+    _spyFuncs.putIfAbsent("get:${funcName}", () => new SpyFunction(funcName)).andReturn(value);
+  }
+
   static stub([object = null, config = null, overrides = null]) {
     if (object is! SpyObject) {
       overrides = config;

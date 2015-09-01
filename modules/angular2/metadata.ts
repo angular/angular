@@ -38,11 +38,14 @@ export {
 } from './src/core/metadata';
 
 export {
-  OnAllChangesDone,
-  OnChange,
+  AfterContentInit,
+  AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked,
+  OnChanges,
   OnDestroy,
   OnInit,
-  OnCheck
+  DoCheck
 } from './src/core/compiler/interfaces';
 
 export {Class, ClassDefinition, TypeDecorator} from './src/core/util/decorators';

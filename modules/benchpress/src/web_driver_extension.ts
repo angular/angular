@@ -2,7 +2,7 @@ import {bind, Binding, Injector, OpaqueToken} from 'angular2/di';
 
 import {BaseException, ABSTRACT, isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {List, ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 
 import {Options} from './common_options';
 
@@ -13,7 +13,7 @@ import {Options} from './common_options';
  */
 @ABSTRACT()
 export class WebDriverExtension {
-  static bindTo(childTokens): List<Binding> {
+  static bindTo(childTokens): Binding[] {
     var res = [
       bind(_CHILDREN)
           .toFactory(
@@ -57,7 +57,7 @@ export class WebDriverExtension {
    * Based on [Chrome Trace Event
    *Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog(): Promise<List<any>> { throw new BaseException('NYI'); }
+  readPerfLog(): Promise<any[]> { throw new BaseException('NYI'); }
 
   perfLogFeatures(): PerfLogFeatures { throw new BaseException('NYI'); }
 

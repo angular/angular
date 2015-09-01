@@ -1,37 +1,36 @@
-import {List} from 'angular2/src/core/facade/collection';
 import {BindingRecord} from './binding_record';
 import {DirectiveIndex} from './directive_record';
 
 export enum RecordType {
-  SELF,
-  CONST,
-  PRIMITIVE_OP,
-  PROPERTY_READ,
-  PROPERTY_WRITE,
-  LOCAL,
-  INVOKE_METHOD,
-  INVOKE_CLOSURE,
-  KEYED_READ,
-  KEYED_WRITE,
-  PIPE,
-  INTERPOLATE,
-  SAFE_PROPERTY,
-  COLLECTION_LITERAL,
-  SAFE_INVOKE_METHOD,
-  DIRECTIVE_LIFECYCLE,
-  CHAIN
+  Self,
+  Const,
+  PrimitiveOp,
+  PropertyRead,
+  PropertyWrite,
+  Local,
+  InvokeMethod,
+  InvokeClosure,
+  KeyedRead,
+  KeyedWrite,
+  Pipe,
+  Interpolate,
+  SafeProperty,
+  CollectionLiteral,
+  SafeMethodInvoke,
+  DirectiveLifecycle,
+  Chain
 }
 
 export class ProtoRecord {
-  constructor(public mode: RecordType, public name: string, public funcOrValue,
-              public args: List<any>, public fixedArgs: List<any>, public contextIndex: number,
+  constructor(public mode: RecordType, public name: string, public funcOrValue, public args: any[],
+              public fixedArgs: any[], public contextIndex: number,
               public directiveIndex: DirectiveIndex, public selfIndex: number,
               public bindingRecord: BindingRecord, public lastInBinding: boolean,
               public lastInDirective: boolean, public argumentToPureFunction: boolean,
               public referencedBySelf: boolean, public propertyBindingIndex: number) {}
 
   isPureFunction(): boolean {
-    return this.mode === RecordType.INTERPOLATE || this.mode === RecordType.COLLECTION_LITERAL;
+    return this.mode === RecordType.Interpolate || this.mode === RecordType.CollectionLiteral;
   }
 
   isUsedByOtherRecord(): boolean { return !this.lastInBinding || this.referencedBySelf; }
@@ -40,7 +39,7 @@ export class ProtoRecord {
     return this.argumentToPureFunction || this.lastInBinding || this.isPureFunction();
   }
 
-  isPipeRecord(): boolean { return this.mode === RecordType.PIPE; }
+  isPipeRecord(): boolean { return this.mode === RecordType.Pipe; }
 
-  isLifeCycleRecord(): boolean { return this.mode === RecordType.DIRECTIVE_LIFECYCLE; }
+  isLifeCycleRecord(): boolean { return this.mode === RecordType.DirectiveLifecycle; }
 }

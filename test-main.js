@@ -39,8 +39,7 @@ System.import('angular2/src/core/dom/browser_adapter').then(function(browser_ada
 .then(function() {
   __karma__.start();
 }, function(error) {
-  console.error(error.stack || error);
-  __karma__.start();
+  __karma__.error(error.stack || error);
 });
 
 

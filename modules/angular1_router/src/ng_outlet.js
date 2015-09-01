@@ -132,62 +132,41 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
       }
     }
 
-    router.registerOutlet({
-      commit: function (instruction) {
+    router.registerPrimaryOutlet({
+      reuse: function (instruction) {
         var next = $q.when(true);
-        var componentInstruction = instruction.component;
-        if (componentInstruction.reuse) {
-          var previousInstruction = currentInstruction;
-          currentInstruction = componentInstruction;
-          if (currentController.onReuse) {
-            next = $q.when(currentController.onReuse(currentInstruction, previousInstruction));
-          }
-        } else {
-          var self = this;
-          next = this.deactivate(instruction).then(function () {
-            return self.activate(componentInstruction);
-          });
+        var previousInstruction = currentInstruction;
+        currentInstruction = instruction;
+        if (currentController.onReuse) {
+          next = $q.when(currentController.onReuse(currentInstruction, previousInstruction));
         }
-        return next.then(function () {
-          if (childRouter) {
-            return childRouter.commit(instruction.child);
-          } else {
-            return $q.when(true);
-          }
-        });
+
+        return next;
       },
       canReuse: function (nextInstruction) {
         var result;
-        var componentInstruction = nextInstruction.component;
         if (!currentInstruction ||
-            currentInstruction.componentType !== componentInstruction.componentType) {
+            currentInstruction.componentType !== nextInstruction.componentType) {
           result = false;
         } else if (currentController.canReuse) {
-          result = currentController.canReuse(componentInstruction, currentInstruction);
+          result = currentController.canReuse(nextInstruction, currentInstruction);
         } else {
-          result = componentInstruction === currentInstruction ||
-                   angular.equals(componentInstruction.params, currentInstruction.params);
+          result = nextInstruction === currentInstruction ||
+                   angular.equals(nextInstruction.params, currentInstruction.params);
         }
-        return $q.when(result).then(function (result) {
-          // TODO: this is a hack
-          componentInstruction.reuse = result;
-          return result;
-        });
+        return $q.when(result);
       },
       canDeactivate: function (instruction) {
         if (currentInstruction && currentController && currentController.canDeactivate) {
-          return $q.when(currentController.canDeactivate(instruction && instruction.component, currentInstruction));
+          return $q.when(currentController.canDeactivate(instruction, currentInstruction));
         }
         return $q.when(true);
       },
       deactivate: function (instruction) {
-        // todo(shahata): childRouter.dectivate, dispose component?
-        var result = $q.when();
-        return result.then(function () {
-          if (currentController && currentController.onDeactivate) {
-            return currentController.onDeactivate(instruction && instruction.component, currentInstruction);
-          }
-        });
+        if (currentController && currentController.onDeactivate) {
+          return $q.when(currentController.onDeactivate(instruction, currentInstruction));
+        }
+        return $q.when();
       },
       activate: function (instruction) {
         var previousInstruction = currentInstruction;
@@ -228,7 +207,7 @@ function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $
           }
         });
       }
-    }, outletName);
+    });
   }
 }
 

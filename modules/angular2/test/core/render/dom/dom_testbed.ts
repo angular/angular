@@ -1,6 +1,6 @@
 import {Inject, Injectable} from 'angular2/di';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {MapWrapper, ListWrapper, List, Map} from 'angular2/src/core/facade/collection';
+import {MapWrapper, ListWrapper, Map} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
@@ -27,7 +27,7 @@ export class TestRootView {
   viewRef: RenderViewRef;
   fragments: RenderFragmentRef[];
   hostElement: Element;
-  events: List<List<any>>;
+  events: any[][];
 
   constructor(viewWithFragments: RenderViewWithFragments) {
     this.viewRef = viewWithFragments.viewRef;
@@ -48,11 +48,11 @@ export function elRef(renderView: RenderViewRef, boundElementIndex: number) {
 export function rootNodes(view: RenderViewRef) {}
 
 class LoggingEventDispatcher implements RenderEventDispatcher {
-  log: List<List<any>>;
+  log: any[][];
 
-  constructor(log: List<List<any>>) { this.log = log; }
+  constructor(log: any[][]) { this.log = log; }
 
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {
     this.log.push([elementIndex, eventName, locals]);
     return true;
   }
@@ -83,7 +83,8 @@ export class DomTestbed {
     return PromiseWrapper.all(promises);
   }
 
-  merge(protoViews: List<ProtoViewDto | RenderProtoViewRef>): Promise<RenderProtoViewMergeMapping> {
+  merge(protoViews:
+            Array<ProtoViewDto | RenderProtoViewRef>): Promise<RenderProtoViewMergeMapping> {
     return this.compiler.mergeProtoViewsRecursively(collectMergeRenderProtoViewsRecurse(
         <ProtoViewDto>protoViews[0], ListWrapper.slice(protoViews, 1)));
   }
@@ -114,8 +115,8 @@ export class DomTestbed {
 }
 
 function collectMergeRenderProtoViewsRecurse(current: ProtoViewDto,
-                                             components: List<ProtoViewDto | RenderProtoViewRef>):
-    List<RenderProtoViewRef | List<any>> {
+                                             components: Array<ProtoViewDto | RenderProtoViewRef>):
+    Array<RenderProtoViewRef | any[]> {
   var result = [current.render];
   current.elementBinders.forEach((elementBinder) => {
     if (isPresent(elementBinder.nestedProtoView)) {

@@ -14,7 +14,12 @@ describe('createTypeDefinitionFile processor', function() {
     // Initialize the processor
     processor.typeDefinitions = [{
       id: 'angular2/angular2',
-      modules: { 'angular2/angular2': 'angular2/angular2' }
+      modules: {
+        'angular2/angular2': {
+          id: 'angular2/angular2',
+          namespace: 'ng'
+        }
+      }
     }];
   });
 

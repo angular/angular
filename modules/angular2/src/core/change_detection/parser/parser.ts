@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
 import {isBlank, isPresent, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
-import {ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Lexer,
   EOF,
@@ -85,7 +85,7 @@ export class Parser {
     return new ASTWithSource(ast, input, location);
   }
 
-  parseTemplateBindings(input: string, location: any): List<TemplateBinding> {
+  parseTemplateBindings(input: string, location: any): TemplateBinding[] {
     var tokens = this._lexer.tokenize(input);
     return new _ParseAST(input, location, tokens, this._reflector, false).parseTemplateBindings();
   }
@@ -141,7 +141,7 @@ export class Parser {
 
 export class _ParseAST {
   index: number = 0;
-  constructor(public input: string, public location: any, public tokens: List<any>,
+  constructor(public input: string, public location: any, public tokens: any[],
               public reflector: Reflector, public parseAction: boolean) {}
 
   peek(offset: number): Token {
@@ -471,7 +471,7 @@ export class _ParseAST {
     throw new BaseException("Fell through all cases in parsePrimary");
   }
 
-  parseExpressionList(terminator: number): List<any> {
+  parseExpressionList(terminator: number): any[] {
     var result = [];
     if (!this.next.isCharacter(terminator)) {
       do {
@@ -677,7 +677,7 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitKeyedWrite(ast: KeyedWrite) { this.simple = false; }
 
-  visitAll(asts: List<any>): List<any> {
+  visitAll(asts: any[]): any[] {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);

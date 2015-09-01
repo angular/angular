@@ -4,7 +4,6 @@ import {
   MapWrapper,
   Set,
   SetWrapper,
-  List,
   StringMapWrapper
 } from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -34,16 +33,12 @@ import {
   PropertyBindingType
 } from '../../api';
 
-import {
-  NG_BINDING_CLASS,
-  EVENT_TARGET_SEPARATOR,
-  queryBoundTextNodeIndices,
-  camelCaseToDashCase
-} from '../util';
+import {NG_BINDING_CLASS, queryBoundTextNodeIndices, camelCaseToDashCase} from '../util';
+import {EVENT_TARGET_SEPARATOR} from "../../event_config";
 
 export class ProtoViewBuilder {
   variableBindings: Map<string, string> = new Map();
-  elements: List<ElementBinderBuilder> = [];
+  elements: ElementBinderBuilder[] = [];
   rootTextBindings: Map<Node, ASTWithSource> = new Map();
   ngContentCount: number = 0;
   hostAttributes: Map<string, string> = new Map();
@@ -157,11 +152,11 @@ export class ProtoViewBuilder {
 export class ElementBinderBuilder {
   parent: ElementBinderBuilder = null;
   distanceToParent: number = 0;
-  directives: List<DirectiveBuilder> = [];
+  directives: DirectiveBuilder[] = [];
   nestedProtoView: ProtoViewBuilder = null;
   propertyBindings: Map<string, ASTWithSource> = new Map();
   variableBindings: Map<string, string> = new Map();
-  eventBindings: List<EventBinding> = [];
+  eventBindings: EventBinding[] = [];
   eventBuilder: EventBuilder = new EventBuilder();
   textBindings: Map<Node, ASTWithSource> = new Map();
   readAttributes: Map<string, string> = new Map();
@@ -194,7 +189,7 @@ export class ElementBinderBuilder {
       throw new BaseException('Only one nested view per element is allowed');
     }
     this.nestedProtoView =
-        new ProtoViewBuilder(rootElement, ViewType.EMBEDDED, ViewEncapsulation.NONE);
+        new ProtoViewBuilder(rootElement, ViewType.EMBEDDED, ViewEncapsulation.None);
     return this.nestedProtoView;
   }
 
@@ -237,9 +232,9 @@ export class DirectiveBuilder {
   // mapping from directive property name to AST for that directive
   propertyBindings: Map<string, ASTWithSource> = new Map();
   // property names used in the template
-  templatePropertyNames: List<string> = [];
+  templatePropertyNames: string[] = [];
   hostPropertyBindings: Map<string, ASTWithSource> = new Map();
-  eventBindings: List<EventBinding> = [];
+  eventBindings: EventBinding[] = [];
   eventBuilder: EventBuilder = new EventBuilder();
 
   constructor(public directiveIndex: number) {}
@@ -262,10 +257,10 @@ export class DirectiveBuilder {
   }
 }
 
-export class EventBuilder extends AstTransformer {
-  locals: List<AST> = [];
-  localEvents: List<Event> = [];
-  globalEvents: List<Event> = [];
+class EventBuilder extends AstTransformer {
+  locals: AST[] = [];
+  localEvents: Event[] = [];
+  globalEvents: Event[] = [];
   _implicitReceiver: AST = new ImplicitReceiver();
 
   constructor() { super(); }
@@ -307,19 +302,19 @@ export class EventBuilder extends AstTransformer {
     }
   }
 
-  buildEventLocals(): List<AST> { return this.locals; }
+  buildEventLocals(): AST[] { return this.locals; }
 
-  buildLocalEvents(): List<Event> { return this.localEvents; }
+  buildLocalEvents(): Event[] { return this.localEvents; }
 
-  buildGlobalEvents(): List<Event> { return this.globalEvents; }
+  buildGlobalEvents(): Event[] { return this.globalEvents; }
 
   merge(eventBuilder: EventBuilder) {
     this._merge(this.localEvents, eventBuilder.localEvents);
     this._merge(this.globalEvents, eventBuilder.globalEvents);
-    ListWrapper.concat(this.locals, eventBuilder.locals);
+    this.locals.concat(eventBuilder.locals);
   }
 
-  _merge(host: List<Event>, tobeAdded: List<Event>) {
+  _merge(host: Event[], tobeAdded: Event[]) {
     var names = [];
     for (var i = 0; i < host.length; i++) {
       names.push(host[i].fullName);
@@ -332,7 +327,6 @@ export class EventBuilder extends AstTransformer {
   }
 }
 
-var PROPERTY_PARTS_SEPARATOR = new RegExp('\\.');
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
@@ -340,7 +334,7 @@ const STYLE_PREFIX = 'style';
 function buildElementPropertyBindings(
     schemaRegistry: ElementSchemaRegistry, protoElement: /*element*/ any, isNgComponent: boolean,
     bindingsInTemplate: Map<string, ASTWithSource>, directiveTemplatePropertyNames: Set<string>):
-    List<ElementPropertyBinding> {
+    ElementPropertyBinding[] {
   var propertyBindings = [];
 
   MapWrapper.forEach(bindingsInTemplate, (ast, propertyNameInTemplate) => {
@@ -373,7 +367,7 @@ function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
                                        binding: ElementPropertyBinding): boolean {
   if (binding.type === PropertyBindingType.PROPERTY) {
     if (!isNgComponent) {
-      return schemaRegistry.hasProperty(protoElement, binding.property);
+      return schemaRegistry.hasProperty(DOM.tagName(protoElement), binding.property);
     } else {
       // TODO(pk): change this logic as soon as we can properly detect custom elements
       return DOM.hasProperty(protoElement, binding.property);
@@ -384,7 +378,7 @@ function isValidElementPropertyBinding(schemaRegistry: ElementSchemaRegistry,
 
 function createElementPropertyBinding(schemaRegistry: ElementSchemaRegistry, ast: ASTWithSource,
                                       propertyNameInTemplate: string): ElementPropertyBinding {
-  var parts = StringWrapper.split(propertyNameInTemplate, PROPERTY_PARTS_SEPARATOR);
+  var parts = propertyNameInTemplate.split('.');
   if (parts.length === 1) {
     var propName = schemaRegistry.getMappedPropName(parts[0]);
     return new ElementPropertyBinding(PropertyBindingType.PROPERTY, ast, propName);

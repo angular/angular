@@ -58,7 +58,7 @@ import {
 import {
   PipeTransform,
   ChangeDetectorRef,
-  ON_PUSH,
+  ChangeDetectionStrategy,
   ChangeDetection,
   DynamicChangeDetection,
   ChangeDetectorGenConfig
@@ -635,7 +635,7 @@ export function main() {
            }));
       });
 
-      describe("ON_PUSH components", () => {
+      describe("OnPush components", () => {
         it("should use ChangeDetectorRef to manually request a check",
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
@@ -840,31 +840,6 @@ export function main() {
                  dir.triggerChange('two');
                });
          }));
-
-      if (DOM.supportsDOMEvents()) {
-        it("should support invoking methods on the host element via hostActions",
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-                 tcb.overrideView(MyComp, new ViewMetadata({
-                                    template: '<div update-host-actions></div>',
-                                    directives: [DirectiveUpdatingHostActions]
-                                  }))
-
-                     .createAsync(MyComp)
-                     .then((rootTC) => {
-                       var tc = rootTC.componentViewChildren[0];
-                       var nativeElement = tc.nativeElement;
-                       var updateHost = tc.inject(DirectiveUpdatingHostActions);
-
-                       ObservableWrapper.subscribe(updateHost.setAttr, (_) => {
-                         expect(DOM.hasAttribute(nativeElement, 'update-host-actions')).toBe(true);
-                         async.done();
-                       });
-
-                       updateHost.triggerSetAttr('value');
-                     });
-               }));
-      }
 
       it('should support render events',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -1672,7 +1647,8 @@ class DirectiveWithTitleAndHostProperty {
   title: string;
 }
 
-@Component({selector: 'push-cmp', properties: ['prop'], changeDetection: ON_PUSH})
+@Component(
+    {selector: 'push-cmp', properties: ['prop'], changeDetection: ChangeDetectionStrategy.OnPush})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmp {
@@ -1687,7 +1663,11 @@ class PushCmp {
   }
 }
 
-@Component({selector: 'push-cmp-with-ref', properties: ['prop'], changeDetection: ON_PUSH})
+@Component({
+  selector: 'push-cmp-with-ref',
+  properties: ['prop'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmpWithRef {
@@ -1705,10 +1685,10 @@ class PushCmpWithRef {
     return "fixed";
   }
 
-  propagate() { this.ref.requestCheck(); }
+  propagate() { this.ref.markForCheck(); }
 }
 
-@Component({selector: 'push-cmp-with-async', changeDetection: ON_PUSH})
+@Component({selector: 'push-cmp-with-async', changeDetection: ChangeDetectionStrategy.OnPush})
 @View({template: '{{field | async}}'})
 @Injectable()
 class PushCmpWithAsyncPipe {

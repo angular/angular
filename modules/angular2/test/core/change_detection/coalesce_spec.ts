@@ -15,7 +15,7 @@ export function main() {
                argumentToPureFunction?: boolean
              } = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
-    if (isBlank(mode)) mode = RecordType.PROPERTY_READ;
+    if (isBlank(mode)) mode = RecordType.PropertyRead;
     if (isBlank(name)) name = "name";
     if (isBlank(directiveIndex)) directiveIndex = null;
     if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;
@@ -62,7 +62,7 @@ export function main() {
       var rs = coalesce(
           [r("user", [], 0, 1, {lastInBinding: true}), r("user", [], 0, 2, {lastInBinding: true})]);
 
-      expect(rs[1]).toEqual(new ProtoRecord(RecordType.SELF, "self", null, [], null, 1, null, 2,
+      expect(rs[1]).toEqual(new ProtoRecord(RecordType.Self, "self", null, [], null, 1, null, 2,
                                             null, true, false, false, false, 0));
     });
 
@@ -75,8 +75,8 @@ export function main() {
 
     it("should not coalesce directive lifecycle records", () => {
       var rs = coalesce([
-        r("onCheck", [], 0, 1, {mode: RecordType.DIRECTIVE_LIFECYCLE}),
-        r("onCheck", [], 0, 1, {mode: RecordType.DIRECTIVE_LIFECYCLE})
+        r("doCheck", [], 0, 1, {mode: RecordType.DirectiveLifecycle}),
+        r("doCheck", [], 0, 1, {mode: RecordType.DirectiveLifecycle})
       ]);
 
       expect(rs.length).toEqual(2);

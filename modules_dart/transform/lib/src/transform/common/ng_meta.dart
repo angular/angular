@@ -1,7 +1,7 @@
 library angular2.transform.common.ng_meta;
 
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/render/dom/convert.dart';
+import 'convert.dart';
 import 'logging.dart';
 
 /// Metadata about directives and directive aliases.

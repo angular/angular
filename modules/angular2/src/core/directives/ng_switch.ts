@@ -2,7 +2,7 @@ import {Directive} from 'angular2/metadata';
 import {Host} from 'angular2/di';
 import {ViewContainerRef, TemplateRef} from 'angular2/core';
 import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {ListWrapper, List, Map} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
 
 const _WHEN_DEFAULT = CONST_EXPR(new Object());
 
@@ -43,8 +43,8 @@ export class SwitchView {
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
-  private _valueViews: Map<any, List<SwitchView>> = new Map();
-  private _activeViews: List<SwitchView> = [];
+  private _valueViews: Map<any, SwitchView[]> = new Map();
+  private _activeViews: SwitchView[] = [];
 
   set ngSwitch(value) {
     // Empty the currently active ViewContainers
@@ -93,7 +93,7 @@ export class NgSwitch {
     this._activeViews = [];
   }
 
-  _activateViews(views: List<SwitchView>): void {
+  _activateViews(views: SwitchView[]): void {
     // TODO(vicb): assert(this._activeViews.length === 0);
     if (isPresent(views)) {
       for (var i = 0; i < views.length; i++) {

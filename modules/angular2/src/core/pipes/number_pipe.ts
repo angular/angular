@@ -90,7 +90,7 @@ export class NumberPipe {
 export class DecimalPipe extends NumberPipe implements PipeTransform {
   transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
-    return NumberPipe._format(value, NumberFormatStyle.DECIMAL, digits);
+    return NumberPipe._format(value, NumberFormatStyle.Decimal, digits);
   }
 }
 
@@ -112,7 +112,7 @@ export class DecimalPipe extends NumberPipe implements PipeTransform {
 export class PercentPipe extends NumberPipe implements PipeTransform {
   transform(value: any, args: any[]): string {
     var digits: string = ListWrapper.first(args);
-    return NumberPipe._format(value, NumberFormatStyle.PERCENT, digits);
+    return NumberPipe._format(value, NumberFormatStyle.Percent, digits);
   }
 }
 
@@ -140,7 +140,7 @@ export class CurrencyPipe extends NumberPipe implements PipeTransform {
     var currencyCode: string = isPresent(args) && args.length > 0 ? args[0] : 'USD';
     var symbolDisplay: boolean = isPresent(args) && args.length > 1 ? args[1] : false;
     var digits: string = isPresent(args) && args.length > 2 ? args[2] : null;
-    return NumberPipe._format(value, NumberFormatStyle.CURRENCY, digits, currencyCode,
+    return NumberPipe._format(value, NumberFormatStyle.Currency, digits, currencyCode,
                               symbolDisplay);
   }
 }

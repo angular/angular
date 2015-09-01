@@ -15,7 +15,7 @@ import {Promise} from 'angular2/src/core/facade/async';
 
 export class IOsDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 

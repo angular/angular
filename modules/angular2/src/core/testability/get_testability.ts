@@ -8,7 +8,7 @@ class PublicTestability {
 
   whenStable(callback: Function) { this._testability.whenStable(callback); }
 
-  findBindings(using: any, binding: string, exactMatch: boolean): List<any> {
+  findBindings(using: any, binding: string, exactMatch: boolean): any[] {
     return this._testability.findBindings(using, binding, exactMatch);
   }
 }
@@ -24,7 +24,7 @@ export class GetTestability {
           }
           return new PublicTestability(testability);
         };
-    global.getAllAngularTestabilities = function(): List<PublicTestability> {
+    global.getAllAngularTestabilities = function(): PublicTestability[] {
       var testabilities = registry.getAllTestabilities();
       return testabilities.map((testability) => { return new PublicTestability(testability); });
     };

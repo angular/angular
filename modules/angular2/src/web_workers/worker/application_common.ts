@@ -24,12 +24,12 @@ import {
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
 import {DEFAULT_PIPES} from 'angular2/pipes';
-import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -42,7 +42,6 @@ import {
   ComponentRef,
   DynamicComponentLoader
 } from 'angular2/src/core/compiler/dynamic_component_loader';
-import {Testability} from 'angular2/src/core/testability/testability';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
@@ -51,7 +50,6 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
 import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
-
 import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from 'angular2/src/core/application_tokens';
@@ -73,12 +71,13 @@ var _rootBindings = [bind(Reflector).toValue(reflector)];
 
 class PrintLogger {
   log = print;
+  logError = print;
   logGroup = print;
   logGroupEnd() {}
 }
 
 function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMap<string, any>):
-    List<Type | Binding | List<any>> {
+    Array<Type | Binding | any[]> {
   var bestChangeDetection = new DynamicChangeDetection();
   if (PreGeneratedChangeDetection.isSupported()) {
     bestChangeDetection = new PreGeneratedChangeDetection();
@@ -125,6 +124,8 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     bind(ChangeDetection).toValue(bestChangeDetection),
     DirectiveResolver,
+    UrlResolver,
+    StyleUrlResolver,
     PipeResolver,
     Parser,
     Lexer,
@@ -132,10 +133,7 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     WebWorkerXHRImpl,
     bind(XHR).toAlias(WebWorkerXHRImpl),
     ComponentUrlMapper,
-    UrlResolver,
-    StyleUrlResolver,
     DynamicComponentLoader,
-    Testability,
     bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl'])),
     WebWorkerEventDispatcher
   ];
@@ -143,7 +141,7 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
 
 export function bootstrapWebWorkerCommon(
     appComponentType: Type, bus: MessageBus,
-    componentInjectableBindings: List<Type | Binding | List<any>> = null): Promise<ApplicationRef> {
+    componentInjectableBindings: Array<Type | Binding | any[]> = null): Promise<ApplicationRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
   var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
@@ -186,7 +184,7 @@ export function bootstrapWebWorkerCommon(
   return bootstrapProcess.promise;
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List<Type | Binding | List<any>>,
+function _createAppInjector(appComponentType: Type, bindings: Array<Type | Binding | any[]>,
                             zone: NgZone, bus: MessageBus, initData: StringMap<string, any>):
     Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);

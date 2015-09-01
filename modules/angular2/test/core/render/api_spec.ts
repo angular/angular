@@ -8,17 +8,12 @@ export function main() {
     describe('host', () => {
       it('should parse host configuration', () => {
         var md = RenderDirectiveMetadata.create({
-          host: MapWrapper.createFromPairs([
-            ['(event)', 'eventVal'],
-            ['[prop]', 'propVal'],
-            ['@action', 'actionVal'],
-            ['attr', 'attrVal']
-          ])
+          host: MapWrapper.createFromPairs(
+              [['(event)', 'eventVal'], ['[prop]', 'propVal'], ['attr', 'attrVal']])
         });
 
         expect(md.hostListeners).toEqual(MapWrapper.createFromPairs([['event', 'eventVal']]));
         expect(md.hostProperties).toEqual(MapWrapper.createFromPairs([['prop', 'propVal']]));
-        expect(md.hostActions).toEqual(MapWrapper.createFromPairs([['action', 'actionVal']]));
         expect(md.hostAttributes).toEqual(MapWrapper.createFromPairs([['attr', 'attrVal']]));
       });
     });

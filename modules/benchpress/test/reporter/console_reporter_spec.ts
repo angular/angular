@@ -1,7 +1,6 @@
 import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
 import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   SampleState,

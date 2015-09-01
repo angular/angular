@@ -24,7 +24,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 @View({
   templateUrl: './demo_app.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE,
+  encapsulation: ViewEncapsulation.None,
 })
 class DemoApp {
   dialog: MdDialog;
@@ -70,7 +70,7 @@ class DemoApp {
   properties: ['numCoconuts'],
 })
 @View({
-  encapsulation: ViewEncapsulation.NONE,
+  encapsulation: ViewEncapsulation.None,
   template: `
     <h2>This is the dialog content</h2>
     <p>There are {{numCoconuts}} coconuts.</p>

@@ -1,6 +1,6 @@
 import {Directive, LifecycleEvent} from 'angular2/metadata';
 import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/di';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 import {ControlContainer} from './control_container';
@@ -52,7 +52,7 @@ const controlGroupBinding =
   selector: '[ng-control-group]',
   bindings: [controlGroupBinding],
   properties: ['name: ng-control-group'],
-  lifecycle: [LifecycleEvent.onInit, LifecycleEvent.onDestroy],
+  lifecycle: [LifecycleEvent.OnInit, LifecycleEvent.OnDestroy],
   exportAs: 'form'
 })
 export class NgControlGroup extends ControlContainer {
@@ -68,7 +68,7 @@ export class NgControlGroup extends ControlContainer {
 
   get control(): ControlGroup { return this.formDirective.getControlGroup(this); }
 
-  get path(): List<string> { return controlPath(this.name, this._parent); }
+  get path(): string[] { return controlPath(this.name, this._parent); }
 
   get formDirective(): Form { return this._parent.formDirective; }
 }

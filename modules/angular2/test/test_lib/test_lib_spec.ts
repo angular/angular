@@ -13,7 +13,7 @@ import {
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
-import {IMPLEMENTS, RegExpWrapper} from 'angular2/src/core/facade/lang';
+import {RegExpWrapper} from 'angular2/src/core/facade/lang';
 
 class TestObj {
   prop;
@@ -22,8 +22,6 @@ class TestObj {
   someComplexFunc(a) { return a; }
 }
 
-@proxy
-@IMPLEMENTS(TestObj)
 class SpyTestObj extends SpyObject {
   constructor() { super(TestObj); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
@@ -88,11 +86,6 @@ export function main() {
       var spyObj;
 
       beforeEach(() => { spyObj = <any>new SpyTestObj(); });
-
-      it("should pass the runtime check", () => {
-        var t: TestObj = spyObj;
-        expect(t).toBeDefined();
-      });
 
       it("should return a new spy func with no calls",
          () => { expect(spyObj.spy("someFunc")).not.toHaveBeenCalled(); });

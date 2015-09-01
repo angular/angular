@@ -7,9 +7,8 @@ import 'options.dart';
 
 TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var config = settings.configuration;
+  _warnDeprecated(config);
   var entryPoints = _readFileList(config, ENTRY_POINT_PARAM);
-  var reflectionEntryPoints =
-      _readFileList(config, REFLECTION_ENTRY_POINT_PARAM);
   var initReflector =
       _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
   var inlineViews = _readBool(config, INLINE_VIEWS_PARAM, defaultValue: true);
@@ -35,7 +34,6 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var optimizationPhases = _readInt(config, OPTIMIZATION_PHASES_PARAM,
       defaultValue: DEFAULT_OPTIMIZATION_PHASES);
   return new TransformerOptions(entryPoints,
-      reflectionEntryPoints: reflectionEntryPoints,
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
@@ -132,3 +130,10 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
         - name: ...
           import: ...
           superClass: ...''';
+
+void _warnDeprecated(Map config) {
+  if (config.containsKey(REFLECTION_ENTRY_POINT_PARAM)) {
+    print('${REFLECTION_ENTRY_POINT_PARAM} is no longer necessary for '
+        'Angular 2 apps. Please remove it from your pubspec.');
+  }
+}

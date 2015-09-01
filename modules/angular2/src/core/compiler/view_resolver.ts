@@ -2,7 +2,7 @@ import {Injectable} from 'angular2/di';
 import {ViewMetadata} from '../metadata/view';
 
 import {Type, stringify, isBlank, BaseException} from 'angular2/src/core/facade/lang';
-import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

@@ -115,10 +115,6 @@ class ListWrapper {
   static List createFixedSize(int size) => new List(size);
   static List createGrowableSize(int size) =>
       new List.generate(size, (_) => null, growable: true);
-  static get(List m, int k) => m[k];
-  static void set(List m, int k, v) {
-    m[k] = v;
-  }
 
   static bool contains(List m, k) => m.contains(k);
   static List map(list, fn(item)) => list.map(fn).toList();

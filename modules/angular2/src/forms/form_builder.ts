@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/di';
-import {StringMapWrapper, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isArray} from 'angular2/src/core/facade/lang';
 import * as modelModule from './model';
 
@@ -91,7 +91,7 @@ export class FormBuilder {
     }
   }
 
-  array(controlsConfig: List<any>, validator: Function = null): modelModule.ControlArray {
+  array(controlsConfig: any[], validator: Function = null): modelModule.ControlArray {
     var controls = ListWrapper.map(controlsConfig, (c) => this._createControl(c));
     if (isPresent(validator)) {
       return new modelModule.ControlArray(controls, validator);
@@ -115,7 +115,7 @@ export class FormBuilder {
       return controlConfig;
 
     } else if (isArray(controlConfig)) {
-      var value = ListWrapper.get(controlConfig, 0);
+      var value = controlConfig[0];
       var validator = controlConfig.length > 1 ? controlConfig[1] : null;
       return this.control(value, validator);
 

@@ -11,16 +11,12 @@ import {
   inject,
   beforeEachBindings,
   it,
-  xit,
-  SpyObject,
-  proxy
+  xit
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
-
+import {SpyView, SpyAppViewManager} from '../spies';
 import {AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {ViewRef} from 'angular2/src/core/compiler/view_ref';
 
@@ -35,8 +31,9 @@ export function main() {
     function createViewContainer() { return new ViewContainerRef(viewManager, location); }
 
     beforeEach(() => {
-      viewManager = new AppViewManagerSpy();
-      view = new AppViewSpy();
+      viewManager = new SpyAppViewManager();
+      view = new SpyView();
+      view.prop("viewContainers", [null]);
       location = new ElementRef(new ViewRef(view), 0, 0, null);
     });
 
@@ -50,8 +47,8 @@ export function main() {
       it('should return the size of the underlying AppViewContainer', () => {
         var vc = createViewContainer();
         var appVc = new AppViewContainer();
-        view.viewContainers = [appVc];
-        appVc.views = [<any>new AppViewSpy()];
+        view.prop("viewContainers", [appVc]);
+        appVc.views = [<any>new SpyView()];
         expect(vc.length).toBe(1);
       });
 
@@ -60,19 +57,4 @@ export function main() {
     // TODO: add missing tests here!
 
   });
-}
-
-@proxy
-@IMPLEMENTS(AppView)
-class AppViewSpy extends SpyObject {
-  viewContainers: AppViewContainer[] = [null];
-  constructor() { super(AppView); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(AppViewManager)
-class AppViewManagerSpy extends SpyObject {
-  constructor() { super(AppViewManager); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }

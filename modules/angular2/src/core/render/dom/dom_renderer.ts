@@ -6,13 +6,6 @@ import {
   RegExpWrapper,
   CONST_EXPR
 } from 'angular2/src/core/facade/lang';
-import {
-  ListWrapper,
-  MapWrapper,
-  Map,
-  StringMapWrapper,
-  List
-} from 'angular2/src/core/facade/collection';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
@@ -57,10 +50,10 @@ export class DomRenderer extends Renderer {
     this._document = document;
   }
 
-  _scope_createRootHostView: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
+  _createRootHostViewScope: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
-    var s = this._scope_createRootHostView();
+    var s = this._createRootHostViewScope();
     var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
@@ -70,9 +63,9 @@ export class DomRenderer extends Renderer {
     return wtfLeave(s, this._createView(hostProtoView, element));
   }
 
-  _scope_createView = wtfCreateScope('DomRenderer#createView()');
+  _createViewScope = wtfCreateScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
-    var s = this._scope_createView();
+    var s = this._createViewScope();
     var protoView = resolveInternalDomProtoView(protoViewRef);
     return wtfLeave(s, this._createView(protoView, null));
   }
@@ -96,9 +89,7 @@ export class DomRenderer extends Renderer {
         .boundElements[location.renderBoundElementIndex];
   }
 
-  getRootNodes(fragment: RenderFragmentRef): List<Node> {
-    return resolveInternalDomFragment(fragment);
-  }
+  getRootNodes(fragment: RenderFragmentRef): Node[] { return resolveInternalDomFragment(fragment); }
 
   attachFragmentAfterFragment(previousFragmentRef: RenderFragmentRef,
                               fragmentRef: RenderFragmentRef) {
@@ -118,9 +109,9 @@ export class DomRenderer extends Renderer {
     moveNodesAfterSibling(element, resolveInternalDomFragment(fragmentRef));
   }
 
-  _scope_detachFragment = wtfCreateScope('DomRenderer#detachFragment()');
+  _detachFragmentScope = wtfCreateScope('DomRenderer#detachFragment()');
   detachFragment(fragmentRef: RenderFragmentRef) {
-    var s = this._scope_detachFragment();
+    var s = this._detachFragmentScope();
     var fragmentNodes = resolveInternalDomFragment(fragmentRef);
     for (var i = 0; i < fragmentNodes.length; i++) {
       DOM.remove(fragmentNodes[i]);
@@ -194,7 +185,7 @@ export class DomRenderer extends Renderer {
     view.setElementStyle(location.renderBoundElementIndex, styleName, styleValue);
   }
 
-  invokeElementMethod(location: RenderElementRef, methodName: string, args: List<any>): void {
+  invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]): void {
     if (isBlank(location.renderBoundElementIndex)) {
       return;
     }
@@ -210,9 +201,9 @@ export class DomRenderer extends Renderer {
     DOM.setText(view.boundTextNodes[textNodeIndex], text);
   }
 
-  _scope_setEventDispatcher = wtfCreateScope('DomRenderer#setEventDispatcher()');
+  _setEventDispatcherScope = wtfCreateScope('DomRenderer#setEventDispatcher()');
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: any /*api.EventDispatcher*/): void {
-    var s = this._scope_setEventDispatcher();
+    var s = this._setEventDispatcherScope();
     var view = resolveInternalDomView(viewRef);
     view.eventDispatcher = dispatcher;
     wtfLeave(s);

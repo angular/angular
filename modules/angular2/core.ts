@@ -4,7 +4,6 @@
  * Define angular core API here.
  */
 export {APP_COMPONENT} from 'angular2/src/core/application_tokens';
-export {commonBootstrap as bootstrap} from 'angular2/src/core/application_common';
 export {Type} from 'angular2/src/core/facade/lang';
 export {ApplicationRef} from 'angular2/src/core/application_ref';
 

@@ -35,11 +35,10 @@ export class ServiceMessageBroker {
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
   }
 
-  registerMethod(methodName: string, signature: List<Type>, method: Function, returnType?: Type):
-      void {
+  registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
-      var deserializedArgs: List<any> = ListWrapper.createFixedSize(signature.length);
+      var deserializedArgs: any[] = ListWrapper.createFixedSize(signature.length);
       for (var i = 0; i < signature.length; i++) {
         var serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
@@ -70,7 +69,7 @@ export class ServiceMessageBroker {
 
 export class ReceivedMessage {
   method: string;
-  args: List<any>;
+  args: any[];
   id: string;
   type: string;
 

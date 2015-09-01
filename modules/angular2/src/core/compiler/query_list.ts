@@ -1,4 +1,4 @@
-import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * An iterable and observable live list of components in the DOM.
@@ -72,11 +72,11 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection
  * ```
  */
 export class QueryList<T> {
-  protected _results: List < T >= [];
-  protected _callbacks: List < () => void >= [];
+  protected _results: Array < T >= [];
+  protected _callbacks: Array < () => void >= [];
   protected _dirty: boolean = false;
 
-  reset(newList: List<T>): void {
+  reset(newList: T[]): void {
     this._results = newList;
     this._dirty = true;
   }

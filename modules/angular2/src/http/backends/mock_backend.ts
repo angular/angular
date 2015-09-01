@@ -5,15 +5,14 @@ import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {IMPLEMENTS, BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/lang';
 
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
  **/
-@IMPLEMENTS(Connection)
-export class MockConnection {
+export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than XHR states.
   /**
@@ -35,7 +34,7 @@ export class MockConnection {
 
   constructor(req: Request) {
     this.response = new EventEmitter();
-    this.readyState = ReadyStates.OPEN;
+    this.readyState = ReadyStates.Open;
     this.request = req;
   }
 
@@ -43,8 +42,8 @@ export class MockConnection {
    * Changes the `readyState` of the connection to a custom state of 5 (cancelled).
    */
   dispose() {
-    if (this.readyState !== ReadyStates.DONE) {
-      this.readyState = ReadyStates.CANCELLED;
+    if (this.readyState !== ReadyStates.Done) {
+      this.readyState = ReadyStates.Cancelled;
     }
   }
 
@@ -63,10 +62,10 @@ export class MockConnection {
    *
    */
   mockRespond(res: Response) {
-    if (this.readyState === ReadyStates.DONE || this.readyState === ReadyStates.CANCELLED) {
+    if (this.readyState === ReadyStates.Done || this.readyState === ReadyStates.Cancelled) {
       throw new BaseException('Connection has already been resolved');
     }
-    this.readyState = ReadyStates.DONE;
+    this.readyState = ReadyStates.Done;
     ObservableWrapper.callNext(this.response, res);
     ObservableWrapper.callReturn(this.response);
   }
@@ -92,7 +91,7 @@ export class MockConnection {
    */
   mockError(err?: Error) {
     // Matches XHR semantics
-    this.readyState = ReadyStates.DONE;
+    this.readyState = ReadyStates.Done;
     ObservableWrapper.callThrow(this.response, err);
     ObservableWrapper.callReturn(this.response);
   }
@@ -130,8 +129,7 @@ export class MockConnection {
  * This method only exists in the mock implementation, not in real Backends.
  **/
 @Injectable()
-@IMPLEMENTS(ConnectionBackend)
-export class MockBackend {
+export class MockBackend implements ConnectionBackend {
   /**
    * {@link EventEmitter}
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
@@ -172,7 +170,7 @@ export class MockBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connectionsArray: Array<MockConnection>;
+  connectionsArray: MockConnection[];
   /**
    * {@link EventEmitter} of {@link MockConnection} instances that haven't yet been resolved (i.e.
    * with a `readyState`

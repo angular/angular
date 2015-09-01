@@ -1,11 +1,11 @@
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/di';
-import {List, ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {Metric} from '../metric';
 
 export class MultiMetric extends Metric {
-  static createBindings(childTokens): List<Binding> {
+  static createBindings(childTokens): Binding[] {
     return [
       bind(_CHILDREN)
           .toFactory(
@@ -15,7 +15,7 @@ export class MultiMetric extends Metric {
     ];
   }
 
-  constructor(private _metrics: List<Metric>) { super(); }
+  constructor(private _metrics: Metric[]) { super(); }
 
   /**
    * Starts measuring

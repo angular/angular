@@ -1,8 +1,7 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {
-  DEFAULT,
-  ON_PUSH,
+  ChangeDetectionStrategy,
   BindingRecord,
   ChangeDetectorDefinition,
   DirectiveIndex,
@@ -12,7 +11,6 @@ import {
   Parser,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {ON_PUSH_OBSERVE} from 'angular2/src/core/change_detection/constants';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
@@ -28,12 +26,12 @@ function _getParser() {
   return _parser;
 }
 
-function _createBindingRecords(expression: string): List<BindingRecord> {
+function _createBindingRecords(expression: string): BindingRecord[] {
   var ast = _getParser().parseBinding(expression, 'location');
   return [BindingRecord.createForElementProperty(ast, 0, PROP_NAME)];
 }
 
-function _createEventRecords(expression: string): List<BindingRecord> {
+function _createEventRecords(expression: string): BindingRecord[] {
   var eq = expression.indexOf("=");
   var eventName = expression.substring(1, eq - 1);
   var exp = expression.substring(eq + 2, expression.length - 1);
@@ -42,7 +40,7 @@ function _createEventRecords(expression: string): List<BindingRecord> {
 }
 
 function _createHostEventRecords(expression: string, directiveRecord: DirectiveRecord):
-    List<BindingRecord> {
+    BindingRecord[] {
   var parts = expression.split("=");
   var eventName = parts[0].substring(1, parts[0].length - 1);
   var exp = parts[1].substring(1, parts[1].length - 1);
@@ -51,7 +49,7 @@ function _createHostEventRecords(expression: string, directiveRecord: DirectiveR
   return [BindingRecord.createForHostEvent(ast, eventName, directiveRecord)];
 }
 
-function _convertLocalsToVariableBindings(locals: Locals): List<any> {
+function _convertLocalsToVariableBindings(locals: Locals): any[] {
   var variableBindings = [];
   var loc = locals;
   while (isPresent(loc) && isPresent(loc.current)) {
@@ -61,7 +59,7 @@ function _convertLocalsToVariableBindings(locals: Locals): List<any> {
   return variableBindings;
 }
 
-export var PROP_NAME = 'propName';
+export const PROP_NAME = 'propName';
 
 /**
  * In this case, we expect `id` and `expression` to be the same string.
@@ -109,15 +107,17 @@ export function getDefinition(id: string): TestDefinition {
 
   } else if (id == "onPushObserveBinding") {
     var records = _createBindingRecords("a");
-    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], records, [], [], genConfig);
+    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], records,
+                                             [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (id == "onPushObserveComponent") {
-    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], [], [], [], genConfig);
+    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], [], [],
+                                             [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (id == "onPushObserveDirective") {
-    let cdDef = new ChangeDetectorDefinition(id, ON_PUSH_OBSERVE, [], [], [],
+    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], [], [],
                                              [_DirectiveUpdating.recordNoCallbacks], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   } else if (id == "updateElementProduction") {
@@ -142,17 +142,15 @@ export class TestDefinition {
  * Get all available ChangeDetectorDefinition objects. Used to pre-generate Dart
  * `ChangeDetector` classes.
  */
-export function getAllDefinitions(): List<TestDefinition> {
+export function getAllDefinitions(): TestDefinition[] {
   var allDefs = _availableDefinitions;
   allDefs = ListWrapper.concat(allDefs,
                                StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions));
-  allDefs =
-      ListWrapper.concat(allDefs, StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions));
-  allDefs =
-      ListWrapper.concat(allDefs, StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
-  allDefs = ListWrapper.concat(allDefs, _availableEventDefinitions);
-  allDefs = ListWrapper.concat(allDefs, _availableHostEventDefinitions);
-  allDefs = ListWrapper.concat(allDefs, [
+  allDefs = allDefs.concat(StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions));
+  allDefs = allDefs.concat(StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
+  allDefs = allDefs.concat(_availableEventDefinitions);
+  allDefs = allDefs.concat(_availableHostEventDefinitions);
+  allDefs = allDefs.concat([
     "onPushObserveBinding",
     "onPushObserveComponent",
     "onPushObserveDirective",
@@ -196,7 +194,7 @@ class _ExpressionWithLocals {
 }
 
 class _ExpressionWithMode {
-  constructor(private _strategy: string, private _withRecords: boolean,
+  constructor(private _strategy: ChangeDetectionStrategy, private _withRecords: boolean,
               private _withEvents: boolean) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
@@ -205,10 +203,14 @@ class _ExpressionWithMode {
     var directiveRecords = [];
     var eventRecords = [];
 
-    var dirRecordWithDefault =
-        new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0), changeDetection: DEFAULT});
-    var dirRecordWithOnPush =
-        new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 1), changeDetection: ON_PUSH});
+    var dirRecordWithDefault = new DirectiveRecord({
+      directiveIndex: new DirectiveIndex(0, 0),
+      changeDetection: ChangeDetectionStrategy.Default
+    });
+    var dirRecordWithOnPush = new DirectiveRecord({
+      directiveIndex: new DirectiveIndex(0, 1),
+      changeDetection: ChangeDetectionStrategy.OnPush
+    });
 
     if (this._withRecords) {
       var updateDirWithOnDefaultRecord =
@@ -240,17 +242,20 @@ class _ExpressionWithMode {
    * Definitions in this map define conditions which allow testing various change detector modes.
    */
   static availableDefinitions: StringMap<string, _ExpressionWithMode> = {
-    'emptyUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, false, false),
-    'emptyUsingOnPushStrategy': new _ExpressionWithMode(ON_PUSH, false, false),
-    'onPushRecordsUsingDefaultStrategy': new _ExpressionWithMode(DEFAULT, true, false),
-    'onPushWithEvent': new _ExpressionWithMode(ON_PUSH, false, true),
-    'onPushWithHostEvent': new _ExpressionWithMode(ON_PUSH, false, true)
+    'emptyUsingDefaultStrategy':
+        new _ExpressionWithMode(ChangeDetectionStrategy.Default, false, false),
+    'emptyUsingOnPushStrategy':
+        new _ExpressionWithMode(ChangeDetectionStrategy.OnPush, false, false),
+    'onPushRecordsUsingDefaultStrategy':
+        new _ExpressionWithMode(ChangeDetectionStrategy.Default, true, false),
+    'onPushWithEvent': new _ExpressionWithMode(ChangeDetectionStrategy.OnPush, false, true),
+    'onPushWithHostEvent': new _ExpressionWithMode(ChangeDetectionStrategy.OnPush, false, true)
   };
 }
 
 class _DirectiveUpdating {
-  constructor(private _bindingRecords: List<BindingRecord>,
-              private _directiveRecords: List<DirectiveRecord>) {}
+  constructor(private _bindingRecords: BindingRecord[],
+              private _directiveRecords: DirectiveRecord[]) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var strategy = null;
@@ -272,26 +277,38 @@ class _DirectiveUpdating {
                                             (o, v) => (<any>o).b = v, dirRecord);
   }
 
-  static basicRecords: List<DirectiveRecord> = [
+  static basicRecords: DirectiveRecord[] = [
     new DirectiveRecord({
       directiveIndex: new DirectiveIndex(0, 0),
-      callOnChange: true,
-      callOnCheck: true,
-      callOnAllChangesDone: true
+      callOnChanges: true,
+      callDoCheck: true,
+      callOnInit: true,
+      callAfterContentInit: true,
+      callAfterContentChecked: true,
+      callAfterViewInit: true,
+      callAfterViewChecked: true
     }),
     new DirectiveRecord({
       directiveIndex: new DirectiveIndex(0, 1),
-      callOnChange: true,
-      callOnCheck: true,
-      callOnAllChangesDone: true
+      callOnChanges: true,
+      callDoCheck: true,
+      callOnInit: true,
+      callAfterContentInit: true,
+      callAfterContentChecked: true,
+      callAfterViewInit: true,
+      callAfterViewChecked: true
     })
   ];
 
   static recordNoCallbacks = new DirectiveRecord({
     directiveIndex: new DirectiveIndex(0, 0),
-    callOnChange: false,
-    callOnCheck: false,
-    callOnAllChangesDone: false
+    callOnChanges: false,
+    callDoCheck: false,
+    callOnInit: false,
+    callAfterContentInit: false,
+    callAfterContentChecked: false,
+    callAfterViewInit: false,
+    callAfterViewChecked: false
   });
 
   /**
@@ -308,13 +325,13 @@ class _DirectiveUpdating {
                 [
                   _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
                   _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
-                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[0]),
+                  BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[0]),
                   _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
-                  BindingRecord.createDirectiveOnChange(_DirectiveUpdating.basicRecords[1])
+                  BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[1])
                 ],
                 [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
-        'directiveOnCheck': new _DirectiveUpdating(
-            [BindingRecord.createDirectiveOnCheck(_DirectiveUpdating.basicRecords[0])],
+        'directiveDoCheck': new _DirectiveUpdating(
+            [BindingRecord.createDirectiveDoCheck(_DirectiveUpdating.basicRecords[0])],
             [_DirectiveUpdating.basicRecords[0]]),
         'directiveOnInit': new _DirectiveUpdating(
             [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],

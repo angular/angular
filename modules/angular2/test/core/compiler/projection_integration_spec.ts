@@ -473,7 +473,7 @@ class Simple {
 @View({
   template: 'SIMPLE(<content></content>)',
   directives: [],
-  encapsulation: ViewEncapsulation.NATIVE
+  encapsulation: ViewEncapsulation.Native
 })
 class SimpleNative {
 }

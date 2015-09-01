@@ -23,7 +23,7 @@ import {Promise} from 'angular2/src/core/facade/async';
  */
 export class ChromeDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 
@@ -63,8 +63,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
         });
   }
 
-  _convertPerfRecordsToEvents(chromeEvents: List<StringMap<string, any>>,
-                              normalizedEvents: List<StringMap<string, any>> = null) {
+  _convertPerfRecordsToEvents(chromeEvents: Array<StringMap<string, any>>,
+                              normalizedEvents: Array<StringMap<string, any>> = null) {
     if (isBlank(normalizedEvents)) {
       normalizedEvents = [];
     }

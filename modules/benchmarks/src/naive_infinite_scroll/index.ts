@@ -9,6 +9,6 @@ export function main() {
   bootstrap(App, createBindings());
 }
 
-function createBindings(): List<any> {
+function createBindings(): any[] {
   return [bind(APP_VIEW_POOL_CAPACITY).toValue(100000)];
 }

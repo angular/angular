@@ -16,18 +16,18 @@ void initReflector() {
             const [
               const Component(
                   selector: '[soup]',
-                  lifecycle: const [LifecycleEvent.onChange])
+                  lifecycle: const [LifecycleEvent.OnChanges])
             ],
             const [],
             () => new OnChangeSoupComponent(),
-            const [OnChange]))
+            const [OnChanges]))
     ..registerType(
         OnDestroySoupComponent,
         new _ngRef.ReflectionInfo(
             const [
               const Component(
                   selector: '[soup]',
-                  lifecycle: const [LifecycleEvent.onDestroy])
+                  lifecycle: const [LifecycleEvent.OnDestroy])
             ],
             const [],
             () => new OnDestroySoupComponent(),
@@ -37,30 +37,63 @@ void initReflector() {
         new _ngRef.ReflectionInfo(
             const [
               const Component(
-                  selector: '[soup]', lifecycle: const [LifecycleEvent.onCheck])
+                  selector: '[soup]', lifecycle: const [LifecycleEvent.DoCheck])
             ],
             const [],
             () => new OnCheckSoupComponent(),
-            const [OnCheck]))
+            const [DoCheck]))
     ..registerType(
         OnInitSoupComponent,
         new _ngRef.ReflectionInfo(
             const [
               const Component(
-                  selector: '[soup]', lifecycle: const [LifecycleEvent.onInit])
+                  selector: '[soup]', lifecycle: const [LifecycleEvent.OnInit])
             ],
             const [],
             () => new OnInitSoupComponent(),
             const [OnInit]))
     ..registerType(
-        OnAllChangesDoneSoupComponent,
+        AfterContentInitSoupComponent,
         new _ngRef.ReflectionInfo(
             const [
               const Component(
                   selector: '[soup]',
-                  lifecycle: const [LifecycleEvent.onAllChangesDone])
+                  lifecycle: const [LifecycleEvent.AfterContentInit])
             ],
             const [],
-            () => new OnAllChangesDoneSoupComponent(),
-            const [OnAllChangesDone]));
+            () => new AfterContentInitSoupComponent(),
+            const [AfterContentInit]))
+    ..registerType(
+        AfterContentCheckedSoupComponent,
+        new _ngRef.ReflectionInfo(
+            const [
+              const Component(
+                  selector: '[soup]',
+                  lifecycle: const [LifecycleEvent.AfterContentChecked])
+            ],
+            const [],
+            () => new AfterContentCheckedSoupComponent(),
+            const [AfterContentChecked]))
+    ..registerType(
+        AfterViewInitSoupComponent,
+        new _ngRef.ReflectionInfo(
+            const [
+              const Component(
+                  selector: '[soup]',
+                  lifecycle: const [LifecycleEvent.AfterViewInit])
+            ],
+            const [],
+            () => new AfterViewInitSoupComponent(),
+            const [AfterViewInit]))
+    ..registerType(
+        AfterViewCheckedSoupComponent,
+        new _ngRef.ReflectionInfo(
+            const [
+              const Component(
+                  selector: '[soup]',
+                  lifecycle: const [LifecycleEvent.AfterViewChecked])
+            ],
+            const [],
+            () => new AfterViewCheckedSoupComponent(),
+            const [AfterViewChecked]));
 }

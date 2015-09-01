@@ -5,7 +5,7 @@ import {WebDriverAdapter} from '../web_driver_adapter';
 import {Promise} from 'angular2/src/core/facade/async';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
 
   private _profilerStarted: boolean;
 

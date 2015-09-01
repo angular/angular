@@ -1,5 +1,5 @@
 import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/core/facade/lang';
-import {isDefaultChangeDetectionStrategy} from './constants';
+import {isDefaultChangeDetectionStrategy, ChangeDetectionStrategy} from './constants';
 
 export class DirectiveIndex {
   constructor(public elementIndex: number, public directiveIndex: number) {}
@@ -9,25 +9,34 @@ export class DirectiveIndex {
 
 export class DirectiveRecord {
   directiveIndex: DirectiveIndex;
-  callOnAllChangesDone: boolean;
-  callOnChange: boolean;
-  callOnCheck: boolean;
+  callAfterContentInit: boolean;
+  callAfterContentChecked: boolean;
+  callAfterViewInit: boolean;
+  callAfterViewChecked: boolean;
+  callOnChanges: boolean;
+  callDoCheck: boolean;
   callOnInit: boolean;
-  changeDetection: string;
+  changeDetection: ChangeDetectionStrategy;
 
-  constructor({directiveIndex, callOnAllChangesDone, callOnChange, callOnCheck, callOnInit,
-               changeDetection}: {
+  constructor({directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
+               callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, changeDetection}: {
     directiveIndex?: DirectiveIndex,
-    callOnAllChangesDone?: boolean,
-    callOnChange?: boolean,
-    callOnCheck?: boolean,
+    callAfterContentInit?: boolean,
+    callAfterContentChecked?: boolean,
+    callAfterViewInit?: boolean,
+    callAfterViewChecked?: boolean,
+    callOnChanges?: boolean,
+    callDoCheck?: boolean,
     callOnInit?: boolean,
-    changeDetection?: string
+    changeDetection?: ChangeDetectionStrategy
   } = {}) {
     this.directiveIndex = directiveIndex;
-    this.callOnAllChangesDone = normalizeBool(callOnAllChangesDone);
-    this.callOnChange = normalizeBool(callOnChange);
-    this.callOnCheck = normalizeBool(callOnCheck);
+    this.callAfterContentInit = normalizeBool(callAfterContentInit);
+    this.callAfterContentChecked = normalizeBool(callAfterContentChecked);
+    this.callOnChanges = normalizeBool(callOnChanges);
+    this.callAfterViewInit = normalizeBool(callAfterViewInit);
+    this.callAfterViewChecked = normalizeBool(callAfterViewChecked);
+    this.callDoCheck = normalizeBool(callDoCheck);
     this.callOnInit = normalizeBool(callOnInit);
     this.changeDetection = changeDetection;
   }

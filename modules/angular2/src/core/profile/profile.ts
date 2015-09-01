@@ -25,7 +25,7 @@ function noopScope(arg0?: any, arg1?: any): any {
  *
  * Used to mark scope entry. The return value is used to leave the scope.
  *
- *     final myScope = wtfCreateScope('MyClass#myMethod(ascii someVal)');
+ *     var myScope = wtfCreateScope('MyClass#myMethod(ascii someVal)');
  *
  *     someMethod() {
  *        var s = myScope('Foo'); // 'Foo' gets stored in tracing UI

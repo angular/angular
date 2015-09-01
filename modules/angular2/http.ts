@@ -62,7 +62,7 @@ export {EventEmitter, Observable} from './src/core/facade/async';
  * ```
  *
  */
-export const HTTP_BINDINGS: List<any> = [
+export const HTTP_BINDINGS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
   bind(Http)
@@ -74,7 +74,7 @@ export const HTTP_BINDINGS: List<any> = [
   XHRBackend
 ];
 
-export const JSONP_BINDINGS: List<any> = [
+export const JSONP_BINDINGS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
   bind(Jsonp)

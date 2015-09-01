@@ -489,7 +489,7 @@ class InertDirective {
 @Component({selector: 'needs-query'})
 @View({
   directives: [NgFor, TextDirective],
-  template: '<div text="ignoreme"></div><div *ng-for="var dir of query">{{dir.text}}|</div>'
+  template: '<div text="ignoreme"></div><b *ng-for="var dir of query">{{dir.text}}|</b>'
 })
 @Injectable()
 class NeedsQuery {

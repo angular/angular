@@ -15,7 +15,7 @@ class ProgressMode {
 
 @Component({
   selector: 'md-progress-linear',
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   properties: ['value', 'bufferValue'],
   host: {
     'role': 'progressbar',
@@ -27,7 +27,7 @@ class ProgressMode {
 @View({
   templateUrl: 'package:angular2_material/src/components/progress-linear/progress_linear.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdProgressLinear {
   /** Value for the primary bar. */
@@ -62,7 +62,7 @@ export class MdProgressLinear {
     }
   }
 
-  onChange(_) {
+  onChanges(_) {
     // If the mode does not use a value, or if there is no value, do nothing.
     if (this.mode == ProgressMode.QUERY || this.mode == ProgressMode.INDETERMINATE ||
         isBlank(this.value)) {

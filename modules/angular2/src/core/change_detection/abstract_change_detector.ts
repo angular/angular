@@ -1,5 +1,5 @@
 import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';
@@ -12,10 +12,9 @@ import {
 } from './exceptions';
 import {BindingTarget} from './binding_record';
 import {Locals} from './parser/locals';
-import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './constants';
+import {ChangeDetectionStrategy} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {isObservable} from './observable_facade';
-import {ON_PUSH_OBSERVE} from './constants';
 
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
@@ -26,8 +25,8 @@ class _Context {
 }
 
 export class AbstractChangeDetector<T> implements ChangeDetector {
-  lightDomChildren: List<any> = [];
-  shadowDomChildren: List<any> = [];
+  lightDomChildren: any[] = [];
+  shadowDomChildren: any[] = [];
   parent: ChangeDetector;
   ref: ChangeDetectorRef;
 
@@ -36,7 +35,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   alreadyChecked: any = false;
   context: T;
   locals: Locals = null;
-  mode: string = null;
+  mode: ChangeDetectionStrategy = null;
   pipes: Pipes = null;
   propertyBindingIndex: number;
 
@@ -46,7 +45,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   constructor(public id: string, public dispatcher: ChangeDispatcher,
               public numberOfPropertyProtoRecords: number, public bindingTargets: BindingTarget[],
-              public directiveIndices: DirectiveIndex[], public strategy: string) {
+              public directiveIndices: DirectiveIndex[], public strategy: ChangeDetectionStrategy) {
     this.ref = new ChangeDetectorRef(this);
   }
 
@@ -79,14 +78,23 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   checkNoChanges(): void { throw new BaseException("Not implemented"); }
 
   runDetectChanges(throwOnChange: boolean): void {
-    if (StringWrapper.equals(this.mode, DETACHED) || StringWrapper.equals(this.mode, CHECKED))
+    if (this.mode === ChangeDetectionStrategy.Detached ||
+        this.mode === ChangeDetectionStrategy.Checked)
       return;
     var s = _scope_check(this.id, throwOnChange);
+
     this.detectChangesInRecords(throwOnChange);
+
     this._detectChangesInLightDomChildren(throwOnChange);
-    if (throwOnChange === false) this.callOnAllChangesDone();
+    if (!throwOnChange) this.afterContentLifecycleCallbacks();
+
     this._detectChangesInShadowDomChildren(throwOnChange);
-    if (StringWrapper.equals(this.mode, CHECK_ONCE)) this.mode = CHECKED;
+    if (!throwOnChange) this.afterViewLifecycleCallbacks();
+
+    if (this.mode === ChangeDetectionStrategy.CheckOnce)
+      this.mode = ChangeDetectionStrategy.Checked;
+
+    this.alreadyChecked = true;
     wtfLeave(s);
   }
 
@@ -121,7 +129,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
     this.context = context;
 
-    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
       this.observeComponent(context);
     }
 
@@ -140,7 +148,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.dehydrateDirectives(true);
 
     // This is an experimental feature. Works only in Dart.
-    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
       this._unsubsribeFromObservables();
     }
 
@@ -155,7 +163,19 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   hydrated(): boolean { return this.context !== null; }
 
-  callOnAllChangesDone(): void { this.dispatcher.notifyOnAllChangesDone(); }
+  afterContentLifecycleCallbacks(): void {
+    this.dispatcher.notifyAfterContentChecked();
+    this.afterContentLifecycleCallbacksInternal();
+  }
+
+  afterContentLifecycleCallbacksInternal(): void {}
+
+  afterViewLifecycleCallbacks(): void {
+    this.dispatcher.notifyAfterViewChecked();
+    this.afterViewLifecycleCallbacksInternal();
+  }
+
+  afterViewLifecycleCallbacksInternal(): void {}
 
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;
@@ -171,12 +191,12 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
-  markAsCheckOnce(): void { this.mode = CHECK_ONCE; }
+  markAsCheckOnce(): void { this.mode = ChangeDetectionStrategy.CheckOnce; }
 
   markPathToRootAsCheckOnce(): void {
     var c: ChangeDetector = this;
-    while (isPresent(c) && !StringWrapper.equals(c.mode, DETACHED)) {
-      if (StringWrapper.equals(c.mode, CHECKED)) c.mode = CHECK_ONCE;
+    while (isPresent(c) && c.mode !== ChangeDetectionStrategy.Detached) {
+      if (c.mode === ChangeDetectionStrategy.Checked) c.mode = ChangeDetectionStrategy.CheckOnce;
       c = c.parent;
     }
   }
@@ -200,11 +220,11 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       this._createArrayToStoreObservables();
       if (isBlank(this.subscriptions[index])) {
         this.streams[index] = value.changes;
-        this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+        this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
       } else if (this.streams[index] !== value.changes) {
         this.subscriptions[index].cancel();
         this.streams[index] = value.changes;
-        this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+        this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
       }
     }
     return value;
@@ -216,7 +236,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       this._createArrayToStoreObservables();
       var arrayIndex = this.numberOfPropertyProtoRecords + index + 2;  // +1 is component
       this.streams[arrayIndex] = value.changes;
-      this.subscriptions[arrayIndex] = value.changes.listen((_) => this.ref.requestCheck());
+      this.subscriptions[arrayIndex] = value.changes.listen((_) => this.ref.markForCheck());
     }
     return value;
   }
@@ -227,7 +247,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
       this._createArrayToStoreObservables();
       var index = this.numberOfPropertyProtoRecords + 1;
       this.streams[index] = value.changes;
-      this.subscriptions[index] = value.changes.listen((_) => this.ref.requestCheck());
+      this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
     }
     return value;
   }

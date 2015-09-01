@@ -42,8 +42,7 @@ export class StyleInliner {
     return this._inlineImports(cssText, baseUrl, []);
   }
 
-  _inlineImports(cssText: string, baseUrl: string, inlinedUrls: List<string>): Promise<string>|
-      string {
+  _inlineImports(cssText: string, baseUrl: string, inlinedUrls: string[]): Promise<string>| string {
     var partIndex = 0;
     var parts = StringWrapper.split(cssText, _importRe);
 

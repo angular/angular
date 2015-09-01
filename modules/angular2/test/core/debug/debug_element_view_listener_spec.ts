@@ -68,7 +68,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, '')
                .createAsync(MyComp)
                .then((rootTestComponent) => {
-                 expect(global['ngProbe'](rootTestComponent.nativeElement).componentInstance)
+                 expect(global['ng']['probe'](rootTestComponent.nativeElement).componentInstance)
                      .toBeAnInstanceOf(MyComp);
 
                  async.done();

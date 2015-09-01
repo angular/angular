@@ -1,5 +1,5 @@
 import {Directive} from '../core/metadata';
-import {List, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {Router} from './router';
 import {Location} from './location';
@@ -37,10 +37,14 @@ import {Instruction, stringifyInstruction} from './instruction';
 @Directive({
   selector: '[router-link]',
   properties: ['routeParams: routerLink'],
-  host: {'(^click)': 'onClick()', '[attr.href]': 'visibleHref'}
+  host: {
+    '(^click)': 'onClick()',
+    '[attr.href]': 'visibleHref',
+    '[class.router-link-active]': 'isRouteActive'
+  }
 })
 export class RouterLink {
-  private _routeParams: List<any>;
+  private _routeParams: any[];
 
   // the url displayed on the anchor element.
   visibleHref: string;
@@ -50,7 +54,9 @@ export class RouterLink {
 
   constructor(private _router: Router, private _location: Location) {}
 
-  set routeParams(changes: List<any>) {
+  get isRouteActive(): boolean { return this._router.isRouteActive(this._navigationInstruction); }
+
+  set routeParams(changes: any[]) {
     this._routeParams = changes;
     this._navigationInstruction = this._router.generate(this._routeParams);
 

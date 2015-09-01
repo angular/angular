@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
-import {List, ListWrapper, SetWrapper} from "angular2/src/core/facade/collection";
+import {ListWrapper, SetWrapper} from "angular2/src/core/facade/collection";
 import {
   NumberWrapper,
   StringJoiner,
@@ -9,17 +9,17 @@ import {
 } from "angular2/src/core/facade/lang";
 
 export enum TokenType {
-  CHARACTER,
-  IDENTIFIER,
-  KEYWORD,
-  STRING,
-  OPERATOR,
-  NUMBER
+  Character,
+  Identifier,
+  Keyword,
+  String,
+  Operator,
+  Number
 }
 
 @Injectable()
 export class Lexer {
-  tokenize(text: string): List<any> {
+  tokenize(text: string): any[] {
     var scanner = new _Scanner(text);
     var tokens = [];
     var token = scanner.scanToken();
@@ -36,50 +36,50 @@ export class Token {
               public strValue: string) {}
 
   isCharacter(code: number): boolean {
-    return (this.type == TokenType.CHARACTER && this.numValue == code);
+    return (this.type == TokenType.Character && this.numValue == code);
   }
 
-  isNumber(): boolean { return (this.type == TokenType.NUMBER); }
+  isNumber(): boolean { return (this.type == TokenType.Number); }
 
-  isString(): boolean { return (this.type == TokenType.STRING); }
+  isString(): boolean { return (this.type == TokenType.String); }
 
   isOperator(operater: string): boolean {
-    return (this.type == TokenType.OPERATOR && this.strValue == operater);
+    return (this.type == TokenType.Operator && this.strValue == operater);
   }
 
-  isIdentifier(): boolean { return (this.type == TokenType.IDENTIFIER); }
+  isIdentifier(): boolean { return (this.type == TokenType.Identifier); }
 
-  isKeyword(): boolean { return (this.type == TokenType.KEYWORD); }
+  isKeyword(): boolean { return (this.type == TokenType.Keyword); }
 
-  isKeywordVar(): boolean { return (this.type == TokenType.KEYWORD && this.strValue == "var"); }
+  isKeywordVar(): boolean { return (this.type == TokenType.Keyword && this.strValue == "var"); }
 
-  isKeywordNull(): boolean { return (this.type == TokenType.KEYWORD && this.strValue == "null"); }
+  isKeywordNull(): boolean { return (this.type == TokenType.Keyword && this.strValue == "null"); }
 
   isKeywordUndefined(): boolean {
-    return (this.type == TokenType.KEYWORD && this.strValue == "undefined");
+    return (this.type == TokenType.Keyword && this.strValue == "undefined");
   }
 
-  isKeywordTrue(): boolean { return (this.type == TokenType.KEYWORD && this.strValue == "true"); }
+  isKeywordTrue(): boolean { return (this.type == TokenType.Keyword && this.strValue == "true"); }
 
-  isKeywordIf(): boolean { return (this.type == TokenType.KEYWORD && this.strValue == "if"); }
+  isKeywordIf(): boolean { return (this.type == TokenType.Keyword && this.strValue == "if"); }
 
-  isKeywordElse(): boolean { return (this.type == TokenType.KEYWORD && this.strValue == "else"); }
+  isKeywordElse(): boolean { return (this.type == TokenType.Keyword && this.strValue == "else"); }
 
-  isKeywordFalse(): boolean { return (this.type == TokenType.KEYWORD && this.strValue == "false"); }
+  isKeywordFalse(): boolean { return (this.type == TokenType.Keyword && this.strValue == "false"); }
 
   toNumber(): number {
     // -1 instead of NULL ok?
-    return (this.type == TokenType.NUMBER) ? this.numValue : -1;
+    return (this.type == TokenType.Number) ? this.numValue : -1;
   }
 
   toString(): string {
     switch (this.type) {
-      case TokenType.CHARACTER:
-      case TokenType.STRING:
-      case TokenType.IDENTIFIER:
-      case TokenType.KEYWORD:
+      case TokenType.Character:
+      case TokenType.String:
+      case TokenType.Identifier:
+      case TokenType.Keyword:
         return this.strValue;
-      case TokenType.NUMBER:
+      case TokenType.Number:
         return this.numValue.toString();
       default:
         return null;
@@ -88,31 +88,31 @@ export class Token {
 }
 
 function newCharacterToken(index: number, code: number): Token {
-  return new Token(index, TokenType.CHARACTER, code, StringWrapper.fromCharCode(code));
+  return new Token(index, TokenType.Character, code, StringWrapper.fromCharCode(code));
 }
 
 function newIdentifierToken(index: number, text: string): Token {
-  return new Token(index, TokenType.IDENTIFIER, 0, text);
+  return new Token(index, TokenType.Identifier, 0, text);
 }
 
 function newKeywordToken(index: number, text: string): Token {
-  return new Token(index, TokenType.KEYWORD, 0, text);
+  return new Token(index, TokenType.Keyword, 0, text);
 }
 
 function newOperatorToken(index: number, text: string): Token {
-  return new Token(index, TokenType.OPERATOR, 0, text);
+  return new Token(index, TokenType.Operator, 0, text);
 }
 
 function newStringToken(index: number, text: string): Token {
-  return new Token(index, TokenType.STRING, 0, text);
+  return new Token(index, TokenType.String, 0, text);
 }
 
 function newNumberToken(index: number, n: number): Token {
-  return new Token(index, TokenType.NUMBER, n, "");
+  return new Token(index, TokenType.Number, n, "");
 }
 
 
-export var EOF: Token = new Token(-1, TokenType.CHARACTER, 0, "");
+export var EOF: Token = new Token(-1, TokenType.Character, 0, "");
 
 export const $EOF = 0;
 export const $TAB = 9;

@@ -11,7 +11,7 @@ import {
 import {ListWrapper, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Injectable} from "angular2/di";
-import {Type} from "angular2/src/core/facade/lang";
+import {Type, StringWrapper} from "angular2/src/core/facade/lang";
 
 @Injectable()
 export class ClientMessageBrokerFactory {
@@ -90,10 +90,10 @@ export class ClientMessageBroker {
   private _handleMessage(message: StringMap<string, any>): void {
     var data = new MessageData(message);
     // TODO(jteplitz602): replace these strings with messaging constants #3685
-    if (data.type === "result" || data.type === "error") {
+    if (StringWrapper.equals(data.type, "result") || StringWrapper.equals(data.type, "error")) {
       var id = data.id;
       if (this._pending.has(id)) {
-        if (data.type === "result") {
+        if (StringWrapper.equals(data.type, "result")) {
           this._pending.get(id).resolve(data.value);
         } else {
           this._pending.get(id).reject(data.value, null);
@@ -132,5 +132,5 @@ export class FnArg {
 }
 
 export class UiArguments {
-  constructor(public method: string, public args?: List<FnArg>) {}
+  constructor(public method: string, public args?: FnArg[]) {}
 }

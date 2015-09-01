@@ -2,7 +2,8 @@ library angular2.test.transform.directive_metadata_extractor.all_tests;
 
 import 'dart:async';
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/render/dom/convert.dart';
+import 'package:angular2/src/core/change_detection/change_detection.dart';
+import 'package:angular2/src/transform/common/convert.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
@@ -96,21 +97,19 @@ void allTests() {
       expect(metadata.hostAttributes.length).toBe(1);
       expect(metadata.hostAttributes).toContain('attName');
       expect(metadata.hostAttributes['attName']).toEqual('attValue');
-
-      expect(metadata.hostActions).toBeNotNull();
-      expect(metadata.hostActions.length).toBe(1);
-      expect(metadata.hostActions).toContain('actionName');
-      expect(metadata.hostActions['actionName']).toEqual('actionValue');
     });
 
     it('should parse lifecycle events.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/lifecycle.ng_deps.dart');
       expect(metadata.callOnDestroy).toBe(true);
-      expect(metadata.callOnChange).toBe(true);
-      expect(metadata.callOnCheck).toBe(true);
+      expect(metadata.callOnChanges).toBe(true);
+      expect(metadata.callDoCheck).toBe(true);
       expect(metadata.callOnInit).toBe(true);
-      expect(metadata.callOnAllChangesDone).toBe(true);
+      expect(metadata.callAfterContentInit).toBe(true);
+      expect(metadata.callAfterContentChecked).toBe(true);
+      expect(metadata.callAfterViewInit).toBe(true);
+      expect(metadata.callAfterViewChecked).toBe(true);
     });
 
     it('should parse events.', () async {
@@ -122,7 +121,7 @@ void allTests() {
     it('should parse changeDetection.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/changeDetection.ng_deps.dart');
-      expect(metadata.changeDetection).toEqual('CHECK_ONCE');
+      expect(metadata.changeDetection).toEqual(ChangeDetectionStrategy.CheckOnce);
     });
 
     it('should fail when a class is annotated with multiple Directives.',

@@ -12,12 +12,10 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  proxy,
-  SpyObject,
   By
 } from 'angular2/test_lib';
 
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
+import {SpyRouter, SpyLocation} from './spies';
 
 import {bind, Component, View} from 'angular2/angular2';
 
@@ -98,29 +96,16 @@ class UserCmp {
 class TestComponent {
 }
 
-
-@proxy
-@IMPLEMENTS(Location)
-class DummyLocation extends SpyObject {
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
 function makeDummyLocation() {
-  var dl = new DummyLocation();
+  var dl = new SpyLocation();
   dl.spy('normalizeAbsolutely').andCallFake((url) => url);
   return dl;
 }
 
-
-@proxy
-@IMPLEMENTS(Router)
-class DummyRouter extends SpyObject {
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
 function makeDummyRouter() {
-  var dr = new DummyRouter();
+  var dr = new SpyRouter();
   dr.spy('generate').andCallFake((routeParams) => dummyInstruction);
+  dr.spy('isRouteActive').andCallFake((_) => false);
   dr.spy('navigateInstruction');
   return dr;
 }

@@ -8,12 +8,11 @@ import {
   expect,
   iit,
   inject,
-  it,
-  SpyObject,
-  proxy
+  it
 } from 'angular2/test_lib';
 
-import {isBlank, IMPLEMENTS, stringify} from 'angular2/src/core/facade/lang';
+import {SpyChangeDetection} from '../spies';
+import {isBlank, stringify} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
@@ -53,7 +52,8 @@ export function main() {
 
     beforeEach(() => {
       directiveResolver = new DirectiveResolver();
-      changeDetection = new ChangeDetectionSpy();
+      changeDetection = new SpyChangeDetection();
+      changeDetection.prop("generateDetectors", true);
       protoViewFactory = new ProtoViewFactory(changeDetection);
     });
 
@@ -252,14 +252,6 @@ function createRenderComponentElementBinder(directiveIndex) {
 
 function createRenderViewportElementBinder(nestedProtoView) {
   return new RenderElementBinder({nestedProtoView: nestedProtoView});
-}
-
-@proxy
-@IMPLEMENTS(ChangeDetection)
-class ChangeDetectionSpy extends SpyObject {
-  constructor() { super(ChangeDetection); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-  get generateDetectors() { return true; }
 }
 
 @Component({selector: 'main-comp'})

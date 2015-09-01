@@ -17,7 +17,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
-  encapsulation: ViewEncapsulation.NONE,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdButton {
   /** Whether a mousedown has occured on this element in the last 100ms. */
@@ -48,7 +48,7 @@ export class MdButton {
 @Component({
   selector: 'a[md-button], a[md-raised-button], a[md-fab]',
   properties: ['disabled'],
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   host: {
     '(^click)': 'onClick($event)',
     '(^mousedown)': 'onMousedown()',
@@ -61,7 +61,7 @@ export class MdButton {
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
   tabIndex: number;
@@ -86,7 +86,7 @@ export class MdAnchor extends MdButton {
   }
 
   /** Invoked when a change is detected. */
-  onChange(_) {
+  onChanges(_) {
     // A disabled anchor should not be in the tab flow.
     this.tabIndex = this.disabled ? -1 : 0;
   }

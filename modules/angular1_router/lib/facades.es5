@@ -4,12 +4,6 @@ function CONST() {
   });
 }
 
-function IMPLEMENTS(_) {
-  return (function(t) {
-    return t;
-  });
-}
-
 function CONST_EXPR(expr) {
   return expr;
 }

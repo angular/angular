@@ -10,18 +10,16 @@ import {
   xdescribe,
   expect,
   beforeEach,
-  SpyObject,
-  proxy,
   inject,
   AsyncTestCompleter,
   el,
   containsRegexp
 } from 'angular2/test_lib';
-import {isBlank, isPresent, IMPLEMENTS, stringify} from 'angular2/src/core/facade/lang';
+import {SpyView, SpyElementRef} from '../spies';
+import {isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {
   ListWrapper,
   MapWrapper,
-  List,
   StringMapWrapper,
   iterateListLike
 } from 'angular2/src/core/facade/collection';
@@ -41,32 +39,17 @@ import {
   LifecycleEvent
 } from 'angular2/metadata';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/di';
-import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
-@proxy
-@IMPLEMENTS(AppView)
-class DummyView extends SpyObject {
-  changeDetector;
-  elementOffset: number;
-  constructor() {
-    super(AppView);
-    this.changeDetector = null;
-    this.elementOffset = 0;
-  }
-  noSuchMethod(m) { return super.noSuchMethod(m); }
-}
-
-@proxy
-@IMPLEMENTS(ElementRef)
-class DummyElementRef extends SpyObject {
-  boundElementIndex: number = 0;
-  constructor() { super(ElementRef); }
-  noSuchMethod(m) { return super.noSuchMethod(m); }
+function createDummyView(detector = null) {
+  var res = new SpyView();
+  res.prop("changeDetector", detector);
+  res.prop("elementOffset", 0);
+  return res;
 }
 
 @Injectable()
@@ -131,11 +114,6 @@ class NeedsServiceFromHost {
 class HasEventEmitter {
   emitter;
   constructor() { this.emitter = "emitter"; }
-}
-
-class HasHostAction {
-  hostActionName;
-  constructor() { this.hostActionName = "hostAction"; }
 }
 
 class NeedsAttribute {
@@ -245,7 +223,7 @@ class TestNode extends TreeNode<TestNode> {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>new DummyView(), <any>new DummyElementRef(), null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, <any>createDummyView(), <any>new SpyElementRef(), null);
 
   // An injector with more than 10 bindings will switch to the dynamic strategy
   var dynamicBindings = [];
@@ -263,7 +241,7 @@ export function main() {
     return ProtoElementInjector.create(parent, index, directiveBinding, hasShadowRoot, distance, dirVariableBindings);
   }
 
-  function humanize(tree: TreeNode<any>, names: List<List<any>>) {
+  function humanize(tree: TreeNode<any>, names: any[][]) {
     var lookupName = (item) =>
         ListWrapper.last(ListWrapper.find(names, (pair) => pair[0] === item));
 
@@ -298,8 +276,8 @@ export function main() {
     return child;
   }
 
-  function hostShadowInjectors(hostBindings: List<any>,
-                               shadowBindings: List<any>, imperativelyCreatedInjector = null): ElementInjector {
+  function hostShadowInjectors(hostBindings: any[],
+                               shadowBindings: any[], imperativelyCreatedInjector = null): ElementInjector {
     var protoHost = createPei(null, 0, hostBindings, 0, true);
     var host = protoHost.instantiate(null);
     host.hydrate(null, null, defaultPreBuiltObjects);
@@ -448,18 +426,6 @@ export function main() {
         var accessor = inj.eventEmitterAccessors[0][0];
         expect(accessor.eventName).toEqual('publicEmitter');
         expect(accessor.getter(new HasEventEmitter())).toEqual('emitter');
-      });
-
-      it('should return a list of hostAction accessors', () => {
-        var binding = DirectiveBinding.createFromType(
-            HasEventEmitter, new DirectiveMetadata({host: {'@hostActionName': 'onAction'}}));
-
-        var inj = createPei(null, 0, [binding]);
-        expect(inj.hostActionAccessors.length).toEqual(1);
-
-        var accessor = inj.hostActionAccessors[0][0];
-        expect(accessor.methodName).toEqual('onAction');
-        expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });
 
@@ -773,7 +739,7 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var templateRef = new TemplateRef(<any>new DummyElementRef());
+            var templateRef = new TemplateRef(<any>new SpyElementRef());
             var bindings = ListWrapper.concat([NeedsTemplateRef], extraBindings);
             var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, null, templateRef));
 
@@ -904,7 +870,7 @@ export function main() {
           it("should call onDestroy on directives subscribed to this event", () => {
             var inj = injector(ListWrapper.concat(
                 [DirectiveBinding.createFromType(DirectiveWithDestroy,
-                                                 new DirectiveMetadata({lifecycle: [LifecycleEvent.onDestroy]}))],
+                                                 new DirectiveMetadata({lifecycle: [LifecycleEvent.OnDestroy]}))],
                 extraBindings));
             var destroy = inj.get(DirectiveWithDestroy);
             inj.dehydrate();
@@ -926,7 +892,7 @@ export function main() {
 
             query.onChange(() => async.done());
 
-            inj.onAllChangesDone();
+            inj.afterContentChecked();
           }));
 
           it("should not notify inherited queries", inject([AsyncTestCompleter], (async) => {
@@ -945,10 +911,10 @@ export function main() {
             });
 
             query.add(new CountingDirective());
-            child.onAllChangesDone(); // this does not notify the query
+            child.afterContentChecked(); // this does not notify the query
 
             query.add(new CountingDirective());
-            child.parent.onAllChangesDone();
+            child.parent.afterContentChecked();
           }));
         });
 
@@ -987,24 +953,22 @@ export function main() {
 
           it("should inject ChangeDetectorRef of the component's view into the component", () => {
             var cd = new DynamicChangeDetector(null, null, 0, [], [], null, [], [], [], null);
-            var view = <any>new DummyView();
-            var childView = new DummyView();
-            childView.changeDetector = cd;
+            var view = <any>createDummyView();
+            var childView = createDummyView(cd);
             view.spy('getNestedView').andReturn(childView);
             var binding = DirectiveBinding.createFromType(ComponentNeedsChangeDetectorRef, new ComponentMetadata());
             var inj = injector(ListWrapper.concat([binding], extraBindings), null, true,
-                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
+                               new PreBuiltObjects(null, view, <any>new SpyElementRef(), null));
 
             expect(inj.get(ComponentNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
 
           it("should inject ChangeDetectorRef of the containing component into directives", () => {
             var cd = new DynamicChangeDetector(null, null, 0, [], [], null, [], [], [], null);
-            var view = <any>new DummyView();
-            view.changeDetector =cd;
+            var view = <any>createDummyView(cd);
             var binding = DirectiveBinding.createFromType(DirectiveNeedsChangeDetectorRef, new DirectiveMetadata());
             var inj = injector(ListWrapper.concat([binding], extraBindings), null, false,
-                               new PreBuiltObjects(null, view, <any>new DummyElementRef(), null));
+                               new PreBuiltObjects(null, view, <any>new SpyElementRef(), null));
 
             expect(inj.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
           });
@@ -1015,7 +979,7 @@ export function main() {
           });
 
           it("should inject TemplateRef", () => {
-            var templateRef = new TemplateRef(<any>new DummyElementRef());
+            var templateRef = new TemplateRef(<any>new SpyElementRef());
             var inj = injector(ListWrapper.concat([NeedsTemplateRef], extraBindings), null, false,
                                new PreBuiltObjects(null, null, null, templateRef));
 
@@ -1065,7 +1029,7 @@ export function main() {
           })
 
           it('should contain PreBuiltObjects on the same injector', () => {
-            var preBuiltObjects = new PreBuiltObjects(null, null, null, new TemplateRef(<any>new DummyElementRef()));
+            var preBuiltObjects = new PreBuiltObjects(null, null, null, new TemplateRef(<any>new SpyElementRef()));
             var inj = injector(ListWrapper.concat([
                 NeedsTemplateRefQuery
               ], extraBindings), null,
@@ -1113,7 +1077,7 @@ export function main() {
               "one": null // element
             });
 
-            var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
+            var inj = injector(dirs.concat(extraBindings), null,
                                false, preBuildObjects, null, dirVariableBindings);
 
             expect(inj.get(NeedsQueryByVarBindings).query.first).toBe(defaultPreBuiltObjects.elementRef);
@@ -1128,7 +1092,7 @@ export function main() {
               "two": 1 // 1 is the index of NeedsDirective
             });
 
-            var inj = injector(ListWrapper.concat(dirs, extraBindings), null,
+            var inj = injector(dirs.concat(extraBindings), null,
                                false, preBuildObjects, null, dirVariableBindings);
 
             // NeedsQueryByVarBindings queries "one,two", so SimpleDirective should be before NeedsDirective

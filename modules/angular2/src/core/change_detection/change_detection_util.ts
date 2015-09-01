@@ -6,15 +6,9 @@ import {
   Type,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {ProtoRecord} from './proto_record';
-import {
-  CHECK_ALWAYS,
-  CHECK_ONCE,
-  CHECKED,
-  DETACHED,
-  isDefaultChangeDetectionStrategy
-} from './constants';
+import {ChangeDetectionStrategy, isDefaultChangeDetectionStrategy} from './constants';
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';
 import {BindingTarget} from './binding_record';
 import {DirectiveIndex} from './directive_record';
@@ -134,7 +128,7 @@ export class ChangeDetectionUtil {
   static operation_logical_or(left, right): any { return left || right; }
   static cond(cond, trueVal, falseVal): any { return cond ? trueVal : falseVal; }
 
-  static mapFn(keys: List<any>): any {
+  static mapFn(keys: any[]): any {
     function buildMap(values): StringMap<any, any> {
       var res = StringMapWrapper.create();
       for (var i = 0; i < keys.length; ++i) {
@@ -180,8 +174,9 @@ export class ChangeDetectionUtil {
     }
   }
 
-  static changeDetectionMode(strategy: string): string {
-    return isDefaultChangeDetectionStrategy(strategy) ? CHECK_ALWAYS : CHECK_ONCE;
+  static changeDetectionMode(strategy: ChangeDetectionStrategy): ChangeDetectionStrategy {
+    return isDefaultChangeDetectionStrategy(strategy) ? ChangeDetectionStrategy.CheckAlways :
+                                                        ChangeDetectionStrategy.CheckOnce;
   }
 
   static simpleChange(previousValue: any, currentValue: any): SimpleChange {

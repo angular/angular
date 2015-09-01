@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent, isBlank, assertionsEnabled, IMPLEMENTS} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, assertionsEnabled} from 'angular2/src/core/facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DirectiveParser} from 'angular2/src/core/render/dom/compiler/directive_parser';
@@ -49,7 +49,7 @@ export function main() {
       return new ViewDefinition({componentId: 'someComponent'});
     }
 
-    function process(el, propertyBindings = null, directives = null): List<ElementBinderBuilder> {
+    function process(el, propertyBindings = null, directives = null): ElementBinderBuilder[] {
       var pipeline = createPipeline(propertyBindings, directives);
       return ListWrapper.map(
           pipeline.processElements(el, ViewType.COMPONENT, createViewDefinition()),

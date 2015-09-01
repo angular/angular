@@ -33,7 +33,7 @@ var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
-  lifecycle: [LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnChanges],
   events: ['change'],
   properties: ['disabled', 'value'],
   host: {
@@ -47,7 +47,7 @@ var _uniqueIdCounter: number = 0;
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/radio/radio_group.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdRadioGroup {
   /** The selected value for the radio group. The value comes from the options. */
@@ -59,8 +59,8 @@ export class MdRadioGroup {
   /** Dispatcher for coordinating radio unique-selection by name. */
   radioDispatcher: MdRadioDispatcher;
 
-  /** List of child radio buttons. */
-  radios_: List<MdRadioButton>;
+  /** Array of child radio buttons. */
+  radios_: MdRadioButton[];
 
   activedescendant: any;
 
@@ -103,7 +103,7 @@ export class MdRadioGroup {
   }
 
   /** Change handler invoked when bindings are resolved or when bindings have changed. */
-  onChange(_) {
+  onChanges(_) {
     // If the component has a disabled attribute with no value, it will set disabled = ''.
     this.disabled = isPresent(this.disabled) && this.disabled !== false;
 
@@ -191,7 +191,7 @@ export class MdRadioGroup {
 
 @Component({
   selector: 'md-radio-button',
-  lifecycle: [LifecycleEvent.onInit],
+  lifecycle: [LifecycleEvent.OnInit],
   properties: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
     'role': 'radio',
@@ -205,7 +205,7 @@ export class MdRadioGroup {
 @View({
   templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdRadioButton {
   /** Whether this radio is checked. */

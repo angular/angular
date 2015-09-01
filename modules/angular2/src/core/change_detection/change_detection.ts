@@ -12,7 +12,7 @@ import {
   ChangeDetectorGenConfig
 } from './interfaces';
 import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/di';
-import {List, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   CONST,
   CONST_EXPR,
@@ -48,7 +48,7 @@ export {
   DebugContext,
   ChangeDetectorGenConfig
 } from './interfaces';
-export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './constants';
+export {ChangeDetectionStrategy} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
 export {BindingRecord, BindingTarget} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';

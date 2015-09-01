@@ -18,7 +18,7 @@ import {
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
 import {Injectable} from 'angular2/di';
@@ -33,7 +33,7 @@ import {NgFor} from 'angular2/src/core/directives/ng_for';
 
 @Injectable()
 class Logger {
-  log: List<string>;
+  log: string[];
 
   constructor() { this.log = []; }
 
@@ -119,7 +119,7 @@ class EventsComp {
 })
 @Injectable()
 class UsingFor {
-  stuff: List<string>;
+  stuff: string[];
 
   constructor() { this.stuff = ['one', 'two', 'three']; }
 }

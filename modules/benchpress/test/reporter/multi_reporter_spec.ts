@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {List, ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {DateWrapper} from 'angular2/src/core/facade/lang';
 
@@ -69,8 +69,8 @@ class MockReporter extends Reporter {
     return PromiseWrapper.resolve({'id': this._id, 'values': values});
   }
 
-  reportSample(completeSample: List<MeasureValues>,
-               validSample: List<MeasureValues>): Promise<StringMap<string, any>> {
+  reportSample(completeSample: MeasureValues[],
+               validSample: MeasureValues[]): Promise<StringMap<string, any>> {
     return PromiseWrapper.resolve(
         {'id': this._id, 'completeSample': completeSample, 'validSample': validSample});
   }

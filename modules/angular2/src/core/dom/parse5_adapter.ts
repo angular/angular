@@ -7,9 +7,15 @@ var cssParse = require('css').parse;
 
 var url = require('url');
 
-import {List, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
-import {BaseException, isPresent, isBlank, global} from 'angular2/src/core/facade/lang';
+import {
+  BaseException,
+  isPresent,
+  isBlank,
+  global,
+  setValueOnPath
+} from 'angular2/src/core/facade/lang';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
 
 var _attrToPropMap = {
@@ -52,7 +58,7 @@ export class Parse5DomAdapter extends DomAdapter {
 
   log(error) { console.log(error); }
 
-  logGroup(error) { console.log(error); }
+  logGroup(error) { console.error(error); }
 
   logGroupEnd() {}
 
@@ -60,7 +66,7 @@ export class Parse5DomAdapter extends DomAdapter {
 
   query(selector) { throw _notImplemented('query'); }
   querySelector(el, selector: string): any { return this.querySelectorAll(el, selector)[0]; }
-  querySelectorAll(el, selector: string): List<any> {
+  querySelectorAll(el, selector: string): any[] {
     var res = [];
     var _recursive = (result, node, selector, matcher) => {
       var cNodes = node.childNodes;
@@ -125,7 +131,7 @@ export class Parse5DomAdapter extends DomAdapter {
   onAndCancel(el, evt, listener): Function {
     this.on(el, evt, listener);
     return () => {
-      ListWrapper.remove(StringMapWrapper.get<List<any>>(el._eventListenersMap, evt), listener);
+      ListWrapper.remove(StringMapWrapper.get<any[]>(el._eventListenersMap, evt), listener);
     };
   }
   dispatchEvent(el, evt) {
@@ -172,7 +178,7 @@ export class Parse5DomAdapter extends DomAdapter {
   nextSibling(el): Node { return el.nextSibling; }
   parentElement(el): Node { return el.parent; }
   childNodes(el): Node[] { return el.childNodes; }
-  childNodesAsList(el): List<any> {
+  childNodesAsList(el): any[] {
     var childNodes = el.childNodes;
     var res = ListWrapper.createFixedSize(childNodes.length);
     for (var i = 0; i < childNodes.length; i++) {
@@ -286,7 +292,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   getShadowRoot(el): Element { return el.shadowRoot; }
   getHost(el): string { return el.host; }
-  getDistributedNodes(el: any): List<Node> { throw _notImplemented('getDistributedNodes'); }
+  getDistributedNodes(el: any): Node[] { throw _notImplemented('getDistributedNodes'); }
   clone(node: Node): Node {
     var _recursive = (node) => {
       var nodeClone = Object.create(Object.getPrototypeOf(node));
@@ -328,13 +334,13 @@ export class Parse5DomAdapter extends DomAdapter {
     };
     return _recursive(node);
   }
-  getElementsByClassName(element, name: string): List<HTMLElement> {
+  getElementsByClassName(element, name: string): HTMLElement[] {
     return this.querySelectorAll(element, "." + name);
   }
-  getElementsByTagName(element: any, name: string): List<HTMLElement> {
+  getElementsByTagName(element: any, name: string): HTMLElement[] {
     throw _notImplemented('getElementsByTagName');
   }
-  classList(element): List<string> {
+  classList(element): string[] {
     var classAttrValue = null;
     var attributes = element.attribs;
     if (attributes && attributes.hasOwnProperty("class")) {
@@ -512,7 +518,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return rules;
   }
-  cssToRules(css: string): List<any> {
+  cssToRules(css: string): any[] {
     css = css.replace(/url\(\'(.+)\'\)/g, 'url($1)');
     var rules = [];
     var parsedCSS = cssParse(css, {silent: true});
@@ -540,7 +546,7 @@ export class Parse5DomAdapter extends DomAdapter {
   getData(el, name: string): string { return this.getAttribute(el, 'data-' + name); }
   setData(el, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(name: string, value: any) { global[name] = value; }
+  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

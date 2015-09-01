@@ -24,7 +24,7 @@ export class TodoFactory {
 // Store manages any generic item that inherits from KeyModel
 @Injectable()
 export class Store {
-  list: List<KeyModel> = [];
+  list: KeyModel[] = [];
 
   add(record: KeyModel): void { this.list.push(record); }
 

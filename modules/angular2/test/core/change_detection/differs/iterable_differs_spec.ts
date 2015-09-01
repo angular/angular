@@ -1,14 +1,5 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  SpyIterableDifferFactory
-} from 'angular2/test_lib';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {SpyIterableDifferFactory} from '../../spies';
 import {IterableDiffers} from 'angular2/src/core/change_detection/differs/iterable_differs';
 import {Injector, bind} from 'angular2/di';
 

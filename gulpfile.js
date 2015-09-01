@@ -1073,6 +1073,27 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
       });
 });
 
+// WebWorker build
+gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
+  var devBundleConfig = merge(true, bundleConfig);
+  devBundleConfig.paths =
+      merge(true, devBundleConfig.paths, {
+       "*": "dist/js/dev/es6/*.js"
+      });
+  return bundler.bundle(
+      devBundleConfig,
+      'angular2/web_worker/ui',
+      './dist/build/web_worker/ui.dev.js',
+      { sourceMaps: true }).
+      then(function() {
+        return bundler.bundle(
+          devBundleConfig,
+          'angular2/web_worker/worker',
+          './dist/build/web_worker/worker.dev.js',
+          { sourceMaps: true});
+      });
+});
+
 gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
@@ -1165,17 +1186,19 @@ function insertRXLicense(source) {
   }
 }
 
+function addDevDependencies(outputFile) {
+  return bundler.modify(
+    JS_DEV_DEPS.concat(['dist/build/' + outputFile]),
+    outputFile)
+      .pipe(insert.transform(insertRXLicense))
+      .pipe(gulp.dest('dist/js/bundle'));
+}
+
 gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
-  return merge2(
-    bundler.modify(
-      JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']),
-      'angular2.dev.js')
-        .pipe(insert.transform(insertRXLicense))
-        .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
-        .pipe(gulp.dest('dist/js/bundle')),
-    bundler.modify(
-      ['dist/build/http.dev.js'], 'http.dev.js')
-        .pipe(gulp.dest('dist/js/bundle')));
+  var bundle = addDevDependencies('angular2.dev.js');
+  return merge2(bundle, bundler.modify(
+    ['dist/build/http.dev.js'], 'http.dev.js')
+      .pipe(gulp.dest('dist/js/bundle')));
 });
 
 gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
@@ -1188,10 +1211,16 @@ gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
       .pipe(gulp.dest('dist/js/bundle')));
 });
 
+gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], function() {
+  return merge2(addDevDependencies("web_worker/ui.dev.js",
+                addDevDependencies("web_worker/worker.dev.js")));
+});
+
 gulp.task('bundles.js', [
   '!bundle.js.prod.deps',
   '!bundle.js.dev.deps',
   '!bundle.js.min.deps',
+  '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
   '!router.bundle.js.dev',
   '!test.bundle.js.dev']);

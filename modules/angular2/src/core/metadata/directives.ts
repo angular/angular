@@ -1,7 +1,6 @@
 import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {List} from 'angular2/src/core/facade/collection';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
-import {DEFAULT} from 'angular2/change_detection';
+import {ChangeDetectionStrategy} from 'angular2/change_detection';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -482,7 +481,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  properties: List<string>;
+  properties: string[];
 
   /**
    * Enumerates the set of emitted events.
@@ -527,7 +526,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  events: List<string>;
+  events: string[];
 
   /**
    * Specifiy the events, actions, properties and attributes related to the host element.
@@ -628,31 +627,6 @@ export class DirectiveMetadata extends InjectableMetadata {
    * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
    * (here: `<div>` ) will ensure that this element will get the "button" role.
    *
-   * ## Actions
-   *
-   * Specifies which DOM methods a directive can invoke.
-   *
-   * ## Syntax
-   *
-   * ```
-   * @Directive({
-   *   selector: 'input',
-   *   host: {
-   *     '@emitFocus': 'focus()'
-   *   }
-   * })
-   * class InputDirective {
-   *   constructor() {
-   *     this.emitFocus = new EventEmitter();
-   *   }
-   *
-   *   focus() {
-   *     this.emitFocus.next();
-   *   }
-   * }
-   * ```
-   *
-   * In this example calling focus on InputDirective will result in calling focus on the input.
    */
   host: StringMap<string, string>;
 
@@ -661,7 +635,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    * See {@link LifecycleEvent} for details.
    */
-  lifecycle: List<LifecycleEvent>;
+  lifecycle: LifecycleEvent[];
 
   /**
    * If set to false the compiler does not compile the children of this directive.
@@ -699,7 +673,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    */
-  bindings: List<any>;
+  bindings: any[];
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -733,11 +707,11 @@ export class DirectiveMetadata extends InjectableMetadata {
                   compileChildren = true,
               }: {
     selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    bindings?: List<any>,
+    lifecycle?: LifecycleEvent[],
+    bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
   } = {}) {
@@ -795,14 +769,12 @@ export class ComponentMetadata extends DirectiveMetadata {
    * Defines the used change detection strategy.
    *
    * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating
-   * the component's bindings.
+   * propagating the component's bindings.
    *
    * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component
-   * tells it to do so.
+   * or only when the component tells it to do so.
    */
-  changeDetection: string;
+  changeDetection: ChangeDetectionStrategy;
 
   /**
    * Defines the set of injectable objects that are visible to its view dom children.
@@ -844,20 +816,20 @@ export class ComponentMetadata extends DirectiveMetadata {
    *
    * ```
    */
-  viewBindings: List<any>;
+  viewBindings: any[];
 
   constructor({selector, properties, events, host, exportAs, lifecycle, bindings, viewBindings,
-               changeDetection = DEFAULT, compileChildren = true}: {
+               changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
     selector?: string,
-    properties?: List<string>,
-    events?: List<string>,
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: List<LifecycleEvent>,
-    bindings?: List<any>,
+    lifecycle?: LifecycleEvent[],
+    bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
-    viewBindings?: List<any>,
-    changeDetection?: string,
+    viewBindings?: any[],
+    changeDetection?: ChangeDetectionStrategy,
   } = {}) {
     super({
       selector: selector,
@@ -877,12 +849,37 @@ export class ComponentMetadata extends DirectiveMetadata {
 
 /**
  * Lifecycle events are guaranteed to be called in the following order:
- * - `onChange` (optional if any bindings have changed),
- * - `onInit` (optional after the first check only),
- * - `onCheck`,
- * - `onAllChangesDone`
+ * - `OnChanges` (if any bindings have changed),
+ * - `OnInit` (after the first check only),
+ * - `DoCheck`,
+ * - `AfterContentChecked`
+ * - `AfterContentChecked`
+ * - `OnDestroy` (at the very end before destruction)
  */
 export enum LifecycleEvent {
+  /**
+   * Notify a directive when it has been checked the first time.
+   *
+   * This method is called right after the directive's bindings have been checked,
+   * and before any of its children's bindings have been checked.
+   *
+   * It is invoked only once.
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.OnInit]
+   * })
+   * class ClassSet {
+   *   onInit() {
+   *   }
+   * }
+   *  ```
+   */
+  OnInit,
+
   /**
    * Notify a directive whenever a {@link ViewMetadata} that contains it is destroyed.
    *
@@ -891,7 +888,7 @@ export enum LifecycleEvent {
    * ```
    * @Directive({
    *   ...,
-   *   lifecycle: [LifecycleEvent.onDestroy]
+   *   lifecycle: [LifecycleEvent.OnDestroy]
    * })
    * class ClassSet {
    *   onDestroy() {
@@ -900,7 +897,7 @@ export enum LifecycleEvent {
    * }
    * ```
    */
-  onDestroy,
+  OnDestroy,
 
 
   /**
@@ -920,12 +917,12 @@ export enum LifecycleEvent {
    *     'propA',
    *     'propB'
    *   ],
-   *   lifecycle: [LifecycleEvent.onChange]
+   *   lifecycle: [LifecycleEvent.OnChanges]
    * })
    * class ClassSet {
    *   propA;
    *   propB;
-   *   onChange(changes:{[idx: string, PropertyUpdate]}) {
+   *   onChanges(changes:{[idx: string, PropertyUpdate]}) {
    *     // This will get called after any of the properties have been updated.
    *     if (changes['propA']) {
    *       // if propA was updated
@@ -937,7 +934,7 @@ export enum LifecycleEvent {
    * }
    *  ```
    */
-  onChange,
+  OnChanges,
 
   /**
    * Notify a directive when it has been checked.
@@ -952,59 +949,102 @@ export enum LifecycleEvent {
    * ```
    * @Directive({
    *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.onCheck]
+   *   lifecycle: [LifecycleEvent.DoCheck]
    * })
    * class ClassSet {
-   *   onCheck() {
+   *   doCheck() {
    *   }
    * }
    *  ```
    */
-  onCheck,
+  DoCheck,
 
   /**
-   * Notify a directive when it has been checked the first itme.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked only once.
+   * Notify a directive when the bindings of all its content children have been checked the first
+   * time (whether they
+   * have changed or not).
    *
    * ## Example
    *
    * ```
    * @Directive({
    *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.onInit]
+   *   lifecycle: [LifecycleEvent.AfterContentInit]
    * })
    * class ClassSet {
-   *   onInit() {
+   *
+   *   afterContentInit() {
    *   }
+   *
    * }
    *  ```
    */
-  onInit,
+  AfterContentInit,
 
   /**
-   * Notify a directive when the bindings of all its children have been checked (whether they have
-   * changed or not).
+   * Notify a directive when the bindings of all its content children have been checked (whether
+   * they
+   * have changed or not).
    *
    * ## Example
    *
    * ```
    * @Directive({
    *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.onAllChangesDone]
+   *   lifecycle: [LifecycleEvent.AfterContentChecked]
    * })
    * class ClassSet {
    *
-   *   onAllChangesDone() {
+   *   afterContentChecked() {
    *   }
    *
    * }
    *  ```
    */
-  onAllChangesDone
+  AfterContentChecked,
+
+  /**
+   * Notify a directive when the bindings of all its view children have been checked the first time
+   * (whether they
+   * have changed or not).
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.AfterViewInit]
+   * })
+   * class ClassSet {
+   *
+   *   afterViewInit() {
+   *   }
+   *
+   * }
+   *  ```
+   */
+  AfterViewInit,
+
+  /**
+   * Notify a directive when the bindings of all its view children have been checked (whether they
+   * have changed or not).
+   *
+   * ## Example
+   *
+   * ```
+   * @Directive({
+   *   selector: '[class-set]',
+   *   lifecycle: [LifecycleEvent.AfterViewChecked]
+   * })
+   * class ClassSet {
+   *
+   *   afterViewChecked() {
+   *   }
+   *
+   * }
+   *  ```
+   */
+  AfterViewChecked
 }
 
 /**

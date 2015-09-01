@@ -32,5 +32,5 @@ import {Pipe} from '../metadata';
 @Pipe({name: 'json'})
 @Injectable()
 export class JsonPipe implements PipeTransform {
-  transform(value: any, args: List<any> = null): string { return Json.stringify(value); }
+  transform(value: any, args: any[] = null): string { return Json.stringify(value); }
 }

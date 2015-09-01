@@ -55,7 +55,7 @@ var inIt = false;
 var testBindings;
 
 class BeforeEachRunner {
-  _fns: List<FunctionWithParamTokens>;
+  _fns: FunctionWithParamTokens[];
   _parent: BeforeEachRunner;
   constructor(parent: BeforeEachRunner) {
     this._fns = [];
@@ -352,6 +352,8 @@ export class SpyObject {
     }
     return this[name];
   }
+
+  prop(name, value) { this[name] = value; }
 
   static stub(object = null, config = null, overrides = null) {
     if (!(object instanceof SpyObject)) {

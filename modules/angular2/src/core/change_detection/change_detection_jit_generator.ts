@@ -1,5 +1,5 @@
 import {BaseException, Type, isBlank, isPresent} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {ChangeDetectionUtil} from './change_detection_util';
@@ -12,6 +12,8 @@ import {codify} from './codegen_facade';
 import {EventBinding} from './event_binding';
 import {BindingTarget} from './binding_record';
 import {ChangeDetectorGenConfig} from './interfaces';
+import {ChangeDetectionStrategy} from './constants';
+
 
 
 /**
@@ -23,19 +25,19 @@ import {ChangeDetectorGenConfig} from './interfaces';
  * `angular2.transform.template_compiler.change_detector_codegen` library. If you make updates
  * here, please make equivalent changes there.
 */
-var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
-var UTIL = "ChangeDetectionUtil";
-var IS_CHANGED_LOCAL = "isChanged";
-var CHANGES_LOCAL = "changes";
+const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
+const UTIL = "ChangeDetectionUtil";
+const IS_CHANGED_LOCAL = "isChanged";
+const CHANGES_LOCAL = "changes";
 
 export class ChangeDetectorJITGenerator {
   _logic: CodegenLogicUtil;
   _names: CodegenNameUtil;
   _typeName: string;
 
-  constructor(private id: string, private changeDetectionStrategy: string,
-              private records: List<ProtoRecord>, private propertyBindingTargets: BindingTarget[],
-              private eventBindings: EventBinding[], private directiveRecords: List<any>,
+  constructor(private id: string, private changeDetectionStrategy: ChangeDetectionStrategy,
+              private records: ProtoRecord[], private propertyBindingTargets: BindingTarget[],
+              private eventBindings: EventBinding[], private directiveRecords: any[],
               private genConfig: ChangeDetectorGenConfig) {
     this._names =
         new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);
@@ -61,23 +63,23 @@ export class ChangeDetectorJITGenerator {
         var ${CHANGES_LOCAL} = null;
 
         ${this.records.map((r) => this._genRecord(r)).join("\n")}
-
-        ${this._names.getAlreadyCheckedName()} = true;
       }
 
       ${this._maybeGenHandleEventInternal()}
 
       ${this._genCheckNoChanges()}
 
-      ${this._maybeGenCallOnAllChangesDone()}
+      ${this._maybeGenAfterContentLifecycleCallbacks()}
+
+      ${this._maybeGenAfterViewLifecycleCallbacks()}
 
       ${this._maybeGenHydrateDirectives()}
 
       ${this._maybeGenDehydrateDirectives()}
 
-      ${this._genPropertyBindingTargets()};
+      ${this._genPropertyBindingTargets()}
 
-      ${this._genDirectiveIndices()};
+      ${this._genDirectiveIndices()}
 
       return function(dispatcher) {
         return new ${this._typeName}(dispatcher);
@@ -170,23 +172,26 @@ export class ChangeDetectorJITGenerator {
     }`;
   }
 
-  _maybeGenCallOnAllChangesDone(): string {
-    var notifications = [];
-    var dirs = this.directiveRecords;
-
-    // NOTE(kegluneq): Order is important!
-    for (var i = dirs.length - 1; i >= 0; --i) {
-      var dir = dirs[i];
-      if (dir.callOnAllChangesDone) {
-        notifications.push(
-            `${this._names.getDirectiveName(dir.directiveIndex)}.onAllChangesDone();`);
-      }
-    }
+  _maybeGenAfterContentLifecycleCallbacks(): string {
+    var notifications = this._logic.genContentLifecycleCallbacks(this.directiveRecords);
     if (notifications.length > 0) {
       var directiveNotifications = notifications.join("\n");
       return `
-        ${this._typeName}.prototype.callOnAllChangesDone = function() {
-          ${ABSTRACT_CHANGE_DETECTOR}.prototype.callOnAllChangesDone.call(this);
+        ${this._typeName}.prototype.afterContentLifecycleCallbacksInternal = function() {
+          ${directiveNotifications}
+        }
+      `;
+    } else {
+      return '';
+    }
+  }
+
+  _maybeGenAfterViewLifecycleCallbacks(): string {
+    var notifications = this._logic.genViewLifecycleCallbacks(this.directiveRecords);
+    if (notifications.length > 0) {
+      var directiveNotifications = notifications.join("\n");
+      return `
+        ${this._typeName}.prototype.afterViewLifecycleCallbacksInternal = function() {
           ${directiveNotifications}
         }
       `;
@@ -212,11 +217,11 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genDirectiveLifecycle(r: ProtoRecord): string {
-    if (r.name === "onCheck") {
+    if (r.name === "DoCheck") {
       return this._genOnCheck(r);
-    } else if (r.name === "onInit") {
+    } else if (r.name === "OnInit") {
       return this._genOnInit(r);
-    } else if (r.name === "onChange") {
+    } else if (r.name === "OnChanges") {
       return this._genOnChange(r);
     } else {
       throw new BaseException(`Unknown lifecycle event '${r.name}'`);
@@ -335,7 +340,7 @@ export class ChangeDetectorJITGenerator {
   _genAddToChanges(r: ProtoRecord): string {
     var newValue = this._names.getLocalName(r.selfIndex);
     var oldValue = this._names.getFieldName(r.selfIndex);
-    if (!r.bindingRecord.callOnChange()) return "";
+    if (!r.bindingRecord.callOnChanges()) return "";
     return `${CHANGES_LOCAL} = this.addChange(${CHANGES_LOCAL}, ${oldValue}, ${newValue});`;
   }
 
@@ -358,7 +363,7 @@ export class ChangeDetectorJITGenerator {
 
   _genOnCheck(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onCheck();`;
+    return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.doCheck();`;
   }
 
   _genOnInit(r: ProtoRecord): string {
@@ -368,7 +373,7 @@ export class ChangeDetectorJITGenerator {
 
   _genOnChange(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onChange(${CHANGES_LOCAL});`;
+    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onChanges(${CHANGES_LOCAL});`;
   }
 
   _genNotifyOnPushDetectors(r: ProtoRecord): string {

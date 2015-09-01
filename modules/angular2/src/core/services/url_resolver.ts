@@ -176,13 +176,13 @@ var _splitRe =
  * @enum {number}
  */
 enum _ComponentIndex {
-  SCHEME = 1,
-  USER_INFO,
-  DOMAIN,
-  PORT,
-  PATH,
-  QUERY_DATA,
-  FRAGMENT
+  Scheme = 1,
+  UserInfo,
+  Domain,
+  Port,
+  Path,
+  QueryData,
+  Fragment
 }
 
 /**
@@ -200,7 +200,7 @@ enum _ComponentIndex {
  *     on the browser's regular expression implementation.  Never null, since
  *     arbitrary strings may still look like path names.
  */
-function _split(uri: string): List<string | any> {
+function _split(uri: string): Array<string | any> {
   return RegExpWrapper.firstMatch(_splitRe, uri);
 }
 
@@ -255,14 +255,14 @@ function _removeDotSegments(path: string): string {
  * @param {Array.<string?>} parts
  * @return {string}
  */
-function _joinAndCanonicalizePath(parts: List<any>): string {
-  var path = parts[_ComponentIndex.PATH];
+function _joinAndCanonicalizePath(parts: any[]): string {
+  var path = parts[_ComponentIndex.Path];
   path = isBlank(path) ? '' : _removeDotSegments(path);
-  parts[_ComponentIndex.PATH] = path;
+  parts[_ComponentIndex.Path] = path;
 
-  return _buildFromEncodedParts(parts[_ComponentIndex.SCHEME], parts[_ComponentIndex.USER_INFO],
-                                parts[_ComponentIndex.DOMAIN], parts[_ComponentIndex.PORT], path,
-                                parts[_ComponentIndex.QUERY_DATA], parts[_ComponentIndex.FRAGMENT]);
+  return _buildFromEncodedParts(parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo],
+                                parts[_ComponentIndex.Domain], parts[_ComponentIndex.Port], path,
+                                parts[_ComponentIndex.QueryData], parts[_ComponentIndex.Fragment]);
 }
 
 /**
@@ -275,26 +275,26 @@ function _resolveUrl(base: string, url: string): string {
   var parts = _split(encodeURI(url));
   var baseParts = _split(base);
 
-  if (isPresent(parts[_ComponentIndex.SCHEME])) {
+  if (isPresent(parts[_ComponentIndex.Scheme])) {
     return _joinAndCanonicalizePath(parts);
   } else {
-    parts[_ComponentIndex.SCHEME] = baseParts[_ComponentIndex.SCHEME];
+    parts[_ComponentIndex.Scheme] = baseParts[_ComponentIndex.Scheme];
   }
 
-  for (var i = _ComponentIndex.SCHEME; i <= _ComponentIndex.PORT; i++) {
+  for (var i = _ComponentIndex.Scheme; i <= _ComponentIndex.Port; i++) {
     if (isBlank(parts[i])) {
       parts[i] = baseParts[i];
     }
   }
 
-  if (parts[_ComponentIndex.PATH][0] == '/') {
+  if (parts[_ComponentIndex.Path][0] == '/') {
     return _joinAndCanonicalizePath(parts);
   }
 
-  var path = baseParts[_ComponentIndex.PATH];
+  var path = baseParts[_ComponentIndex.Path];
   if (isBlank(path)) path = '/';
   var index = path.lastIndexOf('/');
-  path = path.substring(0, index + 1) + parts[_ComponentIndex.PATH];
-  parts[_ComponentIndex.PATH] = path;
+  path = path.substring(0, index + 1) + parts[_ComponentIndex.Path];
+  parts[_ComponentIndex.Path] = path;
   return _joinAndCanonicalizePath(parts);
 }

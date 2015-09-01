@@ -79,6 +79,13 @@ export function main() {
       expect(url).toEqual('first/one/second/two');
     });
 
+    it('should geneate params as an empty StringMap when no params are given', () => {
+      registry.config(RootHostCmp,
+                      new Route({path: '/test/...', component: DummyParentParamCmp, as: 'test'}));
+      var instruction = registry.generate(['test'], RootHostCmp);
+      expect(instruction.component.params).toEqual({});
+    });
+
     it('should generate URLs of loaded components after they are loaded',
        inject([AsyncTestCompleter], (async) => {
          registry.config(

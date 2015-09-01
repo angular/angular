@@ -1,4 +1,4 @@
-import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {ResolvedBinding, Binding, Dependency, BindingBuilder, bind} from './binding';
 import {
   AbstractBindingError,
@@ -427,7 +427,7 @@ export class Injector {
    *such as
    * `fromResolvedBindings` and `createChildFromResolved`.
    */
-  static resolve(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
+  static resolve(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
     var resolvedBindings = _resolveBindings(bindings);
     var flatten = _flattenBindings(resolvedBindings, new Map());
     return _createListOfBindings(flatten);
@@ -446,7 +446,7 @@ export class Injector {
    * bindings.
    * @param `depProvider`
    */
-  static resolveAndCreate(bindings: List<Type | Binding | List<any>>,
+  static resolveAndCreate(bindings: Array<Type | Binding | any[]>,
                           depProvider: DependencyProvider = null): Injector {
     var resolvedBindings = Injector.resolve(bindings);
     return Injector.fromResolvedBindings(resolvedBindings, depProvider);
@@ -460,7 +460,7 @@ export class Injector {
    * {@link Injector}.
    * @param `depProvider`
    */
-  static fromResolvedBindings(bindings: List<ResolvedBinding>,
+  static fromResolvedBindings(bindings: ResolvedBinding[],
                               depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
@@ -537,7 +537,7 @@ export class Injector {
   * recursive list of more bindings.
   * @param `depProvider`
   */
-  resolveAndCreateChild(bindings: List<Type | Binding | List<any>>,
+  resolveAndCreateChild(bindings: Array<Type | Binding | any[]>,
                         depProvider: DependencyProvider = null): Injector {
     var resovledBindings = Injector.resolve(bindings);
     return this.createChildFromResolved(resovledBindings, depProvider);
@@ -551,7 +551,7 @@ export class Injector {
    * @param `depProvider`
    * @returns a new child {@link Injector}.
    */
-  createChildFromResolved(bindings: List<ResolvedBinding>,
+  createChildFromResolved(bindings: ResolvedBinding[],
                           depProvider: DependencyProvider = null): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
@@ -801,7 +801,7 @@ export class Injector {
 var INJECTOR_KEY = Key.get(Injector);
 
 
-function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
+function _resolveBindings(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
   var resolvedList = ListWrapper.createFixedSize(bindings.length);
   for (var i = 0; i < bindings.length; i++) {
     var unresolved = resolveForwardRef(bindings[i]);
@@ -812,7 +812,7 @@ function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<Reso
       resolved = bind(unresolved).toClass(unresolved).resolve();
     } else if (unresolved instanceof Binding) {
       resolved = unresolved.resolve();
-    } else if (unresolved instanceof List) {
+    } else if (unresolved instanceof Array) {
       resolved = _resolveBindings(unresolved);
     } else if (unresolved instanceof BindingBuilder) {
       throw new InvalidBindingError(unresolved.token);
@@ -824,17 +824,16 @@ function _resolveBindings(bindings: List<Type | Binding | List<any>>): List<Reso
   return resolvedList;
 }
 
-function _createListOfBindings(flattenedBindings: Map<number, ResolvedBinding>):
-    List<ResolvedBinding> {
+function _createListOfBindings(flattenedBindings: Map<number, ResolvedBinding>): ResolvedBinding[] {
   return MapWrapper.values(flattenedBindings);
 }
 
-function _flattenBindings(bindings: List<ResolvedBinding | List<any>>,
+function _flattenBindings(bindings: Array<ResolvedBinding | any[]>,
                           res: Map<number, ResolvedBinding>): Map<number, ResolvedBinding> {
   ListWrapper.forEach(bindings, function(b) {
     if (b instanceof ResolvedBinding) {
       res.set(b.key.id, b);
-    } else if (b instanceof List) {
+    } else if (b instanceof Array) {
       _flattenBindings(b, res);
     }
   });

@@ -17,7 +17,7 @@ export class EventDispatcher implements RenderEventDispatcher {
   constructor(private _viewRef: RenderViewRef, private _sink: EventEmitter,
               private _serializer: Serializer) {}
 
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>) {
+  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {
     var e = locals.get('$event');
     var serializedEvent;
     // TODO (jteplitz602): support custom events #3350
@@ -106,5 +106,9 @@ export class EventDispatcher implements RenderEventDispatcher {
       "eventName": eventName,
       "locals": serializedLocals
     });
+
+    // TODO(kegluneq): Eventually, we want the user to indicate from the UI side whether the event
+    // should be canceled, but for now just call `preventDefault` on the original DOM event.
+    return false;
   }
 }

@@ -70,7 +70,7 @@ export class QueryMetadata extends DependencyMetadata {
 
   get isVarBindingQuery(): boolean { return isString(this.selector); }
 
-  get varBindings(): List<string> { return StringWrapper.split(this.selector, new RegExp(",")); }
+  get varBindings(): string[] { return StringWrapper.split(this.selector, new RegExp(",")); }
 
   toString(): string { return `@Query(${stringify(this.selector)})`; }
 }

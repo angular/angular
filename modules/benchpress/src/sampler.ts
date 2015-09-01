@@ -1,6 +1,6 @@
 import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {StringMapWrapper, StringMap, List, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, StringMap, ListWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/di';
 
 import {Metric} from './metric';
@@ -21,7 +21,7 @@ import {MeasureValues} from './measure_values';
  */
 export class Sampler {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): List<Binding> { return _BINDINGS; }
+  static get BINDINGS(): Binding[] { return _BINDINGS; }
 
   _driver: WebDriverAdapter;
   _metric: Metric;
@@ -80,7 +80,7 @@ export class Sampler {
 
   _report(state: SampleState, metricValues: StringMap<string, any>): Promise<SampleState> {
     var measureValues = new MeasureValues(state.completeSample.length, this._now(), metricValues);
-    var completeSample = ListWrapper.concat(state.completeSample, [measureValues]);
+    var completeSample = state.completeSample.concat([measureValues]);
     var validSample = this._validator.validate(completeSample);
     var resultPromise = this._reporter.reportMeasureValues(measureValues);
     if (isPresent(validSample)) {
@@ -92,7 +92,7 @@ export class Sampler {
 }
 
 export class SampleState {
-  constructor(public completeSample: List<any>, public validSample: List<any>) {}
+  constructor(public completeSample: any[], public validSample: any[]) {}
 }
 
 var _BINDINGS = [

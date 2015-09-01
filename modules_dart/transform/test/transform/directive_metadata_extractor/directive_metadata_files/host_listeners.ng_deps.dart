@@ -15,7 +15,6 @@ void initReflector(reflector) {
           const Component(host: const {
             '(change)': 'onChange(\$event)',
             '[value]': 'value',
-            '@actionName': 'actionValue',
             'attName': 'attValue'
           })
         ], const [

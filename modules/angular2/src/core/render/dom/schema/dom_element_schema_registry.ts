@@ -1,17 +1,28 @@
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {ElementSchemaRegistry} from './element_schema_registry';
 
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
-  hasProperty(elm: any, propName: string): boolean {
-    var tagName = DOM.tagName(elm);
+  private _protoElements: Map<string, Element> = new Map();
+
+  private _getProtoElement(tagName: string): Element {
+    var element = this._protoElements.get(tagName);
+    if (isBlank(element)) {
+      element = DOM.createElement(tagName);
+      this._protoElements.set(tagName, element);
+    }
+    return element;
+  }
+
+  hasProperty(tagName: string, propName: string): boolean {
     if (tagName.indexOf('-') !== -1) {
       // can't tell now as we don't know which properties a custom element will get
       // once it is instantiated
       return true;
     } else {
+      var elm = this._getProtoElement(tagName);
       return DOM.hasProperty(elm, propName);
     }
   }

@@ -7,7 +7,7 @@ import {
   expect,
   beforeEach,
   afterEach,
-  supportsIntlApi
+  browserDetection
 } from 'angular2/test_lib';
 
 import {DatePipe} from 'angular2/pipes';
@@ -35,7 +35,7 @@ export function main() {
 
     // TODO(mlaval): enable tests when Intl API is no longer used, see
     // https://github.com/angular/angular/issues/3333
-    if (supportsIntlApi()) {
+    if (browserDetection.supportsIntlApi) {
       describe("transform", () => {
         it('should format each component correctly', () => {
           expect(pipe.transform(date, ['y'])).toEqual('2015');

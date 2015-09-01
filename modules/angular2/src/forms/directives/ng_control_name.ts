@@ -1,6 +1,6 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {List, StringMap} from 'angular2/src/core/facade/collection';
+import {StringMap} from 'angular2/src/core/facade/collection';
 
 import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
@@ -76,7 +76,7 @@ const controlNameBinding =
   bindings: [controlNameBinding],
   properties: ['name: ngControl', 'model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange],
+  lifecycle: [LifecycleEvent.OnDestroy, LifecycleEvent.OnChanges],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl {
@@ -95,7 +95,7 @@ export class NgControlName extends NgControl {
     this.ngValidators = ngValidators;
   }
 
-  onChange(c: StringMap<string, any>) {
+  onChanges(c: StringMap<string, any>) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;
@@ -113,7 +113,7 @@ export class NgControlName extends NgControl {
     ObservableWrapper.callNext(this.update, newValue);
   }
 
-  get path(): List<string> { return controlPath(this.name, this._parent); }
+  get path(): string[] { return controlPath(this.name, this._parent); }
 
   get formDirective(): any { return this._parent.formDirective; }
 

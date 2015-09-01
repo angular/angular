@@ -1,4 +1,4 @@
-import {List, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   isPresent,
   isBlank,
@@ -7,10 +7,12 @@ import {
   CONST_EXPR
 } from 'angular2/src/core/facade/lang';
 
-
+/**
+ * This class represents a parsed URL
+ */
 export class Url {
   constructor(public path: string, public child: Url = null,
-              public auxiliary: List<Url> = CONST_EXPR([]),
+              public auxiliary: Url[] = CONST_EXPR([]),
               public params: StringMap<string, any> = null) {}
 
   toString(): string {
@@ -37,7 +39,7 @@ export class Url {
 }
 
 export class RootUrl extends Url {
-  constructor(path: string, child: Url = null, auxiliary: List<Url> = CONST_EXPR([]),
+  constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
               params: StringMap<string, any> = null) {
     super(path, child, auxiliary, params);
   }
@@ -57,7 +59,7 @@ export class RootUrl extends Url {
   }
 }
 
-export function pathSegmentsToUrl(pathSegments: List<string>): Url {
+export function pathSegmentsToUrl(pathSegments: string[]): Url {
   var url = new Url(pathSegments[pathSegments.length - 1]);
   for (var i = pathSegments.length - 2; i >= 0; i -= 1) {
     url = new Url(pathSegments[i], url);
@@ -185,7 +187,7 @@ export class UrlParser {
     params[key] = value;
   }
 
-  parseAuxiliaryRoutes(): List<Url> {
+  parseAuxiliaryRoutes(): Url[] {
     var routes = [];
     this.capture('(');
 
@@ -203,7 +205,7 @@ export class UrlParser {
 
 export var parser = new UrlParser();
 
-export function serializeParams(paramMap: StringMap<string, any>): List<string> {
+export function serializeParams(paramMap: StringMap<string, any>): string[] {
   var params = [];
   if (isPresent(paramMap)) {
     StringMapWrapper.forEach(paramMap, (value, key) => {

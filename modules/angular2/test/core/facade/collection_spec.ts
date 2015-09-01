@@ -1,7 +1,6 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit} from 'angular2/test_lib';
 
 import {
-  List,
   ListWrapper,
   StringMap,
   StringMapWrapper,
@@ -10,7 +9,7 @@ import {
 
 export function main() {
   describe('ListWrapper', () => {
-    var l: List<number>;
+    var l: number[];
 
     describe('splice', () => {
       it('should remove sublist of given length and return it', () => {

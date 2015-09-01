@@ -17,7 +17,7 @@ import {MdCheckbox} from "../checkbox/checkbox";
 @View({
   templateUrl: 'package:angular2_material/src/components/switcher/switch.html',
   directives: [],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdSwitch extends MdCheckbox {
   constructor(@Attribute('tabindex') tabindex: string) {

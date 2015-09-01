@@ -16,9 +16,9 @@ void initReflector() {
             const [
               const prefix.Component(
                   selector: '[soup]',
-                  lifecycle: const [prefix.LifecycleEvent.onChange])
+                  lifecycle: const [prefix.LifecycleEvent.OnChanges])
             ],
             const [],
             () => new OnChangeSoupComponent(),
-            const [prefix.OnChange]));
+            const [prefix.OnChanges]));
 }

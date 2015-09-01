@@ -15,8 +15,7 @@ import {
   ChangeDetectorGenConfig,
   BindingRecord,
   DirectiveRecord,
-  DirectiveIndex,
-  DEFAULT
+  DirectiveIndex
 } from 'angular2/src/core/change_detection/change_detection';
 
 
@@ -389,5 +388,6 @@ class DummyDispatcher implements ChangeDispatcher {
   }
   notifyOnBinding(bindingTarget, newValue) { throw "Should not be used"; }
   logBindingUpdate(bindingTarget, newValue) { throw "Should not be used"; }
-  notifyOnAllChangesDone() {}
+  notifyAfterContentChecked() {}
+  notifyAfterViewChecked() {}
 }

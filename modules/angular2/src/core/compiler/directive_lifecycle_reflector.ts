@@ -8,15 +8,21 @@ export function hasLifecycleHook(e: LifecycleEvent, type, annotation: DirectiveM
     if (!(type instanceof Type)) return false;
     var proto = (<any>type).prototype;
     switch (e) {
-      case LifecycleEvent.onAllChangesDone:
-        return !!proto.onAllChangesDone;
-      case LifecycleEvent.onChange:
-        return !!proto.onChange;
-      case LifecycleEvent.onCheck:
-        return !!proto.onCheck;
-      case LifecycleEvent.onDestroy:
+      case LifecycleEvent.AfterContentInit:
+        return !!proto.afterContentInit;
+      case LifecycleEvent.AfterContentChecked:
+        return !!proto.afterContentChecked;
+      case LifecycleEvent.AfterViewInit:
+        return !!proto.afterViewInit;
+      case LifecycleEvent.AfterViewChecked:
+        return !!proto.afterViewChecked;
+      case LifecycleEvent.OnChanges:
+        return !!proto.onChanges;
+      case LifecycleEvent.DoCheck:
+        return !!proto.doCheck;
+      case LifecycleEvent.OnDestroy:
         return !!proto.onDestroy;
-      case LifecycleEvent.onInit:
+      case LifecycleEvent.OnInit:
         return !!proto.onInit;
       default:
         return false;

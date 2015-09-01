@@ -1,19 +1,5 @@
 $SCRIPTS$
 
-window = {
-  setTimeout: setTimeout,
-  Map: Map,
-  Set: Set,
-  Array: Array,
-  Reflect: Reflect,
-  RegExp: RegExp,
-  Promise: Promise,
-  Date: Date,
-  zone: zone
-};
-assert = function() {};
-
-
 System.config({
   baseURL: '/',
   defaultJSExtensions: true,

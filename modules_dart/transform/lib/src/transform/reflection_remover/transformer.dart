@@ -25,18 +25,12 @@ class ReflectionRemover extends Transformer {
   ReflectionRemover(this.options);
 
   @override
-  bool isPrimary(AssetId id) => options.reflectionEntryPoints != null &&
-      options.reflectionEntryPoints.contains(id.path);
+  bool isPrimary(AssetId id) => options.entryPointGlobs != null &&
+      options.entryPointGlobs.any((g) => g.matches(id.path));
 
   @override
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
-      var newEntryPoints = options.entryPoints.map((entryPoint) {
-        return new AssetId(transform.primaryInput.id.package, entryPoint)
-            .changeExtension(DEPS_EXTENSION);
-      });
-      var reader = new AssetReader.fromTransform(transform);
-
       var mirrorMode = options.mirrorMode;
       var writeStaticInit = options.initReflector;
       if (options.modeName == TRANSFORM_DYNAMIC_MODE) {
@@ -48,7 +42,7 @@ class ReflectionRemover extends Transformer {
       }
 
       var transformedCode = await removeReflectionCapabilities(
-          reader, transform.primaryInput.id, newEntryPoints,
+          new AssetReader.fromTransform(transform), transform.primaryInput.id,
           mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
       transform.addOutput(
           new Asset.fromString(transform.primaryInput.id, transformedCode));

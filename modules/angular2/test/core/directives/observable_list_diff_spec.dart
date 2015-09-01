@@ -1,8 +1,14 @@
 library angular2.test.directives.observable_list_iterable_diff_spec;
 
 import 'package:angular2/test_lib.dart';
+import 'package:angular2/change_detection.dart';
 import 'package:observe/observe.dart' show ObservableList;
 import 'package:angular2/src/core/directives/observable_list_diff.dart';
+
+@proxy
+class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
 
 main() {
   describe('ObservableListDiff', () {
@@ -67,7 +73,7 @@ main() {
       c.add(3);
       flushMicrotasks();
 
-      expect(changeDetectorRef.spy("requestCheck")).toHaveBeenCalledOnce();
+      expect(changeDetectorRef.spy("markForCheck")).toHaveBeenCalledOnce();
     }));
 
     it("should return the wrapped value after changing a collection", () {

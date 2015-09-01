@@ -73,7 +73,7 @@ class CreditCardValidator {
 class ShowError {
   formDir;
   controlPath: string;
-  errorTypes: List<string>;
+  errorTypes: string[];
 
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 

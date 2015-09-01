@@ -9,12 +9,12 @@ import {
   WebWorkerRenderViewRef,
   WebWorkerRenderFragmentRef
 } from "angular2/src/web_workers/shared/render_view_with_fragments_store";
-import {List, ListWrapper} from "angular2/src/core/facade/collection";
+import {ListWrapper} from "angular2/src/core/facade/collection";
 
 export function main() {
   describe("RenderViewWithFragmentsStore", () => {
     describe("on WebWorker", () => {
-      var store;
+      var store: RenderViewWithFragmentsStore;
       beforeEach(() => { store = new RenderViewWithFragmentsStore(true); });
 
       it("should allocate fragmentCount + 1 refs", () => {
@@ -23,8 +23,8 @@ export function main() {
         var viewRef: WebWorkerRenderViewRef = <WebWorkerRenderViewRef>view.viewRef;
         expect(viewRef.refNumber).toEqual(0);
 
-        var fragmentRefs: List<WebWorkerRenderFragmentRef> =
-            <List<WebWorkerRenderFragmentRef>>view.fragmentRefs;
+        var fragmentRefs: WebWorkerRenderFragmentRef[] =
+            <WebWorkerRenderFragmentRef[]>view.fragmentRefs;
         expect(fragmentRefs.length).toEqual(10);
 
         for (var i = 0; i < fragmentRefs.length; i++) {
@@ -44,10 +44,22 @@ export function main() {
         expect(store.deserializeViewWithFragments(store.serializeViewWithFragments(view)))
             .toEqual(view);
       });
+
+      it("should remove a view and all attached fragments", () => {
+        const NUM_FRAGMENTS = 5;
+        var view = store.allocate(NUM_FRAGMENTS);
+        var viewRef = (<WebWorkerRenderViewRef>view.viewRef).refNumber;
+        store.remove(view.viewRef);
+
+        expect(store.deserializeRenderViewRef(viewRef++)).toBeNull();
+        for (var i = 0; i < NUM_FRAGMENTS; i++) {
+          expect(store.deserializeRenderFragmentRef(viewRef++)).toBeNull();
+        }
+      });
     });
 
     describe("on UI", () => {
-      var store;
+      var store: RenderViewWithFragmentsStore;
       beforeEach(() => { store = new RenderViewWithFragmentsStore(false); });
       function createMockRenderViewWithFragments(): RenderViewWithFragments {
         var view = new MockRenderViewRef();
@@ -62,10 +74,11 @@ export function main() {
         var renderViewWithFragments = createMockRenderViewWithFragments();
 
         store.store(renderViewWithFragments, 100);
-        expect(store.retreive(100)).toBe(renderViewWithFragments.viewRef);
+        expect(store.deserializeRenderViewRef(100)).toBe(renderViewWithFragments.viewRef);
 
         for (var i = 0; i < renderViewWithFragments.fragmentRefs.length; i++) {
-          expect(store.retreive(101 + i)).toBe(renderViewWithFragments.fragmentRefs[i]);
+          expect(store.deserializeRenderFragmentRef(101 + i))
+              .toBe(renderViewWithFragments.fragmentRefs[i]);
         }
       });
 

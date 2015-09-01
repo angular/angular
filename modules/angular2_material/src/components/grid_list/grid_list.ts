@@ -28,15 +28,15 @@ class RowHeightMode {
 @Component({
   selector: 'md-grid-list',
   properties: ['cols', 'rowHeight', 'gutterSize'],
-  lifecycle: [LifecycleEvent.onAllChangesDone]
+  lifecycle: [LifecycleEvent.AfterContentChecked]
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdGridList {
-  /** List of tiles that are being rendered. */
-  tiles: List<MdGridTile>;
+  /** Array of tiles that are being rendered. */
+  tiles: MdGridTile[];
 
   /** Number of columns being rendered. */
   _cols: number;
@@ -88,7 +88,7 @@ export class MdGridList {
     }
   }
 
-  onAllChangesDone() {
+  afterContentChecked() {
     this.layoutTiles();
   }
 
@@ -226,11 +226,11 @@ export class MdGridList {
     '[style.marginTop]': 'style.marginTop',
     '[style.paddingTop]': 'style.paddingTop',
   },
-  lifecycle: [LifecycleEvent.onDestroy, LifecycleEvent.onChange]
+  lifecycle: [LifecycleEvent.OnDestroy, LifecycleEvent.OnChanges]
 })
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html',
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 export class MdGridTile {
   gridList: MdGridList;
@@ -269,7 +269,7 @@ export class MdGridTile {
    * Change handler invoked when bindings are resolved or when bindings have changed.
    * Notifies grid-list that a re-layout is required.
    */
-  onChange(_) {
+  onChanges(_) {
     if (!this.isRegisteredWithGridList) {
       this.gridList.addTile(this);
       this.isRegisteredWithGridList = true;
@@ -302,7 +302,7 @@ export class MdGridTile {
  */
 class TileCoordinator {
   // Tracking array (see class description).
-  tracker: List<number>;
+  tracker: number[];
 
   // Index at which the search for the next gap will start.
   columnIndex: number;
@@ -311,9 +311,9 @@ class TileCoordinator {
   rowIndex: number;
 
   // The computed (row, col) position of each tile (the output).
-  positions: List<Position>;
+  positions: Position[];
 
-  constructor(numColumns: number, tiles: List<MdGridTile>) {
+  constructor(numColumns: number, tiles: MdGridTile[]) {
     this.columnIndex = 0;
     this.rowIndex = 0;
 

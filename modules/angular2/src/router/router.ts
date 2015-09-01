@@ -4,13 +4,7 @@ import {
   EventEmitter,
   ObservableWrapper
 } from 'angular2/src/core/facade/async';
-import {
-  Map,
-  StringMapWrapper,
-  MapWrapper,
-  List,
-  ListWrapper
-} from 'angular2/src/core/facade/collection';
+import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   isBlank,
   isString,
@@ -54,10 +48,15 @@ export class Router {
   lastNavigationAttempt: string;
 
   private _currentInstruction: Instruction = null;
+
   private _currentNavigation: Promise<any> = _resolveToTrue;
   private _outlet: RouterOutlet = null;
-  private _auxOutlets: Map<string, RouterOutlet> = new Map();
+
+  private _auxRouters: Map<string, Router> = new Map();
+  private _childRouter: Router;
+
   private _subject: EventEmitter = new EventEmitter();
+
 
   constructor(public registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
               public hostComponent: any) {}
@@ -67,25 +66,74 @@ export class Router {
    * Constructs a child router. You probably don't need to use this unless you're writing a reusable
    * component.
    */
-  childRouter(hostComponent: any): Router { return new ChildRouter(this, hostComponent); }
+  childRouter(hostComponent: any): Router {
+    return this._childRouter = new ChildRouter(this, hostComponent);
+  }
 
 
   /**
-   * Register an object to notify of route changes. You probably don't need to use this unless
-   * you're writing a reusable component.
+   * Constructs a child router. You probably don't need to use this unless you're writing a reusable
+   * component.
    */
-  registerOutlet(outlet: RouterOutlet): Promise<boolean> {
+  auxRouter(hostComponent: any): Router { return new ChildRouter(this, hostComponent); }
+
+  /**
+   * Register an outlet to notified of primary route changes.
+   *
+   * You probably don't need to use this unless you're writing a reusable component.
+   */
+  registerPrimaryOutlet(outlet: RouterOutlet): Promise<boolean> {
     if (isPresent(outlet.name)) {
-      this._auxOutlets.set(outlet.name, outlet);
-    } else {
-      this._outlet = outlet;
+      throw new BaseException(`registerAuxOutlet expects to be called with an unnamed outlet.`);
     }
+
+    this._outlet = outlet;
     if (isPresent(this._currentInstruction)) {
-      return outlet.commit(this._currentInstruction);
+      return this.commit(this._currentInstruction, false);
     }
     return _resolveToTrue;
   }
 
+  /**
+   * Register an outlet to notified of auxiliary route changes.
+   *
+   * You probably don't need to use this unless you're writing a reusable component.
+   */
+  registerAuxOutlet(outlet: RouterOutlet): Promise<boolean> {
+    var outletName = outlet.name;
+    if (isBlank(outletName)) {
+      throw new BaseException(`registerAuxOutlet expects to be called with an outlet with a name.`);
+    }
+
+    // TODO...
+    // what is the host of an aux route???
+    var router = this.auxRouter(this.hostComponent);
+
+    this._auxRouters.set(outletName, router);
+    router._outlet = outlet;
+
+    var auxInstruction;
+    if (isPresent(this._currentInstruction) &&
+        isPresent(auxInstruction = this._currentInstruction.auxInstruction[outletName])) {
+      return router.commit(auxInstruction);
+    }
+    return _resolveToTrue;
+  }
+
+
+  /**
+   * Given an instruction, returns `true` if the instruction is currently active,
+   * otherwise `false`.
+   */
+  isRouteActive(instruction: Instruction): boolean {
+    var router = this;
+    while (isPresent(router.parent) && isPresent(instruction.child)) {
+      router = router.parent;
+      instruction = instruction.child;
+    }
+    return isPresent(this._currentInstruction) &&
+           this._currentInstruction.component == instruction.component;
+  }
 
   /**
    * Dynamically update the routing configuration and trigger a navigation.
@@ -99,7 +147,7 @@ export class Router {
    * ]);
    * ```
    */
-  config(definitions: List<RouteDefinition>): Promise<any> {
+  config(definitions: RouteDefinition[]): Promise<any> {
     definitions.forEach(
         (routeDefinition) => { this.registry.config(this.hostComponent, routeDefinition); });
     return this.renavigate();
@@ -143,7 +191,7 @@ export class Router {
 
   _navigate(instruction: Instruction, _skipLocationChange: boolean): Promise<any> {
     return this._settleInstruction(instruction)
-        .then((_) => this._reuse(instruction))
+        .then((_) => this._canReuse(instruction))
         .then((_) => this._canActivate(instruction))
         .then((result) => {
           if (!result) {
@@ -168,7 +216,7 @@ export class Router {
   // we begin navigation. The method below simply traverses instructions and resolves any components
   // for which `componentType` is not present
   _settleInstruction(instruction: Instruction): Promise<any> {
-    var unsettledInstructions: List<Promise<any>> = [];
+    var unsettledInstructions: Array<Promise<any>> = [];
     if (isBlank(instruction.component.componentType)) {
       unsettledInstructions.push(instruction.component.resolveComponentType());
     }
@@ -190,14 +238,18 @@ export class Router {
     });
   }
 
-  _reuse(instruction: Instruction): Promise<any> {
+  /*
+   * Recursively set reuse flags
+   */
+  _canReuse(instruction: Instruction): Promise<any> {
     if (isBlank(this._outlet)) {
       return _resolveToFalse;
     }
-    return this._outlet.canReuse(instruction)
+    return this._outlet.canReuse(instruction.component)
         .then((result) => {
-          if (isPresent(this._outlet.childRouter) && isPresent(instruction.child)) {
-            return this._outlet.childRouter._reuse(instruction.child);
+          instruction.component.reuse = result;
+          if (isPresent(this._childRouter) && isPresent(instruction.child)) {
+            return this._childRouter._canReuse(instruction.child);
           }
         });
   }
@@ -211,19 +263,26 @@ export class Router {
       return _resolveToTrue;
     }
     var next: Promise<boolean>;
-    if (isPresent(instruction) && instruction.component.reuse) {
+    var childInstruction: Instruction = null;
+    var reuse: boolean = false;
+    var componentInstruction: ComponentInstruction = null;
+    if (isPresent(instruction)) {
+      childInstruction = instruction.child;
+      componentInstruction = instruction.component;
+      reuse = instruction.component.reuse;
+    }
+    if (reuse) {
       next = _resolveToTrue;
     } else {
-      next = this._outlet.canDeactivate(instruction);
+      next = this._outlet.canDeactivate(componentInstruction);
     }
     // TODO: aux route lifecycle hooks
     return next.then((result) => {
       if (result == false) {
         return false;
       }
-      if (isPresent(this._outlet.childRouter)) {
-        return this._outlet.childRouter._canDeactivate(isPresent(instruction) ? instruction.child :
-                                                                                null);
+      if (isPresent(this._childRouter)) {
+        return this._childRouter._canDeactivate(childInstruction);
       }
       return true;
     });
@@ -234,13 +293,29 @@ export class Router {
    */
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
     this._currentInstruction = instruction;
-    var next = _resolveToTrue;
+    var next: Promise<any> = _resolveToTrue;
     if (isPresent(this._outlet)) {
-      next = this._outlet.commit(instruction);
+      var componentInstruction = instruction.component;
+      if (componentInstruction.reuse) {
+        next = this._outlet.reuse(componentInstruction);
+      } else {
+        next =
+            this.deactivate(instruction).then((_) => this._outlet.activate(componentInstruction));
+      }
+      if (isPresent(instruction.child)) {
+        next = next.then((_) => {
+          if (isPresent(this._childRouter)) {
+            return this._childRouter.commit(instruction.child);
+          }
+        });
+      }
     }
+
     var promises = [];
-    MapWrapper.forEach(this._auxOutlets,
-                       (outlet, _) => { promises.push(outlet.commit(instruction)); });
+    MapWrapper.forEach(this._auxRouters, (router, name) => {
+      promises.push(router.commit(instruction.auxInstruction[name]));
+    });
+
     return next.then((_) => PromiseWrapper.all(promises));
   }
 
@@ -262,10 +337,23 @@ export class Router {
    * Removes the contents of this router's outlet and all descendant outlets
    */
   deactivate(instruction: Instruction): Promise<any> {
-    if (isPresent(this._outlet)) {
-      return this._outlet.deactivate(instruction);
+    var childInstruction: Instruction = null;
+    var componentInstruction: ComponentInstruction = null;
+    if (isPresent(instruction)) {
+      childInstruction = instruction.child;
+      componentInstruction = instruction.component;
     }
-    return _resolveToTrue;
+    var next: Promise<any> = _resolveToTrue;
+    if (isPresent(this._childRouter)) {
+      next = this._childRouter.deactivate(childInstruction);
+    }
+    if (isPresent(this._outlet)) {
+      next = next.then((_) => this._outlet.deactivate(componentInstruction));
+    }
+
+    // TODO: handle aux routes
+
+    return next;
   }
 
 
@@ -293,7 +381,7 @@ export class Router {
    * Generate a URL from a component name and optional map of parameters. The URL is relative to the
    * app's base href.
    */
-  generate(linkParams: List<any>): Instruction {
+  generate(linkParams: any[]): Instruction {
     let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
 
     var first = ListWrapper.first(normalizedLinkParams);
@@ -400,10 +488,10 @@ class ChildRouter extends Router {
  * Returns: ['', 'a', 'b', {c: 2}]
  */
 var SLASH = new RegExp('/');
-function splitAndFlattenLinkParams(linkParams: List<any>): List<any> {
+function splitAndFlattenLinkParams(linkParams: any[]): any[] {
   return ListWrapper.reduce(linkParams, (accumulation, item) => {
     if (isString(item)) {
-      return ListWrapper.concat(accumulation, StringWrapper.split(item, SLASH));
+      return accumulation.concat(StringWrapper.split(item, SLASH));
     }
     accumulation.push(item);
     return accumulation;

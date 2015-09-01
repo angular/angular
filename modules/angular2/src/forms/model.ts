@@ -1,6 +1,6 @@
 import {StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/core/facade/collection';
+import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Validators} from './validators';
 
 /**
@@ -17,14 +17,14 @@ export function isControl(c: Object): boolean {
   return c instanceof AbstractControl;
 }
 
-function _find(c: AbstractControl, path: List<string | number>| string) {
+function _find(c: AbstractControl, path: Array<string | number>| string) {
   if (isBlank(path)) return null;
-  if (!(path instanceof List)) {
+  if (!(path instanceof Array)) {
     path = StringWrapper.split(<string>path, new RegExp("/"));
   }
-  if (path instanceof List && ListWrapper.isEmpty(path)) return null;
+  if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
 
-  return ListWrapper.reduce(<List<string | number>>path, (v, name) => {
+  return ListWrapper.reduce(<Array<string | number>>path, (v, name) => {
     if (v instanceof ControlGroup) {
       return isPresent(v.controls[name]) ? v.controls[name] : null;
     } else if (v instanceof ControlArray) {
@@ -116,9 +116,9 @@ export class AbstractControl {
     }
   }
 
-  find(path: List<string | number>| string): AbstractControl { return _find(this, path); }
+  find(path: Array<string | number>| string): AbstractControl { return _find(this, path); }
 
-  getError(errorCode: string, path: List<string> = null): any {
+  getError(errorCode: string, path: string[] = null): any {
     var c = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
     if (isPresent(c) && isPresent(c._errors)) {
       return StringMapWrapper.get(c._errors, errorCode);
@@ -127,7 +127,7 @@ export class AbstractControl {
     }
   }
 
-  hasError(errorCode: string, path: List<string> = null): boolean {
+  hasError(errorCode: string, path: string[] = null): boolean {
     return isPresent(this.getError(errorCode, path));
   }
 
@@ -183,8 +183,8 @@ export class ControlGroup extends AbstractControl {
   controls: StringMap<string, AbstractControl>;
   _optionals: StringMap<string, boolean>;
 
-  constructor(controls: StringMap<String, AbstractControl>,
-              optionals: StringMap<String, boolean> = null,
+  constructor(controls: StringMap<string, AbstractControl>,
+              optionals: StringMap<string, boolean> = null,
               validator: Function = Validators.group) {
     super(validator);
     this.controls = controls;
@@ -262,9 +262,9 @@ export class ControlGroup extends AbstractControl {
  * other controls, but is of fixed length.
  */
 export class ControlArray extends AbstractControl {
-  controls: List<AbstractControl>;
+  controls: AbstractControl[];
 
-  constructor(controls: List<AbstractControl>, validator: Function = Validators.array) {
+  constructor(controls: AbstractControl[], validator: Function = Validators.array) {
     super(validator);
     this.controls = controls;
 

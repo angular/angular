@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var path = require('canonical-path');
+var codeGen = require('./code_gen.js');
 
 module.exports = function createTypeDefinitionFile(log) {
 
@@ -31,15 +32,17 @@ module.exports = function createTypeDefinitionFile(log) {
           path: docPath,
           outputPath: docPath,
           // A type definition may include a number of top level modules
-          // And those modules could be aliased (such as 'angular2/angular2.api' -> 'angular2/angular2')
-          moduleDocs: _.transform(def.modules, function(moduleDocs, id, alias) {
-            moduleDocs[id] = {
-              id: alias,
-              doc: null,
-              namespace: def.namespace,
-              references: def.references
-            };
-          })
+          // And those modules could be aliased (such as 'angular2/angular2.api' ->
+          // 'angular2/angular2')
+          moduleDocs: _.transform(def.modules,
+                                  function(moduleDocs, props, alias) {
+                                    moduleDocs[props.id] = {
+                                      id: alias,
+                                      doc: null, namespace: props.namespace,
+                                      references: def.references
+                                    };
+                                  }),
+          signature: codeGen.signature(def.remapTypes)
         };
       });
 

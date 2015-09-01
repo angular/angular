@@ -10,13 +10,13 @@ import {bind} from 'angular2/di';
 @View({
   templateUrl: './demo_app.html',
   directives: [MdButton, MdAnchor, NgFor],
-  encapsulation: ViewEncapsulation.NONE
+  encapsulation: ViewEncapsulation.None
 })
 class DemoApp {
   previousClick: string;
   action: string;
   clickCount: number;
-  items: List<number>;
+  items: number[];
 
   constructor() {
     this.previousClick = 'Nothing';

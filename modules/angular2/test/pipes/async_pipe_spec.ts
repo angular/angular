@@ -8,12 +8,13 @@ import {
   beforeEach,
   afterEach,
   AsyncTestCompleter,
-  SpyChangeDetectorRef,
   inject,
-  SpyObject
+  SpyObject,
+  browserDetection
 } from 'angular2/test_lib';
+import {SpyChangeDetectorRef} from './spies';
 
-import {IMPLEMENTS, isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank} from 'angular2/src/core/facade/lang';
 import {WrappedValue} from 'angular2/change_detection';
 import {AsyncPipe} from 'angular2/pipes';
 import {
@@ -90,7 +91,7 @@ export function main() {
              ObservableWrapper.callNext(emitter, message);
 
              TimerWrapper.setTimeout(() => {
-               expect(ref.spy('requestCheck')).toHaveBeenCalled();
+               expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
              }, 0)
            }));
@@ -120,7 +121,7 @@ export function main() {
       var completer;
       var ref;
       // adds longer timers for passing tests in IE
-      var timer = (!isBlank(DOM) && DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
+      var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 0;
 
       beforeEach(() => {
         completer = PromiseWrapper.completer();
@@ -177,7 +178,7 @@ export function main() {
              completer.resolve(message);
 
              TimerWrapper.setTimeout(() => {
-               expect(ref.spy('requestCheck')).toHaveBeenCalled();
+               expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
              }, timer)
            }));

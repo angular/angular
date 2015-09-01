@@ -1,4 +1,4 @@
-import {List, ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
   isPresent,
@@ -9,7 +9,7 @@ import {
 } from 'angular2/src/core/facade/lang';
 
 export class Log {
-  _result: List<any>;
+  _result: any[];
 
   constructor() { this._result = []; }
 
@@ -19,8 +19,46 @@ export class Log {
     return (a1 = null, a2 = null, a3 = null, a4 = null, a5 = null) => { this._result.push(value); }
   }
 
+  clear(): void { this._result = []; }
+
   result(): string { return ListWrapper.join(this._result, "; "); }
 }
+
+
+export class BrowserDetection {
+  private _ua: string;
+
+  constructor(ua: string) {
+    if (isPresent(ua)) {
+      this._ua = ua;
+    } else {
+      this._ua = isPresent(DOM) ? DOM.getUserAgent() : '';
+    }
+  }
+
+  get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
+
+  get isAndroid(): boolean {
+    return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
+           this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+  }
+
+  get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
+
+  get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
+
+  get isWebkit(): boolean {
+    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
+  }
+
+  // The Intl API is only properly supported in recent Chrome and Opera.
+  // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
+  // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
+  get supportsIntlApi(): boolean {
+    return this._ua.indexOf('Chrome/4') > -1 && this._ua.indexOf('Edge') == -1;
+  }
+}
+export var browserDetection = new BrowserDetection(null);
 
 export function dispatchEvent(element, eventType) {
   DOM.dispatchEvent(element, DOM.createEvent(eventType));
@@ -91,27 +129,4 @@ export function stringifyElement(el): string {
   }
 
   return result;
-}
-
-// The Intl API is only properly supported in recent Chrome and Opera.
-// Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
-// see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
-export function supportsIntlApi(): boolean {
-  return DOM.getUserAgent().indexOf('Chrome/4') > -1 && DOM.getUserAgent().indexOf('Edge') == -1;
-}
-
-// TODO(mlaval): extract all browser detection checks from all tests
-export function isFirefox(): boolean {
-  return DOM.getUserAgent().indexOf("Firefox") > -1;
-}
-export function isAndroid(): boolean {
-  var ua = DOM.getUserAgent();
-  return ua.indexOf('Mozilla/5.0') > -1 && ua.indexOf('Android ') > -1 &&
-         ua.indexOf('AppleWebKit') > -1 && ua.indexOf('Chrome') == -1;
-}
-export function isEdge(): boolean {
-  return DOM.getUserAgent().indexOf('Edge') > -1;
-}
-export function isIE(): boolean {
-  return DOM.getUserAgent().indexOf('Trident') > -1;
 }

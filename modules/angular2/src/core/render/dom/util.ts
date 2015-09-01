@@ -8,8 +8,6 @@ import {TemplateCloner} from './template_cloner';
 export const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
 export const NG_BINDING_CLASS = 'ng-binding';
 
-export const EVENT_TARGET_SEPARATOR = ':';
-
 export const NG_CONTENT_ELEMENT_NAME = 'ng-content';
 export const NG_SHADOW_ROOT_ELEMENT_NAME = 'shadow-root';
 
@@ -27,27 +25,6 @@ export function camelCaseToDashCase(input: string): string {
 export function dashCaseToCamelCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
                                         (m) => { return m[1].toUpperCase(); });
-}
-
-export class EventConfig {
-  constructor(public fieldName: string, public eventName: string, public isLongForm: boolean) {}
-
-  static parse(eventConfig: string): EventConfig {
-    var fieldName = eventConfig, eventName = eventConfig, isLongForm = false;
-    var separatorIdx = eventConfig.indexOf(EVENT_TARGET_SEPARATOR);
-    if (separatorIdx > -1) {
-      // long format: 'fieldName: eventName'
-      fieldName = StringWrapper.substring(eventConfig, 0, separatorIdx).trim();
-      eventName = StringWrapper.substring(eventConfig, separatorIdx + 1).trim();
-      isLongForm = true;
-    }
-    return new EventConfig(fieldName, eventName, isLongForm);
-  }
-
-  getFullName(): string {
-    return this.isLongForm ? `${this.fieldName}${EVENT_TARGET_SEPARATOR}${this.eventName}` :
-                             this.eventName;
-  }
 }
 
 // Attention: This is on the hot path, so don't use closures or default values!

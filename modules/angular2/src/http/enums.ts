@@ -37,34 +37,27 @@ export enum RequestCredentialsOpts {
  * Supported http methods.
  */
 export enum RequestMethods {
-  GET,
-  POST,
-  PUT,
-  DELETE,
-  OPTIONS,
-  HEAD,
-  PATCH
+  Get,
+  Post,
+  Put,
+  Delete,
+  Options,
+  Head,
+  Patch
 }
 
-// TODO: Remove this when enum lookups are available in ts2dart
-// https://github.com/angular/ts2dart/issues/221
-export class RequestMethodsMap {
-  private _methods: List<string>;
-  constructor() { this._methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH']; }
-  getMethod(method: number): string { return this._methods[method]; }
-}
 /**
  * All possible states in which a connection can be, based on
  * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
  * additional "CANCELLED" state.
  */
 export enum ReadyStates {
-  UNSENT,
-  OPEN,
-  HEADERS_RECEIVED,
-  LOADING,
-  DONE,
-  CANCELLED
+  Unsent,
+  Open,
+  HeadersReceived,
+  Loading,
+  Done,
+  Cancelled
 }
 
 /**

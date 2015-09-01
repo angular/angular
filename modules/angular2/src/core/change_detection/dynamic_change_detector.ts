@@ -5,7 +5,7 @@ import {
   FunctionWrapper,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {EventBinding} from './event_binding';
@@ -14,19 +14,19 @@ import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
 import {ChangeDetectorGenConfig} from './interfaces';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
-import {ON_PUSH_OBSERVE} from './constants';
+import {ChangeDetectionStrategy} from './constants';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicChangeDetector extends AbstractChangeDetector<any> {
-  values: List<any>;
-  changes: List<any>;
-  localPipes: List<any>;
-  prevContexts: List<any>;
+  values: any[];
+  changes: any[];
+  localPipes: any[];
+  prevContexts: any[];
   directives: any = null;
 
   constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
               propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
-              strategy: string, private records: ProtoRecord[],
+              strategy: ChangeDetectionStrategy, private records: ProtoRecord[],
               private eventBindings: EventBinding[], private directiveRecords: DirectiveRecord[],
               private genConfig: ChangeDetectorGenConfig) {
     super(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices,
@@ -88,7 +88,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     this.values[0] = this.context;
     this.directives = directives;
 
-    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
       for (var i = 0; i < this.directiveIndices.length; ++i) {
         var index = this.directiveIndices[i];
         super.observeDirective(directives.getDirectiveFor(index), i);
@@ -133,12 +133,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       }
 
       if (proto.isLifeCycleRecord()) {
-        if (proto.name === "onCheck" && !throwOnChange) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).onCheck();
-        } else if (proto.name === "onInit" && !throwOnChange && !this.alreadyChecked) {
+        if (proto.name === "DoCheck" && !throwOnChange) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
+        } else if (proto.name === "OnInit" && !throwOnChange && !this.alreadyChecked) {
           this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
-        } else if (proto.name === "onChange" && isPresent(changes) && !throwOnChange) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).onChange(changes);
+        } else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
         }
 
       } else {
@@ -159,8 +159,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         isChanged = false;
       }
     }
-
-    this.alreadyChecked = true;
   }
 
   _firstInBinding(r: ProtoRecord): boolean {
@@ -168,13 +166,29 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
   }
 
-  callOnAllChangesDone() {
-    super.callOnAllChangesDone();
+  afterContentLifecycleCallbacksInternal() {
     var dirs = this.directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
-      if (dir.callOnAllChangesDone) {
-        this._getDirectiveFor(dir.directiveIndex).onAllChangesDone();
+      if (dir.callAfterContentInit && !this.alreadyChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterContentInit();
+      }
+
+      if (dir.callAfterContentChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
+      }
+    }
+  }
+
+  afterViewLifecycleCallbacksInternal() {
+    var dirs = this.directiveRecords;
+    for (var i = dirs.length - 1; i >= 0; --i) {
+      var dir = dirs[i];
+      if (dir.callAfterViewInit && !this.alreadyChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterViewInit();
+      }
+      if (dir.callAfterViewChecked) {
+        this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
       }
     }
   }
@@ -193,7 +207,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   _addChange(bindingRecord: BindingRecord, change, changes) {
-    if (bindingRecord.callOnChange()) {
+    if (bindingRecord.callOnChanges()) {
       return super.addChange(changes, change.previousValue, change.currentValue);
     } else {
       return changes;
@@ -219,7 +233,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
 
     var currValue = this._calculateCurrValue(proto, values, locals);
-    if (StringWrapper.equals(this.strategy, ON_PUSH_OBSERVE)) {
+    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
       super.observeValue(currValue, proto.selfIndex);
     }
 
@@ -252,42 +266,42 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
     switch (proto.mode) {
-      case RecordType.SELF:
+      case RecordType.Self:
         return this._readContext(proto, values);
 
-      case RecordType.CONST:
+      case RecordType.Const:
         return proto.funcOrValue;
 
-      case RecordType.PROPERTY_READ:
+      case RecordType.PropertyRead:
         var context = this._readContext(proto, values);
         return proto.funcOrValue(context);
 
-      case RecordType.SAFE_PROPERTY:
+      case RecordType.SafeProperty:
         var context = this._readContext(proto, values);
         return isBlank(context) ? null : proto.funcOrValue(context);
 
-      case RecordType.PROPERTY_WRITE:
+      case RecordType.PropertyWrite:
         var context = this._readContext(proto, values);
         var value = this._readArgs(proto, values)[0];
         proto.funcOrValue(context, value);
         return value;
 
-      case RecordType.KEYED_WRITE:
+      case RecordType.KeyedWrite:
         var context = this._readContext(proto, values);
         var key = this._readArgs(proto, values)[0];
         var value = this._readArgs(proto, values)[1];
         context[key] = value;
         return value;
 
-      case RecordType.LOCAL:
+      case RecordType.Local:
         return locals.get(proto.name);
 
-      case RecordType.INVOKE_METHOD:
+      case RecordType.InvokeMethod:
         var context = this._readContext(proto, values);
         var args = this._readArgs(proto, values);
         return proto.funcOrValue(context, args);
 
-      case RecordType.SAFE_INVOKE_METHOD:
+      case RecordType.SafeMethodInvoke:
         var context = this._readContext(proto, values);
         if (isBlank(context)) {
           return null;
@@ -295,21 +309,21 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         var args = this._readArgs(proto, values);
         return proto.funcOrValue(context, args);
 
-      case RecordType.KEYED_READ:
+      case RecordType.KeyedRead:
         var arg = this._readArgs(proto, values)[0];
         return this._readContext(proto, values)[arg];
 
-      case RecordType.CHAIN:
+      case RecordType.Chain:
         var args = this._readArgs(proto, values);
         return args[args.length - 1];
 
-      case RecordType.INVOKE_CLOSURE:
+      case RecordType.InvokeClosure:
         return FunctionWrapper.apply(this._readContext(proto, values),
                                      this._readArgs(proto, values));
 
-      case RecordType.INTERPOLATE:
-      case RecordType.PRIMITIVE_OP:
-      case RecordType.COLLECTION_LITERAL:
+      case RecordType.Interpolate:
+      case RecordType.PrimitiveOp:
+      case RecordType.CollectionLiteral:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto, values));
 
       default:

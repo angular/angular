@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "version": "2.0.0-alpha.35",
+  "version": "2.0.0-alpha.36",
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -31,7 +31,7 @@
     "reflect-metadata": "0.1.0",
     "rx": "2.5.1",
     "traceur": "0.0.87",
-    "zone.js": "0.5.3"
+    "zone.js": "0.5.4"
   },
   "devDependencies": {
     "angular": "1.3.5",

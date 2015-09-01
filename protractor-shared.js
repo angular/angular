@@ -225,10 +225,8 @@ exports.createBenchpressRunner = function(options) {
   var bindings = [
     benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
     benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
-    benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION).toValue({
-      'lang': options.lang,
-      'runId': runId
-    }),
+    benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION)
+        .toValue({'lang': options.lang, 'runId': runId}),
     benchpress.JsonFileReporter.BINDINGS,
     benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];

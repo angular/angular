@@ -7,7 +7,6 @@ import {
   BaseException
 } from "angular2/src/core/facade/lang";
 import {
-  List,
   ListWrapper,
   Map,
   StringMap,
@@ -58,9 +57,9 @@ export class Serializer {
     this._enumRegistry.set(ViewType, viewTypeMap);
 
     var viewEncapsulationMap = new Map<number, any>();
-    viewEncapsulationMap[0] = ViewEncapsulation.EMULATED;
-    viewEncapsulationMap[1] = ViewEncapsulation.NATIVE;
-    viewEncapsulationMap[2] = ViewEncapsulation.NONE;
+    viewEncapsulationMap[0] = ViewEncapsulation.Emulated;
+    viewEncapsulationMap[1] = ViewEncapsulation.Native;
+    viewEncapsulationMap[2] = ViewEncapsulation.None;
     this._enumRegistry.set(ViewEncapsulation, viewEncapsulationMap);
 
     var propertyBindingTypeMap = new Map<number, any>();
@@ -119,7 +118,7 @@ export class Serializer {
       return null;
     }
     if (isArray(map)) {
-      var obj: List<any> = new List<any>();
+      var obj: any[] = [];
       ListWrapper.forEach(map, (val) => { obj.push(this.deserialize(val, type, data)); });
       return obj;
     }
@@ -372,15 +371,14 @@ export class Serializer {
       'readAttributes': meta.readAttributes,
       'type': meta.type,
       'callOnDestroy': meta.callOnDestroy,
-      'callOnChange': meta.callOnChange,
-      'callOnCheck': meta.callOnCheck,
+      'callOnChanges': meta.callOnChanges,
+      'callDoCheck': meta.callDoCheck,
       'callOnInit': meta.callOnInit,
-      'callOnAllChangesDone': meta.callOnAllChangesDone,
+      'callAfterContentChecked': meta.callAfterContentChecked,
       'changeDetection': meta.changeDetection,
       'exportAs': meta.exportAs,
       'hostProperties': this.mapToObject(meta.hostProperties),
       'hostListeners': this.mapToObject(meta.hostListeners),
-      'hostActions': this.mapToObject(meta.hostActions),
       'hostAttributes': this.mapToObject(meta.hostAttributes)
     };
     return obj;
@@ -392,17 +390,16 @@ export class Serializer {
       compileChildren: obj['compileChildren'],
       hostProperties: this.objectToMap(obj['hostProperties']),
       hostListeners: this.objectToMap(obj['hostListeners']),
-      hostActions: this.objectToMap(obj['hostActions']),
       hostAttributes: this.objectToMap(obj['hostAttributes']),
       properties: obj['properties'],
       readAttributes: obj['readAttributes'],
       type: obj['type'],
       exportAs: obj['exportAs'],
       callOnDestroy: obj['callOnDestroy'],
-      callOnChange: obj['callOnChange'],
-      callOnCheck: obj['callOnCheck'],
+      callOnChanges: obj['callOnChanges'],
+      callDoCheck: obj['callDoCheck'],
       callOnInit: obj['callOnInit'],
-      callOnAllChangesDone: obj['callOnAllChangesDone'],
+      callAfterContentChecked: obj['callAfterContentChecked'],
       changeDetection: obj['changeDetection'],
       events: obj['events']
     });

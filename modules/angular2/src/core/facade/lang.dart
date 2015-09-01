@@ -13,19 +13,12 @@ class Math {
   static double random() => _random.nextDouble();
 }
 
-int ENUM_INDEX(value) => value.index;
-
 class CONST {
   const CONST();
 }
 
 class ABSTRACT {
   const ABSTRACT();
-}
-
-class IMPLEMENTS {
-  final interfaceClass;
-  const IMPLEMENTS(this.interfaceClass);
 }
 
 bool isPresent(obj) => obj != null;

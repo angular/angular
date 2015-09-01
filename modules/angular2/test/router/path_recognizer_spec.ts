@@ -40,6 +40,17 @@ export function main() {
           .toThrowError(`Path "hi//there" contains "//" which is not allowed in a route config.`);
     });
 
+    it('should return the same instruction instance when recognizing the same path', () => {
+      var rec = new PathRecognizer('/one', mockRouteHandler);
+
+      var one = new Url('one', null, null, {});
+
+      var firstMatch = rec.recognize(one);
+      var secondMatch = rec.recognize(one);
+
+      expect(firstMatch.instruction).toBe(secondMatch.instruction);
+    });
+
     describe('querystring params', () => {
       it('should parse querystring params so long as the recognizer is a root', () => {
         var rec = new PathRecognizer('/hello/there', mockRouteHandler);

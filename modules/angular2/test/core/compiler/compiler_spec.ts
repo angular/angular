@@ -8,26 +8,11 @@ import {
   expect,
   iit,
   inject,
-  it,
-  SpyObject,
-  proxy
+  it
 } from 'angular2/test_lib';
-
-import {
-  List,
-  ListWrapper,
-  Map,
-  MapWrapper,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
-import {
-  IMPLEMENTS,
-  Type,
-  isBlank,
-  stringify,
-  isPresent,
-  isArray
-} from 'angular2/src/core/facade/lang';
+import {SpyRenderCompiler, SpyDirectiveResolver} from '../spies';
+import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {Type, isBlank, stringify, isPresent, isArray} from 'angular2/src/core/facade/lang';
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -58,7 +43,6 @@ import {
   RenderElementBinder
 } from 'angular2/src/core/render/api';
 // TODO(tbosch): Spys don't support named modules...
-import {RenderCompiler} from 'angular2/src/core/render/api';
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
 
 
@@ -69,8 +53,8 @@ export function main() {
         cmpUrlMapper, rootProtoView;
     var renderCompileRequests: any[];
 
-    function createCompiler(renderCompileResults: List<ProtoViewDto | Promise<ProtoViewDto>>,
-                            protoViewFactoryResults: List<AppProtoView>) {
+    function createCompiler(renderCompileResults: Array<ProtoViewDto | Promise<ProtoViewDto>>,
+                            protoViewFactoryResults: AppProtoView[]) {
       var urlResolver = new UrlResolver();
       renderCompileRequests = [];
       renderCompileResults = ListWrapper.clone(renderCompileResults);
@@ -97,7 +81,7 @@ export function main() {
                 createRenderProtoView([createRenderComponentElementBinder(0)], ViewType.HOST));
           });
       renderCompiler.spy('mergeProtoViewsRecursively')
-          .andCallFake((protoViewRefs: List<RenderProtoViewRef | List<any>>) => {
+          .andCallFake((protoViewRefs: Array<RenderProtoViewRef | any[]>) => {
             return PromiseWrapper.resolve(new RenderProtoViewMergeMapping(
                 new MergedRenderProtoViewRef(protoViewRefs), 1, [], 0, [], [], [null]));
           });
@@ -718,20 +702,6 @@ class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr: String) {}
 }
 
-@proxy
-@IMPLEMENTS(RenderCompiler)
-class SpyRenderCompiler extends SpyObject {
-  constructor() { super(RenderCompiler); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
-@proxy
-@IMPLEMENTS(DirectiveResolver)
-class SpyDirectiveResolver extends SpyObject {
-  constructor() { super(DirectiveResolver); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
-}
-
 class FakeViewResolver extends ViewResolver {
   _cmpViews: Map<Type, ViewMetadata> = new Map();
 
@@ -746,15 +716,15 @@ class FakeViewResolver extends ViewResolver {
 }
 
 class FakeProtoViewFactory extends ProtoViewFactory {
-  requests: List<List<any>>;
+  requests: any[][];
 
-  constructor(public results: List<AppProtoView>) {
+  constructor(public results: AppProtoView[]) {
     super(null);
     this.requests = [];
   }
 
   createAppProtoViews(componentBinding: DirectiveBinding, renderProtoView: ProtoViewDto,
-                      directives: List<DirectiveBinding>, pipes: PipeBinding[]): AppProtoView[] {
+                      directives: DirectiveBinding[], pipes: PipeBinding[]): AppProtoView[] {
     this.requests.push([componentBinding, renderProtoView, directives, pipes]);
     return collectEmbeddedPvs(ListWrapper.removeAt(this.results, 0));
   }

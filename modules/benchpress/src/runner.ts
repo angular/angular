@@ -1,6 +1,5 @@
 import {Injector, bind, Binding} from 'angular2/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
-import {List, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {Sampler, SampleState} from './sampler';
@@ -26,8 +25,8 @@ import {Options} from './common_options';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultBindings: List<Binding>;
-  constructor(defaultBindings: List<Binding> = null) {
+  private _defaultBindings: Binding[];
+  constructor(defaultBindings: Binding[] = null) {
     if (isBlank(defaultBindings)) {
       defaultBindings = [];
     }

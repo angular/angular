@@ -302,7 +302,7 @@ export function main() {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  constructor(private _log: List<any>, private _events: List<any>, private _messageMethod: string) {
+  constructor(private _log: any[], private _events: any[], private _messageMethod: string) {
     super();
   }
 

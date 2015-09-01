@@ -39,6 +39,8 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readTypeScriptModules.sourceFiles = [
     'angular2/angular2.ts',
+    'angular2/web_worker/worker.ts',
+    'angular2/web_worker/ui.ts',
     'angular2/router.ts',
     'angular2/http.ts'
   ];
@@ -48,24 +50,39 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
       {
         id: 'angular2/angular2',
         references: ['../es6-promise/es6-promise.d.ts', '../rx/rx.d.ts'],
-        namespace: 'ng',
         modules: {
-          'angular2/angular2': 'angular2/angular2',
+          'angular2/angular2': {
+            namespace: 'ng',
+            id: 'angular2/angular2'
+          },
+          'angular2/web_worker/worker': {
+            namespace: 'ngWorker',
+            id: 'angular2/web_worker/worker'
+          },
+          'angular2/web_worker/ui': {
+            namespace: 'ngUi',
+            id: 'angular2/web_worker/ui'
+          }
         }
       },
       {
         id: 'angular2/router',
-        namespace: 'ngRouter',
         references: ['./angular2.d.ts'],
+        remapTypes: {Type: 'ng.Type'},
         modules: {
-          'angular2/router': 'angular2/router'
+          'angular2/router': {
+            namespace: 'ngRouter',
+            id: 'angular2/router'
+          }
         }
       },
       {
         id: 'angular2/http',
-        namespace: 'ngHttp',
         modules: {
-          'angular2/http':'angular2/http'
+          'angular2/http': {
+            namespace: 'ngHttp',
+            id: 'angular2/http'
+          }
         }
       }
   ];

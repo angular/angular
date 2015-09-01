@@ -6,3 +6,4 @@ export * from './directives';
 export * from './forms';
 export * from './render';
 export * from './profile';
+export {bootstrap} from 'angular2/src/core/application';

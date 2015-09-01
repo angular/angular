@@ -12,10 +12,8 @@ import {
   MapWrapper,
   StringMap,
   StringMapWrapper,
-  List,
   ListWrapper
 } from 'angular2/src/core/facade/collection';
-import {IMPLEMENTS} from 'angular2/src/core/facade/lang';
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
@@ -150,7 +148,7 @@ function parsePathString(route: string): StringMap<string, any> {
 
 // this function is used to determine whether a route config path like `/foo/:id` collides with
 // `/foo/:name`
-function pathDslHash(segments: List<Segment>): string {
+function pathDslHash(segments: Segment[]): string {
   return segments.map((segment) => {
                    if (segment instanceof StarSegment) {
                      return '*';
@@ -165,7 +163,7 @@ function pathDslHash(segments: List<Segment>): string {
       .join('/');
 }
 
-function splitBySlash(url: string): List<string> {
+function splitBySlash(url: string): string[] {
   return url.split('/');
 }
 
@@ -184,15 +182,17 @@ function assertPath(path: string) {
 
 export class PathMatch {
   constructor(public instruction: ComponentInstruction, public remaining: Url,
-              public remainingAux: List<Url>) {}
+              public remainingAux: Url[]) {}
 }
 
 // represents something like '/foo/:bar'
 export class PathRecognizer {
-  private _segments: List<Segment>;
+  private _segments: Segment[];
   specificity: number;
   terminal: boolean = true;
   hash: string;
+  private cache: Map<string, ComponentInstruction> = new Map<string, ComponentInstruction>();
+
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
 
@@ -253,23 +253,26 @@ export class PathRecognizer {
 
     var auxiliary;
     var instruction: ComponentInstruction;
+    var urlParams;
+    var allParams;
     if (isPresent(currentSegment)) {
       // If this is the root component, read query params. Otherwise, read matrix params.
       var paramsSegment = beginningSegment instanceof RootUrl ? beginningSegment : currentSegment;
 
-      var allParams = isPresent(paramsSegment.params) ?
-                          StringMapWrapper.merge(paramsSegment.params, positionalParams) :
-                          positionalParams;
+      allParams = isPresent(paramsSegment.params) ?
+                      StringMapWrapper.merge(paramsSegment.params, positionalParams) :
+                      positionalParams;
 
-      var urlParams = serializeParams(paramsSegment.params);
+      urlParams = serializeParams(paramsSegment.params);
 
-      instruction = new ComponentInstruction(urlPath, urlParams, this, allParams);
 
       auxiliary = currentSegment.auxiliary;
     } else {
-      instruction = new ComponentInstruction(urlPath, [], this, positionalParams);
+      allParams = positionalParams;
       auxiliary = [];
+      urlParams = [];
     }
+    instruction = this._getInstruction(urlPath, urlParams, this, allParams);
     return new PathMatch(instruction, nextSegment, auxiliary);
   }
 
@@ -290,6 +293,18 @@ export class PathRecognizer {
     var nonPositionalParams = paramTokens.getUnused();
     var urlParams = serializeParams(nonPositionalParams);
 
-    return new ComponentInstruction(urlPath, urlParams, this, params);
+    return this._getInstruction(urlPath, urlParams, this, params);
+  }
+
+  private _getInstruction(urlPath: string, urlParams: string[], _recognizer: PathRecognizer,
+                          params: StringMap<string, any>): ComponentInstruction {
+    var hashKey = urlPath + '?' + urlParams.join('?');
+    if (this.cache.has(hashKey)) {
+      return this.cache.get(hashKey);
+    }
+    var instruction = new ComponentInstruction(urlPath, urlParams, _recognizer, params);
+    this.cache.set(hashKey, instruction);
+
+    return instruction;
   }
 }

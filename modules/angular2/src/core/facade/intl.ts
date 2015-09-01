@@ -42,9 +42,9 @@ declare module Intl {
 }
 
 export enum NumberFormatStyle {
-  DECIMAL,
-  PERCENT,
-  CURRENCY
+  Decimal,
+  Percent,
+  Currency
 }
 
 export class NumberFormatter {
@@ -63,7 +63,7 @@ export class NumberFormatter {
       maximumFractionDigits: maximumFractionDigits
     };
     intlOptions.style = NumberFormatStyle[style].toLowerCase();
-    if (style == NumberFormatStyle.CURRENCY) {
+    if (style == NumberFormatStyle.Currency) {
       intlOptions.currency = currency;
       intlOptions.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
