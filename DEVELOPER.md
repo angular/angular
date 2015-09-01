@@ -22,13 +22,15 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
-* [Dart](https://www.dartlang.org) (version ` >=1.10.0-dev.1.10 <2.0.0`), specifically the Dart-SDK and
+* [Dart](https://www.dartlang.org) (version ` >=1.12.0 <2.0.0`), specifically the Dart-SDK and
   Dartium (a version of [Chromium](http://www.chromium.org) with native support for Dart through
   the Dart VM). One of the **simplest** ways to get both is to install the **Dart Editor bundle**,
   which includes the editor, SDK and Dartium. See the [Dart tools](https://www.dartlang.org/tools)
-  download [page for instructions](https://www.dartlang.org/tools/download.html). You can also
-  download both **stable** and **dev** channel versions from the [download
-  archive](https://www.dartlang.org/tools/download-archive).
+  download [page for instructions](https://www.dartlang.org/tools/download.html).  
+  You can also download both **stable** and **dev** channel versions from the [download
+  archive](https://www.dartlang.org/tools/download-archive). In that case, on Windows, Dart must be added
+  to the `Path` (e.g. `path-to-dart-sdk-folder\bin`) and a new `DARTIUM_BIN` environment variable must be
+  created, pointing to the executable (e.g. `path-to-dartium-folder\chrome.exe).`
 
 * [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
