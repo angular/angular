@@ -5,7 +5,7 @@
 
 // We also want the following typings to be available only when compiling to
 // ES5, because they are redundant with lib.es6.d.ts.
-/// <reference path="../angular2/typings/es6-promise/es6-promise.d.ts"/>
+/// <reference path="../typings/es6-promise/es6-promise.d.ts"/>
 
 // es6-promise.d.ts chose a different name for this interface than TS lib.es6.d.ts
 // Generic Type Alises are in TS 1.6 (https://github.com/Microsoft/TypeScript/pull/3397)
