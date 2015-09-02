@@ -8,7 +8,6 @@ var _scheduler;
 var _microtasks: Function[] = [];
 var _pendingPeriodicTimers: number[] = [];
 var _pendingTimers: number[] = [];
-var _error = null;
 
 interface FakeAsyncZone extends NgZoneZone {
   _inFakeAsyncZone: boolean;
