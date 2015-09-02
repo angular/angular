@@ -30,7 +30,7 @@ import {
   createVariableLocations
 } from 'angular2/src/core/compiler/proto_view_factory';
 import {Component, Directive} from 'angular2/metadata';
-import {Key} from 'angular2/di';
+import {Key} from 'angular2/core';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {

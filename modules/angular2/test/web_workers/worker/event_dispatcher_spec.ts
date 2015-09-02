@@ -13,7 +13,7 @@ import {
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore,

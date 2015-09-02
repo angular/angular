@@ -15,7 +15,7 @@ import {
 } from 'angular2/test_lib';
 
 
-import {Injectable, Optional} from 'angular2/di';
+import {Injectable, Optional} from 'angular2/core';
 import {QueryList, TemplateRef} from 'angular2/core';
 import {Query, ViewQuery, Component, Directive, View} from 'angular2/metadata';
 

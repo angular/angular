@@ -2,7 +2,7 @@ import {LocationStrategy} from './location_strategy';
 import {StringWrapper, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {BaseException, isBlank} from 'angular2/src/core/facade/lang';
-import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/di';
+import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/core';
 
 export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHref'));
 

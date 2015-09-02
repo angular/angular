@@ -1,7 +1,7 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 

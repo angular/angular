@@ -2,7 +2,7 @@
  * This file contains declarations of global symbols we reference in our code
  */
 
-/// <reference path="typings/zone/zone.d.ts"/>
+/// <reference path="../typings/zone/zone.d.ts"/>
 declare var assert: any;
 
 // FIXME: K must be string!

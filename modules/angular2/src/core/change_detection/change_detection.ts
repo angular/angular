@@ -11,7 +11,7 @@ import {
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig
 } from './interfaces';
-import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/di';
+import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/core';
 import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   CONST,

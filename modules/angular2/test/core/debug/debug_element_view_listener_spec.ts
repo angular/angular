@@ -18,7 +18,7 @@ import {
 } from 'angular2/test_lib';
 import {global} from 'angular2/src/core/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {Injectable, bind} from 'angular2/di';
+import {Injectable, bind} from 'angular2/core';
 import {
   Directive,
   Component,

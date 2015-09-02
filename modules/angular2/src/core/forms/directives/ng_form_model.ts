@@ -3,7 +3,7 @@ import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 import {Directive, LifecycleEvent} from 'angular2/metadata';
-import {forwardRef, Binding} from 'angular2/di';
+import {forwardRef, Binding} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';

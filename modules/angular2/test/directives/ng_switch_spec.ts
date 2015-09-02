@@ -14,7 +14,7 @@ import {
 
 import {Component, View} from 'angular2/angular2';
 
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/core/directives/ng_switch';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/core';
 
 export function main() {
   describe('switch', () => {

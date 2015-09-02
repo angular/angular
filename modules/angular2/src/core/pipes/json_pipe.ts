@@ -1,5 +1,5 @@
 import {isBlank, isPresent, Json, CONST} from 'angular2/src/core/facade/lang';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 
 import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 

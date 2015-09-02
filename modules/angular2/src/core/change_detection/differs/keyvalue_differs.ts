@@ -1,7 +1,7 @@
 import {isBlank, isPresent, BaseException, CONST} from 'angular2/src/core/facade/lang';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
-import {Binding, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/di';
+import {Binding, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/core';
 
 export interface KeyValueDiffer {
   diff(object: Object);

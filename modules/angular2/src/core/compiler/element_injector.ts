@@ -24,7 +24,7 @@ import {
   CyclicDependencyError,
   resolveForwardRef,
   DependencyProvider
-} from 'angular2/di';
+} from 'angular2/core';
 import {
   InjectorInlineStrategy,
   InjectorDynamicStrategy,

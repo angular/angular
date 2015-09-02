@@ -10,7 +10,7 @@ import {
   browserDetection
 } from 'angular2/test_lib';
 
-import {DecimalPipe, PercentPipe, CurrencyPipe} from 'angular2/pipes';
+import {DecimalPipe, PercentPipe, CurrencyPipe} from 'angular2/core';
 
 export function main() {
   // TODO(mlaval): enable tests when Intl API is no longer used, see

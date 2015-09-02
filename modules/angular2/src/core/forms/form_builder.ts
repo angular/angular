@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isArray} from 'angular2/src/core/facade/lang';
 import * as modelModule from './model';
@@ -11,7 +11,7 @@ import * as modelModule from './model';
  *
  * ```
  * import {Component, View, bootstrap} from 'angular2/angular2';
- * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/forms';
+ * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/core';
  *
  * @Component({
  *   selector: 'login-comp',

@@ -4,7 +4,7 @@ import {StringMap} from 'angular2/src/core/facade/collection';
 
 import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
-import {forwardRef, Host, SkipSelf, Binding, Inject} from 'angular2/di';
+import {forwardRef, Host, SkipSelf, Binding, Inject} from 'angular2/core';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';

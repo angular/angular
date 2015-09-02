@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {isPresent, Type, FunctionWrapper} from "angular2/src/core/facade/lang";

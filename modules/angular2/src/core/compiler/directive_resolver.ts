@@ -1,4 +1,4 @@
-import {resolveForwardRef, Injectable} from 'angular2/di';
+import {resolveForwardRef, Injectable} from 'angular2/core';
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/core/facade/lang';
 import {DirectiveMetadata} from 'angular2/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';

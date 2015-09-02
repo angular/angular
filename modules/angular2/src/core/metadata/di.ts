@@ -7,7 +7,7 @@ import {
   isString
 } from 'angular2/src/core/facade/lang';
 import {DependencyMetadata} from 'angular2/src/core/di/metadata';
-import {resolveForwardRef} from 'angular2/di';
+import {resolveForwardRef} from 'angular2/core';
 
 /**
  * Specifies that a constant attribute value should be injected.

@@ -1,4 +1,4 @@
-import {Injectable, Inject} from "angular2/di";
+import {Injectable, Inject} from "angular2/core";
 import {
   RenderViewRef,
   RenderFragmentRef,

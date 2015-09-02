@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
 import {XHR_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {XHR} from 'angular2/src/core/render/xhr';

@@ -1,4 +1,4 @@
-import {Binding, resolveForwardRef, Injectable, Inject} from 'angular2/di';
+import {Binding, DEFAULT_PIPES_TOKEN, resolveForwardRef, Injectable, Inject} from 'angular2/core';
 import {
   Type,
   isBlank,
@@ -28,7 +28,6 @@ import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {ElementBinder} from './element_binder';
 import {wtfStartTimeRange, wtfEndTimeRange} from '../profile/profile';
 import {PipeBinding} from '../pipes/pipe_binding';
-import {DEFAULT_PIPES_TOKEN} from 'angular2/pipes';
 
 import {
   RenderDirectiveMetadata,

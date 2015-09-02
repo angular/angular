@@ -1,4 +1,4 @@
-import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
+import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/core';
 import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
 import {ElementRef} from './element_ref';

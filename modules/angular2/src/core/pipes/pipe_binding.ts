@@ -1,5 +1,5 @@
 import {Type} from 'angular2/src/core/facade/lang';
-import {Key, Dependency, ResolvedBinding, Binding} from 'angular2/di';
+import {Key, Dependency, ResolvedBinding, Binding} from 'angular2/core';
 import {PipeMetadata} from '../metadata/directives';
 
 export class PipeBinding extends ResolvedBinding {

@@ -1,5 +1,5 @@
 import {Directive, LifecycleEvent} from 'angular2/metadata';
-import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/di';
+import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/core';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 

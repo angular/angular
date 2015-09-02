@@ -1,33 +1,22 @@
-import {Renderer} from 'angular2/render';
-import {ElementRef, QueryList} from 'angular2/core';
-import {Self} from 'angular2/di';
-import {Query, Directive} from 'angular2/metadata';
-
+import {Directive} from 'angular2/metadata';
+import {ElementRef, Renderer, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
 /**
- * Marks <option> as dynamic, so Angular can be notified when options change.
+ * The default accessor for writing a value and listening to changes that is used by the
+ * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
  *
- * #Example:
- *
- * ```
- * <select ng-control="city">
- *   <option *ng-for="#c of cities" [value]="c"></option>
- * </select>
- * ```
- */
-@Directive({selector: 'option'})
-export class NgSelectOption {
-}
-
-/**
- * The accessor for writing a value and listening to changes on a select element.
+ *  # Example
+ *  ```
+ *  <input type="text" [(ng-model)]="searchQuery">
+ *  ```
  */
 @Directive({
-  selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
+  selector:
+      'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
@@ -40,22 +29,21 @@ export class NgSelectOption {
     '[class.ng-invalid]': 'ngClassInvalid'
   }
 })
-export class SelectControlValueAccessor implements ControlValueAccessor {
+export class DefaultValueAccessor implements ControlValueAccessor {
   private cd: NgControl;
-  value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(@Self() cd: NgControl, private renderer: Renderer, private elementRef: ElementRef,
-              @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
+  constructor(@Self() cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
     this.cd = cd;
     cd.valueAccessor = this;
-    this._updateValueWhenListOfOptionsChanges(query);
   }
 
   writeValue(value: any) {
-    this.value = value;
-    setProperty(this.renderer, this.elementRef, "value", value);
+    // both this.value and setProperty are required at the moment
+    // remove when a proper imperative API is provided
+    var normalizedValue = isBlank(value) ? '' : value;
+    setProperty(this.renderer, this.elementRef, 'value', normalizedValue);
   }
 
   get ngClassUntouched(): boolean {
@@ -73,10 +61,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     return isPresent(this.cd.control) ? !this.cd.control.valid : false;
   }
 
-  registerOnChange(fn: () => any): void { this.onChange = fn; }
-  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
+  registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
 
-  private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {
-    query.onChange(() => this.writeValue(this.value));
-  }
+  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

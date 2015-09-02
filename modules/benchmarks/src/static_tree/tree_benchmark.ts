@@ -19,10 +19,9 @@ import {
   windowProfile,
   windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
-import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding, NgIf} from 'angular2/core';
 
 function createBindings(): Binding[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 0;

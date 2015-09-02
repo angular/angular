@@ -1,6 +1,6 @@
 import {NgFor} from 'angular2/src/core/directives/ng_for';
 import {View, Component} from 'angular2/src/core/metadata';
-import {FORM_DIRECTIVES} from 'angular2/src/forms/directives';
+import {FORM_DIRECTIVES} from 'angular2/src/core/forms/directives';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({selector: 'todo-app', viewBindings: [Store, TodoFactory]})

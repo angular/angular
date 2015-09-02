@@ -11,9 +11,7 @@ import {
   Binding
 } from 'angular2/bootstrap';
 
-import {Injectable} from 'angular2/di';
-
-import {FORM_DIRECTIVES} from 'angular2/forms';
+import {FORM_DIRECTIVES, Injectable} from 'angular2/core';
 
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 

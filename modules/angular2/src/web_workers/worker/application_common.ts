@@ -1,4 +1,4 @@
-import {Injector, bind, OpaqueToken, Binding} from 'angular2/di';
+import {DEFAULT_PIPES, FORM_BINDINGS, Injector, bind, OpaqueToken, Binding} from 'angular2/core';
 import {
   NumberWrapper,
   Type,
@@ -23,7 +23,6 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
@@ -135,7 +134,8 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     ComponentUrlMapper,
     DynamicComponentLoader,
     bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl'])),
-    WebWorkerEventDispatcher
+    WebWorkerEventDispatcher,
+    FORM_BINDINGS
   ];
 }
 

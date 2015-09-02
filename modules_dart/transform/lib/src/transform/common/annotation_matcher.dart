@@ -12,7 +12,7 @@ export 'class_matcher_base.dart' show ClassDescriptor;
 const INJECTABLES = const [
   const ClassDescriptor(
       'Injectable', 'package:angular2/src/core/di/decorators.dart'),
-  const ClassDescriptor('Injectable', 'package:angular2/di.dart'),
+  const ClassDescriptor('Injectable', 'package:angular2/core.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/angular2.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/bootstrap_static.dart'),
 ];

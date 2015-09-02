@@ -21,15 +21,13 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
-import {Injectable} from 'angular2/di';
+import {Injectable, NgFor} from 'angular2/core';
 
 import {
   Directive,
   Component,
   View,
 } from 'angular2/metadata';
-
-import {NgFor} from 'angular2/src/core/directives/ng_for';
 
 @Injectable()
 class Logger {

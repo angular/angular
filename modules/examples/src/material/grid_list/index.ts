@@ -2,7 +2,7 @@ import {bootstrap, Component, View, ViewEncapsulation} from 'angular2/bootstrap'
 import {MdGridList, MdGridTile} from 'angular2_material/src/components/grid_list/grid_list';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 
 @Component({
   selector: 'demo-app',

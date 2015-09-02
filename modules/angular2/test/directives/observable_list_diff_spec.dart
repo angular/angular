@@ -3,7 +3,7 @@ library angular2.test.directives.observable_list_iterable_diff_spec;
 import 'package:angular2/test_lib.dart';
 import 'package:angular2/change_detection.dart';
 import 'package:observe/observe.dart' show ObservableList;
-import 'package:angular2/src/core/directives/observable_list_diff.dart';
+import 'package:angular2/core.dart' show ObservableListDiffFactory;
 
 @proxy
 class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
