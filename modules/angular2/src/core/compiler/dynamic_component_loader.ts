@@ -1,10 +1,14 @@
 import {Key, Injector, ResolvedBinding, Binding, bind, Injectable} from 'angular2/src/core/di';
 import {Compiler} from './compiler';
-import {Type, stringify, isPresent} from 'angular2/src/core/facade/lang';
+import {isType, Type, stringify, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {ElementRef} from './element_ref';
 import {ViewRef, HostViewRef} from './view_ref';
+
+function _asType(typeOrBinding: Type | Binding): Type {
+  return isType(typeOrBinding) ? typeOrBinding : (<Binding>typeOrBinding).token;
+}
 
 /**
  * Angular's reference to a component instance.
@@ -22,18 +26,30 @@ export class ComponentRef {
    */
   instance: any;
 
+  componentType: Type;
+
+
+  injector: Injector;
+
   /**
    * @private
    */
-  constructor(location: ElementRef, instance: any, private _dispose: () => void) {
+  constructor(location: ElementRef, instance: any, componentType: Type, injector: Injector,
+              private _dispose: () => void) {
     this.location = location;
     this.instance = instance;
+    this.componentType = componentType;
+    this.injector = injector;
   }
 
   /**
    * Returns the host {@link ViewRef}.
    */
   get hostView(): HostViewRef { return this.location.parentView; }
+
+  get hostComponentType(): Type { return this.componentType; }
+
+  get hostComponent(): any { return this.instance; }
 
   /**
    * Dispose of the component instance.
@@ -104,8 +120,8 @@ export class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  loadAsRoot(typeOrBinding: Type | Binding, overrideSelector: string,
-             injector: Injector): Promise<ComponentRef> {
+  loadAsRoot(typeOrBinding: Type | Binding, overrideSelector: string, injector: Injector,
+             onDispose?: () => void): Promise<ComponentRef> {
     return this._compiler.compileInHost(typeOrBinding)
         .then(hostProtoViewRef => {
           var hostViewRef =
@@ -113,8 +129,14 @@ export class DynamicComponentLoader {
           var newLocation = this._viewManager.getHostElement(hostViewRef);
           var component = this._viewManager.getComponent(newLocation);
 
-          var dispose = () => { this._viewManager.destroyRootHostView(hostViewRef); };
-          return new ComponentRef(newLocation, component, dispose);
+          var dispose = () => {
+            this._viewManager.destroyRootHostView(hostViewRef);
+            if (isPresent(onDispose)) {
+              onDispose();
+            }
+          };
+          return new ComponentRef(newLocation, component, _asType(typeOrBinding), injector,
+                                  dispose);
         });
   }
 
@@ -229,7 +251,7 @@ export class DynamicComponentLoader {
               viewContainer.remove(index);
             }
           };
-          return new ComponentRef(newLocation, component, dispose);
+          return new ComponentRef(newLocation, component, _asType(typeOrBinding), null, dispose);
         });
   }
 }

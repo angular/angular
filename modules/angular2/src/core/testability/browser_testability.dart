@@ -1,4 +1,4 @@
-library testability.get_testability;
+library testability.browser_testability;
 
 import './testability.dart';
 
@@ -80,8 +80,14 @@ class PublicTestability implements _JsObjectProxyable {
   }
 }
 
-class GetTestability {
-  static addToWindow(TestabilityRegistry registry) {
+class BrowserGetTestability implements GetTestability {
+  const BrowserGetTestability();
+
+  static init() {
+    setTestabilityGetter(const BrowserGetTestability());
+  }
+  
+  void addToWindow(TestabilityRegistry registry) {
     var jsRegistry = js.context['ngTestabilityRegistries'];
     if (jsRegistry == null) {
       js.context['ngTestabilityRegistries'] = jsRegistry = new js.JsArray();
@@ -106,10 +112,10 @@ class GetTestability {
         return _jsify(result);
       });
     }
-    jsRegistry.add(_createRegistry(registry));
+    jsRegistry.add(this._createRegistry(registry));
   }
 
-  static js.JsObject _createRegistry(TestabilityRegistry registry) {
+  js.JsObject _createRegistry(TestabilityRegistry registry) {
     var object = new js.JsObject(js.context['Object']);
     object['getAngularTestability'] = _jsify((Element elem,
         bool findInAncestors) {

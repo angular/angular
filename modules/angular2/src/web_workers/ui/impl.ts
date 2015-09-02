@@ -7,7 +7,7 @@
 
 import {createInjector} from "./di_bindings";
 import {MessageBus, MessageBusSink} from "angular2/src/web_workers/shared/message_bus";
-import {createNgZone} from 'angular2/src/core/application_common';
+import {createNgZone} from 'angular2/src/core/application_ref';
 import {Injectable} from 'angular2/src/core/di';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
