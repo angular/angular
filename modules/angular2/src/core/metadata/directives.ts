@@ -318,6 +318,10 @@ import {ChangeDetectionStrategy} from 'angular2/change_detection';
  * the directive
  * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
  *
+ * ## Lifecycle hooks
+ *
+ * When the directive class implements some {@link angular2/lifecycle_hooks} the callbacks are
+ * called by the change detection at defined points in time during the life of the directive.
  *
  * ## Example
  *
@@ -733,6 +737,11 @@ export class DirectiveMetadata extends InjectableMetadata {
  * All template expressions and statements are then evaluated against the component instance.
  *
  * For details on the `@View` annotation, see {@link ViewMetadata}.
+ *
+ * ## Lifecycle hooks
+ *
+ * When the component class implements some {@link angular2/lifecycle_hooks} the callbacks are
+ * called by the change detection at defined points in time during the life of the component.
  *
  * ## Example
  *

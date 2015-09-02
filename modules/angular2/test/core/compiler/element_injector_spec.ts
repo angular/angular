@@ -35,9 +35,9 @@ import {
   Query,
   ViewQuery,
   ComponentMetadata,
-  DirectiveMetadata,
-  OnDestroy
+  DirectiveMetadata
 } from 'angular2/metadata';
+import {OnDestroy} from 'angular2/lifecycle_hooks';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/di';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';

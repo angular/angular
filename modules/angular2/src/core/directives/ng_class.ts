@@ -1,5 +1,6 @@
 import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
-import {Directive, DoCheck, OnDestroy} from 'angular2/metadata';
+import {Directive} from 'angular2/metadata';
+import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
 import {ElementRef} from 'angular2/core';
 import {Renderer} from 'angular2/src/core/render/api';
 import {

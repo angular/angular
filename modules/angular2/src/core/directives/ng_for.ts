@@ -1,4 +1,5 @@
-import {Directive, DoCheck} from 'angular2/metadata';
+import {Directive} from 'angular2/metadata';
+import {DoCheck} from 'angular2/lifecycle_hooks';
 import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
 import {ChangeDetectorRef, IterableDiffer, IterableDiffers} from 'angular2/change_detection';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';

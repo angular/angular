@@ -1,7 +1,7 @@
 import {Type} from 'angular2/src/core/facade/lang';
 import * as Interfaces from './interfaces';
 
-export function hasLifecycleHook(lcInterface: Interfaces.LifecycleHook, type): boolean {
+export function hasLifecycleHook(lcInterface, type): boolean {
   if (!(type instanceof Type)) return false;
 
   var proto = (<any>type).prototype;
