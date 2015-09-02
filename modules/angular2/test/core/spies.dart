@@ -12,6 +12,7 @@ import 'package:angular2/src/core/compiler/view_listener.dart';
 import 'package:angular2/src/core/compiler/element_injector.dart';
 import 'package:angular2/src/core/dom/dom_adapter.dart';
 import 'package:angular2/test_lib.dart';
+import 'package:angular2/src/core/render/xhr.dart';
 
 @proxy
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {
@@ -101,5 +102,10 @@ class SpyPreBuiltObjects extends SpyObject implements PreBuiltObjects {
 
 @proxy
 class SpyDomAdapter extends SpyObject implements DomAdapter {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyXHR extends SpyObject implements XHR {
   noSuchMethod(m) => super.noSuchMethod(m);
 }

@@ -6,7 +6,7 @@ import 'package:angular2/src/test_lib/test_lib.dart' show testSetup;
 main() {
   unit.filterStacks = true;
   unit.formatStacks = false;
-  unit.unittestConfiguration.timeout = new Duration(milliseconds: 1000);
+  unit.unittestConfiguration.timeout = new Duration(milliseconds: 2000);
 
   _printWarnings();
 
