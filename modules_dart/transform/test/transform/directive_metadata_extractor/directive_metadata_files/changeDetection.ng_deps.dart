@@ -11,8 +11,9 @@ void initReflector(reflector) {
   reflector
     ..registerType(
         HelloCmp,
-        new ReflectionInfo(
-            const [const Component(changeDetection: ChangeDetectionStrategy.CheckOnce)],
-            const [const []],
-            () => new HelloCmp()));
+        new ReflectionInfo(const [
+          const Component(changeDetection: ChangeDetectionStrategy.CheckOnce)
+        ], const [
+          const []
+        ], () => new HelloCmp()));
 }

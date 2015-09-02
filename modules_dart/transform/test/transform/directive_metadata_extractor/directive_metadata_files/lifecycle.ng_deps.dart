@@ -2,7 +2,19 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement, LifecycleEvent;
+    show
+        Component,
+        Directive,
+        View,
+        NgElement,
+        OnChanges,
+        OnDestroy,
+        OnInit,
+        DoCheck,
+        AfterContentInit,
+        AfterContentChecked,
+        AfterViewInit,
+        AfterViewChecked;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -11,18 +23,18 @@ void initReflector(reflector) {
   reflector
     ..registerType(
         HelloCmp,
-        new ReflectionInfo(const [
-          const Component(lifecycle: [
-            LifecycleEvent.OnChanges,
-            LifecycleEvent.OnDestroy,
-            LifecycleEvent.OnInit,
-            LifecycleEvent.DoCheck,
-            LifecycleEvent.AfterContentInit,
-            LifecycleEvent.AfterContentChecked,
-            LifecycleEvent.AfterViewInit,
-            LifecycleEvent.AfterViewChecked
-          ])
-        ], const [
-          const []
-        ], () => new HelloCmp()));
+        new ReflectionInfo(
+            const [const Component()],
+            const [const []],
+            () => new HelloCmp(),
+            const [
+              OnChanges,
+              OnDestroy,
+              OnInit,
+              DoCheck,
+              AfterContentInit,
+              AfterContentChecked,
+              AfterViewInit,
+              AfterViewChecked
+            ]));
 }
