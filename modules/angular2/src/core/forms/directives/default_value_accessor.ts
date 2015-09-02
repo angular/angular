@@ -41,9 +41,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     cd.valueAccessor = this;
   }
 
-  writeValue(value: any) {
-    // both this.value and setProperty are required at the moment
-    // remove when a proper imperative API is provided
+  writeValue(value: any): void {
     var normalizedValue = isBlank(value) ? '' : value;
     setProperty(this._renderer, this._elementRef, 'value', normalizedValue);
   }

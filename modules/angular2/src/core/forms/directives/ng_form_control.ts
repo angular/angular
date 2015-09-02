@@ -17,10 +17,8 @@ const formControlBinding =
  * # Example
  *
  * In this example, we bind the control to an input element. When the value of the input element
- * changes, the value of
- * the control will reflect that change. Likewise, if the value of the control changes, the input
- * element reflects that
- * change.
+ * changes, the value of the control will reflect that change. Likewise, if the value of the
+ * control changes, the input element reflects that change.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -29,16 +27,12 @@ const formControlBinding =
  *      template: "<input type='text' [ng-form-control]='loginControl'>"
  *      })
  * class LoginComp {
- *  loginControl:Control;
- *
- *  constructor() {
- *    this.loginControl = new Control('');
- *  }
+ *  loginControl: Control = new Control('');;
  * }
  *
  *  ```
  *
- * We can also use ng-model to bind a domain model to the form.
+ * We can also use `ng-model` to bind a domain model to the form.
  *
  *  ```
  * @Component({selector: "login-comp"})
@@ -47,12 +41,8 @@ const formControlBinding =
  *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
  *      })
  * class LoginComp {
- *  loginControl:Control;
+ *  loginControl: Control = new Control('');
  *  login:string;
- *
- *  constructor() {
- *    this.loginControl = new Control('');
- *  }
  * }
  *  ```
  */
@@ -76,13 +66,13 @@ export class NgFormControl extends NgControl implements OnChanges {
     this.validators = validators;
   }
 
-  onChanges(c: StringMap<string, any>) {
+  onChanges(changes: StringMap<string, any>): void {
     if (!this._added) {
       setUpControl(this.form, this);
       this.form.updateValidity();
       this._added = true;
     }
-    if (isPropertyUpdated(c, this.viewModel)) {
+    if (isPropertyUpdated(changes, this.viewModel)) {
       this.form.updateValue(this.model);
       this.viewModel = this.model;
     }

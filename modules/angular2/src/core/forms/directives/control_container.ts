@@ -2,7 +2,7 @@ import {Form} from './form_interface';
 import {AbstractControlDirective} from './abstract_control_directive';
 
 /**
- * A directive that contains a group of [NgControl].
+ * A directive that contains multiple {@link NgControl}.
  *
  * Only used by the forms module.
  */

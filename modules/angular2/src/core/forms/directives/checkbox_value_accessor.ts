@@ -40,7 +40,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
     cd.valueAccessor = this;
   }
 
-  writeValue(value: any) { setProperty(this._renderer, this._elementRef, "checked", value); }
+  writeValue(value: any): void { setProperty(this._renderer, this._elementRef, "checked", value); }
 
   get ngClassUntouched(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.untouched : false;

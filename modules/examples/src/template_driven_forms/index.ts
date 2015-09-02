@@ -36,7 +36,7 @@ class CheckoutModel {
  * Custom validator.
  */
 function creditCardValidator(c): StringMap<string, boolean> {
-  if (isPresent(c.value) && RegExpWrapper.test(new RegExp("^\\d{16}$"), c.value)) {
+  if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {
     return {"invalidCreditCard": true};
@@ -79,17 +79,19 @@ class ShowError {
 
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
-  get errorMessage() {
-    var c = this.formDir.form.find(this.controlPath);
-    for (var i = 0; i < this.errorTypes.length; ++i) {
-      if (isPresent(c) && c.touched && c.hasError(this.errorTypes[i])) {
-        return this._errorMessage(this.errorTypes[i]);
+  get errorMessage(): string {
+    var control = this.formDir.form.find(this.controlPath);
+    if (isPresent(control) && control.touched) {
+      for (var i = 0; i < this.errorTypes.length; ++i) {
+        if (control.hasError(this.errorTypes[i])) {
+          return this._errorMessage(this.errorTypes[i]);
+        }
       }
     }
     return null;
   }
 
-  _errorMessage(code) {
+  _errorMessage(code: string): string {
     var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
     return config[code];
   }
@@ -159,7 +161,7 @@ class TemplateDrivenForms {
   model = new CheckoutModel();
   countries = ['US', 'Canada'];
 
-  onSubmit() {
+  onSubmit(): void {
     print("Submitting:");
     print(this.model);
   }

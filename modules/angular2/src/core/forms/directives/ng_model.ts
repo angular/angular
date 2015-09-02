@@ -20,9 +20,8 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
  * @Component({selector: "search-comp"})
  * @View({
  *      directives: [FORM_DIRECTIVES],
- *      template: `
-              <input type='text' [(ng-model)]="searchQuery">
- *      `})
+ *      template: `<input type='text' [(ng-model)]="searchQuery">`
+ *      })
  * class SearchComp {
  *  searchQuery: string;
  * }
@@ -48,14 +47,14 @@ export class NgModel extends NgControl implements OnChanges {
     this.validators = validators;
   }
 
-  onChanges(c: StringMap<string, any>) {
+  onChanges(changes: StringMap<string, any>) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValidity();
       this._added = true;
     }
 
-    if (isPropertyUpdated(c, this.viewModel)) {
+    if (isPropertyUpdated(changes, this.viewModel)) {
       this._control.updateValue(this.model);
       this.viewModel = this.model;
     }

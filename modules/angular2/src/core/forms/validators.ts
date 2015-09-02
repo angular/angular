@@ -17,8 +17,8 @@ export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidato
  * ```
  */
 export class Validators {
-  static required(c: modelModule.Control): StringMap<string, boolean> {
-    return isBlank(c.value) || c.value == "" ? {"required": true} : null;
+  static required(control: modelModule.Control): StringMap<string, boolean> {
+    return isBlank(control.value) || control.value == "" ? {"required": true} : null;
   }
 
   static nullValidator(c: any): StringMap<string, boolean> { return null; }
@@ -26,28 +26,28 @@ export class Validators {
   static compose(validators: Function[]): Function {
     if (isBlank(validators)) return Validators.nullValidator;
 
-    return function(c: modelModule.Control) {
+    return function(control: modelModule.Control) {
       var res = ListWrapper.reduce(validators, (res, validator) => {
-        var errors = validator(c);
+        var errors = validator(control);
         return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
       }, {});
       return StringMapWrapper.isEmpty(res) ? null : res;
     };
   }
 
-  static group(c: modelModule.ControlGroup): StringMap<string, boolean> {
+  static group(group: modelModule.ControlGroup): StringMap<string, boolean> {
     var res = {};
-    StringMapWrapper.forEach(c.controls, (control, name) => {
-      if (c.contains(name) && isPresent(control.errors)) {
+    StringMapWrapper.forEach(group.controls, (control, name) => {
+      if (group.contains(name) && isPresent(control.errors)) {
         Validators._mergeErrors(control, res);
       }
     });
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static array(c: modelModule.ControlArray): StringMap<string, boolean> {
+  static array(array: modelModule.ControlArray): StringMap<string, boolean> {
     var res = {};
-    ListWrapper.forEach(c.controls, (control) => {
+    array.controls.forEach((control) => {
       if (isPresent(control.errors)) {
         Validators._mergeErrors(control, res);
       }

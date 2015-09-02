@@ -9,7 +9,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
 /**
- * Marks <option> as dynamic, so Angular can be notified when options change.
+ * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
  * #Example:
  *
@@ -53,7 +53,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._updateValueWhenListOfOptionsChanges(query);
   }
 
-  writeValue(value: any) {
+  writeValue(value: any): void {
     this.value = value;
     setProperty(this._renderer, this._elementRef, "value", value);
   }

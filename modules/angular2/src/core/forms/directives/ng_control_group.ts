@@ -42,7 +42,8 @@ const controlGroupBinding =
  *      `})
  * class SignupComp {
  *  onSignUp(value) {
- *    // value === {personal: {name: 'some name'},
+ *    // value === {
+ *    //  personal: {name: 'some name'},
  *    //  credentials: {login: 'some login', password: 'some password'}}
  *  }
  * }
@@ -63,9 +64,9 @@ export class NgControlGroup extends ControlContainer implements OnInit,
     this._parent = _parent;
   }
 
-  onInit() { this.formDirective.addControlGroup(this); }
+  onInit(): void { this.formDirective.addControlGroup(this); }
 
-  onDestroy() { this.formDirective.removeControlGroup(this); }
+  onDestroy(): void { this.formDirective.removeControlGroup(this); }
 
   get control(): ControlGroup { return this.formDirective.getControlGroup(this); }
 
