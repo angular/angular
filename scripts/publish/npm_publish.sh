@@ -49,6 +49,9 @@ function publishModule {
     cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
   fi
 
+  # Remove all dart related files
+  rm -f $PUBLISH_DIR/{,**/}{*.dart,*.dart.md}
+
   npm publish $PUBLISH_DIR
 }
 
