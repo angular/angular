@@ -1,4 +1,9 @@
-import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+import {
+  TestabilityRegistry,
+  Testability,
+  GetTestability,
+  setTestabilityGetter
+} from 'angular2/src/core/testability/testability';
 import {global} from 'angular2/src/core/facade/lang';
 
 class PublicTestability {
@@ -13,8 +18,10 @@ class PublicTestability {
   }
 }
 
-export class GetTestability {
-  static addToWindow(registry: TestabilityRegistry) {
+export class BrowserGetTestability implements GetTestability {
+  static init() { setTestabilityGetter(new BrowserGetTestability()); }
+
+  addToWindow(registry: TestabilityRegistry): void {
     global.getAngularTestability = function(elem: Element, findInAncestors: boolean = true):
         PublicTestability {
           var testability = registry.findTestabilityInTree(elem, findInAncestors);

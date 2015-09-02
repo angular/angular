@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/src/core/di';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import * as getTestabilityModule from './get_testability';
 import {NgZone} from '../zone/ng_zone';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
@@ -76,7 +76,7 @@ export class Testability {
 export class TestabilityRegistry {
   _applications: Map<any, Testability> = new Map();
 
-  constructor() { getTestabilityModule.GetTestability.addToWindow(this); }
+  constructor() { testabilityGetter.addToWindow(this); }
 
   registerApplication(token: any, testability: Testability) {
     this._applications.set(token, testability);
@@ -99,3 +99,16 @@ export class TestabilityRegistry {
     return this.findTestabilityInTree(DOM.parentElement(elem));
   }
 }
+
+export interface GetTestability { addToWindow(registry: TestabilityRegistry): void; }
+
+@CONST()
+class NoopGetTestability implements GetTestability {
+  addToWindow(registry: TestabilityRegistry): void {}
+}
+
+export function setTestabilityGetter(getter: GetTestability): void {
+  testabilityGetter = getter;
+}
+
+var testabilityGetter: GetTestability = CONST_EXPR(new NoopGetTestability());

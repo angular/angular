@@ -8,7 +8,7 @@ import {Binding, Injectable} from "angular2/src/core/di";
 import {Map} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
-import {ApplicationRef} from "angular2/src/core/application_ref";
+import {ComponentRef} from "angular2/src/core/compiler/dynamic_component_loader";
 export * from "angular2/src/web_workers/shared/message_bus";
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
@@ -28,7 +28,7 @@ var _postMessage: PostMessageInterface = <any>postMessage;
  */
 export function bootstrapWebWorker(
     appComponentType: Type, componentInjectableBindings: Array<Type | Binding | any[]> = null):
-    Promise<ApplicationRef> {
+    Promise<ComponentRef> {
   var sink = new PostMessageBusSink({
     postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
       console.log("Sending", message);
