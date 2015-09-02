@@ -6,7 +6,6 @@ import {
   Directive,
   View,
   Host,
-  NgValidator,
   forwardRef,
   Binding
 } from 'angular2/bootstrap';
