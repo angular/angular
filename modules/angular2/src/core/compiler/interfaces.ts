@@ -8,10 +8,7 @@ import {StringMap} from 'angular2/src/core/facade/collection';
  * - `AfterContentInit`,
  * - `AfterContentChecked`,
  * - `OnDestroy` (at the very end before destruction)
- *
- * // todo(vicb): describe Dart & TS vs JS
  */
-export interface LifecycleHook {}
 
 /**
  * Notify a directive when any of its bindings have changed.
@@ -41,7 +38,7 @@ export interface LifecycleHook {}
  * }
  *  ```
  */
-export class OnChanges implements LifecycleHook {
+export class OnChanges {
   onChanges(changes: StringMap<string, any>): void {}
 }
 
@@ -63,7 +60,7 @@ export class OnChanges implements LifecycleHook {
  * }
  *  ```
  */
-export class OnInit implements LifecycleHook {
+export class OnInit {
   onInit(): void {}
 }
 
@@ -86,7 +83,7 @@ export class OnInit implements LifecycleHook {
  * }
  *  ```
  */
-export class DoCheck implements LifecycleHook {
+export class DoCheck {
   doCheck(): void {}
 }
 
@@ -104,7 +101,7 @@ export class DoCheck implements LifecycleHook {
  * }
  * ```
  */
-export class OnDestroy implements LifecycleHook {
+export class OnDestroy {
   onDestroy(): void {}
 }
 
@@ -122,7 +119,7 @@ export class OnDestroy implements LifecycleHook {
  * }
  *  ```
  */
-export class AfterContentInit implements LifecycleHook {
+export class AfterContentInit {
   afterContentInit(): void {}
 }
 
@@ -140,7 +137,7 @@ export class AfterContentInit implements LifecycleHook {
  * }
  *  ```
  */
-export class AfterContentChecked implements LifecycleHook {
+export class AfterContentChecked {
   afterContentChecked(): void {}
 }
 
@@ -158,7 +155,7 @@ export class AfterContentChecked implements LifecycleHook {
  * }
  *  ```
  */
-export class AfterViewInit implements LifecycleHook {
+export class AfterViewInit {
   afterViewInit(): void {}
 }
 
@@ -176,6 +173,6 @@ export class AfterViewInit implements LifecycleHook {
  * }
  *  ```
  */
-export class AfterViewChecked implements LifecycleHook {
+export class AfterViewChecked {
   afterViewChecked(): void {}
 }

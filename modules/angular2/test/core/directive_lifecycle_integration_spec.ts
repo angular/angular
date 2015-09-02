@@ -13,11 +13,8 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
+import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
 import {
-  Directive,
-  Component,
-  View,
-  ViewMetadata,
   OnChanges,
   OnInit,
   DoCheck,
@@ -25,7 +22,7 @@ import {
   AfterContentChecked,
   AfterViewInit,
   AfterViewChecked
-} from 'angular2/metadata';
+} from 'angular2/lifecycle_hooks';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {

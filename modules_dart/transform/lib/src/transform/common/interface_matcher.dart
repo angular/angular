@@ -11,53 +11,53 @@ export 'class_matcher_base.dart' show ClassDescriptor;
 /// covers all libraries which provide them.
 const _ON_CHANGE_INTERFACES = const [
   const ClassDescriptor('OnChanges', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnChanges', 'package:angular2/metadata.dart'),
+  const ClassDescriptor('OnChanges', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'OnChanges', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_DESTROY_INTERFACES = const [
   const ClassDescriptor('OnDestroy', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnDestroy', 'package:angular2/metadata.dart'),
+  const ClassDescriptor('OnDestroy', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'OnDestroy', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _DO_CHECK_INTERFACES = const [
   const ClassDescriptor('DoCheck', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('DoCheck', 'package:angular2/metadata.dart'),
+  const ClassDescriptor('DoCheck', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'DoCheck', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_INIT_INTERFACES = const [
   const ClassDescriptor('OnInit', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('OnInit', 'package:angular2/metadata.dart'),
+  const ClassDescriptor('OnInit', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'OnInit', 'package:angular2/src/core/compiler/interfaces.dart'),
 ];
 const _ON_AFTER_CONTENT_INIT_INTERFACES = const [
   const ClassDescriptor('AfterContentInit', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
-      'AfterContentInit', 'package:angular2/metadata.dart'),
+      'AfterContentInit', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterContentInit', 'package:angular2/src/core/compiler/interfaces.dart')
 ];
 const _ON_AFTER_CONTENT_CHECKED_INTERFACES = const [
   const ClassDescriptor('AfterContentChecked', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
-      'AfterContentChecked', 'package:angular2/metadata.dart'),
+      'AfterContentChecked', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterContentChecked', 'package:angular2/src/core/compiler/interfaces.dart')
 ];
 const _ON_AFTER_VIEW_INIT_INTERFACES = const [
   const ClassDescriptor('AfterViewInit', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
-      'AfterViewInit', 'package:angular2/metadata.dart'),
+      'AfterViewInit', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterViewInit', 'package:angular2/src/core/compiler/interfaces.dart')
 ];
 const _ON_AFTER_VIEW_CHECKED_INTERFACES = const [
   const ClassDescriptor('AfterViewChecked', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
-      'AfterViewChecked', 'package:angular2/metadata.dart'),
+      'AfterViewChecked', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterViewChecked', 'package:angular2/src/core/compiler/interfaces.dart')
 ];
