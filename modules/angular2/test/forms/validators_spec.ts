@@ -33,6 +33,9 @@ export function main() {
     });
 
     describe("compose", () => {
+      it("should return a null validator when given null",
+         () => { expect(Validators.compose(null)).toBe(Validators.nullValidator); });
+
       it("should collect errors from all the validators", () => {
         var c = Validators.compose([validator("a", true), validator("b", true)]);
         expect(c(new Control(""))).toEqual({"a": true, "b": true});
