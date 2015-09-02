@@ -8,7 +8,6 @@ import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
-import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
@@ -54,12 +53,7 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
   var declarationsCode =
       await _getAllDeclarations(reader, assetId, code, directivesVisitor);
   var declarationsVisitor = new _NgDepsDeclarationsVisitor(
-      assetId,
-      writer,
-      new XhrImpl(reader, assetId),
-      annotationMatcher,
-      _interfaceMatcher,
-      ngMeta,
+      assetId, writer, new XhrImpl(reader, assetId), annotationMatcher, ngMeta,
       inlineViews: inlineViews);
   parseCompilationUnit(declarationsCode, name: '${assetId.path} and parts')
       .declarations
@@ -74,8 +68,6 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
 
   return writer.asyncToString();
 }
-
-InterfaceMatcher _interfaceMatcher = new InterfaceMatcher();
 
 /// Processes `visitor.parts`, reading and appending their contents to the
 /// original `code`.
@@ -278,29 +270,20 @@ class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
   /// Angular 2, for example `@Component`.
   final AnnotationMatcher _annotationMatcher;
 
-  /// Responsible for testing whether interfaces are recognized by Angular2,
-  /// for example `OnChanges`.
-  final InterfaceMatcher _interfaceMatcher;
-
   /// Used to fetch linked files.
   final XHR _xhr;
 
-  _NgDepsDeclarationsVisitor(
-      AssetId assetId,
-      AsyncStringWriter writer,
-      XHR xhr,
-      AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher,
-      this.ngMeta,
+  _NgDepsDeclarationsVisitor(AssetId assetId, AsyncStringWriter writer, XHR xhr,
+      AnnotationMatcher annotationMatcher, this.ngMeta,
       {bool inlineViews})
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
         _metaVisitor = new AnnotationsTransformVisitor(
-            writer, xhr, annotationMatcher, assetId, inlineViews: inlineViews),
+            writer, xhr, annotationMatcher, assetId,
+            inlineViews: inlineViews),
         _annotationMatcher = annotationMatcher,
-        _interfaceMatcher = interfaceMatcher,
         this.assetId = assetId,
         _xhr = xhr;
 
@@ -445,4 +428,5 @@ class _NgDepsDeclarationsVisitor extends Object with SimpleAstVisitor<Object> {
 }
 
 const _REF_PREFIX = '_ngRef';
-const _REFLECTOR_IMPORT = 'package:angular2/src/core/reflection/reflection.dart';
+const _REFLECTOR_IMPORT =
+    'package:angular2/src/core/reflection/reflection.dart';

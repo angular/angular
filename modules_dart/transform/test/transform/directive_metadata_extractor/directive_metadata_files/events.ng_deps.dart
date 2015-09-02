@@ -12,7 +12,7 @@ void initReflector(reflector) {
     ..registerType(
         HelloCmp,
         new ReflectionInfo(const [
-          const Component(events: ['onFoo', 'onBar'])
+          const Component(events: const ['onFoo', 'onBar'])
         ], const [
           const []
         ], () => new HelloCmp()));
