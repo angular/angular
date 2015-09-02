@@ -3,7 +3,6 @@ import {isBlank, BaseException, looseIdentical} from 'angular2/src/core/facade/l
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {NgValidator} from './validators';
 import {Control} from '../model';
 import {Validators} from '../validators';
 import {Renderer} from 'angular2/render';
@@ -35,11 +34,6 @@ export function setUpControl(c: Control, dir: NgControl) {
 
   // touched
   dir.valueAccessor.registerOnTouched(() => c.markAsTouched());
-}
-
-export function composeNgValidator(ngValidators: QueryList<NgValidator>): Function {
-  if (isBlank(ngValidators)) return Validators.nullValidator;
-  return Validators.compose(ngValidators.map(v => v.validator));
 }
 
 function _throwError(dir: NgControl, message: string): void {

@@ -32,8 +32,8 @@ export {
   SelectControlValueAccessor
 } from './src/forms/directives/select_control_value_accessor';
 export {FORM_DIRECTIVES} from './src/forms/directives';
-export {Validators} from './src/forms/validators';
-export {NgValidator, NgRequiredValidator} from './src/forms/directives/validators';
+export {NG_VALIDATORS, Validators} from './src/forms/validators';
+export {DefaultValidators} from './src/forms/directives/validators';
 export {FormBuilder} from './src/forms/form_builder';
 
 import {FormBuilder} from './src/forms/form_builder';
