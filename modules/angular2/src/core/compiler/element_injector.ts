@@ -30,6 +30,7 @@ import {
   InjectorDynamicStrategy,
   BindingWithVisibility
 } from 'angular2/src/core/di/injector';
+import {resolveBinding, ResolvedFactory} from 'angular2/src/core/di/binding';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
@@ -195,40 +196,32 @@ export class DirectiveDependency extends Dependency {
 }
 
 export class DirectiveBinding extends ResolvedBinding {
-  constructor(key: Key, factory: Function, dependencies: Dependency[],
-              public resolvedBindings: ResolvedBinding[],
-              public resolvedViewBindings: ResolvedBinding[],
-              public metadata: RenderDirectiveMetadata) {
-    super(key, factory, dependencies);
+  constructor(key: Key, factory: Function, deps: Dependency[],
+              public metadata: RenderDirectiveMetadata,
+              public bindings: Array<Type | Binding | any[]>,
+              public viewBindings: Array<Type | Binding | any[]>) {
+    super(key, [new ResolvedFactory(factory, deps)], false);
   }
 
-  get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
-
-  get callOnChanges(): boolean { return this.metadata.callOnChanges; }
-
-  get callAfterContentChecked(): boolean { return this.metadata.callAfterContentChecked; }
-
   get displayName(): string { return this.key.displayName; }
+
+  get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
 
   get eventEmitters(): string[] {
     return isPresent(this.metadata) && isPresent(this.metadata.events) ? this.metadata.events : [];
   }
-
-  get changeDetection() { return this.metadata.changeDetection; }
 
   static createFromBinding(binding: Binding, meta: DirectiveMetadata): DirectiveBinding {
     if (isBlank(meta)) {
       meta = new DirectiveMetadata();
     }
 
-    var rb = binding.resolve();
-    var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    var resolvedBindings = isPresent(meta.bindings) ? Injector.resolve(meta.bindings) : [];
-    var resolvedViewBindings = meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ?
-                                   Injector.resolve(meta.viewBindings) :
-                                   [];
+    var rb = resolveBinding(binding);
+    var rf = rb.resolvedFactories[0];
+    var deps = rf.dependencies.map(DirectiveDependency.createFrom);
+    var token = binding.token;
     var metadata = RenderDirectiveMetadata.create({
-      id: stringify(rb.key.token),
+      id: stringify(binding.token),
       type: meta instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
                                                 RenderDirectiveMetadata.DIRECTIVE_TYPE,
       selector: meta.selector,
@@ -236,29 +229,30 @@ export class DirectiveBinding extends ResolvedBinding {
       events: meta.events,
       host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
       properties: meta.properties,
-      readAttributes: DirectiveBinding._readAttributes(deps),
+      readAttributes: DirectiveBinding._readAttributes(<any>deps),
 
-      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, rb.key.token, meta),
-      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, rb.key.token, meta),
-      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, rb.key.token, meta),
-      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, rb.key.token, meta),
-      callAfterContentInit: hasLifecycleHook(LifecycleEvent.AfterContentInit, rb.key.token, meta),
-      callAfterContentChecked:
-          hasLifecycleHook(LifecycleEvent.AfterContentChecked, rb.key.token, meta),
-      callAfterViewInit: hasLifecycleHook(LifecycleEvent.AfterViewInit, rb.key.token, meta),
-      callAfterViewChecked: hasLifecycleHook(LifecycleEvent.AfterViewChecked, rb.key.token, meta),
+      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, token, meta),
+      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, token, meta),
+      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, token, meta),
+      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, token, meta),
+      callAfterContentInit: hasLifecycleHook(LifecycleEvent.AfterContentInit, token, meta),
+      callAfterContentChecked: hasLifecycleHook(LifecycleEvent.AfterContentChecked, token, meta),
+      callAfterViewInit: hasLifecycleHook(LifecycleEvent.AfterViewInit, token, meta),
+      callAfterViewChecked: hasLifecycleHook(LifecycleEvent.AfterViewChecked, token, meta),
 
       changeDetection: meta instanceof ComponentMetadata ? meta.changeDetection : null,
 
       exportAs: meta.exportAs
     });
-    return new DirectiveBinding(rb.key, rb.factory, deps, resolvedBindings, resolvedViewBindings,
-                                metadata);
+    var bindings = isPresent(meta.bindings) ? meta.bindings : [];
+    var viewBindigs =
+        meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ? meta.viewBindings : [];
+    return new DirectiveBinding(rb.key, rf.factory, deps, metadata, bindings, viewBindigs);
   }
 
-  static _readAttributes(deps) {
+  static _readAttributes(deps: DirectiveDependency[]): string[] {
     var readAttributes = [];
-    ListWrapper.forEach(deps, (dep) => {
+    deps.forEach(dep => {
       if (isPresent(dep.attributeName)) {
         readAttributes.push(dep.attributeName);
       }
@@ -316,7 +310,7 @@ export class ProtoElementInjector {
   eventEmitterAccessors: EventEmitterAccessor[][];
   protoInjector: ProtoInjector;
 
-  static create(parent: ProtoElementInjector, index: number, bindings: ResolvedBinding[],
+  static create(parent: ProtoElementInjector, index: number, bindings: DirectiveBinding[],
                 firstBindingIsComponent: boolean, distanceToParent: number,
                 directiveVariableBindings: Map<string, number>): ProtoElementInjector {
     var bd = [];
@@ -326,43 +320,46 @@ export class ProtoElementInjector {
     if (firstBindingIsComponent) {
       ProtoElementInjector._createViewBindingsWithVisibility(bindings, bd);
     }
-    ProtoElementInjector._createBindingsWithVisibility(bindings, bd, firstBindingIsComponent);
+
+    ProtoElementInjector._createBindingsWithVisibility(bindings, bd);
     return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent,
                                     directiveVariableBindings);
   }
 
-  private static _createDirectiveBindingWithVisibility(dirBindings: ResolvedBinding[],
+  private static _createDirectiveBindingWithVisibility(dirBindings: DirectiveBinding[],
                                                        bd: BindingWithVisibility[],
                                                        firstBindingIsComponent: boolean) {
-    ListWrapper.forEach(dirBindings, dirBinding => {
+    dirBindings.forEach(dirBinding => {
       bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent, dirBinding,
                                                                 dirBindings, dirBinding));
     });
   }
 
-  private static _createBindingsWithVisibility(dirBindings: ResolvedBinding[],
-                                               bd: BindingWithVisibility[],
-                                               firstBindingIsComponent: boolean) {
-    ListWrapper.forEach(dirBindings, dirBinding => {
-      ListWrapper.forEach(dirBinding.resolvedBindings, b => {
-        bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent,
-                                                                  dirBinding, dirBindings, b));
-      });
+  private static _createBindingsWithVisibility(dirBindings: DirectiveBinding[],
+                                               bd: BindingWithVisibility[]) {
+    var bindingsFromAllDirectives = [];
+    dirBindings.forEach(dirBinding => {
+      bindingsFromAllDirectives =
+          ListWrapper.concat(bindingsFromAllDirectives, dirBinding.bindings);
     });
+
+    var resolved = Injector.resolve(bindingsFromAllDirectives);
+    resolved.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Public)));
   }
 
-  private static _createBindingWithVisibility(firstBindingIsComponent, dirBinding, dirBindings,
-                                              binding) {
+  private static _createBindingWithVisibility(firstBindingIsComponent: boolean,
+                                              dirBinding: DirectiveBinding,
+                                              dirBindings: DirectiveBinding[],
+                                              binding: ResolvedBinding) {
     var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
     return new BindingWithVisibility(binding,
                                      isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
   }
 
-  private static _createViewBindingsWithVisibility(bindings: ResolvedBinding[],
+  private static _createViewBindingsWithVisibility(dirBindings: DirectiveBinding[],
                                                    bd: BindingWithVisibility[]) {
-    var db = <DirectiveBinding>bindings[0];
-    ListWrapper.forEach(db.resolvedViewBindings,
-                        b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
+    var resolvedViewBindings = Injector.resolve(dirBindings[0].viewBindings);
+    resolvedViewBindings.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
   }
 
 
@@ -852,7 +849,6 @@ interface _ElementInjectorStrategy {
   isComponentKey(key: Key): boolean;
   buildQueries(): void;
   addDirectivesMatchingQuery(q: QueryMetadata, res: any[]): void;
-  getComponentBinding(): DirectiveBinding;
   hydrate(): void;
   dehydrate(): void;
 }
@@ -953,34 +949,44 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var p = this.injectorStrategy.protoStrategy;
 
     if (p.binding0 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding0.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding0.resolvedFactories[0].dependencies);
     }
     if (p.binding1 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding1.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding1.resolvedFactories[0].dependencies);
     }
     if (p.binding2 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding2.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding2.resolvedFactories[0].dependencies);
     }
     if (p.binding3 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding3.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding3.resolvedFactories[0].dependencies);
     }
     if (p.binding4 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding4.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding4.resolvedFactories[0].dependencies);
     }
     if (p.binding5 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding5.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding5.resolvedFactories[0].dependencies);
     }
     if (p.binding6 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding6.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding6.resolvedFactories[0].dependencies);
     }
     if (p.binding7 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding7.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding7.resolvedFactories[0].dependencies);
     }
     if (p.binding8 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding8.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding8.resolvedFactories[0].dependencies);
     }
     if (p.binding9 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding9.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding9.resolvedFactories[0].dependencies);
     }
   }
 
@@ -1028,11 +1034,6 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
       if (i.obj9 === UNDEFINED) i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
       list.push(i.obj9);
     }
-  }
-
-  getComponentBinding(): DirectiveBinding {
-    var p = this.injectorStrategy.protoStrategy;
-    return <DirectiveBinding>p.binding0;
   }
 }
 
@@ -1086,7 +1087,8 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
     for (var i = 0; i < p.bindings.length; i++) {
       if (p.bindings[i] instanceof DirectiveBinding) {
-        this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.bindings[i].dependencies);
+        this._ei._buildQueriesForDeps(
+            <DirectiveDependency[]>p.bindings[i].resolvedFactory.dependencies);
       }
     }
   }
@@ -1103,11 +1105,6 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
         list.push(ist.objs[i]);
       }
     }
-  }
-
-  getComponentBinding(): DirectiveBinding {
-    var p = this.injectorStrategy.protoStrategy;
-    return <DirectiveBinding>p.bindings[0];
   }
 }
 
