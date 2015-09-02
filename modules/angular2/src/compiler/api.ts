@@ -3,11 +3,13 @@ import {HtmlAst} from './html_ast';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
 
 export class TypeMetadata {
+  id: number;
   type: any;
   typeName: string;
   typeUrl: string;
-  constructor({type, typeName, typeUrl}:
-                  {type?: string, typeName?: string, typeUrl?: string} = {}) {
+  constructor({id, type, typeName, typeUrl}:
+                  {id?: number, type?: string, typeName?: string, typeUrl?: string} = {}) {
+    this.id = id;
     this.type = type;
     this.typeName = typeName;
     this.typeUrl = typeUrl;
@@ -65,11 +67,11 @@ export class TemplateMetadata {
   styleAbsUrls: string[];
   ngContentSelectors: string[];
   constructor({encapsulation, nodes, styles, styleAbsUrls, ngContentSelectors}: {
-    encapsulation: ViewEncapsulation,
-    nodes: HtmlAst[],
-    styles: string[],
-    styleAbsUrls: string[],
-    ngContentSelectors: string[]
+    encapsulation?: ViewEncapsulation,
+    nodes?: HtmlAst[],
+    styles?: string[],
+    styleAbsUrls?: string[],
+    ngContentSelectors?: string[]
   }) {
     this.encapsulation = encapsulation;
     this.nodes = nodes;
@@ -120,4 +122,8 @@ export class DirectiveMetadata {
     this.changeDetection = changeDetection;
     this.template = template;
   }
+}
+
+export class SourceModule {
+  constructor(public moduleName: string, public source: string, public imports: string[][]) {}
 }
