@@ -676,7 +676,7 @@ export function main() {
                        `No provider for service! (${stringify(NeedsService) } -> service)`));
              });
 
-          it("should instantiate directives that depend on bindings bindings of other directives", () => {
+          it("should instantiate directives that depend on bindings of other directives", () => {
             var shadowInj = hostShadowInjectors(
                 ListWrapper.concat([DirectiveBinding.createFromType(SimpleDirective, new ComponentMetadata({
                       bindings: [bind('service').toValue('hostService')]})
@@ -723,8 +723,30 @@ export function main() {
             expect(inj.get(NeedsService).service).toEqual('viewService');
           });
 
-          it("should not instantiate a directive in a view that has an ancestor dependency on bindings"+
-            " bindings of a decorator directive", () => {
+          it("should prioritize directive bindings over component bindings", () => {
+            var component = DirectiveBinding.createFromType(NeedsService, new ComponentMetadata({
+                      bindings: [bind('service').toValue('compService')]}));
+            var directive = DirectiveBinding.createFromType(SomeOtherDirective, new DirectiveMetadata({
+                      bindings: [bind('service').toValue('dirService')]}));
+            var inj = injector(ListWrapper.concat([component, directive], extraBindings), null, true);
+            expect(inj.get(NeedsService).service).toEqual('dirService');
+          });
+
+          it("should not instantiate a directive in a view that has a host dependency on bindings"+
+            " of the component", () => {
+            expect(() => {
+              hostShadowInjectors(
+                ListWrapper.concat([
+                  DirectiveBinding.createFromType(SomeOtherDirective, new DirectiveMetadata({
+                      bindings: [bind('service').toValue('hostService')]})
+                  )], extraBindings),
+                ListWrapper.concat([NeedsServiceFromHost], extraBindings)
+              );
+            }).toThrowError(new RegExp("No provider for service!"));
+          });
+
+          it("should not instantiate a directive in a view that has a host dependency on bindings"+
+            " of a decorator directive", () => {
             expect(() => {
               hostShadowInjectors(
                 ListWrapper.concat([

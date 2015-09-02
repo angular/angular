@@ -20,8 +20,7 @@ export function main() {
     it('should create a binding out of a type', () => {
       var binding = PipeBinding.createFromType(MyPipe, new Pipe({name: 'my-pipe'}));
       expect(binding.name).toEqual('my-pipe');
-      expect(binding.factory()).toBeAnInstanceOf(MyPipe);
-      expect(binding.dependencies.length).toEqual(0);
+      expect(binding.key.token).toEqual(MyPipe);
     });
   });
 }

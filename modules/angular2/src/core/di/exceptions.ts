@@ -167,3 +167,17 @@ export class OutOfBoundsError extends BaseException {
 
   toString(): string { return this.message; }
 }
+
+/**
+ * Thrown when a multi binding and a regular binding are bound to the same token.
+ */
+export class MixingMultiBindingsWithRegularBindings extends BaseException {
+  message: string;
+  constructor(binding1, binding2) {
+    super();
+    this.message = "Cannot mix multi bindings and regular bindings, got: " + binding1.toString() +
+                   " " + binding2.toString();
+  }
+
+  toString(): string { return this.message; }
+}
