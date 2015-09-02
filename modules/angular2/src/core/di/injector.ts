@@ -546,8 +546,8 @@ export class Injector {
   */
   resolveAndCreateChild(bindings: Array<Type | Binding | any[]>,
                         depProvider: DependencyProvider = null): Injector {
-    var resovledBindings = Injector.resolve(bindings);
-    return this.createChildFromResolved(resovledBindings, depProvider);
+    var resolvedBindings = Injector.resolve(bindings);
+    return this.createChildFromResolved(resolvedBindings, depProvider);
   }
 
   /**
@@ -578,7 +578,7 @@ export class Injector {
   }
 
   /**
-   * Instantiates an object using a resolved bindin in the context of the injector.
+   * Instantiates an object using a resolved binding in the context of the injector.
    *
    * @param `binding`: a resolved binding
    * @returns an object created using binding.
