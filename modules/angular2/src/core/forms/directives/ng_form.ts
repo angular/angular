@@ -42,8 +42,9 @@ const formDirectiveBinding =
  *              </form>
  *      `})
  * class SignupComp {
- *  onSignUp(value) {
- *    // value === {personal: {name: 'some name'},
+ *  onSignUp(value): void {
+ *    // value === {
+ *    //  personal: {name: 'some name'},
  *    //  credentials: {login: 'some login', password: 'some password'}}
  *  }
  * }
@@ -60,13 +61,8 @@ const formDirectiveBinding =
   exportAs: 'form'
 })
 export class NgForm extends ControlContainer implements Form {
-  form: ControlGroup;
+  form: ControlGroup = new ControlGroup({});
   ngSubmit = new EventEmitter();
-
-  constructor() {
-    super();
-    this.form = new ControlGroup({});
-  }
 
   get formDirective(): Form { return this; }
 
@@ -79,10 +75,10 @@ export class NgForm extends ControlContainer implements Form {
   addControl(dir: NgControl): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
-      var c = new Control();
-      setUpControl(c, dir);
-      container.addControl(dir.name, c);
-      c.updateValidity();
+      var ctrl = new Control();
+      setUpControl(ctrl, dir);
+      container.addControl(dir.name, ctrl);
+      ctrl.updateValidity();
     });
   }
 
@@ -101,9 +97,9 @@ export class NgForm extends ControlContainer implements Form {
   addControlGroup(dir: NgControlGroup): void {
     this._later(_ => {
       var container = this._findContainer(dir.path);
-      var c = new ControlGroup({});
-      container.addControl(dir.name, c);
-      c.updateValidity();
+      var group = new ControlGroup({});
+      container.addControl(dir.name, group);
+      group.updateValidity();
     });
   }
 
@@ -123,8 +119,8 @@ export class NgForm extends ControlContainer implements Form {
 
   updateModel(dir: NgControl, value: any): void {
     this._later(_ => {
-      var c = <Control>this.form.find(dir.path);
-      c.updateValue(value);
+      var ctrl = <Control>this.form.find(dir.path);
+      ctrl.updateValue(value);
     });
   }
 
@@ -138,9 +134,5 @@ export class NgForm extends ControlContainer implements Form {
     return ListWrapper.isEmpty(path) ? this.form : <ControlGroup>this.form.find(path);
   }
 
-  _later(fn) {
-    var c: PromiseCompleter<any> = PromiseWrapper.completer();
-    PromiseWrapper.then(c.promise, fn, (_) => {});
-    c.resolve(null);
-  }
+  _later(fn): void { PromiseWrapper.then(PromiseWrapper.resolve(null), fn, (_) => {}); }
 }

@@ -1,4 +1,4 @@
-import {StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {StringWrapper, isPresent, isBlank, normalizeBool} from 'angular2/src/core/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Validators} from './validators';
@@ -13,14 +13,15 @@ export const VALID = "VALID";
  */
 export const INVALID = "INVALID";
 
-export function isControl(c: Object): boolean {
-  return c instanceof AbstractControl;
+export function isControl(control: Object): boolean {
+  return control instanceof AbstractControl;
 }
 
-function _find(c: AbstractControl, path: Array<string | number>| string) {
+function _find(control: AbstractControl, path: Array<string | number>| string) {
   if (isBlank(path)) return null;
+
   if (!(path instanceof Array)) {
-    path = StringWrapper.split(<string>path, new RegExp("/"));
+    path = (<string>path).split("/");
   }
   if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
 
@@ -33,7 +34,7 @@ function _find(c: AbstractControl, path: Array<string | number>| string) {
     } else {
       return null;
     }
-  }, c);
+  }, control);
 }
 
 /**
@@ -43,18 +44,13 @@ export class AbstractControl {
   _value: any;
   _status: string;
   _errors: StringMap<string, any>;
-  _pristine: boolean;
-  _touched: boolean;
+  _pristine: boolean = true;
+  _touched: boolean = false;
   _parent: ControlGroup | ControlArray;
-  validator: Function;
 
   _valueChanges: EventEmitter;
 
-  constructor(validator: Function) {
-    this.validator = validator;
-    this._pristine = true;
-    this._touched = false;
-  }
+  constructor(public validator: Function) {}
 
   get value(): any { return this._value; }
 
@@ -77,18 +73,18 @@ export class AbstractControl {
   markAsTouched(): void { this._touched = true; }
 
   markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
-    onlySelf = isPresent(onlySelf) ? onlySelf : false;
-
+    onlySelf = normalizeBool(onlySelf);
     this._pristine = false;
+
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.markAsDirty({onlySelf: onlySelf});
     }
   }
 
-  setParent(parent: ControlGroup | ControlArray) { this._parent = parent; }
+  setParent(parent: ControlGroup | ControlArray): void { this._parent = parent; }
 
   updateValidity({onlySelf}: {onlySelf?: boolean} = {}): void {
-    onlySelf = isPresent(onlySelf) ? onlySelf : false;
+    onlySelf = normalizeBool(onlySelf);
 
     this._errors = this.validator(this);
     this._status = isPresent(this._errors) ? INVALID : VALID;
@@ -100,7 +96,7 @@ export class AbstractControl {
 
   updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
-    onlySelf = isPresent(onlySelf) ? onlySelf : false;
+    onlySelf = normalizeBool(onlySelf);
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
     this._updateValue();
@@ -111,6 +107,7 @@ export class AbstractControl {
 
     this._errors = this.validator(this);
     this._status = isPresent(this._errors) ? INVALID : VALID;
+
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
     }
@@ -119,9 +116,9 @@ export class AbstractControl {
   find(path: Array<string | number>| string): AbstractControl { return _find(this, path); }
 
   getError(errorCode: string, path: string[] = null): any {
-    var c = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
-    if (isPresent(c) && isPresent(c._errors)) {
-      return StringMapWrapper.get(c._errors, errorCode);
+    var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
+    if (isPresent(control) && isPresent(control._errors)) {
+      return StringMapWrapper.get(control._errors, errorCode);
     } else {
       return null;
     }
@@ -138,8 +135,7 @@ export class AbstractControl {
  * Defines a part of a form that cannot be divided into other controls.
  *
  * `Control` is one of the three fundamental building blocks used to define forms in Angular, along
- * with
- * {@link ControlGroup} and {@link ControlArray}.
+ * with {@link ControlGroup} and {@link ControlArray}.
  */
 export class Control extends AbstractControl {
   _onChange: Function;
@@ -167,29 +163,22 @@ export class Control extends AbstractControl {
 /**
  * Defines a part of a form, of fixed length, that can contain other controls.
  *
- * A ControlGroup aggregates the values and errors of each {@link Control} in the group. Thus, if
- * one of the controls
- * in a group is invalid, the entire group is invalid. Similarly, if a control changes its value,
- * the entire group
- * changes as well.
+ * A `ControlGroup` aggregates the values and errors of each {@link Control} in the group. Thus, if
+ * one of the controls in a group is invalid, the entire group is invalid. Similarly, if a control
+ * changes its value, the entire group changes as well.
  *
  * `ControlGroup` is one of the three fundamental building blocks used to define forms in Angular,
- * along with
- * {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other controls,
- * but is of variable
- * length.
+ * along with {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other
+ * controls, but is of variable length.
  */
 export class ControlGroup extends AbstractControl {
-  controls: StringMap<string, AbstractControl>;
-  _optionals: StringMap<string, boolean>;
+  private _optionals: StringMap<string, boolean>;
 
-  constructor(controls: StringMap<string, AbstractControl>,
+  constructor(public controls: StringMap<string, AbstractControl>,
               optionals: StringMap<string, boolean> = null,
               validator: Function = Validators.group) {
     super(validator);
-    this.controls = controls;
     this._optionals = isPresent(optionals) ? optionals : {};
-
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
@@ -197,12 +186,12 @@ export class ControlGroup extends AbstractControl {
     this.updateValidity({onlySelf: true});
   }
 
-  addControl(name: string, c: AbstractControl) {
-    this.controls[name] = c;
-    c.setParent(this);
+  addControl(name: string, control: AbstractControl): void {
+    this.controls[name] = control;
+    control.setParent(this);
   }
 
-  removeControl(name: string) { StringMapWrapper.delete(this.controls, name); }
+  removeControl(name: string): void { StringMapWrapper.delete(this.controls, name); }
 
   include(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, true);
@@ -252,21 +241,16 @@ export class ControlGroup extends AbstractControl {
  * Defines a part of a form, of variable length, that can contain other controls.
  *
  * A `ControlArray` aggregates the values and errors of each {@link Control} in the group. Thus, if
- * one of the controls
- * in a group is invalid, the entire group is invalid. Similarly, if a control changes its value,
- * the entire group
- * changes as well.
+ * one of the controls in a group is invalid, the entire group is invalid. Similarly, if a control
+ * changes its value, the entire group changes as well.
  *
  * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
  * other controls, but is of fixed length.
  */
 export class ControlArray extends AbstractControl {
-  controls: AbstractControl[];
-
-  constructor(controls: AbstractControl[], validator: Function = Validators.array) {
+  constructor(public controls: AbstractControl[], validator: Function = Validators.array) {
     super(validator);
-    this.controls = controls;
 
     this._valueChanges = new EventEmitter();
 
@@ -296,9 +280,9 @@ export class ControlArray extends AbstractControl {
 
   get length(): number { return this.controls.length; }
 
-  _updateValue() { this._value = ListWrapper.map(this.controls, (c) => c.value); }
+  _updateValue(): void { this._value = this.controls.map((control) => control.value); }
 
-  _setParentForControls() {
-    ListWrapper.forEach(this.controls, (control) => { control.setParent(this); });
+  _setParentForControls(): void {
+    this.controls.forEach((control) => { control.setParent(this); });
   }
 }

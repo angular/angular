@@ -15,9 +15,7 @@ import * as modelModule from './model';
  *
  * @Component({
  *   selector: 'login-comp',
- *   viewBindings: [
- *     FormBuilder
- *   ]
+ *   viewBindings: [FormBuilder]
  * })
  * @View({
  *   template: `
@@ -30,9 +28,7 @@ import * as modelModule from './model';
  *       </div>
  *     </form>
  *   `,
- *   directives: [
- *     FORM_DIRECTIVES
- *   ]
+ *   directives: [FORM_DIRECTIVES]
  * })
  * class LoginComp {
  *   loginForm: ControlGroup;
@@ -49,12 +45,12 @@ import * as modelModule from './model';
  *   }
  * }
  *
- * bootstrap(LoginComp)
+ * bootstrap(LoginComp);
  * ```
  *
  * This example creates a {@link ControlGroup} that consists of a `login` {@link Control}, and a
- * nested
- * {@link ControlGroup} that defines a `password` and a `passwordConfirmation` {@link Control}:
+ * nested {@link ControlGroup} that defines a `password` and a `passwordConfirmation`
+ * {@link Control}:
  *
  * ```
  *  var loginForm = builder.group({

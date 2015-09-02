@@ -21,21 +21,21 @@ const formDirectiveBinding =
  * # Example
  *
  * In this example, we bind the control group to the form element, and we bind the login and
- * password controls to the
- * login and password elements.
+ * password controls to the login and password elements.
  *
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
  *      directives: [FORM_DIRECTIVES],
- *      template: "<form [ng-form-model]='loginForm'>" +
- *              "Login <input type='text' ng-control='login'>" +
- *              "Password <input type='password' ng-control='password'>" +
- *              "<button (click)="onLogin()">Login</button>" +
- *              "</form>"
+ *      template: `
+ *        <form [ng-form-model]='loginForm'>
+ *          Login <input type='text' ng-control='login'>
+ *          Password <input type='password' ng-control='password'>
+ *          <button (click)="onLogin()">Login</button>
+ *        </form>`
  *      })
  * class LoginComp {
- *  loginForm:ControlGroup;
+ *  loginForm: ControlGroup;
  *
  *  constructor() {
  *    this.loginForm = new ControlGroup({
@@ -44,7 +44,7 @@ const formDirectiveBinding =
  *    });
  *  }
  *
- *  onLogin() {
+ *  onLogin(): void {
  *    // this.loginForm.value
  *  }
  * }
@@ -57,15 +57,17 @@ const formDirectiveBinding =
  * @Component({selector: "login-comp"})
  * @View({
  *      directives: [FORM_DIRECTIVES],
- *      template: "<form [ng-form-model]='loginForm'>" +
- *              "Login <input type='text' ng-control='login' [(ng-model)]='login'>" +
- *              "Password <input type='password' ng-control='password' [(ng-model)]='password'>" +
- *              "<button (click)="onLogin()">Login</button>" +
- *              "</form>"
+ *      template: `
+ *        <form [ng-form-model]='loginForm'>
+ *          Login <input type='text' ng-control='login' [(ng-model)]='credentials.login'>
+ *          Password <input type='password' ng-control='password'
+ *                          [(ng-model)]='credentials.password'>
+ *          <button (click)="onLogin()">Login</button>
+ *        </form>`
  *      })
  * class LoginComp {
- *  credentials:{login:string, password:string}
- *  loginForm:ControlGroup;
+ *  credentials: {login: string, password: string};
+ *  loginForm: ControlGroup;
  *
  *  constructor() {
  *    this.loginForm = new ControlGroup({
@@ -74,7 +76,7 @@ const formDirectiveBinding =
  *    });
  *  }
  *
- *  onLogin() {
+ *  onLogin(): void {
  *    // this.credentials.login === 'some login'
  *    // this.credentials.password === 'some password'
  *  }
@@ -85,9 +87,7 @@ const formDirectiveBinding =
   selector: '[ng-form-model]',
   bindings: [formDirectiveBinding],
   properties: ['form: ng-form-model'],
-  host: {
-    '(submit)': 'onSubmit()',
-  },
+  host: {'(submit)': 'onSubmit()'},
   events: ['ngSubmit'],
   exportAs: 'form'
 })
@@ -97,7 +97,7 @@ export class NgFormModel extends ControlContainer implements Form,
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
 
-  onChanges(_) { this._updateDomValue(); }
+  onChanges(_): void { this._updateDomValue(); }
 
   get formDirective(): Form { return this; }
 
@@ -106,9 +106,9 @@ export class NgFormModel extends ControlContainer implements Form,
   get path(): string[] { return []; }
 
   addControl(dir: NgControl): void {
-    var c: any = this.form.find(dir.path);
-    setUpControl(c, dir);
-    c.updateValidity();
+    var ctrl: any = this.form.find(dir.path);
+    setUpControl(ctrl, dir);
+    ctrl.updateValidity();
     this.directives.push(dir);
   }
 
@@ -125,8 +125,8 @@ export class NgFormModel extends ControlContainer implements Form,
   }
 
   updateModel(dir: NgControl, value: any): void {
-    var c  = <Control>this.form.find(dir.path);
-    c.updateValue(value);
+    var ctrl  = <Control>this.form.find(dir.path);
+    ctrl.updateValue(value);
   }
 
   onSubmit(): boolean {
@@ -136,8 +136,8 @@ export class NgFormModel extends ControlContainer implements Form,
 
   _updateDomValue() {
     ListWrapper.forEach(this.directives, dir => {
-      var c: any = this.form.find(dir.path);
-      dir.valueAccessor.writeValue(c.value);
+      var ctrl: any = this.form.find(dir.path);
+      dir.valueAccessor.writeValue(ctrl.value);
     });
   }
 }
