@@ -24,6 +24,7 @@ import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   ROUTER_BINDINGS,
+  ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
   APP_BASE_HREF,
@@ -33,7 +34,6 @@ import {
 
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {APP_COMPONENT} from 'angular2/src/core/application_tokens';
 
 export function main() {
   describe('router injectables', () => {
@@ -51,6 +51,7 @@ export function main() {
            bootstrap(AppCmp,
                      [
                        ROUTER_BINDINGS,
+                       bind(ROUTER_PRIMARY_COMPONENT).toValue(AppCmp),
                        bind(LocationStrategy).toClass(MockLocationStrategy),
                        bind(DOCUMENT).toValue(fakeDoc)
                      ])
@@ -66,7 +67,7 @@ export function main() {
     });
 
     describe('broken app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(BrokenAppCmp)]; });
+      beforeEachBindings(() => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(BrokenAppCmp)]; });
 
       it('should rethrow exceptions from component constructors',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -82,7 +83,8 @@ export function main() {
     });
 
     describe('back button app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(HierarchyAppCmp)]; });
+      beforeEachBindings(
+          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
 
       it('should change the url without pushing a new history state for back navigations',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -133,7 +135,8 @@ export function main() {
     });
 
     describe('hierarchical app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(HierarchyAppCmp)]; });
+      beforeEachBindings(
+          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
 
       it('should bootstrap an app with a hierarchy',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -177,7 +180,8 @@ export function main() {
     // TODO: add a test in which the child component has bindings
 
     describe('querystring params app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(QueryStringAppCmp)]; });
+      beforeEachBindings(
+          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(QueryStringAppCmp)]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {

@@ -4,7 +4,6 @@
  * Maps application URLs into application states, to support deep-linking and navigation.
  */
 
-
 export {Router, RootRouter} from './src/router/router';
 export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
@@ -30,9 +29,11 @@ import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
 import {Location} from './src/router/location';
-import {APP_COMPONENT} from './src/core/application_tokens';
-import {Binding} from './core';
-import {CONST_EXPR} from './src/core/facade/lang';
+import {bind, OpaqueToken, Binding} from './core';
+import {CONST_EXPR, Type} from './src/core/facade/lang';
+
+export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
+    CONST_EXPR(new OpaqueToken('RouterPrimaryComponent'));
 
 export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
 
@@ -55,18 +56,25 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  * }
  *
  *
- * bootstrap(AppCmp, [ROUTER_BINDINGS]);
+ * bootstrap(AppCmp, [routerBindings(AppCmp)]);
  * ```
  */
 export const ROUTER_BINDINGS: any[] = CONST_EXPR([
   RouteRegistry,
   CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),
   Location,
-  CONST_EXPR(new Binding(
-      Router,
-      {toFactory: routerFactory, deps: CONST_EXPR([RouteRegistry, Location, APP_COMPONENT])}))
+  CONST_EXPR(
+      new Binding(Router,
+                  {
+                    toFactory: routerFactory,
+                    deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT])
+                  }))
 ]);
 
-function routerFactory(registry, location, appRoot) {
-  return new RootRouter(registry, location, appRoot);
+function routerFactory(registry, location, primaryComponent) {
+  return new RootRouter(registry, location, primaryComponent);
+}
+
+export function routerBindings(primaryComponent: Type): Array<any> {
+  return [ROUTER_BINDINGS, bind(ROUTER_PRIMARY_COMPONENT).toValue(primaryComponent)];
 }
