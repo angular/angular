@@ -460,8 +460,6 @@ function _normalizeBindings(bindings: Array<Type | Binding | any[]>,
                             res: Map<number, _NormalizedBinding | _NormalizedBinding[]>):
     Map<number, _NormalizedBinding | _NormalizedBinding[]> {
   ListWrapper.forEach(bindings, (b) => {
-    var key, factory, normalized;
-
     if (b instanceof Type) {
       _normalizeBinding(bind(b).toClass(b), res);
 

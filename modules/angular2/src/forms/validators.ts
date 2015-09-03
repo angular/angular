@@ -5,7 +5,7 @@ import {OpaqueToken} from 'angular2/di';
 
 import * as modelModule from './model';
 
-export const NG_VALIDATORS = CONST_EXPR(new OpaqueToken("NgValidators"));
+export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidators"));
 
 /**
  * Provides a set of validators used by form controls.

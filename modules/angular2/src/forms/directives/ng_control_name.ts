@@ -2,7 +2,6 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {StringMap} from 'angular2/src/core/facade/collection';
 
-import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
 import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/di';
 
@@ -88,7 +87,6 @@ export class NgControlName extends NgControl {
   validators: Function[];
   _added = false;
 
-  // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
   constructor(@Host() @SkipSelf() parent: ControlContainer,
               @Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
     super();
