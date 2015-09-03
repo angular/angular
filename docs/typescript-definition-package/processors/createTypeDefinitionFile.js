@@ -42,7 +42,7 @@ module.exports = function createTypeDefinitionFile(log) {
                                       references: def.references
                                     };
                                   }),
-          signature: codeGen.signature(def.remapTypes)
+          dts: new codeGen.DtsSerializer(def.remapTypes)
         };
       });
 
@@ -82,7 +82,7 @@ module.exports = function createTypeDefinitionFile(log) {
                 docType: 'var',
                 name: exportDoc.name,
                 id: exportDoc.id,
-                heritage: ': InjectableReference'
+                returnType: 'InjectableReference'
               });
             }
           });
