@@ -107,6 +107,10 @@ DtsSerializer.prototype = {
     this.declaration(buffer, ast);
   },
 
+  typeAlias: function(buffer, ast) {
+    buffer.push('type ', ast.name, ' = ', ast.returnType);
+  },
+
   serializeExport: function(ast) {
     var buffer = new Buffer();
     buffer.push('\n');
@@ -121,6 +125,7 @@ DtsSerializer.prototype = {
         case 'enum': this.enum(buffer, ast); break;
         case 'var': this.var(buffer, ast); break;
         case 'const': this.const(buffer, ast); break;
+        case 'type-alias': this.typeAlias(buffer, ast); break;
         default: throw new Error("unknown docType: " + ast.docType);
       }
 

@@ -205,6 +205,10 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
                                  exportSymbol.valueDeclaration.type.typeName.text;
     }
 
+    if (exportDoc.docType === 'type-alias') {
+      exportDoc.returnType = getReturnType(typeChecker, exportSymbol);
+    }
+
     if(exportSymbol.flags & ts.SymbolFlags.Function) {
       exportDoc.parameters = getParameters(typeChecker, exportSymbol);
     }
