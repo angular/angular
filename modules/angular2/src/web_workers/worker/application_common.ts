@@ -90,7 +90,6 @@ function _injectorBindings(appComponentType, bus: MessageBus, initData: StringMa
     bind(APP_COMPONENT_REF_PROMISE)
         .toFactory(
             (dynamicComponentLoader, injector) => {
-
               // TODO(rado): investigate whether to support bindings on root component.
               return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
                   .then((componentRef) => { return componentRef; });
@@ -150,32 +149,39 @@ export function bootstrapWebWorkerCommon(
     // index.html and main.js are possible.
     //
 
-
     var subscription: any;
     var emitter = bus.from(SETUP_CHANNEL);
     subscription = ObservableWrapper.subscribe(emitter, (message: StringMap<string, any>) => {
-      var appInjector =
-          _createAppInjector(appComponentType, componentInjectableBindings, zone, bus, message);
-      var compRefToken = PromiseWrapper.wrap(() => {
-        try {
-          return appInjector.get(APP_COMPONENT_REF_PROMISE);
-        } catch (e) {
-          throw e;
+      var exceptionHandler;
+      try {
+        var appInjector =
+            _createAppInjector(appComponentType, componentInjectableBindings, zone, bus, message);
+        exceptionHandler = appInjector.get(ExceptionHandler);
+        zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+        var compRefToken: Promise<any> = appInjector.get(APP_COMPONENT_REF_PROMISE);
+        var tick = (componentRef) => {
+          var appChangeDetector = internalView(componentRef.hostView).changeDetector;
+          // retrieve life cycle: may have already been created if injected in root component
+          var lc = appInjector.get(LifeCycle);
+          lc.registerWith(zone, appChangeDetector);
+          lc.tick();  // the first tick that will bootstrap the app
+
+          bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
+        };
+
+        var tickResult = PromiseWrapper.then(compRefToken, tick);
+
+        PromiseWrapper.then(tickResult,
+                            (_) => {});  // required for Dart to trigger the default error handler
+        PromiseWrapper.then(tickResult, null,
+                            (err, stackTrace) => { bootstrapProcess.reject(err, stackTrace); });
+        ObservableWrapper.dispose(subscription);
+      } catch (e) {
+        if (isPresent(exceptionHandler)) {
+          exceptionHandler.call(e, e.stack);
         }
-      });
-      var tick = (componentRef) => {
-        var appChangeDetector = internalView(componentRef.hostView).changeDetector;
-        // retrieve life cycle: may have already been created if injected in root component
-        var lc = appInjector.get(LifeCycle);
-        lc.registerWith(zone, appChangeDetector);
-        lc.tick();  // the first tick that will bootstrap the app
-
-        bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
-      };
-      PromiseWrapper.then(compRefToken, tick,
-                          (err, stackTrace) => { bootstrapProcess.reject(err, stackTrace); });
-
-      ObservableWrapper.dispose(subscription);
+        bootstrapProcess.reject(e, e.stack);
+      }
     });
 
     ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");

@@ -35,6 +35,15 @@ transformers:
         - web/src/observable_models/index.dart
         - web/src/person_management/index.dart
         - web/src/template_driven_forms/index.dart
+        - web/src/web_workers/todo/server_index.dart
+        - web/src/web_workers/todo/background_index.dart
+        - web/src/web_workers/message_broker/background_index.dart
+        - web/src/web_workers/kitchen_sink/background_index.dart
+
+        # These entrypoints are disabled untl the transformer supports UI bootstrap (issue #3971)
+        # - web/src/web_workers/message_broker/index.dart
+        # - web/src/web_workers/kitchen_sink/index.dart
+        # - web/src/web_workers/todo/index.dart
         # These entrypoints are disabled until cross-package urls are working (issue #2982)
         # - web/src/material/button/index.dart
         # - web/src/material/checkbox/index.dart

@@ -15,6 +15,7 @@ const INJECTABLES = const [
   const ClassDescriptor('Injectable', 'package:angular2/di.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/angular2.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/bootstrap_static.dart'),
+  const ClassDescriptor('Injectable', 'package:angular2/web_worker/worker.dart'),
 ];
 
 const DIRECTIVES = const [
@@ -29,6 +30,8 @@ const DIRECTIVES = const [
   const ClassDescriptor('Directive', 'package:angular2/core.dart',
       superClass: 'Injectable'),
   const ClassDescriptor('Directive', 'package:angular2/bootstrap_static.dart',
+      superClass: 'Injectable'),
+  const ClassDescriptor('Directive', 'package:angular2/web_worker/worker.dart',
       superClass: 'Injectable'),
 ];
 
@@ -45,10 +48,13 @@ const COMPONENTS = const [
       superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/core.dart',
       superClass: '`Directive'),
+  const ClassDescriptor('Component', 'package:angular2/web_worker/worker.dart',
+      superClass: '`Directive'),
 ];
 
 const VIEWS = const [
   const ClassDescriptor('View', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('View', 'package:angular2/web_worker/worker.dart'),
   const ClassDescriptor('View', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor('View', 'package:angular2/core.dart'),
   const ClassDescriptor('View', 'package:angular2/src/core/metadata/view.dart'),
