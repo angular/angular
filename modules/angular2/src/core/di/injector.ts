@@ -27,9 +27,21 @@ const _MAX_CONSTRUCTION_COUNTER = 10;
 
 export const UNDEFINED: Object = CONST_EXPR(new Object());
 
+/**
+ * Visibility of a {@link Binding}.
+ */
 export enum Visibility {
+  /**
+   * A `Public` {@link Binding} is only visible to regular (as opposed to host) child injectors.
+   */
   Public,
+  /**
+   * A `Private` {@link Binding} is only visible to host (as opposed to regular) child injectors.
+   */
   Private,
+  /**
+   * A `PublicAndPrivate` {@link Binding} is visible to both host and regular child injectors.
+   */
   PublicAndPrivate
 }
 

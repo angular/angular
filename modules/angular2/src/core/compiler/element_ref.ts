@@ -3,12 +3,11 @@ import {ViewRef} from './view_ref';
 import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/render/api';
 
 /**
- * Reference to the element.
+ * An opaque reference to the underlying element.
  *
- * Represents an opaque reference to the underlying element. The element is a DOM ELement in
- * a Browser, but may represent other types on other rendering platforms. In the browser the
- * `ElementRef` can be sent to the web-worker. Web Workers can not have references to the
- * DOM Elements.
+ * The underlying native element is a DOM Element in a browser context, but may represent other
+ * types on other rendering platforms. In the browser the `ElementRef` can be sent to the Web
+ * Worker. Web Workers can not have references to the DOM Elements.
  */
 export class ElementRef implements RenderElementRef {
   /**
@@ -51,11 +50,11 @@ export class ElementRef implements RenderElementRef {
   /**
    * Returns the native Element implementation.
    *
-   * In the browser this represents the DOM Element.
+   * In the browser this represents the DOM element.
    *
    * The `nativeElement` can be used as an escape hatch when direct DOM manipulation is needed. Use
-   * this with caution, as it creates tight coupling between your application and the Browser, which
-   * will not work in WebWorkers.
+   * this with caution, as it creates tight coupling between your application and the browser, which
+   * will not work in Web Workers.
    *
    * NOTE: This method will return null in the webworker scenario!
    */

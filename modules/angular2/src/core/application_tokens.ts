@@ -7,7 +7,8 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 export const APP_COMPONENT_REF_PROMISE = CONST_EXPR(new OpaqueToken('Promise<ComponentRef>'));
 
 /**
- * An opaque token representing the application root type in the {@link Injector}.
+ * An {@link angular2/di/OpaqueToken} representing the application root type in the {@link
+ * Injector}.
  *
  * ```
  * @Component(...)
