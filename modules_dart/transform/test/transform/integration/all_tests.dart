@@ -100,6 +100,15 @@ void allTests() {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'
     }),
+    new IntegrationTestConfig('should preserve custom interpolation pattern', inputs: {
+      'a|web/index.dart': 'custom_interpolation_pattern/index.dart',
+      'a|web/bar.dart': 'custom_interpolation_pattern/bar.dart',
+      'angular2|lib/src/core/metadata.dart':
+          '../../../lib/src/core/metadata.dart'
+    }, outputs: {
+      'a|web/bar.ng_deps.dart':
+          'custom_interpolation_pattern/expected/bar.ng_deps.dart'
+    }),
     new IntegrationTestConfig(
         'should generate getters for output events defined on a Component.',
         inputs: {

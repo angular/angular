@@ -108,7 +108,8 @@ class View extends ViewMetadata {
       dynamic pipes,
       ViewEncapsulation encapsulation,
       List<String> styles,
-      List<String> styleUrls})
+      List<String> styleUrls,
+      String interpolationPattern})
       : super(
             templateUrl: templateUrl,
             template: template,
@@ -116,7 +117,8 @@ class View extends ViewMetadata {
             pipes: pipes,
             encapsulation: encapsulation,
             styles: styles,
-            styleUrls: styleUrls);
+            styleUrls: styleUrls,
+            interpolationPattern: interpolationPattern);
 }
 
 /**

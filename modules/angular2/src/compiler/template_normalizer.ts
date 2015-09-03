@@ -81,7 +81,8 @@ export class TemplateNormalizer {
       templateUrl: templateAbsUrl,
       styles: allResolvedStyles,
       styleUrls: allStyleAbsUrls,
-      ngContentSelectors: visitor.ngContentSelectors
+      ngContentSelectors: visitor.ngContentSelectors,
+      interpolationPattern: templateMeta.interpolationPattern
     });
   }
 }

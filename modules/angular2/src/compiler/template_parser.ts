@@ -80,9 +80,10 @@ export class TemplateParser {
               private _htmlParser: HtmlParser,
               @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
 
-  parse(template: string, directives: CompileDirectiveMetadata[],
-        templateUrl: string): TemplateAst[] {
-    var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
+  parse(template: string, directives: CompileDirectiveMetadata[], templateUrl: string,
+        interpolationPattern?: RegExp): TemplateAst[] {
+    var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry,
+                                                interpolationPattern);
     var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
     var result = htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_COMPONENT);
     var errors: ParseError[] = htmlAstWithErrors.errors.concat(parseVisitor.errors);
@@ -105,7 +106,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   ngContentCount: number = 0;
 
   constructor(directives: CompileDirectiveMetadata[], private _exprParser: Parser,
-              private _schemaRegistry: ElementSchemaRegistry) {
+              private _schemaRegistry: ElementSchemaRegistry,
+              private _interpolationPattern: RegExp) {
     this.selectorMatcher = new SelectorMatcher();
     ListWrapper.forEachWithIndex(directives,
                                  (directive: CompileDirectiveMetadata, index: number) => {
@@ -122,7 +124,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseInterpolation(value, sourceInfo);
+      return this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationPattern);
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);

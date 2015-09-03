@@ -87,6 +87,20 @@ export function main() {
                  });
            }));
 
+        it('should compile component with custom interpolationPattern in view',
+           inject([AsyncTestCompleter], (async) => {
+             compile([CompWithInterpolation])
+                 .then((humanizedTemplate) => {
+                   expect(humanizedTemplate['commands'][0]).toEqual('<comp-int>');
+                   expect(humanizedTemplate['commands'][1]['commands'][0]).toEqual('<p>');
+                   expect(humanizedTemplate['commands'][1]['commands'][1]).toEqual('#text()');
+                   expect(humanizedTemplate['commands'][1]['cd'][0])
+                       .toEqual('textNode(null)=someCtxValue');
+
+                   async.done();
+                 });
+           }));
+
         it('should compile nested components', inject([AsyncTestCompleter], (async) => {
              compile([CompWithBindingsAndStyles])
                  .then((humanizedTemplate) => {
@@ -320,6 +334,10 @@ class CompWithTemplateUrl {
 class CompWithEmbeddedTemplate {
 }
 
+@Component({selector: 'comp-int', moduleId: THIS_MODULE_ID})
+@View({template: '<p>[[someProp]]</p>', interpolationPattern: '\\[\\[(.*?)\\]\\]'})
+class CompWithInterpolation {
+}
 
 @Directive({selector: 'plain', moduleId: THIS_MODULE_ID})
 @View({template: ''})
@@ -366,7 +384,7 @@ export function humanizeTemplate(
 }
 
 class TestContext implements CompWithBindingsAndStyles, TreeComp, CompWithTemplateUrl,
-    CompWithEmbeddedTemplate, CompWithDupDirectives {
+    CompWithEmbeddedTemplate, CompWithDupDirectives, CompWithInterpolation {
   someProp: string;
 }
 
@@ -390,7 +408,11 @@ class CommandHumanizer implements CommandVisitor {
   constructor(private result: any[],
               private humanizedTemplates: Map<string, {[key: string]: any}>) {}
   visitText(cmd: TextCmd, context: any): any {
-    this.result.push(`#text(${cmd.value})`);
+    if (isPresent(cmd.value)) {
+      this.result.push(`#text(${cmd.value})`);
+    } else {
+      this.result.push('#text()');
+    }
     return null;
   }
   visitNgContent(cmd: NgContentCmd, context: any): any { return null; }

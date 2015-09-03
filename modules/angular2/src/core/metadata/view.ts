@@ -123,7 +123,14 @@ export class ViewMetadata {
    */
   encapsulation: ViewEncapsulation;
 
-  constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls}: {
+  /**
+   * Specify a pattern as string to use to match interpolation expressions.
+   * The default is '\\{\\{(.*?)\\}\\}'.
+   */
+  interpolationPattern: string;
+
+  constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls,
+               interpolationPattern}: {
     templateUrl?: string,
     template?: string,
     directives?: Array<Type | any[]>,
@@ -131,6 +138,7 @@ export class ViewMetadata {
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
+    interpolationPattern?: string
   } = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
@@ -139,5 +147,6 @@ export class ViewMetadata {
     this.directives = directives;
     this.pipes = pipes;
     this.encapsulation = encapsulation;
+    this.interpolationPattern = interpolationPattern;
   }
 }

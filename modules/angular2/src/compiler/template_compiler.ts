@@ -1,4 +1,12 @@
-import {IS_DART, Type, Json, isBlank, stringify} from 'angular2/src/facade/lang';
+import {
+  IS_DART,
+  Type,
+  Json,
+  isBlank,
+  stringify,
+  RegExpWrapper,
+  isPresent
+} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper, SetWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
@@ -108,30 +116,37 @@ export class TemplateCompiler {
           templateId, (dispatcher) => changeDetectorFactory(dispatcher), commands, styles);
       this._compiledTemplateCache.set(cacheKey, compiledTemplate);
       compilingComponentCacheKeys.add(cacheKey);
-      done = PromiseWrapper
-                 .all([<any>this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(
-                     uniqViewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
-                 .then((stylesAndNormalizedViewDirMetas: any[]) => {
-                   var childPromises = [];
-                   var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
-                   var parsedTemplate = this._templateParser.parse(
-                       compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
+      done =
+          PromiseWrapper
+              .all([<any>this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(
+                  uniqViewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
+              .then((stylesAndNormalizedViewDirMetas: any[]) => {
+                var childPromises = [];
+                var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
+                var interpolationPattern =
+                    isPresent(compMeta.template.interpolationPattern) ?
+                        RegExpWrapper.create(compMeta.template.interpolationPattern) :
+                        null;
 
-                   var changeDetectorFactories = this._cdCompiler.compileComponentRuntime(
-                       compMeta.type, compMeta.changeDetection, parsedTemplate);
-                   changeDetectorFactory = changeDetectorFactories[0];
-                   var tmpStyles: string[] = stylesAndNormalizedViewDirMetas[0];
-                   tmpStyles.forEach(style => styles.push(style));
-                   var tmpCommands: TemplateCmd[] = this._compileCommandsRuntime(
-                       compMeta, parsedTemplate, changeDetectorFactories,
-                       compilingComponentCacheKeys, childPromises);
-                   tmpCommands.forEach(cmd => commands.push(cmd));
-                   return PromiseWrapper.all(childPromises);
-                 })
-                 .then((_) => {
-                   SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
-                   return compiledTemplate;
-                 });
+                var parsedTemplate =
+                    this._templateParser.parse(compMeta.template.template, normalizedViewDirMetas,
+                                               compMeta.type.name, interpolationPattern);
+
+                var changeDetectorFactories = this._cdCompiler.compileComponentRuntime(
+                    compMeta.type, compMeta.changeDetection, parsedTemplate);
+                changeDetectorFactory = changeDetectorFactories[0];
+                var tmpStyles: string[] = stylesAndNormalizedViewDirMetas[0];
+                tmpStyles.forEach(style => styles.push(style));
+                var tmpCommands: TemplateCmd[] =
+                    this._compileCommandsRuntime(compMeta, parsedTemplate, changeDetectorFactories,
+                                                 compilingComponentCacheKeys, childPromises);
+                tmpCommands.forEach(cmd => commands.push(cmd));
+                return PromiseWrapper.all(childPromises);
+              })
+              .then((_) => {
+                SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
+                return compiledTemplate;
+              });
       this._compiledTemplateDone.set(cacheKey, done);
     }
     return compiledTemplate;
@@ -215,8 +230,11 @@ export class TemplateCompiler {
                                   targetDeclarations: string[], targetTemplateArguments: any[][]) {
     let uniqueDirectives = removeDuplicates(directives);
     var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
+    var interpolationPattern = isPresent(compMeta.template.interpolationPattern) ?
+                                   RegExpWrapper.create(compMeta.template.interpolationPattern) :
+                                   null;
     var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives,
-                                                    compMeta.type.name);
+                                                    compMeta.type.name, interpolationPattern);
     var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(
         compMeta.type, compMeta.changeDetection, parsedTemplate);
     var commandsExpr = this._commandCompiler.compileComponentCodeGen(
