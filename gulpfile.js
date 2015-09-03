@@ -20,7 +20,6 @@ var licenseWrap = require('./tools/build/licensewrap');
 
 var watch = require('./tools/build/watch');
 
-var transpile = require('./tools/build/transpile');
 var pubget = require('./tools/build/pubget');
 var linknodemodules = require('./tools/build/linknodemodules');
 var pubbuild = require('./tools/build/pubbuild');

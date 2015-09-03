@@ -1,5 +1,3 @@
-require('../../tools/transpiler/index.js').init();
-
 var basePackage = require('dgeni-packages/base');
 var Package = require('dgeni').Package;
 var path = require('canonical-path');
