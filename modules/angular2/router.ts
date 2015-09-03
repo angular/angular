@@ -38,6 +38,28 @@ import {CONST_EXPR} from './src/core/facade/lang';
 
 export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
 
+/**
+ * A list of {@link Binding}. To use the router, you must add this to your application.
+ *
+ * ## Example
+ *
+ * ```typescript
+ * @Component({...})
+ * @View({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  new Route(...),
+ * ])
+ * class AppCmp {
+ *  constructor(router: Router, location: Location) {
+ *    // ...
+ *  }
+ *
+ * }
+ *
+ *
+ * bootstrap(AppCmp, [ROUTER_BINDINGS]);
+ * ```
+ */
 export const ROUTER_BINDINGS: any[] = CONST_EXPR([
   RouteRegistry,
   Pipeline,
