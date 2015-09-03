@@ -137,6 +137,12 @@ export class DebugElement {
   }
 }
 
+/**
+ * Returns a DebugElement for a ElementRef.
+ *
+ * @param {ElementRef}: elementRef
+ * @return {DebugElement}
+ */
 export function inspectElement(elementRef: ElementRef): DebugElement {
   return DebugElement.create(elementRef);
 }
