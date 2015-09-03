@@ -96,3 +96,19 @@ class ViewQuery extends ViewQueryMetadata {
   const ViewQuery(dynamic /*Type | string*/ selector, {bool descendants: false})
     : super(selector, descendants: descendants);
 }
+
+/**
+ * See: [PropertyMetadata] for docs.
+ */
+class Property extends PropertyMetadata {
+  const Property([String bindingPropertyName])
+    : super(bindingPropertyName);
+}
+
+/**
+ * See: [EventMetadata] for docs.
+ */
+class Event extends EventMetadata {
+  const Event([String bindingPropertyName])
+    : super(bindingPropertyName);
+}

@@ -1,7 +1,14 @@
 import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
 import {Reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
-import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
+import {
+  ClassDecorator,
+  ParamDecorator,
+  PropDecorator,
+  classDecorator,
+  paramDecorator,
+  propDecorator
+} from './reflector_common';
 import {IS_DART} from '../../platform';
 
 class AType {
@@ -12,8 +19,12 @@ class AType {
 
 @ClassDecorator('class')
 class ClassWithDecorators {
-  a;
+  @PropDecorator("p1") @PropDecorator("p2") a;
   b;
+
+  @PropDecorator("p3")
+  set c(value) {
+  }
 
   constructor(@ParamDecorator("a") a: AType, @ParamDecorator("b") b: AType) {
     this.a = a;
@@ -135,6 +146,19 @@ export function main() {
       it("should return an empty list when no paramters field in the stored type info", () => {
         reflector.registerType(TestObj, new ReflectionInfo());
         expect(reflector.parameters(TestObj)).toEqual([]);
+      });
+    });
+
+    describe("propMetadata", () => {
+      it("should return a string map of prop metadata for the given class", () => {
+        var p = reflector.propMetadata(ClassWithDecorators);
+        expect(p["a"]).toEqual([propDecorator("p1"), propDecorator("p2")]);
+        expect(p["c"]).toEqual([propDecorator("p3")]);
+      });
+
+      it("should return registered meta if available", () => {
+        reflector.registerType(TestObj, new ReflectionInfo(null, null, null, null, {"a": [1, 2]}));
+        expect(reflector.propMetadata(TestObj)).toEqual({"a": [1, 2]});
       });
     });
 

@@ -290,3 +290,24 @@ export function makeParamDecorator(annotationCls): any {
   ParamDecoratorFactory.prototype = Object.create(annotationCls.prototype);
   return ParamDecoratorFactory;
 }
+
+export function makePropDecorator(decoratorCls): any {
+  function PropDecoratorFactory(...args): any {
+    var decoratorInstance = Object.create(decoratorCls.prototype);
+    decoratorCls.apply(decoratorInstance, args);
+
+    if (this instanceof decoratorCls) {
+      return decoratorInstance;
+    } else {
+      return function PropDecorator(target: any, name: string) {
+        var meta = Reflect.getOwnMetadata('propMetadata', target.constructor);
+        meta = meta || {};
+        meta[name] = meta[name] || [];
+        meta[name].unshift(decoratorInstance);
+        Reflect.defineMetadata('propMetadata', meta, target.constructor);
+      };
+    }
+  }
+  PropDecoratorFactory.prototype = Object.create(decoratorCls.prototype);
+  return PropDecoratorFactory;
+}

@@ -1070,3 +1070,43 @@ export class PipeMetadata extends InjectableMetadata {
     this.name = name;
   }
 }
+
+/**
+ * Declare a bound field.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Property() property; // Same as @Property('property') property;
+ *   @Property("el-property") dirProperty;
+ * }
+ * ```
+ */
+@CONST()
+export class PropertyMetadata {
+  constructor(public bindingPropertyName?: string) {}
+}
+
+/**
+ * Declare a bound event.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Event() event = new EventEmitter(); // Same as @Event('event') event = new EventEmitter();
+ *   @Event("el-event") dirEvent = new EventEmitter();
+ * }
+ * ```
+ */
+@CONST()
+export class EventMetadata {
+  constructor(public bindingPropertyName?: string) {}
+}
