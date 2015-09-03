@@ -19,9 +19,7 @@ import {
 } from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Key} from './key';
-import {resolveForwardRef} from './forward_ref';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
-import {reflector} from 'angular2/src/core/reflection/reflection';
 
 
 // Threshold for the dynamic version

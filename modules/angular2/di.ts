@@ -26,7 +26,14 @@ export {
   Visibility,
   UNDEFINED
 } from './src/core/di/injector';
-export {Binding, BindingBuilder, ResolvedBinding, Dependency, bind} from './src/core/di/binding';
+export {
+  Binding,
+  BindingBuilder,
+  ResolvedBinding,
+  ResolvedFactory,
+  Dependency,
+  bind
+} from './src/core/di/binding';
 export {Key, KeyRegistry, TypeLiteral} from './src/core/di/key';
 export {
   NoBindingError,
