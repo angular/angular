@@ -64,7 +64,17 @@ import {
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {Directive, Component, View, ViewMetadata, Attribute, Query, Pipe} from 'angular2/metadata';
+import {
+  Directive,
+  Component,
+  View,
+  ViewMetadata,
+  Attribute,
+  Query,
+  Pipe,
+  Property,
+  Event
+} from 'angular2/metadata';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
@@ -1597,6 +1607,48 @@ export function main() {
                   }));
       }
     });
+
+    describe('property decorators', () => {
+      it('should support property decorators',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(
+                  MyComp, new ViewMetadata({
+                    template: '<with-prop-decorators el-prop="aaa"></with-prop-decorators>',
+                    directives: [DirectiveWithPropDecorators]
+                  }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 var dir = rootTC.componentViewChildren[0].inject(DirectiveWithPropDecorators);
+                 expect(dir.dirProp).toEqual("aaa");
+                 async.done();
+               });
+         }));
+
+
+      if (DOM.supportsDOMEvents()) {
+        it('should support events decorators',
+           inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                    tcb = tcb.overrideView(
+                        MyComp, new ViewMetadata({
+                          template: `<with-prop-decorators (el-event)="ctxProp='called'">`,
+                          directives: [DirectiveWithPropDecorators]
+                        }));
+
+                    var rootTC;
+                    tcb.createAsync(MyComp).then(root => { rootTC = root; });
+                    tick();
+
+                    var emitter =
+                        rootTC.componentViewChildren[0].inject(DirectiveWithPropDecorators);
+                    emitter.fireEvent('fired !');
+
+                    tick();
+
+                    expect(rootTC.componentInstance.ctxProp).toEqual("called");
+                  })));
+      }
+    });
   });
 }
 
@@ -2147,4 +2199,12 @@ class OtherDuplicateDir {
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
   constructor() { throw new BaseException("BOOM"); }
+}
+
+@Directive({selector: 'with-prop-decorators'})
+class DirectiveWithPropDecorators {
+  @Property("elProp") dirProp: string;
+  @Event('elEvent') event = new EventEmitter();
+
+  fireEvent(msg) { ObservableWrapper.callNext(this.event, msg); }
 }

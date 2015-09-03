@@ -5,8 +5,9 @@ export interface PlatformReflectionCapabilities {
   isReflectionEnabled(): boolean;
   factory(type: Type): Function;
   interfaces(type: Type): any[];
-  parameters(type: Type): any[][];
-  annotations(type: Type): any[];
+  parameters(type: any): any[][];
+  annotations(type: any): any[];
+  propMetadata(typeOrFunc: any): StringMap<string, any[]>;
   getter(name: string): GetterFn;
   setter(name: string): SetterFn;
   method(name: string): MethodFn;

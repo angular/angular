@@ -13,7 +13,9 @@ export {
   ComponentMetadata,
   DirectiveMetadata,
   PipeMetadata,
-  LifecycleEvent
+  LifecycleEvent,
+  PropertyMetadata,
+  EventMetadata
 } from './metadata/directives';
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
@@ -29,13 +31,21 @@ import {
   ComponentMetadata,
   DirectiveMetadata,
   PipeMetadata,
-  LifecycleEvent
+  LifecycleEvent,
+  PropertyMetadata,
+  EventMetadata
 } from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
 
-import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from './util/decorators';
+import {
+  makeDecorator,
+  makeParamDecorator,
+  makePropDecorator,
+  TypeDecorator,
+  Class
+} from './util/decorators';
 import {Type} from 'angular2/src/core/facade/lang';
 
 /**
@@ -398,6 +408,46 @@ export interface PipeFactory {
 }
 
 /**
+ * {@link PropertyMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Property() property; // Same as @Property('property') property;
+ *   @Property("el-property") dirProperty;
+ * }
+ * ```
+ */
+export interface PropertyFactory {
+  (bindingPropertyName?: string): any;
+  new (bindingPropertyName?: string): any;
+}
+
+/**
+ * {@link EventMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Event() event = new EventEmitter(); // Same as @Event('event') event = new EventEmitter();
+ *   @Event("el-event") dirEvent = new EventEmitter();
+ * }
+ * ```
+ */
+export interface EventFactory {
+  (bindingPropertyName?: string): any;
+  new (bindingPropertyName?: string): any;
+}
+
+/**
  * {@link ComponentMetadata} factory function.
  */
 export var Component: ComponentFactory =
@@ -433,3 +483,13 @@ export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
  * {@link PipeMetadata} factory function.
  */
 export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);
+
+/**
+ * {@link PropertyMetadata} factory function.
+ */
+export var Property: PropertyFactory = makePropDecorator(PropertyMetadata);
+
+/**
+ * {@link EventMetadata} factory function.
+ */
+export var Event: EventFactory = makePropDecorator(EventMetadata);

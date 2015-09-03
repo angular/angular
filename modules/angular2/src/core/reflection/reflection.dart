@@ -27,6 +27,10 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
+  Map propMetadata(Type type) {
+    throw "Cannot find reflection information on ${stringify(type)}";
+  }
+
   GetterFn getter(String name) {
     throw "Cannot find getter ${name}";
   }

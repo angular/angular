@@ -34,7 +34,13 @@ export {
   QueryFactory,
   ViewQuery,
   Pipe,
-  PipeFactory
+  PipeFactory,
+  Property,
+  PropertyFactory,
+  PropertyMetadata,
+  Event,
+  EventFactory,
+  EventMetadata
 } from './src/core/metadata';
 
 export {
