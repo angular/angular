@@ -93,26 +93,3 @@ export class MdInput {
     ObservableWrapper.callNext(this.mdFocusChange, hasFocus);
   }
 }
-
-/*
-@Directive({
-  selector: 'md-input-container textarea',
-  events: ['mdChange', 'mdFocusChange'],
-  hostProperties: {
-    'yes': 'class.md-input'
-  },
-  hostListeners: {
-    'input': 'updateValue($event)',
-    'focus': 'setHasFocus(true)',
-    'blur': 'setHasFocus(false)'
-  }
-})
-export class MdTextarea extends MdInput {
-  constructor(
-      @Attribute('value') value: string,
-      @SkipSelf() @Host() container: MdInputContainer,
-      @Attribute('id') id: string) {
-    super(value, container, id);
-  }
-}
-*/

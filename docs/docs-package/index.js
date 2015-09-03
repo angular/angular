@@ -1,5 +1,3 @@
-require('../../tools/transpiler/index.js').init();
-
 var Package = require('dgeni').Package;
 var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
