@@ -232,11 +232,11 @@ are always in the form of `property-name` which is assigned an `expression`. The
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element [some-property]="expression">`</td>
+    <td><pre>&lt;some-element [some-property]="expression"&gt;<pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element bind-some-property="expression">`</td>
+    <td><pre>&lt;some-element bind-some-property="expression"&gt;</td>
   </tr>
 </table>
 
