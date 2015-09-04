@@ -281,7 +281,7 @@ syntax which is just a short hand for the data binding syntax.
 is a short hand for:
 
 ```
-<span [text|0]=" 'Hello ' + stringify(name) + '!' ">_</span>
+<span [text|0]=" 'Hello ' + stringify(name) + '!' "></span>
 ```
 
 The above says to bind the `'Hello ' + stringify(name) + '!'` expression to the zero-th child of the `span`'s `text`
