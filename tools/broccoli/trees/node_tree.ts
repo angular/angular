@@ -24,6 +24,7 @@ module.exports = function makeNodeTree(destinationPath) {
       'angular2/test/test_lib/fake_async_spec.ts',
       'angular2/test/core/render/xhr_impl_spec.ts',
       'angular2/test/core/forms/**',
+      'angular2/test/tools/tools_spec.ts',
       'angular1_router/**'
     ]
   });
