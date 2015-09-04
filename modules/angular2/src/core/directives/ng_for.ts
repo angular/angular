@@ -9,7 +9,8 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * to the current item from the iterable.
  *
  * It is possible to alias the `index` to a local variable that will be set to the current loop
- * iteration in the template context.
+ * iteration in the template context, and also to alias the 'last' to a local variable that will
+ * be set to a boolean indicating if the item is the last one in the iteration
  *
  * When the contents of the iterator changes, `NgFor` makes the corresponding changes to the DOM:
  *
@@ -75,6 +76,10 @@ export class NgFor {
 
     for (var i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
+    }
+
+    for (var i = 0, ilen = this.viewContainer.length; i < ilen; i++) {
+      this.viewContainer.get(i).setLocal('last', i === ilen - 1);
     }
   }
 
