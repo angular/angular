@@ -28,7 +28,7 @@
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
-    "reflect-metadata": "0.1.0",
+    "reflect-metadata": "0.1.1",
     "rx": "2.5.1",
     "traceur": "0.0.87",
     "zone.js": "0.5.4"
