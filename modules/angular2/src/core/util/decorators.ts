@@ -164,10 +164,10 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * ## Example with parameter annotations
  *
  * ```
- * var MyService = neg.Class({
+ * var MyService = ng.Class({
  *   constructor: [String, [new Query(), QueryList], function(name, queryList) {
  *     ...
- *   }];
+ *   }]
  * });
  * ```
  *
