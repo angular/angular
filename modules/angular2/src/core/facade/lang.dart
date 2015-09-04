@@ -94,6 +94,16 @@ class StringWrapper {
     return s.startsWith(start);
   }
 
+  static String slice(String s, [int start = 0, int end]) {
+    start = _startOffset(s, start);
+    end = _endOffset(s, end);
+    //in JS if start > end an empty string is returned
+    if(end != null && start > end) {
+      return "";
+    }
+    return s.substring(start, end);
+  }
+
   static String substring(String s, int start, [int end]) {
     return s.substring(start, end);
   }
@@ -107,6 +117,21 @@ class StringWrapper {
   }
 
   static int compare(String a, String b) => a.compareTo(b);
+
+  // JS slice function can take start < 0 which indicates a position relative to
+  // the end of the string
+  static int _startOffset(String s, int start) {
+    int len = s.length;
+    return start < 0 ? math.max(len + start, 0) : math.min(start, len);
+  }
+
+  // JS slice function can take end < 0 which indicates a position relative to
+  // the end of the string
+  static int _endOffset(String s, int end) {
+    int len = s.length;
+    if (end == null) return len;
+    return end < 0 ? math.max(len + end, 0) : math.min(end, len);
+  }
 }
 
 class StringJoiner {

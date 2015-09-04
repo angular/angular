@@ -2,7 +2,7 @@ import {AsyncPipe} from './async_pipe';
 import {UpperCasePipe} from './uppercase_pipe';
 import {LowerCasePipe} from './lowercase_pipe';
 import {JsonPipe} from './json_pipe';
-import {LimitToPipe} from './limit_to_pipe';
+import {SlicePipe} from './slice_pipe';
 import {DatePipe} from './date_pipe';
 import {DecimalPipe, PercentPipe, CurrencyPipe} from './number_pipe';
 
@@ -14,7 +14,7 @@ const DEFAULT_PIPES_LIST = CONST_EXPR([
   UpperCasePipe,
   LowerCasePipe,
   JsonPipe,
-  LimitToPipe,
+  SlicePipe,
   DecimalPipe,
   PercentPipe,
   CurrencyPipe,
