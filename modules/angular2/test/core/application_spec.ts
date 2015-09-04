@@ -14,13 +14,14 @@ import {isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
 import {Component, Directive, View} from 'angular2/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
 import {bind, Inject, Injector} from 'angular2/di';
 import {LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {IS_DART} from '../platform';
+import {NgIf} from 'angular2/src/core/directives/ng_if';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -66,14 +67,24 @@ class HelloRootMissingTemplate {
 class HelloRootDirectiveIsNotCmp {
 }
 
+@Component({selector: 'cd-count'})
+@View({template: '<p *ng-if="condition()"></p>', directives: [NgIf]})
+class ChangeDetectionCounterComponent {
+  cdCount: number = 0;
+
+  condition(): boolean {
+    this.cdCount++;
+    return true;
+  }
+}
+
 class _ArrayLogger {
   res: any[] = [];
   log(s: any): void { this.res.push(s); }
   logError(s: any): void { this.res.push(s); }
   logGroup(s: any): void { this.res.push(s); }
-  logGroupEnd(){};
+  logGroupEnd() {}
 }
-
 
 export function main() {
   var fakeDoc, el, el2, testBindings, lightDom;
@@ -88,6 +99,8 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, 'loading');
+      let cdCountEl = DOM.createElement('cd-count', fakeDoc);
+      DOM.appendChild(fakeDoc.body, cdCountEl);
       testBindings = [bind(DOCUMENT).toValue(fakeDoc)];
     });
 
@@ -182,6 +195,19 @@ export function main() {
            async.done();
          });
        }));
+
+    // see https://github.com/angular/angular/issues/3701
+    it("should run the change detection only once", inject([AsyncTestCompleter], (async) => {
+         var refPromise = bootstrap(ChangeDetectionCounterComponent, testBindings);
+
+         refPromise.then((ref) => {
+           TimerWrapper.setTimeout(() => {
+             expect(ref.hostComponent.cdCount).toEqual(1);
+             async.done();
+           }, 500);
+         });
+
+       }), 1000);
 
     it('should register each application with the testability registry',
        inject([AsyncTestCompleter], (async) => {
