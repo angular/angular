@@ -110,5 +110,5 @@ export class DatePipe implements PipeTransform {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  private supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
 }

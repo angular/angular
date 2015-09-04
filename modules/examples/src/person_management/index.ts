@@ -115,8 +115,8 @@ class DataService {
   directives: [FORM_DIRECTIVES]
 })
 class FullNameComponent {
-  constructor(private service: DataService) {}
-  get person(): Person { return this.service.currentPerson; }
+  constructor(private _service: DataService) {}
+  get person(): Person { return this._service.currentPerson; }
 }
 
 @Component({selector: 'person-detail-cmp'})
@@ -163,8 +163,8 @@ class FullNameComponent {
   directives: [FORM_DIRECTIVES, NgIf]
 })
 class PersonsDetailComponent {
-  constructor(private service: DataService) {}
-  get person(): Person { return this.service.currentPerson; }
+  constructor(private _service: DataService) {}
+  get person(): Person { return this._service.currentPerson; }
 }
 
 @Component({selector: 'persons-cmp'})
@@ -186,9 +186,9 @@ class PersonsDetailComponent {
 class PersonsComponent {
   persons: Person[];
 
-  constructor(private service: DataService) { this.persons = service.persons; }
+  constructor(private _service: DataService) { this.persons = _service.persons; }
 
-  select(person: Person): void { this.service.currentPerson = person; }
+  select(person: Person): void { this._service.currentPerson = person; }
 }
 
 

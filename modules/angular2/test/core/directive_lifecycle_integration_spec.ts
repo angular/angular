@@ -49,8 +49,8 @@ export function main() {
 
 @Directive({selector: '[lifecycle-dir]', lifecycle: [LifecycleEvent.DoCheck]})
 class LifecycleDir {
-  constructor(private log: Log) {}
-  doCheck() { this.log.add("child_doCheck"); }
+  constructor(private _log: Log) {}
+  doCheck() { this._log.add("child_doCheck"); }
 }
 
 @Component({
@@ -69,21 +69,21 @@ class LifecycleDir {
 @View({template: `<div lifecycle-dir></div>`, directives: [LifecycleDir]})
 class LifecycleCmp {
   field;
-  constructor(private log: Log) {}
+  constructor(private _log: Log) {}
 
-  onChanges(_) { this.log.add("onChanges"); }
+  onChanges(_) { this._log.add("onChanges"); }
 
-  onInit() { this.log.add("onInit"); }
+  onInit() { this._log.add("onInit"); }
 
-  doCheck() { this.log.add("doCheck"); }
+  doCheck() { this._log.add("doCheck"); }
 
-  afterContentInit() { this.log.add("afterContentInit"); }
+  afterContentInit() { this._log.add("afterContentInit"); }
 
-  afterContentChecked() { this.log.add("afterContentChecked"); }
+  afterContentChecked() { this._log.add("afterContentChecked"); }
 
-  afterViewInit() { this.log.add("afterViewInit"); }
+  afterViewInit() { this._log.add("afterViewInit"); }
 
-  afterViewChecked() { this.log.add("afterViewChecked"); }
+  afterViewChecked() { this._log.add("afterViewChecked"); }
 }
 
 @Component({selector: 'my-comp'})

@@ -191,7 +191,7 @@ export class PathRecognizer {
   specificity: number;
   terminal: boolean = true;
   hash: string;
-  private cache: Map<string, ComponentInstruction> = new Map<string, ComponentInstruction>();
+  private _cache: Map<string, ComponentInstruction> = new Map<string, ComponentInstruction>();
 
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
@@ -299,11 +299,11 @@ export class PathRecognizer {
   private _getInstruction(urlPath: string, urlParams: string[], _recognizer: PathRecognizer,
                           params: StringMap<string, any>): ComponentInstruction {
     var hashKey = urlPath + '?' + urlParams.join('?');
-    if (this.cache.has(hashKey)) {
-      return this.cache.get(hashKey);
+    if (this._cache.has(hashKey)) {
+      return this._cache.get(hashKey);
     }
     var instruction = new ComponentInstruction(urlPath, urlParams, _recognizer, params);
-    this.cache.set(hashKey, instruction);
+    this._cache.set(hashKey, instruction);
 
     return instruction;
   }
