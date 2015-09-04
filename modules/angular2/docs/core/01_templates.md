@@ -2,7 +2,7 @@
 
 Templates are markup which is added to HTML to declaratively describe how the application model should be
 projected to DOM as well as which DOM events should invoke which methods on the controller. Templates contain
-syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
+syntaxes which are core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of the template syntax has these properties:
 
