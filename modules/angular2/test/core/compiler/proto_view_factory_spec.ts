@@ -30,7 +30,7 @@ import {
   createVariableLocations
 } from 'angular2/src/core/compiler/proto_view_factory';
 import {Component, Directive} from 'angular2/metadata';
-import {Key} from 'angular2/di';
+import {Key, Binding} from 'angular2/di';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {
@@ -222,7 +222,7 @@ export function main() {
 }
 
 function directiveBinding({metadata}: {metadata?: any} = {}) {
-  return new DirectiveBinding(Key.get("dummy"), null, [], [], [], metadata);
+  return new DirectiveBinding(Key.get("dummy"), null, null, metadata, [], []);
 }
 
 function createRenderProtoView(elementBinders = null, type: ViewType = null,

@@ -1,7 +1,11 @@
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {OpaqueToken} from 'angular2/di';
 
 import * as modelModule from './model';
+
+export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidators"));
 
 /**
  * Provides a set of validators used by form controls.
@@ -20,6 +24,8 @@ export class Validators {
   static nullValidator(c: any): StringMap<string, boolean> { return null; }
 
   static compose(validators: Function[]): Function {
+    if (isBlank(validators)) return Validators.nullValidator;
+
     return function(c: modelModule.Control) {
       var res = ListWrapper.reduce(validators, (res, validator) => {
         var errors = validator(c);

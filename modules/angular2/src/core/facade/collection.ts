@@ -238,7 +238,7 @@ export class ListWrapper {
     }
     return false;
   }
-  static clear(list: any[]) { list.splice(0, list.length); }
+  static clear(list: any[]) { list.length = 0; }
   static join(list: any[], s: string): string { return list.join(s); }
   static isEmpty(list: any[]): boolean { return list.length == 0; }
   static fill(list: any[], value: any, start: number = 0, end: number = null) {

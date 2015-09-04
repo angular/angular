@@ -6,7 +6,7 @@ import {
   Directive,
   View,
   Host,
-  NgValidator,
+  NG_VALIDATORS,
   forwardRef,
   Binding
 } from 'angular2/bootstrap';
@@ -32,20 +32,19 @@ class CheckoutModel {
 /**
  * Custom validator.
  */
+function creditCardValidator(c): StringMap<string, boolean> {
+  if (isPresent(c.value) && RegExpWrapper.test(new RegExp("^\\d{16}$"), c.value)) {
+    return null;
+  } else {
+    return {"invalidCreditCard": true};
+  }
+}
+
 const creditCardValidatorBinding =
-    CONST_EXPR(new Binding(NgValidator, {toAlias: forwardRef(() => CreditCardValidator)}));
+    CONST_EXPR(new Binding(NG_VALIDATORS, {toValue: creditCardValidator, multi: true}));
 
 @Directive({selector: '[credit-card]', bindings: [creditCardValidatorBinding]})
 class CreditCardValidator {
-  get validator() { return CreditCardValidator.validate; }
-
-  static validate(c): StringMap<string, boolean> {
-    if (isPresent(c.value) && RegExpWrapper.test(new RegExp("^\\d{16}$"), c.value)) {
-      return null;
-    } else {
-      return {"invalidCreditCard": true};
-    }
-  }
 }
 
 /**

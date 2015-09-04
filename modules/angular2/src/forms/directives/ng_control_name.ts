@@ -2,15 +2,15 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {StringMap} from 'angular2/src/core/facade/collection';
 
-import {QueryList} from 'angular2/core';
 import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
-import {forwardRef, Host, SkipSelf, Binding, Inject} from 'angular2/di';
+import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {NgValidator} from './validators';
-import {controlPath, composeNgValidator, isPropertyUpdated} from './shared';
+import {controlPath, isPropertyUpdated} from './shared';
 import {Control} from '../model';
+import {Validators, NG_VALIDATORS} from '../validators';
+
 
 const controlNameBinding =
     CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgControlName)}));
@@ -84,15 +84,14 @@ export class NgControlName extends NgControl {
   update = new EventEmitter();
   model: any;
   viewModel: any;
-  ngValidators: QueryList<NgValidator>;
+  validators: Function[];
   _added = false;
 
-  // Scope the query once https://github.com/angular/angular/issues/2603 is fixed
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Query(NgValidator) ngValidators: QueryList<NgValidator>) {
+              @Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
     super();
     this._parent = parent;
-    this.ngValidators = ngValidators;
+    this.validators = validators;
   }
 
   onChanges(c: StringMap<string, any>) {
@@ -119,5 +118,5 @@ export class NgControlName extends NgControl {
 
   get control(): Control { return this.formDirective.getControl(this); }
 
-  get validator(): Function { return composeNgValidator(this.ngValidators); }
+  get validator(): Function { return Validators.compose(this.validators); }
 }

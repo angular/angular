@@ -667,11 +667,11 @@ export function humanizeTemplateAsts(templateAsts: TemplateAst[]): any[] {
 
 class TemplateHumanizer implements TemplateAstVisitor {
   result: any[] = [];
-  visitNgContent(ast: NgContentAst): any {
+  visitNgContent(ast: NgContentAst, context: any): any {
     this.result.push([NgContentAst, ast.select, ast.sourceInfo]);
     return null;
   }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst): any {
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     this.result.push([EmbeddedTemplateAst, ast.sourceInfo]);
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.vars);
@@ -679,7 +679,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     templateVisitAll(this, ast.children);
     return null;
   }
-  visitElement(ast: ElementAst): any {
+  visitElement(ast: ElementAst, context: any): any {
     this.result.push([ElementAst, ast.sourceInfo]);
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.properties);
@@ -689,11 +689,11 @@ class TemplateHumanizer implements TemplateAstVisitor {
     templateVisitAll(this, ast.children);
     return null;
   }
-  visitVariable(ast: VariableAst): any {
+  visitVariable(ast: VariableAst, context: any): any {
     this.result.push([VariableAst, ast.name, ast.value, ast.sourceInfo]);
     return null;
   }
-  visitEvent(ast: BoundEventAst): any {
+  visitEvent(ast: BoundEventAst, context: any): any {
     this.result.push([
       BoundEventAst,
       ast.name,
@@ -703,7 +703,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     ]);
     return null;
   }
-  visitElementProperty(ast: BoundElementPropertyAst): any {
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
     this.result.push([
       BoundElementPropertyAst,
       ast.type,
@@ -714,26 +714,26 @@ class TemplateHumanizer implements TemplateAstVisitor {
     ]);
     return null;
   }
-  visitAttr(ast: AttrAst): any {
+  visitAttr(ast: AttrAst, context: any): any {
     this.result.push([AttrAst, ast.name, ast.value, ast.sourceInfo]);
     return null;
   }
-  visitBoundText(ast: BoundTextAst): any {
+  visitBoundText(ast: BoundTextAst, context: any): any {
     this.result.push([BoundTextAst, expressionUnparser.unparse(ast.value), ast.sourceInfo]);
     return null;
   }
-  visitText(ast: TextAst): any {
+  visitText(ast: TextAst, context: any): any {
     this.result.push([TextAst, ast.value, ast.sourceInfo]);
     return null;
   }
-  visitDirective(ast: DirectiveAst): any {
+  visitDirective(ast: DirectiveAst, context: any): any {
     this.result.push([DirectiveAst, ast.directive, ast.sourceInfo]);
     templateVisitAll(this, ast.properties);
     templateVisitAll(this, ast.hostProperties);
     templateVisitAll(this, ast.hostEvents);
     return null;
   }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst): any {
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
     this.result.push([
       BoundDirectivePropertyAst,
       ast.directiveName,
@@ -744,7 +744,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
   }
 }
 
-class MockSchemaRegistry implements ElementSchemaRegistry {
+export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(public existingProperties: StringMap<string, boolean>,
               public attrPropMapping: StringMap<string, string>) {}
   hasProperty(tagName: string, property: string): boolean {

@@ -1,17 +1,26 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {ResolvedBinding, Binding, Dependency, BindingBuilder, bind} from './binding';
+import {
+  ResolvedBinding,
+  Binding,
+  Dependency,
+  BindingBuilder,
+  ResolvedFactory,
+  bind,
+  resolveBindings
+} from './binding';
 import {
   AbstractBindingError,
   NoBindingError,
   CyclicDependencyError,
   InstantiationError,
   InvalidBindingError,
-  OutOfBoundsError
+  OutOfBoundsError,
+  MixingMultiBindingsWithRegularBindings
 } from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Key} from './key';
-import {resolveForwardRef} from './forward_ref';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
+
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
@@ -428,9 +437,7 @@ export class Injector {
    * `fromResolvedBindings` and `createChildFromResolved`.
    */
   static resolve(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
-    var resolvedBindings = _resolveBindings(bindings);
-    var flatten = _flattenBindings(resolvedBindings, new Map());
-    return _createListOfBindings(flatten);
+    return resolveBindings(bindings);
   }
 
   /**
@@ -539,8 +546,8 @@ export class Injector {
   */
   resolveAndCreateChild(bindings: Array<Type | Binding | any[]>,
                         depProvider: DependencyProvider = null): Injector {
-    var resovledBindings = Injector.resolve(bindings);
-    return this.createChildFromResolved(resovledBindings, depProvider);
+    var resolvedBindings = Injector.resolve(bindings);
+    return this.createChildFromResolved(resolvedBindings, depProvider);
   }
 
   /**
@@ -571,25 +578,38 @@ export class Injector {
   }
 
   /**
-   * Instantiates an object using a resolved bindin in the context of the injector.
+   * Instantiates an object using a resolved binding in the context of the injector.
    *
    * @param `binding`: a resolved binding
    * @returns an object created using binding.
    */
   instantiateResolved(binding: ResolvedBinding): any {
-    return this._instantiate(binding, Visibility.PublicAndPrivate);
+    return this._instantiateBinding(binding, Visibility.PublicAndPrivate);
   }
 
   _new(binding: ResolvedBinding, visibility: Visibility): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
       throw new CyclicDependencyError(this, binding.key);
     }
-    return this._instantiate(binding, visibility);
+    return this._instantiateBinding(binding, visibility);
   }
 
-  private _instantiate(binding: ResolvedBinding, visibility: Visibility): any {
-    var factory = binding.factory;
-    var deps = binding.dependencies;
+  private _instantiateBinding(binding: ResolvedBinding, visibility: Visibility): any {
+    if (binding.multiBinding) {
+      var res = ListWrapper.createFixedSize(binding.resolvedFactories.length);
+      for (var i = 0; i < binding.resolvedFactories.length; ++i) {
+        res[i] = this._instantiate(binding, binding.resolvedFactories[i], visibility);
+      }
+      return res;
+    } else {
+      return this._instantiate(binding, binding.resolvedFactories[0], visibility);
+    }
+  }
+
+  private _instantiate(binding: ResolvedBinding, resolvedFactory: ResolvedFactory,
+                       visibility: Visibility): any {
+    var factory = resolvedFactory.factory;
+    var deps = resolvedFactory.dependencies;
     var length = deps.length;
 
     var d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18, d19;
@@ -800,45 +820,6 @@ export class Injector {
 
 var INJECTOR_KEY = Key.get(Injector);
 
-
-function _resolveBindings(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
-  var resolvedList = ListWrapper.createFixedSize(bindings.length);
-  for (var i = 0; i < bindings.length; i++) {
-    var unresolved = resolveForwardRef(bindings[i]);
-    var resolved;
-    if (unresolved instanceof ResolvedBinding) {
-      resolved = unresolved;  // ha-ha! I'm easily amused
-    } else if (unresolved instanceof Type) {
-      resolved = bind(unresolved).toClass(unresolved).resolve();
-    } else if (unresolved instanceof Binding) {
-      resolved = unresolved.resolve();
-    } else if (unresolved instanceof Array) {
-      resolved = _resolveBindings(unresolved);
-    } else if (unresolved instanceof BindingBuilder) {
-      throw new InvalidBindingError(unresolved.token);
-    } else {
-      throw new InvalidBindingError(unresolved);
-    }
-    resolvedList[i] = resolved;
-  }
-  return resolvedList;
-}
-
-function _createListOfBindings(flattenedBindings: Map<number, ResolvedBinding>): ResolvedBinding[] {
-  return MapWrapper.values(flattenedBindings);
-}
-
-function _flattenBindings(bindings: Array<ResolvedBinding | any[]>,
-                          res: Map<number, ResolvedBinding>): Map<number, ResolvedBinding> {
-  ListWrapper.forEach(bindings, function(b) {
-    if (b instanceof ResolvedBinding) {
-      res.set(b.key.id, b);
-    } else if (b instanceof Array) {
-      _flattenBindings(b, res);
-    }
-  });
-  return res;
-}
 
 function _mapBindings(injector: Injector, fn: Function): any[] {
   var res = [];

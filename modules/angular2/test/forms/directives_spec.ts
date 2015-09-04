@@ -14,8 +14,6 @@ import {
   inject
 } from 'angular2/test_lib';
 
-import {QueryList} from 'angular2/angular2';
-
 import {
   ControlGroup,
   Control,
@@ -27,7 +25,7 @@ import {
   NgForm,
   NgModel,
   NgFormControl,
-  NgRequiredValidator
+  DefaultValidators
 } from 'angular2/forms';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -51,7 +49,7 @@ export function main() {
         formModel = new ControlGroup({"login": new Control(null)});
         form.form = formModel;
 
-        loginControlDir = new NgControlName(form, new QueryList<any>());
+        loginControlDir = new NgControlName(form, []);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -85,7 +83,7 @@ export function main() {
         });
 
         it("should set up validator", () => {
-          loginControlDir.ngValidators.reset([new NgRequiredValidator()]);
+          loginControlDir.validators = [Validators.required];
 
           expect(formModel.find(["login"]).valid).toBe(true);
 
@@ -220,7 +218,7 @@ export function main() {
       var control;
 
       beforeEach(() => {
-        controlDir = new NgFormControl(new QueryList<any>());
+        controlDir = new NgFormControl([]);
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new Control(null);
@@ -239,7 +237,7 @@ export function main() {
       });
 
       it("should set up validator", () => {
-        controlDir.ngValidators.reset([new NgRequiredValidator()]);
+        controlDir.validators = [Validators.required];
 
         expect(control.valid).toBe(true);
 
@@ -254,7 +252,7 @@ export function main() {
       var ngModel;
 
       beforeEach(() => {
-        ngModel = new NgModel(new QueryList<any>());
+        ngModel = new NgModel([]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
       });
 
@@ -271,7 +269,7 @@ export function main() {
       });
 
       it("should set up validator", () => {
-        ngModel.ngValidators.reset([new NgRequiredValidator()]);
+        ngModel.validators = [Validators.required];
 
         expect(ngModel.control.valid).toBe(true);
 
@@ -291,7 +289,7 @@ export function main() {
 
         var parent = new NgFormModel();
         parent.form = new ControlGroup({"name": formModel});
-        controlNameDir = new NgControlName(parent, new QueryList<any>());
+        controlNameDir = new NgControlName(parent, []);
         controlNameDir.name = "name";
       });
 

@@ -8,7 +8,6 @@ var _scheduler;
 var _microtasks: Function[] = [];
 var _pendingPeriodicTimers: number[] = [];
 var _pendingTimers: number[] = [];
-var _error = null;
 
 interface FakeAsyncZone extends NgZoneZone {
   _inFakeAsyncZone: boolean;
@@ -66,7 +65,7 @@ export function fakeAsync(fn: Function): Function {
 }
 
 // TODO we should fix tick to dequeue the failed timer instead of relying on clearPendingTimers
-export function clearPendingTimers() {
+export function clearPendingTimers(): void {
   ListWrapper.clear(_microtasks);
   ListWrapper.clear(_pendingPeriodicTimers);
   ListWrapper.clear(_pendingTimers);

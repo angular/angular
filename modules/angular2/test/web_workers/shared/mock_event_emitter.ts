@@ -9,10 +9,14 @@ export class MockEventEmitter extends EventEmitter {
 
   observer(generator: any): Rx.IDisposable {
     this._nextFns.push(generator.next);
-    return null;
+    return new MockDisposable();
   }
 
   next(value: any) {
     ListWrapper.forEach(this._nextFns, (fn) => { fn(value); });
   }
+}
+
+class MockDisposable implements Rx.IDisposable {
+  dispose(): void {}
 }
