@@ -1,4 +1,5 @@
-import {bootstrap, Component, View, NgFor} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/bootstrap';
+import {Component, View, NgFor} from 'angular2/core';
 import {Zippy} from './zippy';
 
 @Component({selector: 'zippy-app'})

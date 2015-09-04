@@ -17,23 +17,25 @@ import {
   TestComponentBuilder,
   RootTestComponent,
   fakeAsync,
-  tick,
-  By
+  tick
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {
+  bind,
   forwardRef,
-  ViewContainerRef,
+  Component,
+  Directive,
   ElementRef,
   TemplateRef,
-  bind,
-  ViewEncapsulation
-} from 'angular2/angular2';
-import {Component, Directive, View, ViewMetadata} from 'angular2/metadata';
-
-import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/core/render/render';
+  View,
+  ViewContainerRef,
+  ViewEncapsulation,
+  ViewMetadata
+} from 'angular2/core';
+import {By} from 'angular2/src/core/debug';
+import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/core/render';
 
 export function main() {
   describe('projection', () => {

@@ -1,6 +1,6 @@
 import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
-import {ChangeDetectionStrategy} from 'angular2/change_detection';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.

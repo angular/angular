@@ -9,7 +9,7 @@ import {
   afterEach,
   el
 } from 'angular2/test_lib';
-import {ControlGroup, Control, Validators} from 'angular2/forms';
+import {ControlGroup, Control, Validators} from 'angular2/core';
 
 export function main() {
   function validator(key: string, error: any) {

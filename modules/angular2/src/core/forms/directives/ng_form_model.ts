@@ -2,9 +2,9 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
-import {Directive} from 'angular2/metadata';
 import {OnChanges} from 'angular2/lifecycle_hooks';
-import {forwardRef, Binding} from 'angular2/di';
+import {Directive} from 'angular2/src/core/metadata';
+import {forwardRef, Binding} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';

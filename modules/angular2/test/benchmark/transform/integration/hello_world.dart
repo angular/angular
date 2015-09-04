@@ -42,7 +42,7 @@ library examples.src.hello_world.index_common;
 
 import "package:angular2/bootstrap.dart"
     show bootstrap, Component, Directive, View, ElementRef;
-import "package:angular2/di.dart" show Injectable;
+import "package:angular2/core.dart" show Injectable;
 
 @Component(selector: "hello-app", services: const [GreetingService])
 @View(

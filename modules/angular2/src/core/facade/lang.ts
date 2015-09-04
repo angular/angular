@@ -1,4 +1,4 @@
-/// <reference path="../../../globals.d.ts" />
+/// <reference path="../../../manual_typings/globals.d.ts" />
 
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope;

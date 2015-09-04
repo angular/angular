@@ -5,7 +5,7 @@ import {
 } from "angular2/src/web_workers/shared/message_bus";
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {Injectable} from "angular2/di";
+import {Injectable} from "angular2/src/core/di";
 
 /**
  * A TypeScript implementation of {@link MessageBus} for communicating via JavaScript's

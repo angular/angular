@@ -1,5 +1,5 @@
+import {bootstrap} from 'angular2/bootstrap';
 import {
-  bootstrap,
   NgIf,
   NgFor,
   Component,
@@ -8,12 +8,10 @@ import {
   Host,
   forwardRef,
   Binding,
-  EventEmitter
-} from 'angular2/bootstrap';
-
-import {Injectable} from 'angular2/di';
-
-import {FORM_DIRECTIVES} from 'angular2/forms';
+  EventEmitter,
+  FORM_DIRECTIVES,
+  Injectable
+} from 'angular2/core';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 

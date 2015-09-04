@@ -14,11 +14,9 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Injectable} from 'angular2/di';
+import {Injectable, NgIf} from 'angular2/core';
 
-import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
-
-import {NgIf} from 'angular2/src/core/directives/ng_if';
+import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 @Component({selector: 'child-comp'})
 @View({template: `<span>Original {{childBinding}}</span>`, directives: []})

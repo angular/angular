@@ -1,4 +1,4 @@
-import {resolveForwardRef, Injectable} from 'angular2/di';
+import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/core/facade/lang';
 import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
@@ -8,7 +8,7 @@ import {
   EventMetadata,
   HostBindingMetadata,
   HostListenerMetadata
-} from 'angular2/metadata';
+} from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
 /**

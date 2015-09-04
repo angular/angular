@@ -15,8 +15,7 @@ import {
 import {SpyChangeDetectorRef} from './spies';
 
 import {isBlank} from 'angular2/src/core/facade/lang';
-import {WrappedValue} from 'angular2/change_detection';
-import {AsyncPipe} from 'angular2/pipes';
+import {AsyncPipe, WrappedValue} from 'angular2/core';
 import {
   EventEmitter,
   ObservableWrapper,

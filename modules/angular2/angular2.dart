@@ -5,4 +5,4 @@ library angular2;
  *
  * This library does not include `bootstrap`. Import `bootstrap.dart` instead.
  */
-export 'package:angular2/angular2_exports.dart';
+export 'package:angular2/core.dart';

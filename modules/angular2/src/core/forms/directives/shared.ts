@@ -5,8 +5,8 @@ import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators} from '../validators';
-import {Renderer} from 'angular2/render';
-import {ElementRef, QueryList} from 'angular2/core';
+import {ElementRef, QueryList} from 'angular2/src/core/compiler';
+import {Renderer} from 'angular2/src/core/render';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {

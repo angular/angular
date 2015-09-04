@@ -4,19 +4,19 @@
  * Common directives shipped with Angular.
  */
 
-import {CONST_EXPR, Type} from './src/core/facade/lang';
-import {NgClass} from './src/core/directives/ng_class';
-import {NgFor} from './src/core/directives/ng_for';
-import {NgIf} from './src/core/directives/ng_if';
-import {NgNonBindable} from './src/core/directives/ng_non_bindable';
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './src/core/directives/ng_switch';
+import {CONST_EXPR, Type} from './facade/lang';
+import {NgClass} from './directives/ng_class';
+import {NgFor} from './directives/ng_for';
+import {NgIf} from './directives/ng_if';
+import {NgNonBindable} from './directives/ng_non_bindable';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './directives/ng_switch';
 
-export * from './src/core/directives/ng_class';
-export * from './src/core/directives/ng_for';
-export * from './src/core/directives/ng_if';
-export * from './src/core/directives/ng_non_bindable';
-export * from './src/core/directives/ng_style';
-export * from './src/core/directives/ng_switch';
+export * from './directives/ng_class';
+export * from './directives/ng_for';
+export * from './directives/ng_if';
+export * from './directives/ng_non_bindable';
+export * from './directives/ng_style';
+export * from './directives/ng_switch';
 
 /**
  * A collection of the Angular core directives that are likely to be used in each and every Angular

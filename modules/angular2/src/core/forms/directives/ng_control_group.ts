@@ -1,6 +1,6 @@
-import {Directive} from 'angular2/metadata';
 import {OnInit, OnDestroy} from 'angular2/lifecycle_hooks';
-import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/di';
+import {Directive} from 'angular2/src/core/metadata';
+import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/src/core/di';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 

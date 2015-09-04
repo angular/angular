@@ -1,4 +1,5 @@
-import {Binding, resolveForwardRef, Injectable, Inject} from 'angular2/di';
+import {Binding, resolveForwardRef, Injectable, Inject} from 'angular2/src/core/di';
+import {DEFAULT_PIPES_TOKEN} from 'angular2/src/core/pipes';
 import {
   Type,
   isBlank,
@@ -20,7 +21,7 @@ import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {ViewMetadata} from 'angular2/metadata';
+import {ViewMetadata} from 'angular2/src/core/metadata';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
@@ -28,7 +29,6 @@ import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {ElementBinder} from './element_binder';
 import {wtfStartTimeRange, wtfEndTimeRange} from '../profile/profile';
 import {PipeBinding} from '../pipes/pipe_binding';
-import {DEFAULT_PIPES_TOKEN} from 'angular2/pipes';
 
 import {
   RenderDirectiveMetadata,

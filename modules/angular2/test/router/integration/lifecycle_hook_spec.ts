@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   TestComponentBuilder,
-  asNativeElements,
   beforeEach,
   ddescribe,
   xdescribe,
@@ -15,8 +14,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {Injector, Inject, bind} from 'angular2/di';
-import {Component, View} from 'angular2/metadata';
+import {bind, Component, Injector, Inject, View} from 'angular2/core';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {
   Promise,

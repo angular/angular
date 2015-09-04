@@ -13,13 +13,12 @@ import {
   xit,
   TestComponentBuilder,
   proxy,
-  SpyObject,
-  By
+  SpyObject
 } from 'angular2/test_lib';
 
 import {NumberWrapper} from 'angular2/src/core/facade/lang';
 
-import {bind, Component, View} from 'angular2/angular2';
+import {bind, Component, DirectiveResolver, View} from 'angular2/core';
 
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {
@@ -35,7 +34,6 @@ import {
   RouteConfig,
   ROUTER_DIRECTIVES
 } from 'angular2/router';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 

@@ -2,7 +2,7 @@
 
 import {HammerGesturesPluginCommon} from './hammer_common';
 import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 
 @Injectable()
 export class HammerGesturesPlugin extends HammerGesturesPluginCommon {

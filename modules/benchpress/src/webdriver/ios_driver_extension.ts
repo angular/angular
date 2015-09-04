@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/src/core/di';
 import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 import {
   Json,

@@ -4,11 +4,11 @@
  * This module provides advanced support for extending change detection.
  */
 
-export {UpperCasePipe} from './src/core/pipes/uppercase_pipe';
-export {LowerCasePipe} from './src/core/pipes/lowercase_pipe';
-export {AsyncPipe} from './src/core/pipes/async_pipe';
-export {JsonPipe} from './src/core/pipes/json_pipe';
-export {DatePipe} from './src/core/pipes/date_pipe';
-export {DecimalPipe, PercentPipe, CurrencyPipe} from './src/core/pipes/number_pipe';
-export {LimitToPipe} from './src/core/pipes/limit_to_pipe';
-export {DEFAULT_PIPES_TOKEN, DEFAULT_PIPES} from './src/core/pipes/default_pipes';
+export {AsyncPipe} from './pipes/async_pipe';
+export {DatePipe} from './pipes/date_pipe';
+export {DEFAULT_PIPES, DEFAULT_PIPES_TOKEN} from './pipes/default_pipes';
+export {JsonPipe} from './pipes/json_pipe';
+export {LimitToPipe} from './pipes/limit_to_pipe';
+export {LowerCasePipe} from './pipes/lowercase_pipe';
+export {NumberPipe, DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
+export {UpperCasePipe} from './pipes/uppercase_pipe';

@@ -1,6 +1,6 @@
 library angular2.src.services.url_resolver;
 
-import 'package:angular2/di.dart' show Injectable;
+import 'package:angular2/src/core/di.dart' show Injectable;
 
 @Injectable()
 class UrlResolver {

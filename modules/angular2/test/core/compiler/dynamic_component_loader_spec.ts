@@ -13,15 +13,13 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  RootTestComponent,
-  inspectElement,
-  By
+  RootTestComponent
 } from 'angular2/test_lib';
 
-import {Injector} from 'angular2/di';
-import {NgIf} from 'angular2/directives';
-import {Component, View, ViewMetadata} from 'angular2/metadata';
 import {OnDestroy} from 'angular2/lifecycle_hooks';
+import {Injector, NgIf} from 'angular2/core';
+import {inspectElement, By} from 'angular2/src/core/debug';
+import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {DOCUMENT} from 'angular2/src/core/render/render';

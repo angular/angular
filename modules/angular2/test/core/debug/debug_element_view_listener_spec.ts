@@ -12,18 +12,11 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  By,
-  Scope,
-  inspectNativeElement
 } from 'angular2/test_lib';
 import {global} from 'angular2/src/core/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {Injectable, bind} from 'angular2/di';
-import {
-  Directive,
-  Component,
-  View,
-} from 'angular2/metadata';
+import {bind, Component, Directive, Injectable, View} from 'angular2/core';
+import {inspectNativeElement} from 'angular2/src/core/debug';
 import {IS_DART} from '../../platform';
 
 @Component({selector: 'my-comp'})

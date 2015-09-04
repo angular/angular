@@ -1,4 +1,4 @@
-library angular2.application_static;
+library angular2.src.core.application_static;
 
 import 'dart:async';
 import 'application_common.dart';

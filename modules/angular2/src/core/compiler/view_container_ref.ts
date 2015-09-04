@@ -1,5 +1,5 @@
 import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {ResolvedBinding} from 'angular2/di';
+import {ResolvedBinding} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
 import * as avmModule from './view_manager';

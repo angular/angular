@@ -21,7 +21,6 @@ export {
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
-
 import {
   QueryMetadata,
   ViewQueryMetadata,

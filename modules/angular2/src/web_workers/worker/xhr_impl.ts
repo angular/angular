@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {Promise} from 'angular2/src/core/facade/async';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {

@@ -16,5 +16,5 @@ describe('WebWorkers Todo', function() {
 });
 
 function waitForBootstrap(): void {
-  browser.wait(protractor.until.elementLocated(by.css("todo-app #todoapp")), 5000);
+  browser.wait(protractor.until.elementLocated(by.css("todo-app #todoapp")), 15000);
 }

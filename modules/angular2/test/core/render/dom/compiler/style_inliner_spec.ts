@@ -19,7 +19,7 @@ import {Map, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {XHR} from 'angular2/src/core/render/xhr';
 
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 
 export function main() {
   describe('StyleInliner', () => {

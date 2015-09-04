@@ -19,7 +19,7 @@ import {
   BindingWithVisibility,
   Visibility,
   Binding
-} from 'angular2/di';
+} from 'angular2/core';
 
 import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/core/di/injector';
 

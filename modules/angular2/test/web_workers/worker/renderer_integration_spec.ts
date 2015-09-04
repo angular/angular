@@ -10,7 +10,7 @@ import {
 } from "angular2/test_lib";
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DomTestbed, TestRootView, elRef} from '../../core/render/dom/dom_testbed';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {WebWorkerCompiler, WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
   ClientMessageBrokerFactory,

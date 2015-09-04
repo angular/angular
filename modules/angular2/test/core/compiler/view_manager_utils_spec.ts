@@ -24,7 +24,7 @@ import {
   SpyPreBuiltObjects
 } from '../spies';
 
-import {Injector, bind} from 'angular2/di';
+import {Injector, bind} from 'angular2/core';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
@@ -37,7 +37,7 @@ import {
   ProtoElementInjector
 } from 'angular2/src/core/compiler/element_injector';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {Component} from 'angular2/metadata';
+import {Component} from 'angular2/src/core/metadata';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {
   RenderProtoViewMergeMapping,

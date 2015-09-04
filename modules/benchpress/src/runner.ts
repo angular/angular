@@ -1,4 +1,4 @@
-import {Injector, bind, Binding} from 'angular2/di';
+import {Injector, bind, Binding} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 

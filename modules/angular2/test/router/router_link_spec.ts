@@ -11,13 +11,13 @@ import {
   beforeEachBindings,
   it,
   xit,
-  TestComponentBuilder,
-  By
+  TestComponentBuilder
 } from 'angular2/test_lib';
 
 import {SpyRouter, SpyLocation} from './spies';
 
-import {bind, Component, View} from 'angular2/angular2';
+import {bind, Component, View} from 'angular2/core';
+import {By} from 'angular2/src/core/debug';
 
 import {
   Location,

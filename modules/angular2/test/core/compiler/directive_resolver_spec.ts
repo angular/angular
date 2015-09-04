@@ -7,7 +7,7 @@ import {
   Event,
   HostBinding,
   HostListener
-} from 'angular2/metadata';
+} from 'angular2/src/core/metadata';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {

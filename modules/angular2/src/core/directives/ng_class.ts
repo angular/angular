@@ -1,14 +1,14 @@
 import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
-import {Directive} from 'angular2/metadata';
 import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
-import {ElementRef} from 'angular2/core';
-import {Renderer} from 'angular2/src/core/render/api';
+import {Directive} from 'angular2/src/core/metadata';
+import {ElementRef} from 'angular2/src/core/compiler';
 import {
-  KeyValueDiffer,
   IterableDiffer,
   IterableDiffers,
+  KeyValueDiffer,
   KeyValueDiffers
-} from 'angular2/change_detection';
+} from 'angular2/src/core/change_detection';
+import {Renderer} from 'angular2/src/core/render';
 import {
   ListWrapper,
   StringMapWrapper,

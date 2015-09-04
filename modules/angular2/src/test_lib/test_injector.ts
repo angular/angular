@@ -1,4 +1,5 @@
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/src/core/di';
+import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -12,7 +13,6 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
@@ -44,7 +44,8 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestComponentBuilder} from './test_component_builder';
 
-import {Injector} from 'angular2/di';
+import {Injector} from 'angular2/src/core/di';
+import {ELEMENT_PROBE_BINDINGS} from 'angular2/src/core/debug';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
@@ -52,7 +53,6 @@ import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {ELEMENT_PROBE_BINDINGS} from 'angular2/debug';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/core/render/api';
 import {

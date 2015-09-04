@@ -1,4 +1,4 @@
-import {bind, Binding, OpaqueToken} from 'angular2/di';
+import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 import {DateWrapper} from 'angular2/src/core/facade/lang';
 
 export class Options {
