@@ -477,11 +477,11 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (some-event)="statement">`</td>
+    <td><pre>&lt;some-element (some-event)="statement"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-some-event="statement">`</td>
+    <td><pre>&lt;some-element on-some-event="statement"&gt;</pre></td>
   </tr>
 </table>
 
@@ -497,11 +497,11 @@ Angular listens to bubbled DOM events (as in the case of clicking on any child),
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (some-event)="statement">`</td>
+    <td><pre>&lt;some-element (some-event)="statement"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-some-event="statement">`</td>
+    <td><pre>&lt;some-element on-some-event="statement"&gt;</pre></td>
   </tr>
 </table>
 
