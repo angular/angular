@@ -9,14 +9,14 @@ describe('WebWorkers Kitchen Sink', function() {
   it('should greet', () => {
     browser.get(URL);
 
-    browser.wait(protractor.until.elementLocated(by.css(selector)), 5000);
+    browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
     expect(element.all(by.css(selector)).first().getText()).toEqual("hello world!");
   });
 
   it('should change greeting', () => {
     browser.get(URL);
 
-    browser.wait(protractor.until.elementLocated(by.css(selector)), 5000);
+    browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
     element(by.css("hello-app .changeButton")).click();
     var elem = element(by.css(selector));
     browser.wait(protractor.until.elementTextIs(elem, "howdy world!"), 5000);
@@ -25,7 +25,7 @@ describe('WebWorkers Kitchen Sink', function() {
 
   it("should display correct key names", () => {
     browser.get(URL);
-    browser.wait(protractor.until.elementLocated(by.css(".sample-area")), 5000);
+    browser.wait(protractor.until.elementLocated(by.css(".sample-area")), 15000);
 
     var area = element.all(by.css(".sample-area")).first();
     expect(area.getText()).toEqual('(none)');

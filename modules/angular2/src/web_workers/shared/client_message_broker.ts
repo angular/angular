@@ -1,4 +1,4 @@
-/// <reference path="../../../globals.d.ts" />
+/// <reference path="../../../manual_typings/globals.d.ts" />
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
 import {print, isPresent, DateWrapper, stringify} from "angular2/src/core/facade/lang";
 import {
@@ -10,7 +10,7 @@ import {
 } from "angular2/src/core/facade/async";
 import {ListWrapper, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {Injectable} from "angular2/di";
+import {Injectable} from "angular2/src/core/di";
 import {Type, StringWrapper} from "angular2/src/core/facade/lang";
 export {Type} from "angular2/src/core/facade/lang";
 

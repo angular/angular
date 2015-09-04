@@ -12,9 +12,9 @@ import {
 } from 'angular2/test_lib';
 
 import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View} from 'angular2/metadata';
+import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {Type} from 'angular2/src/core/facade/lang';
 

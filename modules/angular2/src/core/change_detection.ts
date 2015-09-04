@@ -24,4 +24,4 @@ export {
   KeyValueDiffer,
   KeyValueDifferFactory
 
-} from 'angular2/src/core/change_detection/change_detection';
+} from './change_detection/change_detection';

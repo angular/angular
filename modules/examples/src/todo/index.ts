@@ -1,4 +1,5 @@
-import {bootstrap, NgFor, Component, View} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/bootstrap';
+import {NgFor, Component, View} from 'angular2/core';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({selector: 'todo-app', viewBindings: [Store, TodoFactory]})

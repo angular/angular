@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Inject, Injectable} from 'angular2/di';
+import {Inject, Injectable} from 'angular2/src/core/di';
 import {SetWrapper} from 'angular2/src/core/facade/collection';
 import {DOCUMENT} from '../dom_tokens';
 

@@ -8,7 +8,7 @@ import {
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Injectable, Inject, OpaqueToken} from 'angular2/di';
+import {Injectable, Inject, OpaqueToken} from 'angular2/src/core/di';
 
 export const EVENT_MANAGER_PLUGINS: OpaqueToken =
     CONST_EXPR(new OpaqueToken("EventManagerPlugins"));

@@ -2,7 +2,7 @@ library angular2.src.services.xhr_impl;
 
 import 'dart:async' show Future;
 import 'dart:html' show HttpRequest;
-import 'package:angular2/di.dart';
+import 'package:angular2/core.dart';
 import './xhr.dart' show XHR;
 
 @Injectable()

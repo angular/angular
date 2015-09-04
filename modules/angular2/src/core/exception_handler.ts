@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {isPresent, isBlank, print, BaseException} from 'angular2/src/core/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/core/facade/collection';
 

@@ -9,9 +9,7 @@ import {
   inject,
   it,
   xit,
-  TestComponentBuilder,
-  asNativeElements,
-  By
+  TestComponentBuilder
 } from 'angular2/test_lib';
 
 import {HtmlParser} from 'angular2/src/compiler/html_parser';

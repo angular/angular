@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   TestComponentBuilder,
-  By,
   beforeEach,
   ddescribe,
   describe,
@@ -15,9 +14,8 @@ import {
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, View, NgIf} from 'angular2/core';
 
-import {NgIf} from 'angular2/src/core/directives/ng_if';
 import {IS_DART} from '../../platform';
 
 export function main() {

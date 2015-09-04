@@ -2,9 +2,9 @@ import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent, BaseException} from 'angular2/src/core/facade/lang';
 
-import {Directive, Attribute} from '../core/metadata';
-import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
-import {Injector, bind, Dependency, UNDEFINED} from 'angular2/di';
+import {Directive, Attribute} from 'angular2/src/core/metadata';
+import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/src/core/compiler';
+import {Injector, bind, Dependency, UNDEFINED} from 'angular2/src/core/di';
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams} from './instruction';

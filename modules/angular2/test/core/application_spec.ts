@@ -11,15 +11,15 @@ import {
   xit
 } from 'angular2/test_lib';
 import {isPresent, stringify} from 'angular2/src/core/facade/lang';
-import {bootstrap, ApplicationRef} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/metadata';
+import {bootstrap} from 'angular2/bootstrap';
+import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOCUMENT} from 'angular2/render';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {bind, Inject, Injector} from 'angular2/di';
-import {LifeCycle} from 'angular2/core';
+import {bind, Inject, Injector, LifeCycle} from 'angular2/core';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {DOCUMENT} from 'angular2/src/core/render/render';
 import {IS_DART} from '../platform';
 
 @Component({selector: 'hello-app'})

@@ -1,7 +1,7 @@
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {OpaqueToken} from 'angular2/di';
+import {OpaqueToken} from 'angular2/src/core/di';
 
 import * as modelModule from './model';
 

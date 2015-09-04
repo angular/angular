@@ -1,7 +1,7 @@
-import {Renderer} from 'angular2/render';
-import {Directive} from 'angular2/metadata';
-import {ElementRef} from 'angular2/core';
-import {Self} from 'angular2/di';
+import {Directive} from 'angular2/src/core/metadata';
+import {ElementRef} from 'angular2/src/core/compiler';
+import {Renderer} from 'angular2/src/core/render';
+import {Self} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';

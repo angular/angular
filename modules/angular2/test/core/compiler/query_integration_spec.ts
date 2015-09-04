@@ -10,16 +10,24 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  asNativeElements,
-  By
 } from 'angular2/test_lib';
 
 
-import {Injectable, Optional} from 'angular2/di';
-import {QueryList, TemplateRef} from 'angular2/core';
-import {Query, ViewQuery, Component, Directive, View} from 'angular2/metadata';
+import {
+  Component,
+  Directive,
+  Injectable,
+  NgIf,
+  NgFor,
+  Optional,
+  TemplateRef,
+  Query,
+  QueryList,
+  View,
+  ViewQuery
+} from 'angular2/core';
 
-import {NgIf, NgFor} from 'angular2/angular2';
+import {asNativeElements} from 'angular2/src/core/debug';
 
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 

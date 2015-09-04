@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/src/core/di';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';

@@ -1,4 +1,4 @@
-library angular2.application;
+library angular2.src.core.application;
 
 import 'dart:async';
 

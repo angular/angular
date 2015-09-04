@@ -1,4 +1,4 @@
-import {Injectable, Injector, Key, bind} from "angular2/di";
+import {Injectable, Injector, Key, bind} from "angular2/core";
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';

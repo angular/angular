@@ -2,7 +2,7 @@ import {print, isPresent, isBlank, NumberWrapper} from 'angular2/src/core/facade
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Math} from 'angular2/src/core/facade/math';
-import {bind, Binding, OpaqueToken} from 'angular2/di';
+import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 
 import {Statistic} from '../statistic';
 import {Reporter} from '../reporter';

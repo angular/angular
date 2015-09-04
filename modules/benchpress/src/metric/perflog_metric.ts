@@ -9,7 +9,7 @@ import {
   NumberWrapper
 } from 'angular2/src/core/facade/lang';
 import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {bind, Binding, OpaqueToken} from 'angular2/di';
+import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {Metric} from '../metric';

@@ -1,13 +1,15 @@
 import {isBlank, isPresent, isPromise, CONST, BaseException} from 'angular2/src/core/facade/lang';
-import {Observable, Promise, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {Injectable} from 'angular2/di';
+import {Promise, ObservableWrapper, Observable} from 'angular2/src/core/facade/async';
+import {Pipe} from 'angular2/src/core/metadata';
+import {Injectable} from 'angular2/src/core/di';
+import {
+  ChangeDetectorRef,
+  PipeOnDestroy,
+  PipeTransform,
+  WrappedValue
+} from 'angular2/src/core/change_detection';
 
-import {PipeTransform, PipeOnDestroy, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-import {ChangeDetectorRef} from 'angular2/change_detection';
-
-import {Pipe} from '../metadata';
-
 
 class ObservableStrategy {
   createSubscription(async: any, updateLatestValue: any): any {

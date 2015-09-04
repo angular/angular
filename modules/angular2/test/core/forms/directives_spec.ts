@@ -26,7 +26,7 @@ import {
   NgModel,
   NgFormControl,
   DefaultValidators
-} from 'angular2/forms';
+} from 'angular2/core';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue;

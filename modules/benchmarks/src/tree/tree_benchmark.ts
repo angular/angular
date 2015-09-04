@@ -1,11 +1,14 @@
+import {bootstrap} from 'angular2/bootstrap';
 import {
-  bootstrap,
   Compiler,
   Component,
   Directive,
   View,
-  ViewContainerRef
-} from 'angular2/bootstrap';
+  ViewContainerRef,
+  bind,
+  Binding,
+  NgIf
+} from 'angular2/core';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -18,10 +21,8 @@ import {
   windowProfile,
   windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
-import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {bind, Binding} from 'angular2/di';
 
 function createBindings(): Binding[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;

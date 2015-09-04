@@ -10,11 +10,9 @@ import {
   afterEach
 } from 'angular2/test_lib';
 
-import {PipeTransform} from 'angular2/change_detection';
-import {Injector, Inject, bind} from 'angular2/di';
+import {Injector, Inject, bind, Pipe, PipeTransform} from 'angular2/core';
 import {ProtoPipes, Pipes} from 'angular2/src/core/pipes/pipes';
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
-import {Pipe} from 'angular2/metadata';
 
 class PipeA implements PipeTransform {
   transform(a, b) {}

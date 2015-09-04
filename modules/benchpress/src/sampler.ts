@@ -1,7 +1,7 @@
 import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {StringMapWrapper, StringMap, ListWrapper} from 'angular2/src/core/facade/collection';
-import {bind, Binding, OpaqueToken} from 'angular2/di';
+import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 
 import {Metric} from './metric';
 import {Validator} from './validator';

@@ -52,8 +52,10 @@ import {
   Inject,
   Host,
   SkipSelf,
-  SkipSelfMetadata
-} from 'angular2/di';
+  SkipSelfMetadata,
+  NgIf,
+  NgFor
+} from 'angular2/core';
 
 import {
   PipeTransform,
@@ -76,12 +78,9 @@ import {
   Event,
   HostBinding,
   HostListener
-} from 'angular2/metadata';
+} from 'angular2/src/core/metadata';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
-
-import {NgIf} from 'angular2/src/core/directives/ng_if';
-import {NgFor} from 'angular2/src/core/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ViewRef} from 'angular2/src/core/compiler/view_ref';

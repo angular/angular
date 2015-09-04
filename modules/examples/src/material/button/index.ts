@@ -1,8 +1,7 @@
-import {bootstrap, Component, View, NgFor, ViewEncapsulation} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/bootstrap';
+import {bind, Component, NgFor, UrlResolver, View, ViewEncapsulation} from 'angular2/core';
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
-import {bind} from 'angular2/di';
 
 @Component({
   selector: 'demo-app',

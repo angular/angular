@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
 import {

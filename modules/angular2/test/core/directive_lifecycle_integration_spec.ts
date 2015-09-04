@@ -13,7 +13,6 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Directive, Component, View, ViewMetadata} from 'angular2/metadata';
 import {
   OnChanges,
   OnInit,
@@ -23,6 +22,7 @@ import {
   AfterViewInit,
   AfterViewChecked
 } from 'angular2/lifecycle_hooks';
+import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {

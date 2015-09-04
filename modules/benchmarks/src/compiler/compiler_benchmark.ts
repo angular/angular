@@ -13,7 +13,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
 
-import {Component, Directive, View, ViewMetadata} from 'angular2/metadata';
+import {Component, Directive, View, ViewMetadata} from 'angular2/src/core/metadata';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/core/services/app_root_url';

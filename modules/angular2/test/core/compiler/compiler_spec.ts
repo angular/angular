@@ -20,7 +20,7 @@ import {AppProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
-import {Attribute, ViewMetadata, Component, Directive, Pipe} from 'angular2/metadata';
+import {Attribute, ViewMetadata, Component, Directive, Pipe} from 'angular2/src/core/metadata';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';

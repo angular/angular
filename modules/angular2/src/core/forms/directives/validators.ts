@@ -1,6 +1,6 @@
-import {forwardRef, OpaqueToken, Binding} from 'angular2/di';
+import {forwardRef, Binding, OpaqueToken} from 'angular2/src/core/di';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {Directive} from 'angular2/metadata';
+import {Directive} from 'angular2/src/core/metadata';
 import {Validators, NG_VALIDATORS} from '../validators';
 
 const DEFAULT_VALIDATORS =

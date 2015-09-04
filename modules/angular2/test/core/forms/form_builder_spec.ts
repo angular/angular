@@ -9,7 +9,7 @@ import {
   afterEach,
   el
 } from 'angular2/test_lib';
-import {Control, FormBuilder, Validators} from 'angular2/forms';
+import {Control, FormBuilder, Validators} from 'angular2/core';
 
 export function main() {
   describe("Form Builder", () => {

@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {LimitToPipe} from 'angular2/pipes';
+import {LimitToPipe} from 'angular2/core';
 
 export function main() {
   describe("LimitToPipe", () => {

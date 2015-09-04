@@ -9,21 +9,14 @@ import {
   inject,
   it,
   xit,
-  TestComponentBuilder,
-  asNativeElements,
-  By
+  TestComponentBuilder
 } from 'angular2/test_lib';
-
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank} from 'angular2/src/core/facade/lang';
-
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveMetadata, TypeMetadata, ChangeDetectionMetadata} from 'angular2/src/compiler/api';
-
 import {MockSchemaRegistry} from './template_parser_spec';
-
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
-
 import {
   Parser,
   Lexer,
@@ -38,10 +31,7 @@ import {
   BindingTarget,
   ChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
-
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
-
-
 import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
 
 export function main() {

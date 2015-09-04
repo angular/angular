@@ -23,7 +23,7 @@ module.exports = function makeNodeTree(destinationPath) {
       'angular2/test/core/zone/**',
       'angular2/test/test_lib/fake_async_spec.ts',
       'angular2/test/core/render/xhr_impl_spec.ts',
-      'angular2/test/forms/**',
+      'angular2/test/core/forms/**',
       'angular1_router/**'
     ]
   });
@@ -37,7 +37,8 @@ module.exports = function makeNodeTree(destinationPath) {
     module: 'CommonJS',
     noEmitOnError: true,
     rootDir: '.',
-    rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
+    rootFilePaths:
+        ['angular2/manual_typings/traceur-runtime.d.ts', 'angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
     target: 'ES5'

@@ -8,7 +8,7 @@ import {
   BaseException
 } from 'angular2/src/core/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/core';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
 

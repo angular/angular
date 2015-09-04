@@ -30,7 +30,7 @@ import {
   RouteDefinition
 } from './route_config_impl';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {normalizeRouteConfig} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 

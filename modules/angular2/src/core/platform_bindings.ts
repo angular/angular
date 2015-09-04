@@ -1,4 +1,4 @@
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/src/core/di';
 import {ExceptionHandler} from './exception_handler';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 

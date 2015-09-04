@@ -12,7 +12,7 @@ import {stringify} from 'angular2/src/core/facade/lang';
 
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 
-import {Component, View, ViewMetadata} from 'angular2/metadata';
+import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 import {isBlank} from 'angular2/src/core/facade/lang';
 
