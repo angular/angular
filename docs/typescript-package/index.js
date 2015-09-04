@@ -15,6 +15,8 @@ module.exports = new Package('typescript-parsing', [basePackage])
 .factory(require('./services/tsParser/getExportDocType'))
 .factory(require('./services/tsParser/getContent'))
 
+.factory(require('./services/convertPrivateClassesToInterfaces'))
+
 .factory('EXPORT_DOC_TYPES', function() {
   return [
     'class',
