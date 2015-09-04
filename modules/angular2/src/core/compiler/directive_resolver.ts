@@ -92,7 +92,6 @@ export class DirectiveResolver {
         properties: mergedProperties,
         events: mergedEvents,
         host: mergedHost,
-        lifecycle: dm.lifecycle,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
         compileChildren: dm.compileChildren,
@@ -106,7 +105,6 @@ export class DirectiveResolver {
         properties: mergedProperties,
         events: mergedEvents,
         host: mergedHost,
-        lifecycle: dm.lifecycle,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
         compileChildren: dm.compileChildren
