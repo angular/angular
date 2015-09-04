@@ -452,7 +452,7 @@ microsyntax: ([[key|keyExpression|varExport][;|,]?)*
 ```
 
 Where
-* `expression` is an Angular expression as defined in section: Expressions
+* `expression` is an Angular expression as defined in section: Expressions.
 * `local` is a local identifier for local variables.
 * `internal` is an internal variable which the directive exports for binding.
 * `key` is an attribute name usually only used to trigger a specific directive.
