@@ -1110,3 +1110,67 @@ export class PropertyMetadata {
 export class EventMetadata {
   constructor(public bindingPropertyName?: string) {}
 }
+
+/**
+ * Declare a host property binding.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostBinding() prop1; // Same as @HostBinding('prop1') prop1;
+ *   @HostBinding("el-prop") prop2;
+ * }
+ * ```
+ *
+ * This is equivalent to
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir',
+ *   host: {'[prop1]': 'prop1', '[el-prop]': 'prop2'}
+ * })
+ * class SampleDir {
+ *   prop1;
+ *   prop2;
+ * }
+ * ```
+ */
+@CONST()
+export class HostBindingMetadata {
+  constructor(public hostPropertyName?: string) {}
+}
+
+/**
+ * Declare a host listener.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostListener("change", ['$event.target.value']) onChange(value){}
+ * }
+ * ```
+ *
+ * This is equivalent to
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir',
+ *   host: {'(change)': 'onChange($event.target.value)'}
+ * })
+ * class SampleDir {
+ *   onChange(value){}
+ * }
+ * ```
+ */
+@CONST()
+export class HostListenerMetadata {
+  constructor(public eventName: string, public args?: string[]) {}
+}

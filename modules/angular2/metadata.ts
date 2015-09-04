@@ -40,7 +40,13 @@ export {
   PropertyMetadata,
   Event,
   EventFactory,
-  EventMetadata
+  EventMetadata,
+  HostBinding,
+  HostBindingFactory,
+  HostBindingMetadata,
+  HostListener,
+  HostListenerFactory,
+  HostListenerMetadata
 } from './src/core/metadata';
 
 export {

@@ -112,3 +112,19 @@ class Event extends EventMetadata {
   const Event([String bindingPropertyName])
     : super(bindingPropertyName);
 }
+
+/**
+ * See: [HostBindingMetadata] for docs.
+ */
+class HostBinding extends HostBindingMetadata {
+  const HostBinding([String hostPropertyName])
+    : super(hostPropertyName);
+}
+
+/**
+ * See: [HostListenerMetadata] for docs.
+ */
+class HostListener extends HostListenerMetadata {
+  const HostListener(String eventName, [List<String> args])
+    : super(eventName, args);
+}

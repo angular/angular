@@ -15,7 +15,9 @@ export {
   PipeMetadata,
   LifecycleEvent,
   PropertyMetadata,
-  EventMetadata
+  EventMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
 } from './metadata/directives';
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
@@ -33,7 +35,9 @@ import {
   PipeMetadata,
   LifecycleEvent,
   PropertyMetadata,
-  EventMetadata
+  EventMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
 } from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
@@ -448,6 +452,45 @@ export interface EventFactory {
 }
 
 /**
+ * {@link HostBindingMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostBinding() prop1; // Same as @HostBinding('prop1') prop1;
+ *   @HostBinding("el-prop") prop1;
+ * }
+ * ```
+ */
+export interface HostBindingFactory {
+  (hostPropertyName?: string): any;
+  new (hostPropertyName?: string): any;
+}
+
+/**
+ * {@link HostListenerMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostListener("change", ['$event.target.value']) onChange(value){}
+ * }
+ * ```
+ */
+export interface HostListenerFactory {
+  (eventName: string, args?: string[]): any;
+  new (eventName: string, args?: string[]): any;
+}
+
+/**
  * {@link ComponentMetadata} factory function.
  */
 export var Component: ComponentFactory =
@@ -493,3 +536,13 @@ export var Property: PropertyFactory = makePropDecorator(PropertyMetadata);
  * {@link EventMetadata} factory function.
  */
 export var Event: EventFactory = makePropDecorator(EventMetadata);
+
+/**
+ * {@link HostBindingMetadata} factory function.
+ */
+export var HostBinding: HostBindingFactory = makePropDecorator(HostBindingMetadata);
+
+/**
+ * {@link HostListenerMetadata} factory function.
+ */
+export var HostListener: HostListenerFactory = makePropDecorator(HostListenerMetadata);
