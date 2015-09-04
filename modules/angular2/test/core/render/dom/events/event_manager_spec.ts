@@ -25,14 +25,15 @@ export function main() {
 
   describe('EventManager', () => {
 
-    it('should delegate event bindings to plugins', () => {
-      var element = el('<div></div>');
-      var handler = (e) => e;
-      var plugin = new FakeEventManagerPlugin(['click']);
-      var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
-      manager.addEventListener(element, 'click', handler);
-      expect(plugin._eventHandler.get('click')).toBe(handler);
-    });
+    it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
+       () => {
+         var element = el('<div></div>');
+         var handler = (e) => e;
+         var plugin = new FakeEventManagerPlugin(['click']);
+         var manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
+         manager.addEventListener(element, 'click', handler);
+         expect(plugin._eventHandler.get('click')).toBe(handler);
+       });
 
     it('should delegate event bindings to the first plugin supporting the event', () => {
       var element = el('<div></div>');
@@ -40,7 +41,7 @@ export function main() {
       var dblClickHandler = (e) => e;
       var plugin1 = new FakeEventManagerPlugin(['dblclick']);
       var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
-      var manager = new EventManager([plugin1, plugin2], new FakeNgZone());
+      var manager = new EventManager([plugin2, plugin1], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
       expect(plugin1._eventHandler.has('click')).toBe(false);

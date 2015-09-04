@@ -1,12 +1,25 @@
-import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {
+  isBlank,
+  BaseException,
+  isPresent,
+  StringWrapper,
+  CONST_EXPR
+} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {Injectable, Inject, OpaqueToken} from 'angular2/di';
 
+export const EVENT_MANAGER_PLUGINS: OpaqueToken =
+    CONST_EXPR(new OpaqueToken("EventManagerPlugins"));
+
+@Injectable()
 export class EventManager {
-  constructor(public _plugins: EventManagerPlugin[], public _zone: NgZone) {
-    for (var i = 0; i < _plugins.length; i++) {
-      _plugins[i].manager = this;
-    }
+  private _plugins: EventManagerPlugin[];
+
+  constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
+    plugins.forEach(p => p.manager = this);
+    this._plugins = ListWrapper.reversed(plugins);
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function) {
@@ -48,6 +61,7 @@ export class EventManagerPlugin {
   }
 }
 
+@Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
   manager: EventManager;
 
@@ -56,16 +70,16 @@ export class DomEventsPlugin extends EventManagerPlugin {
   supports(eventName: string): boolean { return true; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function) {
-    var zone = this.manager._zone;
+    var zone = this.manager.getZone();
     var outsideHandler = (event) => zone.run(() => handler(event));
-    this.manager._zone.runOutsideAngular(() => { DOM.on(element, eventName, outsideHandler); });
+    this.manager.getZone().runOutsideAngular(() => { DOM.on(element, eventName, outsideHandler); });
   }
 
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
     var element = DOM.getGlobalEventTarget(target);
-    var zone = this.manager._zone;
+    var zone = this.manager.getZone();
     var outsideHandler = (event) => zone.run(() => handler(event));
-    return this.manager._zone.runOutsideAngular(
+    return this.manager.getZone().runOutsideAngular(
         () => { return DOM.onAndCancel(element, eventName, outsideHandler); });
   }
 }

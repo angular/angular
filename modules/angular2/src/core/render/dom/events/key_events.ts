@@ -10,6 +10,7 @@ import {
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {EventManagerPlugin} from './event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {Injectable} from 'angular2/di';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 var modifierKeyGetters: StringMap<string, Function> = {
@@ -19,6 +20,7 @@ var modifierKeyGetters: StringMap<string, Function> = {
   'shift': (event) => event.shiftKey
 };
 
+@Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
   constructor() { super(); }
 
