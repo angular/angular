@@ -321,25 +321,25 @@ Views than can be inserted and removed as needed to change the DOM structure.
   <tr>
     <th>Short form</th>
     <td>
-```
+<pre>
 parent template
-<element>
-  <some-element template="instantiating-directive-microsyntax">child template</some-element>
-</element>
-```
+&lt;element&gt;
+  &lt;some-element template="instantiating-directive-microsyntax"&gt;child template&lt;/some-element&gt;
+&lt;/element&gt;
+</pre>
     </td>
   </tr>
   <tr>
     <th>Canonical form</th>
     <td>
-```
+<pre>
 parent template
-<element>
-  <template instantiating-directive-bindings>
-    <some-element>child template</some-element>
-  </template>
-</element>
-```
+&lt;element&gt;
+  &lt;template instantiating-directive-bindings&gt;
+    &lt;some-element&gt;child template&lt;/some-element&gt;
+  &lt;/template&gt;
+&lt;/element&gt;
+</pre>
     </td>
   </tr>
 </table>
