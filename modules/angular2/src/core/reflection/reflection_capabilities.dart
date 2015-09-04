@@ -259,7 +259,8 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
     final res = {};
     reflectClass(typeOrFunc).declarations.forEach((k,v) {
       var name = _normalizeName(MirrorSystem.getName(k));
-      res[name] = v.metadata.map((fm) => fm.reflectee).toList();
+      if (res[name] == null) res[name] = [];
+      res[name].addAll(v.metadata.map((fm) => fm.reflectee));
     });
     return res;
   }

@@ -31,3 +31,6 @@ export function propDecorator(value) {
 export var ClassDecorator = makeDecorator(ClassDecoratorMeta);
 export var ParamDecorator = makeParamDecorator(ParamDecoratorMeta);
 export var PropDecorator = makePropDecorator(PropDecoratorMeta);
+
+// used only in Dart
+export class HasGetterAndSetterDecorators {}

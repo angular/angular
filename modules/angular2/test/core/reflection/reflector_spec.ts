@@ -7,7 +7,8 @@ import {
   PropDecorator,
   classDecorator,
   paramDecorator,
-  propDecorator
+  propDecorator,
+  HasGetterAndSetterDecorators
 } from './reflector_common';
 import {IS_DART} from '../../platform';
 
@@ -160,6 +161,13 @@ export function main() {
         reflector.registerType(TestObj, new ReflectionInfo(null, null, null, null, {"a": [1, 2]}));
         expect(reflector.propMetadata(TestObj)).toEqual({"a": [1, 2]});
       });
+
+      if (IS_DART) {
+        it("should merge metadata from getters and setters", () => {
+          var p = reflector.propMetadata(HasGetterAndSetterDecorators);
+          expect(p["a"]).toEqual([propDecorator("get"), propDecorator("set")]);
+        });
+      }
     });
 
     describe("annotations", () => {
