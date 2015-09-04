@@ -2,10 +2,10 @@
 
 import {HammerGesturesPluginCommon} from './hammer_common';
 import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {Injectable} from 'angular2/di';
 
+@Injectable()
 export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
-  constructor() { super(); }
-
   supports(eventName: string): boolean {
     if (!super.supports(eventName)) return false;
 

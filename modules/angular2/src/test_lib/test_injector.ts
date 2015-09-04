@@ -30,7 +30,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
+import {
+  EventManager,
+  DomEventsPlugin,
+  EVENT_MANAGER_PLUGINS
+} from 'angular2/src/core/render/dom/events/event_manager';
 
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
@@ -144,15 +148,8 @@ function _getAppBindings() {
     StyleInliner,
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
-    bind(EventManager)
-        .toFactory(
-            (zone) => {
-              var plugins = [
-                new DomEventsPlugin(),
-              ];
-              return new EventManager(plugins, zone);
-            },
-            [NgZone]),
+    EventManager,
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true})
   ];
 }
 
