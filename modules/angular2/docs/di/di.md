@@ -218,7 +218,7 @@ The `someFactory` function does not have to know that it creates an object for `
 
 ### Resolved Bindings
 
-When DI receives `bind(Car).toClass(Car)`, it needs to do a few things before before it can create an instance of `Car`:
+When DI receives `bind(Car).toClass(Car)`, it needs to do a few things before it can create an instance of `Car`:
 
 - It needs to reflect on `Car` to create a factory function.
 - It needs to normalize the dependencies (e.g., calculate lower and upper bounds).
