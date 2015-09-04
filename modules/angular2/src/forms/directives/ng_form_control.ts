@@ -86,6 +86,7 @@ export class NgFormControl extends NgControl {
     }
     if (isPropertyUpdated(c, this.viewModel)) {
       this.form.updateValue(this.model);
+      this.viewModel = this.model;
     }
   }
 

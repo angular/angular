@@ -756,6 +756,39 @@ export function main() {
                   // selection start has not changed because we did not reset the value
                   expect(input.selectionStart).toEqual(1);
                 })));
+
+      it("should update the view when the model is set back to what used to be in the view",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var t = `<input type="text" [(ng-model)]="name">`;
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.componentInstance.name = "";
+                  rootTC.detectChanges();
+
+                  // Type "aa" into the input.
+                  var input = rootTC.query(By.css("input")).nativeElement;
+                  input.value = "aa";
+                  input.selectionStart = 1;
+                  dispatchEvent(input, "change");
+
+                  tick();
+                  rootTC.detectChanges();
+                  expect(rootTC.componentInstance.name).toEqual("aa");
+
+                  // Programatically update the input value to be "bb".
+                  rootTC.componentInstance.name = "bb";
+                  tick();
+                  rootTC.detectChanges();
+                  expect(input.value).toEqual("bb");
+
+                  // Programatically set it back to "aa".
+                  rootTC.componentInstance.name = "aa";
+                  tick();
+                  rootTC.detectChanges();
+                  expect(input.value).toEqual("aa");
+                })));
     });
   });
 }
