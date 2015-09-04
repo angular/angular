@@ -538,7 +538,7 @@ have different semantics.
 ### Expressions
 
 Expressions can be used to bind to properties only. Expressions represent how data should be projected to the View.
-Expressions should not have any side effects and should be idempotent. Examples of where expressions can be used in
+Expressions should not have any side effect and should be idempotent. Examples of where expressions can be used in
 Angular are:
 ```
 <div title="{{expression}}">{{expression}}</div>
