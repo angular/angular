@@ -523,7 +523,7 @@ component's controller.
 
 
 NOTE: Unlike Angular v1, Angular v2 treats event bindings as core constructs not as directives. This means that there
-is no need to create a event directive for each kind of event. This makes it possible for Angular v2 to easily
+is no need to create an event directive for each kind of event. This makes it possible for Angular v2 to easily
 bind to custom events of Custom Elements, whose event names are not known ahead of time.
 
 
