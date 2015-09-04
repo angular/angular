@@ -85,8 +85,7 @@ function $$controllerIntrospectorProvider() {
  *
  * The value for the `ngOutlet` attribute is optional.
  */
-function ngOutletDirective($animate, $injector, $q, $router, $componentMapper, $controller,
-                           $$controllerIntrospector, $templateRequest) {
+function ngOutletDirective($animate, $q, $router, $componentMapper, $controller, $templateRequest) {
   var rootRouter = $router;
 
   return {
