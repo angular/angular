@@ -42,19 +42,19 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
   _eventBindingRecords: EventBinding[];
   _directiveIndices: DirectiveIndex[];
 
-  constructor(private definition: ChangeDetectorDefinition) {
-    this._propertyBindingRecords = createPropertyRecords(definition);
-    this._eventBindingRecords = createEventRecords(definition);
-    this._propertyBindingTargets = this.definition.bindingRecords.map(b => b.target);
-    this._directiveIndices = this.definition.directiveRecords.map(d => d.directiveIndex);
+  constructor(private _definition: ChangeDetectorDefinition) {
+    this._propertyBindingRecords = createPropertyRecords(_definition);
+    this._eventBindingRecords = createEventRecords(_definition);
+    this._propertyBindingTargets = this._definition.bindingRecords.map(b => b.target);
+    this._directiveIndices = this._definition.directiveRecords.map(d => d.directiveIndex);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
     return new DynamicChangeDetector(
-        this.definition.id, dispatcher, this._propertyBindingRecords.length,
-        this._propertyBindingTargets, this._directiveIndices, this.definition.strategy,
-        this._propertyBindingRecords, this._eventBindingRecords, this.definition.directiveRecords,
-        this.definition.genConfig);
+        this._definition.id, dispatcher, this._propertyBindingRecords.length,
+        this._propertyBindingTargets, this._directiveIndices, this._definition.strategy,
+        this._propertyBindingRecords, this._eventBindingRecords, this._definition.directiveRecords,
+        this._definition.genConfig);
   }
 }
 

@@ -41,36 +41,40 @@ export class NgSelectOption {
   }
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
-  private cd: NgControl;
+  private _cd: NgControl;
   value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(@Self() cd: NgControl, private renderer: Renderer, private elementRef: ElementRef,
+  constructor(@Self() cd: NgControl, private _renderer: Renderer, private _elementRef: ElementRef,
               @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
-    this.cd = cd;
+    this._cd = cd;
     cd.valueAccessor = this;
     this._updateValueWhenListOfOptionsChanges(query);
   }
 
   writeValue(value: any) {
     this.value = value;
-    setProperty(this.renderer, this.elementRef, "value", value);
+    setProperty(this._renderer, this._elementRef, "value", value);
   }
 
   get ngClassUntouched(): boolean {
-    return isPresent(this.cd.control) ? this.cd.control.untouched : false;
+    return isPresent(this._cd.control) ? this._cd.control.untouched : false;
   }
   get ngClassTouched(): boolean {
-    return isPresent(this.cd.control) ? this.cd.control.touched : false;
+    return isPresent(this._cd.control) ? this._cd.control.touched : false;
   }
   get ngClassPristine(): boolean {
-    return isPresent(this.cd.control) ? this.cd.control.pristine : false;
+    return isPresent(this._cd.control) ? this._cd.control.pristine : false;
   }
-  get ngClassDirty(): boolean { return isPresent(this.cd.control) ? this.cd.control.dirty : false; }
-  get ngClassValid(): boolean { return isPresent(this.cd.control) ? this.cd.control.valid : false; }
+  get ngClassDirty(): boolean {
+    return isPresent(this._cd.control) ? this._cd.control.dirty : false;
+  }
+  get ngClassValid(): boolean {
+    return isPresent(this._cd.control) ? this._cd.control.valid : false;
+  }
   get ngClassInvalid(): boolean {
-    return isPresent(this.cd.control) ? !this.cd.control.valid : false;
+    return isPresent(this._cd.control) ? !this._cd.control.valid : false;
   }
 
   registerOnChange(fn: () => any): void { this.onChange = fn; }

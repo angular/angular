@@ -31,30 +31,34 @@ import {setProperty} from './shared';
   }
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
-  private cd: NgControl;
+  private _cd: NgControl;
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(@Self() cd: NgControl, private renderer: Renderer, private elementRef: ElementRef) {
-    this.cd = cd;
+  constructor(@Self() cd: NgControl, private _renderer: Renderer, private _elementRef: ElementRef) {
+    this._cd = cd;
     cd.valueAccessor = this;
   }
 
-  writeValue(value: any) { setProperty(this.renderer, this.elementRef, "checked", value); }
+  writeValue(value: any) { setProperty(this._renderer, this._elementRef, "checked", value); }
 
   get ngClassUntouched(): boolean {
-    return isPresent(this.cd.control) ? this.cd.control.untouched : false;
+    return isPresent(this._cd.control) ? this._cd.control.untouched : false;
   }
   get ngClassTouched(): boolean {
-    return isPresent(this.cd.control) ? this.cd.control.touched : false;
+    return isPresent(this._cd.control) ? this._cd.control.touched : false;
   }
   get ngClassPristine(): boolean {
-    return isPresent(this.cd.control) ? this.cd.control.pristine : false;
+    return isPresent(this._cd.control) ? this._cd.control.pristine : false;
   }
-  get ngClassDirty(): boolean { return isPresent(this.cd.control) ? this.cd.control.dirty : false; }
-  get ngClassValid(): boolean { return isPresent(this.cd.control) ? this.cd.control.valid : false; }
+  get ngClassDirty(): boolean {
+    return isPresent(this._cd.control) ? this._cd.control.dirty : false;
+  }
+  get ngClassValid(): boolean {
+    return isPresent(this._cd.control) ? this._cd.control.valid : false;
+  }
   get ngClassInvalid(): boolean {
-    return isPresent(this.cd.control) ? !this.cd.control.valid : false;
+    return isPresent(this._cd.control) ? !this._cd.control.valid : false;
   }
 
   registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }

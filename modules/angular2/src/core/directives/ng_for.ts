@@ -40,13 +40,13 @@ export class NgFor {
   _ngForOf: any;
   private _differ: IterableDiffer;
 
-  constructor(private viewContainer: ViewContainerRef, private templateRef: TemplateRef,
-              private iterableDiffers: IterableDiffers, private cdr: ChangeDetectorRef) {}
+  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef,
+              private _iterableDiffers: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;
     if (isBlank(this._differ) && isPresent(value)) {
-      this._differ = this.iterableDiffers.find(value).create(this.cdr);
+      this._differ = this._iterableDiffers.find(value).create(this._cdr);
     }
   }
 
@@ -67,19 +67,19 @@ export class NgFor {
     changes.forEachMovedItem((movedRecord) =>
                                  recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
 
-    var insertTuples = NgFor.bulkRemove(recordViewTuples, this.viewContainer);
+    var insertTuples = NgFor.bulkRemove(recordViewTuples, this._viewContainer);
 
     changes.forEachAddedItem((addedRecord) =>
                                  insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
-    NgFor.bulkInsert(insertTuples, this.viewContainer, this.templateRef);
+    NgFor.bulkInsert(insertTuples, this._viewContainer, this._templateRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
     }
 
-    for (var i = 0, ilen = this.viewContainer.length; i < ilen; i++) {
-      this.viewContainer.get(i).setLocal('last', i === ilen - 1);
+    for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
+      this._viewContainer.get(i).setLocal('last', i === ilen - 1);
     }
   }
 

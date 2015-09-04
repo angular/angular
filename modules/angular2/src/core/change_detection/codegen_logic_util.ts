@@ -25,8 +25,8 @@ export class CodegenLogicUtil {
    * value of the record. Used by property bindings.
    */
   genPropertyBindingEvalValue(protoRec: ProtoRecord): string {
-    return this.genEvalValue(protoRec, idx => this._names.getLocalName(idx),
-                             this._names.getLocalsAccessorName());
+    return this._genEvalValue(protoRec, idx => this._names.getLocalName(idx),
+                              this._names.getLocalsAccessorName());
   }
 
   /**
@@ -34,12 +34,12 @@ export class CodegenLogicUtil {
    * value of the record. Used by event bindings.
    */
   genEventBindingEvalValue(eventRecord: any, protoRec: ProtoRecord): string {
-    return this.genEvalValue(protoRec, idx => this._names.getEventLocalName(eventRecord, idx),
-                             "locals");
+    return this._genEvalValue(protoRec, idx => this._names.getEventLocalName(eventRecord, idx),
+                              "locals");
   }
 
-  private genEvalValue(protoRec: ProtoRecord, getLocalName: Function,
-                       localsAccessor: string): string {
+  private _genEvalValue(protoRec: ProtoRecord, getLocalName: Function,
+                        localsAccessor: string): string {
     var context = (protoRec.contextIndex == -1) ?
                       this._names.getDirectiveName(protoRec.directiveIndex) :
                       getLocalName(protoRec.contextIndex);
