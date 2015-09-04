@@ -35,34 +35,30 @@ detail in the following sections.
       <th>Text Interpolation</th>
       <td>
 <pre>
-```
-<div>{{exp}}</div>
-```
+&lt;div&gt;{{exp}}&lt;/div&gt;
 </pre>
 
 Example:
 <pre>
-```
-<div>
+&lt;div&gt;
   Hello {{name}}!
-  <br>
+  &lt;br&gt;
   Goodbye {{name}}!
-</div>
-```
+&lt;/div&gt;
 </pre>
       </td>
       <td>
-`<div [text|index]=exp>`
+<pre>
+&lt;div [text|index]="exp"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 <pre>
-```
-<div
+&lt;div
   [text|0]=" 'Hello' + stringify(name) + '!' "
-  [text|2]=" 'Goodbye' + stringify(name) + '!' ">
-  _<b>x</b>_
-</div>
-```
+  [text|2]=" 'Goodbye' + stringify(name) + '!' "&gt;
+  &lt;b&gt;x&lt;/b&gt;
+&lt;/div&gt;
 </pre>
       </td>
     </tr>
@@ -70,148 +66,156 @@ Example:
       <th>Property Interpolation</th>
       <td>
 <pre>
-```
-<div name="{{exp}}">
-```
+&lt;div name="{{exp}}"&gt;&lt;/div&gt;
 </pre>
 
 Example:
 
 <pre>
-```
-<div class="{{selected}}">`
-```
+&lt;div class="{{selected}}"&gt;&lt;/div&gt;
 </pre>
       </td>
       <td>
 <pre>
-```
-<div [name]="stringify(exp)">
-```
+&lt;div [name]="stringify(exp)"&gt;&lt;/div&gt;
 </pre>
 
 Example:
 
 <pre>
-```
-<div [title]="stringify(selected)">
-```
+&lt;div [title]="stringify(selected)"&gt;&lt;/div&gt;
 </pre>
       </td>
     </tr>
     <tr>
       <th>Property binding</th>
       <td>
-`<div [prop]="exp">`
+<pre>
+&lt;div [prop]="exp"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
-`<div [hidden]="true">`
+<pre>
+&lt;div [hidden]="true"&gt;&lt;/div&gt;
+</pre>
       </td>
       <td>
-`<div bind-prop="exp">`
+<pre>
+&lt;div bind-prop="exp"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
-`<div bind-hidden="true">`
+<pre>
+&lt;div bind-hidden="true"&gt;&lt;/div&gt;
+</pre>
       </td>
     </tr>
     <tr>
       <th>Event binding (non-bubbling)</th>
       <td>
-`<div (event)="statement">`
-
-Example:
-
-`<div (click)="doX()">`
-      </td>
-      <td>
-`<div on-event="statement">`
+<pre>
+&lt;div (event)="statement"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<video #player>
-<button (click)="player.play()">play</button>
-```
+&lt;div (click)="doX()"&gt;&lt;/div&gt;
 </pre>
       </td>
       <td>
-`<div def="symbol">`
+<pre>
+&lt;div on-event="statement"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<video def="player">
-<button on-click="player.play()">play</button>
-```
+&lt;video #player&gt;
+  &lt;button (click)="player.play()"&gt;play&lt;/button&gt;
+&lt;/video&gt;
+</pre>
+
+Or:
+
+<pre>
+&lt;div def="symbol"&gt;&lt;/div&gt;
+</pre>
+
+Example:
+
+<pre>
+&lt;video def="player"&gt;
+  &lt;button on-click="player.play()"&gt;play&lt;/button&gt;
+&lt;/video&gt;
 </pre>
       </td>
     </tr>
     <tr>
       <th>Inline Template</th>
       <td>
-`<div template="...">...</div>`
+<pre>
+&lt;div template="..."&gt;...&lt;/div&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<ul>
-  <li template="for: #item of items">
+&lt;ul&gt;
+  &lt;li template="for: #item of items"&gt;
     {{item}}
-  </li>
-</ul>
-```
+  &lt;/li&gt;
+&lt;/ul&gt;
 </pre>
       </td>
       <td>
-`<template>...</template>`
+<pre>
+&lt;template&gt;...&lt;/template&gt;
+</pre>
 
 Example:
 <pre>
-```
-<ul>
-  <template def-for:"item"
-            bind-for-in="items">
-    <li>
+&lt;ul&gt;
+  &lt;template def-for:"item"
+            bind-for-in="items"&gt;
+    &lt;li&gt;
       {{item}}
-    </li>
-  </template>
-</ul>
-```
+    &lt;/li&gt;
+  &lt;/template&gt;
+&lt;/ul&gt;
 </pre>
       </td>
     </tr>
     <tr>
       <th>Explicit Template</th>
       <td>
-`<template>...</template>`
+<pre>
+&lt;template&gt;...&lt;/template&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<template #for="item"
-          [for-in]="items">
+&lt;template #for="item"
+          [for-in]="items"&gt;
   _some_content_to_repeat_
-</template>
-```
+&lt;/template&gt;
 </pre>
       </td>
       <td>
-`<template>...</template>`
+<pre>
+&lt;template&gt;...&lt;/template&gt;
+</pre>
 
 Example:
+
 <pre>
-```
-<template def-for="item"
-          bind-for-in="items">
+&lt;template def-for="item"
+          bind-for-in="items"&gt;
   _some_content_to_repeat_
-</template>
-```
+&lt;/template&gt;
 </pre>
       </td>
     </tr>
