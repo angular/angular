@@ -47,9 +47,9 @@ const COMPONENTS = const [
   const ClassDescriptor('Component', 'package:angular2/bootstrap_static.dart',
       superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/core.dart',
-      superClass: '`Directive'),
+      superClass: 'Directive'),
   const ClassDescriptor('Component', 'package:angular2/web_worker/worker.dart',
-      superClass: '`Directive'),
+      superClass: 'Directive'),
 ];
 
 const VIEWS = const [
