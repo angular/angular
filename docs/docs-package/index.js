@@ -15,6 +15,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
 .factory(require('./readers/ngdoc'))
 
 // Register the processors
+.processor(require('./processors/convertPrivateClassesToInterfaces'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
