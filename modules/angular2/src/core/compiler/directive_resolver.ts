@@ -1,11 +1,13 @@
 import {resolveForwardRef, Injectable} from 'angular2/di';
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/core/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   DirectiveMetadata,
   ComponentMetadata,
   PropertyMetadata,
-  EventMetadata
+  EventMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
 } from 'angular2/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
@@ -40,6 +42,7 @@ export class DirectiveResolver {
                                          StringMap<string, any[]>): DirectiveMetadata {
     var properties = [];
     var events = [];
+    var host = {};
 
     StringMapWrapper.forEach(propertyMetadata, (metadata: any[], propName: string) => {
       metadata.forEach(a => {
@@ -58,23 +61,37 @@ export class DirectiveResolver {
             events.push(propName);
           }
         }
+
+        if (a instanceof HostBindingMetadata) {
+          if (isPresent(a.hostPropertyName)) {
+            host[`[${a.hostPropertyName}]`] = propName;
+          } else {
+            host[`[${propName}]`] = propName;
+          }
+        }
+
+        if (a instanceof HostListenerMetadata) {
+          var args = isPresent(a.args) ? a.args.join(', ') : '';
+          host[`(${a.eventName})`] = `${propName}(${args})`;
+        }
       });
     });
-
-    return this._merge(dm, properties, events);
+    return this._merge(dm, properties, events, host);
   }
 
-  private _merge(dm: DirectiveMetadata, properties: string[], events: string[]): DirectiveMetadata {
+  private _merge(dm: DirectiveMetadata, properties: string[], events: string[],
+                 host: StringMap<string, string>): DirectiveMetadata {
     var mergedProperties =
         isPresent(dm.properties) ? ListWrapper.concat(dm.properties, properties) : properties;
     var mergedEvents = isPresent(dm.events) ? ListWrapper.concat(dm.events, events) : events;
+    var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
 
     if (dm instanceof ComponentMetadata) {
       return new ComponentMetadata({
         selector: dm.selector,
         properties: mergedProperties,
         events: mergedEvents,
-        host: dm.host,
+        host: mergedHost,
         lifecycle: dm.lifecycle,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
@@ -88,7 +105,7 @@ export class DirectiveResolver {
         selector: dm.selector,
         properties: mergedProperties,
         events: mergedEvents,
-        host: dm.host,
+        host: mergedHost,
         lifecycle: dm.lifecycle,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
