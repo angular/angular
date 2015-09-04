@@ -2,7 +2,7 @@
 
 Templates are markup which is added to HTML to declaratively describe how the application model should be
 projected to DOM as well as which DOM events should invoke which methods on the controller. Templates contain
-syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
+syntaxes which are core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of the template syntax has these properties:
 
@@ -35,34 +35,30 @@ detail in the following sections.
       <th>Text Interpolation</th>
       <td>
 <pre>
-```
-<div>{{exp}}</div>
-```
+&lt;div&gt;{{exp}}&lt;/div&gt;
 </pre>
 
 Example:
 <pre>
-```
-<div>
+&lt;div&gt;
   Hello {{name}}!
-  <br>
+  &lt;br&gt;
   Goodbye {{name}}!
-</div>
-```
+&lt;/div&gt;
 </pre>
       </td>
       <td>
-`<div [text|index]=exp>`
+<pre>
+&lt;div [text|index]="exp"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 <pre>
-```
-<div
+&lt;div
   [text|0]=" 'Hello' + stringify(name) + '!' "
-  [text|2]=" 'Goodbye' + stringify(name) + '!' ">
-  _<b>x</b>_
-</div>
-```
+  [text|2]=" 'Goodbye' + stringify(name) + '!' "&gt;
+  &lt;b&gt;x&lt;/b&gt;
+&lt;/div&gt;
 </pre>
       </td>
     </tr>
@@ -70,148 +66,156 @@ Example:
       <th>Property Interpolation</th>
       <td>
 <pre>
-```
-<div name="{{exp}}">
-```
+&lt;div name="{{exp}}"&gt;&lt;/div&gt;
 </pre>
 
 Example:
 
 <pre>
-```
-<div class="{{selected}}">`
-```
+&lt;div class="{{selected}}"&gt;&lt;/div&gt;
 </pre>
       </td>
       <td>
 <pre>
-```
-<div [name]="stringify(exp)">
-```
+&lt;div [name]="stringify(exp)"&gt;&lt;/div&gt;
 </pre>
 
 Example:
 
 <pre>
-```
-<div [title]="stringify(selected)">
-```
+&lt;div [title]="stringify(selected)"&gt;&lt;/div&gt;
 </pre>
       </td>
     </tr>
     <tr>
       <th>Property binding</th>
       <td>
-`<div [prop]="exp">`
+<pre>
+&lt;div [prop]="exp"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
-`<div [hidden]="true">`
+<pre>
+&lt;div [hidden]="true"&gt;&lt;/div&gt;
+</pre>
       </td>
       <td>
-`<div bind-prop="exp">`
+<pre>
+&lt;div bind-prop="exp"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
-`<div bind-hidden="true">`
+<pre>
+&lt;div bind-hidden="true"&gt;&lt;/div&gt;
+</pre>
       </td>
     </tr>
     <tr>
       <th>Event binding (non-bubbling)</th>
       <td>
-`<div (event)="statement">`
-
-Example:
-
-`<div (click)="doX()">`
-      </td>
-      <td>
-`<div on-event="statement">`
+<pre>
+&lt;div (event)="statement"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<video #player>
-<button (click)="player.play()">play</button>
-```
+&lt;div (click)="doX()"&gt;&lt;/div&gt;
 </pre>
       </td>
       <td>
-`<div def="symbol">`
+<pre>
+&lt;div on-event="statement"&gt;&lt;/div&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<video def="player">
-<button on-click="player.play()">play</button>
-```
+&lt;video #player&gt;
+  &lt;button (click)="player.play()"&gt;play&lt;/button&gt;
+&lt;/video&gt;
+</pre>
+
+Or:
+
+<pre>
+&lt;div def="symbol"&gt;&lt;/div&gt;
+</pre>
+
+Example:
+
+<pre>
+&lt;video def="player"&gt;
+  &lt;button on-click="player.play()"&gt;play&lt;/button&gt;
+&lt;/video&gt;
 </pre>
       </td>
     </tr>
     <tr>
       <th>Inline Template</th>
       <td>
-`<div template="...">...</div>`
+<pre>
+&lt;div template="..."&gt;...&lt;/div&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<ul>
-  <li template="for: #item of items">
+&lt;ul&gt;
+  &lt;li template="for: #item of items"&gt;
     {{item}}
-  </li>
-</ul>
-```
+  &lt;/li&gt;
+&lt;/ul&gt;
 </pre>
       </td>
       <td>
-`<template>...</template>`
+<pre>
+&lt;template&gt;...&lt;/template&gt;
+</pre>
 
 Example:
 <pre>
-```
-<ul>
-  <template def-for:"item"
-            bind-for-in="items">
-    <li>
+&lt;ul&gt;
+  &lt;template def-for:"item"
+            bind-for-in="items"&gt;
+    &lt;li&gt;
       {{item}}
-    </li>
-  </template>
-</ul>
-```
+    &lt;/li&gt;
+  &lt;/template&gt;
+&lt;/ul&gt;
 </pre>
       </td>
     </tr>
     <tr>
       <th>Explicit Template</th>
       <td>
-`<template>...</template>`
+<pre>
+&lt;template&gt;...&lt;/template&gt;
+</pre>
 
 Example:
 
 <pre>
-```
-<template #for="item"
-          [for-in]="items">
+&lt;template #for="item"
+          [for-in]="items"&gt;
   _some_content_to_repeat_
-</template>
-```
+&lt;/template&gt;
 </pre>
       </td>
       <td>
-`<template>...</template>`
+<pre>
+&lt;template&gt;...&lt;/template&gt;
+</pre>
 
 Example:
+
 <pre>
-```
-<template def-for="item"
-          bind-for-in="items">
+&lt;template def-for="item"
+          bind-for-in="items"&gt;
   _some_content_to_repeat_
-</template>
-```
+&lt;/template&gt;
 </pre>
       </td>
     </tr>
@@ -228,11 +232,11 @@ are always in the form of `property-name` which is assigned an `expression`. The
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element [some-property]="expression">`</td>
+    <td><pre>&lt;some-element [some-property]="expression"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element bind-some-property="expression">`</td>
+    <td><pre>&lt;some-element bind-some-property="expression"&gt;</pre></td>
   </tr>
 </table>
 
@@ -255,7 +259,7 @@ Key points:
 * The binding is to the element property not the element attribute.
 * To prevent custom element from accidentally reading the literal `expression` on the title element, the attribute name
   is escaped. In our case the `title` is escaped to `[title]` through the addition of square brackets `[]`.
-* A binding value (in this case `user.firstName` will always be an expression, never a string literal).
+* A binding value (in this case `user.firstName`) will always be an expression, never a string literal.
 
 NOTE: Unlike Angular v1, Angular v2 binds to properties of elements rather than attributes of elements. This is
 done to better support custom elements, and to allow binding for values other than strings.
@@ -277,7 +281,7 @@ syntax which is just a short hand for the data binding syntax.
 is a short hand for:
 
 ```
-<span [text|0]=" 'Hello ' + stringify(name) + '!' ">_</span>
+<span [text|0]=" 'Hello ' + stringify(name) + '!' "></span>
 ```
 
 The above says to bind the `'Hello ' + stringify(name) + '!'` expression to the zero-th child of the `span`'s `text`
@@ -317,25 +321,25 @@ Views than can be inserted and removed as needed to change the DOM structure.
   <tr>
     <th>Short form</th>
     <td>
-```
+<pre>
 parent template
-<element>
-  <some-element template="instantiating-directive-microsyntax">child template</some-element>
-</element>
-```
+&lt;element&gt;
+  &lt;some-element template="instantiating-directive-microsyntax"&gt;child template&lt;/some-element&gt;
+&lt;/element&gt;
+</pre>
     </td>
   </tr>
   <tr>
     <th>Canonical form</th>
     <td>
-```
+<pre>
 parent template
-<element>
-  <template instantiating-directive-bindings>
-    <some-element>child template</some-element>
-  </template>
-</element>
-```
+&lt;element&gt;
+  &lt;template instantiating-directive-bindings&gt;
+    &lt;some-element&gt;child template&lt;/some-element&gt;
+  &lt;/template&gt;
+&lt;/element&gt;
+</pre>
     </td>
   </tr>
 </table>
@@ -448,7 +452,7 @@ microsyntax: ([[key|keyExpression|varExport][;|,]?)*
 ```
 
 Where
-* `expression` is an Angular expression as defined in section: Expressions
+* `expression` is an Angular expression as defined in section: Expressions.
 * `local` is a local identifier for local variables.
 * `internal` is an internal variable which the directive exports for binding.
 * `key` is an attribute name usually only used to trigger a specific directive.
@@ -473,11 +477,11 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (some-event)="statement">`</td>
+    <td><pre>&lt;some-element (some-event)="statement"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-some-event="statement">`</td>
+    <td><pre>&lt;some-element on-some-event="statement"&gt;</pre></td>
   </tr>
 </table>
 
@@ -493,11 +497,11 @@ Angular listens to bubbled DOM events (as in the case of clicking on any child),
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (some-event)="statement">`</td>
+    <td><pre>&lt;some-element (some-event)="statement"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-some-event="statement">`</td>
+    <td><pre>&lt;some-element on-some-event="statement"&gt;</pre></td>
   </tr>
 </table>
 
@@ -519,7 +523,7 @@ component's controller.
 
 
 NOTE: Unlike Angular v1, Angular v2 treats event bindings as core constructs not as directives. This means that there
-is no need to create a event directive for each kind of event. This makes it possible for Angular v2 to easily
+is no need to create an event directive for each kind of event. This makes it possible for Angular v2 to easily
 bind to custom events of Custom Elements, whose event names are not known ahead of time.
 
 
@@ -534,7 +538,7 @@ have different semantics.
 ### Expressions
 
 Expressions can be used to bind to properties only. Expressions represent how data should be projected to the View.
-Expressions should not have any side effects and should be idempotent. Examples of where expressions can be used in
+Expressions should not have any side effect and should be idempotent. Examples of where expressions can be used in
 Angular are:
 ```
 <div title="{{expression}}">{{expression}}</div>
