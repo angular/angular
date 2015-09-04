@@ -259,7 +259,7 @@ Key points:
 * The binding is to the element property not the element attribute.
 * To prevent custom element from accidentally reading the literal `expression` on the title element, the attribute name
   is escaped. In our case the `title` is escaped to `[title]` through the addition of square brackets `[]`.
-* A binding value (in this case `user.firstName` will always be an expression, never a string literal).
+* A binding value (in this case `user.firstName`) will always be an expression, never a string literal.
 
 NOTE: Unlike Angular v1, Angular v2 binds to properties of elements rather than attributes of elements. This is
 done to better support custom elements, and to allow binding for values other than strings.
