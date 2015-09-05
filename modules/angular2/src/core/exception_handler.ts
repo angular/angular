@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {isPresent, isBlank, print, BaseException} from 'angular2/src/core/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/core/facade/collection';
 
@@ -33,7 +33,7 @@ class _ArrayLogger {
  */
 @Injectable()
 export class ExceptionHandler {
-  constructor(private logger: any, private rethrowException: boolean = true) {}
+  constructor(private _logger: any, private _rethrowException: boolean = true) {}
 
   static exceptionToString(exception: any, stackTrace: any = null, reason: string = null): string {
     var l = new _ArrayLogger();
@@ -47,36 +47,36 @@ export class ExceptionHandler {
     var originalStack = this._findOriginalStack(exception);
     var context = this._findContext(exception);
 
-    this.logger.logGroup(`EXCEPTION: ${exception}`);
+    this._logger.logGroup(`EXCEPTION: ${exception}`);
 
     if (isPresent(stackTrace) && isBlank(originalStack)) {
-      this.logger.logError("STACKTRACE:");
-      this.logger.logError(this._longStackTrace(stackTrace));
+      this._logger.logError("STACKTRACE:");
+      this._logger.logError(this._longStackTrace(stackTrace));
     }
 
     if (isPresent(reason)) {
-      this.logger.logError(`REASON: ${reason}`);
+      this._logger.logError(`REASON: ${reason}`);
     }
 
     if (isPresent(originalException)) {
-      this.logger.logError(`ORIGINAL EXCEPTION: ${originalException}`);
+      this._logger.logError(`ORIGINAL EXCEPTION: ${originalException}`);
     }
 
     if (isPresent(originalStack)) {
-      this.logger.logError("ORIGINAL STACKTRACE:");
-      this.logger.logError(this._longStackTrace(originalStack));
+      this._logger.logError("ORIGINAL STACKTRACE:");
+      this._logger.logError(this._longStackTrace(originalStack));
     }
 
     if (isPresent(context)) {
-      this.logger.logError("ERROR CONTEXT:");
-      this.logger.logError(context);
+      this._logger.logError("ERROR CONTEXT:");
+      this._logger.logError(context);
     }
 
-    this.logger.logGroupEnd();
+    this._logger.logGroupEnd();
 
     // We rethrow exceptions, so operations like 'bootstrap' will result in an error
     // when an exception happens. If we do not rethrow, bootstrap will always succeed.
-    if (this.rethrowException) throw exception;
+    if (this._rethrowException) throw exception;
   }
 
   _longStackTrace(stackTrace: any): any {

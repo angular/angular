@@ -1,4 +1,6 @@
-import {Injector, bind, OpaqueToken, Binding} from 'angular2/di';
+import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
+import {FORM_BINDINGS} from 'angular2/src/core/forms';
+import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   NumberWrapper,
   Type,
@@ -25,7 +27,6 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
 import {ExceptionHandler} from './exception_handler';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
@@ -39,7 +40,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
+import {
+  EventManager,
+  DomEventsPlugin,
+  EVENT_MANAGER_PLUGINS
+} from 'angular2/src/core/render/dom/events/event_manager';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
@@ -111,14 +116,10 @@ function _injectorBindings(appComponentType): Array<Type | Binding | any[]> {
         .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [APP_COMPONENT_REF_PROMISE]),
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
                               [ExceptionHandler]),
-    bind(EventManager)
-        .toFactory(
-            (ngZone) => {
-              var plugins =
-                  [new HammerGesturesPlugin(), new KeyEventsPlugin(), new DomEventsPlugin()];
-              return new EventManager(plugins, ngZone);
-            },
-            [NgZone]),
+    EventManager,
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
@@ -156,7 +157,8 @@ function _injectorBindings(appComponentType): Array<Type | Binding | any[]> {
     DynamicComponentLoader,
     Testability,
     AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl)
+    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    FORM_BINDINGS
   ];
 }
 

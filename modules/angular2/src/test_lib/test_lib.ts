@@ -5,7 +5,7 @@ import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {global, isFunction} from 'angular2/src/core/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/src/core/di';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
 import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';

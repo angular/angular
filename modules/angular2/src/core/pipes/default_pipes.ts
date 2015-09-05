@@ -7,7 +7,7 @@ import {DatePipe} from './date_pipe';
 import {DecimalPipe, PercentPipe, CurrencyPipe} from './number_pipe';
 
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {Binding, OpaqueToken} from 'angular2/di';
+import {Binding, OpaqueToken} from 'angular2/src/core/di';
 
 const DEFAULT_PIPES_LIST = CONST_EXPR([
   AsyncPipe,
@@ -21,7 +21,7 @@ const DEFAULT_PIPES_LIST = CONST_EXPR([
   DatePipe
 ]);
 
-export const DEFAULT_PIPES_TOKEN = CONST_EXPR(new OpaqueToken("Default Pipes"));
+export const DEFAULT_PIPES_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken("Default Pipes"));
 
-export const DEFAULT_PIPES =
+export const DEFAULT_PIPES: Binding =
     CONST_EXPR(new Binding(DEFAULT_PIPES_TOKEN, {toValue: DEFAULT_PIPES_LIST}));

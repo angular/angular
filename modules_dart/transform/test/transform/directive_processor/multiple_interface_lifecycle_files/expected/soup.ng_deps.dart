@@ -3,7 +3,8 @@ library dinner.soup.ng_deps.dart;
 import 'soup.dart';
 export 'soup.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
-import 'package:angular2/metadata.dart';
+import 'package:angular2/src/core/metadata.dart';
+import 'package:angular2/src/core/compiler.dart';
 
 var _visited = false;
 void initReflector() {
@@ -14,40 +15,9 @@ void initReflector() {
         MultiSoupComponent,
         new _ngRef.ReflectionInfo(
             const [
-              const Component(
-                  selector: '[soup]',
-                  lifecycle: const [
-                    LifecycleEvent.OnChanges,
-                    LifecycleEvent.OnDestroy,
-                    LifecycleEvent.OnInit
-                  ])
+              const Component(selector: '[soup]')
             ],
             const [],
             () => new MultiSoupComponent(),
-            const [OnChanges, OnDestroy, OnInit]))
-    ..registerType(
-        MixedSoupComponent,
-        new _ngRef.ReflectionInfo(
-            const [
-              const Component(
-                  selector: '[soup]',
-                  lifecycle: const [
-                    LifecycleEvent.DoCheck,
-                    LifecycleEvent.OnChanges
-                  ])
-            ],
-            const [],
-            () => new MixedSoupComponent(),
-            const [OnChanges]))
-    ..registerType(
-        MatchedSoupComponent,
-        new _ngRef.ReflectionInfo(
-            const [
-              const Component(
-                  selector: '[soup]',
-                  lifecycle: const [LifecycleEvent.OnChanges])
-            ],
-            const [],
-            () => new MatchedSoupComponent(),
-            const [OnChanges]));
+            const [OnChanges, OnDestroy, OnInit]));
 }

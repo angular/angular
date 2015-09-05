@@ -34,7 +34,7 @@ class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
     List<RenderDirectiveMetadata> metaList = <RenderDirectiveMetadata>[];
     for (CompilationUnitMember unitMember in unit.declarations) {
       if (unitMember is ClassDeclaration) {
-        RenderDirectiveMetadata meta = readDirectiveMetadata(unitMember.metadata);
+        RenderDirectiveMetadata meta = readDirectiveMetadata(unitMember);
         if (meta != null) {
           metaList.add(meta);
         }

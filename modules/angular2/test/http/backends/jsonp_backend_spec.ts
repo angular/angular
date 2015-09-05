@@ -14,7 +14,7 @@ import {
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
 import {JSONPConnection, JSONPBackend} from 'angular2/src/http/backends/jsonp_backend';
-import {bind, Injector} from 'angular2/di';
+import {bind, Injector} from 'angular2/core';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {TimerWrapper} from 'angular2/src/core/facade/async';
 import {Request} from 'angular2/src/http/static_request';

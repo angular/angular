@@ -52,8 +52,10 @@ import {
   Inject,
   Host,
   SkipSelf,
-  SkipSelfMetadata
-} from 'angular2/di';
+  SkipSelfMetadata,
+  NgIf,
+  NgFor
+} from 'angular2/core';
 
 import {
   PipeTransform,
@@ -64,12 +66,21 @@ import {
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {Directive, Component, View, ViewMetadata, Attribute, Query, Pipe} from 'angular2/metadata';
+import {
+  Directive,
+  Component,
+  View,
+  ViewMetadata,
+  Attribute,
+  Query,
+  Pipe,
+  Property,
+  Event,
+  HostBinding,
+  HostListener
+} from 'angular2/src/core/metadata';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
-
-import {NgIf} from 'angular2/src/core/directives/ng_if';
-import {NgFor} from 'angular2/src/core/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -1597,6 +1608,86 @@ export function main() {
                   }));
       }
     });
+
+    describe('property decorators', () => {
+      it('should support property decorators',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(
+                  MyComp, new ViewMetadata({
+                    template: '<with-prop-decorators el-prop="aaa"></with-prop-decorators>',
+                    directives: [DirectiveWithPropDecorators]
+                  }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 var dir = rootTC.componentViewChildren[0].inject(DirectiveWithPropDecorators);
+                 expect(dir.dirProp).toEqual("aaa");
+                 async.done();
+               });
+         }));
+
+      it('should support host binding decorators',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new ViewMetadata({
+                              template: '<with-prop-decorators></with-prop-decorators>',
+                              directives: [DirectiveWithPropDecorators]
+                            }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 var dir = rootTC.componentViewChildren[0].inject(DirectiveWithPropDecorators);
+                 dir.myAttr = "aaa";
+
+                 rootTC.detectChanges();
+                 expect(DOM.getOuterHTML(rootTC.componentViewChildren[0].nativeElement))
+                     .toContain('my-attr="aaa"');
+                 async.done();
+               });
+         }));
+
+      if (DOM.supportsDOMEvents()) {
+        it('should support events decorators',
+           inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                    tcb = tcb.overrideView(
+                        MyComp, new ViewMetadata({
+                          template: `<with-prop-decorators (el-event)="ctxProp='called'">`,
+                          directives: [DirectiveWithPropDecorators]
+                        }));
+
+                    var rootTC;
+                    tcb.createAsync(MyComp).then(root => { rootTC = root; });
+                    tick();
+
+                    var emitter =
+                        rootTC.componentViewChildren[0].inject(DirectiveWithPropDecorators);
+                    emitter.fireEvent('fired !');
+
+                    tick();
+
+                    expect(rootTC.componentInstance.ctxProp).toEqual("called");
+                  })));
+
+
+        it('should support host listener decorators',
+           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                               async) => {
+             tcb.overrideView(MyComp, new ViewMetadata({
+                                template: '<with-prop-decorators></with-prop-decorators>',
+                                directives: [DirectiveWithPropDecorators]
+                              }))
+                 .createAsync(MyComp)
+                 .then((rootTC) => {
+                   rootTC.detectChanges();
+                   var dir = rootTC.componentViewChildren[0].inject(DirectiveWithPropDecorators);
+                   var native = rootTC.componentViewChildren[0].nativeElement;
+                   native.click();
+
+                   expect(dir.target).toBe(native);
+                   async.done();
+                 });
+           }));
+      }
+    });
   });
 }
 
@@ -2147,4 +2238,20 @@ class OtherDuplicateDir {
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
   constructor() { throw new BaseException("BOOM"); }
+}
+
+@Directive({selector: 'with-prop-decorators'})
+class DirectiveWithPropDecorators {
+  target;
+
+  @Property("elProp") dirProp: string;
+  @Event('elEvent') event = new EventEmitter();
+
+  @HostBinding("attr.my-attr") myAttr: string;
+  @HostListener("click", ["$event.target"])
+  onClick(target) {
+    this.target = target;
+  }
+
+  fireEvent(msg) { ObservableWrapper.callNext(this.event, msg); }
 }

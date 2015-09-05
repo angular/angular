@@ -2,7 +2,7 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement, LifecycleEvent, ChangeDetectionStrategy;
+    show Component, Directive, View, NgElement, ChangeDetectionStrategy;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -11,8 +11,9 @@ void initReflector(reflector) {
   reflector
     ..registerType(
         HelloCmp,
-        new ReflectionInfo(
-            const [const Component(changeDetection: ChangeDetectionStrategy.CheckOnce)],
-            const [const []],
-            () => new HelloCmp()));
+        new ReflectionInfo(const [
+          const Component(changeDetection: ChangeDetectionStrategy.CheckOnce)
+        ], const [
+          const []
+        ], () => new HelloCmp()));
 }

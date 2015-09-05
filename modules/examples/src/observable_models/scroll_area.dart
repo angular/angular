@@ -14,7 +14,7 @@ import "common.dart"
         HEIGHT;
 import "random_data.dart" show generateOfferings;
 import "scroll_item.dart" show ScrollItemComponent;
-import "package:angular2/directives.dart" show NgFor;
+import "package:angular2/core.dart" show NgFor;
 
 @Component(selector: "scroll-area", changeDetection: ChangeDetectionStrategy.OnPushObserve)
 @View(directives: const [ScrollItemComponent, NgFor], template: '''

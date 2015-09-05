@@ -252,6 +252,25 @@ export function main() {
              });
        }));
 
+    it('should display last item correctly',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template =
+             '<div><copy-me template="ng-for: var item of items; var isLast=last">{{isLast.toString()}}</copy-me></div>';
+
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.componentInstance.items = [0, 1, 2];
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('falsefalsetrue');
+
+               rootTC.componentInstance.items = [2, 1];
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('falsetrue');
+               async.done();
+             });
+       }));
+
   });
 }
 

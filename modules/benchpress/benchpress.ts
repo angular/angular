@@ -1,6 +1,6 @@
 /// <reference path="../angular2/typings/node/node.d.ts" />
 
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/src/core/di';
 import {Options} from './common';
 
 export * from './common';

@@ -1,5 +1,5 @@
+import {bootstrap} from 'angular2/bootstrap';
 import {
-  bootstrap,
   NgIf,
   NgFor,
   Component,
@@ -7,12 +7,10 @@ import {
   View,
   Host,
   forwardRef,
-  Binding
-} from 'angular2/bootstrap';
-
-import {Injectable} from 'angular2/di';
-
-import {FORM_DIRECTIVES} from 'angular2/forms';
+  Binding,
+  FORM_DIRECTIVES,
+  Injectable
+} from 'angular2/core';
 
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
@@ -115,8 +113,8 @@ class DataService {
   directives: [FORM_DIRECTIVES]
 })
 class FullNameComponent {
-  constructor(private service: DataService) {}
-  get person(): Person { return this.service.currentPerson; }
+  constructor(private _service: DataService) {}
+  get person(): Person { return this._service.currentPerson; }
 }
 
 @Component({selector: 'person-detail-cmp'})
@@ -163,8 +161,8 @@ class FullNameComponent {
   directives: [FORM_DIRECTIVES, NgIf]
 })
 class PersonsDetailComponent {
-  constructor(private service: DataService) {}
-  get person(): Person { return this.service.currentPerson; }
+  constructor(private _service: DataService) {}
+  get person(): Person { return this._service.currentPerson; }
 }
 
 @Component({selector: 'persons-cmp'})
@@ -186,9 +184,9 @@ class PersonsDetailComponent {
 class PersonsComponent {
   persons: Person[];
 
-  constructor(private service: DataService) { this.persons = service.persons; }
+  constructor(private _service: DataService) { this.persons = _service.persons; }
 
-  select(person: Person): void { this.service.currentPerson = person; }
+  select(person: Person): void { this._service.currentPerson = person; }
 }
 
 

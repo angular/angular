@@ -2,10 +2,10 @@
 library angular2.test.di.integration_dart_spec;
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2/di.dart';
+import 'package:angular2/core.dart';
+import 'package:angular2/src/core/debug.dart';
 import 'package:angular2/test_lib.dart';
 import 'package:observe/observe.dart';
-import 'package:angular2/src/core/directives/observable_list_diff.dart';
 import 'package:angular2/src/core/change_detection/differs/default_iterable_differ.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 
@@ -266,8 +266,6 @@ class NoPropertyAccess {
 
 @Component(
     selector: 'on-change',
-    // TODO: needed because of https://github.com/angular/angular/issues/2120
-    lifecycle: const [LifecycleEvent.OnChanges],
     properties: const ['prop'])
 @View(template: '')
 class OnChangeComponent implements OnChanges {
@@ -300,8 +298,7 @@ class ComponentWithObservableList {
 }
 
 @Directive(
-    selector: 'directive-logging-checks',
-    lifecycle: const [LifecycleEvent.DoCheck])
+    selector: 'directive-logging-checks')
 class DirectiveLoggingChecks implements DoCheck {
   Log log;
 

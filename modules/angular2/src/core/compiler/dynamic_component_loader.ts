@@ -1,4 +1,4 @@
-import {Key, Injector, ResolvedBinding, Binding, bind, Injectable} from 'angular2/di';
+import {Key, Injector, ResolvedBinding, Binding, bind, Injectable} from 'angular2/src/core/di';
 import {Compiler} from './compiler';
 import {Type, BaseException, stringify, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';

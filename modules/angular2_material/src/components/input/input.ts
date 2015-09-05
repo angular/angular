@@ -1,4 +1,11 @@
-import {Directive, LifecycleEvent, Attribute, Host, SkipSelf} from 'angular2/angular2';
+import {
+  Directive,
+  LifecycleEvent,
+  Attribute,
+  Host,
+  SkipSelf,
+  AfterContentChecked
+} from 'angular2/angular2';
 
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
@@ -9,13 +16,12 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 @Directive({
   selector: 'md-input-container',
-  lifecycle: [LifecycleEvent.AfterContentChecked],
   host: {
     '[class.md-input-has-value]': 'inputHasValue',
     '[class.md-input-focused]': 'inputHasFocus',
   }
 })
-export class MdInputContainer {
+export class MdInputContainer implements AfterContentChecked {
   // The MdInput or MdTextarea inside of this container.
   _input: MdInput;
 
@@ -93,26 +99,3 @@ export class MdInput {
     ObservableWrapper.callNext(this.mdFocusChange, hasFocus);
   }
 }
-
-/*
-@Directive({
-  selector: 'md-input-container textarea',
-  events: ['mdChange', 'mdFocusChange'],
-  hostProperties: {
-    'yes': 'class.md-input'
-  },
-  hostListeners: {
-    'input': 'updateValue($event)',
-    'focus': 'setHasFocus(true)',
-    'blur': 'setHasFocus(false)'
-  }
-})
-export class MdTextarea extends MdInput {
-  constructor(
-      @Attribute('value') value: string,
-      @SkipSelf() @Host() container: MdInputContainer,
-      @Attribute('id') id: string) {
-    super(value, container, id);
-  }
-}
-*/

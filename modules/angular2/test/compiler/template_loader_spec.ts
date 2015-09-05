@@ -9,9 +9,7 @@ import {
   inject,
   it,
   xit,
-  TestComponentBuilder,
-  asNativeElements,
-  By
+  TestComponentBuilder
 } from 'angular2/test_lib';
 
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
@@ -19,7 +17,6 @@ import {TypeMetadata, ViewEncapsulation, TemplateMetadata} from 'angular2/src/co
 
 import {TemplateLoader} from 'angular2/src/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/compiler/style_url_resolver';
 import {humanizeDom} from './html_parser_spec';
 import {HtmlTextAst, HtmlElementAst, HtmlAttrAst} from 'angular2/src/compiler/html_ast';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -33,8 +30,7 @@ export function main() {
     beforeEach(inject([XHR], (mockXhr) => {
       xhr = mockXhr;
       var urlResolver = new UrlResolver();
-      loader =
-          new TemplateLoader(xhr, urlResolver, new StyleUrlResolver(urlResolver), new HtmlParser());
+      loader = new TemplateLoader(xhr, urlResolver, new HtmlParser());
       dirType = new TypeMetadata({typeUrl: 'http://sometypeurl', typeName: 'SomeComp'});
     }));
 

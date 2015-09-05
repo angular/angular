@@ -26,12 +26,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
               propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
-              strategy: ChangeDetectionStrategy, private records: ProtoRecord[],
-              private eventBindings: EventBinding[], private directiveRecords: DirectiveRecord[],
-              private genConfig: ChangeDetectorGenConfig) {
+              strategy: ChangeDetectionStrategy, private _records: ProtoRecord[],
+              private _eventBindings: EventBinding[], private _directiveRecords: DirectiveRecord[],
+              private _genConfig: ChangeDetectorGenConfig) {
     super(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices,
           strategy);
-    var len = records.length + 1;
+    var len = _records.length + 1;
     this.values = ListWrapper.createFixedSize(len);
     this.localPipes = ListWrapper.createFixedSize(len);
     this.prevContexts = ListWrapper.createFixedSize(len);
@@ -80,7 +80,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   _matchingEventBindings(eventName: string, elIndex: number): EventBinding[] {
-    return ListWrapper.filter(this.eventBindings,
+    return ListWrapper.filter(this._eventBindings,
                               eb => eb.eventName == eventName && eb.elIndex === elIndex);
   }
 
@@ -119,7 +119,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   checkNoChanges(): void { this.runDetectChanges(true); }
 
   detectChangesInRecordsInternal(throwOnChange: boolean) {
-    var protos = this.records;
+    var protos = this._records;
 
     var changes = null;
     var isChanged = false;
@@ -162,12 +162,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   _firstInBinding(r: ProtoRecord): boolean {
-    var prev = ChangeDetectionUtil.protoByIndex(this.records, r.selfIndex - 1);
+    var prev = ChangeDetectionUtil.protoByIndex(this._records, r.selfIndex - 1);
     return isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
   }
 
   afterContentLifecycleCallbacksInternal() {
-    var dirs = this.directiveRecords;
+    var dirs = this._directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callAfterContentInit && !this.alreadyChecked) {
@@ -181,7 +181,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   afterViewLifecycleCallbacksInternal() {
-    var dirs = this.directiveRecords;
+    var dirs = this._directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callAfterViewInit && !this.alreadyChecked) {
@@ -201,7 +201,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       bindingRecord.setter(this._getDirectiveFor(directiveIndex), change.currentValue);
     }
 
-    if (this.genConfig.logBindingUpdate) {
+    if (this._genConfig.logBindingUpdate) {
       super.logBindingUpdate(change.currentValue);
     }
   }

@@ -11,7 +11,7 @@ import {
 } from 'angular2/test_lib';
 
 import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
-import {Pipe} from 'angular2/metadata';
+import {Pipe} from 'angular2/src/core/metadata';
 
 class MyPipe {}
 

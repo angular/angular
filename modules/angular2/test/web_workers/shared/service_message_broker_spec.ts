@@ -14,7 +14,7 @@ import {createPairedMessageBuses} from '../shared/web_worker_test_util';
 import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
 import {ServiceMessageBroker} from 'angular2/src/web_workers/shared/service_message_broker';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {

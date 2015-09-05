@@ -1,4 +1,4 @@
-import {Component, View, LifecycleEvent, ViewEncapsulation} from 'angular2/angular2';
+import {Component, View, LifecycleEvent, ViewEncapsulation, OnChanges} from 'angular2/angular2';
 
 import {TimerWrapper} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
@@ -48,7 +48,6 @@ export class MdButton {
 @Component({
   selector: 'a[md-button], a[md-raised-button], a[md-fab]',
   properties: ['disabled'],
-  lifecycle: [LifecycleEvent.OnChanges],
   host: {
     '(click)': 'onClick($event)',
     '(mousedown)': 'onMousedown()',
@@ -63,7 +62,7 @@ export class MdButton {
   templateUrl: 'package:angular2_material/src/components/button/button.html',
   encapsulation: ViewEncapsulation.None
 })
-export class MdAnchor extends MdButton {
+export class MdAnchor extends MdButton implements OnChanges {
   tabIndex: number;
 
   /** Whether the component is disabled. */

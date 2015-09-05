@@ -255,6 +255,20 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return meta.map((m) => m.reflectee).toList();
   }
 
+  Map propMetadata(typeOrFunc) {
+    final res = {};
+    reflectClass(typeOrFunc).declarations.forEach((k,v) {
+      var name = _normalizeName(MirrorSystem.getName(k));
+      if (res[name] == null) res[name] = [];
+      res[name].addAll(v.metadata.map((fm) => fm.reflectee));
+    });
+    return res;
+  }
+
+  String _normalizeName(String name) {
+    return name.endsWith("=") ? name.substring(0, name.length - 1) : name;
+  }
+
   List interfaces(type) {
     ClassMirror classMirror = reflectType(type);
     return classMirror.superinterfaces.map((si) => si.reflectedType).toList();

@@ -25,11 +25,12 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}      
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
     ],
 
     exclude: [
       'dist/js/dev/es5/**/e2e_test/**',
+      'dist/js/dev/es5/rtts_assert/**',
       'dist/angular1_router.js'
     ],
 
@@ -40,11 +41,11 @@ module.exports = function(config) {
       startConnect: false,
       recordVideo: false,
       recordScreenshots: false,
-      options:  {
-          'selenium-version': '2.45.0',
-          'command-timeout': 600,
-          'idle-timeout': 600,
-          'max-duration': 5400
+      options: {
+        'selenium-version': '2.45.0',
+        'command-timeout': 600,
+        'idle-timeout': 600,
+        'max-duration': 5400
       }
     },
 
@@ -62,5 +63,3 @@ module.exports = function(config) {
     config.transports = ['xhr-polling'];
   }
 };
-
-

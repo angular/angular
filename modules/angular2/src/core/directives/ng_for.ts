@@ -1,6 +1,11 @@
-import {Directive, LifecycleEvent} from 'angular2/metadata';
-import {ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
-import {ChangeDetectorRef, IterableDiffer, IterableDiffers} from 'angular2/change_detection';
+import {DoCheck} from 'angular2/lifecycle_hooks';
+import {Directive} from 'angular2/src/core/metadata';
+import {
+  ChangeDetectorRef,
+  IterableDiffer,
+  IterableDiffers
+} from 'angular2/src/core/change_detection';
+import {ViewContainerRef, TemplateRef, ViewRef} from 'angular2/src/core/compiler';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
 /**
@@ -9,7 +14,8 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * to the current item from the iterable.
  *
  * It is possible to alias the `index` to a local variable that will be set to the current loop
- * iteration in the template context.
+ * iteration in the template context, and also to alias the 'last' to a local variable that will
+ * be set to a boolean indicating if the item is the last one in the iteration
  *
  * When the contents of the iterator changes, `NgFor` makes the corresponding changes to the DOM:
  *
@@ -33,19 +39,18 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
-@Directive(
-    {selector: '[ng-for][ng-for-of]', properties: ['ngForOf'], lifecycle: [LifecycleEvent.DoCheck]})
-export class NgFor {
+@Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf']})
+export class NgFor implements DoCheck {
   _ngForOf: any;
   private _differ: IterableDiffer;
 
-  constructor(private viewContainer: ViewContainerRef, private templateRef: TemplateRef,
-              private iterableDiffers: IterableDiffers, private cdr: ChangeDetectorRef) {}
+  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef,
+              private _iterableDiffers: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
   set ngForOf(value: any) {
     this._ngForOf = value;
     if (isBlank(this._differ) && isPresent(value)) {
-      this._differ = this.iterableDiffers.find(value).create(this.cdr);
+      this._differ = this._iterableDiffers.find(value).create(this._cdr);
     }
   }
 
@@ -66,15 +71,19 @@ export class NgFor {
     changes.forEachMovedItem((movedRecord) =>
                                  recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
 
-    var insertTuples = NgFor.bulkRemove(recordViewTuples, this.viewContainer);
+    var insertTuples = NgFor.bulkRemove(recordViewTuples, this._viewContainer);
 
     changes.forEachAddedItem((addedRecord) =>
                                  insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
-    NgFor.bulkInsert(insertTuples, this.viewContainer, this.templateRef);
+    NgFor.bulkInsert(insertTuples, this._viewContainer, this._templateRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
+    }
+
+    for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
+      this._viewContainer.get(i).setLocal('last', i === ilen - 1);
     }
   }
 

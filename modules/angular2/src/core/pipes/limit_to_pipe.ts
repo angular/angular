@@ -8,12 +8,10 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Math} from 'angular2/src/core/facade/math';
-import {Injectable} from 'angular2/di';
-
-import {PipeTransform, WrappedValue} from 'angular2/change_detection';
+import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
+import {Injectable} from 'angular2/src/core/di';
+import {Pipe} from 'angular2/src/core/metadata';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-
-import {Pipe} from '../metadata';
 
 /**
  * Creates a new Array or String containing only a prefix/suffix of the

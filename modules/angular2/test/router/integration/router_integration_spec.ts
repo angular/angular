@@ -14,10 +14,10 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {bootstrap} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/metadata';
+import {bootstrap} from 'angular2/bootstrap';
+import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';

@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "version": "2.0.0-alpha.35",
+  "version": "2.0.0-alpha.36",
   "dependencies": {
     "angular": {
       "version": "1.3.5",
@@ -15190,40 +15190,45 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.3",
-      "from": "ts2dart@0.7.3",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.3.tgz",
+      "version": "0.7.4",
+      "from": "ts2dart@0.7.4",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.4.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
-          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
+          "from": "source-map@>=0.4.2 <0.5.0",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
           "dependencies": {
             "amdefine": {
               "version": "1.0.0",
-              "from": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
+              "from": "amdefine@>=0.0.4",
               "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
             }
           }
         },
         "source-map-support": {
           "version": "0.3.2",
-          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.2.tgz",
+          "from": "source-map-support@>=0.3.1 <0.4.0",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.2.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
+              "from": "source-map@0.1.32",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "dependencies": {
                 "amdefine": {
                   "version": "1.0.0",
-                  "from": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
+                  "from": "amdefine@>=0.0.4",
                   "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
                 }
               }
             }
           }
+        },
+        "typescript": {
+          "version": "1.5.3",
+          "from": "microsoft/TypeScript#release-1.5",
+          "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
     },

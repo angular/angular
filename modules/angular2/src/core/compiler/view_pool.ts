@@ -1,4 +1,4 @@
-import {Inject, Injectable, OpaqueToken} from 'angular2/di';
+import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 
 import {ListWrapper, MapWrapper, Map} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';

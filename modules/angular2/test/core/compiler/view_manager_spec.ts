@@ -13,9 +13,8 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-
 import {SpyRenderer, SpyAppViewPool, SpyAppViewListener} from '../spies';
-import {Injector, bind} from 'angular2/di';
+import {Injector, bind} from 'angular2/core';
 
 import {
   AppProtoView,

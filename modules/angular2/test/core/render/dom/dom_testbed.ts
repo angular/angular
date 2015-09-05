@@ -1,4 +1,4 @@
-import {Inject, Injectable} from 'angular2/di';
+import {Inject, Injectable} from 'angular2/core';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {MapWrapper, ListWrapper, Map} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';

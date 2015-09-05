@@ -1,4 +1,4 @@
 # Developer Tools for Angular 2
 
-- JavaScript (TBD)
+- [JavaScript](TOOLS_JS.md)
 - [Dart](TOOLS_DART.md)

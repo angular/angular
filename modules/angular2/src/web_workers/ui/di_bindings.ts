@@ -1,6 +1,7 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
-import {Injector, bind, Binding} from "angular2/di";
+import {Injector, bind, Binding} from "angular2/src/core/di";
+import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
@@ -10,8 +11,11 @@ import {
   JitChangeDetection,
   PreGeneratedChangeDetection
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
+import {
+  EventManager,
+  DomEventsPlugin,
+  EVENT_MANAGER_PLUGINS
+} from 'angular2/src/core/render/dom/events/event_manager';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
@@ -87,14 +91,10 @@ function _injectorBindings(): any[] {
   return [
     bind(DOCUMENT)
         .toValue(DOM.defaultDoc()),
-    bind(EventManager)
-        .toFactory(
-            (ngZone) => {
-              var plugins =
-                  [new HammerGesturesPlugin(), new KeyEventsPlugin(), new DomEventsPlugin()];
-              return new EventManager(plugins, ngZone);
-            },
-            [NgZone]),
+    EventManager,
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,

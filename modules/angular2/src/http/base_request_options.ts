@@ -2,7 +2,7 @@ import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/core/facade/l
 import {Headers} from './headers';
 import {RequestModesOpts, RequestMethods, RequestCacheOpts, RequestCredentialsOpts} from './enums';
 import {RequestOptionsArgs} from './interfaces';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {URLSearchParams} from './url_search_params';
 
 /**

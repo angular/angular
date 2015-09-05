@@ -10,13 +10,12 @@ import {
   FunctionWrapper
 } from 'angular2/src/core/facade/lang';
 import {NumberFormatter, NumberFormatStyle} from 'angular2/src/core/facade/intl';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
+import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
+import {Pipe} from 'angular2/src/core/metadata';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-
-import {Pipe} from '../metadata';
 
 var defaultLocale: string = 'en-US';
 var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');

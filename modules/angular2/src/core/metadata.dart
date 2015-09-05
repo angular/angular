@@ -16,14 +16,13 @@ export "./metadata/view.dart";
 class Directive extends DirectiveMetadata {
   const Directive({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
-  List<LifecycleEvent> lifecycle, List bindings, String exportAs,
+  List bindings, String exportAs,
   bool compileChildren: true})
     : super(
     selector: selector,
     properties: properties,
     events: events,
     host: host,
-    lifecycle: lifecycle,
     bindings: bindings,
     exportAs: exportAs,
     compileChildren: compileChildren);
@@ -35,14 +34,13 @@ class Directive extends DirectiveMetadata {
 class Component extends ComponentMetadata {
   const Component({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
-  List<LifecycleEvent> lifecycle, List bindings, String exportAs,
+  List bindings, String exportAs,
   bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
     properties: properties,
     events: events,
     host: host,
-    lifecycle: lifecycle,
     bindings: bindings,
     exportAs: exportAs,
     compileChildren: compileChildren,
@@ -93,6 +91,38 @@ class Query extends QueryMetadata {
  * See: [ViewQueryMetadata] for docs.
  */
 class ViewQuery extends ViewQueryMetadata {
-  const ViewQuery(dynamic /*Type | string*/ selector, {bool descendants: false})
-    : super(selector, descendants: descendants);
+  const ViewQuery(dynamic /*Type | string*/ selector)
+    : super(selector, descendants: true);
+}
+
+/**
+ * See: [PropertyMetadata] for docs.
+ */
+class Property extends PropertyMetadata {
+  const Property([String bindingPropertyName])
+    : super(bindingPropertyName);
+}
+
+/**
+ * See: [EventMetadata] for docs.
+ */
+class Event extends EventMetadata {
+  const Event([String bindingPropertyName])
+    : super(bindingPropertyName);
+}
+
+/**
+ * See: [HostBindingMetadata] for docs.
+ */
+class HostBinding extends HostBindingMetadata {
+  const HostBinding([String hostPropertyName])
+    : super(hostPropertyName);
+}
+
+/**
+ * See: [HostListenerMetadata] for docs.
+ */
+class HostListener extends HostListenerMetadata {
+  const HostListener(String eventName, [List<String> args])
+    : super(eventName, args);
 }

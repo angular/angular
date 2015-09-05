@@ -74,19 +74,19 @@ function matchUrlSegment(str: string): string {
 }
 
 export class UrlParser {
-  private remaining: string;
+  private _remaining: string;
 
-  peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+  peekStartsWith(str: string): boolean { return this._remaining.startsWith(str); }
 
   capture(str: string): void {
-    if (!this.remaining.startsWith(str)) {
+    if (!this._remaining.startsWith(str)) {
       throw new BaseException(`Expected "${str}".`);
     }
-    this.remaining = this.remaining.substring(str.length);
+    this._remaining = this._remaining.substring(str.length);
   }
 
   parse(url: string): Url {
-    this.remaining = url;
+    this._remaining = url;
     if (url == '' || url == '/') {
       return new Url('');
     }
@@ -98,7 +98,7 @@ export class UrlParser {
     if (this.peekStartsWith('/')) {
       this.capture('/');
     }
-    var path = matchUrlSegment(this.remaining);
+    var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
     var aux = [];
@@ -123,13 +123,13 @@ export class UrlParser {
 
   // segment + (matrix params) + (aux segments)
   parseSegment(): Url {
-    if (this.remaining.length == 0) {
+    if (this._remaining.length == 0) {
       return null;
     }
     if (this.peekStartsWith('/')) {
       this.capture('/');
     }
-    var path = matchUrlSegment(this.remaining);
+    var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
     var matrixParams = null;
@@ -152,7 +152,7 @@ export class UrlParser {
     var params = {};
     this.capture('?');
     this.parseParam(params);
-    while (this.remaining.length > 0 && this.peekStartsWith('&')) {
+    while (this._remaining.length > 0 && this.peekStartsWith('&')) {
       this.capture('&');
       this.parseParam(params);
     }
@@ -161,7 +161,7 @@ export class UrlParser {
 
   parseMatrixParams(): StringMap<string, any> {
     var params = {};
-    while (this.remaining.length > 0 && this.peekStartsWith(';')) {
+    while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
     }
@@ -169,7 +169,7 @@ export class UrlParser {
   }
 
   parseParam(params: StringMap<string, any>): void {
-    var key = matchUrlSegment(this.remaining);
+    var key = matchUrlSegment(this._remaining);
     if (isBlank(key)) {
       return;
     }
@@ -177,7 +177,7 @@ export class UrlParser {
     var value: any = true;
     if (this.peekStartsWith('=')) {
       this.capture('=');
-      var valueMatch = matchUrlSegment(this.remaining);
+      var valueMatch = matchUrlSegment(this._remaining);
       if (isPresent(valueMatch)) {
         value = valueMatch;
         this.capture(value);
@@ -191,7 +191,7 @@ export class UrlParser {
     var routes = [];
     this.capture('(');
 
-    while (!this.peekStartsWith(')') && this.remaining.length > 0) {
+    while (!this.peekStartsWith(')') && this._remaining.length > 0) {
       routes.push(this.parseSegment());
       if (this.peekStartsWith('//')) {
         this.capture('//');

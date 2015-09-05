@@ -4,7 +4,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {XHR} from 'angular2/src/core/render/xhr';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {StyleUrlResolver} from './style_url_resolver';
+import {resolveStyleUrls} from './style_url_resolver';
 
 import {
   HtmlAstVisitor,
@@ -26,7 +26,7 @@ const STYLE_ELEMENT = 'style';
 
 export class TemplateLoader {
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver,
-              private _styleUrlResolver: StyleUrlResolver, private _domParser: HtmlParser) {}
+              private _domParser: HtmlParser) {}
 
   loadTemplate(directiveType: TypeMetadata, encapsulation: ViewEncapsulation, template: string,
                templateUrl: string, styles: string[],
@@ -51,14 +51,12 @@ export class TemplateLoader {
     var remainingNodes = htmlVisitAll(visitor, domNodes);
     var allStyles = styles.concat(visitor.styles);
     var allStyleUrls = styleUrls.concat(visitor.styleUrls);
-    allStyles = allStyles.map(style => {
-      var styleWithImports = this._styleUrlResolver.extractImports(style);
+    var allResolvedStyles = allStyles.map(style => {
+      var styleWithImports = resolveStyleUrls(this._urlResolver, templateSourceUrl, style);
       styleWithImports.styleUrls.forEach(styleUrl => allStyleUrls.push(styleUrl));
       return styleWithImports.style;
     });
 
-    var allResolvedStyles =
-        allStyles.map(style => this._styleUrlResolver.resolveUrls(style, templateSourceUrl));
     var allStyleAbsUrls =
         allStyleUrls.map(styleUrl => this._urlResolver.resolve(templateSourceUrl, styleUrl));
     return new TemplateMetadata({

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 
 import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 import {

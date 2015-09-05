@@ -44,7 +44,7 @@ module.exports = function addJadeDataDocsProcessor() {
             title: _.map(path.basename(doc.fileInfo.baseName).split('_'), function(part) {
               return titleCase(part);
             }).join(' '),
-            intro: doc.description.replace('"', '\"').replace(/\r?\n|\r/g,"")
+            intro: doc.description.replace('"', '\"').replace(/\s*(\r?\n|\r)\s*/g," ")
           }];
 
           // GET DATA FOR EACH PAGE (CLASS, VARS, FUNCTIONS)

@@ -1,16 +1,20 @@
 import {
+  bind,
+  forwardRef,
   Component,
-  Directive,
-  View,
-  ViewEncapsulation,
-  Host,
-  SkipSelf,
-  ElementRef,
-  DynamicComponentLoader,
   ComponentRef,
-  DomRenderer
-} from 'angular2/angular2';
-import {bind, Injectable, forwardRef, ResolvedBinding, Injector} from 'angular2/di';
+  Directive,
+  DynamicComponentLoader,
+  ElementRef,
+  Host,
+  Injectable,
+  ResolvedBinding,
+  SkipSelf,
+  Injector,
+  View,
+  ViewEncapsulation
+} from 'angular2/core';
+import {DomRenderer} from 'angular2/render';
 
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {isPresent, Type} from 'angular2/src/core/facade/lang';

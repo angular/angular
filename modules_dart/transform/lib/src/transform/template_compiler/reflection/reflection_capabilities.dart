@@ -20,6 +20,8 @@ class NullReflectionCapabilities implements ReflectionCapabilities {
 
   List annotations(typeOrFunc) => _notImplemented('annotations');
 
+  Map propMetadata(typeOrFunc) => _notImplemented('propMetadata');
+
   GetterFn getter(String name) => _nullGetter;
 
   SetterFn setter(String name) => _nullSetter;

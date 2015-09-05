@@ -9,13 +9,13 @@ import {
   FunctionWrapper
 } from 'angular2/src/core/facade/lang';
 import {DateFormatter} from 'angular2/src/core/facade/intl';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
+import {Pipe} from 'angular2/src/core/metadata';
+import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {PipeTransform, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-import {Pipe} from '../metadata';
 
 // TODO: move to a global configable location along with other i18n components.
 var defaultLocale: string = 'en-US';
@@ -110,5 +110,5 @@ export class DatePipe implements PipeTransform {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  private supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
 }

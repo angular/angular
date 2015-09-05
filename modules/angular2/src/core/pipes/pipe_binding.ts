@@ -1,6 +1,6 @@
 import {Type} from 'angular2/src/core/facade/lang';
-import {Key, ResolvedBinding, Binding} from 'angular2/di';
 import {ResolvedFactory, resolveBinding} from 'angular2/src/core/di/binding';
+import {Key, ResolvedBinding, Binding} from 'angular2/src/core/di';
 import {PipeMetadata} from '../metadata/directives';
 
 export class PipeBinding extends ResolvedBinding {

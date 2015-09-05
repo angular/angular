@@ -1,5 +1,5 @@
+import {bootstrap} from 'angular2/bootstrap';
 import {
-  bootstrap,
   NgIf,
   NgFor,
   Component,
@@ -8,12 +8,10 @@ import {
   Host,
   forwardRef,
   Binding,
-  EventEmitter
-} from 'angular2/bootstrap';
-
-import {Injectable} from 'angular2/di';
-
-import {FORM_DIRECTIVES} from 'angular2/forms';
+  EventEmitter,
+  FORM_DIRECTIVES,
+  Injectable
+} from 'angular2/core';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
@@ -33,9 +31,9 @@ class OrderItem {
 
 class Order {
   constructor(public orderId: number, public customerName: string, public limit: number,
-              private dataService: DataService) {}
+              private _dataService: DataService) {}
 
-  get items(): OrderItem[] { return this.dataService.itemsFor(this); }
+  get items(): OrderItem[] { return this._dataService.itemsFor(this); }
   get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b); }
 }
 
@@ -113,8 +111,8 @@ class DataService {
 class OrderListComponent {
   orders: Order[];
 
-  constructor(private service: DataService) { this.orders = service.orders; }
-  select(order: Order): void { this.service.currentOrder = order; }
+  constructor(private _service: DataService) { this.orders = _service.orders; }
+  select(order: Order): void { this._service.currentOrder = order; }
 }
 
 
@@ -182,13 +180,13 @@ class OrderItemComponent {
   directives: [FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]
 })
 class OrderDetailsComponent {
-  constructor(private service: DataService) {}
+  constructor(private _service: DataService) {}
 
-  get order(): Order { return this.service.currentOrder; }
+  get order(): Order { return this._service.currentOrder; }
 
-  deleteItem(item: OrderItem): void { this.service.deleteItem(item); }
+  deleteItem(item: OrderItem): void { this._service.deleteItem(item); }
 
-  addItem(): void { this.service.addItemForOrder(this.order); }
+  addItem(): void { this._service.addItemForOrder(this.order); }
 }
 
 @Component({selector: 'order-management-app', viewBindings: [DataService]})

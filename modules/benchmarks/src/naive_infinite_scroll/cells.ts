@@ -1,6 +1,6 @@
 import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
 import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST} from './common';
-import {NgFor} from 'angular2/directives';
+import {NgFor} from 'angular2/core';
 
 import {Component, Directive, View} from 'angular2/angular2';
 

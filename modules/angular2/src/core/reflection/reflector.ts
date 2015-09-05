@@ -14,17 +14,8 @@ export {SetterFn, GetterFn, MethodFn} from './types';
 export {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 
 export class ReflectionInfo {
-  _factory: Function;
-  _annotations: any[];
-  _parameters: any[][];
-  _interfaces: any[];
-
-  constructor(annotations?: any[], parameters?: any[][], factory?: Function, interfaces?: any[]) {
-    this._annotations = annotations;
-    this._parameters = parameters;
-    this._factory = factory;
-    this._interfaces = interfaces;
-  }
+  constructor(public annotations?: any[], public parameters?: any[][], public factory?: Function,
+              public interfaces?: any[], public propMetadata?: StringMap<string, any[]>) {}
 }
 
 export class Reflector {
@@ -87,7 +78,7 @@ export class Reflector {
 
   factory(type: Type): Function {
     if (this._containsReflectionInfo(type)) {
-      var res = this._getReflectionInfo(type)._factory;
+      var res = this._getReflectionInfo(type).factory;
       return isPresent(res) ? res : null;
     } else {
       return this.reflectionCapabilities.factory(type);
@@ -96,7 +87,7 @@ export class Reflector {
 
   parameters(typeOrFunc: /*Type*/ any): any[] {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._getReflectionInfo(typeOrFunc)._parameters;
+      var res = this._getReflectionInfo(typeOrFunc).parameters;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.parameters(typeOrFunc);
@@ -105,16 +96,25 @@ export class Reflector {
 
   annotations(typeOrFunc: /*Type*/ any): any[] {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._getReflectionInfo(typeOrFunc)._annotations;
+      var res = this._getReflectionInfo(typeOrFunc).annotations;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.annotations(typeOrFunc);
     }
   }
 
+  propMetadata(typeOrFunc: /*Type*/ any): StringMap<string, any[]> {
+    if (this._injectableInfo.has(typeOrFunc)) {
+      var res = this._getReflectionInfo(typeOrFunc).propMetadata;
+      return isPresent(res) ? res : {};
+    } else {
+      return this.reflectionCapabilities.propMetadata(typeOrFunc);
+    }
+  }
+
   interfaces(type: Type): any[] {
     if (this._injectableInfo.has(type)) {
-      var res = this._getReflectionInfo(type)._interfaces;
+      var res = this._getReflectionInfo(type).interfaces;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.interfaces(type);

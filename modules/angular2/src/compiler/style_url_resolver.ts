@@ -1,65 +1,52 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {Injectable} from 'angular2/di';
-import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
+import {RegExp, RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 
 /**
  * Rewrites URLs by resolving '@import' and 'url()' URLs from the given base URL,
  * removes and returns the @import urls
  */
-@Injectable()
-export class StyleUrlResolver {
-  constructor(public _resolver: UrlResolver) {}
-
-  resolveUrls(cssText: string, baseUrl: string): string {
-    cssText = this._replaceUrls(cssText, _cssUrlRe, baseUrl);
-    return cssText;
-  }
-
-  extractImports(cssText: string): StyleWithImports {
-    var foundUrls = [];
-    cssText = this._extractUrls(cssText, _cssImportRe, foundUrls);
-    return new StyleWithImports(cssText, foundUrls);
-  }
-
-  _replaceUrls(cssText: string, re: RegExp, baseUrl: string) {
-    return StringWrapper.replaceAllMapped(cssText, re, (m) => {
-      var pre = m[1];
-      var originalUrl = m[2];
-      if (RegExpWrapper.test(_dataUrlRe, originalUrl)) {
-        // Do not attempt to resolve data: URLs
-        return m[0];
-      }
-      var url = StringWrapper.replaceAll(originalUrl, _quoteRe, '');
-      var post = m[3];
-
-      var resolvedUrl = this._resolver.resolve(baseUrl, url);
-
-      return pre + "'" + resolvedUrl + "'" + post;
-    });
-  }
-
-  _extractUrls(cssText: string, re: RegExp, foundUrls: string[]) {
-    return StringWrapper.replaceAllMapped(cssText, re, (m) => {
-      var originalUrl = m[2];
-      if (RegExpWrapper.test(_dataUrlRe, originalUrl)) {
-        // Do not attempt to resolve data: URLs
-        return m[0];
-      }
-      var url = StringWrapper.replaceAll(originalUrl, _quoteRe, '');
-      foundUrls.push(url);
-      return '';
-    });
-  }
+export function resolveStyleUrls(resolver: UrlResolver, baseUrl: string, cssText: string):
+    StyleWithImports {
+  var foundUrls = [];
+  cssText = extractUrls(resolver, baseUrl, cssText, foundUrls);
+  cssText = replaceUrls(resolver, baseUrl, cssText);
+  return new StyleWithImports(cssText, foundUrls);
 }
 
 export class StyleWithImports {
   constructor(public style: string, public styleUrls: string[]) {}
 }
 
+function extractUrls(resolver: UrlResolver, baseUrl: string, cssText: string, foundUrls: string[]):
+    string {
+  return StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m) => {
+    var url = isPresent(m[1]) ? m[1] : m[2];
+    foundUrls.push(resolver.resolve(baseUrl, url));
+    return '';
+  });
+}
+
+function replaceUrls(resolver: UrlResolver, baseUrl: string, cssText: string): string {
+  return StringWrapper.replaceAllMapped(cssText, _cssUrlRe, (m) => {
+    var pre = m[1];
+    var originalUrl = m[2];
+    if (RegExpWrapper.test(_dataUrlRe, originalUrl)) {
+      // Do not attempt to resolve data: URLs
+      return m[0];
+    }
+    var url = StringWrapper.replaceAll(originalUrl, _quoteRe, '');
+    var post = m[3];
+
+    var resolvedUrl = resolver.resolve(baseUrl, url);
+
+    return pre + "'" + resolvedUrl + "'" + post;
+  });
+}
+
 var _cssUrlRe = /(url\()([^)]*)(\))/g;
-var _cssImportRe = /(@import[\s]+(?:url\()?)['"]?([^'"\)]*)['"]?(.*;)/g;
+var _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
 var _quoteRe = /['"]/g;
 var _dataUrlRe = /^['"]?data:/g;

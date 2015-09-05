@@ -28,5 +28,5 @@ describe("MessageBroker", function() {
 });
 
 function waitForBootstrap(): void {
-  browser.wait(protractor.until.elementLocated(by.css("app h1")), 5000);
+  browser.wait(protractor.until.elementLocated(by.css("app h1")), 15000);
 }
