@@ -5,6 +5,7 @@
  * class.
  */
 import {bind, Binding} from 'angular2/core';
+import {Configuration} from 'angular2/auto_configuration';
 import {Http, Jsonp} from './src/http/http';
 import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
 import {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
@@ -85,3 +86,8 @@ export const JSONP_BINDINGS: any[] = [
   bind(ResponseOptions).toClass(BaseResponseOptions),
   JSONPBackend
 ];
+
+@Configuration()
+export class HttpConfiguration {
+  getBindings() { return HTTP_BINDINGS; }
+}
