@@ -1,8 +1,14 @@
-import {Component, LifecycleEvent, View, ViewEncapsulation, Attribute} from 'angular2/angular2';
+import {
+  Component,
+  LifecycleEvent,
+  View,
+  ViewEncapsulation,
+  Attribute,
+  OnChanges
+} from 'angular2/angular2';
 import {CONST} from 'angular2/src/core/facade/lang';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Math} from 'angular2/src/core/facade/math';
-
 
 /** Different display / behavior modes for progress-linear. */
 @CONST()
@@ -15,7 +21,6 @@ class ProgressMode {
 
 @Component({
   selector: 'md-progress-linear',
-  lifecycle: [LifecycleEvent.OnChanges],
   properties: ['value', 'bufferValue'],
   host: {
     'role': 'progressbar',
@@ -29,7 +34,7 @@ class ProgressMode {
   directives: [],
   encapsulation: ViewEncapsulation.None
 })
-export class MdProgressLinear {
+export class MdProgressLinear implements OnChanges {
   /** Value for the primary bar. */
   value_: number;
 

@@ -1,5 +1,6 @@
 import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
-import {Directive, LifecycleEvent} from 'angular2/metadata';
+import {Directive} from 'angular2/metadata';
+import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
 import {ElementRef} from 'angular2/core';
 import {Renderer} from 'angular2/src/core/render/api';
 import {
@@ -34,12 +35,8 @@ import {
  * </div>
  * ```
  */
-@Directive({
-  selector: '[ng-class]',
-  lifecycle: [LifecycleEvent.DoCheck, LifecycleEvent.OnDestroy],
-  properties: ['rawClass: ng-class', 'initialClasses: class']
-})
-export class NgClass {
+@Directive({selector: '[ng-class]', properties: ['rawClass: ng-class', 'initialClasses: class']})
+export class NgClass implements DoCheck, OnDestroy {
   private _differ: any;
   private _mode: string;
   private _initialClasses = [];

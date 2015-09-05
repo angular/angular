@@ -2,7 +2,8 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
-import {Directive, LifecycleEvent} from 'angular2/metadata';
+import {Directive} from 'angular2/metadata';
+import {OnChanges} from 'angular2/lifecycle_hooks';
 import {forwardRef, Binding} from 'angular2/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
@@ -84,14 +85,14 @@ const formDirectiveBinding =
   selector: '[ng-form-model]',
   bindings: [formDirectiveBinding],
   properties: ['form: ng-form-model'],
-  lifecycle: [LifecycleEvent.OnChanges],
   host: {
     '(submit)': 'onSubmit()',
   },
   events: ['ngSubmit'],
   exportAs: 'form'
 })
-export class NgFormModel extends ControlContainer implements Form {
+export class NgFormModel extends ControlContainer implements Form,
+    OnChanges {
   form: ControlGroup = null;
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();

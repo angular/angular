@@ -1,4 +1,5 @@
 export * from '../metadata';
+export * from '../lifecycle_hooks';
 export * from '../change_detection';
 export * from '../core';
 export * from '../di';
@@ -7,6 +8,6 @@ export * from '../forms';
 export * from '../render';
 export * from '../profile';
 export * from '../src/web_workers/worker/application';
-export * from "../src/web_workers/shared/client_message_broker";
-export * from "../src/web_workers/shared/service_message_broker";
-export * from "../src/web_workers/shared/serializer";
+export * from '../src/web_workers/shared/client_message_broker';
+export * from '../src/web_workers/shared/service_message_broker';
+export * from '../src/web_workers/shared/serializer';

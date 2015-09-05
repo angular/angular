@@ -16,14 +16,13 @@ export "./metadata/view.dart";
 class Directive extends DirectiveMetadata {
   const Directive({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
-  List<LifecycleEvent> lifecycle, List bindings, String exportAs,
+  List bindings, String exportAs,
   bool compileChildren: true})
     : super(
     selector: selector,
     properties: properties,
     events: events,
     host: host,
-    lifecycle: lifecycle,
     bindings: bindings,
     exportAs: exportAs,
     compileChildren: compileChildren);
@@ -35,14 +34,13 @@ class Directive extends DirectiveMetadata {
 class Component extends ComponentMetadata {
   const Component({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
-  List<LifecycleEvent> lifecycle, List bindings, String exportAs,
+  List bindings, String exportAs,
   bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
     properties: properties,
     events: events,
     host: host,
-    lifecycle: lifecycle,
     bindings: bindings,
     exportAs: exportAs,
     compileChildren: compileChildren,

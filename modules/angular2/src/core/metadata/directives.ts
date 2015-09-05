@@ -318,6 +318,10 @@ import {ChangeDetectionStrategy} from 'angular2/change_detection';
  * the directive
  * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
  *
+ * ## Lifecycle hooks
+ *
+ * When the directive class implements some {@link angular2/lifecycle_hooks} the callbacks are
+ * called by the change detection at defined points in time during the life of the directive.
  *
  * ## Example
  *
@@ -631,13 +635,6 @@ export class DirectiveMetadata extends InjectableMetadata {
   host: StringMap<string, string>;
 
   /**
-   * Specifies which lifecycle should be notified to the directive.
-   *
-   * See {@link LifecycleEvent} for details.
-   */
-  lifecycle: LifecycleEvent[];
-
-  /**
    * If set to false the compiler does not compile the children of this directive.
    */
   // TODO(vsavkin): This would better fall under the Macro directive concept.
@@ -703,14 +700,12 @@ export class DirectiveMetadata extends InjectableMetadata {
   exportAs: string;
 
   constructor({
-                  selector, properties, events, host, lifecycle, bindings, exportAs,
-                  compileChildren = true,
+                  selector, properties, events, host, bindings, exportAs, compileChildren = true,
               }: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: LifecycleEvent[],
     bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
@@ -721,7 +716,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.events = events;
     this.host = host;
     this.exportAs = exportAs;
-    this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
     this.bindings = bindings;
   }
@@ -743,6 +737,11 @@ export class DirectiveMetadata extends InjectableMetadata {
  * All template expressions and statements are then evaluated against the component instance.
  *
  * For details on the `@View` annotation, see {@link ViewMetadata}.
+ *
+ * ## Lifecycle hooks
+ *
+ * When the component class implements some {@link angular2/lifecycle_hooks} the callbacks are
+ * called by the change detection at defined points in time during the life of the component.
  *
  * ## Example
  *
@@ -818,13 +817,12 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, exportAs, lifecycle, bindings, viewBindings,
+  constructor({selector, properties, events, host, exportAs, bindings, viewBindings,
                changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: LifecycleEvent[],
     bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
@@ -838,213 +836,12 @@ export class ComponentMetadata extends DirectiveMetadata {
       host: host,
       exportAs: exportAs,
       bindings: bindings,
-      lifecycle: lifecycle,
       compileChildren: compileChildren
     });
 
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
   }
-}
-
-/**
- * Lifecycle events are guaranteed to be called in the following order:
- * - `OnChanges` (if any bindings have changed),
- * - `OnInit` (after the first check only),
- * - `DoCheck`,
- * - `AfterContentChecked`
- * - `AfterContentChecked`
- * - `OnDestroy` (at the very end before destruction)
- */
-export enum LifecycleEvent {
-  /**
-   * Notify a directive when it has been checked the first time.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked only once.
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.OnInit]
-   * })
-   * class ClassSet {
-   *   onInit() {
-   *   }
-   * }
-   *  ```
-   */
-  OnInit,
-
-  /**
-   * Notify a directive whenever a {@link ViewMetadata} that contains it is destroyed.
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   ...,
-   *   lifecycle: [LifecycleEvent.OnDestroy]
-   * })
-   * class ClassSet {
-   *   onDestroy() {
-   *     // invoked to notify directive of the containing view destruction.
-   *   }
-   * }
-   * ```
-   */
-  OnDestroy,
-
-
-  /**
-   * Notify a directive when any of its bindings have changed.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked only if at least one of the directive's bindings has changed.
-   *
-   * ## Example:
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   properties: [
-   *     'propA',
-   *     'propB'
-   *   ],
-   *   lifecycle: [LifecycleEvent.OnChanges]
-   * })
-   * class ClassSet {
-   *   propA;
-   *   propB;
-   *   onChanges(changes:{[idx: string, PropertyUpdate]}) {
-   *     // This will get called after any of the properties have been updated.
-   *     if (changes['propA']) {
-   *       // if propA was updated
-   *     }
-   *     if (changes['propA']) {
-   *       // if propB was updated
-   *     }
-   *   }
-   * }
-   *  ```
-   */
-  OnChanges,
-
-  /**
-   * Notify a directive when it has been checked.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked every time even when none of the directive's bindings has changed.
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.DoCheck]
-   * })
-   * class ClassSet {
-   *   doCheck() {
-   *   }
-   * }
-   *  ```
-   */
-  DoCheck,
-
-  /**
-   * Notify a directive when the bindings of all its content children have been checked the first
-   * time (whether they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterContentInit]
-   * })
-   * class ClassSet {
-   *
-   *   afterContentInit() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterContentInit,
-
-  /**
-   * Notify a directive when the bindings of all its content children have been checked (whether
-   * they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterContentChecked]
-   * })
-   * class ClassSet {
-   *
-   *   afterContentChecked() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterContentChecked,
-
-  /**
-   * Notify a directive when the bindings of all its view children have been checked the first time
-   * (whether they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterViewInit]
-   * })
-   * class ClassSet {
-   *
-   *   afterViewInit() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterViewInit,
-
-  /**
-   * Notify a directive when the bindings of all its view children have been checked (whether they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterViewChecked]
-   * })
-   * class ClassSet {
-   *
-   *   afterViewChecked() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterViewChecked
 }
 
 /**

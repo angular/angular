@@ -1,8 +1,9 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
-import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
+import {Query, Directive} from 'angular2/metadata';
 import {forwardRef, Binding, Inject, Optional} from 'angular2/di';
+import {OnChanges} from 'angular2/lifecycle_hooks';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';
@@ -32,10 +33,9 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   bindings: [formControlBinding],
   properties: ['model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [LifecycleEvent.OnChanges],
   exportAs: 'form'
 })
-export class NgModel extends NgControl {
+export class NgModel extends NgControl implements OnChanges {
   _control = new Control();
   _added = false;
   update = new EventEmitter();

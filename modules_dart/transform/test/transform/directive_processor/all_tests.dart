@@ -104,10 +104,6 @@ void allTests() {
   _testProcessor('should not include superclasses in `interfaces`.',
       'superclass_files/soup.dart');
 
-  _testProcessor(
-      'should populate `lifecycle` when lifecycle interfaces are present.',
-      'interface_lifecycle_files/soup.dart');
-
   _testProcessor('should populate multiple `lifecycle` values when necessary.',
       'multiple_interface_lifecycle_files/soup.dart');
 

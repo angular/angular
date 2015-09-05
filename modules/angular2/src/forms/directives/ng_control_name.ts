@@ -2,8 +2,9 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {StringMap} from 'angular2/src/core/facade/collection';
 
-import {Query, Directive, LifecycleEvent} from 'angular2/metadata';
+import {Query, Directive} from 'angular2/metadata';
 import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/di';
+import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
@@ -76,10 +77,10 @@ const controlNameBinding =
   bindings: [controlNameBinding],
   properties: ['name: ngControl', 'model: ngModel'],
   events: ['update: ngModel'],
-  lifecycle: [LifecycleEvent.OnDestroy, LifecycleEvent.OnChanges],
   exportAs: 'form'
 })
-export class NgControlName extends NgControl {
+export class NgControlName extends NgControl implements OnChanges,
+    OnDestroy {
   _parent: ControlContainer;
   update = new EventEmitter();
   model: any;

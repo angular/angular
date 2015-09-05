@@ -1,4 +1,11 @@
-import {Directive, LifecycleEvent, Attribute, Host, SkipSelf} from 'angular2/angular2';
+import {
+  Directive,
+  LifecycleEvent,
+  Attribute,
+  Host,
+  SkipSelf,
+  AfterContentChecked
+} from 'angular2/angular2';
 
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
@@ -9,13 +16,12 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 @Directive({
   selector: 'md-input-container',
-  lifecycle: [LifecycleEvent.AfterContentChecked],
   host: {
     '[class.md-input-has-value]': 'inputHasValue',
     '[class.md-input-focused]': 'inputHasFocus',
   }
 })
-export class MdInputContainer {
+export class MdInputContainer implements AfterContentChecked {
   // The MdInput or MdTextarea inside of this container.
   _input: MdInput;
 
