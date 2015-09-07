@@ -5,6 +5,7 @@ var htmlReplace = require('../html-replace');
 var jsReplace = require('../js-replace');
 var path = require('path');
 var stew = require('broccoli-stew');
+var version = require('../../../../tools/versions/version-info.js').currentVersion;
 
 import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
@@ -214,6 +215,17 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, rxJs]);
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
+
+  mergedTree = replace(mergedTree, {
+    files: ['**/*application_version*'],
+    patterns: [
+      {match: "NG_VERSION_FULL", replacement: function() { return version.full }},
+      {match: "NG_VERSION_MAJOR", replacement: function() { return version.major }},
+      {match: "NG_VERSION_MINOR", replacement: function() { return version.minor }},
+      {match: "NG_VERSION_DOT", replacement: function() { return version.patch }},
+      {match: "NG_VERSION_CODENAME", replacement: function() { return version.codeName }}
+    ]
+  });
 
   return destCopy(mergedTree, destinationPath);
 };

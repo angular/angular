@@ -10,7 +10,13 @@ import {
   xdescribe,
   xit
 } from 'angular2/test_lib';
-import {isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {
+  isPresent,
+  stringify,
+  isString,
+  isNumber,
+  NumberWrapper
+} from 'angular2/src/core/facade/lang';
 import {bootstrap} from 'angular2/bootstrap';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Component, Directive, View} from 'angular2/core';
@@ -21,6 +27,7 @@ import {bind, Inject, Injector, LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {IS_DART} from '../platform';
+import {version} from 'angular2/angular2';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -201,5 +208,16 @@ export function main() {
                    });
              });
        }));
+  });
+
+  describe('version', function() {
+    it('should have full/major/minor/dot/codeName properties', function() {
+      expect(version).toBeDefined();
+      expect(isString(version.full)).toBeTruthy();
+      expect(isNumber(NumberWrapper.parseIntAutoRadix(version.major))).toBeTruthy();
+      expect(isNumber(NumberWrapper.parseIntAutoRadix(version.minor))).toBeTruthy();
+      expect(isNumber(NumberWrapper.parseIntAutoRadix(version.dot))).toBeTruthy();
+      expect(isString(version.codeName)).toBeTruthy();
+    });
   });
 }

@@ -986,6 +986,7 @@ var NG_API = [
   'Validators#nullValidator()',
   'Validators#required()',
   'Validators',
+  'version',
   'View',
   'View.directives',
   'View.encapsulation',
