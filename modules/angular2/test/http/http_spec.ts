@@ -9,10 +9,11 @@ import {
   inject,
   it,
   xit,
-  SpyObject
+  SpyObject,
+  MockBackend,
+  MockConnection
 } from 'angular2/test_lib';
 import {Injector, bind} from 'angular2/core';
-import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {
   BaseRequestOptions,

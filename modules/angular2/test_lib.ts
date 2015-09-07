@@ -2,3 +2,4 @@
 export * from './test';
 export * from './src/test_lib/utils';
 export * from './src/test_lib/fake_async';
+export * from './src/test_lib/mock_backend';

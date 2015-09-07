@@ -14,7 +14,6 @@ import {BaseRequestOptions, RequestOptions} from './src/http/base_request_option
 import {ConnectionBackend} from './src/http/interfaces';
 import {BaseResponseOptions, ResponseOptions} from './src/http/base_response_options';
 
-export {MockConnection, MockBackend} from './src/http/backends/mock_backend';
 export {Request} from './src/http/static_request';
 export {Response} from './src/http/static_response';
 
