@@ -36,6 +36,7 @@ import {
   EVENT_MANAGER_PLUGINS
 } from 'angular2/src/core/render/dom/events/event_manager';
 
+import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
@@ -125,6 +126,7 @@ function _getAppBindings() {
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,
+    bind(DirectiveResolver).toClass(MockDirectiveResolver),
     bind(ViewResolver).toClass(MockViewResolver),
     DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
@@ -133,7 +135,6 @@ function _getAppBindings() {
     Log,
     ViewLoader,
     DynamicComponentLoader,
-    DirectiveResolver,
     PipeResolver,
     Parser,
     Lexer,
