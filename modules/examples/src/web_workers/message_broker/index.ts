@@ -3,7 +3,7 @@ import {bootstrap, UiArguments, FnArg, PRIMITIVE} from "angular2/web_worker/ui";
 const ECHO_CHANNEL = "ECHO";
 
 var instance = bootstrap("loader.js");
-var broker = instance.app.createClientMessageBroker(ECHO_CHANNEL);
+var broker = instance.app.createClientMessageBroker(ECHO_CHANNEL, false);
 
 document.getElementById("send_echo")
     .addEventListener("click", (e) => {

@@ -215,13 +215,14 @@ class NgZone {
             _inVmTurnDone = true;
             parent.run(_innerZone, _onTurnDone);
 
-            if (_pendingMicrotasks == 0 && _onEventDone != null) {
-              runOutsideAngular(_onEventDone);
-            }
           } finally {
             _inVmTurnDone = false;
             _hasExecutedCodeInInnerZone = false;
           }
+        }
+
+        if (_pendingMicrotasks == 0 && _onEventDone != null) {
+          runOutsideAngular(_onEventDone);
         }
       }
     }

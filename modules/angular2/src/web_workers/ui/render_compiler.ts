@@ -17,7 +17,7 @@ export class MessageBasedRenderCompiler {
               private _renderCompiler: RenderCompiler) {}
 
   start(): void {
-    var broker = this._brokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
+    var broker = this._brokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL, false);
     broker.registerMethod("compileHost", [RenderDirectiveMetadata],
                           bind(this._renderCompiler.compileHost, this._renderCompiler),
                           ProtoViewDto);

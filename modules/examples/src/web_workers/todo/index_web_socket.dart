@@ -10,7 +10,9 @@ import 'dart:html'
 main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var webSocket = new WebSocket("ws://127.0.0.1:1337/ws");
-  var bus = new WebSocketMessageBus.fromWebSocket(webSocket);
+  webSocket.onOpen.listen((e) {
+    var bus = new WebSocketMessageBus.fromWebSocket(webSocket);
 
-  bootstrapUICommon(bus);
+    bootstrapUICommon(bus);
+  });
 }

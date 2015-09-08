@@ -38,6 +38,7 @@ main() {
         inject([AsyncTestCompleter], (async) {
           const NUM_CLIENTS = 5;
           var sink = new MultiClientServerMessageBusSink();
+          sink.initChannel(CHANNEL, false);
           int numMessagesSent = 0;
           // initialize all the sockets
           var sockets = new List<WebSocketWrapper>(NUM_CLIENTS);
@@ -78,7 +79,7 @@ main() {
       for (var i = 0; i < numMessages; i++) {
         var message = {'value': random.nextInt(MAX)};
         messageHistory
-            .add(JSON.encode({'channel': CHANNEL, 'message': message}));
+            .add(JSON.encode([{'channel': CHANNEL, 'message': message}]));
       }
       // copy the message history to ensure the test fails if the wrapper modifies the list
       return new List.from(messageHistory);
@@ -136,7 +137,7 @@ main() {
     });
 
     void sendMessage(StreamController controller, dynamic message) {
-      controller.add(JSON.encode(message));
+      controller.add(JSON.encode([message]));
     }
 
     void testForwardingMessages(bool primary, bool events, Function done) {
@@ -146,10 +147,11 @@ main() {
           new WebSocketWrapper(messageHistory, resultMarkers, result.socket);
       socket.setPrimary(primary);
 
-      var source = new MultiClientServerMessageBusSource(null);
+      var source = new MultiClientServerMessageBusSource();
       source.addConnection(socket);
 
       var channel = events ? EVENT_CHANNEL : CHANNEL;
+      source.initChannel(channel, false);
       source.from(channel).listen((message) {
         expect(message).toEqual(MESSAGE);
         done();
@@ -187,7 +189,9 @@ main() {
           socket.setPrimary(true);
 
           var source =
-              new MultiClientServerMessageBusSource(() => async.done());
+              new MultiClientServerMessageBusSource();
+          source.onResult.listen((result) => async.done());
+          source.initChannel(CHANNEL, false);
           source.addConnection(socket);
 
           var message = {
