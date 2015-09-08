@@ -358,7 +358,7 @@ export class RenderProtoViewMergeMapping {
 
 export class RenderCompiler {
   /**
-   * Creats a ProtoViewDto that contains a single nested component with the given componentId.
+   * Creates a ProtoViewDto that contains a single nested component with the given componentId.
    */
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> { return null; }
 
