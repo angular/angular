@@ -7,9 +7,14 @@ library change_detection.change_detection_jit_generator;
 /// `PregenProtoChangeDetector`, and
 /// `src/transform/template_compiler/change_detector_codegen.dart` for details.
 class ChangeDetectorJITGenerator {
-  ChangeDetectorJITGenerator(typeName, strategy, records, directiveMementos) {}
+  String typeName;
+  ChangeDetectorJITGenerator(definition, changeDetectionUtilVarName, abstractChangeDetectorVarName) {}
 
   generate() {
+    throw "Jit Change Detection is not supported in Dart";
+  }
+
+  generateSource() {
     throw "Jit Change Detection is not supported in Dart";
   }
 

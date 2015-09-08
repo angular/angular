@@ -76,7 +76,7 @@ export class StyleCompiler {
   private _styleCodeGen(moduleName: string, plainStyles: string[], absUrls: string[], shim: boolean,
                         suffix: string): SourceModule {
     var imports: string[][] = [];
-    var moduleSource = `${codeGenExportVar('STYLES')} (`;
+    var moduleSource = `var STYLES = (`;
     moduleSource +=
         `[${plainStyles.map( plainStyle => escapeString(this._shimIfNeeded(plainStyle, shim)) ).join(',')}]`;
     for (var i = 0; i < absUrls.length; i++) {
@@ -107,14 +107,6 @@ function escapeString(input: string): string {
     }
   });
   return `'${escapedInput}'`;
-}
-
-function codeGenExportVar(name: string): string {
-  if (IS_DART) {
-    return `var ${name} =`;
-  } else {
-    return `var ${name} = exports.${name} =`;
-  }
 }
 
 function codeGenConcatArray(expression: string): string {

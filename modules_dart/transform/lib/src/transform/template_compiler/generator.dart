@@ -58,7 +58,7 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
     }
     if (generateChangeDetectors) {
       var saved = reflector.reflectionCapabilities;
-      var genConfig = new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), reflectPropertiesAsAttributes);
+      var genConfig = new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), reflectPropertiesAsAttributes, false);
 
       reflector.reflectionCapabilities = const NullReflectionCapabilities();
       var defs = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
