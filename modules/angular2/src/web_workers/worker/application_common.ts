@@ -146,14 +146,13 @@ export function bootstrapWebWorkerCommon(
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
 
   var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
-  zone.run(() => {
-    // TODO(rado): prepopulate template cache, so applications with only
-    // index.html and main.js are possible.
-    //
+  bus.attachToZone(zone);
 
-    var subscription: any;
-    var emitter = bus.from(SETUP_CHANNEL);
-    subscription = ObservableWrapper.subscribe(emitter, (message: StringMap<string, any>) => {
+  var subscription: any;
+  bus.initChannel(SETUP_CHANNEL, false);
+  var emitter = bus.from(SETUP_CHANNEL);
+  subscription = ObservableWrapper.subscribe(emitter, (message: StringMap<string, any>) => {
+    zone.run(() => {
       var exceptionHandler;
       try {
         var appInjector =
@@ -167,7 +166,6 @@ export function bootstrapWebWorkerCommon(
           var lc = appInjector.get(LifeCycle);
           lc.registerWith(zone, appChangeDetector);
           lc.tick();  // the first tick that will bootstrap the app
-
           bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
         };
 
@@ -185,9 +183,8 @@ export function bootstrapWebWorkerCommon(
         bootstrapProcess.reject(e, e.stack);
       }
     });
-
-    ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
   });
+  ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
 
   return bootstrapProcess.promise;
 }

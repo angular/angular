@@ -100,7 +100,7 @@ export class NgZone {
    *
    * This hook is useful for validating application state (e.g. in a test).
    */
-  overrideOnEventDone(onEventDoneFn: Function, opt_waitForAsync: boolean): void {
+  overrideOnEventDone(onEventDoneFn: Function, opt_waitForAsync: boolean = false): void {
     var normalizedOnEventDone = normalizeBlank(onEventDoneFn);
     if (opt_waitForAsync) {
       this._onEventDone = () => {
@@ -212,13 +212,14 @@ export class NgZone {
                     try {
                       this._inVmTurnDone = true;
                       parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
-                      if (ngZone._pendingMicrotasks === 0 && isPresent(ngZone._onEventDone)) {
-                        ngZone.runOutsideAngular(ngZone._onEventDone);
-                      }
                     } finally {
                       this._inVmTurnDone = false;
                       ngZone._hasExecutedCodeInInnerZone = false;
                     }
+                  }
+
+                  if (ngZone._pendingMicrotasks === 0 && isPresent(ngZone._onEventDone)) {
+                    ngZone.runOutsideAngular(ngZone._onEventDone);
                   }
                 }
               }

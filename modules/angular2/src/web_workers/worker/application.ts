@@ -30,8 +30,10 @@ export function bootstrapWebWorker(
     appComponentType: Type, componentInjectableBindings: Array<Type | Binding | any[]> = null):
     Promise<ApplicationRef> {
   var sink = new PostMessageBusSink({
-    postMessage:
-        (message: any, transferrables?:[ArrayBuffer]) => { _postMessage(message, transferrables); }
+    postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
+      console.log("Sending", message);
+      _postMessage(message, transferrables);
+    }
   });
   var source = new PostMessageBusSource();
   var bus = new PostMessageBus(sink, source);

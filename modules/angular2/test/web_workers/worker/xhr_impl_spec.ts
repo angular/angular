@@ -45,5 +45,5 @@ export function main() {
 
 class MockMessageBrokerFactory extends ClientMessageBrokerFactory {
   constructor(private _messageBroker: ClientMessageBroker) { super(null, null); }
-  createMessageBroker(channel: string) { return this._messageBroker; }
+  createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
 }

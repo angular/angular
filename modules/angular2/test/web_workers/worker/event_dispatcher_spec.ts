@@ -11,7 +11,6 @@ import {
   proxy
 } from 'angular2/test_lib';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {bind} from 'angular2/core';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
@@ -34,11 +33,10 @@ export function main() {
       RenderViewWithFragmentsStore
     ]);
 
-    it("should dispatch events",
-       inject([Serializer, NgZone, AsyncTestCompleter], (serializer, zone, async) => {
+    it("should dispatch events", inject([Serializer, AsyncTestCompleter], (serializer, async) => {
          var messageBuses = createPairedMessageBuses();
          var webWorkerEventDispatcher =
-             new WebWorkerEventDispatcher(messageBuses.worker, serializer, zone);
+             new WebWorkerEventDispatcher(messageBuses.worker, serializer);
 
          var elementIndex = 15;
          var eventName = 'click';

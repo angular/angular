@@ -28,6 +28,7 @@ main() {
         inject([AsyncTestCompleter], (async) {
           var socket = new SpyWebSocket();
           var sink = new WebSocketMessageBusSink(socket);
+          sink.initChannel(CHANNEL, false);
           expectSinkSendsEncodedJson(socket, sink, "send", async);
         }));
   });
@@ -41,6 +42,7 @@ main() {
               new StreamController.broadcast();
           socket.spy("get:onMessage").andCallFake(() => controller.stream);
           var source = new WebSocketMessageBusSource(socket);
+          source.initChannel(CHANNEL, false);
 
           source.from(CHANNEL).listen((message) {
             expect(message).toEqual(MESSAGE);
@@ -49,7 +51,7 @@ main() {
 
           var event = new SpyMessageEvent();
           event.spy("get:data").andCallFake(
-              () => JSON.encode({'channel': CHANNEL, 'message': MESSAGE}));
+              () => JSON.encode([{'channel': CHANNEL, 'message': MESSAGE}]));
           controller.add(event);
         }));
   });

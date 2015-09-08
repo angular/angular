@@ -1,76 +1,33 @@
 library angular2.src.web_workers.shared.isolate_message_bus;
 
 import 'dart:isolate';
-import 'dart:async';
-import 'dart:core';
-import 'package:angular2/src/web_workers/shared/message_bus.dart'
-    show MessageBus, MessageBusSink, MessageBusSource;
-import 'package:angular2/src/core/facade/async.dart';
+import 'package:angular2/src/web_workers/shared/generic_message_bus.dart';
 
-class IsolateMessageBus implements MessageBus {
-  final IsolateMessageBusSink sink;
-  final IsolateMessageBusSource source;
-
+class IsolateMessageBus extends GenericMessageBus {
   IsolateMessageBus(IsolateMessageBusSink sink, IsolateMessageBusSource source)
-      : sink = sink,
-        source = source;
-
-  EventEmitter from(String channel) {
-    return source.from(channel);
-  }
-
-  EventEmitter to(String channel) {
-    return sink.to(channel);
-  }
+      : super(sink, source);
 }
 
-class IsolateMessageBusSink implements MessageBusSink {
+class IsolateMessageBusSink extends GenericMessageBusSink {
   final SendPort _port;
-  final Map<String, EventEmitter> _channels = new Map<String, EventEmitter>();
 
   IsolateMessageBusSink(SendPort port) : _port = port;
 
-  EventEmitter to(String channel) {
-    if (_channels.containsKey(channel)) {
-      return _channels[channel];
-    } else {
-      var emitter = new EventEmitter();
-      emitter.listen((message) {
-        _port.send({'channel': channel, 'message': message});
-      });
-      _channels[channel] = emitter;
-      return emitter;
-    }
+  @override
+  void sendMessages(List<dynamic> messages) {
+    _port.send(messages);
   }
 }
 
-class IsolateMessageBusSource extends MessageBusSource {
-  final Stream rawDataStream;
-  final Map<String, EventEmitter> _channels = new Map<String, EventEmitter>();
+class IsolateMessageBusSource extends GenericMessageBusSource {
+  IsolateMessageBusSource(ReceivePort port) : super(port.asBroadcastStream());
 
-  IsolateMessageBusSource(ReceivePort port)
-      : rawDataStream = port.asBroadcastStream() {
-    rawDataStream.listen((message) {
-      if (message is SendPort) {
-        return;
-      }
-
-      if (message.containsKey("channel")) {
-        var channel = message['channel'];
-        if (_channels.containsKey(channel)) {
-          _channels[channel].add(message['message']);
-        }
-      }
-    });
-  }
-
-  EventEmitter from(String channel) {
-    if (_channels.containsKey(channel)) {
-      return _channels[channel];
-    } else {
-      var emitter = new EventEmitter();
-      _channels[channel] = emitter;
-      return emitter;
+  @override
+  List<dynamic> decodeMessages(dynamic messages) {
+    if (messages is SendPort) {
+      return null;
     }
+
+    return messages;
   }
 }

@@ -18,7 +18,11 @@ export {Type} from "angular2/src/core/facade/lang";
 export class ClientMessageBrokerFactory {
   constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
 
-  createMessageBroker(channel: string): ClientMessageBroker {
+  /**
+   * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
+   */
+  createMessageBroker(channel: string, runInZone: boolean = true): ClientMessageBroker {
+    this._messageBus.initChannel(channel, runInZone);
     return new ClientMessageBroker(this._messageBus, this._serializer, channel);
   }
 }

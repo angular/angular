@@ -32,6 +32,7 @@ export function bootstrapUICommon(bus: MessageBus): WebWorkerApplication {
   BrowserDomAdapter.makeCurrent();
   var zone = createNgZone();
   wtfInit();
+  bus.attachToZone(zone);
   return zone.run(() => {
     var injector = createInjector(zone, bus);
     injector.get(MessageBasedRenderCompiler).start();
@@ -47,11 +48,11 @@ export class WebWorkerApplication {
   constructor(private _clientMessageBrokerFactory: ClientMessageBrokerFactory,
               private _serviceMessageBrokerFactory: ServiceMessageBrokerFactory) {}
 
-  createClientMessageBroker(channel: string): ClientMessageBroker {
-    return this._clientMessageBrokerFactory.createMessageBroker(channel);
+  createClientMessageBroker(channel: string, runInZone: boolean = true): ClientMessageBroker {
+    return this._clientMessageBrokerFactory.createMessageBroker(channel, runInZone);
   }
 
-  createServiceMessageBroker(channel: string): ServiceMessageBroker {
-    return this._serviceMessageBrokerFactory.createMessageBroker(channel);
+  createServiceMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
+    return this._serviceMessageBrokerFactory.createMessageBroker(channel, runInZone);
   }
 }

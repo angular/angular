@@ -1,22 +1,24 @@
 library angular2.src.web_workers.debug_tools.single_client_server_message_bus;
 
-import "package:angular2/src/web_workers/shared/message_bus.dart"
-    show MessageBus, MessageBusSink, MessageBusSource;
 import 'dart:io';
 import 'dart:convert' show JSON;
-import 'dart:async';
-import "package:angular2/src/core/facade/async.dart" show EventEmitter;
+import 'package:angular2/src/web_workers/shared/generic_message_bus.dart';
 
-class SingleClientServerMessageBus implements MessageBus {
-  final SingleClientServerMessageBusSink sink;
-  SingleClientServerMessageBusSource source;
+class SingleClientServerMessageBus extends GenericMessageBus {
   bool connected = false;
 
-  SingleClientServerMessageBus(this.sink, this.source);
+  @override
+  SingleClientServerMessageBusSink get sink => super.sink;
+  @override
+  SingleClientServerMessageBusSource get source => super.source;
+
+  SingleClientServerMessageBus(SingleClientServerMessageBusSink sink,
+      SingleClientServerMessageBusSource source)
+      : super(sink, source);
 
   SingleClientServerMessageBus.fromHttpServer(HttpServer server)
-      : sink = new SingleClientServerMessageBusSink() {
-    source = new SingleClientServerMessageBusSource();
+      : super(new SingleClientServerMessageBusSink(),
+            new SingleClientServerMessageBusSource()) {
     server.listen((HttpRequest request) {
       if (request.uri.path == "/ws") {
         if (!connected) {
@@ -24,7 +26,7 @@ class SingleClientServerMessageBus implements MessageBus {
             sink.setConnection(socket);
 
             var stream = socket.asBroadcastStream();
-            source.setConnectionFromStream(stream);
+            source.attachTo(stream);
             stream.listen(null, onDone: _handleDisconnect);
           }).catchError((error) {
             throw error;
@@ -43,51 +45,30 @@ class SingleClientServerMessageBus implements MessageBus {
 
   void _handleDisconnect() {
     sink.removeConnection();
-    source.removeConnection();
     connected = false;
-  }
-
-  EventEmitter from(String channel) {
-    return source.from(channel);
-  }
-
-  EventEmitter to(String channel) {
-    return sink.to(channel);
   }
 }
 
-class SingleClientServerMessageBusSink implements MessageBusSink {
+class SingleClientServerMessageBusSink extends GenericMessageBusSink {
   final List<String> _messageBuffer = new List<String>();
   WebSocket _socket = null;
-  final Map<String, EventEmitter> _channels = new Map<String, EventEmitter>();
 
   void setConnection(WebSocket webSocket) {
     _socket = webSocket;
     _sendBufferedMessages();
   }
 
-  EventEmitter to(String channel) {
-    if (_channels.containsKey(channel)) {
-      return _channels[channel];
-    } else {
-      var emitter = new EventEmitter();
-      emitter.listen((message) {
-        _send({'channel': channel, 'message': message});
-      });
-      return emitter;
-    }
-  }
-
   void removeConnection() {
     _socket = null;
   }
 
-  void _send(dynamic message) {
-    String encodedMessage = JSON.encode(message);
+  @override
+  void sendMessages(List<dynamic> message) {
+    String encodedMessages = JSON.encode(message);
     if (_socket != null) {
-      _socket.add(encodedMessage);
+      _socket.add(encodedMessages);
     } else {
-      _messageBuffer.add(encodedMessage);
+      _messageBuffer.add(encodedMessages);
     }
   }
 
@@ -97,44 +78,11 @@ class SingleClientServerMessageBusSink implements MessageBusSink {
   }
 }
 
-class SingleClientServerMessageBusSource implements MessageBusSource {
-  final Map<String, EventEmitter> _channels = new Map<String, EventEmitter>();
-  Stream _stream;
+class SingleClientServerMessageBusSource extends GenericMessageBusSource {
+  SingleClientServerMessageBusSource() : super(null);
 
-  SingleClientServerMessageBusSource();
-
-  EventEmitter from(String channel) {
-    if (_channels.containsKey(channel)) {
-      return _channels[channel];
-    } else {
-      var emitter = new EventEmitter();
-      _channels[channel] = emitter;
-      return emitter;
-    }
-  }
-
-  void setConnectionFromWebSocket(WebSocket socket) {
-    setConnectionFromStream(socket.asBroadcastStream());
-  }
-
-  void setConnectionFromStream(Stream stream) {
-    _stream = stream;
-    _stream.listen((encodedMessage) {
-      var decodedMessage = decodeMessage(encodedMessage);
-      var channel = decodedMessage['channel'];
-      var message = decodedMessage['message'];
-
-      if (_channels.containsKey(channel)) {
-        _channels[channel].add(message);
-      }
-    });
-  }
-
-  void removeConnection() {
-    _stream = null;
-  }
-
-  Map<String, dynamic> decodeMessage(dynamic message) {
-    return JSON.decode(message);
+  @override
+  List<dynamic> decodeMessages(dynamic messages) {
+    return JSON.decode(messages);
   }
 }

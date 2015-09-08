@@ -12,5 +12,6 @@ void main() {
   HttpServer.bind('127.0.0.1', 1337).then((HttpServer server) {
     var bus = new MultiClientServerMessageBus.fromHttpServer(server);
     bootstrapWebWorkerCommon(TodoApp, bus).catchError((error) => throw error);
+    print ("Server Listening for requests on 127.0.0.1:1337");
   });
 }

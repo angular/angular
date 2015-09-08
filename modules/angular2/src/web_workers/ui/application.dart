@@ -5,7 +5,8 @@ import 'dart:async';
 import 'dart:core';
 import 'package:angular2/src/web_workers/shared/message_bus.dart'
     show MessageBus;
-import 'package:angular2/src/web_workers/ui/impl.dart' show bootstrapUICommon, WebWorkerApplication;
+import 'package:angular2/src/web_workers/ui/impl.dart'
+    show bootstrapUICommon, WebWorkerApplication;
 import 'package:angular2/src/web_workers/shared/isolate_message_bus.dart';
 
 /**
@@ -37,7 +38,7 @@ Future<IsolateInstance> spawnWebWorker(Uri uri) async {
 class UIMessageBusSource extends IsolateMessageBusSource {
   UIMessageBusSource(ReceivePort port) : super(port);
 
-  Future<SendPort> get sink => rawDataStream.firstWhere((message) {
+  Future<SendPort> get sink => stream.firstWhere((message) {
         return message is SendPort;
       });
 }
