@@ -15,7 +15,7 @@ import {IS_DART} from '../platform';
 import {SpyXHR} from '../core/spies';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {CONST_EXPR, isPresent} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
@@ -69,7 +69,7 @@ export function main() {
           });
           compiler.compileComponentRuntime(comp(styles, styleAbsUrls, encapsulation))
               .then((value) => {
-                expect(value).toEqual(expectedStyles);
+                compareStyles(value, expectedStyles);
                 async.done();
               });
         });
@@ -121,7 +121,7 @@ export function main() {
               compiler.compileComponentCodeGen(comp(styles, styleAbsUrls, encapsulation));
           evalModule(testableModule(sourceModule.source), sourceModule.imports, null)
               .then((value) => {
-                expect(value).toEqual(expectedStyles);
+                compareStyles(value, expectedStyles);
                 async.done();
               });
         });
@@ -139,7 +139,8 @@ export function main() {
 
         it('should allow to import rules',
            runTest(['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation,
-                   ['div {color: red}', 'span {color: blue}']));
+                   ['div {color: red}', 'span {color: blue}']),
+           1000);
       });
 
       describe('with shim', () => {
@@ -153,7 +154,8 @@ export function main() {
         it('should allow to import rules',
            runTest(
                ['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation,
-               ['div[_ngcontent-23] {\ncolor: red;\n}', 'span[_ngcontent-23] {\ncolor: blue;\n}']));
+               ['div[_ngcontent-23] {\ncolor: red;\n}', 'span[_ngcontent-23] {\ncolor: blue;\n}']),
+           1000);
       });
     });
 
@@ -165,8 +167,9 @@ export function main() {
                                                    evalModule(testableModule(sourceModule.source),
                                                               sourceModule.imports, null)))
               .then((values) => {
-                expect(values[0]).toEqual(expectedStyles);
-                expect(values[1]).toEqual(expectedShimStyles);
+                compareStyles(values[0], expectedStyles);
+                compareStyles(values[1], expectedShimStyles);
+
                 async.done();
               });
         });
@@ -177,10 +180,12 @@ export function main() {
 
       it('should allow to import rules with relative paths',
          runTest(`div {color: red}@import ${IMPORT_REL_MODULE_NAME};`,
-                 ['div {color: red}', 'span {color: blue}'], [
+                 ['div {color: red}', 'span {color: blue}'],
+                 [
                    'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
                    'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
-                 ]));
+                 ]),
+         1000);
     });
   });
 }
@@ -194,5 +199,13 @@ function testableModule(sourceModule: string) {
     return `${sourceModule}
   exports.run = function(_) { return STYLES; };
 `;
+  }
+}
+
+// Needed for Android browsers which add an extra space at the end of some lines
+function compareStyles(styles: string[], expectedStyles: string[]) {
+  expect(styles.length).toEqual(expectedStyles.length);
+  for (var i = 0; i < styles.length; i++) {
+    expect(StringWrapper.replaceAll(styles[i], /\s+\n/g, '\n')).toEqual(expectedStyles[i]);
   }
 }
