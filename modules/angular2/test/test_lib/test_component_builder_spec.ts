@@ -14,8 +14,7 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Injectable, NgIf} from 'angular2/core';
-
+import {Injectable, NgIf, bind} from 'angular2/core';
 import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 @Component({selector: 'child-comp'})
@@ -48,11 +47,14 @@ class MyIfComp {
 @Component({selector: 'child-child-comp'})
 @View({template: `<span>ChildChild</span>`})
 @Injectable()
-class ChildChildComp {}
+class ChildChildComp {
+}
 
 @Component({selector: 'child-comp'})
-@View({template: `<span>Original {{childBinding}}(<child-child-comp></child-child-comp>)</span>`,
-  directives: [ChildChildComp]})
+@View({
+  template: `<span>Original {{childBinding}}(<child-child-comp></child-child-comp>)</span>`,
+  directives: [ChildChildComp]
+})
 @Injectable()
 class ChildWithChildComp {
   childBinding: string;
@@ -62,7 +64,30 @@ class ChildWithChildComp {
 @Component({selector: 'child-child-comp'})
 @View({template: `<span>ChildChild Mock</span>`})
 @Injectable()
-class MockChildChildComp {}
+class MockChildChildComp {
+}
+
+
+
+class FancyService {
+  value: string = 'real value';
+}
+
+class MockFancyService extends FancyService {
+  value: string = 'mocked out value';
+}
+
+@Component({selector: 'my-service-comp', bindings: [FancyService]})
+@View({template: `injected value: {{fancyService.value}}`})
+class TestBindingsComp {
+  constructor(private fancyService: FancyService) {}
+}
+
+@Component({selector: 'my-service-comp', viewBindings: [FancyService]})
+@View({template: `injected value: {{fancyService.value}}`})
+class TestViewBindingsComp {
+  constructor(private fancyService: FancyService) {}
+}
 
 
 export function main() {
@@ -135,17 +160,46 @@ export function main() {
 
 
     it("should override child component's dependencies",
-        inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
 
-          tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
-              .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
-              .createAsync(ParentComp)
-              .then((rootTestComponent) => {
-                rootTestComponent.detectChanges();
-                expect(rootTestComponent.nativeElement).toHaveText('Parent(Original Child(ChildChild Mock))');
+         tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
+             .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
+             .createAsync(ParentComp)
+             .then((rootTestComponent) => {
+               rootTestComponent.detectChanges();
+               expect(rootTestComponent.nativeElement)
+                   .toHaveText('Parent(Original Child(ChildChild Mock))');
 
-                async.done();
-              });
-      }));
+               async.done();
+             });
+       }));
+
+    it('should override a binding',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+
+         tcb.overrideBindings(TestBindingsComp, [bind(FancyService).toClass(MockFancyService)])
+             .createAsync(TestBindingsComp)
+             .then((rootTestComponent) => {
+               rootTestComponent.detectChanges();
+               expect(rootTestComponent.nativeElement)
+                   .toHaveText('injected value: mocked out value');
+               async.done();
+             });
+       }));
+
+
+    it('should override a viewBinding',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+
+         tcb.overrideViewBindings(TestViewBindingsComp,
+                                  [bind(FancyService).toClass(MockFancyService)])
+             .createAsync(TestViewBindingsComp)
+             .then((rootTestComponent) => {
+               rootTestComponent.detectChanges();
+               expect(rootTestComponent.nativeElement)
+                   .toHaveText('injected value: mocked out value');
+               async.done();
+             });
+       }));
   });
 }
