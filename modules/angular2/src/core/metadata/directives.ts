@@ -1,6 +1,6 @@
-import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
+import {isPresent, CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
+import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -861,11 +861,15 @@ export class ComponentMetadata extends DirectiveMetadata {
 @CONST()
 export class PipeMetadata extends InjectableMetadata {
   name: string;
+  _pure: boolean;
 
-  constructor({name}: {name: string}) {
+  constructor({name, pure}: {name: string, pure: boolean}) {
     super();
     this.name = name;
+    this._pure = pure;
   }
+
+  get pure(): boolean { return isPresent(this._pure) ? this._pure : true; }
 }
 
 /**
