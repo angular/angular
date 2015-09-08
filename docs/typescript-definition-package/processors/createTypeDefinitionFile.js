@@ -38,7 +38,8 @@ module.exports = function createTypeDefinitionFile(log, convertPrivateClassesToI
                                   function(moduleDocs, props, alias) {
                                     moduleDocs[props.id] = {
                                       id: alias,
-                                      doc: null, namespace: props.namespace,
+                                      doc: null,
+                                      namespace: props.namespace,
                                       references: def.references
                                     };
                                   }),
