@@ -1512,7 +1512,8 @@ export function main() {
     describe('logging property updates', () => {
       beforeEachBindings(() => [
         bind(ChangeDetection)
-            .toValue(new DynamicChangeDetection(new ChangeDetectorGenConfig(true, true, true)))
+            .toValue(
+                new DynamicChangeDetection(new ChangeDetectorGenConfig(true, true, true, false)))
       ]);
 
       it('should reflect property values as attributes',

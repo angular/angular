@@ -12,7 +12,6 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank} from 'angular2/src/core/facade/lang';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveMetadata, TypeMetadata, ChangeDetectionMetadata} from 'angular2/src/compiler/api';
 import {MockSchemaRegistry} from './template_parser_spec';
@@ -23,7 +22,6 @@ import {
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig,
   DynamicProtoChangeDetector,
-  ProtoChangeDetector,
   ChangeDetectionStrategy,
   ChangeDispatcher,
   DirectiveIndex,
@@ -33,6 +31,7 @@ import {
 } from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
+import {TestContext, TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
 
 export function main() {
   describe('ChangeDefinitionFactory', () => {
@@ -62,8 +61,8 @@ export function main() {
                                   protoViewIndex: number = 0): ChangeDetector {
       var protoChangeDetectors =
           createChangeDetectorDefinitions(
-              new TypeMetadata({typeName: 'SomeComp'}), ChangeDetectionStrategy.CheckAlways,
-              new ChangeDetectorGenConfig(true, true, false),
+              new TypeMetadata({typeName: 'SomeComp'}), ChangeDetectionStrategy.Default,
+              new ChangeDetectorGenConfig(true, true, false, false),
               parser.parse(domParser.parse(template, 'TestComp'), directives))
               .map(definition => new DynamicProtoChangeDetector(definition));
       var changeDetector = protoChangeDetectors[protoViewIndex].instantiate(dispatcher);
@@ -163,48 +162,4 @@ export function main() {
       expect(dispatcher.log).toEqual(['textNode(null)=someValue']);
     });
   });
-}
-
-class TestContext {
-  eventLog: string[] = [];
-  someProp: string;
-  someProp2: string;
-
-  onEvent(value: string) { this.eventLog.push(value); }
-}
-
-class TestDirective {
-  eventLog: string[] = [];
-  dirProp: string;
-
-  onEvent(value: string) { this.eventLog.push(value); }
-}
-
-class TestDispatcher implements ChangeDispatcher {
-  log: string[];
-
-  constructor(public directives: any[], public detectors: ProtoChangeDetector[]) { this.clear(); }
-
-  getDirectiveFor(di: DirectiveIndex) { return this.directives[di.directiveIndex]; }
-
-  getDetectorFor(di: DirectiveIndex) { return this.detectors[di.directiveIndex]; }
-
-  clear() { this.log = []; }
-
-  notifyOnBinding(target: BindingTarget, value) {
-    this.log.push(`${target.mode}(${target.name})=${this._asString(value)}`);
-  }
-
-  logBindingUpdate(target, value) {}
-
-  notifyAfterContentChecked() {}
-  notifyAfterViewChecked() {}
-
-  getDebugContext(a, b) { return null; }
-
-  _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
-}
-
-class TestPipes implements Pipes {
-  get(type: string) { return null; }
 }

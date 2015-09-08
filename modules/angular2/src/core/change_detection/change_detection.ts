@@ -103,7 +103,7 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
 
     this._genConfig =
         isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
-                                                                 assertionsEnabled(), false);
+                                                                 assertionsEnabled(), false, false);
   }
 
   static isSupported(): boolean { return PregenProtoChangeDetector.isSupported(); }
@@ -133,7 +133,7 @@ export class DynamicChangeDetection extends ChangeDetection {
     super();
     this._genConfig =
         isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
-                                                                 assertionsEnabled(), false);
+                                                                 assertionsEnabled(), false, false);
   }
 
   getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
@@ -157,7 +157,7 @@ export class JitChangeDetection extends ChangeDetection {
     super();
     this._genConfig =
         isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
-                                                                 assertionsEnabled(), false);
+                                                                 assertionsEnabled(), false, true);
   }
 
   static isSupported(): boolean { return JitProtoChangeDetector.isSupported(); }

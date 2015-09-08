@@ -249,7 +249,7 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var genConfig = new ChangeDetectorGenConfig(false, false, false);
+  var genConfig = new ChangeDetectorGenConfig(false, false, false, true);
   var parentProto = changeDetection.getProtoChangeDetector(
       "id", new ChangeDetectorDefinition('parent', null, [], [], [], [], genConfig));
   var parentCd = parentProto.instantiate(dispatcher);
