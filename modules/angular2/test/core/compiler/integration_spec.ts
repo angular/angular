@@ -1703,7 +1703,7 @@ export function main() {
                           var dir = rootTC.debugElement.componentViewChildren[0].inject(
                               DirectiveWithPropDecorators);
                           var native = rootTC.debugElement.componentViewChildren[0].nativeElement;
-                          native.click();
+                          DOM.dispatchEvent(native, DOM.createMouseEvent('click'));
 
                           expect(dir.target).toBe(native);
                           async.done();
