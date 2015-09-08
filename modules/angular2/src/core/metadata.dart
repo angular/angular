@@ -69,7 +69,7 @@ class View extends ViewMetadata {
  * See: [PipeMetadata] for docs.
  */
 class Pipe extends PipeMetadata {
-  const Pipe({name}) : super(name: name);
+  const Pipe({name, pure}) : super(name: name, pure: pure);
 }
 
 /**

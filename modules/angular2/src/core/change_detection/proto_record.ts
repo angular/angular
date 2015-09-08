@@ -36,7 +36,8 @@ export class ProtoRecord {
   isUsedByOtherRecord(): boolean { return !this.lastInBinding || this.referencedBySelf; }
 
   shouldBeChecked(): boolean {
-    return this.argumentToPureFunction || this.lastInBinding || this.isPureFunction();
+    return this.argumentToPureFunction || this.lastInBinding || this.isPureFunction() ||
+           this.isPipeRecord();
   }
 
   isPipeRecord(): boolean { return this.mode === RecordType.Pipe; }

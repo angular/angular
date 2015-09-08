@@ -12,6 +12,7 @@ import {ChangeDetectionStrategy, isDefaultChangeDetectionStrategy} from './const
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';
 import {BindingTarget} from './binding_record';
 import {DirectiveIndex} from './directive_record';
+import {SelectedPipe} from './pipes';
 
 
 /**
@@ -193,9 +194,9 @@ export class ChangeDetectionUtil {
                protos[selfIndex - 1];  // self index is shifted by one because of context
   }
 
-  static callPipeOnDestroy(pipe: any): void {
-    if (implementsOnDestroy(pipe)) {
-      pipe.onDestroy();
+  static callPipeOnDestroy(selectedPipe: SelectedPipe): void {
+    if (implementsOnDestroy(selectedPipe.pipe)) {
+      (<any>selectedPipe.pipe).onDestroy();
     }
   }
 
