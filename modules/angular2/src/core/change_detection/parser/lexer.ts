@@ -75,9 +75,10 @@ export class Token {
   toString(): string {
     switch (this.type) {
       case TokenType.Character:
-      case TokenType.String:
       case TokenType.Identifier:
       case TokenType.Keyword:
+      case TokenType.Operator:
+      case TokenType.String:
         return this.strValue;
       case TokenType.Number:
         return this.numValue.toString();
