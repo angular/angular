@@ -9,7 +9,11 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
   // the contents of `../lib/facades.es5`.
   //{{FACADES}}
 
-  var exports = {Injectable: function () {}};
+  var exports = {Injectable: function () {
+    return (function(target) {
+      return target;
+    });
+  }};
   var require = function () {return exports;};
 
   // When this file is processed, the line below is replaced with

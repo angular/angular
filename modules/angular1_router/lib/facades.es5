@@ -235,6 +235,14 @@ var ListWrapper = {
       }
     }
     return solution;
+  },
+
+  removeLast: function(list) {
+    return list.pop();
+  },
+
+  toJSON: function(list) {
+    return JSON.stringify(list);
   }
 };
 
