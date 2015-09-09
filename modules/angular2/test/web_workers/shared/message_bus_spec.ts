@@ -110,7 +110,7 @@ export function main() {
     /**
      * Flushes pending messages and then runs the given function.
      */
-    function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 10); }
+    function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 40); }
 
     beforeEach(() => { bus = createConnectedMessageBus(); });
 
