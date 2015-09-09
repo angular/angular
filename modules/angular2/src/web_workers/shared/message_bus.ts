@@ -79,7 +79,7 @@ export interface MessageBusSink {
 
   /**
    * Assigns this sink to the given zone.
-   * Any channels which are initilialized with runInZone set to true will wait for the given zone
+   * Any channels which are initialized with runInZone set to true will wait for the given zone
    * to exit before sending messages.
    */
   attachToZone(zone: NgZone): void;
