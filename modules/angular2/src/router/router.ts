@@ -160,7 +160,7 @@ export class Router {
    * If the given URL begins with a `/`, router will navigate absolutely.
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
    */
-  navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
+  navigateByUrl(url: string, _skipLocationChange: boolean = false): Promise<any> {
     return this._currentNavigation = this._currentNavigation.then((_) => {
       this.lastNavigationAttempt = url;
       this._startNavigating();
@@ -178,8 +178,8 @@ export class Router {
    * Navigate via the provided instruction. Returns a promise that resolves when navigation is
    * complete.
    */
-  navigateInstruction(instruction: Instruction,
-                      _skipLocationChange: boolean = false): Promise<any> {
+  navigateByInstruction(instruction: Instruction,
+                        _skipLocationChange: boolean = false): Promise<any> {
     if (isBlank(instruction)) {
       return _resolveToFalse;
     }
@@ -373,7 +373,7 @@ export class Router {
     if (isBlank(this.lastNavigationAttempt)) {
       return this._currentNavigation;
     }
-    return this.navigate(this.lastNavigationAttempt);
+    return this.navigateByUrl(this.lastNavigationAttempt);
   }
 
 
@@ -445,10 +445,11 @@ export class RootRouter extends Router {
               hostComponent: Type) {
     super(registry, pipeline, null, hostComponent);
     this._location = location;
-    this._location.subscribe((change) => this.navigate(change['url'], isPresent(change['pop'])));
+    this._location.subscribe((change) =>
+                                 this.navigateByUrl(change['url'], isPresent(change['pop'])));
 
     this.registry.configFromComponent(hostComponent);
-    this.navigate(location.path());
+    this.navigateByUrl(location.path());
   }
 
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
@@ -471,15 +472,15 @@ class ChildRouter extends Router {
   }
 
 
-  navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
+  navigateByUrl(url: string, _skipLocationChange: boolean = false): Promise<any> {
     // Delegate navigation to the root router
-    return this.parent.navigate(url, _skipLocationChange);
+    return this.parent.navigateByUrl(url, _skipLocationChange);
   }
 
-  navigateInstruction(instruction: Instruction,
-                      _skipLocationChange: boolean = false): Promise<any> {
+  navigateByInstruction(instruction: Instruction,
+                        _skipLocationChange: boolean = false): Promise<any> {
     // Delegate navigation to the root router
-    return this.parent.navigateInstruction(instruction, _skipLocationChange);
+    return this.parent.navigateByInstruction(instruction, _skipLocationChange);
   }
 }
 

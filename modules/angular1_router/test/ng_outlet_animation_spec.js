@@ -46,7 +46,7 @@ describe('ngOutlet animations', function () {
       { path: '/user/:name', component: UserController }
     ]);
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello brian');
 
@@ -55,7 +55,7 @@ describe('ngOutlet animations', function () {
     expect(item.event).toBe('enter');
 
     // navigate to pete
-    $router.navigate('/user/pete');
+    $router.navigateByUrl('/user/pete');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello pete');
 

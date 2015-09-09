@@ -307,7 +307,7 @@ function anchorLinkDirective($router) {
 
         var href = element.attr(hrefAttrName);
         if (href && $router.recognize(href)) {
-          $router.navigate(href);
+          $router.navigateByUrl(href);
           event.preventDefault();
         }
       });

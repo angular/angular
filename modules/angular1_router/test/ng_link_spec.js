@@ -42,7 +42,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<a ng-link="[\'/two\']">link</a> | outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b');
@@ -57,7 +57,7 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b');
@@ -74,7 +74,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b/lol');
@@ -91,7 +91,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b/one');

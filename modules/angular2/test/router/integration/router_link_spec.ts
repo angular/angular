@@ -74,7 +74,7 @@ export function main() {
          compile('<a href="hello" [router-link]="[\'./user\']"></a>')
              .then((_) =>
                        router.config([new Route({path: '/user', component: UserCmp, as: 'user'})]))
-             .then((_) => router.navigate('/a/b'))
+             .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(getHref(rootTC)).toEqual('/my/base/user');
@@ -87,7 +87,7 @@ export function main() {
          compile('<a href="hello" [router-link]="[\'./user\']"></a>')
              .then((_) =>
                        router.config([new Route({path: '/user', component: UserCmp, as: 'user'})]))
-             .then((_) => router.navigate('/a/b'))
+             .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(getHref(rootTC)).toEqual('/user');
@@ -101,7 +101,7 @@ export function main() {
          compile('<a href="hello" [router-link]="[\'./user\', {name: name}]">{{name}}</a>')
              .then((_) => router.config(
                        [new Route({path: '/user/:name', component: UserCmp, as: 'user'})]))
-             .then((_) => router.navigate('/a/b'))
+             .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.componentInstance.name = 'brian';
                rootTC.detectChanges();
@@ -117,7 +117,7 @@ export function main() {
          compile()
              .then((_) => router.config(
                        [new Route({path: '/page/:number', component: SiblingPageCmp, as: 'page'})]))
-             .then((_) => router.navigate('/page/1'))
+             .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                rootTC.detectChanges();
                expect(DOM.getAttribute(
@@ -133,7 +133,7 @@ export function main() {
          compile()
              .then((_) => router.config(
                        [new Route({path: '/book/:title/...', component: BookCmp, as: 'book'})]))
-             .then((_) => router.navigate('/book/1984/page/1'))
+             .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                rootTC.detectChanges();
                expect(DOM.getAttribute(
@@ -180,7 +180,7 @@ export function main() {
 
                    async.done();
                  });
-                 router.navigate('/better-child');
+                 router.navigateByUrl('/better-child');
                });
          }));
 
@@ -221,7 +221,7 @@ export function main() {
 
                    async.done();
                  });
-                 router.navigate('/child-with-grandchild/grandchild');
+                 router.navigateByUrl('/child-with-grandchild/grandchild');
                });
          }));
     });
@@ -239,7 +239,7 @@ export function main() {
            compile('<a href="hello" [router-link]="[\'./user\']"></a>')
                .then((_) => router.config(
                          [new Route({path: '/user', component: UserCmp, as: 'user'})]))
-               .then((_) => router.navigate('/a/b'))
+               .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
                  rootTC.detectChanges();
 
@@ -260,7 +260,7 @@ export function main() {
            compile('<a href="hello" [router-link]="[\'./user\']"></a>')
                .then((_) => router.config(
                          [new Route({path: '/user', component: UserCmp, as: 'user'})]))
-               .then((_) => router.navigate('/a/b'))
+               .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
                  rootTC.detectChanges();
 

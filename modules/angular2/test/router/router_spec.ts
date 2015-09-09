@@ -68,7 +68,7 @@ export function main() {
 
          router.registerPrimaryOutlet(outlet)
              .then((_) => router.config([new Route({path: '/a', component: DummyComponent})]))
-             .then((_) => router.navigate('/a'))
+             .then((_) => router.navigateByUrl('/a'))
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
                expect(location.urlChanges).toEqual(['/a']);
@@ -82,7 +82,7 @@ export function main() {
 
          router.registerPrimaryOutlet(outlet)
              .then((_) => router.config([new Route({path: '/b', component: DummyComponent})]))
-             .then((_) => router.navigate('/b', true))
+             .then((_) => router.navigateByUrl('/b', true))
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
                expect(location.urlChanges).toEqual([]);
@@ -95,7 +95,7 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
-             .then((_) => router.navigate('/a'))
+             .then((_) => router.navigateByUrl('/a'))
              .then((_) => {
                expect(outlet.spy('activate')).not.toHaveBeenCalled();
                return router.config([new Route({path: '/a', component: DummyComponent})]);
@@ -146,7 +146,7 @@ export function main() {
          router.config([new AsyncRoute({path: '/first', loader: loader, as: 'FirstCmp'})]);
 
          var instruction = router.generate(['/FirstCmp']);
-         router.navigateInstruction(instruction)
+         router.navigateByInstruction(instruction)
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
                async.done();
@@ -162,7 +162,7 @@ export function main() {
                new Route({path: '/a', component: DummyComponent, as: 'A'}),
                new Route({path: '/b', component: DummyComponent, as: 'B'})
              ]))
-             .then((_) => router.navigate('/a'))
+             .then((_) => router.navigateByUrl('/a'))
              .then((_) => {
                var instruction = router.generate(['/A']);
                var otherInstruction = router.generate(['/B']);

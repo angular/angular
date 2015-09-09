@@ -64,7 +64,7 @@ export function main() {
                  expect(applicationRef.hostComponent.location.path()).toEqual('/parent/child');
                  async.done();
                });
-               router.navigate('/parent/child');
+               router.navigateByUrl('/parent/child');
              });
        }), 1000);
 
@@ -78,7 +78,7 @@ export function main() {
                  expect(applicationRef.hostComponent.location.path()).toEqual('/after');
                  async.done();
                });
-               router.navigate('/before');
+               router.navigateByUrl('/before');
              });
        }), 1000);
 
@@ -92,7 +92,7 @@ export function main() {
                  expect(applicationRef.hostComponent.location.path()).toEqual('/hello');
                  async.done();
                });
-               router.navigate('/hello');
+               router.navigateByUrl('/hello');
              });
        }), 1000);
 
@@ -107,7 +107,7 @@ export function main() {
                  expect(applicationRef.hostComponent.location.path()).toEqual('/hello');
                  async.done();
                });
-               router.navigate('/hello');
+               router.navigateByUrl('/hello');
              });
        }), 1000);
 

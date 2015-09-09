@@ -51,7 +51,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div>outer { <div ng-outlet></div> }</div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(spy).toHaveBeenCalled();
@@ -69,7 +69,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
 
     expect(spy).toHaveBeenCalledWith(instructionFor(UserController), undefined);
@@ -88,9 +88,9 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
-    $router.navigate('/post/123');
+    $router.navigateByUrl('/post/123');
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith(instructionFor(activate),
                                      instructionFor(OneController));
@@ -108,7 +108,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user');
+    $router.navigateByUrl('/user');
     $rootScope.$digest();
 
     expect(injectedScope).toBeDefined();
@@ -127,9 +127,9 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
-    $router.navigate('/b');
+    $router.navigateByUrl('/b');
     $rootScope.$digest();
     expect(spy).toHaveBeenCalled();
   });
@@ -147,9 +147,9 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
-    $router.navigate('/post/123');
+    $router.navigateByUrl('/post/123');
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith(instructionFor(OneController),
                                      instructionFor(deactivate));
@@ -177,9 +177,9 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
-    $router.navigate('/b');
+    $router.navigateByUrl('/b');
     $rootScope.$digest();
 
     expect(log).toEqual(['deactivate', 'activate']);
@@ -207,13 +207,13 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/on-reuse/1/a');
+    $router.navigateByUrl('/on-reuse/1/a');
     $rootScope.$digest();
     expect(log).toEqual([]);
     expect(cmpInstanceCount).toBe(1);
     expect(elt.text()).toBe('outer { reuse {one} }');
 
-    $router.navigate('/on-reuse/2/b');
+    $router.navigateByUrl('/on-reuse/2/b');
     $rootScope.$digest();
     expect(log).toEqual(['reuse: on-reuse/1 -> on-reuse/2']);
     expect(cmpInstanceCount).toBe(1);
@@ -242,13 +242,13 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/never-reuse/1/a');
+    $router.navigateByUrl('/never-reuse/1/a');
     $rootScope.$digest();
     expect(log).toEqual([]);
     expect(cmpInstanceCount).toBe(1);
     expect(elt.text()).toBe('outer { reuse {one} }');
 
-    $router.navigate('/never-reuse/2/b');
+    $router.navigateByUrl('/never-reuse/2/b');
     $rootScope.$digest();
     expect(log).toEqual([]);
     expect(cmpInstanceCount).toBe(2);
@@ -270,7 +270,7 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(spy).not.toHaveBeenCalled();
@@ -292,7 +292,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(spy).toHaveBeenCalled();
@@ -314,7 +314,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(spy).toHaveBeenCalled();
@@ -335,7 +335,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith({name: 'brian'}, $http);
   }));
@@ -354,11 +354,11 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
     expect(elt.text()).toBe('outer { hi }');
 
-    $router.navigate('/b');
+    $router.navigateByUrl('/b');
     $rootScope.$digest();
     expect(elt.text()).toBe('outer { hi }');
   });
@@ -377,11 +377,11 @@ describe('ngOutlet', function () {
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
     expect(elt.text()).toBe('outer { hi }');
 
-    $router.navigate('/b');
+    $router.navigateByUrl('/b');
     $rootScope.$digest();
     expect(elt.text()).toBe('outer { one }');
   });
@@ -401,7 +401,7 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(spy).toHaveBeenCalled();
@@ -421,9 +421,9 @@ describe('ngOutlet', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
-    $router.navigate('/post/123');
+    $router.navigateByUrl('/post/123');
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith(instructionFor(OneController),
                                      instructionFor(deactivate));

@@ -66,7 +66,7 @@ export class RouterLink {
   }
 
   onClick(): boolean {
-    this._router.navigateInstruction(this._navigationInstruction);
+    this._router.navigateByInstruction(this._navigationInstruction);
     return false;
   }
 }
