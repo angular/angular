@@ -340,7 +340,7 @@ export class RenderProtoViewMergeMapping {
               public fragmentCount: number,
               // Mapping from app element index to render element index.
               // Mappings of nested ProtoViews are in depth first order, with all
-              // indices for one ProtoView in a consecuitve block.
+              // indices for one ProtoView in a consecutive block.
               public mappedElementIndices: number[],
               // Number of bound render element.
               // Note: This could be more than the original ones
@@ -348,7 +348,7 @@ export class RenderProtoViewMergeMapping {
               public mappedElementCount: number,
               // Mapping from app text index to render text index.
               // Mappings of nested ProtoViews are in depth first order, with all
-              // indices for one ProtoView in a consecuitve block.
+              // indices for one ProtoView in a consecutive block.
               public mappedTextIndices: number[],
               // Mapping from view index to app element index
               public hostElementIndicesByViewIndex: number[],
@@ -358,7 +358,7 @@ export class RenderProtoViewMergeMapping {
 
 export class RenderCompiler {
   /**
-   * Creats a ProtoViewDto that contains a single nested component with the given componentId.
+   * Creates a ProtoViewDto that contains a single nested component with the given componentId.
    */
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> { return null; }
 
