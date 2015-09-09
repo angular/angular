@@ -283,7 +283,7 @@ function isWildcard(selector): boolean {
 // different sub views
 function sortContentElements(contentElements: Element[]): Element[] {
   // for now, only move the wildcard selector to the end.
-  // TODO(tbosch): think about sorting by selector specifity...
+  // TODO(tbosch): think about sorting by selector specificity...
   var firstWildcard = null;
   var sorted = [];
   contentElements.forEach((contentElement) => {
