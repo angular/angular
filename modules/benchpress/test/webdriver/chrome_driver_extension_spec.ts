@@ -342,6 +342,17 @@ export function main() {
                });
          }));
 
+      it('should ignore FunctionCalls with empty scriptName',
+         inject([AsyncTestCompleter], (async) => {
+           createExtension(
+               [chromeTimelineV8Events.start('FunctionCall', 0, {'data': {'scriptName': ''}})])
+               .readPerfLog()
+               .then((events) => {
+                 expect(events).toEqual([]);
+                 async.done();
+               });
+         }));
+
 
     });
 
