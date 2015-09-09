@@ -35,6 +35,7 @@ import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 var cmpInstanceCount;
+var childCmpInstanceCount;
 var log: string[];
 
 export function main() {
@@ -57,6 +58,7 @@ export function main() {
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
       tcb = tcBuilder;
       rtr = router;
+      childCmpInstanceCount = 0;
       cmpInstanceCount = 0;
       log = [];
     }));
@@ -143,6 +145,27 @@ export function main() {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(1);
                expect(rootTC.nativeElement).toHaveText('team angular { hello victor }');
+               async.done();
+             });
+       }));
+
+    it('should not reuse children when parent components change',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
+             .then((_) => rtr.navigate('/team/angular/user/rado'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(cmpInstanceCount).toBe(1);
+               expect(childCmpInstanceCount).toBe(1);
+               expect(rootTC.nativeElement).toHaveText('team angular { hello rado }');
+             })
+             .then((_) => rtr.navigate('/team/dart/user/rado'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(cmpInstanceCount).toBe(2);
+               expect(childCmpInstanceCount).toBe(2);
+               expect(rootTC.nativeElement).toHaveText('team dart { hello rado }');
                async.done();
              });
        }));
@@ -256,7 +279,10 @@ class RouteDataCmp {
 @View({template: "hello {{user}}"})
 class UserCmp {
   user: string;
-  constructor(params: RouteParams) { this.user = params.get('name'); }
+  constructor(params: RouteParams) {
+    childCmpInstanceCount += 1;
+    this.user = params.get('name');
+  }
 }
 
 

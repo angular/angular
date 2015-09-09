@@ -248,7 +248,7 @@ export class Router {
     return this._outlet.canReuse(instruction.component)
         .then((result) => {
           instruction.component.reuse = result;
-          if (isPresent(this._childRouter) && isPresent(instruction.child)) {
+          if (result && isPresent(this._childRouter) && isPresent(instruction.child)) {
             return this._childRouter._canReuse(instruction.child);
           }
         });
