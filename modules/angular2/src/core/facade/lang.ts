@@ -342,5 +342,8 @@ export function setValueOnPath(global: any, path: string, value: any) {
       obj = obj[name] = {};
     }
   }
+  if (obj === undefined || obj === null) {
+    obj = {};
+  }
   obj[parts.shift()] = value;
 }
