@@ -153,6 +153,15 @@ export class Router {
     return this.renavigate();
   }
 
+  /**
+   * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
+   * over `navigateByUrl`.
+   */
+  navigate(linkParams: any[], _skipLocationChange: boolean = false): Promise<any> {
+    var instruction = this.generate(linkParams);
+    return this.navigateByInstruction(instruction, _skipLocationChange);
+  }
+
 
   /**
    * Navigate to a URL. Returns a promise that resolves when navigation is complete.

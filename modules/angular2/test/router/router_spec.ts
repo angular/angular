@@ -76,6 +76,21 @@ export function main() {
              });
        }));
 
+    it('should activate viewports and update URL when navigating via DSL',
+       inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerPrimaryOutlet(outlet)
+             .then((_) =>
+                       router.config([new Route({path: '/a', component: DummyComponent, as: 'A'})]))
+             .then((_) => router.navigate(['/A']))
+             .then((_) => {
+               expect(outlet.spy('activate')).toHaveBeenCalled();
+               expect(location.urlChanges).toEqual(['/a']);
+               async.done();
+             });
+       }));
+
     it('should not push a history change on when navigate is called with skipUrlChange',
        inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();
