@@ -45,7 +45,7 @@ class UIMessageBusSource extends IsolateMessageBusSource {
 
 /**
  * Wrapper class that exposes the {@link WebWorkerApplication}
- * Isolate instance and underyling {@link MessageBus} for lower level message passing.
+ * Isolate instance and underlying {@link MessageBus} for lower level message passing.
  */
 class IsolateInstance {
   WebWorkerApplication app;
