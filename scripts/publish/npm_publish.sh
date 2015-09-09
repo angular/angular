@@ -49,7 +49,6 @@ function publishModule {
     cp -r $ROOT_DIR/dist/js/bundle/$FILES $PUBLISH_DIR/bundles
     # Copy Typings
     cp -r $ROOT_DIR/dist/docs/typings/angular2/$DTS_FILES $PUBLISH_DIR/bundles/typings/angular2
-    cp -r $ROOT_DIR/dist/docs/typings/http/$DTS_FILES $PUBLISH_DIR/bundles/typings/angular2
     cp -r $ROOT_DIR/modules/angular2/typings/es6-promise/$DTS_FILES $PUBLISH_DIR/bundles/typings/es6-promise
     cp -r $ROOT_DIR/modules/angular2/typings/rx/$DTS_FILES $PUBLISH_DIR/bundles/typings/rx
   fi
