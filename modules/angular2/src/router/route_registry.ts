@@ -200,6 +200,7 @@ export class RouteRegistry {
   generate(linkParams: any[], parentComponent: any): Instruction {
     let segments = [];
     let componentCursor = parentComponent;
+    var lastInstructionIsTerminal = false;
 
     for (let i = 0; i < linkParams.length; i += 1) {
       let segment = linkParams[i];
@@ -233,9 +234,26 @@ export class RouteRegistry {
       }
       segments.push(response);
       componentCursor = response.componentType;
+      lastInstructionIsTerminal = response.terminal;
     }
 
-    var instruction: Instruction = this._generateRedirects(componentCursor);
+    var instruction: Instruction = null;
+
+    if (!lastInstructionIsTerminal) {
+      instruction = this._generateRedirects(componentCursor);
+
+      if (isPresent(instruction)) {
+        let lastInstruction = instruction;
+        while (isPresent(lastInstruction.child)) {
+          lastInstruction = lastInstruction.child;
+        }
+        lastInstructionIsTerminal = lastInstruction.component.terminal;
+      }
+      if (!lastInstructionIsTerminal) {
+        throw new BaseException(
+            `Link "${ListWrapper.toJSON(linkParams)}" does not resolve to a terminal instruction.`);
+      }
+    }
 
 
     while (segments.length > 0) {

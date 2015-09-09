@@ -79,9 +79,8 @@ export function main() {
       expect(url).toEqual('first/one/second/two');
     });
 
-    it('should geneate params as an empty StringMap when no params are given', () => {
-      registry.config(RootHostCmp,
-                      new Route({path: '/test/...', component: DummyParentParamCmp, as: 'test'}));
+    it('should generate params as an empty StringMap when no params are given', () => {
+      registry.config(RootHostCmp, new Route({path: '/test', component: DummyCmpA, as: 'test'}));
       var instruction = registry.generate(['test'], RootHostCmp);
       expect(instruction.component.params).toEqual({});
     });
@@ -230,6 +229,13 @@ export function main() {
         expect(() => registry.config(RootHostCmp, new Route({path: '/', component:<Type>(<any>4)})))
             .toThrowError('Component for route "/" is not defined, or is not a class.');
       }
+    });
+
+    it('should throw when linkParams are not terminal', () => {
+      registry.config(RootHostCmp,
+                      new Route({path: '/first/...', component: DummyParentCmp, as: 'first'}));
+      expect(() => { registry.generate(['first'], RootHostCmp); })
+          .toThrowError('Link "["first"]" does not resolve to a terminal instruction.');
     });
 
     it('should match matrix params on child components and query params on the root component',
