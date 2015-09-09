@@ -14,7 +14,7 @@
   angular.module('myApp', ['ngComponentRouter'])
     .controller('MyCtrl', ['$router', function ($router) {
       console.log($router);
-      $router.navigate('/')
+      $router.navigateByUrl('/')
         .then(console.log.bind(console, 'resolve'), console.log.bind(console, 'reject'));
     }]);
 </script>

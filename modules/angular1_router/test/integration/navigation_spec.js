@@ -43,7 +43,7 @@ describe('navigation', function () {
       { path: '/', component: OneController }
     ]);
 
-    $router.navigate('/');
+    $router.navigateByUrl('/');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('one');
@@ -59,7 +59,7 @@ describe('navigation', function () {
 
     spyOn(console, 'warn');
     compile('<ng-outlet></ng-outlet>');
-    $router.navigate('/');
+    $router.navigateByUrl('/');
 
     expect(console.warn).toHaveBeenCalledWith('Could not find controller for', 'NoControllerController');
     expect(elt.text()).toBe('4');
@@ -72,11 +72,11 @@ describe('navigation', function () {
     ]);
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigate('/user/brian');
+    $router.navigateByUrl('/user/brian');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello brian');
 
-    $router.navigate('/user/igor');
+    $router.navigateByUrl('/user/igor');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello igor');
   });
@@ -97,14 +97,14 @@ describe('navigation', function () {
     ]);
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigate('/parent/user/brian');
+    $router.navigateByUrl('/parent/user/brian');
     $rootScope.$digest();
     expect(spy).toHaveBeenCalled();
     expect(elt.text()).toBe('parent { hello brian }');
 
     spy.calls.reset();
 
-    $router.navigate('/parent/user/igor');
+    $router.navigateByUrl('/parent/user/igor');
     $rootScope.$digest();
     expect(spy).not.toHaveBeenCalled();
     expect(elt.text()).toBe('parent { hello igor }');
@@ -121,7 +121,7 @@ describe('navigation', function () {
     ]);
     compile('<div>outer { <div ng-outlet></div> }</div>');
 
-    $router.navigate('/a/b');
+    $router.navigateByUrl('/a/b');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('outer { inner { one } }');
@@ -136,7 +136,7 @@ describe('navigation', function () {
     ]);
 
     compile('<div>root { <div ng-outlet></div> }</div>');
-    $router.navigate('/');
+    $router.navigateByUrl('/');
     $rootScope.$digest();
     expect(elt.text()).toBe('root { one }');
   });
@@ -152,7 +152,7 @@ describe('navigation', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user');
+    $router.navigateByUrl('/user');
     $rootScope.$digest();
 
     expect(injectedScope).toBeDefined();
@@ -166,7 +166,7 @@ describe('navigation', function () {
 
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/user');
+    $router.navigateByUrl('/user');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/user');
@@ -181,7 +181,7 @@ describe('navigation', function () {
       { path: '/user', component:  UserController }
     ]);
 
-    $router.navigate('/');
+    $router.navigateByUrl('/');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/user');
@@ -203,13 +203,13 @@ describe('navigation', function () {
 
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/old-parent/old-child');
+    $router.navigateByUrl('/old-parent/old-child');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/new-parent/new-child');
     expect(elt.text()).toBe('inner { one }');
 
-    $router.navigate('/old-parent/old-child-two');
+    $router.navigateByUrl('/old-parent/old-child-two');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/new-parent/new-child-two');
@@ -243,7 +243,7 @@ describe('navigation', function () {
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/pendingActivate');
+    $router.navigateByUrl('/pendingActivate');
     $rootScope.$digest();
     expect($router.navigating).toBe(true);
     defer.resolve();

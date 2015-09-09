@@ -72,7 +72,7 @@ export function main() {
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
            tcb.createAsync(AppCmp).then((rootTC) => {
              var router = rootTC.componentInstance.router;
-             PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
+             PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
                expect(rootTC.nativeElement).toHaveText('outer { oh no }');
                expect(error).toContainError('oops!');
                async.done();
@@ -123,11 +123,11 @@ export function main() {
                        if (flipped) {
                          location.back();
                        } else {
-                         router.navigate(nextUrl);
+                         router.navigateByUrl(nextUrl);
                        }
                      });
 
-                 router.navigate(history[0][0]);
+                 router.navigateByUrl(history[0][0]);
                });
          }), 1000);
     });
@@ -146,7 +146,7 @@ export function main() {
                    expect(rootTC.componentInstance.location.path()).toEqual('/parent/child');
                    async.done();
                  });
-                 router.navigate('/parent/child');
+                 router.navigateByUrl('/parent/child');
                });
          }), 1000);
 
@@ -165,7 +165,7 @@ export function main() {
                                 .toEqual('/my/app/parent/child');
                             async.done();
                           });
-                          router.navigate('/parent/child');
+                          router.navigateByUrl('/parent/child');
                         });
                   }),
            1000);
@@ -190,7 +190,7 @@ export function main() {
                        .toEqual('/qs?q=search-for-something');*/
                    async.done();
                  });
-                 router.navigate('/qs?q=search-for-something');
+                 router.navigateByUrl('/qs?q=search-for-something');
                  rootTC.detectChanges();
                });
          }), 1000);

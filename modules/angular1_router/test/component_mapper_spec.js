@@ -63,7 +63,7 @@ describe('$componentMapper', function () {
       { path: '/', component: Ctrl }
     ]);
 
-    $router.navigate('/');
+    $router.navigateByUrl('/');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('howdy');
