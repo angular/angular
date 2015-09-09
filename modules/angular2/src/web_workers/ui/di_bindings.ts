@@ -78,7 +78,7 @@ var _rootInjector: Injector;
 // Contains everything that is safe to share between applications.
 var _rootBindings = [bind(Reflector).toValue(reflector)];
 
-// TODO: This code is nearly identitcal to core/application. There should be a way to only write it
+// TODO: This code is nearly identical to core/application. There should be a way to only write it
 // once
 function _injectorBindings(): any[] {
   var bestChangeDetection = new DynamicChangeDetection();
