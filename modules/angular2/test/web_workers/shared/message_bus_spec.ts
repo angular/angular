@@ -38,7 +38,7 @@ export function main() {
          });
          var toEmitter = bus.to(CHANNEL);
          ObservableWrapper.callNext(toEmitter, MESSAGE);
-       }), 1000);
+       }));
 
     it("should broadcast", inject([AsyncTestCompleter], (async) => {
          const CHANNEL = "CHANNEL 1";
@@ -111,7 +111,7 @@ export function main() {
      * Flushes pending messages and then runs the given function.
      */
     // TODO(mlaval): timeout is fragile, test to be rewritten
-    function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 40); }
+    function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 50); }
 
     beforeEach(() => { bus = createConnectedMessageBus(); });
 
@@ -133,7 +133,7 @@ export function main() {
              async.done();
            });
          });
-       }));
+       }), 500);
 
     it("should send messages immediatly when run outside the zone",
        inject([AsyncTestCompleter, NgZone], (async, zone: MockNgZone) => {
@@ -147,6 +147,6 @@ export function main() {
            expect(wasCalled).toBeTruthy();
            async.done();
          });
-       }));
+       }), 500);
   });
 }

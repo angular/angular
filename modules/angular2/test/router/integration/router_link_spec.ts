@@ -280,7 +280,7 @@ export function main() {
                    async.done();
                  });
                });
-         }), 1000);
+         }));
 
       it('should navigate to link hrefs in presence of base href',
          inject([AsyncTestCompleter], (async) => {
@@ -301,7 +301,7 @@ export function main() {
                    async.done();
                  });
                });
-         }), 1000);
+         }));
     });
   });
 }

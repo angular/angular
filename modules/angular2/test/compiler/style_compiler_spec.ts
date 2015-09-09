@@ -180,12 +180,10 @@ export function main() {
 
       it('should allow to import rules with relative paths',
          runTest(`div {color: red}@import ${IMPORT_REL_MODULE_NAME};`,
-                 ['div {color: red}', 'span {color: blue}'],
-                 [
+                 ['div {color: red}', 'span {color: blue}'], [
                    'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
                    'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
-                 ]),
-         1000);
+                 ]));
     });
   });
 }
