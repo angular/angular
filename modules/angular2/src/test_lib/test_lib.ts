@@ -2,12 +2,13 @@
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {global, isFunction} from 'angular2/src/core/facade/lang';
+import {global, isFunction, Math} from 'angular2/src/core/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {bind} from 'angular2/src/core/di';
 
 import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {browserDetection} from './utils';
 
 export {inject} from './test_injector';
 
@@ -52,6 +53,7 @@ var jsmXIt = _global.xit;
 
 var runnerStack = [];
 var inIt = false;
+var globalTimeOut = browserDetection.isSlow ? 3000 : jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 var testBindings;
 
@@ -130,8 +132,9 @@ export function beforeEachBindings(fn): void {
 }
 
 function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
-             timeOut: number): void {
+             testTimeOut: number): void {
   var runner = runnerStack[runnerStack.length - 1];
+  var timeOut = Math.max(globalTimeOut, testTimeOut);
 
   if (testFn instanceof FunctionWithParamTokens) {
     // The test case uses inject(). ie `it('test', inject([AsyncTestCompleter], (async) => { ...

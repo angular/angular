@@ -63,7 +63,7 @@ export function main() {
            expect(ev['url']).toEqual('/user/btford');
            async.done();
          })
-       }), 2000);
+       }));
 
     it('should normalize location path', () => {
       locationStrategy.internalPath = '/my/app/user/btford';

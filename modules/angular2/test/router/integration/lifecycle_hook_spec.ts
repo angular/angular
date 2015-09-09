@@ -97,7 +97,7 @@ export function main() {
                expect(log).toEqual(['activate: null -> /on-activate']);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should wait for a parent component\'s onActivate hook to resolve before calling its child\'s',
        inject([AsyncTestCompleter], (async) => {
@@ -120,7 +120,7 @@ export function main() {
                      async.done();
                    });
              });
-       }), 2000);
+       }));
 
     it('should call the onDeactivate hook', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -133,7 +133,7 @@ export function main() {
                expect(log).toEqual(['deactivate: /on-deactivate -> /a']);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should wait for a child component\'s onDeactivate hook to resolve before calling its parent\'s',
        inject([AsyncTestCompleter], (async) => {
@@ -158,7 +158,7 @@ export function main() {
                  async.done();
                });
              });
-       }), 2000);
+       }));
 
     it('should reuse a component when the canReuse hook returns true',
        inject([AsyncTestCompleter], (async) => {
@@ -179,7 +179,7 @@ export function main() {
                expect(cmpInstanceCount).toBe(1);
                async.done();
              });
-       }), 2000);
+       }));
 
 
     it('should not reuse a component when the canReuse hook returns false',
@@ -201,7 +201,7 @@ export function main() {
                expect(cmpInstanceCount).toBe(2);
                async.done();
              });
-       }), 2000);
+       }));
 
 
     it('should navigate when canActivate returns true', inject([AsyncTestCompleter], (async) => {
@@ -221,7 +221,7 @@ export function main() {
                      async.done();
                    });
              });
-       }), 2000);
+       }));
 
     it('should not navigate when canActivate returns false',
        inject([AsyncTestCompleter], (async) => {
@@ -241,7 +241,7 @@ export function main() {
                      async.done();
                    });
              });
-       }), 2000);
+       }));
 
     it('should navigate away when canDeactivate returns true',
        inject([AsyncTestCompleter], (async) => {
@@ -266,7 +266,7 @@ export function main() {
                  async.done();
                });
              });
-       }), 2000);
+       }));
 
     it('should not navigate away when canDeactivate returns false',
        inject([AsyncTestCompleter], (async) => {
@@ -291,7 +291,7 @@ export function main() {
                  async.done();
                });
              });
-       }), 2000);
+       }));
 
 
     it('should run activation and deactivation hooks in the correct order',
@@ -319,7 +319,7 @@ export function main() {
                ]);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should only run reuse hooks when reusing', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -346,7 +346,7 @@ export function main() {
                ]);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should not run reuse hooks when not reusing', inject([AsyncTestCompleter], (async) => {
          compile()
@@ -375,7 +375,7 @@ export function main() {
                ]);
                async.done();
              });
-       }), 2000);
+       }));
   });
 }
 

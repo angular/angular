@@ -63,7 +63,7 @@ export function main() {
                    async.done();
                  });
                });
-         }), 1000);
+         }));
     });
 
     describe('broken app', () => {
@@ -79,7 +79,7 @@ export function main() {
                async.done();
              });
            });
-         }), 1000);
+         }));
     });
 
     describe('back button app', () => {
@@ -153,7 +153,7 @@ export function main() {
                  });
                  router.navigateByUrl('/parent/child');
                });
-         }), 1000);
+         }));
 
       describe('custom app base ref', () => {
         beforeEachBindings(() => { return [bind(APP_BASE_HREF).toValue('/my/app')]; });
@@ -173,8 +173,7 @@ export function main() {
                           });
                           router.navigateByUrl('/parent/child');
                         });
-                  }),
-           1000);
+                  }));
       });
     });
     // TODO: add a test in which the child component has bindings
@@ -201,7 +200,7 @@ export function main() {
                  router.navigateByUrl('/qs?q=search-for-something');
                  rootTC.detectChanges();
                });
-         }), 1000);
+         }));
     });
   });
 }

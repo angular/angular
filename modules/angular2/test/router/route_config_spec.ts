@@ -68,7 +68,7 @@ export function main() {
                });
                router.navigateByUrl('/parent/child');
              });
-       }), 1000);
+       }));
 
 
     it('should work in an app with redirects', inject([AsyncTestCompleter], (async) => {
@@ -83,7 +83,7 @@ export function main() {
                });
                router.navigateByUrl('/before');
              });
-       }), 1000);
+       }));
 
 
     it('should work in an app with async components', inject([AsyncTestCompleter], (async) => {
@@ -97,7 +97,7 @@ export function main() {
                });
                router.navigateByUrl('/hello');
              });
-       }), 1000);
+       }));
 
 
     it('should work in an app with a constructor component',
@@ -114,7 +114,7 @@ export function main() {
                });
                router.navigateByUrl('/hello');
              });
-       }), 1000);
+       }));
 
     it('should throw if a config is missing a target',
        inject(
