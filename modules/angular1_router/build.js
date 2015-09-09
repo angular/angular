@@ -39,7 +39,11 @@ function main() {
   out += angularFactory('$router', ['$q', '$location', '$$controllerIntrospector',
                                     '$browser', '$rootScope', '$injector'], [
     FACADES,
-    "var exports = {Injectable: function () {}};",
+    "var exports = {Injectable: function () {",
+    "  return function(target) {",
+    "    return target;",
+    "  };",
+    "}};",
     "var require = function () {return exports;};",
     sharedCode,
     "var RouteConfig = exports.RouteConfig;",

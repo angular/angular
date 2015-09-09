@@ -1,3 +1,7 @@
+function getTypeNameForDebugging(component) {
+  return component.constructor.name;
+}
+
 function CONST() {
   return (function(target) {
     return target;
@@ -128,7 +132,7 @@ var StringMapWrapper = {
   },
 
   forEach: function (m, fn) {
-    for (prop in m) {
+    for (var prop in m) {
       if (m.hasOwnProperty(prop)) {
         fn(m[prop], prop);
       }
@@ -231,6 +235,14 @@ var ListWrapper = {
       }
     }
     return solution;
+  },
+
+  removeLast: function(list) {
+    return list.pop();
+  },
+
+  toJSON: function(list) {
+    return JSON.stringify(list);
   }
 };
 
