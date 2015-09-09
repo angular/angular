@@ -9,7 +9,13 @@ var url = require('url');
 
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
-import {isPresent, isBlank, global, setValueOnPath} from 'angular2/src/core/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  global,
+  setValueOnPath,
+  DateWrapper
+} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
 
@@ -545,6 +551,7 @@ export class Parse5DomAdapter extends DomAdapter {
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   requestAnimationFrame(callback): number { return setTimeout(callback, 0); }
   cancelAnimationFrame(id: number) { clearTimeout(id); }
+  performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement
