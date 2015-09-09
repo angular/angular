@@ -39,7 +39,7 @@ export class WebWorkerCompiler implements RenderCompiler {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
   }
   /**
-   * Creats a ProtoViewDto that contains a single nested component with the given componentId.
+   * Creates a ProtoViewDto that contains a single nested component with the given componentId.
    */
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
     var fnArgs: FnArg[] = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
