@@ -20,7 +20,7 @@ export /* abstract (with TS 1.6) */ class MessageBus implements MessageBusSource
    * If runInZone is true then the source will emit events inside the angular zone
    * and the sink will buffer messages and send only once the zone exits.
    * if runInZone is false then the source will emit events inside the global zone
-   * and the sink will send messages immediatly.
+   * and the sink will send messages immediately.
    */
   initChannel(channel: string, runInZone: boolean = true): void { throw _abstract(); }
 
