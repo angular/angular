@@ -9,6 +9,7 @@ export * from './src/core/di';
 export * from './src/core/pipes';
 export * from './src/core/facade';
 export * from './src/core/application';
+export * from './src/core/bootstrap';
 export * from './src/core/services';
 export * from './src/core/compiler';
 export * from './src/core/lifecycle';
