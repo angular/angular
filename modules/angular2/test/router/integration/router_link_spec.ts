@@ -139,11 +139,7 @@ export function main() {
                  as: 'child-with-grandchild'
                })
              ]))
-             .then((_) => {
-               // TODO: refactor when https://github.com/angular/angular/pull/4074 lands
-               var instruction = router.generate(['/child-with-grandchild']);
-               return router.navigateInstruction(instruction);
-             })
+             .then((_) => router.navigate(['/child-with-grandchild']))
              .then((_) => {
                rootTC.detectChanges();
                expect(DOM.getAttribute(

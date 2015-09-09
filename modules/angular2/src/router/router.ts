@@ -152,9 +152,27 @@ export class Router {
     return this.renavigate();
   }
 
+  /**
+   * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
+   * over `navigateByUrl`.
+   *
+   * # Usage
+   *
+   * This method takes an array representing the Route Link DSL:
+   * ```
+   * ['./MyCmp', {param: 3}]
+   * ```
+   * See the {@link RouterLink} directive for more.
+   */
+  navigate(linkParams: any[]): Promise<any> {
+    var instruction = this.generate(linkParams);
+    return this.navigateByInstruction(instruction, false);
+  }
+
 
   /**
    * Navigate to a URL. Returns a promise that resolves when navigation is complete.
+   * It's preferred to navigate with `navigate` instead of this method, since URLs are more brittle.
    *
    * If the given URL begins with a `/`, router will navigate absolutely.
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
