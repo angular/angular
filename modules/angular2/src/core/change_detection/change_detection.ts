@@ -21,14 +21,7 @@ import {
   assertionsEnabled
 } from 'angular2/src/core/facade/lang';
 
-export {
-  ASTWithSource,
-  AST,
-  AstTransformer,
-  PropertyRead,
-  LiteralArray,
-  ImplicitReceiver
-} from './parser/ast';
+export * from './parser/ast';
 
 export {Lexer} from './parser/lexer';
 export {Parser} from './parser/parser';

@@ -52,11 +52,9 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
       id: 'angular2/angular2',
       references: ['../es6-promise/es6-promise.d.ts', '../rx/rx.d.ts'],
       modules: {
-        'angular2/angular2': {namespace: 'ng', id: 'angular2/angular2'}
-        /* TODO(jeffbcross): re-implement with @jteplitz as part of #3926,
+        'angular2/angular2': {namespace: 'ng', id: 'angular2/angular2'},
         'angular2/web_worker/worker': {namespace: 'ngWorker', id: 'angular2/web_worker/worker'},
         'angular2/web_worker/ui': {namespace: 'ngUi', id: 'angular2/web_worker/ui'}
-        */
       }
     },
     {
