@@ -1,7 +1,7 @@
 /**
  * @module
  * @description
- * This module provides advanced support for extending change detection.
+ * This module provides a set of common Pipes.
  */
 
 export {AsyncPipe} from './pipes/async_pipe';
