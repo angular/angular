@@ -1,11 +1,25 @@
 import {Injectable} from 'angular2/src/core/di';
-import {Request} from '../static_request';
-import {Response} from '../static_response';
-import {ReadyStates} from '../enums';
-import {Connection, ConnectionBackend} from '../interfaces';
+import {Request} from 'angular2/src/http/static_request';
+import {Response} from 'angular2/src/http/static_response';
+import {ReadyStates} from 'angular2/src/http/enums';
+import {Connection, ConnectionBackend} from 'angular2/src/http/interfaces';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
-import {isPresent} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+
+export {Headers} from 'angular2/src/http/headers';
+export {Request} from 'angular2/src/http/static_request';
+export {URLSearchParams} from 'angular2/src/http/url_search_params';
+export {EventEmitter, Observable} from 'angular2/src/core/facade/async';
+export {Connection, ConnectionBackend} from 'angular2/src/http/interfaces';
+export {Response} from 'angular2/src/http/static_response';
+export {
+  ResponseTypes,
+  ReadyStates,
+  RequestMethods,
+  RequestCredentialsOpts,
+  RequestCacheOpts,
+  RequestModesOpts
+} from 'angular2/src/http/enums';
 
 /**
  *
