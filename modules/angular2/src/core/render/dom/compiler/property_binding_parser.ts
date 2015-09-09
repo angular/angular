@@ -14,8 +14,8 @@ import {dashCaseToCamelCase} from '../util';
 // Group 3 = "on-"
 // Group 4 = "bindon-"
 // Group 5 = the identifier after "bind-", "var-/#", or "on-"
-// Group 6 = idenitifer inside [()]
-// Group 7 = idenitifer inside []
+// Group 6 = identifier inside [()]
+// Group 7 = identifier inside []
 // Group 8 = identifier inside ()
 var BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
