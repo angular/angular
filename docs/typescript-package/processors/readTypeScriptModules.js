@@ -150,12 +150,17 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
   function createExportDoc(name, exportSymbol, moduleDoc, basePath, typeChecker) {
     var typeParamString = '';
     var heritageString = '';
+    var typeDefinition = '';
 
     exportSymbol.declarations.forEach(function(decl) {
       var sourceFile = ts.getSourceFileOfNode(decl);
 
       if (decl.typeParameters) {
         typeParamString = '<' + getText(sourceFile, decl.typeParameters) + '>';
+      }
+
+      if (decl.symbol.flags & ts.SymbolFlags.TypeAlias) {
+        typeDefinition = getText(sourceFile, decl.type);
       }
 
       if (decl.heritageClauses) {
@@ -214,6 +219,9 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     }
     if(exportSymbol.flags & ts.SymbolFlags.Value) {
       exportDoc.returnType = getReturnType(typeChecker, exportSymbol);
+    }
+    if (exportSymbol.flags & ts.SymbolFlags.TypeAlias) {
+      exportDoc.typeDefinition = typeDefinition;
     }
     return exportDoc;
   }

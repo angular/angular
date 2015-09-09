@@ -15,7 +15,6 @@ import {
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
 
-import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   ProtoViewBuilder,
   ElementBinderBuilder

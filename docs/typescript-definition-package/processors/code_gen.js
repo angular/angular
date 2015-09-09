@@ -5,6 +5,7 @@ function DtsSerializer(remap) {
 }
 
 DtsSerializer.prototype = {
+  _initializerRegex: /\s*=[^>][^,}]*/g,
 
   constructor: DtsSerializer,
 
@@ -18,15 +19,21 @@ DtsSerializer.prototype = {
     }
     if (ast.parameters) {
       buffer.push('(');
-      buffer.push(ast.parameters.join(', '));
+      var parameters = ast.parameters;
+      for (var i = 0; i < parameters.length; i++) {
+        parameters[i] = parameters[i].replace(this._initializerRegex, '');
+      }
+      buffer.push(parameters.join(', '));
       buffer.push(')');
     }
-    if (ast.returnType) {
-      buffer.push(': ', ast.returnType);
-    } else if (ast.parameters) {
-      buffer.push(': void');
-    } else {
-      buffer.push(': any');
+    if (!isConstructor(ast)) {
+      if (ast.returnType) {
+        buffer.push(': ', ast.returnType);
+      } else if (ast.parameters) {
+        buffer.push(': void');
+      } else {
+        buffer.push(': any');
+      }
     }
     buffer.push(';\n');
   },
@@ -58,6 +65,7 @@ DtsSerializer.prototype = {
     buffer.indent();
     if (ast.newMember) this.member(buffer, ast.newMember);
     if (ast.callMember) this.member(buffer, ast.callMember);
+    if (ast.constructorDoc) this.member(buffer, ast.constructorDoc);
 
     ast.statics.forEach(function(staticMember) {
       this.member(buffer, staticMember);
@@ -144,7 +152,6 @@ DtsSerializer.prototype = {
   }
 };
 
-
 function Buffer() {
   this._globalBuffer = [];
   this._indentedBuffer = [];
@@ -191,7 +198,11 @@ Buffer.prototype = {
   }
 };
 
+function isConstructor(ast) {
+  return ast.parameters && ast.name === "constructor";
+}
 
 module.exports = {
   DtsSerializer: DtsSerializer
 };
+

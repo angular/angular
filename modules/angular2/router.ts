@@ -7,12 +7,47 @@
 
 export {Router, RootRouter} from './src/router/router';
 export {RouterOutlet} from './src/router/router_outlet';
+export {
+  DynamicComponentLoader,
+  ComponentRef,
+  ElementRef,
+  Compiler,
+  AppViewManager,
+  ViewRef,
+  HostViewRef,
+  ProtoViewRef,
+  ViewContainerRef,
+  TemplateRef
+} from './core';
+export {
+  Renderer,
+  RenderElementRef,
+  RenderViewRef,
+  RenderProtoViewRef,
+  RenderEventDispatcher,
+  RenderFragmentRef,
+  RenderViewWithFragments
+} from './render';
+export {
+  Binding,
+  Injector,
+  ResolvedBinding,
+  Key,
+  Dependency,
+  ProtoInjector,
+  DependencyProvider,
+  BindingWithVisibility,
+  Visibility,
+  ResolvedFactory
+} from './src/core/di';
 export {RouterLink} from './src/router/router_link';
 export {RouteParams} from './src/router/instruction';
 export {RouteRegistry} from './src/router/route_registry';
 export {LocationStrategy} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';
 export {PathLocationStrategy} from './src/router/path_location_strategy';
+export {PathRecognizer, PathMatch} from './src/router/path_recognizer';
+export {RouteHandler} from './src/router/route_handler';
 export {Location, APP_BASE_HREF} from './src/router/location';
 export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
@@ -72,6 +107,8 @@ export const ROUTER_BINDINGS: any[] = CONST_EXPR([
                     deps: CONST_EXPR([RouteRegistry, Pipeline, Location, APP_COMPONENT])
                   }))
 ]);
+
+export interface InjectableReference {}
 
 function routerFactory(registry, pipeline, location, appRoot) {
   return new RootRouter(registry, pipeline, location, appRoot);

@@ -30,6 +30,7 @@ export {BaseRequestOptions, RequestOptions} from './src/http/base_request_option
 export {BaseResponseOptions, ResponseOptions} from './src/http/base_response_options';
 export {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
 export {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
+export {BrowserJsonp} from './src/http/backends/browser_jsonp';
 export {Http, Jsonp} from './src/http/http';
 
 export {Headers} from './src/http/headers';
