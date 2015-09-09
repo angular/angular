@@ -91,7 +91,7 @@ function main() {
 
 /*
  * Given a directory name and a file's TypeScript content, return an object with the ES5 code,
- * sourcemap, anf exported variable identifier name for the content.
+ * sourcemap, and exported variable identifier name for the content.
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
 function transform(dir, contents) {
