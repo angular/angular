@@ -36,7 +36,8 @@ export function main() {
     it('should instantiate a pipe', () => {
       var proto = new ProtoPipes([PipeBinding.createFromType(PipeA, new Pipe({name: 'a'}))]);
       var pipes = new Pipes(proto, injector);
-      expect(pipes.get("a")).toBeAnInstanceOf(PipeA);
+
+      expect(pipes.get("a").pipe).toBeAnInstanceOf(PipeA);
     });
 
     it('should throw when no pipe found', () => {
@@ -48,7 +49,25 @@ export function main() {
     it('should inject dependencies from the provided injector', () => {
       var proto = new ProtoPipes([PipeBinding.createFromType(PipeB, new Pipe({name: 'b'}))]);
       var pipes = new Pipes(proto, injector);
-      expect(pipes.get("b").dep).toEqual("dependency");
+      expect((<any>pipes.get("b").pipe).dep).toEqual("dependency");
+    });
+
+    it('should cache pure pipes', () => {
+      var proto =
+          new ProtoPipes([PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: true}))]);
+      var pipes = new Pipes(proto, injector);
+
+      expect(pipes.get("a").pure).toEqual(true);
+      expect(pipes.get("a")).toBe(pipes.get("a"));
+    });
+
+    it('should NOT cache impure pipes', () => {
+      var proto =
+          new ProtoPipes([PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: false}))]);
+      var pipes = new Pipes(proto, injector);
+
+      expect(pipes.get("a").pure).toEqual(false);
+      expect(pipes.get("a")).not.toBe(pipes.get("a"));
     });
   });
 }

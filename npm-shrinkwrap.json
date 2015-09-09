@@ -14590,9 +14590,9 @@
       }
     },
     "reflect-metadata": {
-      "version": "0.1.0",
-      "from": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.0.tgz",
-      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.0.tgz"
+      "version": "0.1.1",
+      "from": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.1.tgz",
+      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.1.tgz"
     },
     "rewire": {
       "version": "2.3.3",

@@ -255,7 +255,22 @@ to some whitespace difference.
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
   `Sublime Text`, etc.).
+  
+## Generating the API documentation
 
+The following gulp task will generate the API docs in the `dist/angular.io/partials/api/angular2`:  
+  
+```shell
+$(npm bin)/gulp docs/angular.io
+```
+
+You can serve the generated documentation to check how it would render on [angular.io](https://angular.io/):
+- check out the [angular.io repo](https://github.com/angular/angular.io) locally,
+- install dependencies as described in the [angular.io README](https://github.com/angular/angular.io/blob/master/README.md),
+- copy the generated documentation from your local angular repo at `angular/dist/angular.io/partials/api/angular2` to your local angular.io repo at `angular.io/public/docs/js/latest/api`,
+- run `harp compile` at the root of the angular.io repo to check the generated documentation for errors,
+- run `harp server` and open a browser at `http://localhost:9000/docs/js/latest/api/` to check the rendered documentation. 
+ 
 ## Project Information
 
 ### Folder structure

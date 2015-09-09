@@ -186,6 +186,20 @@ function commonTests() {
          }, 80);
        }));
 
+    it('should call standalone onEventDone', inject([AsyncTestCompleter], (async) => {
+         _zone.overrideOnTurnStart(null);
+         _zone.overrideOnEventDone(() => { _log.add('onEventDone'); });
+
+         _zone.overrideOnTurnDone(null);
+
+         macroTask(() => { _zone.run(_log.fn('run')); });
+
+         macroTask(() => {
+           expect(_log.result()).toEqual('run; onEventDone');
+           async.done();
+         }, 80);
+       }));
+
     it('should not allow onEventDone to cause further digests',
        inject([AsyncTestCompleter], (async) => {
          _zone.overrideOnTurnStart(null);

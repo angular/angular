@@ -102,6 +102,11 @@ export class ProtoRecordBuilder {
         rec.args.forEach(recordIndex => this.records[recordIndex - 1].argumentToPureFunction =
                              true);
       }
+      if (rec.mode === RecordType.Pipe) {
+        rec.args.forEach(recordIndex => this.records[recordIndex - 1].argumentToPureFunction =
+                             true);
+        this.records[rec.contextIndex - 1].argumentToPureFunction = true;
+      }
     }
   }
 

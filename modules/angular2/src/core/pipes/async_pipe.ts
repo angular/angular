@@ -59,7 +59,7 @@ var _observableStrategy = new ObservableStrategy();
  *
  * ```
  */
-@Pipe({name: 'async'})
+@Pipe({name: 'async', pure: false})
 @Injectable()
 export class AsyncPipe implements PipeTransform, PipeOnDestroy {
   _latestValue: Object = null;

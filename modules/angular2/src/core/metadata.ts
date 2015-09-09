@@ -398,10 +398,8 @@ export interface QueryFactory {
  * ```
  */
 export interface PipeFactory {
-  (obj: {name: string}): any;
-  new (obj: {
-    name: string,
-  }): any;
+  (obj: {name: string, pure?: boolean}): any;
+  new (obj: {name: string, pure?: boolean}): any;
 }
 
 /**

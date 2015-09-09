@@ -333,38 +333,39 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
     var context = this._readContext(proto, values);
-    var args = this._readArgs(proto, values);
+    var selectedPipe = this._pipeFor(proto, context);
+    if (!selectedPipe.pure || this._argsOrContextChanged(proto)) {
+      var args = this._readArgs(proto, values);
+      var currValue = selectedPipe.pipe.transform(context, args);
 
-    var pipe = this._pipeFor(proto, context);
-    var currValue = pipe.transform(context, args);
+      if (proto.shouldBeChecked()) {
+        var prevValue = this._readSelf(proto, values);
+        if (!isSame(prevValue, currValue)) {
+          currValue = ChangeDetectionUtil.unwrapValue(currValue);
 
-    if (proto.shouldBeChecked()) {
-      var prevValue = this._readSelf(proto, values);
-      if (!isSame(prevValue, currValue)) {
-        currValue = ChangeDetectionUtil.unwrapValue(currValue);
+          if (proto.lastInBinding) {
+            var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
+            if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
 
-        if (proto.lastInBinding) {
-          var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
-          if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
+            this._writeSelf(proto, currValue, values);
+            this._setChanged(proto, true);
 
-          this._writeSelf(proto, currValue, values);
-          this._setChanged(proto, true);
+            return change;
 
-          return change;
-
+          } else {
+            this._writeSelf(proto, currValue, values);
+            this._setChanged(proto, true);
+            return null;
+          }
         } else {
-          this._writeSelf(proto, currValue, values);
-          this._setChanged(proto, true);
+          this._setChanged(proto, false);
           return null;
         }
       } else {
-        this._setChanged(proto, false);
+        this._writeSelf(proto, currValue, values);
+        this._setChanged(proto, true);
         return null;
       }
-    } else {
-      this._writeSelf(proto, currValue, values);
-      this._setChanged(proto, true);
-      return null;
     }
   }
 
@@ -411,6 +412,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       }
     }
     return false;
+  }
+
+  _argsOrContextChanged(proto: ProtoRecord): boolean {
+    return this._argsChanged(proto) || this.changes[proto.contextIndex];
   }
 
   _readArgs(proto: ProtoRecord, values: any[]) {

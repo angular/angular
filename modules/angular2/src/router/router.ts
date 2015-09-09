@@ -27,17 +27,17 @@ let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
 
 /**
- * # Router
- * The router is responsible for mapping URLs to components.
+ * The `Router` is responsible for mapping URLs to components.
  *
  * You can see the state of the router by inspecting the read-only field `router.navigating`.
  * This may be useful for showing a spinner, for instance.
  *
  * ## Concepts
+ *
  * Routers and component instances have a 1:1 correspondence.
  *
- * The router holds reference to a number of "outlets." An outlet is a placeholder that the
- * router dynamically fills in depending on the current URL.
+ * The router holds reference to a number of {@link RouterOutlet}.
+ * An outlet is a placeholder that the router dynamically fills in depending on the current URL.
  *
  * When the router navigates from a URL, it must first recognizes it and serialize it into an
  * `Instruction`.

@@ -26,6 +26,7 @@ export class MessageBasedRenderer {
 
   start(): void {
     var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+    this._bus.initChannel(EVENT_CHANNEL);
     broker.registerMethod("createRootHostView",
                           [RenderProtoViewRef, PRIMITIVE, PRIMITIVE, PRIMITIVE],
                           bind(this._createRootHostView, this));

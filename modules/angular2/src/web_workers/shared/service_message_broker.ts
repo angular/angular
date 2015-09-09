@@ -14,7 +14,11 @@ import {
 export class ServiceMessageBrokerFactory {
   constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
 
-  createMessageBroker(channel: string): ServiceMessageBroker {
+  /**
+   * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
+   */
+  createMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
+    this._messageBus.initChannel(channel, runInZone);
     return new ServiceMessageBroker(this._messageBus, this._serializer, channel);
   }
 }

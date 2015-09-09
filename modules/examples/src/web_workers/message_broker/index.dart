@@ -9,7 +9,7 @@ main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   const ECHO_CHANNEL = "ECHO";
   bootstrap("background_index.dart").then((instance) {
-    var broker = instance.app.createClientMessageBroker(ECHO_CHANNEL);
+    var broker = instance.app.createClientMessageBroker(ECHO_CHANNEL, false);
     querySelector("#send_echo").addEventListener("click", (e) {
       var val = (querySelector("#echo_input") as InputElement).value;
       var args = new UiArguments("echo", [new FnArg(val, PRIMITIVE)]);

@@ -335,12 +335,19 @@ class _CodegenState {
     var pipe = _names.getPipeName(r.selfIndex);
     var pipeType = r.name;
 
-    var read = '''
+    var init = '''
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType');
       }
-      $newValue = $pipe.transform($context, [$argString]);
     ''';
+
+    var read = '''
+      $newValue = $pipe.pipe.transform($context, [$argString]);
+    ''';
+
+    var contexOrArgCheck = r.args.map((a) => _names.getChangeName(a)).toList();
+    contexOrArgCheck.add(_names.getChangeName(r.contextIndex));
+    var condition = '''!${pipe}.pure || (${contexOrArgCheck.join(" || ")})''';
 
     var check = '''
       if ($_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
@@ -352,7 +359,13 @@ class _CodegenState {
       }
     ''';
 
-    return r.shouldBeChecked() ? "${read}${check}" : read;
+    var genCode = r.shouldBeChecked() ? '''${read}${check}''' : read;
+
+    if (r.isUsedByOtherRecord()) {
+      return '''${init} if (${condition}) { ${genCode} } else { ${newValue} = ${oldValue}; }''';
+    } else {
+      return '''${init} if (${condition}) { ${genCode} }''';
+    }
   }
 
   String _genReferenceCheck(ProtoRecord r) {

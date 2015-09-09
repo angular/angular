@@ -236,13 +236,18 @@ export class ChangeDetectorJITGenerator {
     var newValue = this._names.getLocalName(r.selfIndex);
 
     var pipe = this._names.getPipeName(r.selfIndex);
-    var pipeType = r.name;
-    var read = `
+    var pipeName = r.name;
+
+    var init = `
       if (${pipe} === ${UTIL}.uninitialized) {
-        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}');
+        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeName}');
       }
-      ${newValue} = ${pipe}.transform(${context}, [${argString}]);
     `;
+    var read = `${newValue} = ${pipe}.pipe.transform(${context}, [${argString}]);`;
+
+    var contexOrArgCheck = r.args.map((a) => this._names.getChangeName(a));
+    contexOrArgCheck.push(this._names.getChangeName(r.contextIndex));
+    var condition = `!${pipe}.pure || (${contexOrArgCheck.join(" || ")})`;
 
     var check = `
       if (${oldValue} !== ${newValue}) {
@@ -254,7 +259,13 @@ export class ChangeDetectorJITGenerator {
       }
     `;
 
-    return r.shouldBeChecked() ? `${read}${check}` : read;
+    var genCode = r.shouldBeChecked() ? `${read}${check}` : read;
+
+    if (r.isUsedByOtherRecord()) {
+      return `${init} if (${condition}) { ${genCode} } else { ${newValue} = ${oldValue}; }`;
+    } else {
+      return `${init} if (${condition}) { ${genCode} }`;
+    }
   }
 
   _genReferenceCheck(r: ProtoRecord): string {

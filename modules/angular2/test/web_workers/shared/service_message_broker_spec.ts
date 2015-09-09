@@ -39,7 +39,11 @@ export function main() {
   describe("UIMessageBroker", () => {
     var messageBuses;
 
-    beforeEach(() => { messageBuses = createPairedMessageBuses(); });
+    beforeEach(() => {
+      messageBuses = createPairedMessageBuses();
+      messageBuses.ui.initChannel(CHANNEL);
+      messageBuses.worker.initChannel(CHANNEL);
+    });
     it("should call registered method with correct arguments",
        inject([Serializer], (serializer) => {
          var broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);

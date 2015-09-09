@@ -14,6 +14,7 @@ export class WebWorkerSetup {
   }
 
   start(): void {
+    this._bus.initChannel(SETUP_CHANNEL, false);
     var sink = this._bus.to(SETUP_CHANNEL);
     var source = this._bus.from(SETUP_CHANNEL);
 

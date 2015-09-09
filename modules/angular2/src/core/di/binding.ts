@@ -266,14 +266,38 @@ export class ResolvedFactory {
 /**
  * Provides an API for imperatively constructing {@link Binding}s.
  *
- * This is only relevant for JavaScript. See {@link BindingBuilder}.
+ * To construct a {@link Binding}, bind a `token` to either a class, a value or a factory function.
+ * See {@link BindingBuilder} for more details.
+ *
+ * The `token` is most commonly an {@link angular2/di/OpaqueToken} or a class.
+ *
+ * `bind` is only relevant for JavaScript. For Dart use the {@link Binding} constructor.
  *
  * ## Example
  *
- * ```javascript
- * bind(MyInterface).toClass(MyClass)
+ * ```typescript
+ * // inj.get(MyClass) would instantiate MyClass
+ * bind(MyClass).toClass(MyClass);
  *
+ * // inj.get(MyClass) === 'my class'
+ * bind(MyClass).toValue('my class');
+ *
+ * // inj.get(MyClass) would instantiate the depenency and call the factory function with the
+ * // instance
+ * bind(MyClass).toFactory(dep => new MyClass(dep), [DepClass]);
+ *
+ * // inj.get(MyOtherClass) === inj.get(MyClass)
+ * bind(MyOtherClass).toAlias(MyClass);
  * ```
+ *
+ * ```dart
+ * var binding = new Binding(MyClass, toClass: MyClass);
+ * var binding = new Binding(MyClass, toValue: 'my class');
+ * var binding = new Binding(MyClass, toFactory: (dep) => new MyClass(dep),
+ *                           dependencies: [DepClass]);
+ *  var binding = new Binding(MyOtherClass, toAlias: MyClass);
+ * ```
+ *
  */
 export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
