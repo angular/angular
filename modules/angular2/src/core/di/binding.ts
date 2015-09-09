@@ -364,7 +364,7 @@ export class BindingBuilder {
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy
+   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for easy
    * comparison.
    *
    * ```javascript
