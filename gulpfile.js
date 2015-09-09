@@ -21,6 +21,7 @@ var licenseWrap = require('./tools/build/licensewrap');
 var watch = require('./tools/build/watch');
 
 var pubget = require('./tools/build/pubget');
+var proto = require('./tools/build/proto');
 var linknodemodules = require('./tools/build/linknodemodules');
 var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
@@ -830,7 +831,7 @@ gulp.task('build/pure-packages.dart', function() {
   var transformStream = gulp
     .src([
       'modules_dart/transform/**/*',
-      '!modules_dart/transform/pubspec.yaml'
+      '!modules_dart/transform/**/*.proto'
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
 
@@ -882,6 +883,7 @@ gulp.task('build/pure-packages.dart', function() {
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
+    'lint_protos.dart',
     'build/tree.dart',
     'build/pure-packages.dart',
     // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
@@ -1206,9 +1208,21 @@ gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', '
 gulp.task('build', ['build.js', 'build.dart']);
 
 // ------------
+// transform codegen
+gulp.task('lint_protos.dart', function(done) {
+  return proto.lint({
+    dir: 'modules_dart/transform/lib/src/transform/common/model/'
+  }, done);
+});
+
+gulp.task('gen_protos.dart', function(done) {
+  return proto.generate({
+    dir: 'modules_dart/transform/lib/src/transform/common/model/',
+    plugin: 'tools/build/protoc-gen-dart'
+  }, done);
+});
+
 // change detection codegen
-
-
 gulp.task('build.change_detect.dart', function(done) {
   return runSequence('build/packages.dart', '!build/pubget.angular2.dart',
                      '!build/change_detect.dart', done);

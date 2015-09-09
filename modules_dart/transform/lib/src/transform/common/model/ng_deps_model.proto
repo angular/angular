@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+import "import_export_model.proto";
+import "reflection_info_model.proto";
+
+package angular2.src.transform.common.model.proto;
+
+message NgDepsModel {
+  optional string library_uri = 1;
+
+  repeated string part_uris = 2;
+
+  repeated ImportModel imports = 3;
+
+  repeated ExportModel exports = 4;
+
+  repeated ReflectionInfoModel reflectables = 5;
+}

@@ -82,6 +82,7 @@
     "gulp-typescript": "^2.6.0",
     "gulp-uglify": "^1.2.0",
     "gulp-webserver": "^0.8.7",
+    "hash-files": "^1.0.0",
     "html2jade": "^0.8.3",
     "indent-string": "^1.2.1",
     "jasmine": "2.3.1",
