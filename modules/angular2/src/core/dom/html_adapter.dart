@@ -431,4 +431,8 @@ class Html5LibDomAdapter implements DomAdapter {
   cancelAnimationFrame(id) {
     throw 'not implemented';
   }
+
+  performanceNow() {
+    throw 'not implemented';
+  }
 }

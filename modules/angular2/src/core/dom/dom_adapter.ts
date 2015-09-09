@@ -138,4 +138,5 @@ export class DomAdapter {
   setGlobalVar(name: string, value: any) { throw _abstract(); }
   requestAnimationFrame(callback): number { throw _abstract(); }
   cancelAnimationFrame(id) { throw _abstract(); }
+  performanceNow(): number { throw _abstract(); }
 }

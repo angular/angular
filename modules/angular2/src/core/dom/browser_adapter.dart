@@ -475,6 +475,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   cancelAnimationFrame(id) {
     window.cancelAnimationFrame(id);
   }
+
+  num performanceNow() {
+    return window.performance.now();
+  }
 }
 
 var baseElement = null;

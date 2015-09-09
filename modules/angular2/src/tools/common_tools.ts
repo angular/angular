@@ -1,6 +1,7 @@
 import {ApplicationRef, LifeCycle} from 'angular2/angular2';
 import {isPresent, NumberWrapper} from 'angular2/src/core/facade/lang';
 import {performance, window} from 'angular2/src/core/facade/browser';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`
@@ -40,17 +41,19 @@ export class AngularProfiler {
   timeChangeDetection(config: any) {
     var record = isPresent(config) && config['record'];
     var profileName = 'Change Detection';
-    if (record) {
+    // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
+    var isProfilerAvailable = isPresent(window.console.profile);
+    if (record && isProfilerAvailable) {
       window.console.profile(profileName);
     }
-    var start = window.performance.now();
+    var start = DOM.performanceNow();
     var numTicks = 0;
-    while (numTicks < 5 || (window.performance.now() - start) < 500) {
+    while (numTicks < 5 || (DOM.performanceNow() - start) < 500) {
       this.lifeCycle.tick();
       numTicks++;
     }
-    var end = window.performance.now();
-    if (record) {
+    var end = DOM.performanceNow();
+    if (record && isProfilerAvailable) {
       // need to cast to <any> because type checker thinks there's no argument
       // while in fact there is:
       //
