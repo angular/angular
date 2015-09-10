@@ -12,7 +12,7 @@ import {
   Log
 } from 'angular2/test_lib';
 import {BaseException} from 'angular2/src/core/facade/lang';
-import {ExceptionHandler} from 'angular2/src/core/exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
 
 class _CustomException {
   context = "some context";

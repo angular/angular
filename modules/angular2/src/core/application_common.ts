@@ -27,7 +27,7 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from './exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';

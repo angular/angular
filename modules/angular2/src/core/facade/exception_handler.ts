@@ -1,4 +1,3 @@
-import {Injectable} from 'angular2/src/core/di';
 import {isPresent, isBlank, print, BaseException} from 'angular2/src/core/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/core/facade/collection';
 
@@ -31,7 +30,6 @@ class _ArrayLogger {
  *
  * ```
  */
-@Injectable()
 export class ExceptionHandler {
   constructor(private _logger: any, private _rethrowException: boolean = true) {}
 
