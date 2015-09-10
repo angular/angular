@@ -95,54 +95,43 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
   onDestroy() {}
 
+  // CollectionChanges is considered dirty if it has any additions, moves or removals.
+  get isDirty(): boolean {
+    return this._additionsHead !== null || this._movesHead !== null || this._removalsHead !== null;
+  }
+
   // todo(vicb): optim for UnmodifiableListView (frozen arrays)
   check(collection: any): boolean {
     this._reset();
 
-    var record: CollectionChangeRecord = this._itHead;
-    var mayBeDirty: boolean = false;
-    var index: number;
-    var item;
+    var context = new _CheckContext(this._itHead);
 
     if (isArray(collection)) {
-      var list = collection;
-      this._length = collection.length;
-
-      for (index = 0; index < this._length; index++) {
-        item = list[index];
-        if (record === null || !looseIdentical(record.item, item)) {
-          record = this._mismatch(record, item, index);
-          mayBeDirty = true;
-        } else if (mayBeDirty) {
-          // TODO(misko): can we limit this to duplicates only?
-          record = this._verifyReinsertion(record, item, index);
-        }
-        record = record._next;
+      while (context.index < collection.length) {
+        this._checkRecord(collection[context.index], context);
       }
     } else {
-      index = 0;
-      iterateListLike(collection, (item) => {
-        if (record === null || !looseIdentical(record.item, item)) {
-          record = this._mismatch(record, item, index);
-          mayBeDirty = true;
-        } else if (mayBeDirty) {
-          // TODO(misko): can we limit this to duplicates only?
-          record = this._verifyReinsertion(record, item, index);
-        }
-        record = record._next;
-        index++;
-      });
-      this._length = index;
+      iterateListLike(collection, (item) => { this._checkRecord(item, context); });
     }
+    this._length = context.index;
 
-    this._truncate(record);
+    this._truncate(context.record);
     this._collection = collection;
     return this.isDirty;
   }
 
-  // CollectionChanges is considered dirty if it has any additions, moves or removals.
-  get isDirty(): boolean {
-    return this._additionsHead !== null || this._movesHead !== null || this._removalsHead !== null;
+  // Compares the current record with the new item keeping state in the context
+  // for the next process step
+  private _checkRecord(item: any, ctx: _CheckContext): void {
+    if (ctx.record === null || !looseIdentical(ctx.record.item, item)) {
+      ctx.record = this._mismatch(ctx.record, item, ctx.index);
+      ctx.mayBeDirty = true;
+    } else if (ctx.mayBeDirty) {
+      // TODO(misko): can we limit this to duplicates only?
+      ctx.record = this._verifyReinsertion(ctx.record, item, ctx.index);
+    }
+    ctx.record = ctx.record._next;
+    ctx.index++;
   }
 
   /**
@@ -617,4 +606,19 @@ class _DuplicateMap {
   clear() { this.map.clear(); }
 
   toString(): string { return '_DuplicateMap(' + stringify(this.map) + ')'; }
+}
+
+/**
+ * Context class used during the check phase of the differ
+ */
+class _CheckContext {
+  // Flag indicating if during the process a diffing record was found
+  mayBeDirty: boolean = false;
+  // Current check index
+  index: number = 0;
+  // Record points to the current processing record
+  record: CollectionChangeRecord;
+
+  // Initialize pointing to the head of the processing chain
+  constructor(record: CollectionChangeRecord) { this.record = record; }
 }
