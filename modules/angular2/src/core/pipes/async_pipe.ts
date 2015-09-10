@@ -44,6 +44,7 @@ var _observableStrategy = new ObservableStrategy();
  * The example below binds the `time` Observable to the view. Every 500ms, the `time` Observable
  * updates the view with the current time.
  *
+ * ```
  * import {Observable} from 'angular2/core';
  * @Component({
  *   selector: "task-cmp"
@@ -57,6 +58,7 @@ var _observableStrategy = new ObservableStrategy();
  *       observer.next(new Date().getTime()), 500);
  *   });
  * }
+ * ```
  */
 @Pipe({name: 'async', pure: false})
 @Injectable()
