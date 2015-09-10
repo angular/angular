@@ -3,9 +3,10 @@ import {
   isArray,
   isPresent,
   serializeEnum,
-  deserializeEnum,
-  BaseException
+  deserializeEnum
 } from "angular2/src/core/facade/lang";
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+
 import {
   ListWrapper,
   Map,

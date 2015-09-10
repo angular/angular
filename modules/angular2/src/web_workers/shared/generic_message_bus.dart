@@ -6,6 +6,7 @@ import 'package:angular2/src/web_workers/shared/message_bus.dart'
     show MessageBus, MessageBusSink, MessageBusSource;
 import 'package:angular2/src/core/zone/ng_zone.dart';
 import 'package:angular2/src/core/facade/lang.dart';
+import 'package:angular2/src/core/facade/exceptions.dart';
 
 class GenericMessageBus implements MessageBus {
   final MessageBusSink _sink;

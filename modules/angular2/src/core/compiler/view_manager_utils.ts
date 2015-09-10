@@ -1,7 +1,7 @@
 import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/src/core/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import * as eli from './element_injector';
-import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
 import {internalView} from './view_ref';
 import * as avmModule from './view_manager';

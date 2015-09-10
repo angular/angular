@@ -12,7 +12,7 @@ import 'package:angular2/src/core/change_detection/proto_record.dart';
 import 'package:angular2/src/core/change_detection/event_binding.dart';
 import 'package:angular2/src/core/change_detection/binding_record.dart';
 import 'package:angular2/src/core/change_detection/codegen_facade.dart' show codify;
-import 'package:angular2/src/core/facade/lang.dart' show BaseException;
+import 'package:angular2/src/core/facade/exceptions.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
 ///

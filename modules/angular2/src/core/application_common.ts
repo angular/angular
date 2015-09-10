@@ -6,11 +6,15 @@ import {
   Type,
   isBlank,
   isPresent,
-  BaseException,
   assertionsEnabled,
   print,
   stringify
 } from 'angular2/src/core/facade/lang';
+import {
+  BaseException,
+  WrappedException,
+  ExceptionHandler
+} from 'angular2/src/core/facade/exceptions';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
@@ -27,7 +31,6 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';

@@ -11,10 +11,9 @@ import {
   StringWrapper,
   isPresent,
   Type,
-  isArray,
-  BaseException
+  isArray
 } from 'angular2/src/core/facade/lang';
-
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
 import {ComponentInstruction, Instruction, stringifyInstruction} from './instruction';

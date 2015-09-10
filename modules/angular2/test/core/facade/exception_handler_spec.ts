@@ -11,8 +11,11 @@ import {
   xit,
   Log
 } from 'angular2/test_lib';
-import {BaseException} from 'angular2/src/core/facade/lang';
-import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
+import {
+  BaseException,
+  WrappedException,
+  ExceptionHandler
+} from 'angular2/src/core/facade/exceptions';
 
 class _CustomException {
   context = "some context";
@@ -46,13 +49,13 @@ export function main() {
     describe("context", () => {
       it("should print context", () => {
         var e = ExceptionHandler.exceptionToString(
-            new BaseException("message!", null, null, "context!"));
+            new WrappedException("message!", null, null, "context!"));
         expect(e).toContain("context!");
       });
 
       it("should print nested context", () => {
-        var original = new BaseException("message!", null, null, "context!");
-        var e = ExceptionHandler.exceptionToString(new BaseException("message", original));
+        var original = new WrappedException("message!", null, null, "context!");
+        var e = ExceptionHandler.exceptionToString(new WrappedException("message", original));
         expect(e).toContain("context!");
       });
 
@@ -65,17 +68,18 @@ export function main() {
     describe('original exception', () => {
       it("should print original exception message if available (original is BaseException)", () => {
         var realOriginal = new BaseException("inner");
-        var original = new BaseException("wrapped", realOriginal);
-        var e = ExceptionHandler.exceptionToString(new BaseException("wrappedwrapped", original));
+        var original = new WrappedException("wrapped", realOriginal);
+        var e =
+            ExceptionHandler.exceptionToString(new WrappedException("wrappedwrapped", original));
         expect(e).toContain("inner");
       });
 
       it("should print original exception message if available (original is not BaseException)",
          () => {
            var realOriginal = new _CustomException();
-           var original = new BaseException("wrapped", realOriginal);
+           var original = new WrappedException("wrapped", realOriginal);
            var e =
-               ExceptionHandler.exceptionToString(new BaseException("wrappedwrapped", original));
+               ExceptionHandler.exceptionToString(new WrappedException("wrappedwrapped", original));
            expect(e).toContain("custom");
          });
     });
@@ -83,9 +87,9 @@ export function main() {
     describe('original stack', () => {
       it("should print original stack if available", () => {
         var realOriginal = new BaseException("inner");
-        var original = new BaseException("wrapped", realOriginal, "originalStack");
+        var original = new WrappedException("wrapped", realOriginal, "originalStack");
         var e = ExceptionHandler.exceptionToString(
-            new BaseException("wrappedwrapped", original, "wrappedStack"));
+            new WrappedException("wrappedwrapped", original, "wrappedStack"));
         expect(e).toContain("originalStack");
       });
     });

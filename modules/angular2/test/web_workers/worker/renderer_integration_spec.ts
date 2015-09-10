@@ -18,7 +18,7 @@ import {
   FnArg
 } from "angular2/src/web_workers/shared/client_message_broker";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {isPresent, isBlank, BaseException, Type} from "angular2/src/core/facade/lang";
+import {isPresent, isBlank, Type} from "angular2/src/core/facade/lang";
 import {MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
 import {
   RenderDirectiveMetadata,

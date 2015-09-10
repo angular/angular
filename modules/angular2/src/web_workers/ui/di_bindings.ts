@@ -48,7 +48,7 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';

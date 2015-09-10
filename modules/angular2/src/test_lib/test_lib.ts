@@ -6,7 +6,6 @@ import {global, isFunction} from 'angular2/src/core/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {bind} from 'angular2/src/core/di';
-import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
 
 import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
 
@@ -285,7 +284,7 @@ _global.beforeEach(function() {
     toContainError: function() {
       return {
         compare: function(actual, expectedText) {
-          var errorMessage = ExceptionHandler.exceptionToString(actual);
+          var errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
             get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
@@ -304,7 +303,7 @@ _global.beforeEach(function() {
               get message() { return "Was expected to throw, but did not throw"; }
             };
           } catch (e) {
-            var errorMessage = ExceptionHandler.exceptionToString(e);
+            var errorMessage = e.toString();
             return {
               pass: errorMessage.indexOf(expectedText) > -1,
               get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }

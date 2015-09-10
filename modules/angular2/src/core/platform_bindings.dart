@@ -2,7 +2,7 @@ library angular2.src.core.platform_bindings;
 
 
 import 'package:angular2/core.dart';
-import './exception_handler.dart';
+import 'package:angular2/src/core/facade/exceptions.dart';
 import 'package:angular2/src/core/dom/dom_adapter.dart';
 
 exceptionFactory() => new ExceptionHandler(DOM, true);

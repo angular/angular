@@ -1,6 +1,6 @@
 import {Injector, bind, Injectable} from 'angular2/src/core/di';
 
-import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 

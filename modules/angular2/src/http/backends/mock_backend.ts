@@ -5,7 +5,7 @@ import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 /**
  *

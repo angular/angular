@@ -1,4 +1,5 @@
-import {Type, isPresent, stringify, BaseException} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   ListWrapper,
   Map,

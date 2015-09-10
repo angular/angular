@@ -3,7 +3,7 @@ import {
   MessageBusSource,
   MessageBusSink
 } from "angular2/src/web_workers/shared/message_bus";
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable} from "angular2/src/core/di";

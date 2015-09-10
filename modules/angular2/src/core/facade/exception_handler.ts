@@ -1,4 +1,5 @@
-import {isPresent, isBlank, print, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/core/facade/collection';
 
 class _ArrayLogger {
@@ -45,7 +46,7 @@ export class ExceptionHandler {
     var originalStack = this._findOriginalStack(exception);
     var context = this._findContext(exception);
 
-    this._logger.logGroup(`EXCEPTION: ${exception}`);
+    this._logger.logGroup(`EXCEPTION: ${this._extractMessage(exception)}`);
 
     if (isPresent(stackTrace) && isBlank(originalStack)) {
       this._logger.logError("STACKTRACE:");
@@ -57,7 +58,7 @@ export class ExceptionHandler {
     }
 
     if (isPresent(originalException)) {
-      this._logger.logError(`ORIGINAL EXCEPTION: ${originalException}`);
+      this._logger.logError(`ORIGINAL EXCEPTION: ${this._extractMessage(originalException)}`);
     }
 
     if (isPresent(originalStack)) {
@@ -77,6 +78,10 @@ export class ExceptionHandler {
     if (this._rethrowException) throw exception;
   }
 
+  _extractMessage(exception: any): string {
+    return exception instanceof WrappedException ? exception.wrapperMessage : exception.toString();
+  }
+
   _longStackTrace(stackTrace: any): any {
     return isListLikeIterable(stackTrace) ? (<any>stackTrace).join("\n\n-----async gap-----\n") :
                                             stackTrace.toString();
@@ -84,7 +89,7 @@ export class ExceptionHandler {
 
   _findContext(exception: any): any {
     try {
-      if (!(exception instanceof BaseException)) return null;
+      if (!(exception instanceof WrappedException)) return null;
       return isPresent(exception.context) ? exception.context :
                                             this._findContext(exception.originalException);
     } catch (e) {
@@ -94,10 +99,10 @@ export class ExceptionHandler {
   }
 
   _findOriginalException(exception: any): any {
-    if (!(exception instanceof BaseException)) return null;
+    if (!(exception instanceof WrappedException)) return null;
 
     var e = exception.originalException;
-    while (e instanceof BaseException && isPresent(e.originalException)) {
+    while (e instanceof WrappedException && isPresent(e.originalException)) {
       e = e.originalException;
     }
 
@@ -105,13 +110,13 @@ export class ExceptionHandler {
   }
 
   _findOriginalStack(exception: any): any {
-    if (!(exception instanceof BaseException)) return null;
+    if (!(exception instanceof WrappedException)) return null;
 
     var e = exception;
     var stack = exception.originalStack;
-    while (e instanceof BaseException && isPresent(e.originalException)) {
+    while (e instanceof WrappedException && isPresent(e.originalException)) {
       e = e.originalException;
-      if (e instanceof BaseException && isPresent(e.originalException)) {
+      if (e instanceof WrappedException && isPresent(e.originalException)) {
         stack = e.originalStack;
       }
     }

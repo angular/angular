@@ -4,7 +4,6 @@ import {
   isBlank,
   StringWrapper,
   RegExpWrapper,
-  BaseException,
   NumberWrapper
 } from 'angular2/src/core/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';

@@ -11,14 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {
-  isBlank,
-  isPresent,
-  BaseException,
-  stringify,
-  Date,
-  DateWrapper
-} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, stringify, Date, DateWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 import {

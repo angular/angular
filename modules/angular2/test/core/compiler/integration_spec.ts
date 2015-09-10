@@ -25,7 +25,6 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
   Type,
   isPresent,
-  BaseException,
   assertionsEnabled,
   isJsObject,
   global,
@@ -34,6 +33,7 @@ import {
   CONST,
   CONST_EXPR
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   PromiseWrapper,
   EventEmitter,

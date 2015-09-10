@@ -2,13 +2,13 @@ import {RequestMethods, RequestModesOpts, RequestCredentialsOpts, RequestCacheOp
 import {RequestOptions} from './base_request_options';
 import {Headers} from './headers';
 import {
-  BaseException,
   RegExpWrapper,
   CONST_EXPR,
   isPresent,
   isJsObject,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
+
 
 // TODO(jeffbcross): properly implement body accessors
 /**

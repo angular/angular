@@ -1,11 +1,5 @@
-import {
-  isPresent,
-  isBlank,
-  isJsObject,
-  isType,
-  StringWrapper,
-  BaseException
-} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, isJsObject, isType, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   isListLikeIterable,
   Map,

@@ -4,9 +4,9 @@ import {
   isBlank,
   RegExpWrapper,
   RegExpMatcherWrapper,
-  StringWrapper,
-  BaseException
+  StringWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 const _EMPTY_ATTR_VALUE = '';
 

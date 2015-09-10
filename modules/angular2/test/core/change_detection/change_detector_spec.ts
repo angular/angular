@@ -16,10 +16,10 @@ import {
   isPresent,
   isBlank,
   isJsObject,
-  BaseException,
   FunctionWrapper,
   normalizeBool
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
@@ -1140,9 +1140,8 @@ export function main() {
           expect(val.dispatcher.log).toEqual(['propName=Bob']);
 
           val.changeDetector.dehydrate();
-          var dehydratedException = new DehydratedException();
           expect(() => {val.changeDetector.detectChanges()})
-              .toThrowError(dehydratedException.toString());
+              .toThrowErrorWith("Attempt to detect changes on a dehydrated detector");
           expect(val.dispatcher.log).toEqual(['propName=Bob']);
         });
       });

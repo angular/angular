@@ -4,11 +4,11 @@ import {
   isPresent,
   CONST,
   CONST_EXPR,
-  BaseException,
   stringify,
   isArray,
   normalizeBool
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Key} from './key';

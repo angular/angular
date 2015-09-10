@@ -1,5 +1,3 @@
-import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
-
 /**
  * To create a Pipe, you must implement this interface.
  *

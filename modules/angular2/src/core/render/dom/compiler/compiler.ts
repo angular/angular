@@ -1,7 +1,7 @@
 import {Injectable, Inject} from 'angular2/src/core/di';
 
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
-import {BaseException, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {
@@ -15,6 +15,7 @@ import {
   ViewEncapsulation
 } from '../../api';
 import {CompilePipeline} from './compile_pipeline';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ViewLoader, TemplateAndStyles} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';

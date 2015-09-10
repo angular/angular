@@ -2,12 +2,12 @@ import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/core/facade/as
 import {
   isPresent,
   isBlank,
-  BaseException,
   StringWrapper,
   Math,
   RegExpWrapper,
   NumberWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 

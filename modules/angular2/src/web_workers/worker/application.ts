@@ -3,7 +3,7 @@ import {
   PostMessageBusSink,
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
-import {Type, BaseException} from "angular2/src/core/facade/lang";
+import {Type} from "angular2/src/core/facade/lang";
 import {Binding, Injectable} from "angular2/src/core/di";
 import {Map} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';

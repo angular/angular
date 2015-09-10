@@ -1,5 +1,6 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {Type, isPresent, BaseException, stringify, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, stringify, isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {ViewMetadata} from '../core/metadata';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';

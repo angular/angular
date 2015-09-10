@@ -5,12 +5,12 @@ import {
   isBlank,
   isType,
   isPresent,
-  BaseException,
   normalizeBlank,
   stringify,
   isArray,
   isPromise
 } from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 

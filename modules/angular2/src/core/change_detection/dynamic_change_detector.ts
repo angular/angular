@@ -1,10 +1,5 @@
-import {
-  isPresent,
-  isBlank,
-  BaseException,
-  FunctionWrapper,
-  StringWrapper
-} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, FunctionWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';

@@ -26,7 +26,7 @@ import {
   ROUTER_DIRECTIVES
 } from 'angular2/router';
 
-import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 

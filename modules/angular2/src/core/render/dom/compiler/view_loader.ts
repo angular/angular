@@ -2,11 +2,11 @@ import {Injectable} from 'angular2/src/core/di';
 import {
   isBlank,
   isPresent,
-  BaseException,
   stringify,
   isPromise,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';

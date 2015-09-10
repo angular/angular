@@ -1,11 +1,5 @@
-import {
-  CONST_EXPR,
-  isPresent,
-  isBlank,
-  BaseException,
-  Type,
-  StringWrapper
-} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, isPresent, isBlank, Type, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {ChangeDetectionStrategy, isDefaultChangeDetectionStrategy} from './constants';

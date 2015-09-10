@@ -1,11 +1,5 @@
-import {
-  isBlank,
-  isString,
-  isArray,
-  StringWrapper,
-  BaseException,
-  CONST
-} from 'angular2/src/core/facade/lang';
+import {isBlank, isString, isArray, StringWrapper, CONST} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Math} from 'angular2/src/core/facade/math';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';

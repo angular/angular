@@ -6,9 +6,9 @@ import {
   isBlank,
   RegExpWrapper,
   StringWrapper,
-  BaseException,
   NumberWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';

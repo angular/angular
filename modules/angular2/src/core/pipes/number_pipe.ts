@@ -5,10 +5,10 @@ import {
   StringWrapper,
   NumberWrapper,
   RegExpWrapper,
-  BaseException,
   CONST,
   FunctionWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {NumberFormatter, NumberFormatStyle} from 'angular2/src/core/facade/intl';
 import {Injectable} from 'angular2/src/core/di';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';

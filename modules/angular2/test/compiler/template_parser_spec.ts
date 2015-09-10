@@ -614,7 +614,7 @@ Can't bind to 'invalidProp' since it isn't a known native property in TestComp >
       });
 
       it('should report errors in expressions', () => {
-        expect(() => parse('<div [prop]="a b"></div>', [])).toThrowError(`Template parse errors:
+        expect(() => parse('<div [prop]="a b"></div>', [])).toThrowErrorWith(`Template parse errors:
 Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp > div:nth-child(0)[[prop]=a b]`);
       });
 
