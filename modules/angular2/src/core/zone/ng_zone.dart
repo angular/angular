@@ -222,8 +222,13 @@ class NgZone {
           }
         }
 
-        if (_pendingMicrotasks == 0 && _onEventDone != null) {
-          runOutsideAngular(_onEventDone);
+        if (_pendingMicrotasks == 0) {
+          if (_onEventDone != null) {
+            runOutsideAngular(_onEventDone);
+          }
+          if (_onEventDoneWaitForAsync != null) {
+            runOutsideAngular(_onEventDoneWaitForAsync);
+          }
         }
       }
     }
