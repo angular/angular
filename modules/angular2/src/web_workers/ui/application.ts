@@ -33,7 +33,7 @@ export function spawnWebWorker(uri: string): WebWorkerInstance {
 
 /**
  * Wrapper class that exposes the {@link WebWorkerApplication}
- * Isolate instance and underyling {@link MessageBus} for lower level message passing.
+ * Isolate instance and underlying {@link MessageBus} for lower level message passing.
  */
 export class WebWorkerInstance {
   constructor(public app: WebWorkerApplication, public worker: Worker, public bus: MessageBus) {}
