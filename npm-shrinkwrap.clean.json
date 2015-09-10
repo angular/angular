@@ -8714,7 +8714,7 @@
       }
     },
     "karma-jasmine": {
-      "version": "0.3.5"
+      "version": "0.3.6"
     },
     "karma-sauce-launcher": {
       "version": "0.2.11",
@@ -9850,6 +9850,10 @@
               }
             }
           }
+        },
+        "typescript": {
+          "version": "1.5.3",
+          "resolved": "git://github.com/microsoft/TypeScript.git#a24aa6f57d281bafd3535f0f4c3f492364a8b4d6"
         }
       }
     },
