@@ -40,7 +40,7 @@ To bootstrap Hello World in a WebWorker we do the following in TypeScript
 ```TypeScript
 // index.js
 import {bootstrap} from "angular2/web_worker/ui";
-bootstrap(loader.js);
+bootstrap("loader.js");
 ```
 ```JavaScript
 // loader.js
@@ -217,7 +217,7 @@ import {MessageBus} from 'angular2/web_worker/worker';
 @View({...})
 export class MyComponent {
   constructor (bus: MessageBus) {
-    bus.initChannel("My CustomChannel");
+    bus.initChannel("My Custom Channel");
   }
 }
 ```
@@ -396,8 +396,8 @@ an operation be performed and may want to receive the result.
 
 ### Using the MessageBroker In Your Application
 To use MessageBrokers in your application you must initialize both a `ClientMessageBroker` and a
-`ServiceMessageBroker` on the same channel. You can then register methods that the `ServiceMessageBroker` should
-listen the instruct the `ClientMessageBroker` to run those methods. Below is a lightweight example of using
+`ServiceMessageBroker` on the same channel. You can then register methods with the `ServiceMessageBroker` and
+instruct the `ClientMessageBroker` to run those methods. Below is a lightweight example of using
 MessageBrokers in an application. For a more complete example, check out the `WebWorkerRenderer` and
 `MessageBasedRenderer` inside the Angular WebWorker code.
 
