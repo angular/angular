@@ -9,7 +9,7 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  * A wrapper around zones that lets you schedule tasks after it has executed a task.
  *
  * The wrapper maintains an "inner" and an "mount" `Zone`. The application code will executes
- * in the "inner" zone unless `runOutsideAngular` is explicitely called.
+ * in the "inner" zone unless `runOutsideAngular` is explicitly called.
  *
  * A typical application will create a singleton `NgZone`. The outer `Zone` is a fork of the root
  * `Zone`. The default `onTurnDone` runs the Angular change detection.
