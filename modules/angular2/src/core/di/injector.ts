@@ -647,7 +647,7 @@ export class Injector {
       d18 = length > 18 ? this._getByDependency(binding, deps[18], visibility) : null;
       d19 = length > 19 ? this._getByDependency(binding, deps[19], visibility) : null;
     } catch (e) {
-      if (e instanceof AbstractBindingError) {
+      if (e instanceof AbstractBindingError || e instanceof InstantiationError) {
         e.addKey(this, binding.key);
       }
       throw e;

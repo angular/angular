@@ -1,6 +1,7 @@
 import {XHR} from 'angular2/src/core/render/xhr';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent, normalizeBlank, BaseException} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, normalizeBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 export class MockXHR extends XHR {

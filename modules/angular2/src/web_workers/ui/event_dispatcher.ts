@@ -9,7 +9,7 @@ import {
   serializeGenericEvent,
   serializeEventWithTarget
 } from 'angular2/src/web_workers/ui/event_serializer';
-import {BaseException} from "angular2/src/core/facade/lang";
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 

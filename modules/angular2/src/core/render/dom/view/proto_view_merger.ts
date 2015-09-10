@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {isPresent, isBlank, BaseException, isArray} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, isArray} from 'angular2/src/core/facade/lang';
 import {ListWrapper, SetWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';

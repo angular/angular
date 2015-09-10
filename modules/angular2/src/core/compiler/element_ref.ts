@@ -1,4 +1,4 @@
-import {BaseException, isPresent} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ViewRef} from './view_ref';
 import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/render/api';
 

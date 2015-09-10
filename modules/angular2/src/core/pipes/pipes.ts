@@ -1,4 +1,5 @@
-import {isBlank, isPresent, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, CONST, Type} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   Injectable,

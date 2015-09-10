@@ -1,11 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
-import {
-  isPresent,
-  isBlank,
-  RegExpWrapper,
-  BaseException,
-  normalizeBlank
-} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, RegExpWrapper, normalizeBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 /**

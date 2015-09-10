@@ -193,24 +193,6 @@ class FunctionWrapper {
   }
 }
 
-class BaseException extends Error {
-  final dynamic context;
-  final String message;
-  final originalException;
-  final originalStack;
-
-  BaseException(
-      [this.message, this.originalException, this.originalStack, this.context]);
-
-  String toString() {
-    return this.message;
-  }
-}
-
-Error makeTypeError([String message = ""]) {
-  return new BaseException(message);
-}
-
 const _NAN_KEY = const Object();
 
 // Dart can have identical(str1, str2) == false while str1 == str2. Moreover,

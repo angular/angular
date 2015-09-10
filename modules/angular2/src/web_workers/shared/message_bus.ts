@@ -1,5 +1,5 @@
 import {EventEmitter} from 'angular2/src/core/facade/async';
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 export {EventEmitter, Observable} from 'angular2/src/core/facade/async';
 

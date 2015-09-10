@@ -3,13 +3,12 @@ import {
   RegExpWrapper,
   isPresent,
   StringWrapper,
-  BaseException,
   StringJoiner,
   stringify,
   assertionsEnabled,
   isBlank
 } from 'angular2/src/core/facade/lang';
-
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 

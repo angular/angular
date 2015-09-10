@@ -1,4 +1,4 @@
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 function _abstract() {
   return new BaseException('This method is abstract');

@@ -17,10 +17,10 @@ import {
   isStringMap,
   isFunction,
   StringWrapper,
-  BaseException,
   Type,
   getTypeNameForDebugging
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   RouteConfig,
   AsyncRoute,

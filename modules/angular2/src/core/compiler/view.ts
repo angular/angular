@@ -25,7 +25,8 @@ import {
   DirectiveBinding
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import * as renderApi from 'angular2/src/core/render/api';
 import {RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
@@ -318,7 +319,7 @@ class _Context {
 /**
  * Wraps an exception thrown by an event handler.
  */
-class EventEvaluationError extends BaseException {
+class EventEvaluationError extends WrappedException {
   constructor(eventName: string, originalException: any, originalStack: any, context: any) {
     super(`Error during evaluation of "${eventName}"`, originalException, originalStack, context);
   }

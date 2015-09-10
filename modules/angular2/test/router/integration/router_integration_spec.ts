@@ -21,7 +21,7 @@ import {bind} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   ROUTER_BINDINGS,
   RouteParams,

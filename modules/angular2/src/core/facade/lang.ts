@@ -33,26 +33,6 @@ export function getTypeNameForDebugging(type: Type): string {
   return type['name'];
 }
 
-export class BaseException extends Error {
-  stack;
-  constructor(public message?: string, private _originalException?, private _originalStack?,
-              private _context?) {
-    super(message);
-    this.stack = (<any>new Error(message)).stack;
-  }
-
-  get originalException(): any { return this._originalException; }
-
-  get originalStack(): any { return this._originalStack; }
-
-  get context(): any { return this._context; }
-
-  toString(): string { return this.message; }
-}
-
-export function makeTypeError(message?: string): Error {
-  return new TypeError(message);
-}
 
 export var Math = _global.Math;
 export var Date = _global.Date;
@@ -211,10 +191,10 @@ export class StringJoiner {
   toString(): string { return this.parts.join(""); }
 }
 
-export class NumberParseError extends BaseException {
+export class NumberParseError extends Error {
   name: string;
 
-  constructor(public message: string) { super(); }
+  constructor(public message: string) { super(message); }
 
   toString(): string { return this.message; }
 }
@@ -328,11 +308,7 @@ export function isJsObject(o: any): boolean {
 }
 
 export function print(obj: Error | Object) {
-  if (obj instanceof BaseException) {
-    console.log(obj.stack);
-  } else {
-    console.log(obj);
-  }
+  console.log(obj);
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...

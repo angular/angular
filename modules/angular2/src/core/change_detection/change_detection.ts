@@ -13,14 +13,7 @@ import {
 } from './interfaces';
 import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/src/core/di';
 import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {
-  CONST,
-  CONST_EXPR,
-  isPresent,
-  BaseException,
-  assertionsEnabled
-} from 'angular2/src/core/facade/lang';
-
+import {CONST, CONST_EXPR, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
 export * from './parser/ast';
 
 export {Lexer} from './parser/lexer';

@@ -1,4 +1,4 @@
-import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/core/facade/collection';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';

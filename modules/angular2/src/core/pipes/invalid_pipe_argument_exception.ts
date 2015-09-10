@@ -1,4 +1,5 @@
-import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
+import {ABSTRACT, CONST, Type} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 export class InvalidPipeArgumentException extends BaseException {
   constructor(type: Type, value: Object) {

@@ -1,7 +1,8 @@
 import {Injectable} from 'angular2/src/core/di';
 import {ChangeDetector} from 'angular2/src/core/change_detection/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
 /**

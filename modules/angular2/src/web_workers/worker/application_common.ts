@@ -6,7 +6,6 @@ import {
   Type,
   isBlank,
   isPresent,
-  BaseException,
   assertionsEnabled,
   print,
   stringify
@@ -25,7 +24,7 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from 'angular2/src/core/facade/exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';

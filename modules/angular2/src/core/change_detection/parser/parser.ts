@@ -1,5 +1,6 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
-import {isBlank, isPresent, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Lexer,
@@ -51,8 +52,7 @@ var INTERPOLATION_REGEXP = /\{\{(.*?)\}\}/g;
 
 class ParseException extends BaseException {
   constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
-    super(`Parser Error: ${message} ${errLocation} [${input}] in ${ctxLocation}`, null, null,
-          ctxLocation);
+    super(`Parser Error: ${message} ${errLocation} [${input}] in ${ctxLocation}`);
   }
 }
 

@@ -22,7 +22,6 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 
 import 'package:angular2/src/core/di/binding.dart' show bind;
 import 'package:angular2/src/core/di/injector.dart' show Injector;
-import 'package:angular2/src/core/facade/exception_handler.dart' show ExceptionHandler;
 import 'package:angular2/src/core/facade/collection.dart' show StringMapWrapper;
 
 import 'test_injector.dart';
@@ -77,7 +76,7 @@ Expect expect(actual, [matcher]) {
 const _u = const Object();
 
 expectErrorMessage(actual, expectedMessage) {
-  expect(ExceptionHandler.exceptionToString(actual)).toContain(expectedMessage);
+  expect(actual.toString()).toContain(expectedMessage);
 }
 
 expectException(Function actual, expectedMessage) {

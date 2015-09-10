@@ -1,4 +1,5 @@
-import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {Type, isBlank, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {

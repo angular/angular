@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
-import {BaseException, isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';

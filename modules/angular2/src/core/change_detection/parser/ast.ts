@@ -1,4 +1,4 @@
-import {isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/core/facade/lang";
+import {isBlank, isPresent, FunctionWrapper} from "angular2/src/core/facade/lang";
 import {Map, ListWrapper, StringMapWrapper} from "angular2/src/core/facade/collection";
 
 export class AST {

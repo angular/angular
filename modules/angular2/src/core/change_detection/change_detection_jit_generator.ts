@@ -1,10 +1,5 @@
-import {
-  BaseException,
-  Type,
-  isBlank,
-  isPresent,
-  StringWrapper
-} from 'angular2/src/core/facade/lang';
+import {Type, isBlank, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
@@ -70,7 +65,7 @@ export class ChangeDetectorJITGenerator {
       ${this.generateSource()}
       return function(dispatcher) {
         return new ${this.typeName}(dispatcher);
-      }      
+      }
     `;
     return new Function(this.abstractChangeDetectorVarName, this.changeDetectionUtilVarName,
                         factorySource)(AbstractChangeDetector, ChangeDetectionUtil);

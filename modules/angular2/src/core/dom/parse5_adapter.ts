@@ -9,13 +9,8 @@ var url = require('url');
 
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
-import {
-  BaseException,
-  isPresent,
-  isBlank,
-  global,
-  setValueOnPath
-} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, global, setValueOnPath} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
 
 var _attrToPropMap = {

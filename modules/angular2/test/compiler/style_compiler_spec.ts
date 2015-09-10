@@ -13,8 +13,9 @@ import {
 } from 'angular2/test_lib';
 import {IS_DART} from '../platform';
 import {SpyXHR} from '../core/spies';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {CONST_EXPR, isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, isPresent} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';

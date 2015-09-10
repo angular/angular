@@ -1,4 +1,5 @@
-import {isPresent, isBlank, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef} from './change_detector_ref';
