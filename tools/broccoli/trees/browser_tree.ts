@@ -131,10 +131,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   });
 
   // Now we add a few more files to the es6 tree that the es5 tree should not see
-  ['angular2', 'rtts_assert'].forEach(function(destDir) {
-    var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
-    es6Tree = mergeTrees([es6Tree, extras]);
-  });
+  var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: 'angular2'});
+  es6Tree = mergeTrees([es6Tree, extras]);
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [

@@ -14,19 +14,6 @@ rm -fr $NPM_DIR
 FILES='!(test|e2e_test|docs)'
 DTS_FILES='*.d.ts'
 
-function publishRttsAssert {
-  NAME='rtts_assert'
-  PUBLISH_DIR=$NPM_DIR/$NAME
-  rm -fr $PUBLISH_DIR
-  mkdir -p $PUBLISH_DIR
-
-  mkdir -p $PUBLISH_DIR/es6
-  cp -r $ROOT_DIR/dist/js/prod/es6/$NAME/$FILES $PUBLISH_DIR/es6
-
-  cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
-  npm publish $PUBLISH_DIR
-}
-
 function publishModule {
   NAME=$1
   PUBLISH_DIR=$NPM_DIR/$NAME
@@ -65,6 +52,5 @@ function publishModule {
   npm publish $PUBLISH_DIR
 }
 
-publishRttsAssert
 publishModule angular2
 publishModule benchpress

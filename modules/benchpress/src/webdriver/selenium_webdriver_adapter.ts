@@ -17,7 +17,7 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     thenable.then(
         // selenium-webdriver uses an own Node.js context,
         // so we need to convert data into objects of this context.
-        // (e.g. otherwise instanceof checks of rtts_assert would fail)
+        // Previously needed for rtts_asserts.
         (data) => completer.resolve(convertToLocalProcess(data)), completer.reject);
     return completer.promise;
   }
