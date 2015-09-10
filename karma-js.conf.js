@@ -30,7 +30,6 @@ module.exports = function(config) {
 
     exclude: [
       'dist/js/dev/es5/**/e2e_test/**',
-      'dist/js/dev/es5/rtts_assert/**',
       'dist/angular1_router.js'
     ],
 

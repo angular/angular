@@ -10,7 +10,6 @@
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
     "traceur": "<%= packageJson.dependencies.traceur %>",
-    "rtts_assert": "<%= packageJson.version %>",
     "rx": "<%= packageJson.dependencies['rx'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
