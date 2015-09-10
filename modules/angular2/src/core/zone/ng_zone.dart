@@ -54,6 +54,7 @@ class NgZone {
   ZeroArgFunction _onTurnStart;
   ZeroArgFunction _onTurnDone;
   ZeroArgFunction _onEventDone;
+  ZeroArgFunction _onEventDoneWaitForAsync;
   ErrorHandlingFn _onErrorHandler;
 
   // Code executed in _mountZone does not trigger the onTurnDone.
@@ -125,14 +126,14 @@ class NgZone {
    */
   void overrideOnEventDone(ZeroArgFunction onEventDoneFn,
       [bool waitForAsync = false]) {
-    _onEventDone = onEventDoneFn;
-
     if (waitForAsync) {
-      _onEventDone = () {
+      _onEventDoneWaitForAsync = () {
         if (_pendingTimers.length == 0) {
           onEventDoneFn();
         }
       };
+    } else {
+      _onEventDone = onEventDoneFn;
     }
   }
 
