@@ -93,7 +93,7 @@
     "karma-chrome-launcher": "^0.1.4",
     "karma-cli": "^0.0.4",
     "karma-dart": "^0.2.8",
-    "karma-jasmine": "^0.3.5",
+    "karma-jasmine": "^0.3.6",
     "karma-sauce-launcher": "^0.2.11",
     "lodash": "^2.4.1",
     "madge": "^0.5.0",
