@@ -1,6 +1,6 @@
 // Index to be used if Http is ever configured as a standalone npm package.
 // require('reflect-metadata');
-// require('traceur-runtime');
+// require('es6-shim');
 // import {HTTP_BINDINGS, JSONP_BINDINGS, Http, Jsonp} from './http';
 // import {Injector} from 'angular2/angular2';
 // export * from './http';

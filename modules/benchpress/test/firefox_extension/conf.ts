@@ -1,5 +1,5 @@
 /// <reference path="../../../angular2/typings/node/node.d.ts" />
-require('traceur/bin/traceur-runtime.js');
+require('es6-shim/es6-shim.js');
 require('reflect-metadata');
 var testHelper = require('../../src/firefox_extension/lib/test_helper.js');
 

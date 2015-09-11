@@ -30,7 +30,6 @@
   "dependencies": {
     "reflect-metadata": "0.1.1",
     "rx": "2.5.1",
-    "traceur": "0.0.87",
     "zone.js": "0.5.4"
   },
   "devDependencies": {
@@ -57,6 +56,7 @@
     "del": "~1",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.10.11",
+    "es6-shim": "^0.33.3",
     "event-stream": "^3.1.5",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.18.0",
