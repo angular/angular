@@ -73,9 +73,10 @@ export class PostMessageBusSink implements MessageBusSink {
   }
 
   private _handleOnEventDone() {
-    // TODO: Send all buffered messages in one postMessage call
-    this._sendMessages(this._messageBuffer);
-    this._messageBuffer = [];
+    if (this._messageBuffer.length > 0) {
+      this._sendMessages(this._messageBuffer);
+      this._messageBuffer = [];
+    }
   }
 
   private _sendMessages(messages: Array<Object>) { this._postMessageTarget.postMessage(messages); }

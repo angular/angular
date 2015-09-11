@@ -31,7 +31,6 @@ export function bootstrapWebWorker(
     Promise<ApplicationRef> {
   var sink = new PostMessageBusSink({
     postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
-      console.log("Sending", message);
       _postMessage(message, transferrables);
     }
   });

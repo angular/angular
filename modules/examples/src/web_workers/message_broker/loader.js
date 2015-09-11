@@ -9,7 +9,6 @@ $SCRIPTS$
 System.import("examples/src/web_workers/message_broker/background_index")
     .then(
         function(m) {
-          console.log("running main");
           try {
             m.main();
           } catch (e) {
