@@ -134,7 +134,7 @@ export class TemplateMetadata {
     this.ngContentSelectors = ngContentSelectors;
   }
 
-  static fromJson(data: StringMap<string, any>):TemplateMetadata {
+  static fromJson(data: StringMap<string, any>): TemplateMetadata {
     return new TemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
                          viewEncapsulationFromJson(data['encapsulation']) :
