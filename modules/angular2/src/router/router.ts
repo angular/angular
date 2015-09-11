@@ -217,7 +217,8 @@ export class Router {
   _settleInstruction(instruction: Instruction): Promise<any> {
     var unsettledInstructions: Array<Promise<any>> = [];
     if (isBlank(instruction.component.componentType)) {
-      unsettledInstructions.push(instruction.component.resolveComponentType());
+      unsettledInstructions.push(instruction.component.resolveComponentType().then(
+          (type: Type) => { this.registry.configFromComponent(type); }));
     }
     if (isPresent(instruction.child)) {
       unsettledInstructions.push(this._settleInstruction(instruction.child));

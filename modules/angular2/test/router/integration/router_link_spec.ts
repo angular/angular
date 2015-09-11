@@ -17,6 +17,7 @@ import {
 } from 'angular2/test_lib';
 
 import {NumberWrapper} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {bind, Component, DirectiveResolver, View} from 'angular2/core';
 
@@ -29,6 +30,7 @@ import {
   Pipeline,
   RouterLink,
   RouterOutlet,
+  AsyncRoute,
   Route,
   RouteParams,
   RouteConfig,
@@ -96,7 +98,6 @@ export function main() {
        }));
 
 
-
     it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
          compile('<a href="hello" [router-link]="[\'./user\', {name: name}]">{{name}}</a>')
              .then((_) => router.config(
@@ -124,6 +125,31 @@ export function main() {
                           rootTC.componentViewChildren[1].componentViewChildren[0].nativeElement,
                           'href'))
                    .toEqual('/page/2');
+               async.done();
+             });
+       }));
+
+    it('should generate link hrefs when asynchronously loaded',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => router.config([
+               new AsyncRoute({
+                 path: '/child-with-grandchild/...',
+                 loader: parentCmpLoader,
+                 as: 'child-with-grandchild'
+               })
+             ]))
+             .then((_) => {
+               // TODO: refactor when https://github.com/angular/angular/pull/4074 lands
+               var instruction = router.generate(['/child-with-grandchild']);
+               return router.navigateInstruction(instruction);
+             })
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(
+                          rootTC.componentViewChildren[1].componentViewChildren[0].nativeElement,
+                          'href'))
+                   .toEqual('/child-with-grandchild/grandchild');
                async.done();
              });
        }));
@@ -317,6 +343,10 @@ class HelloCmp {
 @Component({selector: 'hello2-cmp'})
 @View({template: 'hello2'})
 class Hello2Cmp {
+}
+
+function parentCmpLoader() {
+  return PromiseWrapper.resolve(ParentCmp);
 }
 
 @Component({selector: 'parent-cmp'})
