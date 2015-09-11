@@ -9,7 +9,7 @@ import {ChangeDetectionStrategy} from './constants';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 
 /**
- * Class responsible for providing change detection logic for chagne detector classes.
+ * Class responsible for providing change detection logic for change detector classes.
  */
 export class CodegenLogicUtil {
   constructor(private _names: CodegenNameUtil, private _utilName: string,
