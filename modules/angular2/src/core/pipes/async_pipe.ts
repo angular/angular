@@ -54,7 +54,7 @@ var _observableStrategy = new ObservableStrategy();
  * class Task {
  *   time = new Observable<number>(observer => {
  *     setInterval(_ =>
- *       observer.next(new Date().getTime(), 500);
+ *       observer.next(new Date().getTime()), 500);
  *   });
  * }
  */
