@@ -10,7 +10,6 @@
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
-    "traceur": "<%= packageJson.dependencies.traceur %>",
     "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>"
   },

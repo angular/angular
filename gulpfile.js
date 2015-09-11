@@ -91,19 +91,18 @@ var treatTestErrorsAsFatal = true;
 
 function runJasmineTests(globs, done) {
   var args = ['--'].concat(globs);
-  fork('./tools/traceur-jasmine', args, {
-    stdio: 'inherit'
-  }).on('close', function jasmineCloseHandler(exitCode) {
-    if (exitCode && treatTestErrorsAsFatal) {
-      var err = new Error('Jasmine tests failed');
-      // Mark the error for gulp similar to how gulp-utils.PluginError does it.
-      // The stack is not useful in this context.
-      err.showStack = false;
-      done(err);
-    } else {
-      done();
-    }
-  });
+  fork('./tools/cjs-jasmine', args, {stdio: 'inherit'})
+      .on('close', function jasmineCloseHandler(exitCode) {
+        if (exitCode && treatTestErrorsAsFatal) {
+          var err = new Error('Jasmine tests failed');
+          // Mark the error for gulp similar to how gulp-utils.PluginError does it.
+          // The stack is not useful in this context.
+          err.showStack = false;
+          done(err);
+        } else {
+          done();
+        }
+      });
 }
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
@@ -141,11 +140,8 @@ var BENCHPRESS_BUNDLE_CONFIG = {
     'angular2'
   ],
   excludes: [
-    'traceur',
-    'traceur/bin/traceur-runtime',
     'reflect-metadata',
     'selenium-webdriver',
-    'rtts_assert',
     'zone.js'
   ],
   ignore: [
@@ -837,47 +833,46 @@ gulp.task('build/pure-packages.dart', function() {
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
 
-  var moveStream = gulp
-    .src([
-      'modules_dart/**/*.dart',
-      'modules_dart/**/pubspec.yaml',
-      '!modules_dart/transform/**'
-    ])
-    .pipe(through2.obj(function(file, enc, done) {
-      if (file.path.endsWith('pubspec.yaml')) {
-        // Pure packages specify dependency_overrides relative to
-        // `modules_dart`, so they have to walk up and into `dist`.
-        //
-        // Example:
-        //
-        // dependency_overrides:
-        //   angular2:
-        //     path: ../../dist/dart/angular2
-        //
-        // When we copy a pure package into `dist` the relative path
-        // must be updated. The code below replaces paths accordingly.
-        // So the example above is turned into:
-        //
-        // dependency_overrides:
-        //   angular2:
-        //     path: ../angular2
-        //
-        var pubspec = yaml.safeLoad(file.contents.toString());
-        var overrides = pubspec.dependency_overrides;
-        if (overrides) {
-          Object.keys(overrides).forEach(function(pkg) {
-            var overridePath = overrides[pkg].path;
-            if (overridePath.startsWith(originalPrefix)) {
-              overrides[pkg].path = overridePath.replace(originalPrefix, '../');
-            }
-          });
-          file.contents = new Buffer(yaml.safeDump(pubspec));
-        }
-      }
-      this.push(file);
-      done();
-    }))
-    .pipe(gulp.dest(CONFIG.dest.dart));
+  var moveStream = gulp.src([
+                         'modules_dart/**/*.dart',
+                         'modules_dart/**/pubspec.yaml',
+                         '!modules_dart/transform/**'
+                       ])
+                       .pipe(through2.obj(function(file, enc, done) {
+                         if (/pubspec.yaml$/.test(file.path)) {
+                           // Pure packages specify dependency_overrides relative to
+                           // `modules_dart`, so they have to walk up and into `dist`.
+                           //
+                           // Example:
+                           //
+                           // dependency_overrides:
+                           //   angular2:
+                           //     path: ../../dist/dart/angular2
+                           //
+                           // When we copy a pure package into `dist` the relative path
+                           // must be updated. The code below replaces paths accordingly.
+                           // So the example above is turned into:
+                           //
+                           // dependency_overrides:
+                           //   angular2:
+                           //     path: ../angular2
+                           //
+                           var pubspec = yaml.safeLoad(file.contents.toString());
+                           var overrides = pubspec.dependency_overrides;
+                           if (overrides) {
+                             Object.keys(overrides).forEach(function(pkg) {
+                               var overridePath = overrides[pkg].path;
+                               if ((new RegExp('^' + originalPrefix)).test(overridePath)) {
+                                 overrides[pkg].path = overridePath.replace(originalPrefix, '../');
+                               }
+                             });
+                             file.contents = new Buffer(yaml.safeDump(pubspec));
+                           }
+                         }
+                         this.push(file);
+                         done();
+                       }))
+                       .pipe(gulp.dest(CONFIG.dest.dart));
 
 
   return merge2(transformStream, moveStream);
@@ -1145,13 +1140,11 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
 });
 
 var JS_DEV_DEPS = [
-    licenseWrap('node_modules/zone.js/LICENSE', true),
-    'node_modules/zone.js/dist/zone-microtask.js',
-    'node_modules/zone.js/dist/long-stack-trace-zone.js',
-    licenseWrap('node_modules/reflect-metadata/LICENSE', true),
-    'node_modules/reflect-metadata/Reflect.js',
-    // traceur-runtime is always first in the bundle
-    licenseWrap('node_modules/traceur/LICENSE', true)
+  licenseWrap('node_modules/zone.js/LICENSE', true),
+  'node_modules/zone.js/dist/zone-microtask.js',
+  'node_modules/zone.js/dist/long-stack-trace-zone.js',
+  licenseWrap('node_modules/reflect-metadata/LICENSE', true),
+  'node_modules/reflect-metadata/Reflect.js'
 ];
 
 // Splice in RX license if rx is in the bundle.

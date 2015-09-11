@@ -15,7 +15,7 @@
 interface PromiseLike<T> extends Thenable<T> {}
 
 // Extend the ES5 standard library with some ES6 features we polyfill at runtime
-// by loading traceur-runtime.js
+// by loading es6-shim.js
 
 // These are mostly copied from lib.es6.d.ts
 

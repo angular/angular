@@ -27,7 +27,7 @@ To bootstrap Hello World in a WebWorker we do the following in TypeScript
 ```HTML
 <html>
   <head>
-     <script src="https://github.jspm.io/jmcriffey/bower-traceur-runtime@0.0.87/traceur-runtime.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.js"></script>
      <script src="https://jspm.io/system@0.16.js"></script>
      <script src="angular2/web_worker/ui.js"></script>
   </head>
@@ -44,7 +44,7 @@ bootstrap("loader.js");
 ```
 ```JavaScript
 // loader.js
-importScripts("https://github.jspm.io/jmcriffey/bower-traceur-runtime@0.0.87/traceur-runtime.js", "https://jspm.io/system@0.16.js", "angular2/web_worker/worker.js");
+importScripts("https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.js", "https://jspm.io/system@0.16.js", "angular2/web_worker/worker.js");
 System.import("app");
 ```
 ```TypeScript

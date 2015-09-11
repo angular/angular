@@ -1,2 +1,2 @@
-importScripts("zone-microtask.js", "long-stack-trace-zone.js", "traceur-runtime.js",
-              "system.src.js", "Reflect.js");
+importScripts("zone-microtask.js", "long-stack-trace-zone.js", "es6-shim.js", "system.src.js",
+              "Reflect.js");

@@ -5,7 +5,6 @@ var htmlReplace = require('../html-replace');
 var jsReplace = require('../js-replace');
 var path = require('path');
 var stew = require('broccoli-stew');
-var traceur = require('traceur');
 
 import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
@@ -143,7 +142,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'node_modules/rx/dist/rx.js',
       'node_modules/base64-js/lib/b64.js',
       'node_modules/reflect-metadata/Reflect.js',
-      path.relative(projectRootDir, traceur.RUNTIME_PATH)
+      'node_modules/es6-shim/es6-shim.js'
     ]
   }));
 

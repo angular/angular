@@ -128,7 +128,7 @@ var StringMapWrapper = {
   },
 
   forEach: function (m, fn) {
-    for (prop in m) {
+    for (var prop in m) {
       if (m.hasOwnProperty(prop)) {
         fn(m[prop], prop);
       }
