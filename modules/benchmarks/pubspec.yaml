@@ -23,6 +23,7 @@ transformers:
         - web/src/element_injector/element_injector_benchmark.dart
         - web/src/largetable/largetable_benchmark.dart
         - web/src/naive_infinite_scroll/index.dart
+        - web/src/static_tree/tree_benchmark.dart
         - web/src/tree/tree_benchmark.dart
     generate_change_detectors: true
 - $dart2js:
