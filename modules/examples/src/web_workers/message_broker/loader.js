@@ -1,10 +1,12 @@
 $SCRIPTS$
 
-    System.config({
-      baseURL: '/',
-      defaultJSExtensions: true,
-      paths: {'rx': 'examples/src/web_workers/message_broker/rx.js'}
-    });
+System.config({
+  baseURL: '/',
+  defaultJSExtensions: true,
+  paths: {
+    '@reactivex/rxjs': '/@reactivex/Rx.js'
+  }
+});
 
 System.import("examples/src/web_workers/message_broker/background_index")
     .then(

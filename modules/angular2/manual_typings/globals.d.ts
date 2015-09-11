@@ -5,6 +5,27 @@
 /// <reference path="../typings/zone/zone.d.ts"/>
 declare var assert: any;
 
+// TODO: Replace with a real d.ts file
+declare module '@reactivex/rxjs' {
+  class Subject<T> {
+    subscribe(a, b, c): any;
+    next(a): any;
+    error(a): any;
+    complete(): any;
+  }
+
+  class Observable<T> {
+    subscribe(a, b, c): any;
+  }
+
+
+  class Subscription<T> {
+    isUnsubscribed: boolean;
+    unsubscribe(): void;
+  }
+}
+
+
 // FIXME: K must be string!
 // FIXME: should have an index signature, `[k: string]: V;`
 interface StringMap<K extends string, V> {}

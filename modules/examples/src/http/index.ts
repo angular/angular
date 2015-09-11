@@ -1,5 +1,3 @@
-/// <reference path="../../../angular2/typings/rx/rx.d.ts" />
-
 import {bootstrap} from 'angular2/bootstrap';
 import {HTTP_BINDINGS} from 'angular2/http';
 import {HttpCmp} from './http_comp';

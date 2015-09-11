@@ -4,7 +4,7 @@ System.config({
   baseURL: '/',
   defaultJSExtensions: true,
   paths: {
-    'rx': 'examples/src/web_workers/todo/rx.js'
+    '@reactivex/rxjs': '/@reactivex/Rx.js'
   }
 });
 

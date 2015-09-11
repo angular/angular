@@ -4,7 +4,7 @@ System.config({
   baseURL: '/',
   defaultJSExtensions: true,
   paths: {
-    'rx': 'examples/src/web_workers/kitchen_sink/rx.js'
+    '@reactivex/rxjs': '/@reactivex/Rx.js'
   }
 });
 

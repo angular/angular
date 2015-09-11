@@ -6,7 +6,7 @@ System.config({
   baseURL: '/',
   defaultJSExtensions: true,
   paths: {
-    'rx': 'examples/src/web_workers/images/rx.js'
+    '@reactivex/rxjs': '/@reactivex/Rx.js'
   }
 });
 

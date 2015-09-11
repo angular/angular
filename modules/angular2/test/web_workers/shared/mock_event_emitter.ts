@@ -1,5 +1,5 @@
 import {EventEmitter} from 'angular2/src/core/facade/async';
-import * as Rx from 'rx';
+import * as RxNext from '@reactivex/rxjs';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export class MockEventEmitter extends EventEmitter {
@@ -7,7 +7,7 @@ export class MockEventEmitter extends EventEmitter {
 
   constructor() { super(); }
 
-  observer(generator: any): Rx.IDisposable {
+  observer(generator: any): RxNext.Subscription<any> {
     this._nextFns.push(generator.next);
     return new MockDisposable();
   }
@@ -17,6 +17,7 @@ export class MockEventEmitter extends EventEmitter {
   }
 }
 
-class MockDisposable implements Rx.IDisposable {
-  dispose(): void {}
+class MockDisposable implements RxNext.Subscription<any> {
+  isUnsubscribed: boolean = false;
+  unsubscribe(): void {}
 }

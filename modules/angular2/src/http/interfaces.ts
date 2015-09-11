@@ -1,5 +1,3 @@
-/// <reference path="../../typings/rx/rx.d.ts" />
-
 import {
   ReadyStates,
   RequestModesOpts,

@@ -1,6 +1,6 @@
 ///<reference path="../../../typings/tsd.d.ts" />
 import {global, isPresent} from 'angular2/src/core/facade/lang';
-import * as Rx from 'rx';
+import * as RxNext from '@reactivex/rxjs';
 
 export {Promise};
 
@@ -75,7 +75,7 @@ export class ObservableWrapper {
 
   static isObservable(obs: any): boolean { return obs instanceof Observable; }
 
-  static dispose(subscription: any) { subscription.dispose(); }
+  static dispose(subscription: any) { subscription.unsubscribe(); }
 
   static callNext(emitter: EventEmitter, value: any) { emitter.next(value); }
 
@@ -128,30 +128,19 @@ export class Observable {
  * Once a reference implementation of the spec is available, switch to it.
  */
 export class EventEmitter extends Observable {
-  _subject: Rx.Subject<any> = new Rx.Subject<any>();
-  _immediateScheduler = (<any>Rx.Scheduler).immediate;
+  _subject: RxNext.Subject<any> = new RxNext.Subject<any>();
 
-  observer(generator: any): Rx.IDisposable {
-    return this._subject.observeOn(this._immediateScheduler)
-        .subscribe((value) => { setTimeout(() => generator.next(value)); },
-                   (error) => generator.throw ? generator.throw(error) : null,
-                   () => generator.return ? generator.return () : null);
+  observer(generator: any): any {
+    return this._subject.subscribe((value) => { setTimeout(() => generator.next(value)); },
+                                   (error) => generator.throw ? generator.throw(error) : null,
+                                   () => generator.return ? generator.return () : null);
   }
 
-  toRx(): Rx.Observable<any> { return this._subject; }
+  toRx(): any { return this; }
 
-  /**
-   * Emits a `value`.
-   */
-  next(value: any) { this._subject.onNext(value); }
+  next(value: any) { this._subject.next(value); }
 
-  /**
-   * Emits an `error`.
-   */
-  throw(error: any) { this._subject.onError(error); }
+  throw(error: any) { this._subject.error(error); }
 
-  /**
-   * Closes the stream.
-   */
-  return (value?: any) { this._subject.onCompleted(); }
+  return (value?: any) { this._subject.complete(); }
 }

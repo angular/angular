@@ -336,7 +336,7 @@ export function setValueOnPath(global: any, path: string, value: any) {
   var obj: any = global;
   while (parts.length > 1) {
     var name = parts.shift();
-    if (obj.hasOwnProperty(name)) {
+    if (obj.hasOwnProperty(name) && obj[name]) {
       obj = obj[name];
     } else {
       obj = obj[name] = {};
@@ -345,5 +345,4 @@ export function setValueOnPath(global: any, path: string, value: any) {
   if (obj === undefined || obj === null) {
     obj = {};
   }
-  obj[parts.shift()] = value;
 }
