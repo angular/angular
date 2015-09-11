@@ -5,7 +5,7 @@ export interface ForwardRefFn { (): any; }
 /**
  * Allows to refer to references which are not yet defined.
  *
- * This situation arises when the key which we need te refer to for the purposes of DI is declared,
+ * This situation arises when the key which we need to refer to for the purposes of DI is declared,
  * but not yet defined.
  *
  * ## Example:
