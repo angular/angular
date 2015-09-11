@@ -54,7 +54,25 @@
 
 #### Lifecycle
 
-* Before
+* Before (ES5)
+
+```js
+var HelloCmp = ng.
+  Component({
+    selector: 'hello-cmp',
+    lifecycle: [LifecycleEvent.onInit]
+  })
+  .View({
+    template: `<h1>hello, there!</h1>`
+  })
+  .Class({
+    onInit: function() {
+      console.log('hello-cmp init');
+    }
+  });
+```
+
+* Before (ES6)
 
 ```js
 import {Component, View, LifecycleEvent} from 'angular2/angular2';
@@ -66,7 +84,6 @@ import {Component, View, LifecycleEvent} from 'angular2/angular2';
 @View({
   template: `<h1>hello, there!</h1>`
 })
-
 class HelloCmp {
   onInit() {
     console.log('hello-cmp init');
@@ -74,7 +91,24 @@ class HelloCmp {
 }
 ```
 
-* After
+* After (ES5)
+
+```js
+var HelloCmp = ng.
+  Component({
+    selector: 'hello-cmp'
+  })
+  .View({
+    template: `<h1>hello, there!</h1>`
+  })
+  .Class({
+    onInit: function() {
+      console.log('hello-cmp init');
+    }
+  });
+```
+
+* After (ES6)
 
 ```js
 import {Component, View, OnInit} from 'angular2/angular2';
@@ -85,13 +119,13 @@ import {Component, View, OnInit} from 'angular2/angular2';
 @View({
   template: `<h1>hello, there!</h1>`
 })
-
 class HelloCmp implements OnInit {
   onInit() {
     console.log('hello-cmp init');
   }
 }
 ```
+
 
 <a name="2.0.0-alpha.36"></a>
 # 2.0.0-alpha.36 (2015-08-31)
