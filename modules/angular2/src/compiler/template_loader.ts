@@ -1,5 +1,6 @@
-import {TypeMetadata, TemplateMetadata, ViewEncapsulation} from './api';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {TypeMetadata, TemplateMetadata} from './api';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -61,7 +62,7 @@ export class TemplateLoader {
         allStyleUrls.map(styleUrl => this._urlResolver.resolve(templateSourceUrl, styleUrl));
     return new TemplateMetadata({
       encapsulation: encapsulation,
-      nodes: remainingNodes,
+      template: this._domParser.unparse(remainingNodes),
       styles: allResolvedStyles,
       styleAbsUrls: allStyleAbsUrls,
       ngContentSelectors: visitor.ngContentSelectors
@@ -74,7 +75,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
   styles: string[] = [];
   styleUrls: string[] = [];
 
-  visitElement(ast: HtmlElementAst): HtmlElementAst {
+  visitElement(ast: HtmlElementAst, context: any): HtmlElementAst {
     var selectAttr = null;
     var hrefAttr = null;
     var relAttr = null;
@@ -90,7 +91,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
     var nodeName = ast.name;
     var keepElement = true;
     if (nodeName == NG_CONTENT_ELEMENT) {
-      this.ngContentSelectors.push(selectAttr);
+      this.ngContentSelectors.push(normalizeNgContentSelect(selectAttr));
     } else if (nodeName == STYLE_ELEMENT) {
       keepElement = false;
       var textContent = '';
@@ -111,6 +112,13 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
       return null;
     }
   }
-  visitAttr(ast: HtmlAttrAst): HtmlAttrAst { return ast; }
-  visitText(ast: HtmlTextAst): HtmlTextAst { return ast; }
+  visitAttr(ast: HtmlAttrAst, context: any): HtmlAttrAst { return ast; }
+  visitText(ast: HtmlTextAst, context: any): HtmlTextAst { return ast; }
+}
+
+function normalizeNgContentSelect(selectAttr: string): string {
+  if (isBlank(selectAttr) || selectAttr.length === 0) {
+    return '*';
+  }
+  return selectAttr;
 }

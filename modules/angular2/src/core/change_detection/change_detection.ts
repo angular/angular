@@ -41,7 +41,7 @@ export {
   DebugContext,
   ChangeDetectorGenConfig
 } from './interfaces';
-export {ChangeDetectionStrategy} from './constants';
+export {ChangeDetectionStrategy, changeDetectionStrategyFromJson} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
 export {BindingRecord, BindingTarget} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';

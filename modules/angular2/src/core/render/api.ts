@@ -304,6 +304,12 @@ export enum ViewEncapsulation {
   None
 }
 
+var encapsulationMap: Map<number, ViewEncapsulation> = MapWrapper.createFromPairs(
+    [[0, ViewEncapsulation.Emulated], [1, ViewEncapsulation.Native], [2, ViewEncapsulation.None]]);
+export function viewEncapsulationFromJson(value: number): ViewEncapsulation {
+  return deserializeEnum(value, encapsulationMap);
+}
+
 export class ViewDefinition {
   componentId: string;
   templateAbsUrl: string;
