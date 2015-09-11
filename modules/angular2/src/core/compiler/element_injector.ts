@@ -662,7 +662,7 @@ interface _ElementInjectorStrategy {
 
 /**
  * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
- * In such a case, inlining fields is benefitial for performances.
+ * In such a case, inlining fields is beneficial for performances.
  */
 class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
   constructor(public injectorStrategy: InjectorInlineStrategy, public _ei: ElementInjector) {}
