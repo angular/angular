@@ -276,7 +276,7 @@ export class RenderDirectiveMetadata {
   }
 }
 
-// An opaque reference to a render proto ivew
+// An opaque reference to a render proto view
 export class RenderProtoViewRef {}
 
 // An opaque reference to a part of a view
