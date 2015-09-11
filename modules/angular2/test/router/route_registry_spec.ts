@@ -235,7 +235,7 @@ export function main() {
       registry.config(RootHostCmp,
                       new Route({path: '/first/...', component: DummyParentCmp, as: 'first'}));
       expect(() => { registry.generate(['first'], RootHostCmp); })
-          .toThrowError('Link "["first"]" does not resolve to a terminal instruction.');
+          .toThrowError('Link "["first"]" does not resolve to a terminal or async instruction.');
     });
 
     it('should match matrix params on child components and query params on the root component',

@@ -249,9 +249,9 @@ export class RouteRegistry {
         }
         lastInstructionIsTerminal = lastInstruction.component.terminal;
       }
-      if (!lastInstructionIsTerminal) {
+      if (isPresent(componentCursor) && !lastInstructionIsTerminal) {
         throw new BaseException(
-            `Link "${ListWrapper.toJSON(linkParams)}" does not resolve to a terminal instruction.`);
+            `Link "${ListWrapper.toJSON(linkParams)}" does not resolve to a terminal or async instruction.`);
       }
     }
 
