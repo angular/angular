@@ -32,10 +32,8 @@ export function bootstrapWebWorker(
     componentInjectableProviders: Array<Type | Provider | any[]> = null): Promise<ComponentRef> {
   Parse5DomAdapter.makeCurrent();
   var sink = new PostMessageBusSink({
-    postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
-      console.log("Sending", message);
-      _postMessage(message, transferrables);
-    }
+    postMessage:
+        (message: any, transferrables?:[ArrayBuffer]) => { _postMessage(message, transferrables); }
   });
   var source = new PostMessageBusSource();
   var bus = new PostMessageBus(sink, source);
