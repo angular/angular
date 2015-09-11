@@ -34,21 +34,64 @@
 
 ### BREAKING CHANGES
 
+#### Events
+
 * Before
 
-```
+```html
 <div (^click)="onEventHandler()">
   <button></button>
 </div>
 ```
-After
-```
+
+* After
+
+```html
 <div (click)="onEventHandler()">
   <button></button>
 </div>
 ```
 
+#### Lifecycle
 
+* Before
+
+```js
+import {Component, View, LifecycleEvent} from 'angular2/angular2';
+
+@Component({
+  selector: 'hello-cmp',
+  lifecycle: [LifecycleEvent.onInit]
+})
+@View({
+  template: `<h1>hello, there!</h1>`
+})
+
+class HelloCmp {
+  onInit() {
+    console.log('hello-cmp init');
+  }
+}
+```
+
+* After
+
+```js
+import {Component, View, OnInit} from 'angular2/angular2';
+
+@Component({
+  selector: 'hello-cmp'  
+})
+@View({
+  template: `<h1>hello, there!</h1>`
+})
+
+class HelloCmp implements OnInit {
+  onInit() {
+    console.log('hello-cmp init');
+  }
+}
+```
 
 <a name="2.0.0-alpha.36"></a>
 # 2.0.0-alpha.36 (2015-08-31)
