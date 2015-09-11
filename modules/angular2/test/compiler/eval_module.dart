@@ -13,7 +13,7 @@ createIsolateSource(String moduleSource, List<List<String>> moduleImports) {
     String modAlias = sourceImport[1];
     moduleSourceParts.add("import 'package:${modName}.dart' as ${modAlias};");
   });
-  moduleSourceParts.add(moduleSource);
+  moduleSourceParts.add(moduleSource); 
   
   return """
 import "dart:isolate";
@@ -26,6 +26,8 @@ main(List args, SendPort replyPort) {
 
 } 
 
+var timeStamp = new DateTime.now().millisecondsSinceEpoch;
+
 dynamic callModule(dynamic data) { return data.map( (a) => a+1); }
 
 evalModule(String moduleSource, List<List<String>> moduleImports, List args) {
@@ -36,7 +38,11 @@ evalModule(String moduleSource, List<List<String>> moduleImports, List args) {
       receivePort.close();
       completer.complete(message);
     });
-    var packageRoot = Uri.parse('/packages');
+    // Note: we have a special karma plugin that sends files under
+    // urls like /package_1234 as permanently cached.
+    // With this, spawning multiple isolates gets faster as Darts does not
+    // reload the files from the server.
+    var packageRoot = Uri.parse('/packages_${timeStamp}');
     return Isolate.spawnUri(toDartDataUri(source), args, receivePort.sendPort, packageRoot: packageRoot).then( (isolate) { 
       RawReceivePort errorPort;
       errorPort = new RawReceivePort( (message) {

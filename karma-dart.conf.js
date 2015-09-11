@@ -1,11 +1,41 @@
 var sauceConf = require('./sauce.conf');
 
+var packageSources = {
+  // Dependencies installed with `pub install`.
+  'unittest': 'packages/unittest',
+  'guinness': 'packages/guinness',
+  'matcher': 'packages/matcher',
+  'stack_trace': 'packages/stack_trace',
+  'collection': 'packages/collection',
+  'path': 'packages/path',
+  'observe': 'packages/observe',
+  'quiver': 'packages/quiver',
+  'intl': 'packages/intl',
+  'smoke': 'packages/smoke',
+  'logging': 'packages/logging',
+  'utf': 'packages/utf',
+
+  // Local dependencies, transpiled from the source.
+  'angular2/test/': 'dist/dart/angular2/test/',
+  'angular2': 'dist/dart/angular2/lib',
+  'http': 'dist/dart/http/lib',
+  'angular2_material': 'dist/dart/angular2_material/lib',
+  'benchpress': 'dist/dart/benchpress/lib',
+  'examples': 'dist/dart/examples/lib'
+};
+
+var proxyPaths = {};
+Object.keys(packageSources).map(function(packageName) {
+  var filePath = packageSources[packageName];
+  proxyPaths['/packages/'+packageName] = '/base/'+filePath;
+});
+
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
 module.exports = function(config) {
   config.set({
 
-    frameworks: ['dart-unittest'],
+    frameworks: ['dart-unittest', 'dart-evalcache'],
 
     files: [
       // Init and configure guiness.
@@ -35,27 +65,18 @@ module.exports = function(config) {
     },
 
     // Map packages to the correct urls where Karma serves them.
-    proxies: {
-      // Dependencies installed with `pub install`.
-      '/packages/unittest': '/base/packages/unittest',
-      '/packages/guinness': '/base/packages/guinness',
-      '/packages/matcher': '/base/packages/matcher',
-      '/packages/stack_trace': '/base/packages/stack_trace',
-      '/packages/collection': '/base/packages/collection',
-      '/packages/path': '/base/packages/path',
-
-      // Local dependencies, transpiled from the source.
-      '/packages/angular2/test/': '/base/dist/dart/angular2/test/',
-      '/packages/angular2': '/base/dist/dart/angular2/lib',
-      '/packages/http': '/base/dist/dart/http/lib',
-      '/packages/angular2_material': '/base/dist/dart/angular2_material/lib',
-      '/packages/benchpress': '/base/dist/dart/benchpress/lib',
-      '/packages/examples': '/base/dist/dart/examples/lib'
-    },
+    proxies: proxyPaths,
 
     customLaunchers: sauceConf.customLaunchers,
     browsers: ['DartiumWithWebPlatform'],
 
-    port: 9877
+    port: 9877,
+
+    plugins: [
+      require('karma-dart'),
+      require('karma-chrome-launcher'),
+      require('karma-sauce-launcher'),
+      require('./karma-dart-evalcache')(packageSources)
+    ]
   });
 };
