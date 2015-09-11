@@ -17,14 +17,6 @@
     "node/node.d.ts": {
       "commit": "51738fdf1643d269067861b405e87503b7479236"
     },
-    "rx/rx.d.ts": {
-      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
-    },
-
-    "rx/rx-lite.d.ts": {
-      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
-    },
-
 
     "selenium-webdriver/selenium-webdriver.d.ts": {
       "commit": "be0b6b394f77a59e192ad7cfec18078706e44db5"

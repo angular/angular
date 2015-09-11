@@ -2,10 +2,7 @@ $SCRIPTS$
 
 System.config({
   baseURL: '/',
-  defaultJSExtensions: true,
-  paths: {
-    'rx': 'examples/src/web_workers/todo/rx.js'
-  }
+  defaultJSExtensions: true
 });
 
 System.import("examples/src/web_workers/todo/background_index")

@@ -6,14 +6,9 @@
 <script src="Reflect.js" type="text/javascript"></script>
 <script type="text/javascript">
   var filename = '@@FILENAME_NO_EXT';
-  var parent = filename.split('/');
-  parent = parent.splice(0, parent.length-1).join('/');
   System.config({
     baseURL: '/',
-    defaultJSExtensions: true,
-    paths: {
-      'rx': parent + '/rx.js'
-    }
+    defaultJSExtensions: true
   });
   System.import(filename).then(function(m) { m.main(); }, console.error.bind(console));
 </script>

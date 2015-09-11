@@ -4,10 +4,7 @@ importScripts("b64.js");
 
 System.config({
   baseURL: '/',
-  defaultJSExtensions: true,
-  paths: {
-    'rx': 'examples/src/web_workers/images/rx.js'
-  }
+  defaultJSExtensions: true
 });
 
 System.import("examples/src/web_workers/images/background_index")
