@@ -992,18 +992,11 @@ gulp.task('!build.js.cjs', function() {
 
 
 var bundleConfig = {
-  paths: {
-    "*": "dist/js/prod/es6/*.js",
-    "rx": "node_modules/rx/dist/rx.js"
-  },
+  paths: {"*": "dist/js/prod/es5/*.js", "rx": "node_modules/rx/dist/rx.js"},
   meta: {
+    'angular2/src/router/route_definition': {format: 'cjs'},
     // auto-detection fails to detect properly here - https://github.com/systemjs/builder/issues/123
-    'rx': {
-      format: 'cjs'
-    },
-    'angular2/src/router/route_definition': {
-      format: 'es6'
-    }
+    'rx': {format: 'cjs'}
   }
 };
 
@@ -1054,10 +1047,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
 // development build
 gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-      merge(true, devBundleConfig.paths, {
-       "*": "dist/js/dev/es6/*.js"
-      });
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
       devBundleConfig,
       'angular2/angular2',
@@ -1075,10 +1065,7 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
 // WebWorker build
 gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-      merge(true, devBundleConfig.paths, {
-       "*": "dist/js/dev/es6/*.js"
-      });
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
       devBundleConfig,
       'angular2/web_worker/ui',
@@ -1095,10 +1082,7 @@ gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
 
 gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-    merge(true, devBundleConfig.paths, {
-      "*": "dist/js/dev/es6/*.js"
-    });
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
     devBundleConfig,
     'angular2/router - angular2/angular2',
@@ -1108,10 +1092,7 @@ gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
 
 gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-    merge(true, devBundleConfig.paths, {
-      "*": "dist/js/dev/es6/*.js"
-    });
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
     devBundleConfig,
     'angular2/test + angular2/mock - angular2/angular2',
@@ -1126,16 +1107,15 @@ gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
 // see: https://github.com/systemjs/builder (SFX bundles).
 gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-      merge(true, devBundleConfig.paths, {
-       '*': 'dist/js/dev/es6/*.js'
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {'*': 'dist/js/dev/es5/*.js'});
+  return bundler.bundle(devBundleConfig, 'angular2/angular2_sfx',
+                        './dist/build/angular2.sfx.dev.js', {sourceMaps: true},
+                        /* self-executing */ true)
+      .then(function() {
+        return bundler.bundle(devBundleConfig, 'angular2/http', './dist/build/http.sfx.dev.js',
+                              {sourceMaps: true},
+                              /* self-executing */ true)
       });
-  return bundler.bundle(
-      devBundleConfig,
-      'angular2/angular2_sfx',
-      './dist/build/angular2.sfx.dev.js',
-      { sourceMaps: true },
-      /* self-executing */ true);
 });
 
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
