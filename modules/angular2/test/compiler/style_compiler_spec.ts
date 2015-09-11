@@ -19,12 +19,8 @@ import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {
-  DirectiveMetadata,
-  TemplateMetadata,
-  TypeMetadata,
-  ViewEncapsulation
-} from 'angular2/src/compiler/api';
+import {DirectiveMetadata, TemplateMetadata, TypeMetadata} from 'angular2/src/compiler/api';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 // Attention: These module names have to correspond to real modules!
 const MODULE_NAME = 'angular2/test/compiler/style_compiler_spec';

@@ -8,12 +8,12 @@ export interface TemplateAst {
 }
 
 export class TextAst implements TemplateAst {
-  constructor(public value: string, public sourceInfo: string) {}
+  constructor(public value: string, public ngContentIndex: number, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitText(this, context); }
 }
 
 export class BoundTextAst implements TemplateAst {
-  constructor(public value: AST, public sourceInfo: string) {}
+  constructor(public value: AST, public ngContentIndex: number, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitBoundText(this, context);
   }
@@ -38,6 +38,13 @@ export class BoundEventAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
   }
+  getFullName(): string {
+    if (isPresent(this.target)) {
+      return `${this.target}:${this.name}`;
+    } else {
+      return this.name;
+    }
+  }
 }
 
 export class VariableAst implements TemplateAst {
@@ -48,9 +55,10 @@ export class VariableAst implements TemplateAst {
 }
 
 export class ElementAst implements TemplateAst {
-  constructor(public attrs: AttrAst[], public properties: BoundElementPropertyAst[],
-              public events: BoundEventAst[], public vars: VariableAst[],
-              public directives: DirectiveAst[], public children: TemplateAst[],
+  constructor(public name: string, public attrs: AttrAst[],
+              public properties: BoundElementPropertyAst[], public events: BoundEventAst[],
+              public vars: VariableAst[], public directives: DirectiveAst[],
+              public children: TemplateAst[], public ngContentIndex: number,
               public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);
@@ -60,12 +68,18 @@ export class ElementAst implements TemplateAst {
     return (this.properties.length > 0 || this.events.length > 0 || this.vars.length > 0 ||
             this.directives.length > 0);
   }
+
+  getComponent(): DirectiveMetadata {
+    return this.directives.length > 0 && this.directives[0].directive.isComponent ?
+               this.directives[0].directive :
+               null;
+  }
 }
 
 export class EmbeddedTemplateAst implements TemplateAst {
   constructor(public attrs: AttrAst[], public vars: VariableAst[],
               public directives: DirectiveAst[], public children: TemplateAst[],
-              public sourceInfo: string) {}
+              public ngContentIndex: number, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEmbeddedTemplate(this, context);
   }
@@ -89,7 +103,7 @@ export class DirectiveAst implements TemplateAst {
 }
 
 export class NgContentAst implements TemplateAst {
-  constructor(public select: string, public sourceInfo: string) {}
+  constructor(public ngContentIndex: number, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitNgContent(this, context);
   }

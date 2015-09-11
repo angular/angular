@@ -1,4 +1,4 @@
-import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, RegExpWrapper, deserializeEnum} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 import {Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
@@ -389,6 +389,45 @@ export class RenderCompiler {
     return null;
   }
 }
+
+export interface RenderTemplateCmd { visit(visitor: RenderCommandVisitor, context: any): any; }
+
+export interface RenderBeginCmd extends RenderTemplateCmd {
+  ngContentIndex: number;
+  isBound: boolean;
+}
+
+export interface RenderTextCmd extends RenderBeginCmd { value: string; }
+
+export interface RenderNgContentCmd extends RenderBeginCmd { ngContentIndex: number; }
+
+export interface RenderBeginElementCmd extends RenderBeginCmd {
+  name: string;
+  attrNameAndValues: string[];
+  eventNames: string[];
+}
+
+export interface RenderBeginComponentCmd extends RenderBeginElementCmd {
+  nativeShadow: boolean;
+  templateId: string;
+}
+
+export interface RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
+  isMerged: boolean;
+  children: RenderTemplateCmd[];
+}
+
+// TODO(tbosch): change ts2dart to allow to use `CMD` as type in these methods!
+export interface RenderCommandVisitor {
+  visitText /*<CMD extends RenderTextCmd>*/ (cmd: any, context: any): any;
+  visitNgContent /*<CMD extends RenderNgContentCmd>*/ (cmd: any, context: any): any;
+  visitBeginElement /*<CMD extends RenderBeginElementCmd>*/ (cmd: any, context: any): any;
+  visitEndElement(context: any): any;
+  visitBeginComponent /*<CMD extends RenderBeginComponentCmd>*/ (cmd: any, context: any): any;
+  visitEndComponent(context: any): any;
+  visitEmbeddedTemplate /*<CMD extends RenderEmbeddedTemplateCmd>*/ (cmd: any, context: any): any;
+}
+
 
 export class RenderViewWithFragments {
   constructor(public viewRef: RenderViewRef, public fragmentRefs: RenderFragmentRef[]) {}

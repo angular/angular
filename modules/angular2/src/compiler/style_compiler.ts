@@ -1,16 +1,17 @@
-import {DirectiveMetadata, SourceModule, ViewEncapsulation} from './api';
+import {DirectiveMetadata, SourceModule, TypeMetadata} from './api';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {StringWrapper, isJsObject, isBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {ShadowCss} from 'angular2/src/core/render/dom/compiler/shadow_css';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {resolveStyleUrls} from './style_url_resolver';
+import {escapeSingleQuoteString} from './util';
 
 const COMPONENT_VARIABLE = '%COMP%';
 var COMPONENT_REGEX = /%COMP%/g;
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-var ESCAPE_STRING_RE = /'|\\|\n/g;
 var IS_DART = !isJsObject({});
 
 export class StyleCompiler {
@@ -78,7 +79,7 @@ export class StyleCompiler {
     var imports: string[][] = [];
     var moduleSource = `var STYLES = (`;
     moduleSource +=
-        `[${plainStyles.map( plainStyle => escapeString(this._shimIfNeeded(plainStyle, shim)) ).join(',')}]`;
+        `[${plainStyles.map( plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, shim)) ).join(',')}]`;
     for (var i = 0; i < absUrls.length; i++) {
       var url = absUrls[i];
       var moduleAlias = `import${i}`;
@@ -98,15 +99,12 @@ export class StyleCompiler {
   }
 }
 
-function escapeString(input: string): string {
-  var escapedInput = StringWrapper.replaceAllMapped(input, ESCAPE_STRING_RE, (match) => {
-    if (match[0] == "'" || match[0] == '\\') {
-      return `\\${match[0]}`;
-    } else {
-      return '\\n';
-    }
-  });
-  return `'${escapedInput}'`;
+export function shimContentAttribute(component: TypeMetadata): string {
+  return StringWrapper.replaceAll(CONTENT_ATTR, COMPONENT_REGEX, `${component.id}`);
+}
+
+export function shimHostAttribute(component: TypeMetadata): string {
+  return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, `${component.id}`);
 }
 
 function codeGenConcatArray(expression: string): string {
