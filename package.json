@@ -102,7 +102,7 @@
     "merge2": "^0.3.5",
     "minimatch": "^2.0.1",
     "minimist": "1.1.x",
-    "mock-fs": "^2.5.0",
+    "mock-fs": "^3.0.0",
     "node-html-encoder": "0.0.2",
     "node-uuid": "1.4.x",
     "on-headers": "^1.0.0",
