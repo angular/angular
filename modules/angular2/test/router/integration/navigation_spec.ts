@@ -114,6 +114,18 @@ export function main() {
        }));
 
 
+    it('should navigate to child routes of async routes', inject([AsyncTestCompleter], (async) => {
+         compile('outer { <router-outlet></router-outlet> }')
+             .then((_) => rtr.config([new AsyncRoute({path: '/a/...', loader: parentLoader})]))
+             .then((_) => rtr.navigate('/a/b'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.nativeElement).toHaveText('outer { inner { hello } }');
+               async.done();
+             });
+       }));
+
+
     it('should recognize and apply redirects',
        inject([AsyncTestCompleter, Location], (async, location) => {
          compile()
@@ -285,6 +297,10 @@ class UserCmp {
   }
 }
 
+
+function parentLoader() {
+  return PromiseWrapper.resolve(ParentCmp);
+}
 
 @Component({selector: 'parent-cmp'})
 @View({template: "inner { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
