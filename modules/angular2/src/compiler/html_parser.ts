@@ -7,7 +7,16 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
+import {
+  HtmlAst,
+  HtmlAttrAst,
+  HtmlTextAst,
+  HtmlElementAst,
+  HtmlAstVisitor,
+  htmlVisitAll
+} from './html_ast';
+
+import {escapeDoubleQuoteString} from './util';
 
 const NG_NON_BINDABLE = 'ng-non-bindable';
 
@@ -15,6 +24,12 @@ export class HtmlParser {
   parse(template: string, sourceInfo: string): HtmlAst[] {
     var root = DOM.createTemplate(template);
     return parseChildNodes(root, sourceInfo);
+  }
+  unparse(nodes: HtmlAst[]): string {
+    var visitor = new UnparseVisitor();
+    var parts = [];
+    htmlVisitAll(visitor, nodes, parts);
+    return parts.join('');
   }
 }
 
@@ -91,4 +106,28 @@ function ignoreChildren(attrs: HtmlAttrAst[]): boolean {
     }
   }
   return false;
+}
+
+class UnparseVisitor implements HtmlAstVisitor {
+  visitElement(ast: HtmlElementAst, parts: string[]): any {
+    parts.push(`<${ast.name}`);
+    var attrs = [];
+    htmlVisitAll(this, ast.attrs, attrs);
+    if (ast.attrs.length > 0) {
+      parts.push(' ');
+      parts.push(attrs.join(' '));
+    }
+    parts.push(`>`);
+    htmlVisitAll(this, ast.children, parts);
+    parts.push(`</${ast.name}>`);
+    return null;
+  }
+  visitAttr(ast: HtmlAttrAst, parts: string[]): any {
+    parts.push(`${ast.name}=${escapeDoubleQuoteString(ast.value)}`);
+    return null;
+  }
+  visitText(ast: HtmlTextAst, parts: string[]): any {
+    parts.push(ast.value);
+    return null;
+  }
 }

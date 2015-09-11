@@ -13,12 +13,11 @@ import {
 } from 'angular2/test_lib';
 
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {TypeMetadata, ViewEncapsulation, TemplateMetadata} from 'angular2/src/compiler/api';
+import {TypeMetadata, TemplateMetadata} from 'angular2/src/compiler/api';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 import {TemplateLoader} from 'angular2/src/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {humanizeDom} from './html_parser_spec';
-import {HtmlTextAst, HtmlElementAst, HtmlAttrAst} from 'angular2/src/compiler/html_ast';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 
@@ -27,21 +26,22 @@ export function main() {
     var loader: TemplateLoader;
     var dirType: TypeMetadata;
     var xhr: MockXHR;
+    var htmlParser: HtmlParser;
+
     beforeEach(inject([XHR], (mockXhr) => {
       xhr = mockXhr;
-      var urlResolver = new UrlResolver();
-      loader = new TemplateLoader(xhr, urlResolver, new HtmlParser());
+      htmlParser = new HtmlParser();
+      loader = new TemplateLoader(xhr, new UrlResolver(), htmlParser);
       dirType = new TypeMetadata({typeUrl: 'http://sometypeurl', typeName: 'SomeComp'});
     }));
 
     describe('loadTemplate', () => {
       describe('inline template', () => {
-        it('should parse the template', inject([AsyncTestCompleter], (async) => {
+        it('should store the template', inject([AsyncTestCompleter], (async) => {
              loader.loadTemplate(dirType, null, 'a', null, [], ['test.css'])
                  .then((template: TemplateMetadata) => {
-                   expect(humanizeDom(template.nodes))
-                       .toEqual([[HtmlTextAst, 'a', 'SomeComp > #text(a):nth-child(0)']])
-                           async.done();
+                   expect(template.template).toEqual('a');
+                   async.done();
                  });
            }));
 
@@ -61,9 +61,8 @@ export function main() {
              xhr.expect('http://sometypeurl/sometplurl', 'a');
              loader.loadTemplate(dirType, null, null, 'sometplurl', [], ['test.css'])
                  .then((template: TemplateMetadata) => {
-                   expect(humanizeDom(template.nodes))
-                       .toEqual([[HtmlTextAst, 'a', 'SomeComp > #text(a):nth-child(0)']])
-                           async.done();
+                   expect(template.template).toEqual('a');
+                   async.done();
                  });
              xhr.flush();
            }));
@@ -91,44 +90,46 @@ export function main() {
         expect(template.encapsulation).toBe(viewEncapsulation);
       });
 
-      it('should parse the template as html', () => {
+      it('should keep the template as html', () => {
         var template =
             loader.createTemplateFromString(dirType, null, 'a', 'http://someurl/', [], []);
-        expect(humanizeDom(template.nodes))
-            .toEqual([[HtmlTextAst, 'a', 'SomeComp > #text(a):nth-child(0)']])
+        expect(template.template).toEqual('a')
       });
 
       it('should collect and keep ngContent', () => {
-        var template = loader.createTemplateFromString(dirType, null, '<ng-content select="a">',
-                                                       'http://someurl/', [], []);
+        var template = loader.createTemplateFromString(
+            dirType, null, '<ng-content select="a"></ng-content>', 'http://someurl/', [], []);
         expect(template.ngContentSelectors).toEqual(['a']);
-        expect(humanizeDom(template.nodes))
-            .toEqual([
-              [HtmlElementAst, 'ng-content', 'SomeComp > ng-content:nth-child(0)'],
-              [HtmlAttrAst, 'select', 'a', 'SomeComp > ng-content:nth-child(0)[select=a]']
-            ])
+        expect(template.template).toEqual('<ng-content select="a"></ng-content>');
+      });
+
+      it('should normalize ngContent wildcard selector', () => {
+        var template = loader.createTemplateFromString(
+            dirType, null,
+            '<ng-content></ng-content><ng-content select></ng-content><ng-content select="*"></ng-content>',
+            'http://someurl/', [], []);
+        expect(template.ngContentSelectors).toEqual(['*', '*', '*']);
       });
 
       it('should collect and remove top level styles in the template', () => {
         var template = loader.createTemplateFromString(dirType, null, '<style>a</style>',
                                                        'http://someurl/', [], []);
         expect(template.styles).toEqual(['a']);
-        expect(template.nodes).toEqual([]);
+        expect(template.template).toEqual('');
       });
 
       it('should collect and remove styles inside in elements', () => {
         var template = loader.createTemplateFromString(dirType, null, '<div><style>a</style></div>',
                                                        'http://someurl/', [], []);
         expect(template.styles).toEqual(['a']);
-        expect(humanizeDom(template.nodes))
-            .toEqual([[HtmlElementAst, 'div', 'SomeComp > div:nth-child(0)']]);
+        expect(template.template).toEqual('<div></div>');
       });
 
       it('should collect and remove styleUrls in the template', () => {
         var template = loader.createTemplateFromString(
             dirType, null, '<link rel="stylesheet" href="aUrl">', 'http://someurl/', [], []);
         expect(template.styleAbsUrls).toEqual(['http://someurl/aUrl']);
-        expect(template.nodes).toEqual([]);
+        expect(template.template).toEqual('');
       });
 
       it('should collect and remove styleUrls in elements', () => {
@@ -136,20 +137,14 @@ export function main() {
             dirType, null, '<div><link rel="stylesheet" href="aUrl"></div>', 'http://someurl/', [],
             []);
         expect(template.styleAbsUrls).toEqual(['http://someurl/aUrl']);
-        expect(humanizeDom(template.nodes))
-            .toEqual([[HtmlElementAst, 'div', 'SomeComp > div:nth-child(0)']]);
+        expect(template.template).toEqual('<div></div>');
       });
 
       it('should keep link elements with non stylesheet rel attribute', () => {
-        var template = loader.createTemplateFromString(dirType, null, '<link rel="a" href="b">',
-                                                       'http://someurl/', [], []);
+        var template = loader.createTemplateFromString(
+            dirType, null, '<link href="b" rel="a"></link>', 'http://someurl/', [], []);
         expect(template.styleAbsUrls).toEqual([]);
-        expect(humanizeDom(template.nodes))
-            .toEqual([
-              [HtmlElementAst, 'link', 'SomeComp > link:nth-child(0)'],
-              [HtmlAttrAst, 'href', 'b', 'SomeComp > link:nth-child(0)[href=b]'],
-              [HtmlAttrAst, 'rel', 'a', 'SomeComp > link:nth-child(0)[rel=a]']
-            ]);
+        expect(template.template).toEqual('<link href="b" rel="a"></link>');
       });
 
       it('should extract @import style urls into styleAbsUrl', () => {
