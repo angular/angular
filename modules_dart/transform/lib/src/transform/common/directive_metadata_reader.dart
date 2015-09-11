@@ -3,8 +3,7 @@ library angular2.transform.common.directive_metadata_reader;
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/change_detection/change_detection.dart'
-  show ChangeDetectionStrategy;
+import 'package:angular2/src/core/change_detection/change_detection.dart';
 
 /// Reads [RenderDirectiveMetadata] from the `node`. `node` is expected to be an
 /// instance of [ClassDeclaration] (a class which may have a [Directive] or

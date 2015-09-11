@@ -16,6 +16,7 @@ import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 import {ViewDefinition} from 'angular2/src/core/render/api';

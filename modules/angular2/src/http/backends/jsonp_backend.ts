@@ -18,6 +18,9 @@ export class JSONPConnection implements Connection {
   private _responseData: any;
   private _finished: boolean = false;
 
+  /**
+   * @private
+   */
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
     if (req.method !== RequestMethods.Get) {
@@ -91,6 +94,9 @@ export class JSONPConnection implements Connection {
 
 @Injectable()
 export class JSONPBackend implements ConnectionBackend {
+  /**
+   * @private
+   */
   constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {}
   createConnection(request: Request): JSONPConnection {
     return new JSONPConnection(request, this._browserJSONP, this._baseResponseOptions);

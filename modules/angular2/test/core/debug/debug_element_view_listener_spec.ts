@@ -31,11 +31,12 @@ export function main() {
     beforeEachBindings(() => [bind(APP_VIEW_POOL_CAPACITY).toValue(0)]);
 
     it('should return a TestElement from a dom element',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(MyComp, '<div some-dir></div>')
              .createAsync(MyComp)
              .then((rootTestComponent) => {
-               expect(inspectNativeElement(rootTestComponent.nativeElement).componentInstance)
+               expect(inspectNativeElement(rootTestComponent.debugElement.nativeElement)
+                          .componentInstance)
                    .toBeAnInstanceOf(MyComp);
 
                async.done();
@@ -43,12 +44,13 @@ export function main() {
        }));
 
     it('should clean up whent the view is destroyed',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(MyComp, '')
              .createAsync(MyComp)
              .then((rootTestComponent) => {
                rootTestComponent.destroy();
-               expect(inspectNativeElement(rootTestComponent.nativeElement)).toBe(null);
+               expect(inspectNativeElement(rootTestComponent.debugElement.nativeElement))
+                   .toBe(null);
 
                async.done();
              });
@@ -57,11 +59,12 @@ export function main() {
 
     if (!IS_DART) {
       it('should provide a global function to inspect elements',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideTemplate(MyComp, '')
                .createAsync(MyComp)
                .then((rootTestComponent) => {
-                 expect(global['ng']['probe'](rootTestComponent.nativeElement).componentInstance)
+                 expect(global['ng']['probe'](rootTestComponent.debugElement.nativeElement)
+                            .componentInstance)
                      .toBeAnInstanceOf(MyComp);
 
                  async.done();

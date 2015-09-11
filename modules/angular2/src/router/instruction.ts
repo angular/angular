@@ -92,6 +92,9 @@ function stringifyAux(instruction: Instruction): string {
 export class ComponentInstruction {
   reuse: boolean = false;
 
+  /**
+   * @private
+   */
   constructor(public urlPath: string, public urlParams: string[],
               private _recognizer: PathRecognizer, public params: StringMap<string, any> = null) {}
 

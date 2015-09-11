@@ -22,12 +22,16 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
-export class RootTestComponent extends DebugElement {
+export class RootTestComponent {
   _componentRef: ComponentRef;
   _componentParentView: AppView;
+  debugElement: DebugElement;
 
+  /**
+   * @private
+   */
   constructor(componentRef: ComponentRef) {
-    super(internalView(<ViewRef>componentRef.hostView), 0);
+    this.debugElement = new DebugElement(internalView(<ViewRef>componentRef.hostView), 0);
 
     this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;

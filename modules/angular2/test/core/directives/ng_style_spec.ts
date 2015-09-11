@@ -32,7 +32,8 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('40px');
 
                async.done();
@@ -48,15 +49,17 @@ export function main() {
              .then((rootTC) => {
                var expr: Map<string, any>;
 
-               rootTC.componentInstance.expr = {'max-width': '40px'};
+               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('40px');
 
-               expr = rootTC.componentInstance.expr;
+               expr = rootTC.debugElement.componentInstance.expr;
                expr['max-width'] = '30%';
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('30%');
 
                async.done();
@@ -70,14 +73,16 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.expr = {'max-width': '40px'};
+               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('40px');
 
-               StringMapWrapper.delete(rootTC.componentInstance.expr, 'max-width');
+               StringMapWrapper.delete(rootTC.debugElement.componentInstance.expr, 'max-width');
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('');
 
                async.done();
@@ -91,18 +96,22 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.expr = {'max-width': '40px'};
+               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('40px');
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'font-size'))
                    .toEqual('12px');
 
-               StringMapWrapper.delete(rootTC.componentInstance.expr, 'max-width');
+               StringMapWrapper.delete(rootTC.debugElement.componentInstance.expr, 'max-width');
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('');
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'font-size'))
                    .toEqual('12px');
 
                async.done();
@@ -116,19 +125,23 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.expr = {'max-width': '40px'};
+               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('40px');
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'font-size'))
                    .toEqual('12px');
 
-               StringMapWrapper.delete(rootTC.componentInstance.expr, 'max-width');
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'font-size'))
+               StringMapWrapper.delete(rootTC.debugElement.componentInstance.expr, 'max-width');
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'font-size'))
                    .toEqual('12px');
 
                rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.componentViewChildren[0].nativeElement, 'max-width'))
+               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                   'max-width'))
                    .toEqual('');
 
                async.done();

@@ -13,6 +13,7 @@ import {
   SpyObject,
 } from 'angular2/test_lib';
 
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {DomTestbed, TestRootView, elRef} from './dom_testbed';

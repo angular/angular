@@ -24,7 +24,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('foo{{text}}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('foo{{text}}');
                async.done();
              });
        }));
@@ -39,7 +39,7 @@ export function main() {
 
                // We must use DOM.querySelector instead of rootTC.query here
                // since the elements inside are not compiled.
-               var span = DOM.querySelector(rootTC.nativeElement, '#child');
+               var span = DOM.querySelector(rootTC.debugElement.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
                async.done();
              });
@@ -52,7 +52,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               var span = DOM.querySelector(rootTC.nativeElement, '#child');
+               var span = DOM.querySelector(rootTC.debugElement.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
                async.done();
              });
