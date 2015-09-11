@@ -1,27 +1,27 @@
 import {Type} from 'angular2/src/core/facade/lang';
-import * as Interfaces from './interfaces';
+import {LifecycleHooks} from './interfaces';
 
-export function hasLifecycleHook(lcInterface, type): boolean {
-  if (!(type instanceof Type)) return false;
+export function hasLifecycleHook(lcInterface: LifecycleHooks, token): boolean {
+  if (!(token instanceof Type)) return false;
 
-  var proto = (<any>type).prototype;
+  var proto = (<any>token).prototype;
 
   switch (lcInterface) {
-    case Interfaces.AfterContentInit:
+    case LifecycleHooks.AfterContentInit:
       return !!proto.afterContentInit;
-    case Interfaces.AfterContentChecked:
+    case LifecycleHooks.AfterContentChecked:
       return !!proto.afterContentChecked;
-    case Interfaces.AfterViewInit:
+    case LifecycleHooks.AfterViewInit:
       return !!proto.afterViewInit;
-    case Interfaces.AfterViewChecked:
+    case LifecycleHooks.AfterViewChecked:
       return !!proto.afterViewChecked;
-    case Interfaces.OnChanges:
+    case LifecycleHooks.OnChanges:
       return !!proto.onChanges;
-    case Interfaces.DoCheck:
+    case LifecycleHooks.DoCheck:
       return !!proto.doCheck;
-    case Interfaces.OnDestroy:
+    case LifecycleHooks.OnDestroy:
       return !!proto.onDestroy;
-    case Interfaces.OnInit:
+    case LifecycleHooks.OnInit:
       return !!proto.onInit;
     default:
       return false;
