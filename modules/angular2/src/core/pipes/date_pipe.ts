@@ -17,7 +17,7 @@ import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 
-// TODO: move to a global configable location along with other i18n components.
+// TODO: move to a global configurable location along with other i18n components.
 var defaultLocale: string = 'en-US';
 
 /**
