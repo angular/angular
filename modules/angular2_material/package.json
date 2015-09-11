@@ -10,7 +10,7 @@
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
     "traceur": "<%= packageJson.dependencies.traceur %>",
-    "rx": "<%= packageJson.dependencies['rx'] %>",
+    "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>

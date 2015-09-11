@@ -10,7 +10,7 @@
   "dependencies": {
     "traceur": "<%= packageJson.dependencies.traceur %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
-    "rx": "<%= packageJson.dependencies['rx'] %>",
+    "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,

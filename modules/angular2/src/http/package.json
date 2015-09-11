@@ -9,7 +9,7 @@
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
-    "rx": "<%= packageJson.dependencies['rx'] %>",
+    "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
     "traceur": "<%= packageJson.dependencies['traceur'] %>"
   },

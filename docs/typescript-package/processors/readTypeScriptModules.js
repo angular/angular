@@ -359,8 +359,8 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
   function getType(sourceFile, type) {
     var text = getText(sourceFile, type);
     while (text.indexOf(".") >= 0) {
-      // Keep namespaced symbols in Rx
-      if (text.match(/^\s*Rx\./)) break;
+      // Keep namespaced symbols in RxNext
+      if (text.match(/^\s*RxNext\./)) break;
       // handle the case List<thing.stuff> -> List<stuff>
       text = text.replace(/([^.<]*)\.([^>]*)/, "$2");
     }
