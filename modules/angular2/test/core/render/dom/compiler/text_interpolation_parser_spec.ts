@@ -3,6 +3,7 @@ import {
   TextInterpolationParser
 } from 'angular2/src/core/render/dom/compiler/text_interpolation_parser';
 import {CompilePipeline} from 'angular2/src/core/render/dom/compiler/compile_pipeline';
+import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Lexer, Parser, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';
 import {

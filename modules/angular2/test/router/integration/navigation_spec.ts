@@ -1,4 +1,5 @@
 import {
+  RootTestComponent,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -42,7 +43,8 @@ export function main() {
   describe('navigation', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC, rtr;
+    var rootTC: RootTestComponent;
+    var rtr;
 
     beforeEachBindings(() => [
       Pipeline,
@@ -78,7 +80,7 @@ export function main() {
              .then((_) => rtr.navigate('/test'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('hello');
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
                async.done();
              });
        }));
@@ -91,12 +93,12 @@ export function main() {
              .then((_) => rtr.navigate('/user/brian'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('hello brian');
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello brian');
              })
              .then((_) => rtr.navigate('/user/igor'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('hello igor');
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello igor');
                async.done();
              });
        }));
@@ -108,7 +110,7 @@ export function main() {
              .then((_) => rtr.navigate('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('outer { inner { hello } }');
+               expect(rootTC.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
                async.done();
              });
        }));
@@ -136,7 +138,7 @@ export function main() {
              .then((_) => rtr.navigate('/original'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('hello');
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
                expect(location.urlChanges).toEqual(['/redirected']);
                async.done();
              });
@@ -150,13 +152,14 @@ export function main() {
              .then((_) => {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(1);
-               expect(rootTC.nativeElement).toHaveText('team angular { hello rado }');
+               expect(rootTC.debugElement.nativeElement).toHaveText('team angular { hello rado }');
              })
              .then((_) => rtr.navigate('/team/angular/user/victor'))
              .then((_) => {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(1);
-               expect(rootTC.nativeElement).toHaveText('team angular { hello victor }');
+               expect(rootTC.debugElement.nativeElement)
+                   .toHaveText('team angular { hello victor }');
                async.done();
              });
        }));
@@ -170,14 +173,14 @@ export function main() {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(1);
                expect(childCmpInstanceCount).toBe(1);
-               expect(rootTC.nativeElement).toHaveText('team angular { hello rado }');
+               expect(rootTC.debugElement.nativeElement).toHaveText('team angular { hello rado }');
              })
              .then((_) => rtr.navigate('/team/dart/user/rado'))
              .then((_) => {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(2);
                expect(childCmpInstanceCount).toBe(2);
-               expect(rootTC.nativeElement).toHaveText('team dart { hello rado }');
+               expect(rootTC.debugElement.nativeElement).toHaveText('team dart { hello rado }');
                async.done();
              });
        }));
@@ -190,7 +193,8 @@ export function main() {
              .then((_) => rtr.navigate('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
+               expect(rootTC.debugElement.nativeElement)
+                   .toHaveText(Json.stringify({'isAdmin': true}));
                async.done();
              });
        }));
@@ -205,7 +209,8 @@ export function main() {
              .then((_) => rtr.navigate('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
+               expect(rootTC.debugElement.nativeElement)
+                   .toHaveText(Json.stringify({'isAdmin': true}));
                async.done();
              });
        }));
@@ -218,7 +223,7 @@ export function main() {
              .then((_) => rtr.navigate('/route-data-default'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('null');
+               expect(rootTC.debugElement.nativeElement).toHaveText('null');
                async.done();
              });
        }));
@@ -231,7 +236,7 @@ export function main() {
              .then((_) => rtr.navigate('/route-data-array'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
+               expect(rootTC.debugElement.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
                async.done();
              });
        }));
@@ -245,7 +250,7 @@ export function main() {
              .then((_) => rtr.navigate('/route-data-string'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText(Json.stringify('hello world'));
+               expect(rootTC.debugElement.nativeElement).toHaveText(Json.stringify('hello world'));
                async.done();
              });
        }));
@@ -257,7 +262,7 @@ export function main() {
                .then((_) => rtr.navigate('/hello(modal)'))
                .then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('main {hello} | aux {modal}');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('main {hello} | aux {modal}');
                  async.done();
                });
          }));

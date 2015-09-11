@@ -38,6 +38,9 @@ const REFLECT_PREFIX: string = 'ng-reflect-';
 export class DomRenderer extends Renderer {
   _document;
 
+  /**
+   * @private
+   */
   constructor(private _eventManager: EventManager,
               private _domSharedStylesHost: DomSharedStylesHost,
               private _templateCloner: TemplateCloner, @Inject(DOCUMENT) document) {

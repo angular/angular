@@ -1,4 +1,5 @@
 import {
+  RootTestComponent,
   AsyncTestCompleter,
   beforeEach,
   ddescribe,
@@ -40,7 +41,8 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 export function main() {
   describe('router-link directive', function() {
     var tcb: TestComponentBuilder;
-    var rootTC, router, location;
+    var rootTC: RootTestComponent;
+    var router, location;
 
     beforeEachBindings(() => [
       Pipeline,
@@ -103,10 +105,11 @@ export function main() {
                        [new Route({path: '/user/:name', component: UserCmp, as: 'user'})]))
              .then((_) => router.navigate('/a/b'))
              .then((_) => {
-               rootTC.componentInstance.name = 'brian';
+               rootTC.debugElement.componentInstance.name = 'brian';
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('brian');
-               expect(DOM.getAttribute(rootTC.componentViewChildren[0].nativeElement, 'href'))
+               expect(rootTC.debugElement.nativeElement).toHaveText('brian');
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                       'href'))
                    .toEqual('/user/brian');
                async.done();
              });
@@ -120,9 +123,10 @@ export function main() {
              .then((_) => router.navigate('/page/1'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(DOM.getAttribute(
-                          rootTC.componentViewChildren[1].componentViewChildren[0].nativeElement,
-                          'href'))
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+                                           .componentViewChildren[0]
+                                           .nativeElement,
+                                       'href'))
                    .toEqual('/page/2');
                async.done();
              });
@@ -136,12 +140,13 @@ export function main() {
              .then((_) => router.navigate('/book/1984/page/1'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(DOM.getAttribute(
-                          rootTC.componentViewChildren[1].componentViewChildren[0].nativeElement,
-                          'href'))
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+                                           .componentViewChildren[0]
+                                           .nativeElement,
+                                       'href'))
                    .toEqual('/book/1984/page/100');
 
-               expect(DOM.getAttribute(rootTC.componentViewChildren[1]
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
                                            .componentViewChildren[2]
                                            .componentViewChildren[0]
                                            .nativeElement,
@@ -162,7 +167,7 @@ export function main() {
                                 <a [router-link]="['./better-child']" class="better-child-link">Better Child</a>
                                 <router-outlet></router-outlet>`))
                .then((_) => {
-                 var element = rootTC.nativeElement;
+                 var element = rootTC.debugElement.nativeElement;
 
                  rootTC.detectChanges();
 
@@ -197,7 +202,7 @@ export function main() {
                                 <a [router-link]="['./child-with-grandchild/grandchild']" class="child-with-grandchild-link">Better Child</a>
                                 <router-outlet></router-outlet>`))
                .then((_) => {
-                 var element = rootTC.nativeElement;
+                 var element = rootTC.debugElement.nativeElement;
 
                  rootTC.detectChanges();
 
@@ -229,7 +234,7 @@ export function main() {
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
-        var anchorEl = rootTC.componentViewChildren[0].nativeElement;
+        var anchorEl = rootTC.debugElement.componentViewChildren[0].nativeElement;
         var dispatchedEvent = DOM.createMouseEvent('click');
         DOM.dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
@@ -278,8 +283,8 @@ export function main() {
   });
 }
 
-function getHref(tc) {
-  return DOM.getAttribute(tc.componentViewChildren[0].nativeElement, 'href');
+function getHref(tc: RootTestComponent) {
+  return DOM.getAttribute(tc.debugElement.componentViewChildren[0].nativeElement, 'href');
 }
 
 @Component({selector: 'my-comp'})

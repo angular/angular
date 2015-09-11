@@ -1,4 +1,5 @@
 import {
+  RootTestComponent,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -58,7 +59,8 @@ export function main() {
   describe('Router lifecycle hooks', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC, rtr;
+    var rootTC: RootTestComponent;
+    var rtr;
 
     beforeEachBindings(() => [
       Pipeline,
@@ -94,7 +96,7 @@ export function main() {
              .then((_) => rtr.navigate('/on-activate'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('activate cmp');
+               expect(rootTC.debugElement.nativeElement).toHaveText('activate cmp');
                expect(log).toEqual(['activate: null -> /on-activate']);
                async.done();
              });
@@ -113,7 +115,7 @@ export function main() {
                rtr.navigate('/parent-activate/child-activate')
                    .then((_) => {
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('parent {activate cmp}');
+                     expect(rootTC.debugElement.nativeElement).toHaveText('parent {activate cmp}');
                      expect(log).toEqual([
                        'parent activate: null -> /parent-activate',
                        'activate: null -> /child-activate'
@@ -130,7 +132,7 @@ export function main() {
              .then((_) => rtr.navigate('/a'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('A');
+               expect(rootTC.debugElement.nativeElement).toHaveText('A');
                expect(log).toEqual(['deactivate: /on-deactivate -> /a']);
                async.done();
              });
@@ -146,12 +148,12 @@ export function main() {
                  if (ev.startsWith('deactivate')) {
                    completer.resolve(true);
                    rootTC.detectChanges();
-                   expect(rootTC.nativeElement).toHaveText('parent {deactivate cmp}');
+                   expect(rootTC.debugElement.nativeElement).toHaveText('parent {deactivate cmp}');
                  }
                });
                rtr.navigate('/a').then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('A');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('A');
                  expect(log).toEqual([
                    'deactivate: /child-deactivate -> null',
                    'parent deactivate: /parent-deactivate -> /a'
@@ -169,14 +171,14 @@ export function main() {
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.nativeElement).toHaveText('reuse {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {A}');
                expect(cmpInstanceCount).toBe(1);
              })
              .then((_) => rtr.navigate('/on-reuse/2/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual(['reuse: /on-reuse/1 -> /on-reuse/2']);
-               expect(rootTC.nativeElement).toHaveText('reuse {B}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {B}');
                expect(cmpInstanceCount).toBe(1);
                async.done();
              });
@@ -191,14 +193,14 @@ export function main() {
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.nativeElement).toHaveText('reuse {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {A}');
                expect(cmpInstanceCount).toBe(1);
              })
              .then((_) => rtr.navigate('/never-reuse/2/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.nativeElement).toHaveText('reuse {B}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {B}');
                expect(cmpInstanceCount).toBe(2);
                async.done();
              });
@@ -217,7 +219,7 @@ export function main() {
                rtr.navigate('/can-activate/a')
                    .then((_) => {
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('canActivate {A}');
+                     expect(rootTC.debugElement.nativeElement).toHaveText('canActivate {A}');
                      expect(log).toEqual(['canActivate: null -> /can-activate']);
                      async.done();
                    });
@@ -237,7 +239,7 @@ export function main() {
                rtr.navigate('/can-activate/a')
                    .then((_) => {
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('');
+                     expect(rootTC.debugElement.nativeElement).toHaveText('');
                      expect(log).toEqual(['canActivate: null -> /can-activate']);
                      async.done();
                    });
@@ -251,7 +253,7 @@ export function main() {
              .then((_) => rtr.navigate('/can-deactivate/a'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -262,7 +264,7 @@ export function main() {
 
                rtr.navigate('/a').then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('A');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('A');
                  expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
                  async.done();
                });
@@ -276,7 +278,7 @@ export function main() {
              .then((_) => rtr.navigate('/can-deactivate/a'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -287,7 +289,7 @@ export function main() {
 
                rtr.navigate('/a').then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                  expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
                  async.done();
                });

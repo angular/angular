@@ -12,5 +12,3 @@ export {LimitToPipe} from './pipes/limit_to_pipe';
 export {LowerCasePipe} from './pipes/lowercase_pipe';
 export {NumberPipe, DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
 export {UpperCasePipe} from './pipes/uppercase_pipe';
-export {ProtoPipes} from './pipes/pipes';
-export {PipeBinding} from './pipes/pipe_binding';
