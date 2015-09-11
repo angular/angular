@@ -14,7 +14,15 @@ import {
 import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/src/core/di';
 import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {CONST, CONST_EXPR, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
-export * from './parser/ast';
+
+export {
+  ASTWithSource,
+  AST,
+  AstTransformer,
+  PropertyRead,
+  LiteralArray,
+  ImplicitReceiver
+} from './parser/ast';
 
 export {Lexer} from './parser/lexer';
 export {Parser} from './parser/parser';

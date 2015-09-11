@@ -31,6 +31,9 @@ export class RouterOutlet {
   private _componentRef: ComponentRef = null;
   private _currentInstruction: ComponentInstruction = null;
 
+  /**
+   * @private
+   */
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
     if (isPresent(nameAttr)) {

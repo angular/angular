@@ -93,66 +93,66 @@ class TestViewBindingsComp {
 export function main() {
   describe('test component builder', function() {
     it('should instantiate a component with valid DOM',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ChildComp).then((rootTestComponent) => {
            rootTestComponent.detectChanges();
 
-           expect(rootTestComponent.nativeElement).toHaveText('Original Child');
+           expect(rootTestComponent.debugElement.nativeElement).toHaveText('Original Child');
            async.done();
          });
        }));
 
     it('should allow changing members of the component',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(MyIfComp).then((rootTestComponent) => {
            rootTestComponent.detectChanges();
-           expect(rootTestComponent.nativeElement).toHaveText('MyIf()');
+           expect(rootTestComponent.debugElement.nativeElement).toHaveText('MyIf()');
 
-           rootTestComponent.componentInstance.showMore = true;
+           rootTestComponent.debugElement.componentInstance.showMore = true;
            rootTestComponent.detectChanges();
-           expect(rootTestComponent.nativeElement).toHaveText('MyIf(More)');
+           expect(rootTestComponent.debugElement.nativeElement).toHaveText('MyIf(More)');
 
            async.done();
          });
        }));
 
     it('should override a template',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideTemplate(MockChildComp, '<span>Mock</span>')
              .createAsync(MockChildComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.nativeElement).toHaveText('Mock');
+               expect(rootTestComponent.debugElement.nativeElement).toHaveText('Mock');
 
                async.done();
              });
        }));
 
     it('should override a view',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideView(ChildComp,
                           new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.nativeElement).toHaveText('Modified Child');
+               expect(rootTestComponent.debugElement.nativeElement).toHaveText('Modified Child');
 
                async.done();
              });
        }));
 
     it('should override component dependencies',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideDirective(ParentComp, ChildComp, MockChildComp)
              .createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.nativeElement).toHaveText('Parent(Mock)');
+               expect(rootTestComponent.debugElement.nativeElement).toHaveText('Parent(Mock)');
 
                async.done();
              });
@@ -160,14 +160,14 @@ export function main() {
 
 
     it("should override child component's dependencies",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
              .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
              .createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.nativeElement)
+               expect(rootTestComponent.debugElement.nativeElement)
                    .toHaveText('Parent(Original Child(ChildChild Mock))');
 
                async.done();
@@ -175,13 +175,13 @@ export function main() {
        }));
 
     it('should override a binding',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideBindings(TestBindingsComp, [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestBindingsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.nativeElement)
+               expect(rootTestComponent.debugElement.nativeElement)
                    .toHaveText('injected value: mocked out value');
                async.done();
              });
@@ -189,14 +189,14 @@ export function main() {
 
 
     it('should override a viewBinding',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideViewBindings(TestViewBindingsComp,
                                   [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestViewBindingsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
-               expect(rootTestComponent.nativeElement)
+               expect(rootTestComponent.debugElement.nativeElement)
                    .toHaveText('injected value: mocked out value');
                async.done();
              });

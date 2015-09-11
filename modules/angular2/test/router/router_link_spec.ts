@@ -51,7 +51,7 @@ export function main() {
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
                testComponent.detectChanges();
-               let anchorElement = testComponent.query(By.css('a')).nativeElement;
+               let anchorElement = testComponent.debugElement.query(By.css('a')).nativeElement;
                expect(DOM.getAttribute(anchorElement, 'href')).toEqual('/detail');
                async.done();
              });
@@ -65,7 +65,7 @@ export function main() {
              .then((testComponent) => {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
-               testComponent.query(By.css('a')).triggerEventHandler('click', null);
+               testComponent.debugElement.query(By.css('a')).triggerEventHandler('click', null);
                expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
                async.done();
              });

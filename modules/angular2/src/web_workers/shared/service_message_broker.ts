@@ -12,6 +12,9 @@ import {
 
 @Injectable()
 export class ServiceMessageBrokerFactory {
+  /**
+   * @private
+   */
   constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
 
   /**
@@ -33,6 +36,9 @@ export class ServiceMessageBroker {
   private _sink: EventEmitter;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
+  /**
+   * @private
+   */
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);

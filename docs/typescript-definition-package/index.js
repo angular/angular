@@ -60,27 +60,21 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
     {
       id: 'angular2/router',
       references: ['./angular2.d.ts'],
-      remapTypes: {Type: 'ng.Type'},
+      remapTypes: {Type: 'ng.Type', InjectableReference: 'ng.InjectableReference'},
       modules: {'angular2/router': {namespace: 'ngRouter', id: 'angular2/router'}}
     },
     {
       id: 'angular2/http',
       references: ['./angular2.d.ts'],
-      remapTypes: {Type: 'ng.Type', Observable: 'ng.Observable', EventEmitter: 'ng.EventEmitter'},
+      remapTypes: {Type: 'ng.Type', Observable: 'ng.Observable', EventEmitter: 'ng.EventEmitter', InjectableReference: 'ng.InjectableReference' },
       modules: {'angular2/http': {namespace: 'ngHttp', id: 'angular2/http'}}
     },
     {
       id: 'angular2/test_lib',
       references: ['./angular2.d.ts', '../jasmine/jasmine.d.ts'],
-      remapTypes: {
-        Type: 'ng.Type',
-        Binding: 'ng.Binding',
-        ViewMetadata: 'ng.ViewMetadata',
-        Injector: 'ng.Injector',
-        Predicate: 'ng.Predicate',
-        ElementRef: 'ng.ElementRef',
-        DebugElement: 'ng.DebugElement'
-      },
+      remapTypes: { Type: 'ng.Type', Binding: 'ng.Binding', ViewMetadata: 'ng.ViewMetadata', Injector: 'ng.Injector',
+                    Predicate: 'ng.Predicate', ElementRef: 'ng.ElementRef', DebugElement: 'ng.DebugElement',
+                    InjectableReference: 'ng.InjectableReference' },
       modules: {'angular2/test_lib': {namespace: 'ngTestLib', id: 'angular2/test_lib'}}
     }
   ];

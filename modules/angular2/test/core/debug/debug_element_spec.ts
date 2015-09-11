@@ -124,17 +124,17 @@ export function main() {
   describe('debug element', function() {
 
     it('should list component child elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
 
-               var childEls = rootTestComponent.children;
+               var childEls = rootTestComponent.debugElement.children;
                // The root is a lone component, and has no children in the light dom.
                expect(childEls.length).toEqual(0);
 
-               var rootCompChildren = rootTestComponent.componentViewChildren;
+               var rootCompChildren = rootTestComponent.debugElement.componentViewChildren;
                // The root component has 3 elements in its shadow view.
                expect(rootCompChildren.length).toEqual(3);
                expect(DOM.hasClass(rootCompChildren[0].nativeElement, 'parent')).toBe(true);
@@ -163,12 +163,12 @@ export function main() {
        }));
 
     it('should list child elements within viewports',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(UsingFor).then((rootTestComponent) => {
            rootTestComponent.detectChanges();
 
-           var childEls = rootTestComponent.componentViewChildren;
+           var childEls = rootTestComponent.debugElement.componentViewChildren;
            // TODO should this count include the <template> element?
            expect(childEls.length).toEqual(5);
 
@@ -180,13 +180,13 @@ export function main() {
        }));
 
     it('should query child elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
 
-               var childTestEls = rootTestComponent.queryAll(By.directive(MessageDir));
+               var childTestEls = rootTestComponent.debugElement.queryAll(By.directive(MessageDir));
 
                expect(childTestEls.length).toBe(4);
                expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
@@ -198,13 +198,13 @@ export function main() {
        }));
 
     it('should query child elements in the light DOM',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
 
-               var parentEl = rootTestComponent.componentViewChildren[0];
+               var parentEl = rootTestComponent.debugElement.componentViewChildren[0];
 
                var childTestEls = parentEl.queryAll(By.directive(MessageDir), Scope.light);
 
@@ -216,13 +216,14 @@ export function main() {
        }));
 
     it('should query child elements in the current component view DOM',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
 
-               var childTestEls = rootTestComponent.queryAll(By.directive(MessageDir), Scope.view);
+               var childTestEls =
+                   rootTestComponent.debugElement.queryAll(By.directive(MessageDir), Scope.view);
 
                expect(childTestEls.length).toBe(2);
                expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
@@ -233,13 +234,13 @@ export function main() {
        }));
 
     it('should allow injecting from the element injector',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
 
-               expect(rootTestComponent.componentViewChildren[0].inject(Logger).log)
+               expect(rootTestComponent.debugElement.componentViewChildren[0].inject(Logger).log)
                    .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
 
                async.done();
@@ -247,20 +248,22 @@ export function main() {
        }));
 
     it('should trigger event handlers',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(EventsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
 
-               expect(rootTestComponent.componentInstance.clicked).toBe(false);
-               expect(rootTestComponent.componentInstance.customed).toBe(false);
+               expect(rootTestComponent.debugElement.componentInstance.clicked).toBe(false);
+               expect(rootTestComponent.debugElement.componentInstance.customed).toBe(false);
 
-               rootTestComponent.componentViewChildren[0].triggerEventHandler('click', {});
-               expect(rootTestComponent.componentInstance.clicked).toBe(true);
+               rootTestComponent.debugElement.componentViewChildren[0].triggerEventHandler(
+                   'click', <Event>{});
+               expect(rootTestComponent.debugElement.componentInstance.clicked).toBe(true);
 
-               rootTestComponent.componentViewChildren[1].triggerEventHandler('myevent', {});
-               expect(rootTestComponent.componentInstance.customed).toBe(true);
+               rootTestComponent.debugElement.componentViewChildren[1].triggerEventHandler(
+                   'myevent', <Event>{});
+               expect(rootTestComponent.debugElement.componentInstance.customed).toBe(true);
 
                async.done();
              });

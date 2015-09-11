@@ -31,7 +31,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('1;2;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;');
                async.done();
              });
        }));
@@ -43,10 +43,10 @@ export function main() {
              .then((rootTC) => {
                rootTC.detectChanges();
 
-               (<number[]>rootTC.componentInstance.items).push(3);
+               (<number[]>rootTC.debugElement.componentInstance.items).push(3);
                rootTC.detectChanges();
 
-               expect(rootTC.nativeElement).toHaveText('1;2;3;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;3;');
                async.done();
              });
        }));
@@ -58,10 +58,10 @@ export function main() {
              .then((rootTC) => {
                rootTC.detectChanges();
 
-               ListWrapper.removeAt(rootTC.componentInstance.items, 1);
+               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 1);
                rootTC.detectChanges();
 
-               expect(rootTC.nativeElement).toHaveText('1;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('1;');
                async.done();
              });
        }));
@@ -73,11 +73,11 @@ export function main() {
              .then((rootTC) => {
                rootTC.detectChanges();
 
-               ListWrapper.removeAt(rootTC.componentInstance.items, 0);
-               (<number[]>rootTC.componentInstance.items).push(1);
+               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 0);
+               (<number[]>rootTC.debugElement.componentInstance.items).push(1);
                rootTC.detectChanges();
 
-               expect(rootTC.nativeElement).toHaveText('2;1;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('2;1;');
                async.done();
              });
        }));
@@ -87,13 +87,13 @@ export function main() {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.items = [0, 1, 2, 3, 4, 5];
+               rootTC.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5];
                rootTC.detectChanges();
 
-               rootTC.componentInstance.items = [6, 2, 7, 0, 4, 8];
+               rootTC.debugElement.componentInstance.items = [6, 2, 7, 0, 4, 8];
                rootTC.detectChanges();
 
-               expect(rootTC.nativeElement).toHaveText('6;2;7;0;4;8;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('6;2;7;0;4;8;');
                async.done();
              });
        }));
@@ -107,22 +107,22 @@ export function main() {
              .then((rootTC) => {
 
                // INIT
-               rootTC.componentInstance.items = [{'name': 'misko'}, {'name': 'shyam'}];
+               rootTC.debugElement.componentInstance.items = [{'name': 'misko'}, {'name': 'shyam'}];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('misko;shyam;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('misko;shyam;');
 
                // GROW
-               (<any[]>rootTC.componentInstance.items).push({'name': 'adam'});
+               (<any[]>rootTC.debugElement.componentInstance.items).push({'name': 'adam'});
                rootTC.detectChanges();
 
-               expect(rootTC.nativeElement).toHaveText('misko;shyam;adam;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('misko;shyam;adam;');
 
                // SHRINK
-               ListWrapper.removeAt(rootTC.componentInstance.items, 2);
-               ListWrapper.removeAt(rootTC.componentInstance.items, 0);
+               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 2);
+               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 0);
                rootTC.detectChanges();
 
-               expect(rootTC.nativeElement).toHaveText('shyam;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('shyam;');
                async.done();
              });
        }));
@@ -134,7 +134,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -145,15 +145,15 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('1;2;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;');
 
-               rootTC.componentInstance.items = null;
+               rootTC.debugElement.componentInstance.items = null;
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
 
-               rootTC.componentInstance.items = [1, 2, 3];
+               rootTC.debugElement.componentInstance.items = [1, 2, 3];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('1;2;3;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;3;');
                async.done();
              });
        }));
@@ -164,9 +164,9 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('1;2;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;');
 
-               rootTC.componentInstance.items = 'whaaa';
+               rootTC.debugElement.componentInstance.items = 'whaaa';
                expect(() => rootTC.detectChanges()).toThrowError();
                async.done();
              });
@@ -178,9 +178,9 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                var a = new Foo();
-               rootTC.componentInstance.items = [a, a];
+               rootTC.debugElement.componentInstance.items = [a, a];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('foo;foo;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('foo;foo;');
                async.done();
              });
        }));
@@ -198,15 +198,15 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.items = [['a', 'b'], ['c']];
+               rootTC.debugElement.componentInstance.items = [['a', 'b'], ['c']];
                rootTC.detectChanges();
                rootTC.detectChanges();
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('a-2;b-2;|c-1;|');
+               expect(rootTC.debugElement.nativeElement).toHaveText('a-2;b-2;|c-1;|');
 
-               rootTC.componentInstance.items = [['e'], ['f', 'g']];
+               rootTC.debugElement.componentInstance.items = [['e'], ['f', 'g']];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('e-1;|f-2;g-2;|');
+               expect(rootTC.debugElement.nativeElement).toHaveText('e-1;|f-2;g-2;|');
 
                async.done();
              });
@@ -222,13 +222,13 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.items = [['a', 'b'], ['c']];
+               rootTC.debugElement.componentInstance.items = [['a', 'b'], ['c']];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('a-2;b-2;c-1;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('a-2;b-2;c-1;');
 
-               rootTC.componentInstance.items = [['e'], ['f', 'g']];
+               rootTC.debugElement.componentInstance.items = [['e'], ['f', 'g']];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('e-1;f-2;g-2;');
+               expect(rootTC.debugElement.nativeElement).toHaveText('e-1;f-2;g-2;');
                async.done();
              });
        }));
@@ -241,13 +241,13 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+               rootTC.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('0123456789');
+               expect(rootTC.debugElement.nativeElement).toHaveText('0123456789');
 
-               rootTC.componentInstance.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
+               rootTC.debugElement.componentInstance.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('0123456789');
+               expect(rootTC.debugElement.nativeElement).toHaveText('0123456789');
                async.done();
              });
        }));
@@ -260,13 +260,13 @@ export function main() {
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.items = [0, 1, 2];
+               rootTC.debugElement.componentInstance.items = [0, 1, 2];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('falsefalsetrue');
+               expect(rootTC.debugElement.nativeElement).toHaveText('falsefalsetrue');
 
-               rootTC.componentInstance.items = [2, 1];
+               rootTC.debugElement.componentInstance.items = [2, 1];
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('falsetrue');
+               expect(rootTC.debugElement.nativeElement).toHaveText('falsetrue');
                async.done();
              });
        }));
