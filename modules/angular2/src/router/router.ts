@@ -38,7 +38,7 @@ let _resolveToFalse = PromiseWrapper.resolve(false);
  * The router holds reference to a number of {@link RouterOutlet}.
  * An outlet is a placeholder that the router dynamically fills in depending on the current URL.
  *
- * When the router navigates from a URL, it must first recognizes it and serialize it into an
+ * When the router navigates from a URL, it must first recognize it and serialize it into an
  * `Instruction`.
  * The router uses the `RouteRegistry` to get an `Instruction`.
  */
