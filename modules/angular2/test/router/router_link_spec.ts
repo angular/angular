@@ -66,7 +66,7 @@ export function main() {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
                testComponent.query(By.css('a')).triggerEventHandler('click', null);
-               expect(router.spy('navigateInstruction')).toHaveBeenCalledWith(dummyInstruction);
+               expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
                async.done();
              });
        }));

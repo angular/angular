@@ -75,7 +75,7 @@ export function main() {
     it('should work in a simple case', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
-             .then((_) => rtr.navigate('/test'))
+             .then((_) => rtr.navigateByUrl('/test'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText('hello');
@@ -88,12 +88,12 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/user/:name', component: UserCmp})]))
-             .then((_) => rtr.navigate('/user/brian'))
+             .then((_) => rtr.navigateByUrl('/user/brian'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText('hello brian');
              })
-             .then((_) => rtr.navigate('/user/igor'))
+             .then((_) => rtr.navigateByUrl('/user/igor'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText('hello igor');
@@ -105,7 +105,7 @@ export function main() {
     it('should navigate to child routes', inject([AsyncTestCompleter], (async) => {
          compile('outer { <router-outlet></router-outlet> }')
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
-             .then((_) => rtr.navigate('/a/b'))
+             .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText('outer { inner { hello } }');
@@ -133,7 +133,7 @@ export function main() {
                new Redirect({path: '/original', redirectTo: '/redirected'}),
                new Route({path: '/redirected', component: HelloCmp})
              ]))
-             .then((_) => rtr.navigate('/original'))
+             .then((_) => rtr.navigateByUrl('/original'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText('hello');
@@ -146,13 +146,13 @@ export function main() {
     it('should reuse common parent components', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
-             .then((_) => rtr.navigate('/team/angular/user/rado'))
+             .then((_) => rtr.navigateByUrl('/team/angular/user/rado'))
              .then((_) => {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(1);
                expect(rootTC.nativeElement).toHaveText('team angular { hello rado }');
              })
-             .then((_) => rtr.navigate('/team/angular/user/victor'))
+             .then((_) => rtr.navigateByUrl('/team/angular/user/victor'))
              .then((_) => {
                rootTC.detectChanges();
                expect(cmpInstanceCount).toBe(1);
@@ -187,7 +187,7 @@ export function main() {
              .then((_) => rtr.config([
                new Route({path: '/route-data', component: RouteDataCmp, data: {'isAdmin': true}})
              ]))
-             .then((_) => rtr.navigate('/route-data'))
+             .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
@@ -202,7 +202,7 @@ export function main() {
                new AsyncRoute(
                    {path: '/route-data', loader: AsyncRouteDataCmp, data: {isAdmin: true}})
              ]))
-             .then((_) => rtr.navigate('/route-data'))
+             .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText(Json.stringify({'isAdmin': true}));
@@ -215,7 +215,7 @@ export function main() {
          compile()
              .then((_) => rtr.config(
                        [new Route({path: '/route-data-default', component: RouteDataCmp})]))
-             .then((_) => rtr.navigate('/route-data-default'))
+             .then((_) => rtr.navigateByUrl('/route-data-default'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText('null');
@@ -228,7 +228,7 @@ export function main() {
              .then((_) => rtr.config([
                new Route({path: '/route-data-array', component: RouteDataCmp, data: [1, 2, 3]})
              ]))
-             .then((_) => rtr.navigate('/route-data-array'))
+             .then((_) => rtr.navigateByUrl('/route-data-array'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
@@ -242,7 +242,7 @@ export function main() {
                new Route(
                    {path: '/route-data-string', component: RouteDataCmp, data: 'hello world'})
              ]))
-             .then((_) => rtr.navigate('/route-data-string'))
+             .then((_) => rtr.navigateByUrl('/route-data-string'))
              .then((_) => {
                rootTC.detectChanges();
                expect(rootTC.nativeElement).toHaveText(Json.stringify('hello world'));
@@ -254,7 +254,7 @@ export function main() {
       it('should recognize a simple case', inject([AsyncTestCompleter], (async) => {
            compile()
                .then((_) => rtr.config([new Route({path: '/...', component: AuxCmp})]))
-               .then((_) => rtr.navigate('/hello(modal)'))
+               .then((_) => rtr.navigateByUrl('/hello(modal)'))
                .then((_) => {
                  rootTC.detectChanges();
                  expect(rootTC.nativeElement).toHaveText('main {hello} | aux {modal}');
