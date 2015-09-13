@@ -1,5 +1,5 @@
 import {ApplicationRef, LifeCycle} from 'angular2/angular2';
-import {isPresent, NumberWrapper} from 'angular2/src/core/facade/lang';
+import {isPresent, NumberWrapper, DateWrapper} from 'angular2/src/core/facade/lang';
 import {performance, window} from 'angular2/src/core/facade/browser';
 
 /**
@@ -40,17 +40,19 @@ export class AngularProfiler {
   timeChangeDetection(config: any) {
     var record = isPresent(config) && config['record'];
     var profileName = 'Change Detection';
-    if (record) {
+    // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
+    var isProfilerAvailable = isPresent(window.console.profile);
+    if (record && isProfilerAvailable) {
       window.console.profile(profileName);
     }
-    var start = window.performance.now();
+    var start = _now();
     var numTicks = 0;
-    while (numTicks < 5 || (window.performance.now() - start) < 500) {
+    while (numTicks < 5 || (_now() - start) < 500) {
       this.lifeCycle.tick();
       numTicks++;
     }
-    var end = window.performance.now();
-    if (record) {
+    var end = _now();
+    if (record && isProfilerAvailable) {
       // need to cast to <any> because type checker thinks there's no argument
       // while in fact there is:
       //
@@ -62,3 +64,13 @@ export class AngularProfiler {
     window.console.log(`${NumberWrapper.toFixed(msPerTick, 2)} ms per check`);
   }
 }
+
+// performance.now() is not available in all browsers, see
+// http://caniuse.com/#search=performance.now
+var _now: {(): number} = (function() {
+  if (isPresent(window.performance) && isPresent(window.performance.now)) {
+    return function() { return window.performance.now(); };
+  } else {
+    return function() { return DateWrapper.toMillis(DateWrapper.now()); };
+  }
+})();
