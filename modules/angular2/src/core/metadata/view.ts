@@ -6,7 +6,7 @@ export {ViewEncapsulation} from 'angular2/src/core/render/api';
 /**
  * Declares the available HTML templates for an application.
  *
- * Each angular component requires a single `@Component` and at least one `@View` annotation. The
+ * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
  * `@View` annotation specifies the HTML template to use, and lists the directives that are active
  * within the template.
  *
@@ -37,26 +37,26 @@ export {ViewEncapsulation} from 'angular2/src/core/render/api';
 @CONST()
 export class ViewMetadata {
   /**
-   * Specifies a template URL for an angular component.
+   * Specifies a template URL for an Angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
   templateUrl: string;
 
   /**
-   * Specifies an inline template for an angular component.
+   * Specifies an inline template for an Angular component.
    *
    * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
   template: string;
 
   /**
-   * Specifies stylesheet URLs for an angular component.
+   * Specifies stylesheet URLs for an Angular component.
    */
   styleUrls: string[];
 
   /**
-   * Specifies an inline stylesheet for an angular component.
+   * Specifies an inline stylesheet for an Angular component.
    */
   styles: string[];
 
@@ -72,7 +72,7 @@ export class ViewMetadata {
    *     selector: 'my-component'
    *   })
    * @View({
-   *   directives: [For]
+   *   directives: [NgFor]
    *   template: '
    *   <ul>
    *     <li *ng-for="#item of items">{{item}}</li>
