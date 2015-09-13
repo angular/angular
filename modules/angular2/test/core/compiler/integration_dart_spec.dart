@@ -241,15 +241,12 @@ class ThrowingComponent2 {
   }
 }
 
-@proxy()
-class PropModel implements Map {
+class PropModel {
   final String foo = 'foo-prop';
 
   operator [](_) => 'foo-map';
-
-  noSuchMethod(_) {
-    throw 'property not found';
-  }
+  
+  bool get doesNotExist => throw 'property not found';
 }
 
 @Component(selector: 'property-access')

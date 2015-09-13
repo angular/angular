@@ -1,4 +1,4 @@
-import {global, Type, isFunction, stringify} from 'angular2/src/core/facade/lang';
+import {global, Type, isFunction, stringify, isPresent} from 'angular2/src/core/facade/lang';
 
 /**
  * Declares the interface to be used with {@link Class}.
@@ -66,6 +66,8 @@ export interface TypeDecorator {
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
    */
   Class(obj: ClassDefinition): Type;
+
+  _Class(obj: ClassDefinition): Type;
 }
 
 function extractAnnotation(annotation: any): any {
@@ -230,6 +232,32 @@ if (!(Reflect && Reflect.getMetadata)) {
   throw 'reflect-metadata shim is required when using class decorators';
 }
 
+var id: number = 0;
+
+export class ReflectRegistry {
+  private _annotationRegistry = {};
+
+  constructor(){};
+
+  add(annotation: any, cls: any): void {
+    if (!isPresent(annotation._uniqueId)) {
+      annotation._uniqueId = id++;
+    }
+    var annotationList: any[] = this._annotationRegistry[annotation._uniqueId];
+    if (!isPresent(annotationList)) {
+      annotationList = this._annotationRegistry[annotation._uniqueId] = [];
+    }
+    annotationList.push(cls);
+  }
+
+  getForAnnotation(annotation: any): any[] {
+    var list: any[] = this._annotationRegistry[annotation._uniqueId];
+    return isPresent(list) ? list : [];
+  }
+}
+
+export const reflectRegistry: ReflectRegistry = new ReflectRegistry();
+
 export function makeDecorator(annotationCls, chainFn: (fn: Function) => void = null): (...args) =>
     (cls: any) => any {
   function DecoratorFactory(objOrType): (cls: any) => any {
@@ -245,10 +273,18 @@ export function makeDecorator(annotationCls, chainFn: (fn: Function) => void = n
         annotations = annotations || [];
         annotations.push(annotationInstance);
         Reflect.defineMetadata('annotations', annotations, cls);
+        reflectRegistry.add(annotationCls, cls);
+        reflectRegistry.add(DecoratorFactory, cls);
         return cls;
       };
       TypeDecorator.annotations = chainAnnotation;
-      TypeDecorator.Class = Class;
+      TypeDecorator.Class = function(clsDef: ClassDefinition): Type {
+        var constructor = this._Class(clsDef);
+        reflectRegistry.add(annotationCls, constructor);
+        reflectRegistry.add(DecoratorFactory, constructor);
+        return constructor;
+      };
+      TypeDecorator._Class = Class;
       if (chainFn) chainFn(TypeDecorator);
       return TypeDecorator;
     }
