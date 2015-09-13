@@ -183,7 +183,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       if (b.isElementProperty()) {
         this.renderer.setElementProperty(elementRef, b.name, currentValue);
       } else if (b.isElementAttribute()) {
-        this.renderer.setElementAttribute(elementRef, b.name, `${currentValue}`);
+        this.renderer.setElementAttribute(elementRef, b.name,
+                                          isPresent(currentValue) ? `${currentValue}` : null);
       } else if (b.isElementClass()) {
         this.renderer.setElementClass(elementRef, b.name, currentValue);
       } else if (b.isElementStyle()) {

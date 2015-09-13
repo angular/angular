@@ -167,6 +167,30 @@ export function main() {
                });
          }));
 
+      it('should remove an attribute when attribute expression evaluates to null',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp,
+                            new ViewMetadata({template: '<div [attr.foo]="ctxProp"></div>'}))
+
+               .createAsync(MyComp)
+               .then((rootTC) => {
+
+                 rootTC.debugElement.componentInstance.ctxProp = 'bar';
+                 rootTC.detectChanges();
+                 expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                         'foo'))
+                     .toEqual('bar');
+
+                 rootTC.debugElement.componentInstance.ctxProp = null;
+                 rootTC.detectChanges();
+                 expect(DOM.hasAttribute(rootTC.debugElement.componentViewChildren[0].nativeElement,
+                                         'foo'))
+                     .toBeFalsy();
+
+                 async.done();
+               });
+         }));
+
       it('should consume binding to property names where attr name and property name do not match',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp,
