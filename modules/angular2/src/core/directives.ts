@@ -9,6 +9,7 @@ import {NgClass} from './directives/ng_class';
 import {NgFor} from './directives/ng_for';
 import {NgIf} from './directives/ng_if';
 import {NgNonBindable} from './directives/ng_non_bindable';
+import {NgStyle} from './directives/ng_style';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './directives/ng_switch';
 
 export * from './directives/ng_class';
@@ -60,5 +61,5 @@ export * from './directives/ng_switch';
  * ```
  *
  */
-export const CORE_DIRECTIVES: Type[] =
-    CONST_EXPR([NgClass, NgFor, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
+export const CORE_DIRECTIVES: Type[] = CONST_EXPR(
+    [NgClass, NgFor, NgIf, NgNonBindable, NgStyle, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
