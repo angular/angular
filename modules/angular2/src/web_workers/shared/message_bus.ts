@@ -62,7 +62,7 @@ export interface MessageBusSource {
   attachToZone(zone: NgZone): void;
 
   /**
-   * Returns an {@link EventEmitter} that emits every time a messsage
+   * Returns an {@link EventEmitter} that emits every time a message 
    * is received on the given channel.
    */
   from(channel: string): EventEmitter;
