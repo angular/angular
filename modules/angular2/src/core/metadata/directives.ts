@@ -533,7 +533,7 @@ export class DirectiveMetadata extends InjectableMetadata {
   events: string[];
 
   /**
-   * Specifiy the events, actions, properties and attributes related to the host element.
+   * Specify the events, actions, properties and attributes related to the host element.
    *
    * ## Events
    *
@@ -607,7 +607,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    *
-   * In this example the prop property of the host element is updated with the expression value
+   * In this example the `prop` property of the host element is updated with the expression value
    * every time it changes.
    *
    * ## Attributes
@@ -641,7 +641,7 @@ export class DirectiveMetadata extends InjectableMetadata {
   compileChildren: boolean;
 
   /**
-   * Defines the set of injectable objects that are visible to a Directive and its light dom
+   * Defines the set of injectable objects that are visible to a Directive and its light DOM
    * children.
    *
    * ## Simple Example
@@ -776,7 +776,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   changeDetection: ChangeDetectionStrategy;
 
   /**
-   * Defines the set of injectable objects that are visible to its view dom children.
+   * Defines the set of injectable objects that are visible to its view DOM children.
    *
    * ## Simple Example
    *
