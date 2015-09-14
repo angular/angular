@@ -22,8 +22,8 @@ var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
 var FACADES = fs.readFileSync(__dirname + '/lib/facades.es5', 'utf8');
 var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.js', 'utf8');
-var ES6_SHIM = fs.readFileSync(__dirname + '/../../node_modules/es6-shim/es6-shim.js', 'utf8');
 function main() {
+  var ES6_SHIM = fs.readFileSync(__dirname + '/../../node_modules/es6-shim/es6-shim.js', 'utf8');
   var dir = __dirname + '/../angular2/src/router/';
 
   var out = '';
