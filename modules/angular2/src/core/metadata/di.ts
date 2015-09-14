@@ -36,7 +36,7 @@ import {DependencyMetadata, resolveForwardRef} from 'angular2/src/core/di';
  */
 @CONST()
 export class AttributeMetadata extends DependencyMetadata {
-  constructor(public attributeName: string) { super(); }
+  public constructor(public attributeName: string) { super(); }
 
   get token() {
     // Normally one would default a token to a type of an injected value but here
@@ -57,7 +57,7 @@ export class AttributeMetadata extends DependencyMetadata {
 @CONST()
 export class QueryMetadata extends DependencyMetadata {
   descendants: boolean;
-  constructor(private _selector: Type | string,
+  public constructor(private _selector: Type | string,
               {descendants = false}: {descendants?: boolean} = {}) {
     super();
     this.descendants = descendants;
@@ -81,7 +81,7 @@ export class QueryMetadata extends DependencyMetadata {
  */
 @CONST()
 export class ViewQueryMetadata extends QueryMetadata {
-  constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
+  public constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
     super(_selector, {descendants: descendants});
   }
 
