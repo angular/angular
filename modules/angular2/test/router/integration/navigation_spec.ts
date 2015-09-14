@@ -115,6 +115,18 @@ export function main() {
              });
        }));
 
+    it('should navigate to child routes that capture an empty path',
+       inject([AsyncTestCompleter], (async) => {
+         compile('outer { <router-outlet></router-outlet> }')
+             .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
+             .then((_) => rtr.navigateByUrl('/a'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(rootTC.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               async.done();
+             });
+       }));
+
 
     it('should navigate to child routes of async routes', inject([AsyncTestCompleter], (async) => {
          compile('outer { <router-outlet></router-outlet> }')
@@ -309,7 +321,8 @@ function parentLoader() {
 
 @Component({selector: 'parent-cmp'})
 @View({template: "inner { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
-@RouteConfig([new Route({path: '/b', component: HelloCmp})])
+@RouteConfig(
+    [new Route({path: '/b', component: HelloCmp}), new Route({path: '/', component: HelloCmp})])
 class ParentCmp {
   constructor() {}
 }

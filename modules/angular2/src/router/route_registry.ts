@@ -120,7 +120,7 @@ export class RouteRegistry {
   private _recognizePrimaryRoute(parsedUrl: Url, parentComponent): Promise<PrimaryInstruction> {
     var componentRecognizer = this._rules.get(parentComponent);
     if (isBlank(componentRecognizer)) {
-      return PromiseWrapper.resolve(null);
+      return _resolveToNull;
     }
 
     // Matches some beginning part of the given URL
@@ -137,12 +137,8 @@ export class RouteRegistry {
     return instruction.resolveComponentType().then((componentType) => {
       this.configFromComponent(componentType);
 
-      if (isBlank(partialMatch.remaining)) {
-        if (instruction.terminal) {
-          return new PrimaryInstruction(instruction, null, partialMatch.remainingAux);
-        } else {
-          return null;
-        }
+      if (instruction.terminal) {
+        return new PrimaryInstruction(instruction, null, partialMatch.remainingAux);
       }
 
       return this._recognizePrimaryRoute(partialMatch.remaining, componentType)
