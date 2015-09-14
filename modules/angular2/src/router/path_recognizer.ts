@@ -20,7 +20,7 @@ import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
 import {ComponentInstruction} from './instruction';
 
-export class TouchMap {
+class TouchMap {
   map: StringMap<string, string> = {};
   keys: StringMap<string, boolean> = {};
 
@@ -54,7 +54,7 @@ function normalizeString(obj: any): string {
   }
 }
 
-export interface Segment {
+interface Segment {
   name: string;
   generate(params: TouchMap): string;
   match(path: string): boolean;
@@ -75,7 +75,7 @@ class StaticSegment implements Segment {
 
 class DynamicSegment implements Segment {
   constructor(public name: string) {}
-  match(path: string): boolean { return true; }
+  match(path: string): boolean { return path.length > 0; }
   generate(params: TouchMap): string {
     if (!StringMapWrapper.contains(params.map, this.name)) {
       throw new BaseException(
@@ -224,26 +224,26 @@ export class PathRecognizer {
         break;
       }
 
-      if (isBlank(currentSegment)) {
+      if (isPresent(currentSegment)) {
+        captured.push(currentSegment.path);
+
+        // the star segment consumes all of the remaining URL, including matrix params
+        if (segment instanceof StarSegment) {
+          positionalParams[segment.name] = currentSegment.toString();
+          nextSegment = null;
+          break;
+        }
+
+        if (segment instanceof DynamicSegment) {
+          positionalParams[segment.name] = currentSegment.path;
+        } else if (!segment.match(currentSegment.path)) {
+          return null;
+        }
+
+        nextSegment = currentSegment.child;
+      } else if (!segment.match('')) {
         return null;
       }
-
-      captured.push(currentSegment.path);
-
-      // the star segment consumes all of the remaining URL, including matrix params
-      if (segment instanceof StarSegment) {
-        positionalParams[segment.name] = currentSegment.toString();
-        nextSegment = null;
-        break;
-      }
-
-      if (segment instanceof DynamicSegment) {
-        positionalParams[segment.name] = currentSegment.path;
-      } else if (!segment.match(currentSegment.path)) {
-        return null;
-      }
-
-      nextSegment = currentSegment.child;
     }
 
     if (this.terminal && isPresent(nextSegment)) {
