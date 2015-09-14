@@ -221,6 +221,36 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should ignore empty or blank class names',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div class="foo" [ng-class]="arrExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+
+                 rootTC.debugElement.componentInstance.arrExpr = ['', '  '];
+                 detectChangesAndCheck(rootTC, 'foo ng-binding');
+
+                 async.done();
+               });
+         }));
+
+      it('should trim blanks from class names',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div class="foo" [ng-class]="arrExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+
+                 rootTC.debugElement.componentInstance.arrExpr = [' bar  '];
+                 detectChangesAndCheck(rootTC, 'foo ng-binding bar');
+
+                 async.done();
+               });
+         }));
     });
 
     describe('expressions evaluating to string', () => {
@@ -284,6 +314,20 @@ export function main() {
 
                  rootTC.debugElement.componentInstance.strExpr = null;
                  detectChangesAndCheck(rootTC, 'ng-binding foo');
+
+                 async.done();
+               });
+         }));
+
+      it('should ignore empty and blank strings',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = `<div class="foo" [ng-class]="strExpr"></div>`;
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 rootTC.debugElement.componentInstance.strExpr = '';
+                 detectChangesAndCheck(rootTC, 'foo ng-binding');
 
                  async.done();
                });
