@@ -1,4 +1,5 @@
-import {TypeMetadata, SourceModule} from './api';
+import {TypeMetadata} from './directive_metadata';
+import {SourceExpression, moduleRef} from './source_module';
 import {
   ChangeDetectorJITGenerator
 } from 'angular2/src/core/change_detection/change_detection_jit_generator';
@@ -15,20 +16,19 @@ import {
 
 import {TemplateAst} from './template_ast';
 import {Codegen} from 'angular2/src/transform/template_compiler/change_detector_codegen';
-
-var IS_DART = !isJsObject({});
+import {IS_DART} from './util';
+import {Injectable} from 'angular2/src/core/di';
 
 const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
 
-const JS_CHANGE_DETECTOR_IMPORTS = CONST_EXPR([
-  ['angular2/src/core/change_detection/abstract_change_detector', 'acd'],
-  ['angular2/src/core/change_detection/change_detection_util', 'cdu']
-]);
+var ABSTRACT_CHANGE_DETECTOR_MODULE =
+    moduleRef('angular2/src/core/change_detection/abstract_change_detector');
+var UTIL_MODULE = moduleRef('angular2/src/core/change_detection/change_detection_util');
+var PREGEN_PROTO_CHANGE_DETECTOR_MODULE =
+    moduleRef('angular2/src/core/change_detection/pregen_proto_change_detector');
 
-const DART_CHANGE_DETECTOR_IMPORTS =
-    CONST_EXPR([['angular2/src/core/change_detection/pregen_proto_change_detector', '_gen']]);
-
+@Injectable()
 export class ChangeDetectionCompiler {
   constructor(private _genConfig: ChangeDetectorGenConfig) {}
 
@@ -52,10 +52,9 @@ export class ChangeDetectionCompiler {
   }
 
   compileComponentCodeGen(componentType: TypeMetadata, strategy: ChangeDetectionStrategy,
-                          parsedTemplate: TemplateAst[]): SourceModule {
+                          parsedTemplate: TemplateAst[]): SourceExpression {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
-    var imports = IS_DART ? DART_CHANGE_DETECTOR_IMPORTS : JS_CHANGE_DETECTOR_IMPORTS;
     var factories = [];
     var sourceParts = changeDetectorDefinitions.map(definition => {
       var codegen: any;
@@ -63,19 +62,20 @@ export class ChangeDetectionCompiler {
       // suffix
       // and have the same API for calling them!
       if (IS_DART) {
-        codegen = new Codegen();
+        codegen = new Codegen(PREGEN_PROTO_CHANGE_DETECTOR_MODULE);
         var className = definition.id;
-        codegen.generate(componentType.typeName, className, definition);
+        codegen.generate(componentType.name, className, definition);
         factories.push(`(dispatcher) => new ${className}(dispatcher)`);
         return codegen.toString();
       } else {
-        codegen = new ChangeDetectorJITGenerator(definition, `cdu.${UTIL}`,
-                                                 `acd.${ABSTRACT_CHANGE_DETECTOR}`);
+        codegen = new ChangeDetectorJITGenerator(
+            definition, `${UTIL_MODULE}${UTIL}`,
+            `${ABSTRACT_CHANGE_DETECTOR_MODULE}${ABSTRACT_CHANGE_DETECTOR}`);
         factories.push(`function(dispatcher) { return new ${codegen.typeName}(dispatcher); }`);
         return codegen.generateSource();
       }
     });
-    sourceParts.push(`var CHANGE_DETECTORS = [ ${factories.join(',')} ];`);
-    return new SourceModule(componentType.typeUrl, sourceParts.join('\n'), imports);
+    var expression = `[ ${factories.join(',')} ]`;
+    return new SourceExpression(sourceParts, expression);
   }
 }

@@ -139,11 +139,11 @@ export interface ViewDecorator extends TypeDecorator {
 export interface DirectiveFactory {
   (obj: {
     selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
-        bindings?: any[], exportAs?: string, compileChildren?: boolean;
+        bindings?: any[], exportAs?: string, moduleId?: string, compileChildren?: boolean;
   }): DirectiveDecorator;
   new (obj: {
     selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
-        bindings?: any[], exportAs?: string, compileChildren?: boolean;
+        bindings?: any[], exportAs?: string, moduleId?: string, compileChildren?: boolean;
   }): DirectiveMetadata;
 }
 
@@ -196,8 +196,10 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
+    dynamicLoadable?: boolean,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
@@ -207,8 +209,10 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
+    dynamicLoadable?: boolean,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,

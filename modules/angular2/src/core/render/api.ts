@@ -409,7 +409,7 @@ export interface RenderBeginElementCmd extends RenderBeginCmd {
 
 export interface RenderBeginComponentCmd extends RenderBeginElementCmd {
   nativeShadow: boolean;
-  templateId: string;
+  templateId: number;
 }
 
 export interface RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {

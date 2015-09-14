@@ -13,28 +13,29 @@ import {
 } from 'angular2/test_lib';
 
 import {
-  DirectiveMetadata,
+  NormalizedDirectiveMetadata,
   TypeMetadata,
-  TemplateMetadata,
+  NormalizedTemplateMetadata,
   ChangeDetectionMetadata
-} from 'angular2/src/compiler/api';
+} from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 
 export function main() {
-  describe('Compiler api', () => {
+  describe('DirectiveMetadata', () => {
     var fullTypeMeta: TypeMetadata;
-    var fullTemplateMeta: TemplateMetadata;
+    var fullTemplateMeta: NormalizedTemplateMetadata;
     var fullChangeDetectionMeta: ChangeDetectionMetadata;
-    var fullDirectiveMeta: DirectiveMetadata;
+    var fullDirectiveMeta: NormalizedDirectiveMetadata;
 
     beforeEach(() => {
-      fullTypeMeta = new TypeMetadata({id: 23, typeName: 'SomeType', typeUrl: 'someUrl'});
-      fullTemplateMeta = new TemplateMetadata({
+      fullTypeMeta = new TypeMetadata({id: 23, name: 'SomeType', moduleId: 'someUrl'});
+      fullTemplateMeta = new NormalizedTemplateMetadata({
         encapsulation: ViewEncapsulation.Emulated,
         template: '<a></a>',
         styles: ['someStyle'],
         styleAbsUrls: ['someStyleUrl'],
+        hostAttributes: {'attr1': 'attrValue2'},
         ngContentSelectors: ['*']
       });
       fullChangeDetectionMeta = new ChangeDetectionMetadata({
@@ -51,10 +52,10 @@ export function main() {
         callDoCheck: true,
         callOnInit: true
       });
-      fullDirectiveMeta = new DirectiveMetadata({
+      fullDirectiveMeta = new NormalizedDirectiveMetadata({
         selector: 'someSelector',
         isComponent: true,
-        hostAttributes: {'attr1': 'attrValue2'},
+        dynamicLoadable: true,
         type: fullTypeMeta, template: fullTemplateMeta,
         changeDetection: fullChangeDetectionMeta,
       });
@@ -63,12 +64,13 @@ export function main() {
 
     describe('DirectiveMetadata', () => {
       it('should serialize with full data', () => {
-        expect(DirectiveMetadata.fromJson(fullDirectiveMeta.toJson())).toEqual(fullDirectiveMeta);
+        expect(NormalizedDirectiveMetadata.fromJson(fullDirectiveMeta.toJson()))
+            .toEqual(fullDirectiveMeta);
       });
 
       it('should serialize with no data', () => {
-        var empty = new DirectiveMetadata();
-        expect(DirectiveMetadata.fromJson(empty.toJson())).toEqual(empty);
+        var empty = new NormalizedDirectiveMetadata();
+        expect(NormalizedDirectiveMetadata.fromJson(empty.toJson())).toEqual(empty);
       });
     });
 
@@ -84,12 +86,13 @@ export function main() {
 
     describe('TemplateMetadata', () => {
       it('should serialize with full data', () => {
-        expect(TemplateMetadata.fromJson(fullTemplateMeta.toJson())).toEqual(fullTemplateMeta);
+        expect(NormalizedTemplateMetadata.fromJson(fullTemplateMeta.toJson()))
+            .toEqual(fullTemplateMeta);
       });
 
       it('should serialize with no data', () => {
-        var empty = new TemplateMetadata();
-        expect(TemplateMetadata.fromJson(empty.toJson())).toEqual(empty);
+        var empty = new NormalizedTemplateMetadata();
+        expect(NormalizedTemplateMetadata.fromJson(empty.toJson())).toEqual(empty);
       });
     });
 

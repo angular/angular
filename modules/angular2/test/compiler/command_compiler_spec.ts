@@ -9,16 +9,13 @@ import {
   beforeEach,
   afterEach,
   AsyncTestCompleter,
-  inject
+  inject,
+  beforeEachBindings
 } from 'angular2/test_lib';
 
-import {IS_DART} from '../platform';
 import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
-import {MockSchemaRegistry} from './template_parser_spec';
-import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {
   CommandVisitor,
   TextCmd,
@@ -32,14 +29,19 @@ import {
 } from 'angular2/src/core/compiler/template_commands';
 import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
 import {
-  DirectiveMetadata,
+  NormalizedDirectiveMetadata,
   TypeMetadata,
-  TemplateMetadata,
-  SourceModule
-} from 'angular2/src/compiler/api';
+  NormalizedTemplateMetadata
+} from 'angular2/src/compiler/directive_metadata';
+import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {evalModule} from './eval_module';
-import {escapeSingleQuoteString} from 'angular2/src/compiler/util';
+import {
+  escapeSingleQuoteString,
+  codeGenValueFn,
+  codeGenExportVariable
+} from 'angular2/src/compiler/util';
+import {TEST_BINDINGS} from './test_bindings';
 
 const BEGIN_ELEMENT = 'BEGIN_ELEMENT';
 const END_ELEMENT = 'END_ELEMENT';
@@ -50,8 +52,9 @@ const NG_CONTENT = 'NG_CONTENT';
 const EMBEDDED_TEMPLATE = 'EMBEDDED_TEMPLATE';
 
 // Attention: These module names have to correspond to real modules!
-const MODULE_NAME = 'angular2/test/compiler/command_compiler_spec';
-const TEMPLATE_COMMANDS_MODULE_NAME = 'angular2/src/core/compiler/template_commands';
+const THIS_MODULE_NAME = 'angular2/test/compiler/command_compiler_spec';
+var THIS_MODULE_REF = moduleRef(THIS_MODULE_NAME);
+var TEMPLATE_COMMANDS_MODULE_REF = moduleRef('angular2/src/core/compiler/template_commands');
 
 // Attention: read by eval!
 export class RootComp {}
@@ -59,27 +62,26 @@ export class SomeDir {}
 export class AComp {}
 
 var RootCompTypeMeta =
-    new TypeMetadata({typeName: 'RootComp', id: 1, type: RootComp, typeUrl: MODULE_NAME});
+    new TypeMetadata({id: 1, name: 'RootComp', runtime: RootComp, moduleId: THIS_MODULE_NAME});
 var SomeDirTypeMeta =
-    new TypeMetadata({typeName: 'SomeDir', id: 2, type: SomeDir, typeUrl: MODULE_NAME});
-var ACompTypeMeta = new TypeMetadata({typeName: 'AComp', id: 3, type: AComp, typeUrl: MODULE_NAME});
+    new TypeMetadata({id: 2, name: 'SomeDir', runtime: SomeDir, moduleId: THIS_MODULE_NAME});
+var ACompTypeMeta =
+    new TypeMetadata({id: 3, name: 'AComp', runtime: AComp, moduleId: THIS_MODULE_NAME});
 
-var NESTED_COMPONENT = new CompiledTemplate('someNestedComponentId', []);
+var NESTED_COMPONENT = new CompiledTemplate(45, () => []);
 
 export function main() {
   describe('CommandCompiler', () => {
-    var domParser: HtmlParser;
+    beforeEachBindings(() => TEST_BINDINGS);
+
     var parser: TemplateParser;
     var commandCompiler: CommandCompiler;
     var componentTemplateFactory: Function;
 
-    beforeEach(() => {
-      domParser = new HtmlParser();
-      parser = new TemplateParser(
-          new Parser(new Lexer()),
-          new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'}));
-      commandCompiler = new CommandCompiler();
-    });
+    beforeEach(inject([TemplateParser, CommandCompiler], (_templateParser, _commandCompiler) => {
+      parser = _templateParser;
+      commandCompiler = _commandCompiler;
+    }));
 
     function createComp({type, selector, template, encapsulation, ngContentSelectors}: {
       type?: TypeMetadata,
@@ -87,7 +89,7 @@ export function main() {
       template?: string,
       encapsulation?: ViewEncapsulation,
       ngContentSelectors?: string[]
-    }): DirectiveMetadata {
+    }): NormalizedDirectiveMetadata {
       if (isBlank(encapsulation)) {
         encapsulation = ViewEncapsulation.None;
       }
@@ -100,11 +102,11 @@ export function main() {
       if (isBlank(template)) {
         template = '';
       }
-      return new DirectiveMetadata({
+      return new NormalizedDirectiveMetadata({
         selector: selector,
         isComponent: true,
         type: type,
-        template: new TemplateMetadata({
+        template: new NormalizedTemplateMetadata({
           template: template,
           ngContentSelectors: ngContentSelectors,
           encapsulation: encapsulation
@@ -112,8 +114,8 @@ export function main() {
       });
     }
 
-    function createDirective(type: TypeMetadata, selector: string): DirectiveMetadata {
-      return new DirectiveMetadata({selector: selector, isComponent: false, type: type});
+    function createDirective(type: TypeMetadata, selector: string): NormalizedDirectiveMetadata {
+      return new NormalizedDirectiveMetadata({selector: selector, isComponent: false, type: type});
     }
 
 
@@ -229,7 +231,7 @@ export function main() {
                        ['ACompType'],
                        false,
                        null,
-                       'AComp'
+                       3
                      ],
                      [END_COMPONENT]
                    ]);
@@ -258,7 +260,7 @@ export function main() {
                        ['ACompType'],
                        false,
                        null,
-                       'AComp'
+                       3
                      ],
                      [END_COMPONENT]
                    ]);
@@ -273,7 +275,7 @@ export function main() {
              run(rootComp, [comp])
                  .then((data) => {
                    expect(data).toEqual([
-                     [BEGIN_COMPONENT, 'a', [], [], [], ['ACompType'], true, null, 'AComp'],
+                     [BEGIN_COMPONENT, 'a', [], [], [], ['ACompType'], true, null, 3],
                      [END_COMPONENT]
                    ]);
                    async.done();
@@ -287,7 +289,7 @@ export function main() {
              run(rootComp, [comp])
                  .then((data) => {
                    expect(data).toEqual([
-                     [BEGIN_COMPONENT, 'a', [], [], [], ['ACompType'], false, null, 'AComp'],
+                     [BEGIN_COMPONENT, 'a', [], [], [], ['ACompType'], false, null, 3],
                      [TEXT, 't', false, 0],
                      [END_COMPONENT]
                    ]);
@@ -362,15 +364,15 @@ export function main() {
 
     describe('compileComponentRuntime', () => {
       beforeEach(() => {
-        componentTemplateFactory = (directiveType: TypeMetadata) => {
-          return new CompiledTemplate(directiveType.typeName, []);
+        componentTemplateFactory = (directive: NormalizedDirectiveMetadata) => {
+          return new CompiledTemplate(directive.type.id, () => []);
         };
       });
 
-      function run(component: DirectiveMetadata, directives: DirectiveMetadata[]):
-          Promise<any[][]> {
-        var parsedTemplate = parser.parse(
-            domParser.parse(component.template.template, component.type.typeName), directives);
+      function run(component: NormalizedDirectiveMetadata,
+                   directives: NormalizedDirectiveMetadata[]): Promise<any[][]> {
+        var parsedTemplate =
+            parser.parse(component.template.template, directives, component.type.name);
         var commands = commandCompiler.compileComponentRuntime(component, parsedTemplate,
                                                                componentTemplateFactory);
         return PromiseWrapper.resolve(humanize(commands));
@@ -382,19 +384,18 @@ export function main() {
 
     describe('compileComponentCodeGen', () => {
       beforeEach(() => {
-        componentTemplateFactory = (directiveType: TypeMetadata, imports: string[][]) => {
-          imports.push([TEMPLATE_COMMANDS_MODULE_NAME, 'tcm']);
-          return `new tcm.CompiledTemplate(${escapeSingleQuoteString(directiveType.typeName)}, [])`;
+        componentTemplateFactory = (directive: NormalizedDirectiveMetadata) => {
+          return `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${directive.type.id}, ${codeGenValueFn([], '{}')})`;
         };
       });
 
-      function run(component: DirectiveMetadata, directives: DirectiveMetadata[]):
-          Promise<any[][]> {
-        var parsedTemplate = parser.parse(
-            domParser.parse(component.template.template, component.type.typeName), directives);
+      function run(component: NormalizedDirectiveMetadata,
+                   directives: NormalizedDirectiveMetadata[]): Promise<any[][]> {
+        var parsedTemplate =
+            parser.parse(component.template.template, directives, component.type.name);
         var sourceModule = commandCompiler.compileComponentCodeGen(component, parsedTemplate,
                                                                    componentTemplateFactory);
-        var testableModule = createTestableModule(sourceModule);
+        var testableModule = createTestableModule(sourceModule).getSourceWithImports();
         return evalModule(testableModule.source, testableModule.imports, null);
       }
 
@@ -453,6 +454,7 @@ class CommandHumanizer implements CommandVisitor {
       cmd.directives.map(checkAndStringifyType),
       cmd.nativeShadow,
       cmd.ngContentIndex,
+      // TODO humanizeTemplate(cmd.template)
       cmd.template.id
     ]);
     return null;
@@ -475,15 +477,9 @@ class CommandHumanizer implements CommandVisitor {
   }
 }
 
-function createTestableModule(sourceModule: SourceModule): SourceModule {
-  var testableSource;
-  var testableImports = [[MODULE_NAME, 'mocks']].concat(sourceModule.imports);
-  if (IS_DART) {
-    testableSource = `${sourceModule.source}
-  run(_) { return mocks.humanize(COMMANDS); }`;
-  } else {
-    testableSource = `${sourceModule.source}
-  exports.run = function(_) { return mocks.humanize(COMMANDS); }`;
-  }
-  return new SourceModule(null, testableSource, testableImports);
+function createTestableModule(source: SourceExpression): SourceModule {
+  var resultExpression = `${THIS_MODULE_REF}humanize(${source.expression})`;
+  var testableSource = `${source.declarations.join('\n')}
+  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
+  return new SourceModule(null, testableSource);
 }

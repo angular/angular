@@ -1,15 +1,26 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
-
-import {isPresent} from 'angular2/src/core/facade/lang';
-import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
-import {TemplateParser, splitClasses} from 'angular2/src/compiler/template_parser';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {
-  DirectiveMetadata,
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  inject,
+  beforeEachBindings
+} from 'angular2/test_lib';
+import {bind} from 'angular2/src/core/di';
+
+import {TEST_BINDINGS} from './test_bindings';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {TemplateParser, splitClasses} from 'angular2/src/compiler/template_parser';
+import {
+  NormalizedDirectiveMetadata,
   TypeMetadata,
   ChangeDetectionMetadata,
-  TemplateMetadata
-} from 'angular2/src/compiler/api';
+  NormalizedTemplateMetadata
+} from 'angular2/src/compiler/directive_metadata';
 import {
   templateVisitAll,
   TemplateAstVisitor,
@@ -29,6 +40,7 @@ import {
 } from 'angular2/src/compiler/template_ast';
 
 import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {MockSchemaRegistry} from './schema_registry_mock';
 
 import {Unparser} from '../core/change_detection/parser/unparser';
 
@@ -36,24 +48,26 @@ var expressionUnparser = new Unparser();
 
 export function main() {
   describe('TemplateParser', () => {
-    var domParser: HtmlParser;
+    beforeEachBindings(() => [
+      TEST_BINDINGS,
+      bind(ElementSchemaRegistry)
+          .toValue(new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'}))
+    ]);
+
     var parser: TemplateParser;
     var ngIf;
 
-    beforeEach(() => {
-      domParser = new HtmlParser();
-      parser = new TemplateParser(
-          new Parser(new Lexer()),
-          new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'}));
-      ngIf = new DirectiveMetadata({
+    beforeEach(inject([TemplateParser], (_parser) => {
+      parser = _parser;
+      ngIf = new NormalizedDirectiveMetadata({
         selector: '[ng-if]',
-        type: new TypeMetadata({typeName: 'NgIf'}),
+        type: new TypeMetadata({name: 'NgIf'}),
         changeDetection: new ChangeDetectionMetadata({properties: ['ngIf']})
       });
-    });
+    }));
 
-    function parse(template: string, directives: DirectiveMetadata[]): TemplateAst[] {
-      return parser.parse(domParser.parse(template, 'TestComp'), directives);
+    function parse(template: string, directives: NormalizedDirectiveMetadata[]): TemplateAst[] {
+      return parser.parse(template, directives, 'TestComp');
     }
 
     describe('parse', () => {
@@ -341,16 +355,16 @@ export function main() {
       });
 
       describe('directives', () => {
-        it('should locate directives ordered by typeName and components first', () => {
-          var dirA = new DirectiveMetadata(
-              {selector: '[a=b]', type: new TypeMetadata({typeName: 'DirA'})});
-          var dirB =
-              new DirectiveMetadata({selector: '[a]', type: new TypeMetadata({typeName: 'DirB'})});
-          var comp = new DirectiveMetadata({
+        it('should locate directives ordered by name and components first', () => {
+          var dirA = new NormalizedDirectiveMetadata(
+              {selector: '[a=b]', type: new TypeMetadata({name: 'DirA'})});
+          var dirB = new NormalizedDirectiveMetadata(
+              {selector: '[a]', type: new TypeMetadata({name: 'DirB'})});
+          var comp = new NormalizedDirectiveMetadata({
             selector: 'div',
             isComponent: true,
-            type: new TypeMetadata({typeName: 'ZComp'}),
-            template: new TemplateMetadata({ngContentSelectors: []})
+            type: new TypeMetadata({name: 'ZComp'}),
+            template: new NormalizedTemplateMetadata({ngContentSelectors: []})
           });
           expect(humanizeTemplateAsts(parse('<div a="b">', [dirB, dirA, comp])))
               .toEqual([
@@ -363,10 +377,10 @@ export function main() {
         });
 
         it('should locate directives in property bindings', () => {
-          var dirA = new DirectiveMetadata(
-              {selector: '[a=b]', type: new TypeMetadata({typeName: 'DirA'})});
-          var dirB =
-              new DirectiveMetadata({selector: '[b]', type: new TypeMetadata({typeName: 'DirB'})});
+          var dirA = new NormalizedDirectiveMetadata(
+              {selector: '[a=b]', type: new TypeMetadata({name: 'DirA'})});
+          var dirB = new NormalizedDirectiveMetadata(
+              {selector: '[b]', type: new TypeMetadata({name: 'DirB'})});
           expect(humanizeTemplateAsts(parse('<div [a]="b">', [dirA, dirB])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -383,10 +397,10 @@ export function main() {
         });
 
         it('should locate directives in variable bindings', () => {
-          var dirA = new DirectiveMetadata(
-              {selector: '[a=b]', type: new TypeMetadata({typeName: 'DirA'})});
-          var dirB =
-              new DirectiveMetadata({selector: '[b]', type: new TypeMetadata({typeName: 'DirB'})});
+          var dirA = new NormalizedDirectiveMetadata(
+              {selector: '[a=b]', type: new TypeMetadata({name: 'DirA'})});
+          var dirB = new NormalizedDirectiveMetadata(
+              {selector: '[b]', type: new TypeMetadata({name: 'DirB'})});
           expect(humanizeTemplateAsts(parse('<div #a="b">', [dirA, dirB])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -396,9 +410,9 @@ export function main() {
         });
 
         it('should parse directive host properties', () => {
-          var dirA = new DirectiveMetadata({
+          var dirA = new NormalizedDirectiveMetadata({
             selector: 'div',
-            type: new TypeMetadata({typeName: 'DirA'}),
+            type: new TypeMetadata({name: 'DirA'}),
             changeDetection: new ChangeDetectionMetadata({hostProperties: {'a': 'expr'}})
           });
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
@@ -417,9 +431,9 @@ export function main() {
         });
 
         it('should parse directive host listeners', () => {
-          var dirA = new DirectiveMetadata({
+          var dirA = new NormalizedDirectiveMetadata({
             selector: 'div',
-            type: new TypeMetadata({typeName: 'DirA'}),
+            type: new TypeMetadata({name: 'DirA'}),
             changeDetection: new ChangeDetectionMetadata({hostListeners: {'a': 'expr'}})
           });
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
@@ -431,9 +445,9 @@ export function main() {
         });
 
         it('should parse directive properties', () => {
-          var dirA = new DirectiveMetadata({
+          var dirA = new NormalizedDirectiveMetadata({
             selector: 'div',
-            type: new TypeMetadata({typeName: 'DirA'}),
+            type: new TypeMetadata({name: 'DirA'}),
             changeDetection: new ChangeDetectionMetadata({properties: ['aProp']})
           });
           expect(humanizeTemplateAsts(parse('<div [a-prop]="expr"></div>', [dirA])))
@@ -450,9 +464,9 @@ export function main() {
         });
 
         it('should parse renamed directive properties', () => {
-          var dirA = new DirectiveMetadata({
+          var dirA = new NormalizedDirectiveMetadata({
             selector: 'div',
-            type: new TypeMetadata({typeName: 'DirA'}),
+            type: new TypeMetadata({name: 'DirA'}),
             changeDetection: new ChangeDetectionMetadata({properties: ['b:a']})
           });
           expect(humanizeTemplateAsts(parse('<div [a]="expr"></div>', [dirA])))
@@ -464,9 +478,9 @@ export function main() {
         });
 
         it('should parse literal directive properties', () => {
-          var dirA = new DirectiveMetadata({
+          var dirA = new NormalizedDirectiveMetadata({
             selector: 'div',
-            type: new TypeMetadata({typeName: 'DirA'}),
+            type: new TypeMetadata({name: 'DirA'}),
             changeDetection: new ChangeDetectionMetadata({properties: ['a']})
           });
           expect(humanizeTemplateAsts(parse('<div a="literal"></div>', [dirA])))
@@ -484,9 +498,9 @@ export function main() {
         });
 
         it('should support optional directive properties', () => {
-          var dirA = new DirectiveMetadata({
+          var dirA = new NormalizedDirectiveMetadata({
             selector: 'div',
-            type: new TypeMetadata({typeName: 'DirA'}),
+            type: new TypeMetadata({name: 'DirA'}),
             changeDetection: new ChangeDetectionMetadata({properties: ['a']})
           });
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
@@ -549,13 +563,13 @@ export function main() {
 
         describe('directives', () => {
           it('should locate directives in property bindings', () => {
-            var dirA = new DirectiveMetadata({
+            var dirA = new NormalizedDirectiveMetadata({
               selector: '[a=b]',
-              type: new TypeMetadata({typeName: 'DirA'}),
+              type: new TypeMetadata({name: 'DirA'}),
               changeDetection: new ChangeDetectionMetadata({properties: ['a']})
             });
-            var dirB = new DirectiveMetadata(
-                {selector: '[b]', type: new TypeMetadata({typeName: 'DirB'})});
+            var dirB = new NormalizedDirectiveMetadata(
+                {selector: '[b]', type: new TypeMetadata({name: 'DirB'})});
             expect(humanizeTemplateAsts(parse('<div template="a b" b>', [dirA, dirB])))
                 .toEqual([
                   [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
@@ -573,10 +587,10 @@ export function main() {
           });
 
           it('should locate directives in variable bindings', () => {
-            var dirA = new DirectiveMetadata(
-                {selector: '[a=b]', type: new TypeMetadata({typeName: 'DirA'})});
-            var dirB = new DirectiveMetadata(
-                {selector: '[b]', type: new TypeMetadata({typeName: 'DirB'})});
+            var dirA = new NormalizedDirectiveMetadata(
+                {selector: '[a=b]', type: new TypeMetadata({name: 'DirA'})});
+            var dirB = new NormalizedDirectiveMetadata(
+                {selector: '[b]', type: new TypeMetadata({name: 'DirB'})});
             expect(humanizeTemplateAsts(parse('<div template="#a=b" b>', [dirA, dirB])))
                 .toEqual([
                   [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
@@ -609,12 +623,13 @@ export function main() {
     });
 
     describe('content projection', () => {
-      function createComp(selector: string, ngContentSelectors: string[]): DirectiveMetadata {
-        return new DirectiveMetadata({
+      function createComp(selector: string, ngContentSelectors: string[]):
+          NormalizedDirectiveMetadata {
+        return new NormalizedDirectiveMetadata({
           selector: selector,
           isComponent: true,
-          type: new TypeMetadata({typeName: 'SomeComp'}),
-          template: new TemplateMetadata({ngContentSelectors: ngContentSelectors})
+          type: new TypeMetadata({name: 'SomeComp'}),
+          template: new NormalizedTemplateMetadata({ngContentSelectors: ngContentSelectors})
         })
       }
 
@@ -710,26 +725,26 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp > div:nth-ch
 
       it('should not throw on invalid property names if the property is used by a directive',
          () => {
-           var dirA = new DirectiveMetadata({
+           var dirA = new NormalizedDirectiveMetadata({
              selector: 'div',
-             type: new TypeMetadata({typeName: 'DirA'}),
+             type: new TypeMetadata({name: 'DirA'}),
              changeDetection: new ChangeDetectionMetadata({properties: ['invalidProp']})
            });
            expect(() => parse('<div [invalid-prop]></div>', [dirA])).not.toThrow();
          });
 
       it('should not allow more than 1 component per element', () => {
-        var dirA = new DirectiveMetadata({
+        var dirA = new NormalizedDirectiveMetadata({
           selector: 'div',
           isComponent: true,
-          type: new TypeMetadata({typeName: 'DirA'}),
-          template: new TemplateMetadata({ngContentSelectors: []})
+          type: new TypeMetadata({name: 'DirA'}),
+          template: new NormalizedTemplateMetadata({ngContentSelectors: []})
         });
-        var dirB = new DirectiveMetadata({
+        var dirB = new NormalizedDirectiveMetadata({
           selector: 'div',
           isComponent: true,
-          type: new TypeMetadata({typeName: 'DirB'}),
-          template: new TemplateMetadata({ngContentSelectors: []})
+          type: new TypeMetadata({name: 'DirB'}),
+          template: new NormalizedTemplateMetadata({ngContentSelectors: []})
         });
         expect(() => parse('<div>', [dirB, dirA])).toThrowError(`Template parse errors:
 More than one component: DirA,DirB in TestComp > div:nth-child(0)`);
@@ -737,11 +752,11 @@ More than one component: DirA,DirB in TestComp > div:nth-child(0)`);
 
       it('should not allow components or element nor event bindings on explicit embedded templates',
          () => {
-           var dirA = new DirectiveMetadata({
+           var dirA = new NormalizedDirectiveMetadata({
              selector: '[a]',
              isComponent: true,
-             type: new TypeMetadata({typeName: 'DirA'}),
-             template: new TemplateMetadata({ngContentSelectors: []})
+             type: new TypeMetadata({name: 'DirA'}),
+             template: new NormalizedTemplateMetadata({ngContentSelectors: []})
            });
            expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
                .toThrowError(`Template parse errors:
@@ -751,11 +766,11 @@ Event binding e on an embedded template in TestComp > template:nth-child(0)[(e)=
          });
 
       it('should not allow components or element bindings on inline embedded templates', () => {
-        var dirA = new DirectiveMetadata({
+        var dirA = new NormalizedDirectiveMetadata({
           selector: '[a]',
           isComponent: true,
-          type: new TypeMetadata({typeName: 'DirA'}),
-          template: new TemplateMetadata({ngContentSelectors: []})
+          type: new TypeMetadata({name: 'DirA'}),
+          template: new NormalizedTemplateMetadata({ngContentSelectors: []})
         });
         expect(() => parse('<div *a="b">', [dirA])).toThrowError(`Template parse errors:
 Components on an embedded template: DirA in TestComp > div:nth-child(0)
@@ -886,18 +901,4 @@ class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
   }
   visitDirective(ast: DirectiveAst, context: any): any { return null; }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
-}
-
-export class MockSchemaRegistry implements ElementSchemaRegistry {
-  constructor(public existingProperties: StringMap<string, boolean>,
-              public attrPropMapping: StringMap<string, string>) {}
-  hasProperty(tagName: string, property: string): boolean {
-    var result = this.existingProperties[property];
-    return isPresent(result) ? result : true;
-  }
-
-  getMappedPropName(attrName: string): string {
-    var result = this.attrPropMapping[attrName];
-    return isPresent(result) ? result : attrName;
-  }
 }

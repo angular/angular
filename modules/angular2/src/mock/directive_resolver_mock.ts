@@ -29,8 +29,11 @@ export class MockDirectiveResolver extends DirectiveResolver {
         properties: dm.properties,
         events: dm.events,
         host: dm.host,
+        dynamicLoadable: dm.dynamicLoadable,
+        compiledHostTemplate: dm.compiledHostTemplate,
         bindings: bindings,
         exportAs: dm.exportAs,
+        moduleId: dm.moduleId,
         compileChildren: dm.compileChildren,
         changeDetection: dm.changeDetection,
         viewBindings: viewBindings
@@ -44,6 +47,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
       host: dm.host,
       bindings: bindings,
       exportAs: dm.exportAs,
+      moduleId: dm.moduleId,
       compileChildren: dm.compileChildren
     });
   }
