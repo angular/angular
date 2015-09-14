@@ -126,6 +126,9 @@ export class NgClass implements DoCheck, OnDestroy {
   }
 
   private _toggleClass(className: string, enabled): void {
-    this._renderer.setElementClass(this._ngEl, className, enabled);
+    className = className.trim();
+    if (className.length > 0) {
+      this._renderer.setElementClass(this._ngEl, className, enabled);
+    }
   }
 }
