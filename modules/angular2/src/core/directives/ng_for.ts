@@ -90,6 +90,8 @@ export class NgFor implements DoCheck {
   private _perViewChange(view, record) {
     view.setLocal('\$implicit', record.item);
     view.setLocal('index', record.currentIndex);
+    view.setLocal('even', (record.currentIndex % 2 == 0));
+    view.setLocal('odd', (record.currentIndex % 2 == 1));
   }
 
   static bulkRemove(tuples: RecordViewTuple[], viewContainer: ViewContainerRef): RecordViewTuple[] {
