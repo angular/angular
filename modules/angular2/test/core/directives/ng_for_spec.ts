@@ -271,6 +271,44 @@ export function main() {
              });
        }));
 
+    it('should display even items correctly',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template =
+             '<div><copy-me template="ng-for: var item of items; var isEven=even">{{isEven.toString()}}</copy-me></div>';
+
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.debugElement.componentInstance.items = [0, 1, 2];
+               rootTC.detectChanges();
+               expect(rootTC.debugElement.nativeElement).toHaveText('truefalsetrue');
+
+               rootTC.debugElement.componentInstance.items = [2, 1];
+               rootTC.detectChanges();
+               expect(rootTC.debugElement.nativeElement).toHaveText('truefalse');
+               async.done();
+             });
+       }));
+
+    it('should display odd items correctly',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template =
+             '<div><copy-me template="ng-for: var item of items; var isOdd=odd">{{isOdd.toString()}}</copy-me></div>';
+
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((rootTC) => {
+               rootTC.debugElement.componentInstance.items = [0, 1, 2, 3];
+               rootTC.detectChanges();
+               expect(rootTC.debugElement.nativeElement).toHaveText('falsetruefalsetrue');
+
+               rootTC.debugElement.componentInstance.items = [2, 1];
+               rootTC.detectChanges();
+               expect(rootTC.debugElement.nativeElement).toHaveText('falsetrue');
+               async.done();
+             });
+       }));
+
   });
 }
 
