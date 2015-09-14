@@ -485,6 +485,32 @@ gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
   }
 });
 
+
+gulp.task('docs/angular.io/watch', function() {
+  watch(['modules/angular2/docs/**', 'modules/**/src/**'], ['docs/angular.io', 'docs/angular.io/copy']);
+});
+
+
+gulp.task('docs/angular.io/copy', function(){
+  var DOCS_DIRS = ['core', 'http', 'lifecycle_hooks', 'router', 'test'];
+  var DOCS_DIST = 'dist/angular.io/partials/api/angular2/';
+  var DOCS_IO_DIST = '../angular.io/public/docs/js/latest/api/';
+
+  var fs = require('fs');
+  var fse = require('fs-extra');
+
+  if (!fs.existsSync('../angular.io')) {
+    throw new Error('docs/angular.io-watch task requires the angular.io repo to be at ' + path.resolve('../angular.io'));
+  }
+
+  DOCS_DIRS.forEach(function(dir) {
+    var distIODir = DOCS_IO_DIST + dir;
+    fse.removeSync(distIODir);
+    fse.copySync(DOCS_DIST + dir, DOCS_IO_DIST + dir);
+  });
+});
+
+
 gulp.task('docs/typings', [], function() {
   try {
     var dgeni = new Dgeni([require('./docs/typescript-definition-package')]);
