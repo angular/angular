@@ -9,19 +9,27 @@ import {
   beforeEach,
   afterEach,
   AsyncTestCompleter,
-  inject
+  inject,
+  beforeEachBindings
 } from 'angular2/test_lib';
-import {IS_DART} from '../platform';
+import {bind} from 'angular2/src/core/di';
 import {SpyXHR} from '../core/spies';
+import {XHR} from 'angular2/src/core/render/xhr';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {CONST_EXPR, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {DirectiveMetadata, TemplateMetadata, TypeMetadata} from 'angular2/src/compiler/api';
+import {
+  NormalizedDirectiveMetadata,
+  NormalizedTemplateMetadata,
+  TypeMetadata
+} from 'angular2/src/compiler/directive_metadata';
+import {SourceExpression, SourceModule} from 'angular2/src/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {TEST_BINDINGS} from './test_bindings';
+import {codeGenValueFn, codeGenExportVariable} from 'angular2/src/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
 const MODULE_NAME = 'angular2/test/compiler/style_compiler_spec';
@@ -33,19 +41,21 @@ const IMPORT_ABS_MODULE_NAME_WITH_IMPORT =
 
 export function main() {
   describe('StyleCompiler', () => {
-    var compiler: StyleCompiler;
-    var xhr;
-
-    beforeEach(() => {
+    var xhr: SpyXHR;
+    beforeEachBindings(() => {
       xhr = <any>new SpyXHR();
-      compiler = new StyleCompiler(xhr, new UrlResolver());
+      return [TEST_BINDINGS, bind(XHR).toValue(xhr)];
     });
 
+    var compiler: StyleCompiler;
+
+    beforeEach(inject([StyleCompiler], (_compiler) => { compiler = _compiler; }));
+
     function comp(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
-        DirectiveMetadata {
-      return new DirectiveMetadata({
-        type: new TypeMetadata({id: 23, typeUrl: 'someUrl'}),
-        template: new TemplateMetadata(
+        NormalizedDirectiveMetadata {
+      return new NormalizedDirectiveMetadata({
+        type: new TypeMetadata({id: 23, moduleId: 'someUrl'}),
+        template: new NormalizedTemplateMetadata(
             {styles: styles, styleAbsUrls: styleAbsUrls, encapsulation: encapsulation})
       });
     }
@@ -117,9 +127,10 @@ export function main() {
       function runTest(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation,
                        expectedStyles: string[]) {
         return inject([AsyncTestCompleter], (async) => {
-          var sourceModule =
+          var sourceExpression =
               compiler.compileComponentCodeGen(comp(styles, styleAbsUrls, encapsulation));
-          evalModule(testableModule(sourceModule.source), sourceModule.imports, null)
+          var sourceWithImports = testableExpression(sourceExpression).getSourceWithImports();
+          evalModule(sourceWithImports.source, sourceWithImports.imports, null)
               .then((value) => {
                 compareStyles(value, expectedStyles);
                 async.done();
@@ -163,9 +174,12 @@ export function main() {
       function runTest(style: string, expectedStyles: string[], expectedShimStyles: string[]) {
         return inject([AsyncTestCompleter], (async) => {
           var sourceModules = compiler.compileStylesheetCodeGen(MODULE_NAME, style);
-          PromiseWrapper.all(sourceModules.map(sourceModule =>
-                                                   evalModule(testableModule(sourceModule.source),
-                                                              sourceModule.imports, null)))
+          PromiseWrapper.all(sourceModules.map(sourceModule => {
+                          var sourceWithImports =
+                              testableModule(sourceModule).getSourceWithImports();
+                          return evalModule(sourceWithImports.source, sourceWithImports.imports,
+                                            null);
+                        }))
               .then((values) => {
                 compareStyles(values[0], expectedStyles);
                 compareStyles(values[1], expectedShimStyles);
@@ -188,16 +202,17 @@ export function main() {
   });
 }
 
-function testableModule(sourceModule: string) {
-  if (IS_DART) {
-    return `${sourceModule}
-  run(_) { return STYLES; }
-`;
-  } else {
-    return `${sourceModule}
-  exports.run = function(_) { return STYLES; };
-`;
-  }
+
+function testableExpression(source: SourceExpression): SourceModule {
+  var testableSource = `${source.declarations.join('\n')}
+  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], source.expression)};`;
+  return new SourceModule(null, testableSource);
+}
+
+function testableModule(sourceModule: SourceModule): SourceModule {
+  var testableSource = `${sourceModule.source}
+  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], 'STYLES')};`;
+  return new SourceModule(sourceModule.moduleId, testableSource);
 }
 
 // Needed for Android browsers which add an extra space at the end of some lines

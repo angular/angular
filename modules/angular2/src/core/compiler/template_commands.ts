@@ -1,4 +1,4 @@
-import {Type, CONST_EXPR, isPresent} from 'angular2/src/core/facade/lang';
+import {Type, CONST_EXPR, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {
   RenderTemplateCmd,
   RenderCommandVisitor,
@@ -10,7 +10,35 @@ import {
 } from 'angular2/src/core/render/render';
 
 export class CompiledTemplate {
-  constructor(public id: string, public commands: TemplateCmd[]) {}
+  private _changeDetectorFactories: Function[] = null;
+  private _styles: string[] = null;
+  private _commands: TemplateCmd[] = null;
+  // Note: paramGetter is a function so that we can have cycles between templates!
+  constructor(public id: number, private _paramGetter: Function) {}
+
+  private _init() {
+    if (isBlank(this._commands)) {
+      var params = this._paramGetter();
+      this._changeDetectorFactories = params[0];
+      this._commands = params[1];
+      this._styles = params[2];
+    }
+  }
+
+  get changeDetectorFactories(): Function[] {
+    this._init();
+    return this._changeDetectorFactories;
+  }
+
+  get styles(): string[] {
+    this._init();
+    return this._styles;
+  }
+
+  get commands(): TemplateCmd[] {
+    this._init();
+    return this._commands;
+  }
 }
 
 const EMPTY_ARR = CONST_EXPR([]);
@@ -73,14 +101,14 @@ export function endElement(): TemplateCmd {
 
 export class BeginComponentCmd implements TemplateCmd, IBeginElementCmd, RenderBeginComponentCmd {
   isBound: boolean = true;
-  templateId: string;
+  templateId: number;
   component: Type;
   constructor(public name: string, public attrNameAndValues: string[], public eventNames: string[],
               public variableNameAndValues: string[], public directives: Type[],
               public nativeShadow: boolean, public ngContentIndex: number,
               public template: CompiledTemplate) {
     this.component = directives[0];
-    this.templateId = isPresent(template) ? template.id : null;
+    this.templateId = template.id;
   }
   visit(visitor: CommandVisitor, context: any): any {
     return visitor.visitBeginComponent(this, context);

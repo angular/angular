@@ -19,14 +19,14 @@ import {evalModule} from './eval_module';
 // when evaling the test module!
 export var TEST_VALUE = 23;
 
+const THIS_MODULE = 'angular2/test/compiler/eval_module_spec';
+
 export function main() {
   describe('evalModule', () => {
     it('should call the "run" function and allow to use imports',
        inject([AsyncTestCompleter], (async) => {
          var moduleSource = IS_DART ? testDartModule : testJsModule;
-         var imports = [['angular2/test/compiler/eval_module_spec', 'testMod']];
-
-         evalModule(moduleSource, imports, [1])
+         evalModule(moduleSource, [[THIS_MODULE, 'tst']], [1])
              .then((value) => {
                expect(value).toEqual([1, 23]);
                async.done();
@@ -36,15 +36,15 @@ export function main() {
 }
 
 var testDartModule = `
-  run(data) { 
-	  data.add(testMod.TEST_VALUE);
+  run(data) {
+	  data.add(tst.TEST_VALUE);
 		return data;
 	}
 `;
 
 var testJsModule = `
   exports.run = function(data) {
-	  data.push(testMod.TEST_VALUE);
+	  data.push(tst.TEST_VALUE);
 		return data;
 	}
 `;

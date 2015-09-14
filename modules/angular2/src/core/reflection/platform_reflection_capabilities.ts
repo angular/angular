@@ -11,5 +11,8 @@ export interface PlatformReflectionCapabilities {
   getter(name: string): GetterFn;
   setter(name: string): SetterFn;
   method(name: string): MethodFn;
+  // TODO(tbosch): remove this method after the new compiler is done
+  // (and ComponentUrlMapper as well).
   importUri(type: Type): string;
+  moduleId(type: Type): string;
 }

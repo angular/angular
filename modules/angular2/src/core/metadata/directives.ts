@@ -1,4 +1,4 @@
-import {isPresent, CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {isPresent, CONST, CONST_EXPR, Type} from 'angular2/src/core/facade/lang';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 
@@ -699,8 +699,29 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   exportAs: string;
 
+  /**
+   * The module id of the module that contains the directive.
+   * Needed to be able to resolve relative urls for templates and styles.
+   * In Dart, this can be determined automatically and does not need to be set.
+   * In CommonJS, this can always be set to `module.id`.
+   *
+   * ## Simple Example
+   *
+   * ```
+   * @Directive({
+   *   selector: 'someDir',
+   *   moduleId: module.id
+   * })
+   * class SomeDir {
+   * }
+   *
+   * ```
+   */
+  moduleId: string;
+
   constructor({
-                  selector, properties, events, host, bindings, exportAs, compileChildren = true,
+                  selector, properties, events, host, bindings, exportAs, moduleId,
+                  compileChildren = true,
               }: {
     selector?: string,
     properties?: string[],
@@ -708,6 +729,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     host?: StringMap<string, string>,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
   } = {}) {
     super();
@@ -716,6 +738,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.events = events;
     this.host = host;
     this.exportAs = exportAs;
+    this.moduleId = moduleId;
     this.compileChildren = compileChildren;
     this.bindings = bindings;
   }
@@ -764,6 +787,34 @@ export class DirectiveMetadata extends InjectableMetadata {
  */
 @CONST()
 export class ComponentMetadata extends DirectiveMetadata {
+  /**
+  * Declare that this component can be programatically loaded.
+  * Every component that is used in bootstrap, routing, ... has to be
+  * annotated with this.
+  *
+  * ## Example
+  *
+  * ```
+  * @Component({
+  *   selector: 'root',
+  *   dynamicLoadable: true
+  * })
+  * @View({
+  *   template: 'hello world!'
+  * })
+  * class RootComponent {
+  * }
+  * ```
+   */
+  dynamicLoadable: boolean;
+
+
+  /**
+   * Used by build tools to store the compiled template.
+   * Not intended to be used by a user.
+   */
+  compiledHostTemplate: /* CompiledTemplate */ any;
+
   /**
    * Defines the used change detection strategy.
    *
@@ -817,14 +868,18 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, exportAs, bindings, viewBindings,
-               changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
+  constructor({selector, properties, events, host, dynamicLoadable, compiledHostTemplate, exportAs,
+               moduleId, bindings, viewBindings, changeDetection = ChangeDetectionStrategy.Default,
+               compileChildren = true}: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
+    dynamicLoadable?: boolean,
+    compiledHostTemplate?: any,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
@@ -835,12 +890,15 @@ export class ComponentMetadata extends DirectiveMetadata {
       events: events,
       host: host,
       exportAs: exportAs,
+      moduleId: moduleId,
       bindings: bindings,
       compileChildren: compileChildren
     });
 
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
+    this.dynamicLoadable = dynamicLoadable;
+    this.compiledHostTemplate = compiledHostTemplate;
   }
 }
 

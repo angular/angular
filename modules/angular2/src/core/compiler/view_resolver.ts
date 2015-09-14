@@ -10,7 +10,7 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 
 @Injectable()
 export class ViewResolver {
-  _cache: Map<Type, /*node*/ any> = new Map();
+  _cache: Map<Type, ViewMetadata> = new Map();
 
   resolve(component: Type): ViewMetadata {
     var view = this._cache.get(component);

@@ -25,16 +25,19 @@ import {
   BoundDirectivePropertyAst,
   templateVisitAll
 } from './template_ast';
-import {SourceModule, DirectiveMetadata, TypeMetadata} from './api';
+import {TypeMetadata, NormalizedDirectiveMetadata} from './directive_metadata';
+import {SourceExpression, moduleRef} from './source_module';
+
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {shimHostAttribute, shimContentAttribute} from './style_compiler';
 import {escapeSingleQuoteString} from './util';
+import {Injectable} from 'angular2/src/core/di';
 
-const TEMPLATE_COMMANDS_MODULE = 'angular2/src/core/compiler/template_commands';
-const TEMPLATE_COMMANDS_MODULE_ALIAS = 'tc';
+export var TEMPLATE_COMMANDS_MODULE_REF = moduleRef('angular2/src/core/compiler/template_commands');
 
+@Injectable()
 export class CommandCompiler {
-  compileComponentRuntime(component: DirectiveMetadata, template: TemplateAst[],
+  compileComponentRuntime(component: NormalizedDirectiveMetadata, template: TemplateAst[],
                           componentTemplateFactory: Function): TemplateCmd[] {
     var visitor =
         new CommandBuilderVisitor(new RuntimeCommandFactory(componentTemplateFactory), component);
@@ -42,16 +45,13 @@ export class CommandCompiler {
     return visitor.result;
   }
 
-  compileComponentCodeGen(component: DirectiveMetadata, template: TemplateAst[],
-                          componentTemplateFactory: Function): SourceModule {
-    var imports: string[][] = [[TEMPLATE_COMMANDS_MODULE, TEMPLATE_COMMANDS_MODULE_ALIAS]];
-    var visitor = new CommandBuilderVisitor(
-        new CodegenCommandFactory(componentTemplateFactory, TEMPLATE_COMMANDS_MODULE_ALIAS,
-                                  imports),
-        component);
+  compileComponentCodeGen(component: NormalizedDirectiveMetadata, template: TemplateAst[],
+                          componentTemplateFactory: Function): SourceExpression {
+    var visitor =
+        new CommandBuilderVisitor(new CodegenCommandFactory(componentTemplateFactory), component);
     templateVisitAll(visitor, template);
-    var source = `var COMMANDS = [${visitor.result.join(',')}];`;
-    return new SourceModule(null, source, imports);
+    var source = `[${visitor.result.join(',')}]`;
+    return new SourceExpression([], source);
   }
 }
 
@@ -59,22 +59,22 @@ interface CommandFactory<R> {
   createText(value: string, isBound: boolean, ngContentIndex: number): R;
   createNgContent(ngContentIndex: number): R;
   createBeginElement(name: string, attrNameAndValues: string[], eventNames: string[],
-                     variableNameAndValues: string[], directives: TypeMetadata[], isBound: boolean,
-                     ngContentIndex: number): R;
+                     variableNameAndValues: string[], directives: NormalizedDirectiveMetadata[],
+                     isBound: boolean, ngContentIndex: number): R;
   createEndElement(): R;
   createBeginComponent(name: string, attrNameAndValues: string[], eventNames: string[],
-                       variableNameAndValues: string[], directives: TypeMetadata[],
+                       variableNameAndValues: string[], directives: NormalizedDirectiveMetadata[],
                        nativeShadow: boolean, ngContentIndex: number): R;
   createEndComponent(): R;
   createEmbeddedTemplate(attrNameAndValues: string[], variableNameAndValues: string[],
-                         directives: TypeMetadata[], isMerged: boolean, ngContentIndex: number,
-                         children: R[]): R;
+                         directives: NormalizedDirectiveMetadata[], isMerged: boolean,
+                         ngContentIndex: number, children: R[]): R;
 }
 
 class RuntimeCommandFactory implements CommandFactory<TemplateCmd> {
   constructor(public componentTemplateFactory: Function) {}
-  private _mapDirectives(directives: TypeMetadata[]): Type[] {
-    return directives.map(directive => directive.type);
+  private _mapDirectives(directives: NormalizedDirectiveMetadata[]): Type[] {
+    return directives.map(directive => directive.type.runtime);
   }
 
   createText(value: string, isBound: boolean, ngContentIndex: number): TemplateCmd {
@@ -82,14 +82,14 @@ class RuntimeCommandFactory implements CommandFactory<TemplateCmd> {
   }
   createNgContent(ngContentIndex: number): TemplateCmd { return ngContent(ngContentIndex); }
   createBeginElement(name: string, attrNameAndValues: string[], eventNames: string[],
-                     variableNameAndValues: string[], directives: TypeMetadata[], isBound: boolean,
-                     ngContentIndex: number): TemplateCmd {
+                     variableNameAndValues: string[], directives: NormalizedDirectiveMetadata[],
+                     isBound: boolean, ngContentIndex: number): TemplateCmd {
     return beginElement(name, attrNameAndValues, eventNames, variableNameAndValues,
                         this._mapDirectives(directives), isBound, ngContentIndex);
   }
   createEndElement(): TemplateCmd { return endElement(); }
   createBeginComponent(name: string, attrNameAndValues: string[], eventNames: string[],
-                       variableNameAndValues: string[], directives: TypeMetadata[],
+                       variableNameAndValues: string[], directives: NormalizedDirectiveMetadata[],
                        nativeShadow: boolean, ngContentIndex: number): TemplateCmd {
     return beginComponent(name, attrNameAndValues, eventNames, variableNameAndValues,
                           this._mapDirectives(directives), nativeShadow, ngContentIndex,
@@ -97,8 +97,8 @@ class RuntimeCommandFactory implements CommandFactory<TemplateCmd> {
   }
   createEndComponent(): TemplateCmd { return endComponent(); }
   createEmbeddedTemplate(attrNameAndValues: string[], variableNameAndValues: string[],
-                         directives: TypeMetadata[], isMerged: boolean, ngContentIndex: number,
-                         children: TemplateCmd[]): TemplateCmd {
+                         directives: NormalizedDirectiveMetadata[], isMerged: boolean,
+                         ngContentIndex: number, children: TemplateCmd[]): TemplateCmd {
     return embeddedTemplate(attrNameAndValues, variableNameAndValues,
                             this._mapDirectives(directives), isMerged, ngContentIndex, children);
   }
@@ -109,40 +109,36 @@ function escapeStringArray(data: string[]): string {
 }
 
 class CodegenCommandFactory implements CommandFactory<string> {
-  constructor(public componentTemplateFactory: Function, public templateCommandsModuleAlias,
-              public imports: string[][]) {}
-
-  private _escapeDirectives(directives: TypeMetadata[]): string[] {
-    return directives.map(directiveType => {
-      var importAlias = `dir${this.imports.length}`;
-      this.imports.push([directiveType.typeUrl, importAlias]);
-      return `${importAlias}.${directiveType.typeName}`;
-    });
-  }
+  constructor(public componentTemplateFactory: Function) {}
 
   createText(value: string, isBound: boolean, ngContentIndex: number): string {
-    return `${this.templateCommandsModuleAlias}.text(${escapeSingleQuoteString(value)}, ${isBound}, ${ngContentIndex})`;
+    return `${TEMPLATE_COMMANDS_MODULE_REF}text(${escapeSingleQuoteString(value)}, ${isBound}, ${ngContentIndex})`;
   }
   createNgContent(ngContentIndex: number): string {
-    return `${this.templateCommandsModuleAlias}.ngContent(${ngContentIndex})`;
+    return `${TEMPLATE_COMMANDS_MODULE_REF}ngContent(${ngContentIndex})`;
   }
   createBeginElement(name: string, attrNameAndValues: string[], eventNames: string[],
-                     variableNameAndValues: string[], directives: TypeMetadata[], isBound: boolean,
-                     ngContentIndex: number): string {
-    return `${this.templateCommandsModuleAlias}.beginElement(${escapeSingleQuoteString(name)}, ${escapeStringArray(attrNameAndValues)}, ${escapeStringArray(eventNames)}, ${escapeStringArray(variableNameAndValues)}, [${this._escapeDirectives(directives).join(',')}], ${isBound}, ${ngContentIndex})`;
+                     variableNameAndValues: string[], directives: NormalizedDirectiveMetadata[],
+                     isBound: boolean, ngContentIndex: number): string {
+    return `${TEMPLATE_COMMANDS_MODULE_REF}beginElement(${escapeSingleQuoteString(name)}, ${escapeStringArray(attrNameAndValues)}, ${escapeStringArray(eventNames)}, ${escapeStringArray(variableNameAndValues)}, [${_escapeDirectives(directives).join(',')}], ${isBound}, ${ngContentIndex})`;
   }
-  createEndElement(): string { return `${this.templateCommandsModuleAlias}.endElement()`; }
+  createEndElement(): string { return `${TEMPLATE_COMMANDS_MODULE_REF}endElement()`; }
   createBeginComponent(name: string, attrNameAndValues: string[], eventNames: string[],
-                       variableNameAndValues: string[], directives: TypeMetadata[],
+                       variableNameAndValues: string[], directives: NormalizedDirectiveMetadata[],
                        nativeShadow: boolean, ngContentIndex: number): string {
-    return `${this.templateCommandsModuleAlias}.beginComponent(${escapeSingleQuoteString(name)}, ${escapeStringArray(attrNameAndValues)}, ${escapeStringArray(eventNames)}, ${escapeStringArray(variableNameAndValues)}, [${this._escapeDirectives(directives).join(',')}], ${nativeShadow}, ${ngContentIndex}, ${this.componentTemplateFactory(directives[0], this.imports)})`;
+    return `${TEMPLATE_COMMANDS_MODULE_REF}beginComponent(${escapeSingleQuoteString(name)}, ${escapeStringArray(attrNameAndValues)}, ${escapeStringArray(eventNames)}, ${escapeStringArray(variableNameAndValues)}, [${_escapeDirectives(directives).join(',')}], ${nativeShadow}, ${ngContentIndex}, ${this.componentTemplateFactory(directives[0])})`;
   }
-  createEndComponent(): string { return `${this.templateCommandsModuleAlias}.endComponent()`; }
+  createEndComponent(): string { return `${TEMPLATE_COMMANDS_MODULE_REF}endComponent()`; }
   createEmbeddedTemplate(attrNameAndValues: string[], variableNameAndValues: string[],
-                         directives: TypeMetadata[], isMerged: boolean, ngContentIndex: number,
-                         children: string[]): string {
-    return `${this.templateCommandsModuleAlias}.embeddedTemplate(${escapeStringArray(attrNameAndValues)}, ${escapeStringArray(variableNameAndValues)}, [${this._escapeDirectives(directives).join(',')}], ${isMerged}, ${ngContentIndex}, [${children.join(',')}])`;
+                         directives: NormalizedDirectiveMetadata[], isMerged: boolean,
+                         ngContentIndex: number, children: string[]): string {
+    return `${TEMPLATE_COMMANDS_MODULE_REF}embeddedTemplate(${escapeStringArray(attrNameAndValues)}, ${escapeStringArray(variableNameAndValues)}, [${_escapeDirectives(directives).join(',')}], ${isMerged}, ${ngContentIndex}, [${children.join(',')}])`;
   }
+}
+
+function _escapeDirectives(directives: NormalizedDirectiveMetadata[]): string[] {
+  return directives.map(directiveType =>
+                            `${moduleRef(directiveType.type.moduleId)}${directiveType.type.name}`);
 }
 
 function visitAndReturnContext(visitor: TemplateAstVisitor, asts: TemplateAst[], context: any):
@@ -154,18 +150,19 @@ function visitAndReturnContext(visitor: TemplateAstVisitor, asts: TemplateAst[],
 class CommandBuilderVisitor<R> implements TemplateAstVisitor {
   result: R[] = [];
   transitiveNgContentCount: number = 0;
-  constructor(public commandFactory: CommandFactory<R>, public component: DirectiveMetadata) {}
+  constructor(public commandFactory: CommandFactory<R>,
+              public component: NormalizedDirectiveMetadata) {}
 
-  private _readAttrNameAndValues(localComponent: DirectiveMetadata,
+  private _readAttrNameAndValues(localComponent: NormalizedDirectiveMetadata,
                                  attrAsts: TemplateAst[]): string[] {
     var attrNameAndValues: string[] = visitAndReturnContext(this, attrAsts, []);
     if (isPresent(localComponent) &&
         localComponent.template.encapsulation === ViewEncapsulation.Emulated) {
-      attrNameAndValues.push(shimHostAttribute(localComponent.type));
+      attrNameAndValues.push(shimHostAttribute(localComponent.type.id));
       attrNameAndValues.push('');
     }
     if (this.component.template.encapsulation === ViewEncapsulation.Emulated) {
-      attrNameAndValues.push(shimContentAttribute(this.component.type));
+      attrNameAndValues.push(shimContentAttribute(this.component.type.id));
       attrNameAndValues.push('');
     }
     return attrNameAndValues;
@@ -228,7 +225,7 @@ class CommandBuilderVisitor<R> implements TemplateAstVisitor {
     return null;
   }
   visitDirective(ast: DirectiveAst, directivesAndEventNames: any[][]): any {
-    directivesAndEventNames[0].push(ast.directive.type);
+    directivesAndEventNames[0].push(ast.directive);
     templateVisitAll(this, ast.hostEvents, directivesAndEventNames[1]);
     return null;
   }

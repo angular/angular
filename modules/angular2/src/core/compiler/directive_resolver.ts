@@ -93,8 +93,11 @@ export class DirectiveResolver {
         properties: mergedProperties,
         events: mergedEvents,
         host: mergedHost,
+        dynamicLoadable: dm.dynamicLoadable,
+        compiledHostTemplate: dm.compiledHostTemplate,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
+        moduleId: dm.moduleId,
         compileChildren: dm.compileChildren,
         changeDetection: dm.changeDetection,
         viewBindings: dm.viewBindings
@@ -108,6 +111,7 @@ export class DirectiveResolver {
         host: mergedHost,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
+        moduleId: dm.moduleId,
         compileChildren: dm.compileChildren
       });
     }

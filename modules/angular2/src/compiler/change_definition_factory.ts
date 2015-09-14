@@ -14,7 +14,7 @@ import {
   ASTWithSource
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {DirectiveMetadata, TypeMetadata} from './api';
+import {NormalizedDirectiveMetadata, TypeMetadata} from './directive_metadata';
 import {
   TemplateAst,
   ElementAst,
@@ -203,5 +203,5 @@ function _collectNestedProtoViewsVariableNames(pvVisitors: ProtoViewVisitor[]): 
 
 
 function _protoViewId(hostComponentType: TypeMetadata, pvIndex: number, viewType: string): string {
-  return `${hostComponentType.typeName}_${viewType}_${pvIndex}`;
+  return `${hostComponentType.name}_${viewType}_${pvIndex}`;
 }
