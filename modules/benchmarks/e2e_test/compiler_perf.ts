@@ -6,17 +6,17 @@ describe('ng2 compiler benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log withBindings stats', function(done) {
-    runBenchmark({
-      url: URL,
-      id: 'ng2.compile.withBindings',
-      params: [{name: 'elements', value: 150, scale: 'linear'}],
-      work: function() {
-        browser.executeScript('document.querySelector("#compileWithBindings").click()');
-        browser.sleep(500);
-      }
-    }).then(done, done.fail);
-  });
+  // it('should log withBindings stats', function(done) {
+  //   runBenchmark({
+  //     url: URL,
+  //     id: 'ng2.compile.withBindings',
+  //     params: [{name: 'elements', value: 150, scale: 'linear'}],
+  //     work: function() {
+  //       browser.executeScript('document.querySelector("#compileWithBindings").click()');
+  //       browser.sleep(500);
+  //     }
+  //   }).then(done, done.fail);
+  // });
 
   it('should log noBindings stats', function(done) {
     runBenchmark({
