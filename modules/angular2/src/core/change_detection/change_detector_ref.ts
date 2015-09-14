@@ -25,6 +25,8 @@ export class ChangeDetectorRef {
    */
   detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
 
+  detectChanges(): void { this._cd.detectChanges(); }
+
   /**
    * Reattach the change detector to the change detector tree.
    *

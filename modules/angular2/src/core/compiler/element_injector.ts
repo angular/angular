@@ -51,7 +51,7 @@ import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 import {EventConfig} from 'angular2/src/core/render/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
 
-import * as LifecycleHooks from './interfaces';
+import {LifecycleHooks} from './interfaces';
 
 var _staticKeys;
 
