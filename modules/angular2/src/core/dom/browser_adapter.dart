@@ -426,13 +426,12 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return window.location;
   }
 
-  getBaseHref() {
+  String getBaseHref() {
     var href = getBaseElementHref();
     if (href == null) {
       return null;
     }
-    var baseUri = Uri.parse(href);
-    return baseUri.path[0] == '/' ? baseUri.path : ('/' + baseUri.path);
+    return _relativePath(href);
   }
 
   resetBaseElement() {
@@ -486,4 +485,15 @@ String getBaseElementHref() {
     }
   }
   return baseElement.getAttribute('href');
+}
+
+// based on urlUtils.js in AngularJS 1
+AnchorElement _urlParsingNode = null;
+String _relativePath(String url) {
+  if (_urlParsingNode == null) {
+    _urlParsingNode = new AnchorElement();
+  }
+  _urlParsingNode.href = url;
+  var pathname = _urlParsingNode.pathname;
+  return (pathname[0] == '/') ? pathname : '/${pathname}';
 }
