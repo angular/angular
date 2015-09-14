@@ -127,6 +127,14 @@ export function main() {
     });
 
 
+    it('should throw if the route alias is not CamelCase', () => {
+      expect(() => recognizer.config(
+                 new Route({path: 'app/user/:name', component: DummyCmpA, as: 'user'})))
+          .toThrowError(
+              `Route 'app/user/:name' with alias 'user' does not begin with an uppercase letter. Route aliases should be CamelCase like 'User'.`);
+    });
+
+
     describe('params', () => {
       it('should recognize parameters within the URL path', () => {
         recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'User'}));

@@ -144,6 +144,20 @@ export function main() {
                      async.done();
                      return null;
                    })}));
+
+    it('should throw if a config has an invalid alias name',
+       inject(
+           [AsyncTestCompleter],
+           (async) => {
+               bootstrap(BadAliasCmp,
+                         [bind(ROUTER_PRIMARY_COMPONENT).toValue(BadAliasCmp), testBindings])
+                   .catch((e) => {
+                     expect(e.originalException)
+                         .toContainError(
+                             `Route '/child' with alias 'child' does not begin with an uppercase letter. Route aliases should be CamelCase like 'Child'.`);
+                     async.done();
+                     return null;
+                   })}));
   });
 }
 
@@ -199,6 +213,12 @@ class HierarchyAppCmp {
 @View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([{path: '/hello'}])
 class WrongConfigCmp {
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@RouteConfig([{path: '/child', component: HelloCmp, as: 'child'}])
+class BadAliasCmp {
 }
 
 @Component({selector: 'app-cmp'})
