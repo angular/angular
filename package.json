@@ -28,8 +28,8 @@
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
+    "@reactivex/rxjs": "0.0.0-prealpha.3",
     "reflect-metadata": "0.1.1",
-    "rx": "2.5.1",
     "zone.js": "0.5.4"
   },
   "devDependencies": {

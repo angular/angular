@@ -10,6 +10,7 @@ describe('ng2 cost benchmark', function() {
   afterEach(verifyNoBrowserErrors);
 
   it('should log stats for baseline (plain components)', function(done) {
+    console.log("BENCHMARK-COST-BASELINE");
     runClickBenchmark({
       url: URL,
       buttons: ['#reset', '#createPlainComponents'],
@@ -19,6 +20,7 @@ describe('ng2 cost benchmark', function() {
   });
 
   it('should log stats for components with decorators', function(done) {
+    console.log("BENCHMARK-COST-DECORATOR");
     runClickBenchmark({
       url: URL,
       buttons: ['#reset', '#createComponentsWithDirectives'],
@@ -28,6 +30,7 @@ describe('ng2 cost benchmark', function() {
   });
 
   it('should log stats for dynamic components', function(done) {
+    console.log("BENCHMARK-COST-DYNAMIC");
     runClickBenchmark({
       url: URL,
       buttons: ['#reset', '#createDynamicComponents'],
