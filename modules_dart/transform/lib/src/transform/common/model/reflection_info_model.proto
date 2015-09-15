@@ -5,6 +5,14 @@ import "parameter_model.proto";
 
 package angular2.src.transform.common.model.proto;
 
+message PropertyMetadataModel {
+  // The name of the property with metadata attached.
+  required string name = 1;
+
+  // The metadata attached to the property.
+  repeated AnnotationModel annotations = 2;
+}
+
 message ReflectionInfoModel {
   // The (potentially prefixed) name of this Injectable.
   // This can be a `Type` or a function name.
@@ -21,4 +29,7 @@ message ReflectionInfoModel {
   repeated ParameterModel parameters = 5;
 
   repeated string interfaces = 6;
+
+  // Entries for all properties with associated metadata.
+  repeated PropertyMetadataModel propertyMetadata = 7;
 }

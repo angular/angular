@@ -292,6 +292,61 @@ void allTests() {
     });
   });
 
+  describe('property metadata', () {
+    it('should be recorded on fields', () async {
+      var model = await _testCreateModel('prop_metadata_files/fields.dart');
+
+      expect(model.reflectables.first.propertyMetadata).toBeNotNull();
+      expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
+      expect(model.reflectables.first.propertyMetadata.first.name)
+          .toEqual('field');
+      expect(model.reflectables.first.propertyMetadata.first.annotations
+          .firstWhere((a) => a.name == 'FieldDecorator',
+              orElse: () => null)).toBeNotNull();
+    });
+
+    it('should be recorded on getters', () async {
+      var model = await _testCreateModel('prop_metadata_files/getters.dart');
+
+      expect(model.reflectables.first.propertyMetadata).toBeNotNull();
+      expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
+      expect(model.reflectables.first.propertyMetadata.first.name)
+          .toEqual('getVal');
+      expect(model.reflectables.first.propertyMetadata.first.annotations
+              .firstWhere((a) => a.name == 'GetDecorator', orElse: () => null))
+          .toBeNotNull();
+    });
+
+    it('should be recorded on setters', () async {
+      var model = await _testCreateModel('prop_metadata_files/setters.dart');
+
+      expect(model.reflectables.first.propertyMetadata).toBeNotNull();
+      expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
+      expect(model.reflectables.first.propertyMetadata.first.name)
+          .toEqual('setVal');
+      expect(model.reflectables.first.propertyMetadata.first.annotations
+              .firstWhere((a) => a.name == 'SetDecorator', orElse: () => null))
+          .toBeNotNull();
+    });
+
+    it('should be coalesced when getters and setters have the same name',
+        () async {
+      var model = await _testCreateModel(
+          'prop_metadata_files/getters_and_setters.dart');
+
+      expect(model.reflectables.first.propertyMetadata).toBeNotNull();
+      expect(model.reflectables.first.propertyMetadata.length).toBe(1);
+      expect(model.reflectables.first.propertyMetadata.first.name)
+          .toEqual('myVal');
+      expect(model.reflectables.first.propertyMetadata.first.annotations
+              .firstWhere((a) => a.name == 'GetDecorator', orElse: () => null))
+          .toBeNotNull();
+      expect(model.reflectables.first.propertyMetadata.first.annotations
+              .firstWhere((a) => a.name == 'SetDecorator', orElse: () => null))
+          .toBeNotNull();
+    });
+  });
+
   it('should not throw/hang on invalid urls', () async {
     var logger = new RecordingLogger();
     var model =
