@@ -12,9 +12,8 @@ main() {
 }
 
 var formatter = new DartFormatter();
-var transform = new AngularTransformerGroup(new TransformerOptions(
-    ['web/index.dart'],
-    formatCode: true));
+var transform = new AngularTransformerGroup(
+    new TransformerOptions(['web/index.dart'], formatCode: true));
 
 class IntegrationTestConfig {
   final String name;
@@ -96,7 +95,8 @@ void allTests() {
     new IntegrationTestConfig('should preserve multiple annotations.', inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/metadata.dart': '../../../lib/src/core/metadata.dart'
+      'angular2|lib/src/core/metadata.dart':
+          '../../../lib/src/core/metadata.dart'
     }, outputs: {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'

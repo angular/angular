@@ -1,10 +1,10 @@
 library examples.src.hello_world.multiple_style_urls_files.ng_deps.dart;
 
 import 'hello.dart';
-export 'hello.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;
+export 'hello.dart';
 
 var _visited = false;
 void initReflector() {
@@ -15,12 +15,9 @@ void initReflector() {
         HelloCmp,
         new _ngRef.ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(
-              template: r'''{{greeting}}''',
-              templateUrl: r'template.html',
-              styles: const [
-                r'''.greeting { .color: blue; }''',
-                r'''.hello { .color: red; }''',
-              ])
+          const View(styles: const [
+            r'''.greeting { .color: blue; }''',
+            r'''.hello { .color: red; }''',
+          ], template: r'''{{greeting}}''', templateUrl: 'template.html')
         ], const [], () => new HelloCmp()));
 }
