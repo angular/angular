@@ -1,7 +1,6 @@
 // Public API for render
 export {
   RenderDirectiveMetadata,
-  DomRenderer,
   RenderEventDispatcher,
   Renderer,
   RenderElementRef,
