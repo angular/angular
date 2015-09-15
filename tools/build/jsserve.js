@@ -13,10 +13,11 @@ module.exports = function(gulp, plugins, config) {
         config.proxies = config.proxies || [];
         var middlewares =
             config.proxies.map(function(entry) { return makeProxy(entry.route, entry.url); });
-        middlewares.push(function(req,res,next){
-          console.log('request', req.url)
-          next();
-        });
+        // middlewares.push(function(req,res,next){
+        //   console.log('request', req.url)
+        //   next();
+        // });
+        
         middlewares.push(connect.favicon());
 
         // pub serve can't give the right content-type header for jsonp requests
