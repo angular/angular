@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
@@ -35,17 +36,20 @@ class DirectiveProcessor extends Transformer {
       var asset = transform.primaryInput;
       var reader = new AssetReader.fromTransform(transform);
       var ngMeta = new NgMeta.empty();
-      var ngDepsSrc = await createNgDeps(
+      var ngDepsModel = await createNgDeps(
           reader, asset.id, options.annotationMatcher, ngMeta,
           inlineViews: options.inlineViews);
-      if (ngDepsSrc != null && ngDepsSrc.isNotEmpty) {
+      if (ngDepsModel != null) {
         var ngDepsAssetId =
             transform.primaryInput.id.changeExtension(DEPS_EXTENSION);
         if (await transform.hasInput(ngDepsAssetId)) {
           log.logger.error('Clobbering ${ngDepsAssetId}. '
               'This probably will not end well');
         }
-        transform.addOutput(new Asset.fromString(ngDepsAssetId, ngDepsSrc));
+        var buf = new StringBuffer();
+        var writer = new NgDepsWriter(buf);
+        writer.writeNgDepsModel(ngDepsModel);
+        transform.addOutput(new Asset.fromString(ngDepsAssetId, '$buf'));
       }
       if (!ngMeta.isEmpty) {
         var ngAliasesId =

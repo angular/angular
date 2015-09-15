@@ -8,6 +8,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
@@ -24,7 +25,7 @@ import 'inliner.dart';
 /// If no Angular 2 `Directive`s are found in `code`, returns the empty
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
-Future<String> createNgDeps(AssetReader reader, AssetId assetId,
+Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
     AnnotationMatcher annotationMatcher, NgMeta ngMeta,
     {bool inlineViews}) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
@@ -64,10 +65,7 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
     await inlineViewProps(new XhrImpl(reader, assetId), ngDepsModel);
   }
 
-  var buffer = new StringBuffer();
-  var ngDepsWriter = new NgDepsWriter(buffer);
-  ngDepsWriter.writeNgDepsModel(ngDepsModel);
-  return '$buffer';
+  return ngDepsModel;
 }
 
 /// Processes `visitor.parts`, reading and appending their contents to the

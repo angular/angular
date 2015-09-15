@@ -1,6 +1,9 @@
 library angular2.test.transform.directive_linker.all_tests;
 
 import 'package:barback/barback.dart';
+import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
+import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
+import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/directive_linker/linker.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
