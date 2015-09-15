@@ -243,17 +243,11 @@ bool isJsObject(o) {
   return false;
 }
 
-var _assertionsEnabled = null;
 bool assertionsEnabled() {
-  if (_assertionsEnabled == null) {
-    try {
-      assert(false);
-      _assertionsEnabled = false;
-    } catch (e) {
-      _assertionsEnabled = true;
-    }
-  }
-  return _assertionsEnabled;
+  // TODO(yjbanov): verify that this is inlined after https://github.com/dart-lang/sdk/issues/24355
+  bool k = false;
+  assert((k = true));
+  return k;
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
