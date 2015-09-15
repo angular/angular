@@ -5,6 +5,7 @@ import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
+import 'package:angular2/src/transform/common/property_utils.dart';
 import 'package:barback/barback.dart' show AssetId;
 
 import 'annotation_code.dart';
@@ -16,20 +17,26 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
   /// The file we are processing.
   final AssetId assetId;
 
-  final AnnotationVisitor _annotationVisitor;
-  final ParameterVisitor _parameterVisitor = new ParameterVisitor();
-
-  /// Whether an Angular 2 `Reflection` has been found.
-  bool _foundNgReflection = false;
-
   /// Responsible for testing whether [Annotation]s are those recognized by
   /// Angular 2, for example `@Component`.
   final AnnotationMatcher _annotationMatcher;
 
-  ReflectionInfoVisitor(AssetId assetId, AnnotationMatcher annotationMatcher)
-      : this.assetId = assetId,
-        _annotationMatcher = annotationMatcher,
-        _annotationVisitor = new AnnotationVisitor(assetId, annotationMatcher);
+  final AnnotationVisitor _annotationVisitor;
+  final ParameterVisitor _parameterVisitor = new ParameterVisitor();
+  final _PropertyMetadataVisitor _propMetadataVisitor;
+
+  /// Whether an Angular 2 `Reflection` has been found.
+  bool _foundNgReflection = false;
+
+  ReflectionInfoVisitor._(this.assetId, this._annotationMatcher,
+      this._annotationVisitor, this._propMetadataVisitor);
+
+  factory ReflectionInfoVisitor(
+      AssetId assetId, AnnotationMatcher annotationMatcher) {
+    var annotationVisitor = new AnnotationVisitor(assetId, annotationMatcher);
+    return new ReflectionInfoVisitor._(assetId, annotationMatcher,
+        annotationVisitor, new _PropertyMetadataVisitor(annotationVisitor));
+  }
 
   bool get shouldCreateNgDeps => _foundNgReflection;
 
@@ -92,7 +99,42 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
       model.interfaces.addAll(node.implementsClause.interfaces
           .map((interface) => '${interface.name}'));
     }
+
+    // Record annotations attached to properties.
+    for (var member in node.members) {
+      var propMetaList = member.accept(_propMetadataVisitor);
+      if (propMetaList != null) {
+        model.propertyMetadata.addAll(propMetaList);
+      }
+    }
+    _coalesce(model.propertyMetadata);
+
     return model;
+  }
+
+  // If a class has a getter & a setter with the same name and each has
+  // individual metadata, collapse to a single entry.
+  void _coalesce(List<PropertyMetadataModel> propertyMetadata) {
+    if (propertyMetadata.isEmpty) return;
+
+    var firstSeenIdxMap = <String, int>{};
+    firstSeenIdxMap[propertyMetadata[0].name] = 0;
+    var i = 1;
+    while (i < propertyMetadata.length) {
+      var propName = propertyMetadata[i].name;
+      if (firstSeenIdxMap.containsKey(propName)) {
+        var propNameIdx = firstSeenIdxMap[propName];
+        // We have seen this name before, combine the metadata lists.
+        propertyMetadata[propNameIdx]
+            .annotations
+            .addAll(propertyMetadata[i].annotations);
+        // Remove the higher index, okay since we directly check `length` above.
+        propertyMetadata.removeAt(i);
+      } else {
+        firstSeenIdxMap[propName] = i;
+        ++i;
+      }
+    }
   }
 
   @override
@@ -123,6 +165,53 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
       });
     }
     return model;
+  }
+}
+
+/// Visitor responsible for parsing [ClassMember]s into
+/// [PropertyMetadataModel]s.
+class _PropertyMetadataVisitor
+    extends SimpleAstVisitor<List<PropertyMetadataModel>> {
+  final AnnotationVisitor _annotationVisitor;
+
+  _PropertyMetadataVisitor(this._annotationVisitor);
+
+  @override
+  List<PropertyMetadataModel> visitFieldDeclaration(FieldDeclaration node) {
+    var retVal = null;
+    for (var variable in node.fields.variables) {
+      var propModel = new PropertyMetadataModel()..name = '${variable.name}';
+      for (var meta in node.metadata) {
+        var annotationModel = meta.accept(_annotationVisitor);
+        if (annotationModel != null) {
+          propModel.annotations.add(annotationModel);
+        }
+      }
+      if (propModel.annotations.isNotEmpty) {
+        if (retVal == null) {
+          retVal = <PropertyMetadataModel>[];
+        }
+        retVal.add(propModel);
+      }
+    }
+    return retVal;
+  }
+
+  @override
+  List<PropertyMetadataModel> visitMethodDeclaration(MethodDeclaration node) {
+    if (node.isGetter || node.isSetter) {
+      var propModel = new PropertyMetadataModel()..name = '${node.name}';
+      for (var meta in node.metadata) {
+        var annotationModel = meta.accept(_annotationVisitor);
+        if (annotationModel != null) {
+          propModel.annotations.add(annotationModel);
+        }
+      }
+      if (propModel.annotations.isNotEmpty) {
+        return <PropertyMetadataModel>[propModel];
+      }
+    }
+    return null;
   }
 }
 
@@ -171,9 +260,25 @@ abstract class ReflectionWriterMixin
       _writeListWithSeparator(model.parameters, writeParameterModelForImpl,
           prefix: '(', suffix: ')');
       // Interfaces
+      var hasPropertyMetadata =
+          model.propertyMetadata != null && model.propertyMetadata.isNotEmpty;
       if (model.interfaces != null && model.interfaces.isNotEmpty) {
         _writeListWithSeparator(model.interfaces, buffer.write,
             prefix: ',\nconst [', suffix: ']');
+      } else if (hasPropertyMetadata) {
+        buffer.write(',\nconst []');
+      }
+      // Property Metadata
+      if (hasPropertyMetadata) {
+        buffer.write(',\nconst {');
+        for (var propMeta in model.propertyMetadata) {
+          if (propMeta != model.propertyMetadata.first) {
+            buffer.write(', ');
+          }
+          _writeListWithSeparator(propMeta.annotations, writeAnnotationModel,
+              prefix: "\n'${sanitize(propMeta.name)}': const [", suffix: ']');
+        }
+        buffer.write('}');
       }
     }
     buffer.writeln(')\n)');
