@@ -848,8 +848,6 @@ const NG_API = [
   'TypeLiteral',
   'TypeLiteral.type',
 
-  'UNDEFINED',  // TODO: private
-
   'UpperCasePipe',
   'UpperCasePipe.transform',
 
