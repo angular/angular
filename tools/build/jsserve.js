@@ -13,11 +13,28 @@ module.exports = function(gulp, plugins, config) {
         config.proxies = config.proxies || [];
         var middlewares =
             config.proxies.map(function(entry) { return makeProxy(entry.route, entry.url); });
+
+
         // middlewares.push(function(req,res,next){
+        //   var rEnd = res.end;
+
+        //   // To track response time
+        //   req._rlStartTime = new Date();
+
+        //   // Proxy the real end function
+        //   res.end = function(chunk, encoding) {
+        //     res.end = rEnd;
+        //     res.end(chunk, encoding);
+        //     var status = res.statusCode;
+        //     var respTime = (new Date() - req._rlStartTime);
+
+        //     // console.log("response", req.url, "status", status, "time", respTime);
+        //   };
         //   console.log('request', req.url)
+
         //   next();
         // });
-        
+
         middlewares.push(connect.favicon());
 
         // pub serve can't give the right content-type header for jsonp requests
