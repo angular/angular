@@ -49,10 +49,9 @@ void allTests() {
 
     var typeName = reflectable.parameters[1].typeName;
     expect(typeName == null || typeName.isEmpty).toBeTrue();
-    var firstParam = reflectable.parameters[1];
-    expect(firstParam.metadata.firstWhere((m) => m.contains('Inject(Salt)'),
-        orElse: () => null)).toBeNotNull();
-    expect(firstParam.paramName).toEqual('salt');
+    var secondParam = reflectable.parameters[1];
+    expect(secondParam.metadata.first).toContain('Inject(Salt)');
+    expect(secondParam.paramName).toEqual('salt');
   });
 
   describe('part support', () {
@@ -124,7 +123,7 @@ void allTests() {
   });
 
   describe('inliner', () {
-    var absoluteReader = null;
+    var absoluteReader;
     beforeEach(() {
       absoluteReader = new TestAssetReader();
     });
