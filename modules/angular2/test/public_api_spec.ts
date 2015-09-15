@@ -464,9 +464,9 @@ const NG_API = [
   'LifeCycle.registerWith',
   'LifeCycle.tick',
 
-  'LimitToPipe',
-  'LimitToPipe.supports',
-  'LimitToPipe.transform',
+  'SlicePipe',
+  'SlicePipe.supports',
+  'SlicePipe.transform',
 
   'Locals',
   'Locals.clearValues',
