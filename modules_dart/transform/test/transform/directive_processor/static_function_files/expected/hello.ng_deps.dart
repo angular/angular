@@ -1,9 +1,9 @@
 library static_function_files.hello.ng_deps.dart;
 
 import 'hello.dart';
-export 'hello.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/angular2.dart';
+export 'hello.dart';
 
 var _visited = false;
 void initReflector() {
