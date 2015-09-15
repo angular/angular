@@ -8,7 +8,7 @@ p.location-badge.
   defined in {$ githubViewLink(doc) $}
 
 :markdown
-{$ doc.moduleDoc.description | indent(2, true) | trimBlankLines $}
+{$ doc.description | indent(2, true) | trimBlankLines $}
 
 {%- if doc.decorators %}
 .l-main-section
