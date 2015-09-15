@@ -66,24 +66,6 @@ const NG_API = [
   'AbstractControlDirective.valid',
   'AbstractControlDirective.value',
 
-  'Animation',  // TODO: Animation should be on DOM renderer side only, and should be private
-  'Animation.addClasses',
-  'Animation.addEvents',
-  'Animation.applyStyles',
-  'Animation.handleAnimationCompleted',
-  'Animation.handleAnimationEvent',
-  'Animation.onComplete',
-  'Animation.parseDurationString',
-  'Animation.removeClasses',
-  'Animation.setup',
-  'Animation.start',
-  'Animation.stripLetters',
-  'Animation.totalTime',
-  'Animation.wait',
-
-  'AnimationBuilder',
-  'AnimationBuilder.css',
-
   'AppRootUrl',
   'AppRootUrl.value',
 
@@ -135,11 +117,6 @@ const NG_API = [
 
   'BindingWithVisibility',
   'BindingWithVisibility.getKeyId',
-
-  'BrowserDetails',  // TODO: should be private
-  'BrowserDetails.doesElapsedTimeIncludesDelay',
-  'BrowserDetails.raf',
-
 
   'By',  // TODO: not sure
   'By.all',
@@ -287,19 +264,6 @@ const NG_API = [
   'ControlGroup.valid',
   'ControlGroup.value',
   'ControlGroup.valueChanges',
-
-  'CssAnimationBuilder',  // TODO: private
-  'CssAnimationBuilder.addAnimationClass',
-  'CssAnimationBuilder.addClass',
-  'CssAnimationBuilder.removeClass',
-  'CssAnimationBuilder.setDelay',
-  'CssAnimationBuilder.setDuration',
-  'CssAnimationBuilder.setFromStyles',
-  'CssAnimationBuilder.setStyles',
-  'CssAnimationBuilder.setToStyles',
-  'CssAnimationBuilder.start',
-
-  'CssAnimationOptions',  // TODO: private
 
   'CurrencyPipe',
   'CurrencyPipe.constructor',
