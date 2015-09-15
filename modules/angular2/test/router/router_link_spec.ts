@@ -88,7 +88,7 @@ class UserCmp {
 @View({
   template: `
     <div>
-      <a [router-link]="['/detail']">detail view</a>
+      <a [router-link]="['/Detail']">detail view</a>
     </div>`,
   directives: [RouterLink]
 })

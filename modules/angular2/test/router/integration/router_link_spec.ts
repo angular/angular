@@ -72,9 +72,9 @@ export function main() {
     it('should generate absolute hrefs that include the base href',
        inject([AsyncTestCompleter], (async) => {
          location.setBaseHref('/my/base');
-         compile('<a href="hello" [router-link]="[\'./user\']"></a>')
+         compile('<a href="hello" [router-link]="[\'./User\']"></a>')
              .then((_) =>
-                       router.config([new Route({path: '/user', component: UserCmp, as: 'user'})]))
+                       router.config([new Route({path: '/user', component: UserCmp, as: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
@@ -85,9 +85,9 @@ export function main() {
 
 
     it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
-         compile('<a href="hello" [router-link]="[\'./user\']"></a>')
+         compile('<a href="hello" [router-link]="[\'./User\']"></a>')
              .then((_) =>
-                       router.config([new Route({path: '/user', component: UserCmp, as: 'user'})]))
+                       router.config([new Route({path: '/user', component: UserCmp, as: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
@@ -98,9 +98,9 @@ export function main() {
 
 
     it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
-         compile('<a href="hello" [router-link]="[\'./user\', {name: name}]">{{name}}</a>')
+         compile('<a href="hello" [router-link]="[\'./User\', {name: name}]">{{name}}</a>')
              .then((_) => router.config(
-                       [new Route({path: '/user/:name', component: UserCmp, as: 'user'})]))
+                       [new Route({path: '/user/:name', component: UserCmp, as: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.debugElement.componentInstance.name = 'brian';
@@ -117,7 +117,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => router.config(
-                       [new Route({path: '/page/:number', component: SiblingPageCmp, as: 'page'})]))
+                       [new Route({path: '/page/:number', component: SiblingPageCmp, as: 'Page'})]))
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                rootTC.detectChanges();
@@ -137,10 +137,10 @@ export function main() {
                new AsyncRoute({
                  path: '/child-with-grandchild/...',
                  loader: parentCmpLoader,
-                 as: 'child-with-grandchild'
+                 as: 'ChildWithGrandchild'
                })
              ]))
-             .then((_) => router.navigate(['/child-with-grandchild']))
+             .then((_) => router.navigate(['/ChildWithGrandchild']))
              .then((_) => {
                rootTC.detectChanges();
                expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
@@ -156,7 +156,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => router.config(
-                       [new Route({path: '/book/:title/...', component: BookCmp, as: 'book'})]))
+                       [new Route({path: '/book/:title/...', component: BookCmp, as: 'Book'})]))
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                rootTC.detectChanges();
@@ -180,11 +180,11 @@ export function main() {
     describe('router-link-active CSS class', () => {
       it('should be added to the associated element', inject([AsyncTestCompleter], (async) => {
            router.config([
-                   new Route({path: '/child', component: HelloCmp, as: 'child'}),
-                   new Route({path: '/better-child', component: Hello2Cmp, as: 'better-child'})
+                   new Route({path: '/child', component: HelloCmp, as: 'Child'}),
+                   new Route({path: '/better-child', component: Hello2Cmp, as: 'BetterChild'})
                  ])
-               .then((_) => compile(`<a [router-link]="['./child']" class="child-link">Child</a>
-                                <a [router-link]="['./better-child']" class="better-child-link">Better Child</a>
+               .then((_) => compile(`<a [router-link]="['./Child']" class="child-link">Child</a>
+                                <a [router-link]="['./BetterChild']" class="better-child-link">Better Child</a>
                                 <router-outlet></router-outlet>`))
                .then((_) => {
                  var element = rootTC.debugElement.nativeElement;
@@ -211,15 +211,15 @@ export function main() {
 
       it('should be added to links in child routes', inject([AsyncTestCompleter], (async) => {
            router.config([
-                   new Route({path: '/child', component: HelloCmp, as: 'child'}),
+                   new Route({path: '/child', component: HelloCmp, as: 'Child'}),
                    new Route({
                      path: '/child-with-grandchild/...',
                      component: ParentCmp,
-                     as: 'child-with-grandchild'
+                     as: 'ChildWithGrandchild'
                    })
                  ])
-               .then((_) => compile(`<a [router-link]="['./child']" class="child-link">Child</a>
-                                <a [router-link]="['./child-with-grandchild/grandchild']" class="child-with-grandchild-link">Better Child</a>
+               .then((_) => compile(`<a [router-link]="['./Child']" class="child-link">Child</a>
+                                <a [router-link]="['./ChildWithGrandchild/Grandchild']" class="child-with-grandchild-link">Better Child</a>
                                 <router-outlet></router-outlet>`))
                .then((_) => {
                  var element = rootTC.debugElement.nativeElement;
@@ -261,9 +261,9 @@ export function main() {
       };
 
       it('should navigate to link hrefs without params', inject([AsyncTestCompleter], (async) => {
-           compile('<a href="hello" [router-link]="[\'./user\']"></a>')
+           compile('<a href="hello" [router-link]="[\'./User\']"></a>')
                .then((_) => router.config(
-                         [new Route({path: '/user', component: UserCmp, as: 'user'})]))
+                         [new Route({path: '/user', component: UserCmp, as: 'User'})]))
                .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
                  rootTC.detectChanges();
@@ -282,9 +282,9 @@ export function main() {
       it('should navigate to link hrefs in presence of base href',
          inject([AsyncTestCompleter], (async) => {
            location.setBaseHref('/base');
-           compile('<a href="hello" [router-link]="[\'./user\']"></a>')
+           compile('<a href="hello" [router-link]="[\'./User\']"></a>')
                .then((_) => router.config(
-                         [new Route({path: '/user', component: UserCmp, as: 'user'})]))
+                         [new Route({path: '/user', component: UserCmp, as: 'User'})]))
                .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
                  rootTC.detectChanges();
@@ -322,7 +322,7 @@ class UserCmp {
 @Component({selector: 'page-cmp'})
 @View({
   template:
-      `page #{{pageNumber}} | <a href="hello" [router-link]="[\'../page\', {number: nextPage}]">next</a>`,
+      `page #{{pageNumber}} | <a href="hello" [router-link]="[\'../Page\', {number: nextPage}]">next</a>`,
   directives: [RouterLink]
 })
 class SiblingPageCmp {
@@ -350,14 +350,14 @@ function parentCmpLoader() {
 
 @Component({selector: 'parent-cmp'})
 @View({
-  template: `{ <a [router-link]="['./grandchild']" class="grandchild-link">Grandchild</a>
-               <a [router-link]="['./better-grandchild']" class="better-grandchild-link">Better Grandchild</a>
+  template: `{ <a [router-link]="['./Grandchild']" class="grandchild-link">Grandchild</a>
+               <a [router-link]="['./BetterGrandchild']" class="better-grandchild-link">Better Grandchild</a>
                <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
-  new Route({path: '/grandchild', component: HelloCmp, as: 'grandchild'}),
-  new Route({path: '/better-grandchild', component: Hello2Cmp, as: 'better-grandchild'})
+  new Route({path: '/grandchild', component: HelloCmp, as: 'Grandchild'}),
+  new Route({path: '/better-grandchild', component: Hello2Cmp, as: 'BetterGrandchild'})
 ])
 class ParentCmp {
   constructor(public router: Router) {}
@@ -365,11 +365,11 @@ class ParentCmp {
 
 @Component({selector: 'book-cmp'})
 @View({
-  template: `<a href="hello" [router-link]="[\'./page\', {number: 100}]">{{title}}</a> |
+  template: `<a href="hello" [router-link]="[\'./Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, as: 'page'})])
+@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, as: 'Page'})])
 class BookCmp {
   title: string;
   constructor(params: RouteParams) { this.title = params.get('title'); }
