@@ -51,15 +51,15 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   parsedCode.accept(ngDepsVisitor);
   var ngDepsModel = ngDepsVisitor.model;
 
+  var ngMetaVisitor = new _NgMetaVisitor(ngMeta);
+  parsedCode.accept(ngMetaVisitor);
+
   // If this file imports only dart: libraries and does not define any
   // reflectables of its own, it doesn't need a .ng_deps.dart file.
   if (!directivesVisitor.usesNonLangLibs &&
       (ngDepsModel.reflectables == null || ngDepsModel.reflectables.isEmpty)) {
     return null;
   }
-
-  var ngMetaVisitor = new _NgMetaVisitor(ngMeta);
-  parsedCode.accept(ngMetaVisitor);
 
   if (inlineViews) {
     await inlineViewProps(new XhrImpl(reader, assetId), ngDepsModel);

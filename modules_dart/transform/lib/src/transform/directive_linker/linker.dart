@@ -2,118 +2,115 @@ library angular2.transform.directive_linker.linker;
 
 import 'dart:async';
 
-import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/ng_deps.dart';
+import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
+import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
-/// Checks the `.ng_deps.dart` file represented by `entryPoint` and
+/// Checks the `.ng_deps.json` file represented by `entryPoint` and
 /// determines whether it is necessary to the functioning of the Angular 2
 /// Dart app.
 ///
-/// An `.ng_deps.dart` file is not necessary if:
+/// An `.ng_deps.json` file is not necessary if:
 /// 1. It does not register any `@Injectable` types with the system.
-/// 2. It does not import any libraries whose `.ng_deps.dart` files register
+/// 2. It does not import any libraries whose `.ng_deps.json` files register
 ///    any `@Injectable` types with the system.
 ///
 /// Since `@Directive` and `@Component` inherit from `@Injectable`, we know
 /// we will not miss processing any classes annotated with those tags.
 Future<bool> isNecessary(AssetReader reader, AssetId entryPoint) async {
-  NgDeps ngDeps = await NgDeps.parse(reader, entryPoint);
+  if (!(await reader.hasInput(entryPoint))) return false;
+  var jsonString = await reader.readAsString(entryPoint);
+  if (jsonString == null || jsonString.isEmpty) return false;
+  var ngDepsModel = new NgDepsModel.fromJson(jsonString);
 
-  if (ngDeps.registeredTypes.isNotEmpty) return true;
+  if (ngDepsModel.reflectables != null &&
+      ngDepsModel.reflectables.isNotEmpty) return true;
 
   // We do not register any @Injectables, do we call any dependencies?
-  var linkedDepsMap =
-      await _processNgImports(reader, entryPoint, _getSortedDeps(ngDeps));
+  var linkedDepsMap = await _processNgImports(reader, entryPoint, ngDepsModel);
   return linkedDepsMap.isNotEmpty;
 }
 
-/// Modifies the `.ng_deps.dart` file represented by `entryPoint` to call its
-/// dependencies associated `initReflector` methods.
+/// Modifies the [NgDepsModel] represented by `entryPoint` to import its
+/// dependencies' associated `.ng_deps.dart` files.
 ///
 /// For example, if entry_point.ng_deps.dart imports dependency.dart, this
-/// will check if dependency.ng_deps.dart exists. If it does, we add:
-///
-/// ```
-/// import 'dependency.ng_deps.dart' as i0;
-/// ...
-/// void setupReflection(reflector) {
-///   ...
-///   i0.initReflector(reflector);
-/// }
-/// ```
-Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
-  NgDeps ngDeps = await NgDeps.parse(reader, entryPoint);
+/// will check if dependency.ng_deps.json exists. If it does, we add an import
+/// to dependency.ng_deps.dart to the entry_point [NgDepsModel] and set
+/// `isNgDeps` to `true` to signify that it is a dependency on which we need to
+/// call `initReflector`.
+Future<NgDepsModel> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
+  if (!(await reader.hasInput(entryPoint))) return null;
+  var jsonString = await reader.readAsString(entryPoint);
+  if (jsonString.isEmpty) return null;
+  var ngDepsModel = new NgDepsModel.fromJson(jsonString);
 
-  if (ngDeps == null) return null;
-
-  var allDeps = _getSortedDeps(ngDeps);
-  var linkedDepsMap = await _processNgImports(reader, entryPoint, allDeps);
+  var linkedDepsMap = await _processNgImports(reader, entryPoint, ngDepsModel);
 
   if (linkedDepsMap.isEmpty) {
-    // We are not calling `initReflector` on any other libraries.
-    return ngDeps.code;
+    // We are not calling `initReflector` on any other libraries, but we still
+    // return the model to ensure it is written to code.
+    // TODO(kegluneq): Continue using the protobuf format after this phase.
+    return ngDepsModel;
   }
 
-  var importBuf = new StringBuffer();
-  var declarationBuf = new StringBuffer();
-  var code = ngDeps.code;
-  var codeIdx = 0;
-  // Generate import statements for linked deps where necessary.
-  for (var i = 0, it = allDeps.iterator; it.moveNext();) {
-    if (linkedDepsMap.containsKey(it.current)) {
-      importBuf.write(code.substring(codeIdx, it.current.end));
-      codeIdx = it.current.end;
-      importBuf.write('''
-        import '${linkedDepsMap[it.current]}' as i${i};
-      ''');
-      declarationBuf.write('i${i}.${SETUP_METHOD_NAME}();');
-      ++i;
+  for (var i = ngDepsModel.imports.length - 1; i >= 0; --i) {
+    var import = ngDepsModel.imports[i];
+    if (linkedDepsMap.containsKey(import.uri)) {
+      var linkedModel = new ImportModel()
+        ..isNgDeps = true
+        ..uri = toDepsExtension(linkedDepsMap[import.uri])
+        ..prefix = 'i$i';
+      // TODO(kegluneq): Preserve combinators?
+      ngDepsModel.imports.insert(i + 1, linkedModel);
+    }
+  }
+  for (var i = 0, iLen = ngDepsModel.exports.length; i < iLen; ++i) {
+    var export = ngDepsModel.exports[i];
+    if (linkedDepsMap.containsKey(export.uri)) {
+      var linkedModel = new ImportModel()
+        ..isNgDeps = true
+        ..uri = toDepsExtension(linkedDepsMap[export.uri])
+        ..prefix = 'i${ngDepsModel.imports.length}';
+      // TODO(kegluneq): Preserve combinators?
+      ngDepsModel.imports.add(linkedModel);
     }
   }
 
-  var declarationSeamIdx = ngDeps.setupMethod.end - 1;
-  return '$importBuf'
-      '${code.substring(codeIdx, declarationSeamIdx)}'
-      '$declarationBuf'
-      '${code.substring(declarationSeamIdx)}';
+  return ngDepsModel;
 }
 
-/// All `import`s and `export`s in `ngDeps` sorted by order of appearance in
-/// the file.
-List<UriBasedDirective> _getSortedDeps(NgDeps ngDeps) {
-  return <UriBasedDirective>[]
-    ..addAll(ngDeps.imports)
-    ..addAll(ngDeps.exports)
-    ..sort((a, b) => a.end.compareTo(b.end));
+bool _isNotDartDirective(dynamic model) {
+  return !model.uri.startsWith('dart:');
 }
 
-bool _isNotDartDirective(UriBasedDirective directive) {
-  return !stringLiteralToString(directive.uri).startsWith('dart:');
-}
-
-/// Maps each input {@link UriBasedDirective} to its associated `.ng_deps.dart`
-/// file, if it exists.
-Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
-    AssetId entryPoint, Iterable<UriBasedDirective> directives) {
+/// Maps the `uri` of each input [ImportModel] or [ExportModel] to its
+/// associated `.ng_deps.json` file, if one exists.
+Future<Map<String, String>> _processNgImports(
+    AssetReader reader, AssetId ngJsonAsset, NgDepsModel model) {
   final nullFuture = new Future.value(null);
-  final retVal = <UriBasedDirective, String>{};
+  final importsAndExports = new List.from(model.imports)..addAll(model.exports);
+  final retVal = <String, String>{};
+  final entryPoint =
+      new AssetId(ngJsonAsset.package, toDepsExtension(ngJsonAsset.path));
   return Future
-      .wait(directives
-          .where(_isNotDartDirective)
-          .map((UriBasedDirective directive) {
-    var ngDepsUri = toDepsExtension(stringLiteralToString(directive.uri));
+      .wait(
+          importsAndExports.where(_isNotDartDirective).map((dynamic directive) {
+    // The uri of the import or export with .dart replaced with .ng_deps.json.
+    // This is the json file containing Angular 2 codegen info, if one exists.
+    var linkedJsonUri = toJsonExtension(directive.uri);
     var spanArg = null;
-    var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger, spanArg,
+    var linkedNgJsonAsset = uriToAssetId(
+        entryPoint, linkedJsonUri, logger, spanArg,
         errorOnAbsolute: false);
-    if (ngDepsAsset == entryPoint) return nullFuture;
-    return reader.hasInput(ngDepsAsset).then((hasInput) {
+    if (linkedNgJsonAsset == ngJsonAsset) return nullFuture;
+    return reader.hasInput(linkedNgJsonAsset).then((hasInput) {
       if (hasInput) {
-        retVal[directive] = ngDepsUri;
+        retVal[directive.uri] = linkedJsonUri;
       }
     }, onError: (_) => null);
   }))

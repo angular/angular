@@ -140,7 +140,7 @@ abstract class NgDepsWriterMixin
     }
 
     // We do not support `partUris`, so skip outputting them.
-    model.imports.forEach((importModel) {
+    for (var importModel in model.imports) {
       // Ignore deferred imports here so as to not load the deferred libraries
       // code in the current library causing much of the code to not be
       // deferred. Instead `DeferredRewriter` will rewrite the code as to load
@@ -148,7 +148,7 @@ abstract class NgDepsWriterMixin
       if (importModel.isDeferred) return;
 
       writeImportModel(importModel);
-    });
+    }
     model.exports.forEach(writeExportModel);
 
     buffer
@@ -160,6 +160,13 @@ abstract class NgDepsWriterMixin
       buffer.writeln('$REFLECTOR_PREFIX.$REFLECTOR_VAR_NAME');
       model.reflectables.forEach(writeRegistration);
       buffer.writeln(';');
+    }
+
+    // Call the setup method for our imports that are `.ng_deps` imports.
+    for (var importModel in model.imports) {
+      if (importModel.isNgDeps) {
+        buffer.writeln('${importModel.prefix}.${SETUP_METHOD_NAME}();');
+      }
     }
 
     buffer.writeln('}');

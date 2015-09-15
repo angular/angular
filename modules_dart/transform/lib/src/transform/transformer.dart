@@ -32,11 +32,8 @@ class AngularTransformerGroup extends TransformerGroup {
     phases.addAll(new List.generate(
         options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
     phases.addAll([
-      [
-        new DirectiveLinker(),
-        new DirectiveMetadataExtractor(),
-        new DeferredRewriter(options)
-      ],
+      [new DirectiveLinker(), new DeferredRewriter(options)],
+      [new DirectiveMetadataExtractor()],
       [new BindGenerator(options)],
       [new TemplateCompiler(options)]
     ]);

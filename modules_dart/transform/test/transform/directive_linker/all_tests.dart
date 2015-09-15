@@ -4,6 +4,7 @@ import 'package:barback/barback.dart';
 import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
 import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
+import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
 import 'package:angular2/src/transform/directive_linker/linker.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
@@ -15,36 +16,122 @@ var formatter = new DartFormatter();
 main() => allTests();
 
 void allTests() {
-  var reader = new TestAssetReader();
+  var reader;
 
-  it('should ensure that dependencies are property chained.', () async {
-    for (var inputPath in [
-      'bar.ng_deps.dart',
-      'foo.ng_deps.dart',
-      'index.ng_deps.dart'
-    ]) {
-      var expected =
-          readFile('directive_linker/simple_files/expected/$inputPath');
-      inputPath = 'directive_linker/simple_files/$inputPath';
-      var actual = formatter
-          .format(await linkNgDeps(reader, new AssetId('a', inputPath)));
-      expect(actual).toEqual(formatter.format(expected));
-    }
+  beforeEach(() {
+    reader = new TestAssetReader();
   });
 
-  it('should ensure that exported dependencies are property chained.',
-      () async {
-    for (var inputPath in [
-      'bar.ng_deps.dart',
-      'foo.ng_deps.dart',
-      'index.ng_deps.dart'
-    ]) {
-      var expected =
-          readFile('directive_linker/simple_export_files/expected/$inputPath');
-      inputPath = 'directive_linker/simple_export_files/$inputPath';
-      var actual = formatter
-          .format(await linkNgDeps(reader, new AssetId('a', inputPath)));
-      expect(actual).toEqual(formatter.format(expected));
-    }
+  it('should chain imported dependencies.', () async {
+    var fooModel = new NgDepsModel()
+      ..libraryUri = 'test.foo'
+      ..imports.add(new ImportModel()
+        ..uri = 'bar.dart'
+        ..prefix = 'dep');
+    var barModel = new NgDepsModel()..libraryUri = 'test.bar';
+
+    var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+    reader
+      ..addAsset(fooAssetId, fooModel.writeToJson())
+      ..addAsset(
+          new AssetId('a', 'lib/bar.ng_deps.json'), barModel.writeToJson());
+
+    var linked = await linkNgDeps(reader, fooAssetId);
+    expect(linked).toBeNotNull();
+    var linkedImport =
+        linked.imports.firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
+    expect(linkedImport).toBeNotNull();
+    expect(linkedImport.isNgDeps).toBeTrue();
+    expect(linkedImport.prefix.startsWith('i')).toBeTrue();
+  });
+
+  it('should chain exported dependencies.', () async {
+    var fooModel = new NgDepsModel()
+      ..libraryUri = 'test.foo'
+      ..exports.add(new ExportModel()..uri = 'bar.dart');
+    var barModel = new NgDepsModel()..libraryUri = 'test.bar';
+
+    var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+    reader
+      ..addAsset(fooAssetId, fooModel.writeToJson())
+      ..addAsset(
+          new AssetId('a', 'lib/bar.ng_deps.json'), barModel.writeToJson());
+
+    var linked = await linkNgDeps(reader, fooAssetId);
+    expect(linked).toBeNotNull();
+    var linkedImport =
+        linked.imports.firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
+    expect(linkedImport).toBeNotNull();
+    expect(linkedImport.isNgDeps).toBeTrue();
+    expect(linkedImport.prefix.startsWith('i')).toBeTrue();
+  });
+
+  describe('isNecessary', () {
+    it('should drop deps that do no registration and do not import.', () async {
+      var fooModel = new NgDepsModel()..libraryUri = 'test.foo';
+
+      var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+      reader.addAsset(fooAssetId, fooModel.writeToJson());
+      expect(await isNecessary(reader, fooAssetId)).toBeFalse();
+    });
+
+    it('should retain deps that import other deps.', () async {
+      var fooModel = new NgDepsModel()
+        ..libraryUri = 'test.foo'
+        ..imports.add(new ImportModel()..uri = 'bar.dart');
+      var barModel = new NgDepsModel()..libraryUri = 'test.bar';
+
+      var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+      reader
+        ..addAsset(fooAssetId, fooModel.writeToJson())
+        ..addAsset(
+            new AssetId('a', 'lib/bar.ng_deps.json'), barModel.writeToJson());
+
+      expect(await isNecessary(reader, fooAssetId)).toBeTrue();
+    });
+
+    it('should retain deps that export other deps.', () async {
+      var fooModel = new NgDepsModel()
+        ..libraryUri = 'test.foo'
+        ..exports.add(new ExportModel()..uri = 'bar.dart');
+      var barModel = new NgDepsModel()..libraryUri = 'test.bar';
+
+      var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+      reader
+        ..addAsset(fooAssetId, fooModel.writeToJson())
+        ..addAsset(
+            new AssetId('a', 'lib/bar.ng_deps.json'), barModel.writeToJson());
+
+      expect(await isNecessary(reader, fooAssetId)).toBeTrue();
+    });
+
+    it('should retain deps that register injectable types.', () async {
+      var fooModel = new NgDepsModel()
+        ..libraryUri = 'test.foo'
+        ..reflectables.add(new ReflectionInfoModel()
+          ..name = 'MyInjectable'
+          ..annotations.add(new AnnotationModel()
+            ..name = 'Injectable'
+            ..isInjectable = true));
+
+      var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+      reader.addAsset(fooAssetId, fooModel.writeToJson());
+      expect(await isNecessary(reader, fooAssetId)).toBeTrue();
+    });
+
+    it('should retain deps that register injectable functions.', () async {
+      var fooModel = new NgDepsModel()
+        ..libraryUri = 'test.foo'
+        ..reflectables.add(new ReflectionInfoModel()
+          ..name = 'injectableFunction'
+          ..isFunction = true
+          ..annotations.add(new AnnotationModel()
+            ..name = 'Injectable'
+            ..isInjectable = true));
+
+      var fooAssetId = new AssetId('a', 'lib/foo.ng_deps.json');
+      reader.addAsset(fooAssetId, fooModel.writeToJson());
+      expect(await isNecessary(reader, fooAssetId)).toBeTrue();
+    });
   });
 }

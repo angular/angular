@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
@@ -52,15 +51,12 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
           inlineViews: options.inlineViews);
       if (ngDepsModel != null) {
         var ngDepsAssetId =
-            transform.primaryInput.id.changeExtension(DEPS_EXTENSION);
+            transform.primaryInput.id.changeExtension(DEPS_JSON_EXTENSION);
         if (await transform.hasInput(ngDepsAssetId)) {
           log.logger.error('Clobbering ${ngDepsAssetId}. '
               'This probably will not end well');
         }
-        var buf = new StringBuffer();
-        var writer = new NgDepsWriter(buf);
-        writer.writeNgDepsModel(ngDepsModel);
-        transform.addOutput(new Asset.fromString(ngDepsAssetId, '$buf'));
+        transform.addOutput(new Asset.fromString(ngDepsAssetId, ngDepsModel.writeToJson()));
       }
       if (!ngMeta.isEmpty) {
         var ngAliasesId =
