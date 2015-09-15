@@ -14,7 +14,6 @@ import {
   View,
   ViewEncapsulation
 } from 'angular2/core';
-import {DomRenderer} from 'angular2/render';
 
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {isPresent, Type} from 'angular2/src/core/facade/lang';
@@ -37,11 +36,9 @@ import {KeyCodes} from 'angular2_material/src/core/key_codes';
 @Injectable()
 export class MdDialog {
   componentLoader: DynamicComponentLoader;
-  domRenderer: DomRenderer;
 
-  constructor(loader: DynamicComponentLoader, domRenderer: DomRenderer) {
+  constructor(loader: DynamicComponentLoader) {
     this.componentLoader = loader;
-    this.domRenderer = domRenderer;
   }
 
   /**
