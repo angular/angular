@@ -1329,6 +1329,7 @@ process.on('SIGINT', function() {
       process.exit();
     });
   }
+  process.exit();
 });
 
 
