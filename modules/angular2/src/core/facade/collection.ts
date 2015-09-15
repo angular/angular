@@ -166,7 +166,7 @@ export class StringMapWrapper {
 export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean; }
 
 export class ListWrapper {
-  // JS has no way to express a staticly fixed size list, but dart does so we
+  // JS has no way to express a statically fixed size list, but dart does so we
   // keep both methods.
   static createFixedSize(size: number): any[] { return new Array(size); }
   static createGrowableSize(size: number): any[] { return new Array(size); }
