@@ -557,8 +557,6 @@ const NG_API = [
   'NgControlName.viewToModelUpdate',
 
   'NgFor',
-  'NgFor.bulkInsert',
-  'NgFor.bulkRemove',
   'NgFor.doCheck',
   'NgFor.ngForOf',
 
@@ -769,8 +767,6 @@ const NG_API = [
   'QueryMetadata.toString',
   'QueryMetadata.token',
   'QueryMetadata.varBindings',
-
-  'RecordViewTuple',  // TODO: private
 
   'RenderDirectiveMetadata',
   'RenderDirectiveMetadata.COMPONENT_TYPE',
