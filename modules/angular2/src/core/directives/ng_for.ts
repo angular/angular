@@ -71,12 +71,12 @@ export class NgFor implements DoCheck {
     changes.forEachMovedItem((movedRecord) =>
                                  recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
 
-    var insertTuples = NgFor.bulkRemove(recordViewTuples, this._viewContainer);
+    var insertTuples = this._bulkRemove(recordViewTuples);
 
     changes.forEachAddedItem((addedRecord) =>
                                  insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
-    NgFor.bulkInsert(insertTuples, this._viewContainer, this._templateRef);
+    this._bulkInsert(insertTuples);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
@@ -94,38 +94,38 @@ export class NgFor implements DoCheck {
     view.setLocal('odd', (record.currentIndex % 2 == 1));
   }
 
-  static bulkRemove(tuples: RecordViewTuple[], viewContainer: ViewContainerRef): RecordViewTuple[] {
+  private _bulkRemove(tuples: RecordViewTuple[]): RecordViewTuple[] {
     tuples.sort((a, b) => a.record.previousIndex - b.record.previousIndex);
     var movedTuples = [];
     for (var i = tuples.length - 1; i >= 0; i--) {
       var tuple = tuples[i];
       // separate moved views from removed views.
       if (isPresent(tuple.record.currentIndex)) {
-        tuple.view = viewContainer.detach(tuple.record.previousIndex);
+        tuple.view = this._viewContainer.detach(tuple.record.previousIndex);
         movedTuples.push(tuple);
       } else {
-        viewContainer.remove(tuple.record.previousIndex);
+        this._viewContainer.remove(tuple.record.previousIndex);
       }
     }
     return movedTuples;
   }
 
-  static bulkInsert(tuples: RecordViewTuple[], viewContainer: ViewContainerRef,
-                    templateRef: TemplateRef): RecordViewTuple[] {
+  private _bulkInsert(tuples: RecordViewTuple[]): RecordViewTuple[] {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
     for (var i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];
       if (isPresent(tuple.view)) {
-        viewContainer.insert(tuple.view, tuple.record.currentIndex);
+        this._viewContainer.insert(tuple.view, tuple.record.currentIndex);
       } else {
-        tuple.view = viewContainer.createEmbeddedView(templateRef, tuple.record.currentIndex);
+        tuple.view =
+            this._viewContainer.createEmbeddedView(this._templateRef, tuple.record.currentIndex);
       }
     }
     return tuples;
   }
 }
 
-export class RecordViewTuple {
+class RecordViewTuple {
   view: ViewRef;
   record: any;
   constructor(record, view) {
