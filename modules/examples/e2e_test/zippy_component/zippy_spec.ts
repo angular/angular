@@ -4,7 +4,7 @@ describe('Zippy Component', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  describe('dynamic reflection', function() {
+  describe('zippy', function() {
     var URL = 'examples/src/zippy_component/index.html';
 
     beforeEach(function() { browser.get(URL); });

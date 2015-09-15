@@ -21,8 +21,6 @@ transformers:
     # The build currently fails on material files because there is not yet
     # support for transforming cross-package urls. (see issue #2982)
     - 'web/src/material/**'
-    # No need to transform the dart:mirrors specific entrypoints
-    - '**/index_dynamic.dart'
     entry_points:
         - web/src/gestures/index.dart
         - web/src/hello_world/index.dart
