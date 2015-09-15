@@ -13,7 +13,6 @@ import {
   Injector,
   ProtoInjector,
   Visibility,
-  UNDEFINED,
   Key,
   Dependency,
   bind,
@@ -25,6 +24,7 @@ import {
   resolveForwardRef,
   DependencyProvider
 } from 'angular2/src/core/di';
+import {UNDEFINED} from 'angular2/src/core/di/injector';
 import {
   InjectorInlineStrategy,
   InjectorDynamicStrategy,

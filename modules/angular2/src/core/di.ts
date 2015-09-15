@@ -23,8 +23,7 @@ export {
   ProtoInjector,
   BindingWithVisibility,
   DependencyProvider,
-  Visibility,
-  UNDEFINED
+  Visibility
 } from './di/injector';
 export {
   Binding,
