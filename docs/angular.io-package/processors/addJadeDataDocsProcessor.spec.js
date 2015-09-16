@@ -15,7 +15,9 @@ describe('addJadeDataDocsProcessor', function() {
       {
         docType: 'module',
         id: 'someModule',
-        exports: [{ name: 'someObj', docType: 'var', symbolTypeName: 'MyClass'}],
+        exports: [
+          { name: 'someObj', docType: 'var', symbolTypeName: 'MyClass', originalModule: 'some/private/module' }
+        ],
         fileInfo: { baseName: 'x_y' },
         description: 'some description\nsecond line'
       }
@@ -28,8 +30,8 @@ describe('addJadeDataDocsProcessor', function() {
       docType : 'jade-data',
       originalDoc : docs[0],
       data : [
-        { name : 'index', title : 'X Y', intro : 'some description second line' },
-        { name : 'someObj-var', title : 'someObj', varType : 'MyClass', docType: 'var' }
+        { name : 'index', title : 'X Y', intro : 'some description second line', docType : 'module' },
+        { name : 'someObj-var', title : 'someObj', varType : 'MyClass', docType: 'var', originalModule: 'some/private/module' }
       ] });
   });
 
@@ -52,12 +54,12 @@ describe('addJadeDataDocsProcessor', function() {
     docs = processor.$process(docs);
 
     expect(docs[1].data).toEqual([
-      { name : 'index', title : 'X Y', intro : 'some description second line' },
-      { name: 'Alpha-class', title: 'Alpha', varType : undefined, docType: 'class' },
-      { name: 'Beta-class', title: 'Beta', varType : undefined, docType: 'class' },
-      { name: 'Gamma-class', title: 'Gamma', varType : undefined, docType: 'class' },
-      { name: 'Mu-class', title: 'Mu', varType : undefined, docType: 'class' },
-      { name: 'Nu-class', title: 'Nu', varType : undefined, docType: 'class' }
+      { name : 'index', title : 'X Y', intro : 'some description second line', docType : 'module' },
+      { name: 'Alpha-class', title: 'Alpha', docType: 'class' },
+      { name: 'Beta-class', title: 'Beta', docType: 'class' },
+      { name: 'Gamma-class', title: 'Gamma', docType: 'class' },
+      { name: 'Mu-class', title: 'Mu', docType: 'class' },
+      { name: 'Nu-class', title: 'Nu', docType: 'class' }
     ]);
 
   });

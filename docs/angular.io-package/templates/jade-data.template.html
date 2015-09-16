@@ -8,6 +8,9 @@
     {%- if item.varType %}
     "varType" : "{$ item.varType $}",
     {%- endif %}
+    {%- if item.originalModule %}
+    "originalModule" : "{$ item.originalModule $}",
+    {%- endif %}
     "docType": "{$ item.docType $}"
   }{% if not loop.last %},{% endif %}
 {% endfor -%}

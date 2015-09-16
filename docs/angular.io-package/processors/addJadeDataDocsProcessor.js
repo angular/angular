@@ -51,12 +51,14 @@ module.exports = function addJadeDataDocsProcessor() {
           // GET DATA FOR EACH PAGE (CLASS, VARS, FUNCTIONS)
           var modulePageInfo  = _(doc.exports)
           .map(function(exportDoc) {
-            return {
+            var dataDoc = {
               name: exportDoc.name + '-' + exportDoc.docType,
               title: exportDoc.name,
-              docType: exportDoc.docType,
-              varType: exportDoc.symbolTypeName && titleCase(exportDoc.symbolTypeName)
+              docType: exportDoc.docType
             };
+            if (exportDoc.symbolTypeName) dataDoc.varType = titleCase(exportDoc.symbolTypeName);
+            if (exportDoc.originalModule) dataDoc.originalModule = exportDoc.originalModule;
+            return dataDoc;
           })
           .sortBy('name')
           .value();

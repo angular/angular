@@ -1,0 +1,1 @@
+export { x as y} from './privateModule';
