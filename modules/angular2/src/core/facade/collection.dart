@@ -36,15 +36,16 @@ class MapWrapper {
   static Map clone(Map m) => new Map.from(m);
 
   // in opposite to JS, Dart does not create a new map
-  static Map createFromStringMap(Map m) => m;
+  static Map createFromStringMap(Map m) => clone(m);
 
   // in opposite to JS, Dart does not create a new map
-  static Map toStringMap(Map m) => m;
+  static Map toStringMap(Map m) => StringMapWrapper.create()..addAll(m);
 
   static Map createFromPairs(List pairs) => pairs.fold({}, (m, p) {
         m[p[0]] = p[1];
         return m;
       });
+
   static forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }
@@ -67,7 +68,7 @@ class MapWrapper {
 }
 
 class StringMapWrapper {
-  static Map create() => {};
+  static Map create() => new Map.identity();
   static bool contains(Map map, key) => map.containsKey(key);
   static get(Map map, key) => map[key];
   static void set(Map map, key, value) {
@@ -83,9 +84,10 @@ class StringMapWrapper {
   }
 
   static Map merge(Map a, Map b) {
-    var m = new Map.from(a);
+    var m = new Map.identity();
+    m.addAll(a);
     if (b != null) {
-      b.forEach((k, v) => m[k] = v);
+      m.addAll(b);
     }
     return m;
   }
@@ -185,7 +187,7 @@ class ListWrapper {
     from = _startOffset(l, from);
     to = _endOffset(l, to);
     //in JS if from > to an empty array is returned
-    if(to != null && from > to) {
+    if (to != null && from > to) {
       return [];
     }
     return l.sublist(from, to);
@@ -225,7 +227,6 @@ class ListWrapper {
     if (end == null) return len;
     return end < 0 ? max(len + end, 0) : min(end, len);
   }
-
 
   static maximum(List l, fn(item)) {
     if (l.length == 0) {
