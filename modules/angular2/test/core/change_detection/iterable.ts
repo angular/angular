@@ -1,7 +1,8 @@
+import {getSymbolIterator} from 'angular2/src/core/facade/lang';
 
 export class TestIterable {
   list: number[];
   constructor() { this.list = []; }
 
-  [Symbol.iterator]() { return this.list[Symbol.iterator](); }
+  [getSymbolIterator()]() { return this.list[getSymbolIterator()](); }
 }
