@@ -48,13 +48,18 @@ module.exports = function addJadeDataDocsProcessor() {
           }];
 
           // GET DATA FOR EACH PAGE (CLASS, VARS, FUNCTIONS)
-          var modulePageInfo  = _.map(doc.exports, function(exportDoc) {
+          var modulePageInfo  = _(doc.exports)
+          .map(function(exportDoc) {
             return {
               name: exportDoc.name + '-' + exportDoc.docType,
               title: exportDoc.name,
               varType: exportDoc.symbolTypeName && titleCase(exportDoc.symbolTypeName)
             };
-          });
+          })
+          .sortBy('name')
+          .value();
+
+
 
           //COMBINE PAGE DATA
           var allPageData = indexPageInfo.concat(modulePageInfo);
