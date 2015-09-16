@@ -8,7 +8,7 @@
  *
  * `value | pipeName[:arg0[:arg1...]]`
  *
- * ## Example
+ * ### Example ([live demo](http://plnkr.co/edit/f5oyIked9M2cKzvZNKHV?p=preview))
  *
  * The `RepeatPipe` below repeats the value as many times as indicated by the first argument:
  *
@@ -29,8 +29,6 @@
  *
  * Invoking `{{ 'ok' | repeat:3 }}` in a template produces `okokok`.
  *
- * See full working example: http://plnkr.co/edit/f5oyIked9M2cKzvZNKHV?p=preview
- *
  */
 export interface PipeTransform { transform(value: any, args: any[]): any; }
 
@@ -42,7 +40,7 @@ export interface PipeTransform { transform(value: any, args: any[]): any; }
  * a binding is destroyed. For example, a subscription to a stream of data may need to
  * be disposed, or an interval may need to be cleared.
  *
- * ## Example
+ * ### Example ([live demo](http://plnkr.co/edit/hlaejwQAmWayxwc5YXQE?p=preview))
  *
  * In this example, a pipe is created to countdown its input value, updating it every
  * 50ms. Because it maintains an internal interval, it automatically clears
@@ -82,6 +80,5 @@ export interface PipeTransform { transform(value: any, args: any[]): any; }
  * Invoking `{{ 10000 | countdown }}` would cause the value to be decremented by 50,
  * every 50ms, until it reaches 0.
  *
- * See full working example: http://plnkr.co/edit/hlaejwQAmWayxwc5YXQE?p=preview
  */
 export interface PipeOnDestroy { onDestroy(): void; }
