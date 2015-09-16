@@ -11,8 +11,7 @@ import {
   xit,
   Log,
   isInInnerZone,
-  browserDetection,
-  TIMEOUT_INTERVAL_FOR_SLOW_BROWSERS
+  browserDetection
 } from 'angular2/test_lib';
 
 import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
