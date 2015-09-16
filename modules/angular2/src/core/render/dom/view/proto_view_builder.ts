@@ -258,7 +258,7 @@ export class DirectiveBuilder {
   }
 }
 
-class EventBuilder extends AstTransformer {
+export class EventBuilder extends AstTransformer {
   locals: AST[] = [];
   localEvents: Event[] = [];
   globalEvents: Event[] = [];

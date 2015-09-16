@@ -11,7 +11,7 @@ export class MockAnimationBuilder extends AnimationBuilder {
   css(): MockCssAnimationBuilder { return new MockCssAnimationBuilder(); }
 }
 
-class MockCssAnimationBuilder extends CssAnimationBuilder {
+export class MockCssAnimationBuilder extends CssAnimationBuilder {
   constructor() { super(null); }
   start(element: HTMLElement): Animation { return new MockAnimation(element, this.data); }
 }
