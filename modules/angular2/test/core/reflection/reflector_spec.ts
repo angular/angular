@@ -51,7 +51,11 @@ class TestObj {
 
 class Interface {}
 
-class ClassImplementingInterface implements Interface {}
+class Interface2 {}
+
+class SuperClassImplementingInterface implements Interface2 {}
+
+class ClassImplementingInterface extends SuperClassImplementingInterface implements Interface {}
 
 export function main() {
   describe('Reflector', () => {
@@ -191,7 +195,7 @@ export function main() {
       describe("interfaces", () => {
         it("should return an array of interfaces for a type", () => {
           var p = reflector.interfaces(ClassImplementingInterface);
-          expect(p).toEqual([Interface]);
+          expect(p).toEqual([Interface, Interface2]);
         });
 
         it("should return an empty array otherwise", () => {
