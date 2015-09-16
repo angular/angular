@@ -1,7 +1,7 @@
 library angular2.src.tools.tools;
 
 import 'dart:js';
-import 'package:angular2/angular2.dart' show ApplicationRef;
+import 'package:angular2/src/core/compiler/dynamic_component_loader.dart' show ComponentRef;
 import 'common_tools.dart' show AngularTools;
 
 /**
@@ -15,8 +15,8 @@ import 'common_tools.dart' show AngularTools;
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
  */
-void enableDebugTools(ApplicationRef appRef) {
-  final tools = new AngularTools(appRef);
+void enableDebugTools(ComponentRef ref) {
+  final tools = new AngularTools(ref);
   context['ng'] = new JsObject.jsify({
     'profiler': {
       'timeChangeDetection': ([config]) {

@@ -219,7 +219,7 @@ export function platform(bindings?: Array<Type | Binding | any[]>): PlatformRef 
  * - `errorReporter`: `function(exception:any, stackTrace:string)` a default error reporter
  *   for unhandled exceptions.
  *
- * Returns a `Promise` of {@link ApplicationRef}.
+ * Returns a `Promise` of {@link ComponentRef}.
  */
 export function commonBootstrap(appComponentType: /*Type*/ any,
                                 appBindings: Array<Type | Binding | any[]> = null):

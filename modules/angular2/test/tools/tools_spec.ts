@@ -11,11 +11,11 @@ import {
 } from 'angular2/test_lib';
 
 import {enableDebugTools, disableDebugTools} from 'angular2/tools';
-import {SpyApplicationRef, callNgProfilerTimeChangeDetection} from './spies';
+import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 
 export function main() {
   describe('profiler', () => {
-    beforeEach(() => { enableDebugTools((<any>new SpyApplicationRef())); });
+    beforeEach(() => { enableDebugTools((<any>new SpyComponentRef())); });
 
     afterEach(() => { disableDebugTools(); });
 

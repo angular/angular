@@ -1,8 +1,9 @@
 import {SpyObject} from 'angular2/test_lib';
-import {ApplicationRef, LifeCycle, Injector, bind} from 'angular2/angular2';
+import {LifeCycle, Injector, bind} from 'angular2/angular2';
+import {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {global} from 'angular2/src/core/facade/lang';
 
-export class SpyApplicationRef extends SpyObject {
+export class SpyComponentRef extends SpyObject {
   injector;
   constructor() {
     super();
