@@ -272,8 +272,13 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   List interfaces(type) {
-    ClassMirror classMirror = reflectType(type);
-    return classMirror.superinterfaces.map((si) => si.reflectedType).toList();
+    return _interfacesFromMirror(reflectType(type));
+  }
+
+  List _interfacesFromMirror(classMirror) {
+    return classMirror.superinterfaces.map((si) => si.reflectedType).toList()
+      ..addAll(classMirror.superclass == null ? []
+        : _interfacesFromMirror(classMirror.superclass));
   }
 
   GetterFn getter(String name) {
