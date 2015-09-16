@@ -699,7 +699,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   exportAs: string;
 
-  constructor({
+  public constructor({
                   selector, properties, events, host, bindings, exportAs, compileChildren = true,
               }: {
     selector?: string,
@@ -817,7 +817,7 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, exportAs, bindings, viewBindings,
+  public constructor({selector, properties, events, host, exportAs, bindings, viewBindings,
                changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
     selector?: string,
     properties?: string[],
@@ -863,7 +863,7 @@ export class PipeMetadata extends InjectableMetadata {
   name: string;
   _pure: boolean;
 
-  constructor({name, pure}: {name: string, pure: boolean}) {
+  public constructor({name, pure}: {name: string, pure: boolean}) {
     super();
     this.name = name;
     this._pure = pure;
@@ -889,7 +889,7 @@ export class PipeMetadata extends InjectableMetadata {
  */
 @CONST()
 export class PropertyMetadata {
-  constructor(public bindingPropertyName?: string) {}
+  public constructor(public bindingPropertyName?: string) {}
 }
 
 /**
@@ -909,7 +909,7 @@ export class PropertyMetadata {
  */
 @CONST()
 export class EventMetadata {
-  constructor(public bindingPropertyName?: string) {}
+  public constructor(public bindingPropertyName?: string) {}
 }
 
 /**
@@ -942,7 +942,7 @@ export class EventMetadata {
  */
 @CONST()
 export class HostBindingMetadata {
-  constructor(public hostPropertyName?: string) {}
+  public constructor(public hostPropertyName?: string) {}
 }
 
 /**
@@ -973,5 +973,5 @@ export class HostBindingMetadata {
  */
 @CONST()
 export class HostListenerMetadata {
-  constructor(public eventName: string, public args?: string[]) {}
+  public constructor(public eventName: string, public args?: string[]) {}
 }

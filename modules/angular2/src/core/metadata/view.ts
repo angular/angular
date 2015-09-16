@@ -97,7 +97,7 @@ export class ViewMetadata {
    */
   encapsulation: ViewEncapsulation;
 
-  constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls}: {
+  public constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls}: {
     templateUrl?: string,
     template?: string,
     directives?: Array<Type | any | any[]>,
