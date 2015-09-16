@@ -29,7 +29,7 @@ p.location-badge.
 
 {%- if doc.constructorDoc %}
   .l-sub-section
-    h3 {$ doc.constructorDoc.name $}
+    h3#{$ doc.constructorDoc.name | toId $} {$ doc.constructorDoc.name $}
 
     {% if doc.constructorDoc.parameters %}
     pre.prettyprint
@@ -44,7 +44,7 @@ p.location-badge.
 
 {%- for member in doc.members %}{% if not member.private %}
   .l-sub-section
-    h3 {$ member.name $}{% if member.optional %}?{% endif %}
+    h3#{$ member.name | toId $} {$ member.name $}{% if member.optional %}?{% endif %}
 
     {% if member.parameters %}
     pre.prettyprint

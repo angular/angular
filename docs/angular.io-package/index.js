@@ -58,7 +58,10 @@ module.exports = new Package('angular.io', [basePackage])
 
 
 .config(function(templateEngine, getInjectables) {
-  templateEngine.filters = templateEngine.filters.concat(getInjectables([require('./rendering/trimBlankLines')]));
+  templateEngine.filters = templateEngine.filters.concat(getInjectables([
+    require('./rendering/trimBlankLines'),
+    require('./rendering/toId')
+  ]));
 });
 
 
