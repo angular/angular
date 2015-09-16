@@ -44,7 +44,8 @@ module.exports = function addJadeDataDocsProcessor() {
             title: _.map(path.basename(doc.fileInfo.baseName).split('_'), function(part) {
               return titleCase(part);
             }).join(' '),
-            intro: doc.description.replace('"', '\"').replace(/\s*(\r?\n|\r)\s*/g," ")
+            intro: doc.description.replace('"', '\"').replace(/\s*(\r?\n|\r)\s*/g," "),
+            docType: 'module'
           }];
 
           // GET DATA FOR EACH PAGE (CLASS, VARS, FUNCTIONS)
@@ -53,6 +54,7 @@ module.exports = function addJadeDataDocsProcessor() {
             return {
               name: exportDoc.name + '-' + exportDoc.docType,
               title: exportDoc.name,
+              docType: exportDoc.docType,
               varType: exportDoc.symbolTypeName && titleCase(exportDoc.symbolTypeName)
             };
           })

@@ -15,7 +15,7 @@ describe('addJadeDataDocsProcessor', function() {
       {
         docType: 'module',
         id: 'someModule',
-        exports: [{ name: 'MyClass', docType: 'class'}],
+        exports: [{ name: 'someObj', docType: 'var', symbolTypeName: 'MyClass'}],
         fileInfo: { baseName: 'x_y' },
         description: 'some description\nsecond line'
       }
@@ -29,7 +29,7 @@ describe('addJadeDataDocsProcessor', function() {
       originalDoc : docs[0],
       data : [
         { name : 'index', title : 'X Y', intro : 'some description second line' },
-        { name : 'MyClass-class', title : 'MyClass', varType : undefined }
+        { name : 'someObj-var', title : 'someObj', varType : 'MyClass', docType: 'var' }
       ] });
   });
 
@@ -53,11 +53,11 @@ describe('addJadeDataDocsProcessor', function() {
 
     expect(docs[1].data).toEqual([
       { name : 'index', title : 'X Y', intro : 'some description second line' },
-      { name: 'Alpha-class', title: 'Alpha', varType : undefined },
-      { name: 'Beta-class', title: 'Beta', varType : undefined },
-      { name: 'Gamma-class', title: 'Gamma', varType : undefined },
-      { name: 'Mu-class', title: 'Mu', varType : undefined },
-      { name: 'Nu-class', title: 'Nu', varType : undefined }
+      { name: 'Alpha-class', title: 'Alpha', varType : undefined, docType: 'class' },
+      { name: 'Beta-class', title: 'Beta', varType : undefined, docType: 'class' },
+      { name: 'Gamma-class', title: 'Gamma', varType : undefined, docType: 'class' },
+      { name: 'Mu-class', title: 'Mu', varType : undefined, docType: 'class' },
+      { name: 'Nu-class', title: 'Nu', varType : undefined, docType: 'class' }
     ]);
 
   });
