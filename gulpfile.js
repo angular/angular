@@ -43,6 +43,7 @@ var shouldLog = require('./tools/build/logging');
 var tslint = require('gulp-tslint');
 var dartSdk = require('./tools/build/dart');
 var sauceConf = require('./sauce.conf');
+var os = require('os');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.9.0',
@@ -250,6 +251,7 @@ gulp.task('build/analyze.ddc.dart', dartanalyzer(gulp, gulpPlugins, {
 
 gulp.task('build/check.apidocs.dart', dartapidocs(gulp, gulpPlugins, {
   dest: CONFIG.dest.dart,
+  output: os.tmpdir(),
   command: DART_SDK.DARTDOCGEN
 }));
 

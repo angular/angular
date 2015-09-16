@@ -4,6 +4,7 @@ var spawn = require('child_process').spawn;
 var util = require('./util');
 
 module.exports = function(gulp, plugins, config) {
+  config.output = config.output || 'doc/api';
   return function() {
     return util.forEachSubDirSequential(config.dest, function(dir) {
       var defer = Q.defer();
@@ -21,7 +22,7 @@ module.exports = function(gulp, plugins, config) {
       } else {
         console.log('INFO: running dartdoc for ', dir);
 
-        var stream = spawn(config.command, ['--input=.'], {
+        var stream = spawn(config.command, ['--input=.', '--output=' + config.output], {
           stdio: [process.stdin, process.stdout, process.stderr],
           cwd: dir
         });
