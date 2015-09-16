@@ -1,5 +1,5 @@
 import {global} from 'angular2/src/core/facade/lang';
-import {ApplicationRef} from 'angular2/angular2';
+import {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {AngularTools} from './common_tools';
 
 var context = <any>global;
@@ -15,8 +15,8 @@ var context = <any>global;
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
  */
-export function enableDebugTools(appRef: ApplicationRef): void {
-  context.ng = new AngularTools(appRef);
+export function enableDebugTools(ref: ComponentRef): void {
+  context.ng = new AngularTools(ref);
 }
 
 /**

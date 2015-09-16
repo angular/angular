@@ -1,4 +1,5 @@
-import {ApplicationRef, LifeCycle} from 'angular2/angular2';
+import {LifeCycle} from 'angular2/angular2';
+import {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {isPresent, NumberWrapper} from 'angular2/src/core/facade/lang';
 import {performance, window} from 'angular2/src/core/facade/browser';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -10,7 +11,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 export class AngularTools {
   profiler: AngularProfiler;
 
-  constructor(appRef: ApplicationRef) { this.profiler = new AngularProfiler(appRef); }
+  constructor(ref: ComponentRef) { this.profiler = new AngularProfiler(ref); }
 }
 
 /**
@@ -20,7 +21,7 @@ export class AngularTools {
 export class AngularProfiler {
   lifeCycle: LifeCycle;
 
-  constructor(appRef: ApplicationRef) { this.lifeCycle = appRef.injector.get(LifeCycle); }
+  constructor(ref: ComponentRef) { this.lifeCycle = ref.injector.get(LifeCycle); }
 
   /**
    * Exercises change detection in a loop and then prints the average amount of
