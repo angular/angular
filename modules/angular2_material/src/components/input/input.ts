@@ -1,6 +1,5 @@
 import {
   Directive,
-  LifecycleEvent,
   Attribute,
   Host,
   SkipSelf,

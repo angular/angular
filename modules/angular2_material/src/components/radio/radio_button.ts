@@ -2,7 +2,6 @@ import {
   Component,
   View,
   ViewEncapsulation,
-  LifecycleEvent,
   Host,
   SkipSelf,
   Attribute,

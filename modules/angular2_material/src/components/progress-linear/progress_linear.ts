@@ -1,6 +1,5 @@
 import {
   Component,
-  LifecycleEvent,
   View,
   ViewEncapsulation,
   Attribute,
