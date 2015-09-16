@@ -846,7 +846,7 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
 
 /**
  * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
- * In such a case, inlining fields is benefitial for performances.
+ * In such a case, inlining fields is beneficial for performances.
  */
 class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
   constructor(public injectorStrategy: InjectorDynamicStrategy, public _ei: ElementInjector) {}
