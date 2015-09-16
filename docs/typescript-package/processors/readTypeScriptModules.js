@@ -223,6 +223,11 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     if (exportSymbol.flags & ts.SymbolFlags.TypeAlias) {
       exportDoc.typeDefinition = typeDefinition;
     }
+
+    // Compute the original module name from the relative file path
+    exportDoc.originalModule = exportDoc.fileInfo.relativePath
+        .replace(new RegExp('\.' + exportDoc.fileInfo.extension + '$'), '');
+
     return exportDoc;
   }
 
