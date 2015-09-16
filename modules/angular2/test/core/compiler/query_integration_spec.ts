@@ -10,16 +10,24 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  asNativeElements,
-  By
 } from 'angular2/test_lib';
 
 
-import {Injectable, Optional} from 'angular2/di';
-import {QueryList, TemplateRef} from 'angular2/core';
-import {Query, ViewQuery, Component, Directive, View} from 'angular2/metadata';
+import {
+  Component,
+  Directive,
+  Injectable,
+  NgIf,
+  NgFor,
+  Optional,
+  TemplateRef,
+  Query,
+  QueryList,
+  View,
+  ViewQuery
+} from 'angular2/core';
 
-import {NgIf, NgFor} from 'angular2/angular2';
+import {asNativeElements} from 'angular2/src/core/debug';
 
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
@@ -41,7 +49,8 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|3|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('2|3|');
 
                  async.done();
                });
@@ -59,7 +68,8 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|3|4|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('2|3|4|');
 
                  async.done();
                });
@@ -75,7 +85,8 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|3|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('2|3|');
 
                  async.done();
                });
@@ -93,11 +104,12 @@ export function main() {
                .then((view) => {
 
                  view.detectChanges();
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren)).toHaveText('2|');
 
-                 view.componentInstance.shouldShow = true;
+                 view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|3|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('2|3|');
 
                  async.done();
                });
@@ -113,7 +125,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((rtc) => {
-                 rtc.componentInstance.shouldShow = true;
+                 rtc.debugElement.componentInstance.shouldShow = true;
                  rtc.detectChanges();
                  rtc.destroy();
 
@@ -133,11 +145,13 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|1d|2d|3d|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('2|1d|2d|3d|');
 
-                 view.componentInstance.list = ['3d', '2d'];
+                 view.debugElement.componentInstance.list = ['3d', '2d'];
                  view.detectChanges();
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('2|3d|2d|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('2|3d|2d|');
 
                  async.done();
                });
@@ -152,7 +166,8 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 var needsTpl: NeedsTpl = view.componentViewChildren[0].inject(NeedsTpl);
+                 var needsTpl: NeedsTpl =
+                     view.debugElement.componentViewChildren[0].inject(NeedsTpl);
                  expect(needsTpl.query.first.hasLocal('light')).toBe(true);
                  expect(needsTpl.viewQuery.first.hasLocal('shadow')).toBe(true);
 
@@ -173,7 +188,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
                  view.detectChanges();
 
                  q.query.onChange(() => {
@@ -182,7 +197,7 @@ export function main() {
                    async.done();
                  });
 
-                 view.componentInstance.shouldShow = true;
+                 view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
                });
          }));
@@ -198,8 +213,8 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q1 = view.componentViewChildren[0].getLocal("q1");
-                 var q2 = view.componentViewChildren[0].getLocal("q2");
+                 var q1 = view.debugElement.componentViewChildren[0].getLocal("q1");
+                 var q2 = view.debugElement.componentViewChildren[0].getLocal("q2");
 
                  var firedQ2 = false;
 
@@ -210,6 +225,34 @@ export function main() {
                  });
 
                  view.detectChanges();
+               });
+         }));
+
+      it('should correctly clean-up when destroyed together with the directives it is querying',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-query #q *ng-if="shouldShow"><div text="foo"></div></needs-query>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.debugElement.componentInstance.shouldShow = true;
+                 view.detectChanges();
+
+                 var q: NeedsQuery = view.debugElement.componentViewChildren[1].getLocal('q');
+                 expect(q.query.length).toEqual(1);
+
+                 view.debugElement.componentInstance.shouldShow = false;
+                 view.detectChanges();
+
+                 view.debugElement.componentInstance.shouldShow = true;
+                 view.detectChanges();
+
+                 var q2: NeedsQuery = view.debugElement.componentViewChildren[1].getLocal('q');
+
+                 expect(q2.query.length).toEqual(1);
+
+                 async.done();
                });
          }));
     });
@@ -225,9 +268,9 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
 
-                 view.componentInstance.list = ['1d', '2d'];
+                 view.debugElement.componentInstance.list = ['1d', '2d'];
 
                  view.detectChanges();
 
@@ -248,7 +291,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
                  view.detectChanges();
 
                  expect(q.query.first.text).toEqual("one");
@@ -268,13 +311,13 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
 
-                 view.componentInstance.list = ['1d', '2d'];
+                 view.debugElement.componentInstance.list = ['1d', '2d'];
 
                  view.detectChanges();
 
-                 view.componentInstance.list = ['2d', '1d'];
+                 view.debugElement.componentInstance.list = ['2d', '1d'];
 
                  view.detectChanges();
 
@@ -295,9 +338,9 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
 
-                 view.componentInstance.list = ['1d', '2d'];
+                 view.debugElement.componentInstance.list = ['1d', '2d'];
 
                  view.detectChanges();
 
@@ -319,7 +362,25 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 expect(asNativeElements(view.componentViewChildren)).toHaveText('hello|world|');
+                 expect(asNativeElements(view.debugElement.componentViewChildren))
+                     .toHaveText('hello|world|');
+
+                 async.done();
+               });
+         }));
+
+      it('should support querying the view by using a view query',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-query-by-var-binding #q></needs-view-query-by-var-binding>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsViewQueryByLabel =
+                     view.debugElement.componentViewChildren[0].getLocal("q");
+                 view.detectChanges();
+
+                 expect(q.query.first.nativeElement).toHaveText("text");
 
                  async.done();
                });
@@ -334,24 +395,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQuery = view.componentViewChildren[0].getLocal("q");
-
-                 view.detectChanges();
-
-                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "2", "3"]);
-
-                 async.done();
-               });
-         }));
-
-      it('should query descendants in the view when the flag is used',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-view-query-desc #q></needs-view-query-desc>';
-
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
-               .then((view) => {
-                 var q: NeedsViewQueryDesc = view.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQuery = view.debugElement.componentViewChildren[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -361,18 +405,18 @@ export function main() {
                });
          }));
 
-      it('should include directive present on the host element',
+      it('should not include directive present on the host element',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query #q text="self"></needs-view-query>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQuery = view.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQuery = view.debugElement.componentViewChildren[0].getLocal("q");
 
                  view.detectChanges();
 
-                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "2", "3"]);
+                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "2", "3", "4"]);
 
                  async.done();
                });
@@ -385,7 +429,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryIf = view.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryIf = view.debugElement.componentViewChildren[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -393,6 +437,7 @@ export function main() {
 
                  q.show = true;
                  view.detectChanges();
+                 expect(q.query.length).toBe(1);
 
                  expect(q.query.first.text).toEqual("1");
 
@@ -407,7 +452,8 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryNestedIf = view.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryNestedIf =
+                     view.debugElement.componentViewChildren[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -432,7 +478,32 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrder = view.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryOrder =
+                     view.debugElement.componentViewChildren[0].getLocal("q");
+
+                 view.detectChanges();
+
+                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "2", "3", "4"]);
+
+                 q.list = ["-3", "2"];
+                 view.detectChanges();
+
+
+                 expect(q.query.map((d: TextDirective) => d.text)).toEqual(["1", "-3", "2", "4"]);
+
+                 async.done();
+               });
+         }));
+
+      it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsViewQueryOrderWithParent =
+                     view.debugElement.componentViewChildren[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -455,7 +526,8 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrder = view.componentViewChildren[0].getLocal('q');
+                 var q: NeedsViewQueryOrder =
+                     view.debugElement.componentViewChildren[0].getLocal('q');
 
                  // no significance to 50, just a reasonably large cycle.
                  for (var i = 0; i < 50; i++) {
@@ -517,6 +589,14 @@ class NeedsQueryByLabel {
   }
 }
 
+@Component({selector: 'needs-view-query-by-var-binding'})
+@View({directives: [], template: '<div #text-label>text</div>'})
+@Injectable()
+class NeedsViewQueryByLabel {
+  query: QueryList<any>;
+  constructor(@ViewQuery("textLabel") query: QueryList<any>) { this.query = query; }
+}
+
 @Component({selector: 'needs-query-by-var-bindings'})
 @View({directives: [], template: '<ng-content>'})
 @Injectable()
@@ -541,27 +621,13 @@ class NeedsQueryAndProject {
 @Component({selector: 'needs-view-query'})
 @View({
   directives: [TextDirective],
-  template: '<div text="1"><div text="need descendants"></div></div>' +
-                '<div text="2"></div><div text="3"></div>'
+  template: '<div text="1"><div text="2"></div></div>' +
+                '<div text="3"></div><div text="4"></div>'
 })
 @Injectable()
 class NeedsViewQuery {
   query: QueryList<TextDirective>;
   constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
-}
-
-@Component({selector: 'needs-view-query-desc'})
-@View({
-  directives: [TextDirective],
-  template: '<div text="1"><div text="2"></div></div>' +
-                '<div text="3"></div><div text="4"></div>'
-})
-@Injectable()
-class NeedsViewQueryDesc {
-  query: QueryList<TextDirective>;
-  constructor(@ViewQuery(TextDirective, {descendants: true}) query: QueryList<TextDirective>) {
-    this.query = query;
-  }
 }
 
 @Component({selector: 'needs-view-query-if'})
@@ -592,10 +658,24 @@ class NeedsViewQueryNestedIf {
   }
 }
 
-
-// TODO(rado): once https://github.com/angular/angular/issues/3438 is resolved
-// duplicate the test without InertDirective.
 @Component({selector: 'needs-view-query-order'})
+@View({
+  directives: [NgFor, TextDirective, InertDirective],
+  template: '<div text="1"></div>' +
+                '<div *ng-for="var i of list" [text]="i"></div>' +
+                '<div text="4"></div>'
+})
+@Injectable()
+class NeedsViewQueryOrder {
+  query: QueryList<TextDirective>;
+  list: string[];
+  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
+    this.query = query;
+    this.list = ['2', '3'];
+  }
+}
+
+@Component({selector: 'needs-view-query-order-with-p'})
 @View({
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div dir><div text="1"></div>' +
@@ -603,10 +683,10 @@ class NeedsViewQueryNestedIf {
                 '<div text="4"></div></div>'
 })
 @Injectable()
-class NeedsViewQueryOrder {
+class NeedsViewQueryOrderWithParent {
   query: QueryList<TextDirective>;
   list: string[];
-  constructor(@ViewQuery(TextDirective, {descendants: true}) query: QueryList<TextDirective>) {
+  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
     this.query = query;
     this.list = ['2', '3'];
   }
@@ -633,10 +713,11 @@ class NeedsTpl {
     NeedsQueryByTwoLabels,
     NeedsQueryAndProject,
     NeedsViewQuery,
-    NeedsViewQueryDesc,
     NeedsViewQueryIf,
     NeedsViewQueryNestedIf,
     NeedsViewQueryOrder,
+    NeedsViewQueryByLabel,
+    NeedsViewQueryOrderWithParent,
     NeedsTpl,
     TextDirective,
     InertDirective,

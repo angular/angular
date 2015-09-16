@@ -4,9 +4,10 @@ import {
   RegExpMatcherWrapper,
   StringWrapper,
   isPresent,
-  isBlank,
-  BaseException
+  isBlank
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+
 import {
   Map,
   MapWrapper,
@@ -19,7 +20,7 @@ import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
 import {ComponentInstruction} from './instruction';
 
-export class TouchMap {
+class TouchMap {
   map: StringMap<string, string> = {};
   keys: StringMap<string, boolean> = {};
 
@@ -53,7 +54,7 @@ function normalizeString(obj: any): string {
   }
 }
 
-export interface Segment {
+interface Segment {
   name: string;
   generate(params: TouchMap): string;
   match(path: string): boolean;
@@ -74,7 +75,7 @@ class StaticSegment implements Segment {
 
 class DynamicSegment implements Segment {
   constructor(public name: string) {}
-  match(path: string): boolean { return true; }
+  match(path: string): boolean { return path.length > 0; }
   generate(params: TouchMap): string {
     if (!StringMapWrapper.contains(params.map, this.name)) {
       throw new BaseException(
@@ -191,7 +192,7 @@ export class PathRecognizer {
   specificity: number;
   terminal: boolean = true;
   hash: string;
-  private cache: Map<string, ComponentInstruction> = new Map<string, ComponentInstruction>();
+  private _cache: Map<string, ComponentInstruction> = new Map<string, ComponentInstruction>();
 
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
@@ -223,26 +224,26 @@ export class PathRecognizer {
         break;
       }
 
-      if (isBlank(currentSegment)) {
+      if (isPresent(currentSegment)) {
+        captured.push(currentSegment.path);
+
+        // the star segment consumes all of the remaining URL, including matrix params
+        if (segment instanceof StarSegment) {
+          positionalParams[segment.name] = currentSegment.toString();
+          nextSegment = null;
+          break;
+        }
+
+        if (segment instanceof DynamicSegment) {
+          positionalParams[segment.name] = currentSegment.path;
+        } else if (!segment.match(currentSegment.path)) {
+          return null;
+        }
+
+        nextSegment = currentSegment.child;
+      } else if (!segment.match('')) {
         return null;
       }
-
-      captured.push(currentSegment.path);
-
-      // the star segment consumes all of the remaining URL, including matrix params
-      if (segment instanceof StarSegment) {
-        positionalParams[segment.name] = currentSegment.toString();
-        nextSegment = null;
-        break;
-      }
-
-      if (segment instanceof DynamicSegment) {
-        positionalParams[segment.name] = currentSegment.path;
-      } else if (!segment.match(currentSegment.path)) {
-        return null;
-      }
-
-      nextSegment = currentSegment.child;
     }
 
     if (this.terminal && isPresent(nextSegment)) {
@@ -299,11 +300,11 @@ export class PathRecognizer {
   private _getInstruction(urlPath: string, urlParams: string[], _recognizer: PathRecognizer,
                           params: StringMap<string, any>): ComponentInstruction {
     var hashKey = urlPath + '?' + urlParams.join('?');
-    if (this.cache.has(hashKey)) {
-      return this.cache.get(hashKey);
+    if (this._cache.has(hashKey)) {
+      return this._cache.get(hashKey);
     }
     var instruction = new ComponentInstruction(urlPath, urlParams, _recognizer, params);
-    this.cache.set(hashKey, instruction);
+    this._cache.set(hashKey, instruction);
 
     return instruction;
   }

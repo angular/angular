@@ -35,7 +35,7 @@ guidelines for [contributing][contributing] and then check out one of our issues
 [contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
 [dart]: http://www.dartlang.org
 [dartium]: http://www.dartlang.org/tools/dartium
-[download]: http://angular.io/download
+[download]: http://angular.io/download/
 [quickstart]: https://angular.io/docs/js/latest/quickstart.html
 [ng2]: http://angular.io
 [ngDart]: http://angulardart.org

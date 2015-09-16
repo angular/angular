@@ -38,26 +38,26 @@ describe('ngOutlet', function () {
 
     $router.config([
       { path: '/a', component: OneController },
-      { path: '/b', component: TwoController, as: 'two' }
+      { path: '/b', component: TwoController, as: 'Two' }
     ]);
-    compile('<a ng-link="[\'/two\']">link</a> | outer { <div ng-outlet></div> }');
+    compile('<a ng-link="[\'/Two\']">link</a> | outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b');
   });
 
   it('should allow linking from the child and the parent', function () {
-    put('one', '<div><a ng-link="[\'/two\']">{{number}}</a></div>');
+    put('one', '<div><a ng-link="[\'/Two\']">{{number}}</a></div>');
 
     $router.config([
       { path: '/a', component: OneController },
-      { path: '/b', component: TwoController, as: 'two' }
+      { path: '/b', component: TwoController, as: 'Two' }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b');
@@ -66,15 +66,15 @@ describe('ngOutlet', function () {
 
   it('should allow params in routerLink directive', function () {
     put('router', '<div>outer { <div ng-outlet></div> }</div>');
-    put('one', '<div><a ng-link="[\'/two\', {param: \'lol\'}]">{{number}}</a></div>');
+    put('one', '<div><a ng-link="[\'/Two\', {param: \'lol\'}]">{{number}}</a></div>');
 
     $router.config([
       { path: '/a', component: OneController },
-      { path: '/b/:param', component: TwoController, as: 'two' }
+      { path: '/b/:param', component: TwoController, as: 'Two' }
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b/lol');
@@ -83,15 +83,15 @@ describe('ngOutlet', function () {
   // TODO: test dynamic links
   it('should update the href of links with bound params', function () {
     put('router', '<div>outer { <div ng-outlet></div> }</div>');
-    put('one', '<div><a ng-link="[\'/two\', {param: one.number}]">{{one.number}}</a></div>');
+    put('one', '<div><a ng-link="[\'/Two\', {param: one.number}]">{{one.number}}</a></div>');
 
     $router.config([
       { path: '/a', component: OneController },
-      { path: '/b/:param', component: TwoController, as: 'two' }
+      { path: '/b/:param', component: TwoController, as: 'Two' }
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigate('/a');
+    $router.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b/one');

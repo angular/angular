@@ -25,23 +25,15 @@ export function main() {
 
   describe('EventManager', () => {
 
-    it('should delegate event bindings to plugins', () => {
-      var element = el('<div></div>');
-      var handler = (e) => e;
-      var plugin = new FakeEventManagerPlugin(['click']);
-      var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
-      manager.addEventListener(element, 'click', handler);
-      expect(plugin._nonBubbleEventHandlers.get('click')).toBe(handler);
-    });
-
-    it('should delegate bubbling events to plugins', () => {
-      var element = el('<div></div>');
-      var handler = (e) => e;
-      var plugin = new FakeEventManagerPlugin(['click']);
-      var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
-      manager.addEventListener(element, '^click', handler);
-      expect(plugin._bubbleEventHandlers.get('click')).toBe(handler);
-    });
+    it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
+       () => {
+         var element = el('<div></div>');
+         var handler = (e) => e;
+         var plugin = new FakeEventManagerPlugin(['click']);
+         var manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
+         manager.addEventListener(element, 'click', handler);
+         expect(plugin._eventHandler.get('click')).toBe(handler);
+       });
 
     it('should delegate event bindings to the first plugin supporting the event', () => {
       var element = el('<div></div>');
@@ -49,13 +41,13 @@ export function main() {
       var dblClickHandler = (e) => e;
       var plugin1 = new FakeEventManagerPlugin(['dblclick']);
       var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
-      var manager = new EventManager([plugin1, plugin2], new FakeNgZone());
+      var manager = new EventManager([plugin2, plugin1], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
-      expect(plugin1._nonBubbleEventHandlers.has('click')).toBe(false);
-      expect(plugin2._nonBubbleEventHandlers.get('click')).toBe(clickHandler);
-      expect(plugin2._nonBubbleEventHandlers.has('dblclick')).toBe(false);
-      expect(plugin1._nonBubbleEventHandlers.get('dblclick')).toBe(dblClickHandler);
+      expect(plugin1._eventHandler.has('click')).toBe(false);
+      expect(plugin2._eventHandler.get('click')).toBe(clickHandler);
+      expect(plugin2._eventHandler.has('dblclick')).toBe(false);
+      expect(plugin1._eventHandler.get('dblclick')).toBe(dblClickHandler);
     });
 
     it('should throw when no plugin can handle the event', () => {
@@ -66,20 +58,7 @@ export function main() {
           .toThrowError('No event manager plugin found for event click');
     });
 
-    it('by default events are only caught on same element', () => {
-      var element = el('<div><div></div></div>');
-      var child = DOM.firstChild(element);
-      var dispatchedEvent = DOM.createMouseEvent('click');
-      var receivedEvent = null;
-      var handler = (e) => { receivedEvent = e; };
-      var manager = new EventManager([domEventPlugin], new FakeNgZone());
-      manager.addEventListener(element, 'click', handler);
-      DOM.dispatchEvent(child, dispatchedEvent);
-
-      expect(receivedEvent).toBe(null);
-    });
-
-    it('bubbled events are caught when fired from a child', () => {
+    it('events are caught when fired from a child', () => {
       var element = el('<div><div></div></div>');
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
       DOM.appendChild(DOM.defaultDoc().body, element);
@@ -89,13 +68,13 @@ export function main() {
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
-      manager.addEventListener(element, '^click', handler);
+      manager.addEventListener(element, 'click', handler);
       DOM.dispatchEvent(child, dispatchedEvent);
 
       expect(receivedEvent).toBe(dispatchedEvent);
     });
 
-    it('should add and remove global event listeners with correct bubbling', () => {
+    it('should add and remove global event listeners', () => {
       var element = el('<div><div></div></div>');
       DOM.appendChild(DOM.defaultDoc().body, element);
       var dispatchedEvent = DOM.createMouseEvent('click');
@@ -103,7 +82,7 @@ export function main() {
       var handler = (e) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      var remover = manager.addGlobalEventListener("document", '^click', handler);
+      var remover = manager.addGlobalEventListener("document", 'click', handler);
       DOM.dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
 
@@ -111,37 +90,19 @@ export function main() {
       remover();
       DOM.dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
-
-      remover = manager.addGlobalEventListener("document", 'click', handler);
-      DOM.dispatchEvent(element, dispatchedEvent);
-      expect(receivedEvent).toBe(null);
     });
   });
 }
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
-  _supports: string[];
-  _nonBubbleEventHandlers: Map<string, Function>;
-  _bubbleEventHandlers: Map<string, Function>;
-  constructor(supports: string[]) {
-    super();
-    this._supports = supports;
-    this._nonBubbleEventHandlers = new Map();
-    this._bubbleEventHandlers = new Map();
-  }
+  _eventHandler: Map<string, Function> = new Map();
+  constructor(public _supports: string[]) { super(); }
 
   supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
 
-  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
-    if (shouldSupportBubble) {
-      this._bubbleEventHandlers.set(eventName, handler);
-    } else {
-      this._nonBubbleEventHandlers.set(eventName, handler);
-    }
-    return () => {
-      MapWrapper.delete(
-          shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers, eventName)
-    };
+  addEventListener(element, eventName: string, handler: Function) {
+    this._eventHandler.set(eventName, handler);
+    return () => { MapWrapper.delete(this._eventHandler, eventName) };
   }
 }
 

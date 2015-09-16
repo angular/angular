@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {isPresent, Type, FunctionWrapper} from "angular2/src/core/facade/lang";
@@ -12,9 +12,16 @@ import {
 
 @Injectable()
 export class ServiceMessageBrokerFactory {
+  /**
+   * @private
+   */
   constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
 
-  createMessageBroker(channel: string): ServiceMessageBroker {
+  /**
+   * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
+   */
+  createMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
+    this._messageBus.initChannel(channel, runInZone);
     return new ServiceMessageBroker(this._messageBus, this._serializer, channel);
   }
 }
@@ -29,6 +36,9 @@ export class ServiceMessageBroker {
   private _sink: EventEmitter;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
+  /**
+   * @private
+   */
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);

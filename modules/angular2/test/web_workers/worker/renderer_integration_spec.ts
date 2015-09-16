@@ -10,7 +10,7 @@ import {
 } from "angular2/test_lib";
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DomTestbed, TestRootView, elRef} from '../../core/render/dom/dom_testbed';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {WebWorkerCompiler, WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
   ClientMessageBrokerFactory,
@@ -18,7 +18,7 @@ import {
   FnArg
 } from "angular2/src/web_workers/shared/client_message_broker";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {isPresent, isBlank, BaseException, Type} from "angular2/src/core/facade/lang";
+import {isPresent, isBlank, Type} from "angular2/src/core/facade/lang";
 import {MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
 import {
   RenderDirectiveMetadata,
@@ -43,7 +43,7 @@ import {
   DomProtoView
 } from 'angular2/src/core/render/dom/view/proto_view';
 import {someComponent} from '../../core/render/dom/dom_renderer_integration_spec';
-import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
+import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';
@@ -64,9 +64,11 @@ export function main() {
     // set up the ui side
     var uiMessageBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
     var renderCompiler = new MessageBasedRenderCompiler(uiMessageBrokerFactory, tb.compiler);
+    renderCompiler.start();
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
                                             uiRenderViewStore, tb.renderer);
-    new WebWorkerMain(renderCompiler, renderer, null, null);
+    renderer.start();
+    new WebWorkerApplication(null, null);
 
     return webWorkerBrokerFactory;
   }

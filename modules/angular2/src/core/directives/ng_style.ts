@@ -1,8 +1,12 @@
-import {Directive, LifecycleEvent} from 'angular2/metadata';
-import {ElementRef} from 'angular2/core';
-import {KeyValueDiffer, KeyValueDiffers} from 'angular2/change_detection';
+import {DoCheck} from 'angular2/lifecycle_hooks';
+import {
+  KeyValueDiffer,
+  KeyValueDiffers,
+} from 'angular2/src/core/change_detection';
+import {ElementRef} from 'angular2/src/core/compiler';
+import {Directive} from 'angular2/src/core/metadata';
+import {Renderer} from 'angular2/src/core/render';
 import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
-import {Renderer} from 'angular2/src/core/render/api';
 
 /**
  * Adds or removes styles based on an {expression}.
@@ -25,12 +29,8 @@ import {Renderer} from 'angular2/src/core/render/api';
  * - `<div [ng-style]="{'text-align': alignExp}"></div>`
  * - `<div [ng-style]="styleExp"></div>`
  */
-@Directive({
-  selector: '[ng-style]',
-  lifecycle: [LifecycleEvent.DoCheck],
-  properties: ['rawStyle: ng-style']
-})
-export class NgStyle {
+@Directive({selector: '[ng-style]', properties: ['rawStyle: ng-style']})
+export class NgStyle implements DoCheck {
   _rawStyle;
   _differ: KeyValueDiffer;
 

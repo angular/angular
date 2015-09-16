@@ -4,10 +4,11 @@ import {
   isPresent,
   CONST,
   CONST_EXPR,
-  BaseException,
   stringify,
-  isArray
+  isArray,
+  normalizeBool
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Key} from './key';
@@ -20,7 +21,11 @@ import {
   SkipSelfMetadata,
   DependencyMetadata
 } from './metadata';
-import {NoAnnotationError} from './exceptions';
+import {
+  NoAnnotationError,
+  MixingMultiBindingsWithRegularBindings,
+  InvalidBindingError
+} from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
 /**
@@ -62,7 +67,8 @@ export class Binding {
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy
+   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
+   * easy
    * comparison.
    *
    * ```javascript
@@ -112,7 +118,7 @@ export class Binding {
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused the example contains both use cases for easy
+   * Because `toAlias` and `toClass` are often confused the example contains both use cases for easy
    * comparison.
    *
    * ```javascript
@@ -174,46 +180,52 @@ export class Binding {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  dependencies: any[];
+  dependencies: Object[];
 
-  constructor(
-      token,
-      {toClass, toValue, toAlias, toFactory, deps}:
-          {toClass?: Type, toValue?: any, toAlias?: any, toFactory?: Function, deps?: any[]}) {
+  _multi: boolean;
+
+  constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {
+    toClass?: Type,
+    toValue?: any,
+    toAlias?: any,
+    toFactory?: Function,
+    deps?: Object[],
+    multi?: boolean
+  }) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;
     this.toAlias = toAlias;
     this.toFactory = toFactory;
     this.dependencies = deps;
+    this._multi = multi;
   }
 
   /**
-   * Converts the {@link Binding} into {@link ResolvedBinding}.
+   * Used to create multiple bindings matching the same token.
    *
-   * {@link Injector} internally only uses {@link ResolvedBinding}, {@link Binding} contains
-   * convenience binding syntax.
+   * ## Example
+   *
+   * ```javascript
+   * var injector = Injector.resolveAndCreate([
+   *   new Binding("Strings", { toValue: "String1", multi: true}),
+   *   new Binding("Strings", { toValue: "String2", multi: true})
+   * ]);
+   *
+   * expect(injector.get("Strings")).toEqual(["String1", "String2"]);
+   * ```
+   *
+   * Multi bindings and regular bindings cannot be mixed. The following
+   * will throw an exception:
+   *
+   * ```javascript
+   * var injector = Injector.resolveAndCreate([
+   *   new Binding("Strings", { toValue: "String1", multi: true}),
+   *   new Binding("Strings", { toValue: "String2"})
+   * ]);
+   * ```
    */
-  resolve(): ResolvedBinding {
-    var factoryFn: Function;
-    var resolvedDeps;
-    if (isPresent(this.toClass)) {
-      var toClass = resolveForwardRef(this.toClass);
-      factoryFn = reflector.factory(toClass);
-      resolvedDeps = _dependenciesFor(toClass);
-    } else if (isPresent(this.toAlias)) {
-      factoryFn = (aliasInstance) => aliasInstance;
-      resolvedDeps = [Dependency.fromKey(Key.get(this.toAlias))];
-    } else if (isPresent(this.toFactory)) {
-      factoryFn = this.toFactory;
-      resolvedDeps = _constructDependencies(this.toFactory, this.dependencies);
-    } else {
-      factoryFn = () => this.toValue;
-      resolvedDeps = _EMPTY_LIST;
-    }
-
-    return new ResolvedBinding(Key.get(this.token), factoryFn, resolvedDeps);
-  }
+  get multi(): boolean { return normalizeBool(this._multi); }
 }
 
 /**
@@ -233,6 +245,17 @@ export class ResolvedBinding {
       /**
        * Factory function which can return an instance of an object represented by a key.
        */
+      public resolvedFactories: ResolvedFactory[],
+
+      public multiBinding: boolean) {}
+  get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
+}
+
+export class ResolvedFactory {
+  constructor(
+      /**
+       * Factory function which can return an instance of an object represented by a key.
+       */
       public factory: Function,
 
       /**
@@ -244,14 +267,38 @@ export class ResolvedBinding {
 /**
  * Provides an API for imperatively constructing {@link Binding}s.
  *
- * This is only relevant for JavaScript. See {@link BindingBuilder}.
+ * To construct a {@link Binding}, bind a `token` to either a class, a value or a factory function.
+ * See {@link BindingBuilder} for more details.
+ *
+ * The `token` is most commonly an {@link angular2/di/OpaqueToken} or a class.
+ *
+ * `bind` is only relevant for JavaScript. For Dart use the {@link Binding} constructor.
  *
  * ## Example
  *
- * ```javascript
- * bind(MyInterface).toClass(MyClass)
+ * ```typescript
+ * // inj.get(MyClass) would instantiate MyClass
+ * bind(MyClass).toClass(MyClass);
  *
+ * // inj.get(MyClass) === 'my class'
+ * bind(MyClass).toValue('my class');
+ *
+ * // inj.get(MyClass) would instantiate the depenency and call the factory function with the
+ * // instance
+ * bind(MyClass).toFactory(dep => new MyClass(dep), [DepClass]);
+ *
+ * // inj.get(MyOtherClass) === inj.get(MyClass)
+ * bind(MyOtherClass).toAlias(MyClass);
  * ```
+ *
+ * ```dart
+ * var binding = new Binding(MyClass, toClass: MyClass);
+ * var binding = new Binding(MyClass, toValue: 'my class');
+ * var binding = new Binding(MyClass, toFactory: (dep) => new MyClass(dep),
+ *                           dependencies: [DepClass]);
+ *  var binding = new Binding(MyOtherClass, toAlias: MyClass);
+ * ```
+ *
  */
 export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
@@ -318,7 +365,8 @@ export class BindingBuilder {
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy
+   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
+   * easy
    * comparison.
    *
    * ```javascript
@@ -367,6 +415,124 @@ export class BindingBuilder {
    */
   toFactory(factoryFunction: Function, dependencies?: any[]): Binding {
     return new Binding(this.token, {toFactory: factoryFunction, deps: dependencies});
+  }
+}
+
+/**
+ * Resolve a single binding.
+ */
+export function resolveFactory(binding: Binding): ResolvedFactory {
+  var factoryFn: Function;
+  var resolvedDeps;
+  if (isPresent(binding.toClass)) {
+    var toClass = resolveForwardRef(binding.toClass);
+    factoryFn = reflector.factory(toClass);
+    resolvedDeps = _dependenciesFor(toClass);
+  } else if (isPresent(binding.toAlias)) {
+    factoryFn = (aliasInstance) => aliasInstance;
+    resolvedDeps = [Dependency.fromKey(Key.get(binding.toAlias))];
+  } else if (isPresent(binding.toFactory)) {
+    factoryFn = binding.toFactory;
+    resolvedDeps = _constructDependencies(binding.toFactory, binding.dependencies);
+  } else {
+    factoryFn = () => binding.toValue;
+    resolvedDeps = _EMPTY_LIST;
+  }
+  return new ResolvedFactory(factoryFn, resolvedDeps);
+}
+
+/**
+ * Converts the {@link Binding} into {@link ResolvedBinding}.
+ *
+ * {@link Injector} internally only uses {@link ResolvedBinding}, {@link Binding} contains
+ * convenience binding syntax.
+ */
+export function resolveBinding(binding: Binding): ResolvedBinding {
+  return new ResolvedBinding(Key.get(binding.token), [resolveFactory(binding)], false);
+}
+
+/**
+ * Resolve a list of Bindings.
+ */
+export function resolveBindings(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
+  var normalized = _createListOfBindings(_normalizeBindings(bindings, new Map()));
+  return normalized.map(b => {
+    if (b instanceof _NormalizedBinding) {
+      return new ResolvedBinding(b.key, [b.resolvedFactory], false);
+
+    } else {
+      var arr = <_NormalizedBinding[]>b;
+      return new ResolvedBinding(arr[0].key, arr.map(_ => _.resolvedFactory), true);
+    }
+  });
+}
+
+/**
+ * The algorithm works as follows:
+ *
+ * [Binding] -> [_NormalizedBinding|[_NormalizedBinding]] -> [ResolvedBinding]
+ *
+ * _NormalizedBinding is essentially a resolved binding before it was grouped by key.
+ */
+class _NormalizedBinding {
+  constructor(public key: Key, public resolvedFactory: ResolvedFactory) {}
+}
+
+function _createListOfBindings(flattenedBindings: Map<number, any>): any[] {
+  return MapWrapper.values(flattenedBindings);
+}
+
+function _normalizeBindings(bindings: Array<Type | Binding | any[]>,
+                            res: Map<number, _NormalizedBinding | _NormalizedBinding[]>):
+    Map<number, _NormalizedBinding | _NormalizedBinding[]> {
+  ListWrapper.forEach(bindings, (b) => {
+    if (b instanceof Type) {
+      _normalizeBinding(bind(b).toClass(b), res);
+
+    } else if (b instanceof Binding) {
+      _normalizeBinding(b, res);
+
+    } else if (b instanceof Array) {
+      _normalizeBindings(b, res);
+
+    } else if (b instanceof BindingBuilder) {
+      throw new InvalidBindingError(b.token);
+
+    } else {
+      throw new InvalidBindingError(b);
+    }
+  });
+
+  return res;
+}
+
+function _normalizeBinding(b: Binding, res: Map<number, _NormalizedBinding | _NormalizedBinding[]>):
+    void {
+  var key = Key.get(b.token);
+  var factory = resolveFactory(b);
+  var normalized = new _NormalizedBinding(key, factory);
+
+  if (b.multi) {
+    var existingBinding = res.get(key.id);
+
+    if (existingBinding instanceof Array) {
+      existingBinding.push(normalized);
+
+    } else if (isBlank(existingBinding)) {
+      res.set(key.id, [normalized]);
+
+    } else {
+      throw new MixingMultiBindingsWithRegularBindings(existingBinding, b);
+    }
+
+  } else {
+    var existingBinding = res.get(key.id);
+
+    if (existingBinding instanceof Array) {
+      throw new MixingMultiBindingsWithRegularBindings(existingBinding, b);
+    }
+
+    res.set(key.id, normalized);
   }
 }
 

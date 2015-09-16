@@ -13,11 +13,13 @@ export {
   ComponentMetadata,
   DirectiveMetadata,
   PipeMetadata,
-  LifecycleEvent
+  PropertyMetadata,
+  EventMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
 } from './metadata/directives';
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
-
 
 import {
   QueryMetadata,
@@ -29,13 +31,22 @@ import {
   ComponentMetadata,
   DirectiveMetadata,
   PipeMetadata,
-  LifecycleEvent
+  PropertyMetadata,
+  EventMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
 } from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
 
-import {makeDecorator, makeParamDecorator, TypeDecorator, Class} from './util/decorators';
+import {
+  makeDecorator,
+  makeParamDecorator,
+  makePropDecorator,
+  TypeDecorator,
+  Class
+} from './util/decorators';
 import {Type} from 'angular2/src/core/facade/lang';
 
 /**
@@ -128,13 +139,11 @@ export interface ViewDecorator extends TypeDecorator {
 export interface DirectiveFactory {
   (obj: {
     selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
-        lifecycle?: LifecycleEvent[], bindings?: any[], exportAs?: string,
-        compileChildren?: boolean;
+        bindings?: any[], exportAs?: string, compileChildren?: boolean;
   }): DirectiveDecorator;
   new (obj: {
     selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
-        lifecycle?: LifecycleEvent[], bindings?: any[], exportAs?: string,
-        compileChildren?: boolean;
+        bindings?: any[], exportAs?: string, compileChildren?: boolean;
   }): DirectiveMetadata;
 }
 
@@ -187,7 +196,6 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: LifecycleEvent[],
     bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
@@ -199,7 +207,6 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: LifecycleEvent[],
     bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
@@ -391,10 +398,87 @@ export interface QueryFactory {
  * ```
  */
 export interface PipeFactory {
-  (obj: {name: string}): any;
-  new (obj: {
-    name: string,
-  }): any;
+  (obj: {name: string, pure?: boolean}): any;
+  new (obj: {name: string, pure?: boolean}): any;
+}
+
+/**
+ * {@link PropertyMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Property() property; // Same as @Property('property') property;
+ *   @Property("el-property") dirProperty;
+ * }
+ * ```
+ */
+export interface PropertyFactory {
+  (bindingPropertyName?: string): any;
+  new (bindingPropertyName?: string): any;
+}
+
+/**
+ * {@link EventMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Event() event = new EventEmitter(); // Same as @Event('event') event = new EventEmitter();
+ *   @Event("el-event") dirEvent = new EventEmitter();
+ * }
+ * ```
+ */
+export interface EventFactory {
+  (bindingPropertyName?: string): any;
+  new (bindingPropertyName?: string): any;
+}
+
+/**
+ * {@link HostBindingMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostBinding() prop1; // Same as @HostBinding('prop1') prop1;
+ *   @HostBinding("el-prop") prop1;
+ * }
+ * ```
+ */
+export interface HostBindingFactory {
+  (hostPropertyName?: string): any;
+  new (hostPropertyName?: string): any;
+}
+
+/**
+ * {@link HostListenerMetadata} factory for creating decorators.
+ *
+ * ## Example as TypeScript Decorator
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostListener("change", ['$event.target.value']) onChange(value){}
+ * }
+ * ```
+ */
+export interface HostListenerFactory {
+  (eventName: string, args?: string[]): any;
+  new (eventName: string, args?: string[]): any;
 }
 
 /**
@@ -433,3 +517,23 @@ export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
  * {@link PipeMetadata} factory function.
  */
 export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);
+
+/**
+ * {@link PropertyMetadata} factory function.
+ */
+export var Property: PropertyFactory = makePropDecorator(PropertyMetadata);
+
+/**
+ * {@link EventMetadata} factory function.
+ */
+export var Event: EventFactory = makePropDecorator(EventMetadata);
+
+/**
+ * {@link HostBindingMetadata} factory function.
+ */
+export var HostBinding: HostBindingFactory = makePropDecorator(HostBindingMetadata);
+
+/**
+ * {@link HostListenerMetadata} factory function.
+ */
+export var HostListener: HostListenerFactory = makePropDecorator(HostListenerMetadata);

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {Promise} from 'angular2/src/core/facade/async';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {
@@ -25,6 +25,6 @@ export class WebWorkerXHRImpl extends XHR {
   get(url: string): Promise<string> {
     var fnArgs: FnArg[] = [new FnArg(url, null)];
     var args: UiArguments = new UiArguments("get", fnArgs);
-    return this._messageBroker.runOnUiThread(args, String);
+    return this._messageBroker.runOnService(args, String);
   }
 }

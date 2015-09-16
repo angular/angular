@@ -1,4 +1,4 @@
-/// <reference path="../../../globals.d.ts" />
+/// <reference path="../../../manual_typings/globals.d.ts" />
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
 import {print, isPresent, DateWrapper, stringify} from "angular2/src/core/facade/lang";
 import {
@@ -10,14 +10,22 @@ import {
 } from "angular2/src/core/facade/async";
 import {ListWrapper, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {Injectable} from "angular2/di";
+import {Injectable} from "angular2/src/core/di";
 import {Type, StringWrapper} from "angular2/src/core/facade/lang";
+export {Type} from "angular2/src/core/facade/lang";
 
 @Injectable()
 export class ClientMessageBrokerFactory {
+  /**
+   * @private
+   */
   constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
 
-  createMessageBroker(channel: string): ClientMessageBroker {
+  /**
+   * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
+   */
+  createMessageBroker(channel: string, runInZone: boolean = true): ClientMessageBroker {
+    this._messageBus.initChannel(channel, runInZone);
     return new ClientMessageBroker(this._messageBus, this._serializer, channel);
   }
 }
@@ -26,10 +34,14 @@ export class ClientMessageBroker {
   private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
   private _sink: EventEmitter;
 
+  /**
+   * @private
+   */
   constructor(messageBus: MessageBus, protected _serializer: Serializer, public channel) {
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
-    ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
+    ObservableWrapper.subscribe(source,
+                                (message: StringMap<string, any>) => this._handleMessage(message));
   }
 
   private _generateMessageId(name: string): string {
@@ -43,7 +55,7 @@ export class ClientMessageBroker {
     return id;
   }
 
-  runOnUiThread(args: UiArguments, returnType: Type): Promise<any> {
+  runOnService(args: UiArguments, returnType: Type): Promise<any> {
     var fnArgs = [];
     if (isPresent(args.args)) {
       ListWrapper.forEach(args.args, (argument) => {
@@ -128,7 +140,7 @@ class MessageData {
 }
 
 export class FnArg {
-  constructor(public value, public type) {}
+  constructor(public value, public type: Type) {}
 }
 
 export class UiArguments {

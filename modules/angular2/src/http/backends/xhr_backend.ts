@@ -3,7 +3,7 @@ import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {BrowserXhr} from './browser_xhr';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
@@ -99,7 +99,7 @@ export class XHRConnection implements Connection {
  * })
  * class MyComponent {
  *   constructor(http:Http) {
- *     http('people.json').subscribe(res => this.people = res.json());
+ *     http('people.json').toRx().subscribe(res => this.people = res.json());
  *   }
  * }
  * ```

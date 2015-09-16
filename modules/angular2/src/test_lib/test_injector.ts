@@ -1,4 +1,7 @@
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/src/core/di';
+import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
+import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -12,8 +15,7 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
-import {ExceptionHandler} from 'angular2/src/core/exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
@@ -30,8 +32,13 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
+import {
+  EventManager,
+  DomEventsPlugin,
+  EVENT_MANAGER_PLUGINS
+} from 'angular2/src/core/render/dom/events/event_manager';
 
+import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
@@ -40,7 +47,8 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestComponentBuilder} from './test_component_builder';
 
-import {Injector} from 'angular2/di';
+import {Injector} from 'angular2/src/core/di';
+import {ELEMENT_PROBE_BINDINGS} from 'angular2/src/core/debug';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
@@ -48,7 +56,6 @@ import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {ELEMENT_PROBE_BINDINGS} from 'angular2/debug';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/core/render/api';
 import {
@@ -121,6 +128,7 @@ function _getAppBindings() {
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,
+    bind(DirectiveResolver).toClass(MockDirectiveResolver),
     bind(ViewResolver).toClass(MockViewResolver),
     DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
@@ -129,7 +137,6 @@ function _getAppBindings() {
     Log,
     ViewLoader,
     DynamicComponentLoader,
-    DirectiveResolver,
     PipeResolver,
     Parser,
     Lexer,
@@ -144,15 +151,9 @@ function _getAppBindings() {
     StyleInliner,
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
-    bind(EventManager)
-        .toFactory(
-            (zone) => {
-              var plugins = [
-                new DomEventsPlugin(),
-              ];
-              return new EventManager(plugins, zone);
-            },
-            [NgZone]),
+    bind(AnimationBuilder).toClass(MockAnimationBuilder),
+    EventManager,
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true})
   ];
 }
 
@@ -195,13 +196,7 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
 }
 
 export class FunctionWithParamTokens {
-  _tokens: any[];
-  _fn: Function;
-
-  constructor(tokens: any[], fn: Function) {
-    this._tokens = tokens;
-    this._fn = fn;
-  }
+  constructor(private _tokens: any[], private _fn: Function) {}
 
   /**
    * Returns the value of the executed function.
@@ -210,4 +205,6 @@ export class FunctionWithParamTokens {
     var params = ListWrapper.map(this._tokens, (t) => injector.get(t));
     return FunctionWrapper.apply(this._fn, params);
   }
+
+  hasToken(token: any): boolean { return this._tokens.indexOf(token) > -1; }
 }

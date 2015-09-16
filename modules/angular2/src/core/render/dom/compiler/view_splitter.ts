@@ -1,4 +1,5 @@
-import {isBlank, isPresent, BaseException, StringWrapper} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/change_detection';

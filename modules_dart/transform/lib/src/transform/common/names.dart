@@ -10,6 +10,8 @@ const META_EXTENSION = '.ng_meta.json';
 // upfront (rather than extracting it from ng_deps).
 const ALIAS_EXTENSION = '.aliases.json';
 const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
+const REFLECTOR_IMPORT = 'package:angular2/src/core/reflection/reflection.dart';
+const REFLECTOR_PREFIX = '_ngRef';
 const REGISTER_TYPE_METHOD_NAME = 'registerType';
 const REGISTER_GETTERS_METHOD_NAME = 'registerGetters';
 const REGISTER_SETTERS_METHOD_NAME = 'registerSetters';

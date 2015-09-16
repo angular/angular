@@ -1,4 +1,4 @@
-/// <reference path="../../../globals.d.ts" />
+/// <reference path="../../../manual_typings/globals.d.ts" />
 
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope;
@@ -33,26 +33,6 @@ export function getTypeNameForDebugging(type: Type): string {
   return type['name'];
 }
 
-export class BaseException extends Error {
-  stack;
-  constructor(public message?: string, private _originalException?, private _originalStack?,
-              private _context?) {
-    super(message);
-    this.stack = (<any>new Error(message)).stack;
-  }
-
-  get originalException(): any { return this._originalException; }
-
-  get originalStack(): any { return this._originalStack; }
-
-  get context(): any { return this._context; }
-
-  toString(): string { return this.message; }
-}
-
-export function makeTypeError(message?: string): Error {
-  return new TypeError(message);
-}
 
 export var Math = _global.Math;
 export var Date = _global.Date;
@@ -178,6 +158,10 @@ export class StringWrapper {
     return s.replace(from, replace);
   }
 
+  static slice<T>(s: string, from: number = 0, to: number = null): string {
+    return s.slice(from, to === null ? undefined : to);
+  }
+
   static toUpperCase(s: string): string { return s.toUpperCase(); }
 
   static toLowerCase(s: string): string { return s.toLowerCase(); }
@@ -218,10 +202,10 @@ export class StringJoiner {
   toString(): string { return this.parts.join(""); }
 }
 
-export class NumberParseError extends BaseException {
+export class NumberParseError extends Error {
   name: string;
 
-  constructor(public message: string) { super(); }
+  constructor(public message: string) { super(message); }
 
   toString(): string { return this.message; }
 }
@@ -335,11 +319,7 @@ export function isJsObject(o: any): boolean {
 }
 
 export function print(obj: Error | Object) {
-  if (obj instanceof BaseException) {
-    console.log(obj.stack);
-  } else {
-    console.log(obj);
-  }
+  console.log(obj);
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
@@ -372,6 +352,9 @@ export function setValueOnPath(global: any, path: string, value: any) {
     } else {
       obj = obj[name] = {};
     }
+  }
+  if (obj === undefined || obj === null) {
+    obj = {};
   }
   obj[parts.shift()] = value;
 }

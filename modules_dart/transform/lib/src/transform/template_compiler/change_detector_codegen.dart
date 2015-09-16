@@ -12,7 +12,7 @@ import 'package:angular2/src/core/change_detection/proto_record.dart';
 import 'package:angular2/src/core/change_detection/event_binding.dart';
 import 'package:angular2/src/core/change_detection/binding_record.dart';
 import 'package:angular2/src/core/change_detection/codegen_facade.dart' show codify;
-import 'package:angular2/src/core/facade/lang.dart' show BaseException;
+import 'package:angular2/src/core/facade/exceptions.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
 ///
@@ -335,12 +335,19 @@ class _CodegenState {
     var pipe = _names.getPipeName(r.selfIndex);
     var pipeType = r.name;
 
-    var read = '''
+    var init = '''
       if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType');
       }
-      $newValue = $pipe.transform($context, [$argString]);
     ''';
+
+    var read = '''
+      $newValue = $pipe.pipe.transform($context, [$argString]);
+    ''';
+
+    var contexOrArgCheck = r.args.map((a) => _names.getChangeName(a)).toList();
+    contexOrArgCheck.add(_names.getChangeName(r.contextIndex));
+    var condition = '''!${pipe}.pure || (${contexOrArgCheck.join(" || ")})''';
 
     var check = '''
       if ($_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
@@ -352,7 +359,13 @@ class _CodegenState {
       }
     ''';
 
-    return r.shouldBeChecked() ? "${read}${check}" : read;
+    var genCode = r.shouldBeChecked() ? '''${read}${check}''' : read;
+
+    if (r.isUsedByOtherRecord()) {
+      return '''${init} if (${condition}) { ${genCode} } else { ${newValue} = ${oldValue}; }''';
+    } else {
+      return '''${init} if (${condition}) { ${genCode} }''';
+    }
   }
 
   String _genReferenceCheck(ProtoRecord r) {

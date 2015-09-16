@@ -1,2 +1,4 @@
-export {commonBootstrap as bootstrap} from './application_common';
-export {ApplicationRef} from './application_ref';
+// Public API for Application
+export {APP_COMPONENT} from './application_tokens';
+export {platform, commonBootstrap as bootstrap} from './application_common';
+export {PlatformRef, ApplicationRef} from './application_ref';

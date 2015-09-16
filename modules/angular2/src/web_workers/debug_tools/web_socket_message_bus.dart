@@ -2,77 +2,33 @@ library angular2.src.web_workers.worker.web_socket_message_bus;
 
 import 'dart:html';
 import 'dart:convert' show JSON;
-import "package:angular2/src/web_workers/shared/message_bus.dart"
-    show MessageBus, MessageBusSink, MessageBusSource;
-import 'package:angular2/src/core/facade/async.dart' show EventEmitter;
+import 'package:angular2/src/web_workers/shared/generic_message_bus.dart';
 
-class WebSocketMessageBus implements MessageBus {
-  final WebSocketMessageBusSink sink;
-  final WebSocketMessageBusSource source;
-
-  WebSocketMessageBus(this.sink, this.source);
+class WebSocketMessageBus extends GenericMessageBus {
+  WebSocketMessageBus(
+      WebSocketMessageBusSink sink, WebSocketMessageBusSource source)
+      : super(sink, source);
 
   WebSocketMessageBus.fromWebSocket(WebSocket webSocket)
-      : sink = new WebSocketMessageBusSink(webSocket),
-        source = new WebSocketMessageBusSource(webSocket);
-
-  EventEmitter from(String channel) {
-    return source.from(channel);
-  }
-
-  EventEmitter to(String channel) {
-    return sink.to(channel);
-  }
+      : super(new WebSocketMessageBusSink(webSocket),
+            new WebSocketMessageBusSource(webSocket));
 }
 
-class WebSocketMessageBusSink implements MessageBusSink {
+class WebSocketMessageBusSink extends GenericMessageBusSink {
   final WebSocket _webSocket;
-  final Map<String, EventEmitter> _channels = new Map<String, EventEmitter>();
 
   WebSocketMessageBusSink(this._webSocket);
 
-  EventEmitter to(String channel) {
-    if (_channels.containsKey(channel)) {
-      return _channels[channel];
-    } else {
-      var emitter = new EventEmitter();
-      emitter.listen((message) {
-        _send({'channel': channel, 'message': message});
-      });
-      _channels[channel] = emitter;
-      return emitter;
-    }
-  }
-
-  void _send(message) {
-    _webSocket.send(JSON.encode(message));
+  void sendMessages(List<dynamic> messages) {
+    _webSocket.send(JSON.encode(messages));
   }
 }
 
-class WebSocketMessageBusSource implements MessageBusSource {
-  final Map<String, EventEmitter> _channels = new Map<String, EventEmitter>();
+class WebSocketMessageBusSource extends GenericMessageBusSource {
+  WebSocketMessageBusSource(WebSocket webSocket) : super(webSocket.onMessage);
 
-  WebSocketMessageBusSource(WebSocket webSocket) {
-    webSocket.onMessage.listen((MessageEvent encodedMessage) {
-      var message = decodeMessage(encodedMessage.data);
-      var channel = message['channel'];
-      if (_channels.containsKey(channel)) {
-        _channels[channel].add(message['message']);
-      }
-    });
-  }
-
-  EventEmitter from(String channel) {
-    if (_channels.containsKey(channel)) {
-      return _channels[channel];
-    } else {
-      var emitter = new EventEmitter();
-      _channels[channel] = emitter;
-      return emitter;
-    }
-  }
-
-  Map<String, dynamic> decodeMessage(dynamic message) {
-    return JSON.decode(message);
+  List<dynamic> decodeMessages(MessageEvent event) {
+    var messages = event.data;
+    return JSON.decode(messages);
   }
 }

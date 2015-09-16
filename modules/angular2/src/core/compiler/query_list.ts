@@ -34,7 +34,7 @@ import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
  *
  * A possible solution would be for a `<pane>` to inject `<tabs>` component and then register itself
  * with `<tabs>` component's on `hydrate` and deregister on `dehydrate` event. While a reasonable
- * approach, this would only work partialy since `*ng-for` could rearrange the list of `<pane>`
+ * approach, this would only work partially since `*ng-for` could rearrange the list of `<pane>`
  * components which would not be reported to `<tabs>` component and thus the list of `<pane>`
  * components would be out of sync with respect to the list of `<pane>` elements.
  *
@@ -86,16 +86,12 @@ export class QueryList<T> {
     this._dirty = true;
   }
 
-  fireCallbacks(): void {
-    if (this._dirty) {
-      ListWrapper.forEach(this._callbacks, (c) => c());
-      this._dirty = false;
-    }
-  }
 
   onChange(callback: () => void): void { this._callbacks.push(callback); }
 
   removeCallback(callback: () => void): void { ListWrapper.remove(this._callbacks, callback); }
+
+  removeAllCallbacks(): void { this._callbacks = []; }
 
   toString(): string { return this._results.toString(); }
 
@@ -106,4 +102,12 @@ export class QueryList<T> {
   map<U>(fn: (item: T) => U): U[] { return this._results.map(fn); }
 
   [Symbol.iterator](): any { return this._results[Symbol.iterator](); }
+
+  // Internal to the framework.
+  fireCallbacks(): void {
+    if (this._dirty) {
+      ListWrapper.forEach(this._callbacks, (c) => c());
+      this._dirty = false;
+    }
+  }
 }

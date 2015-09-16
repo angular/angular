@@ -31,7 +31,7 @@ class BuildUnitDirectivesTaskTest extends _AbstractDartTaskTest {
     _addAngularSources();
 
     Source source = _newSource('/test.dart', r'''
-  import '/angular2/metadata.dart';
+  import '/angular2/src/core/metadata.dart';
 
   @Component(selector: 'comp-a')
   class ComponentA {
@@ -56,7 +56,7 @@ class BuildUnitDirectivesTaskTest extends _AbstractDartTaskTest {
 
     Source source = _newSource('/test.dart', r'''
 
-import '/angular2/metadata.dart';
+import '/angular2/src/core/metadata.dart';
 
 @Directive(selector: 'deco-a')
 class ComponentA {
@@ -79,7 +79,7 @@ class ComponentB {
   void _addAngularSources() {
 
 
-    _newSource('/angular2/metadata.dart', r'''
+    _newSource('/angular2/src/core/metadata.dart', r'''
 
 library angular2.src.core.metadata;
 

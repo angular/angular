@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   TestComponentBuilder,
-  By,
   beforeEach,
   ddescribe,
   describe,
@@ -15,9 +14,8 @@ import {
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, View, NgIf} from 'angular2/core';
 
-import {NgIf} from 'angular2/src/core/directives/ng_if';
 import {IS_DART} from '../../platform';
 
 export function main() {
@@ -30,8 +28,9 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('hello');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
                async.done();
              });
        }));
@@ -45,8 +44,9 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('hello2');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello2');
                async.done();
              });
        }));
@@ -58,20 +58,23 @@ export function main() {
          tcb.overrideTemplate(TestComponent, html)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.booleanCondition = false;
+               rootTC.debugElement.componentInstance.booleanCondition = false;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(0);
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
 
-               rootTC.componentInstance.booleanCondition = true;
+               rootTC.debugElement.componentInstance.booleanCondition = true;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('hello');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
 
-               rootTC.componentInstance.booleanCondition = false;
+               rootTC.debugElement.componentInstance.booleanCondition = false;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(0);
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
 
                async.done();
              });
@@ -85,30 +88,35 @@ export function main() {
          tcb.overrideTemplate(TestComponent, html)
              .createAsync(TestComponent)
              .then((rootTC) => {
-               rootTC.componentInstance.booleanCondition = false;
+               rootTC.debugElement.componentInstance.booleanCondition = false;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(0);
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
 
-               rootTC.componentInstance.booleanCondition = true;
+               rootTC.debugElement.componentInstance.booleanCondition = true;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('hello');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
 
-               rootTC.componentInstance.nestedBooleanCondition = false;
+               rootTC.debugElement.componentInstance.nestedBooleanCondition = false;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(0);
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
 
-               rootTC.componentInstance.nestedBooleanCondition = true;
+               rootTC.debugElement.componentInstance.nestedBooleanCondition = true;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('hello');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
 
-               rootTC.componentInstance.booleanCondition = false;
+               rootTC.debugElement.componentInstance.booleanCondition = false;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
-               expect(rootTC.nativeElement).toHaveText('');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(0);
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
 
                async.done();
              });
@@ -127,20 +135,23 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(3);
-               expect(DOM.getText(rootTC.nativeElement))
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(3);
+               expect(DOM.getText(rootTC.debugElement.nativeElement))
                    .toEqual('helloNumberhelloStringhelloFunction');
 
-               rootTC.componentInstance.numberCondition = 0;
+               rootTC.debugElement.componentInstance.numberCondition = 0;
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('helloString');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('helloString');
 
-               rootTC.componentInstance.numberCondition = 1;
-               rootTC.componentInstance.stringCondition = "bar";
+               rootTC.debugElement.componentInstance.numberCondition = 1;
+               rootTC.debugElement.componentInstance.stringCondition = "bar";
                rootTC.detectChanges();
-               expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-               expect(rootTC.nativeElement).toHaveText('helloNumber');
+               expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                   .toEqual(1);
+               expect(rootTC.debugElement.nativeElement).toHaveText('helloNumber');
                async.done();
              });
        }));
@@ -155,13 +166,15 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  rootTC.detectChanges();
-                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-                 expect(rootTC.nativeElement).toHaveText('hello');
+                 expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                     .toEqual(1);
+                 expect(rootTC.debugElement.nativeElement).toHaveText('hello');
 
-                 rootTC.componentInstance.numberCondition = 2;
+                 rootTC.debugElement.componentInstance.numberCondition = 2;
                  rootTC.detectChanges();
-                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(1);
-                 expect(rootTC.nativeElement).toHaveText('hello');
+                 expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                     .toEqual(1);
+                 expect(rootTC.debugElement.nativeElement).toHaveText('hello');
 
                  async.done();
                });
@@ -175,11 +188,13 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  rootTC.detectChanges();
-                 DOM.addClass(DOM.querySelector(rootTC.nativeElement, 'copy-me'), "foo");
+                 DOM.addClass(DOM.querySelector(rootTC.debugElement.nativeElement, 'copy-me'),
+                              "foo");
 
-                 rootTC.componentInstance.numberCondition = 2;
+                 rootTC.debugElement.componentInstance.numberCondition = 2;
                  rootTC.detectChanges();
-                 expect(DOM.hasClass(DOM.querySelector(rootTC.nativeElement, 'copy-me'), "foo"))
+                 expect(DOM.hasClass(
+                            DOM.querySelector(rootTC.debugElement.nativeElement, 'copy-me'), "foo"))
                      .toBe(true);
 
                  async.done();
@@ -196,8 +211,9 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  expect(() => rootTC.detectChanges()).toThrowError();
-                 expect(DOM.querySelectorAll(rootTC.nativeElement, 'copy-me').length).toEqual(0);
-                 expect(rootTC.nativeElement).toHaveText('');
+                 expect(DOM.querySelectorAll(rootTC.debugElement.nativeElement, 'copy-me').length)
+                     .toEqual(0);
+                 expect(rootTC.debugElement.nativeElement).toHaveText('');
                  async.done();
                });
          }));

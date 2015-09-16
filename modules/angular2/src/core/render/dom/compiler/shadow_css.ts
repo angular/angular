@@ -6,8 +6,7 @@ import {
   RegExpWrapper,
   RegExpMatcherWrapper,
   isPresent,
-  isBlank,
-  BaseException
+  isBlank
 } from 'angular2/src/core/facade/lang';
 
 /**

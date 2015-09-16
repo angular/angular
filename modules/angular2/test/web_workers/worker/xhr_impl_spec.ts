@@ -26,7 +26,7 @@ export function main() {
          const RESPONSE = "Example response text";
 
          var messageBroker: any = new SpyMessageBroker();
-         messageBroker.spy("runOnUiThread")
+         messageBroker.spy("runOnService")
              .andCallFake((args: UiArguments, returnType: Type) => {
                expect(args.method).toEqual("get");
                expect(args.args.length).toEqual(1);
@@ -45,5 +45,5 @@ export function main() {
 
 class MockMessageBrokerFactory extends ClientMessageBrokerFactory {
   constructor(private _messageBroker: ClientMessageBroker) { super(null, null); }
-  createMessageBroker(channel: string) { return this._messageBroker; }
+  createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
 }

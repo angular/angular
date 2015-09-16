@@ -92,6 +92,19 @@ export function main() {
         queryList.fireCallbacks();
         expect(fires).toEqual(1);
       });
+
+      it('should support removing all callbacks', () => {
+        var fires = 0;
+        var callback = () => fires += 1;
+        queryList.onChange(callback);
+
+        queryList.add('one');
+        queryList.removeAllCallbacks();
+
+        queryList.fireCallbacks();
+
+        expect(fires).toEqual(0);
+      });
     });
   });
 }

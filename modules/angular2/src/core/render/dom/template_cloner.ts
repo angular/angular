@@ -1,5 +1,5 @@
 import {isString} from 'angular2/src/core/facade/lang';
-import {Injectable, Inject} from 'angular2/di';
+import {Injectable, Inject} from 'angular2/src/core/di';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from './dom_tokens';
 

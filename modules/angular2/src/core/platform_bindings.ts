@@ -1,5 +1,5 @@
-import {bind, Binding} from 'angular2/di';
-import {ExceptionHandler} from './exception_handler';
+import {bind, Binding} from 'angular2/src/core/di';
+import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export const EXCEPTION_BINDING: Binding =

@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {isPresent, isBlank, BaseException, isArray} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, isArray} from 'angular2/src/core/facade/lang';
 import {ListWrapper, SetWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
@@ -283,7 +283,7 @@ function isWildcard(selector): boolean {
 // different sub views
 function sortContentElements(contentElements: Element[]): Element[] {
   // for now, only move the wildcard selector to the end.
-  // TODO(tbosch): think about sorting by selector specifity...
+  // TODO(tbosch): think about sorting by selector specificity...
   var firstWildcard = null;
   var sorted = [];
   contentElements.forEach((contentElement) => {
@@ -309,7 +309,7 @@ function createRootElementFromFragments(fragments: Node[][]): Element {
   for (var i = 0; i < fragments.length; i++) {
     var fragment = fragments[i];
     if (i >= 1) {
-      // Note: We need to seprate fragments by a comment so that sibling
+      // Note: We need to separate fragments by a comment so that sibling
       // text nodes don't get merged when we serialize the DomProtoView into a string
       // and parse it back again.
       DOM.appendChild(rootNode, DOM.createComment('|'));

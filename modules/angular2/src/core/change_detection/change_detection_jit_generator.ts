@@ -1,4 +1,5 @@
-import {BaseException, Type, isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {Type, isBlank, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
@@ -11,10 +12,9 @@ import {CodegenLogicUtil} from './codegen_logic_util';
 import {codify} from './codegen_facade';
 import {EventBinding} from './event_binding';
 import {BindingTarget} from './binding_record';
-import {ChangeDetectorGenConfig} from './interfaces';
+import {ChangeDetectorGenConfig, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectionStrategy} from './constants';
-
-
+import {createPropertyRecords, createEventRecords} from './proto_change_detector';
 
 /**
  * The code generator takes a list of proto records and creates a function/class
@@ -25,39 +25,65 @@ import {ChangeDetectionStrategy} from './constants';
  * `angular2.transform.template_compiler.change_detector_codegen` library. If you make updates
  * here, please make equivalent changes there.
 */
-const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
-const UTIL = "ChangeDetectionUtil";
 const IS_CHANGED_LOCAL = "isChanged";
 const CHANGES_LOCAL = "changes";
 
 export class ChangeDetectorJITGenerator {
-  _logic: CodegenLogicUtil;
-  _names: CodegenNameUtil;
-  _typeName: string;
+  private _logic: CodegenLogicUtil;
+  private _names: CodegenNameUtil;
+  private id: string;
+  private changeDetectionStrategy: ChangeDetectionStrategy;
+  private records: ProtoRecord[];
+  private propertyBindingTargets: BindingTarget[];
+  private eventBindings: EventBinding[];
+  private directiveRecords: any[];
+  private genConfig: ChangeDetectorGenConfig;
+  typeName: string;
 
-  constructor(private id: string, private changeDetectionStrategy: ChangeDetectionStrategy,
-              private records: ProtoRecord[], private propertyBindingTargets: BindingTarget[],
-              private eventBindings: EventBinding[], private directiveRecords: any[],
-              private genConfig: ChangeDetectorGenConfig) {
-    this._names =
-        new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords, UTIL);
-    this._logic = new CodegenLogicUtil(this._names, UTIL, changeDetectionStrategy);
-    this._typeName = sanitizeName(`ChangeDetector_${this.id}`);
+  constructor(definition: ChangeDetectorDefinition, private changeDetectionUtilVarName: string,
+              private abstractChangeDetectorVarName: string) {
+    var propertyBindingRecords = createPropertyRecords(definition);
+    var eventBindingRecords = createEventRecords(definition);
+    var propertyBindingTargets = definition.bindingRecords.map(b => b.target);
+    this.id = definition.id;
+    this.changeDetectionStrategy = definition.strategy;
+    this.genConfig = definition.genConfig;
+
+    this.records = propertyBindingRecords;
+    this.propertyBindingTargets = propertyBindingTargets;
+    this.eventBindings = eventBindingRecords;
+    this.directiveRecords = definition.directiveRecords;
+    this._names = new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords,
+                                      this.changeDetectionUtilVarName);
+    this._logic = new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
+                                       this.changeDetectionStrategy);
+    this.typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
   generate(): Function {
-    var classDefinition = `
-      var ${this._typeName} = function ${this._typeName}(dispatcher) {
-        ${ABSTRACT_CHANGE_DETECTOR}.call(
+    var factorySource = `
+      ${this.generateSource()}
+      return function(dispatcher) {
+        return new ${this.typeName}(dispatcher);
+      }
+    `;
+    return new Function(this.abstractChangeDetectorVarName, this.changeDetectionUtilVarName,
+                        factorySource)(AbstractChangeDetector, ChangeDetectionUtil);
+  }
+
+  generateSource(): string {
+    return `
+      var ${this.typeName} = function ${this.typeName}(dispatcher) {
+        ${this.abstractChangeDetectorVarName}.call(
             this, ${JSON.stringify(this.id)}, dispatcher, ${this.records.length},
-            ${this._typeName}.gen_propertyBindingTargets, ${this._typeName}.gen_directiveIndices,
+            ${this.typeName}.gen_propertyBindingTargets, ${this.typeName}.gen_directiveIndices,
             ${codify(this.changeDetectionStrategy)});
         this.dehydrateDirectives(false);
       }
 
-      ${this._typeName}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
+      ${this.typeName}.prototype = Object.create(${this.abstractChangeDetectorVarName}.prototype);
 
-      ${this._typeName}.prototype.detectChangesInRecordsInternal = function(throwOnChange) {
+      ${this.typeName}.prototype.detectChangesInRecordsInternal = function(throwOnChange) {
         ${this._names.genInitLocals()}
         var ${IS_CHANGED_LOCAL} = false;
         var ${CHANGES_LOCAL} = null;
@@ -80,31 +106,25 @@ export class ChangeDetectorJITGenerator {
       ${this._genPropertyBindingTargets()}
 
       ${this._genDirectiveIndices()}
-
-      return function(dispatcher) {
-        return new ${this._typeName}(dispatcher);
-      }
     `;
-    return new Function(ABSTRACT_CHANGE_DETECTOR, UTIL, classDefinition)(AbstractChangeDetector,
-                                                                         ChangeDetectionUtil);
   }
 
   _genPropertyBindingTargets(): string {
     var targets = this._logic.genPropertyBindingTargets(this.propertyBindingTargets,
                                                         this.genConfig.genDebugInfo);
-    return `${this._typeName}.gen_propertyBindingTargets = ${targets};`;
+    return `${this.typeName}.gen_propertyBindingTargets = ${targets};`;
   }
 
   _genDirectiveIndices(): string {
     var indices = this._logic.genDirectiveIndices(this.directiveRecords);
-    return `${this._typeName}.gen_directiveIndices = ${indices};`;
+    return `${this.typeName}.gen_directiveIndices = ${indices};`;
   }
 
   _maybeGenHandleEventInternal(): string {
     if (this.eventBindings.length > 0) {
       var handlers = this.eventBindings.map(eb => this._genEventBinding(eb)).join("\n");
       return `
-        ${this._typeName}.prototype.handleEventInternal = function(eventName, elIndex, locals) {
+        ${this.typeName}.prototype.handleEventInternal = function(eventName, elIndex, locals) {
           var ${this._names.getPreventDefaultAccesor()} = false;
           ${this._names.genInitEventLocals()}
           ${handlers}
@@ -156,7 +176,7 @@ export class ChangeDetectorJITGenerator {
     }
     var dehydrateFieldsCode = this._names.genDehydrateFields();
     if (!destroyPipesCode && !dehydrateFieldsCode) return '';
-    return `${this._typeName}.prototype.dehydrateDirectives = function(destroyPipes) {
+    return `${this.typeName}.prototype.dehydrateDirectives = function(destroyPipes) {
         ${destroyPipesCode}
         ${dehydrateFieldsCode}
     }`;
@@ -166,7 +186,7 @@ export class ChangeDetectorJITGenerator {
     var hydrateDirectivesCode = this._logic.genHydrateDirectives(this.directiveRecords);
     var hydrateDetectorsCode = this._logic.genHydrateDetectors(this.directiveRecords);
     if (!hydrateDirectivesCode && !hydrateDetectorsCode) return '';
-    return `${this._typeName}.prototype.hydrateDirectives = function(directives) {
+    return `${this.typeName}.prototype.hydrateDirectives = function(directives) {
       ${hydrateDirectivesCode}
       ${hydrateDetectorsCode}
     }`;
@@ -177,7 +197,7 @@ export class ChangeDetectorJITGenerator {
     if (notifications.length > 0) {
       var directiveNotifications = notifications.join("\n");
       return `
-        ${this._typeName}.prototype.afterContentLifecycleCallbacksInternal = function() {
+        ${this.typeName}.prototype.afterContentLifecycleCallbacksInternal = function() {
           ${directiveNotifications}
         }
       `;
@@ -191,7 +211,7 @@ export class ChangeDetectorJITGenerator {
     if (notifications.length > 0) {
       var directiveNotifications = notifications.join("\n");
       return `
-        ${this._typeName}.prototype.afterViewLifecycleCallbacksInternal = function() {
+        ${this.typeName}.prototype.afterViewLifecycleCallbacksInternal = function() {
           ${directiveNotifications}
         }
       `;
@@ -236,17 +256,22 @@ export class ChangeDetectorJITGenerator {
     var newValue = this._names.getLocalName(r.selfIndex);
 
     var pipe = this._names.getPipeName(r.selfIndex);
-    var pipeType = r.name;
-    var read = `
-      if (${pipe} === ${UTIL}.uninitialized) {
-        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeType}');
+    var pipeName = r.name;
+
+    var init = `
+      if (${pipe} === ${this.changeDetectionUtilVarName}.uninitialized) {
+        ${pipe} = ${this._names.getPipesAccessorName()}.get('${pipeName}');
       }
-      ${newValue} = ${pipe}.transform(${context}, [${argString}]);
     `;
+    var read = `${newValue} = ${pipe}.pipe.transform(${context}, [${argString}]);`;
+
+    var contexOrArgCheck = r.args.map((a) => this._names.getChangeName(a));
+    contexOrArgCheck.push(this._names.getChangeName(r.contextIndex));
+    var condition = `!${pipe}.pure || (${contexOrArgCheck.join(" || ")})`;
 
     var check = `
       if (${oldValue} !== ${newValue}) {
-        ${newValue} = ${UTIL}.unwrapValue(${newValue})
+        ${newValue} = ${this.changeDetectionUtilVarName}.unwrapValue(${newValue})
         ${this._genChangeMarker(r)}
         ${this._genUpdateDirectiveOrElement(r)}
         ${this._genAddToChanges(r)}
@@ -254,7 +279,13 @@ export class ChangeDetectorJITGenerator {
       }
     `;
 
-    return r.shouldBeChecked() ? `${read}${check}` : read;
+    var genCode = r.shouldBeChecked() ? `${read}${check}` : read;
+
+    if (r.isUsedByOtherRecord()) {
+      return `${init} if (${condition}) { ${genCode} } else { ${newValue} = ${oldValue}; }`;
+    } else {
+      return `${init} if (${condition}) { ${genCode} }`;
+    }
   }
 
   _genReferenceCheck(r: ProtoRecord): string {
@@ -331,7 +362,7 @@ export class ChangeDetectorJITGenerator {
 
   _genCheckNoChanges(): string {
     if (this.genConfig.genCheckNoChanges) {
-      return `${this._typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
+      return `${this.typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
     } else {
       return '';
     }

@@ -1,6 +1,7 @@
 library dinner.soup;
 
-import 'package:angular2/metadata.dart' as prefix;
+import 'package:angular2/src/core/compiler.dart' as prefix;
+import 'package:angular2/src/core/metadata.dart';
 
-@prefix.Component(selector: '[soup]')
+@Component(selector: '[soup]')
 class OnChangeSoupComponent implements prefix.OnChanges {}

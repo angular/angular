@@ -4,7 +4,7 @@
   <ol class="inbox-list">
     <li *ng-for="#item of items" class="inbox-item-record">
       <a id="item-{{ item.id }}"
-         [router-link]="['/detailPage', {'id':item.id}]">{{ item.subject }}</a>
+         [router-link]="['/DetailPage', {'id':item.id}]">{{ item.subject }}</a>
     </li>
   </ol>
 </div>

@@ -1,4 +1,5 @@
-import {BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 export var DOM: DomAdapter;
 
@@ -132,6 +133,10 @@ export class DomAdapter {
   resetBaseElement(): void { throw _abstract(); }
   getUserAgent(): string { throw _abstract(); }
   setData(element, name: string, value: string) { throw _abstract(); }
+  getComputedStyle(element): any { throw _abstract(); }
   getData(element, name: string): string { throw _abstract(); }
   setGlobalVar(name: string, value: any) { throw _abstract(); }
+  requestAnimationFrame(callback): number { throw _abstract(); }
+  cancelAnimationFrame(id) { throw _abstract(); }
+  performanceNow(): number { throw _abstract(); }
 }

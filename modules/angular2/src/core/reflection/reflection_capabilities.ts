@@ -1,11 +1,5 @@
-import {
-  Type,
-  isPresent,
-  isFunction,
-  global,
-  stringify,
-  BaseException
-} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isFunction, global, stringify} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
@@ -109,35 +103,51 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return result;
   }
 
-  parameters(typeOfFunc: Type): any[][] {
+  parameters(typeOrFunc: Type): any[][] {
     // Prefer the direct API.
-    if (isPresent((<any>typeOfFunc).parameters)) {
-      return (<any>typeOfFunc).parameters;
+    if (isPresent((<any>typeOrFunc).parameters)) {
+      return (<any>typeOrFunc).parameters;
     }
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
-      var paramAnnotations = this._reflect.getMetadata('parameters', typeOfFunc);
-      var paramTypes = this._reflect.getMetadata('design:paramtypes', typeOfFunc);
+      var paramAnnotations = this._reflect.getMetadata('parameters', typeOrFunc);
+      var paramTypes = this._reflect.getMetadata('design:paramtypes', typeOrFunc);
       if (isPresent(paramTypes) || isPresent(paramAnnotations)) {
         return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
       }
     }
-    return ListWrapper.createFixedSize((<any>typeOfFunc).length);
+    return ListWrapper.createFixedSize((<any>typeOrFunc).length);
   }
 
-  annotations(typeOfFunc: Type): any[] {
+  annotations(typeOrFunc: Type): any[] {
     // Prefer the direct API.
-    if (isPresent((<any>typeOfFunc).annotations)) {
-      var annotations = (<any>typeOfFunc).annotations;
+    if (isPresent((<any>typeOrFunc).annotations)) {
+      var annotations = (<any>typeOrFunc).annotations;
       if (isFunction(annotations) && annotations.annotations) {
         annotations = annotations.annotations;
       }
       return annotations;
     }
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
-      var annotations = this._reflect.getMetadata('annotations', typeOfFunc);
+      var annotations = this._reflect.getMetadata('annotations', typeOrFunc);
       if (isPresent(annotations)) return annotations;
     }
     return [];
+  }
+
+  propMetadata(typeOrFunc: any): StringMap<string, any[]> {
+    // Prefer the direct API.
+    if (isPresent((<any>typeOrFunc).propMetadata)) {
+      var propMetadata = (<any>typeOrFunc).propMetadata;
+      if (isFunction(propMetadata) && propMetadata.propMetadata) {
+        propMetadata = propMetadata.propMetadata;
+      }
+      return propMetadata;
+    }
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      var propMetadata = this._reflect.getMetadata('propMetadata', typeOrFunc);
+      if (isPresent(propMetadata)) return propMetadata;
+    }
+    return {};
   }
 
   interfaces(type: Type): any[] {
@@ -155,4 +165,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return o.${name}.apply(o, args);`;
     return <MethodFn>new Function('o', 'args', functionBody);
   }
+
+  // There is not a concept of import uri in Js, but this is useful in developing Dart applications.
+  importUri(type: Type): string { return './'; }
 }

@@ -1,10 +1,11 @@
-import {TypeMetadata, TemplateMetadata, ViewEncapsulation} from './api';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {TypeMetadata, TemplateMetadata} from './api';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {XHR} from 'angular2/src/core/render/xhr';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {StyleUrlResolver} from './style_url_resolver';
+import {resolveStyleUrls} from './style_url_resolver';
 
 import {
   HtmlAstVisitor,
@@ -26,7 +27,7 @@ const STYLE_ELEMENT = 'style';
 
 export class TemplateLoader {
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver,
-              private _styleUrlResolver: StyleUrlResolver, private _domParser: HtmlParser) {}
+              private _domParser: HtmlParser) {}
 
   loadTemplate(directiveType: TypeMetadata, encapsulation: ViewEncapsulation, template: string,
                templateUrl: string, styles: string[],
@@ -51,19 +52,17 @@ export class TemplateLoader {
     var remainingNodes = htmlVisitAll(visitor, domNodes);
     var allStyles = styles.concat(visitor.styles);
     var allStyleUrls = styleUrls.concat(visitor.styleUrls);
-    allStyles = allStyles.map(style => {
-      var styleWithImports = this._styleUrlResolver.extractImports(style);
+    var allResolvedStyles = allStyles.map(style => {
+      var styleWithImports = resolveStyleUrls(this._urlResolver, templateSourceUrl, style);
       styleWithImports.styleUrls.forEach(styleUrl => allStyleUrls.push(styleUrl));
       return styleWithImports.style;
     });
 
-    var allResolvedStyles =
-        allStyles.map(style => this._styleUrlResolver.resolveUrls(style, templateSourceUrl));
     var allStyleAbsUrls =
         allStyleUrls.map(styleUrl => this._urlResolver.resolve(templateSourceUrl, styleUrl));
     return new TemplateMetadata({
       encapsulation: encapsulation,
-      nodes: remainingNodes,
+      template: this._domParser.unparse(remainingNodes),
       styles: allResolvedStyles,
       styleAbsUrls: allStyleAbsUrls,
       ngContentSelectors: visitor.ngContentSelectors
@@ -76,7 +75,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
   styles: string[] = [];
   styleUrls: string[] = [];
 
-  visitElement(ast: HtmlElementAst): HtmlElementAst {
+  visitElement(ast: HtmlElementAst, context: any): HtmlElementAst {
     var selectAttr = null;
     var hrefAttr = null;
     var relAttr = null;
@@ -92,7 +91,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
     var nodeName = ast.name;
     var keepElement = true;
     if (nodeName == NG_CONTENT_ELEMENT) {
-      this.ngContentSelectors.push(selectAttr);
+      this.ngContentSelectors.push(normalizeNgContentSelect(selectAttr));
     } else if (nodeName == STYLE_ELEMENT) {
       keepElement = false;
       var textContent = '';
@@ -113,6 +112,13 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
       return null;
     }
   }
-  visitAttr(ast: HtmlAttrAst): HtmlAttrAst { return ast; }
-  visitText(ast: HtmlTextAst): HtmlTextAst { return ast; }
+  visitAttr(ast: HtmlAttrAst, context: any): HtmlAttrAst { return ast; }
+  visitText(ast: HtmlTextAst, context: any): HtmlTextAst { return ast; }
+}
+
+function normalizeNgContentSelect(selectAttr: string): string {
+  if (isBlank(selectAttr) || selectAttr.length === 0) {
+    return '*';
+  }
+  return selectAttr;
 }

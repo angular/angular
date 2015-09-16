@@ -8,12 +8,6 @@
 {%- endmacro -%}
 
 
-{%- macro memberInfo(signature, member) -%}
-{$ commentBlock(member, 5) $}
-     {$ signature(member) $};
-{%- endmacro -%}
-
-
 // Type definitions for Angular v{$ versionInfo.currentVersion.full | replace(r/\+/, "_") $}
 // Project: http://angular.io/
 // Definitions by: angular team <https://github.com/angular/>
@@ -38,38 +32,7 @@
 declare module {$ module.namespace $} {
 
   {%- for export in module.doc.exports -%}
-  {%- if export.content -%}
-    {$ commentBlock(export, 3) $}
-  {%- endif %}
-  {$ export.docType $} {$ export.name $}{$ export.typeParams $}{%- if export.heritage == ' extends Directive' %} extends DirectiveAnnotation{% else %}{$ export.heritage $}{% endif %}
-  {%- if export.docType == 'class' or export.docType == 'interface' %} {
-  {%- if export.newMember %}
-    {$ memberInfo(doc.signature, export.newMember) $}
-  {% endif %}
-  {%- if export.callMember %}
-    {$ memberInfo(doc.signature, export.callMember) $}
-  {% endif -%}
-  {%- for static in export.statics %}
-    {$ memberInfo(doc.signature, static) $}
-  {%- endfor -%}
-  {%- for member in export.members %}
-    {$ memberInfo(doc.signature, member) $}
-  {%- endfor %}
-  }
-
-  {%- elif export.docType == 'enum' %} {
-    {%- for member in export.members %}
-    {$ commentBlock(member, 5) $}
-     {$ member.name $}{% if not loop.last %},
-    {%- endif -%}
-    {%- endfor %}
-  }
-
-  {%- else -%}
-    {% if export.parameters %}({% for param in export.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
-    {%- if export.returnType %} : {$ export.returnType $} {% endif -%}
-    ;
-  {%- endif %}
+    {$ doc.dts.serializeExport(export) $}
   {% endfor %}
 }
 

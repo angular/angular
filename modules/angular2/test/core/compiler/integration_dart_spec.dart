@@ -2,10 +2,10 @@
 library angular2.test.di.integration_dart_spec;
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2/di.dart';
+import 'package:angular2/core.dart';
+import 'package:angular2/src/core/debug.dart';
 import 'package:angular2/test_lib.dart';
 import 'package:observe/observe.dart';
-import 'package:angular2/src/core/directives/observable_list_diff.dart';
 import 'package:angular2/src/core/change_detection/differs/default_iterable_differ.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 
@@ -56,7 +56,7 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            expect(asNativeElements(tc.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.componentViewChildren))
                 .toHaveText('[Hello, World]');
             async.done();
           });
@@ -112,7 +112,7 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            expect(asNativeElements(tc.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.componentViewChildren))
                 .toHaveText('prop:foo-prop;map:foo-map');
             async.done();
           });
@@ -149,7 +149,7 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            var cmp = tc.componentViewChildren[0].inject(OnChangeComponent);
+            var cmp = tc.debugElement.componentViewChildren[0].inject(OnChangeComponent);
             expect(cmp.prop).toEqual('hello');
             expect(cmp.changes.containsKey('prop')).toEqual(true);
             async.done();
@@ -171,19 +171,19 @@ main() {
                       directives: [ComponentWithObservableList]))
               .createAsync(Dummy)
               .then((tc) {
-            tc.componentInstance.value = new ObservableList.from([1, 2]);
+            tc.debugElement.componentInstance.value = new ObservableList.from([1, 2]);
 
             tc.detectChanges();
 
             expect(log.result()).toEqual("check");
-            expect(asNativeElements(tc.componentViewChildren)).toHaveText('12');
+            expect(asNativeElements(tc.debugElement.componentViewChildren)).toHaveText('12');
 
             tc.detectChanges();
 
             // we did not change the list => no checks
             expect(log.result()).toEqual("check");
 
-            tc.componentInstance.value.add(3);
+            tc.debugElement.componentInstance.value.add(3);
 
             flushMicrotasks();
 
@@ -191,16 +191,16 @@ main() {
 
             // we changed the list => a check
             expect(log.result()).toEqual("check; check");
-            expect(asNativeElements(tc.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.componentViewChildren))
                 .toHaveText('123');
 
             // we replaced the list => a check
-            tc.componentInstance.value = new ObservableList.from([5, 6, 7]);
+            tc.debugElement.componentInstance.value = new ObservableList.from([5, 6, 7]);
 
             tc.detectChanges();
 
             expect(log.result()).toEqual("check; check; check");
-            expect(asNativeElements(tc.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.componentViewChildren))
                 .toHaveText('567');
           });
         })));
@@ -266,8 +266,6 @@ class NoPropertyAccess {
 
 @Component(
     selector: 'on-change',
-    // TODO: needed because of https://github.com/angular/angular/issues/2120
-    lifecycle: const [LifecycleEvent.OnChanges],
     properties: const ['prop'])
 @View(template: '')
 class OnChangeComponent implements OnChanges {
@@ -300,8 +298,7 @@ class ComponentWithObservableList {
 }
 
 @Directive(
-    selector: 'directive-logging-checks',
-    lifecycle: const [LifecycleEvent.DoCheck])
+    selector: 'directive-logging-checks')
 class DirectiveLoggingChecks implements DoCheck {
   Log log;
 

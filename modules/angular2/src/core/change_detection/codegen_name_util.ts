@@ -44,17 +44,17 @@ export class CodegenNameUtil {
   _sanitizedNames: string[];
   _sanitizedEventNames: Map<EventBinding, string[]>;
 
-  constructor(private records: ProtoRecord[], private eventBindings: EventBinding[],
-              private directiveRecords: any[], private utilName: string) {
-    this._sanitizedNames = ListWrapper.createFixedSize(this.records.length + 1);
+  constructor(private _records: ProtoRecord[], private _eventBindings: EventBinding[],
+              private _directiveRecords: any[], private _utilName: string) {
+    this._sanitizedNames = ListWrapper.createFixedSize(this._records.length + 1);
     this._sanitizedNames[CONTEXT_INDEX] = _CONTEXT_ACCESSOR;
-    for (var i = 0, iLen = this.records.length; i < iLen; ++i) {
-      this._sanitizedNames[i + 1] = sanitizeName(`${this.records[i].name}${i}`);
+    for (var i = 0, iLen = this._records.length; i < iLen; ++i) {
+      this._sanitizedNames[i + 1] = sanitizeName(`${this._records[i].name}${i}`);
     }
 
     this._sanitizedEventNames = new Map();
-    for (var ebIndex = 0; ebIndex < eventBindings.length; ++ebIndex) {
-      var eb = eventBindings[ebIndex];
+    for (var ebIndex = 0; ebIndex < _eventBindings.length; ++ebIndex) {
+      var eb = _eventBindings[ebIndex];
       var names = [_CONTEXT_ACCESSOR];
       for (var i = 0, iLen = eb.records.length; i < iLen; ++i) {
         names.push(sanitizeName(`${eb.records[i].name}${i}_${ebIndex}`));
@@ -99,7 +99,7 @@ export class CodegenNameUtil {
       if (i == CONTEXT_INDEX) {
         declarations.push(`${this.getLocalName(i)} = ${this.getFieldName(i)}`);
       } else {
-        var rec = this.records[i - 1];
+        var rec = this._records[i - 1];
         if (rec.argumentToPureFunction) {
           var changeName = this.getChangeName(i);
           declarations.push(`${this.getLocalName(i)},${changeName}`);
@@ -138,20 +138,20 @@ export class CodegenNameUtil {
   getAllFieldNames(): string[] {
     var fieldList = [];
     for (var k = 0, kLen = this.getFieldCount(); k < kLen; ++k) {
-      if (k === 0 || this.records[k - 1].shouldBeChecked()) {
+      if (k === 0 || this._records[k - 1].shouldBeChecked()) {
         fieldList.push(this.getFieldName(k));
       }
     }
 
-    for (var i = 0, iLen = this.records.length; i < iLen; ++i) {
-      var rec = this.records[i];
+    for (var i = 0, iLen = this._records.length; i < iLen; ++i) {
+      var rec = this._records[i];
       if (rec.isPipeRecord()) {
         fieldList.push(this.getPipeName(rec.selfIndex));
       }
     }
 
-    for (var j = 0, jLen = this.directiveRecords.length; j < jLen; ++j) {
-      var dRec = this.directiveRecords[j];
+    for (var j = 0, jLen = this._directiveRecords.length; j < jLen; ++j) {
+      var dRec = this._directiveRecords[j];
       fieldList.push(this.getDirectiveName(dRec.directiveIndex));
       if (!dRec.isDefaultChangeDetection()) {
         fieldList.push(this.getDetectorName(dRec.directiveIndex));
@@ -169,7 +169,7 @@ export class CodegenNameUtil {
     if (ListWrapper.isEmpty(fields)) return '';
 
     // At least one assignment.
-    fields.push(`${this.utilName}.uninitialized;`);
+    fields.push(`${this._utilName}.uninitialized;`);
     return ListWrapper.join(fields, ' = ');
   }
 
@@ -179,9 +179,9 @@ export class CodegenNameUtil {
   genPipeOnDestroy(): string {
     return ListWrapper.join(
         ListWrapper.map(
-            ListWrapper.filter(this.records, (r) => { return r.isPipeRecord(); }),
+            ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); }),
             (r) => {
-              return `${this.utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`;
+              return `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`;
             }),
         '\n');
   }

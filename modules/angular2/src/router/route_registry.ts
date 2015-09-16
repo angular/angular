@@ -17,10 +17,10 @@ import {
   isStringMap,
   isFunction,
   StringWrapper,
-  BaseException,
   Type,
   getTypeNameForDebugging
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   RouteConfig,
   AsyncRoute,
@@ -30,7 +30,7 @@ import {
   RouteDefinition
 } from './route_config_impl';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {normalizeRouteConfig} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 
@@ -120,7 +120,7 @@ export class RouteRegistry {
   private _recognizePrimaryRoute(parsedUrl: Url, parentComponent): Promise<PrimaryInstruction> {
     var componentRecognizer = this._rules.get(parentComponent);
     if (isBlank(componentRecognizer)) {
-      return PromiseWrapper.resolve(null);
+      return _resolveToNull;
     }
 
     // Matches some beginning part of the given URL
@@ -137,12 +137,8 @@ export class RouteRegistry {
     return instruction.resolveComponentType().then((componentType) => {
       this.configFromComponent(componentType);
 
-      if (isBlank(partialMatch.remaining)) {
-        if (instruction.terminal) {
-          return new PrimaryInstruction(instruction, null, partialMatch.remainingAux);
-        } else {
-          return null;
-        }
+      if (instruction.terminal) {
+        return new PrimaryInstruction(instruction, null, partialMatch.remainingAux);
       }
 
       return this._recognizePrimaryRoute(partialMatch.remaining, componentType)
@@ -200,6 +196,7 @@ export class RouteRegistry {
   generate(linkParams: any[], parentComponent: any): Instruction {
     let segments = [];
     let componentCursor = parentComponent;
+    var lastInstructionIsTerminal = false;
 
     for (let i = 0; i < linkParams.length; i += 1) {
       let segment = linkParams[i];
@@ -233,9 +230,26 @@ export class RouteRegistry {
       }
       segments.push(response);
       componentCursor = response.componentType;
+      lastInstructionIsTerminal = response.terminal;
     }
 
-    var instruction: Instruction = this._generateRedirects(componentCursor);
+    var instruction: Instruction = null;
+
+    if (!lastInstructionIsTerminal) {
+      instruction = this._generateRedirects(componentCursor);
+
+      if (isPresent(instruction)) {
+        let lastInstruction = instruction;
+        while (isPresent(lastInstruction.child)) {
+          lastInstruction = lastInstruction.child;
+        }
+        lastInstructionIsTerminal = lastInstruction.component.terminal;
+      }
+      if (isPresent(componentCursor) && !lastInstructionIsTerminal) {
+        throw new BaseException(
+            `Link "${ListWrapper.toJSON(linkParams)}" does not resolve to a terminal or async instruction.`);
+      }
+    }
 
 
     while (segments.length > 0) {

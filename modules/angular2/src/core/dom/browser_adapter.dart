@@ -426,13 +426,12 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return window.location;
   }
 
-  getBaseHref() {
+  String getBaseHref() {
     var href = getBaseElementHref();
     if (href == null) {
       return null;
     }
-    var baseUri = Uri.parse(href);
-    return baseUri.path[0] == '/' ? baseUri.path : ('/' + baseUri.path);
+    return _relativePath(href);
   }
 
   resetBaseElement() {
@@ -451,6 +450,8 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return element.dataset[name];
   }
 
+  getComputedStyle(elem) => elem.getComputedStyle();
+
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(String path, value) {
     var parts = path.split('.');
@@ -465,6 +466,18 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     obj[parts.removeAt(0)] = value;
   }
+
+  requestAnimationFrame(callback) {
+    return window.requestAnimationFrame(callback);
+  }
+
+  cancelAnimationFrame(id) {
+    window.cancelAnimationFrame(id);
+  }
+
+  num performanceNow() {
+    return window.performance.now();
+  }
 }
 
 var baseElement = null;
@@ -476,4 +489,15 @@ String getBaseElementHref() {
     }
   }
   return baseElement.getAttribute('href');
+}
+
+// based on urlUtils.js in AngularJS 1
+AnchorElement _urlParsingNode = null;
+String _relativePath(String url) {
+  if (_urlParsingNode == null) {
+    _urlParsingNode = new AnchorElement();
+  }
+  _urlParsingNode.href = url;
+  var pathname = _urlParsingNode.pathname;
+  return (pathname[0] == '/') ? pathname : '/${pathname}';
 }

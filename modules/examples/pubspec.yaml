@@ -21,7 +21,6 @@ transformers:
     # The build currently fails on material files because there is not yet
     # support for transforming cross-package urls. (see issue #2982)
     - 'web/src/material/**'
-    - 'web/src/zippy_component/**'
     # No need to transform the dart:mirrors specific entrypoints
     - '**/index_dynamic.dart'
     entry_points:
@@ -35,6 +34,16 @@ transformers:
         - web/src/observable_models/index.dart
         - web/src/person_management/index.dart
         - web/src/template_driven_forms/index.dart
+        - web/src/web_workers/todo/server_index.dart
+        - web/src/web_workers/todo/background_index.dart
+        - web/src/web_workers/message_broker/background_index.dart
+        - web/src/web_workers/kitchen_sink/background_index.dart
+        - web/src/zippy_component/index.dart
+
+        # These entrypoints are disabled untl the transformer supports UI bootstrap (issue #3971)
+        # - web/src/web_workers/message_broker/index.dart
+        # - web/src/web_workers/kitchen_sink/index.dart
+        # - web/src/web_workers/todo/index.dart
         # These entrypoints are disabled until cross-package urls are working (issue #2982)
         # - web/src/material/button/index.dart
         # - web/src/material/checkbox/index.dart
@@ -44,7 +53,6 @@ transformers:
         # - web/src/material/progress-linear/index.dart
         # - web/src/material/radio/index.dart
         # - web/src/material/switcher/index.dart
-        # - web/src/zippy_component/index.dart
         #
         # This entrypoint is not needed:
         # - web/src/material/demo_common.dart

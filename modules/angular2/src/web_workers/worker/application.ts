@@ -3,13 +3,12 @@ import {
   PostMessageBusSink,
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
-import {Type, BaseException} from "angular2/src/core/facade/lang";
-import {Binding} from "angular2/di";
+import {Type} from "angular2/src/core/facade/lang";
+import {Binding, Injectable} from "angular2/src/core/di";
 import {Map} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
-import {ApplicationRef} from "angular2/src/core/application_ref";
-import {Injectable} from "angular2/di";
+import {ComponentRef} from "angular2/src/core/compiler/dynamic_component_loader";
 export * from "angular2/src/web_workers/shared/message_bus";
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
@@ -29,10 +28,12 @@ var _postMessage: PostMessageInterface = <any>postMessage;
  */
 export function bootstrapWebWorker(
     appComponentType: Type, componentInjectableBindings: Array<Type | Binding | any[]> = null):
-    Promise<ApplicationRef> {
+    Promise<ComponentRef> {
   var sink = new PostMessageBusSink({
-    postMessage:
-        (message: any, transferrables?:[ArrayBuffer]) => { _postMessage(message, transferrables); }
+    postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
+      console.log("Sending", message);
+      _postMessage(message, transferrables);
+    }
   });
   var source = new PostMessageBusSource();
   var bus = new PostMessageBus(sink, source);

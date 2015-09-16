@@ -9,7 +9,6 @@ import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/cor
  * }
  * ```
  */
-
 @CONST()
 export class InjectMetadata {
   constructor(public token) {}
@@ -34,7 +33,7 @@ export class OptionalMetadata {
 }
 
 /**
- * `DependencyMetadata is used by the framework to extend DI.
+ * `DependencyMetadata` is used by the framework to extend DI.
  *
  * Only metadata implementing `DependencyMetadata` are added to the list of dependency
  * properties.

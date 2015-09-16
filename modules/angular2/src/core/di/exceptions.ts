@@ -1,5 +1,6 @@
 import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {stringify, BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {stringify, isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Key} from './key';
 import {Injector} from './injector';
 
@@ -37,9 +38,8 @@ export class AbstractBindingError extends BaseException {
   injectors: Injector[];
   constructResolvingMessage: Function;
 
-  constructor(injector: Injector, key: Key, constructResolvingMessage: Function, originalException?,
-              originalStack?) {
-    super("DI Exception", originalException, originalStack, null);
+  constructor(injector: Injector, key: Key, constructResolvingMessage: Function) {
+    super("DI Exception");
     this.keys = [key];
     this.injectors = [injector];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -53,8 +53,6 @@ export class AbstractBindingError extends BaseException {
   }
 
   get context() { return this.injectors[this.injectors.length - 1].debugContext(); }
-
-  toString(): string { return this.message; }
 }
 
 /**
@@ -100,16 +98,30 @@ export class CyclicDependencyError extends AbstractBindingError {
  * The `InstantiationError` class contains the original error plus the dependency graph which caused
  * this object to be instantiated.
  */
-export class InstantiationError extends AbstractBindingError {
-  causeKey: Key;
-  constructor(injector: Injector, originalException, originalStack, key: Key) {
-    super(injector, key, function(keys: any[]) {
-      var first = stringify(ListWrapper.first(keys).token);
-      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
-    }, originalException, originalStack);
+export class InstantiationError extends WrappedException {
+  name: string;
+  keys: Key[];
+  injectors: Injector[];
 
-    this.causeKey = key;
+  constructor(injector: Injector, originalException, originalStack, key: Key) {
+    super("DI Exception", originalException, originalStack, null);
+    this.keys = [key];
+    this.injectors = [injector];
   }
+
+  addKey(injector: Injector, key: Key): void {
+    this.injectors.push(injector);
+    this.keys.push(key);
+  }
+
+  get wrapperMessage(): string {
+    var first = stringify(ListWrapper.first(this.keys).token);
+    return `Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
+  }
+
+  get causeKey(): Key { return this.keys[0]; }
+
+  get context() { return this.injectors[this.injectors.length - 1].debugContext(); }
 }
 
 /**
@@ -163,6 +175,20 @@ export class OutOfBoundsError extends BaseException {
   constructor(index) {
     super();
     this.message = `Index ${index} is out-of-bounds.`;
+  }
+
+  toString(): string { return this.message; }
+}
+
+/**
+ * Thrown when a multi binding and a regular binding are bound to the same token.
+ */
+export class MixingMultiBindingsWithRegularBindings extends BaseException {
+  message: string;
+  constructor(binding1, binding2) {
+    super();
+    this.message = "Cannot mix multi bindings and regular bindings, got: " + binding1.toString() +
+                   " " + binding2.toString();
   }
 
   toString(): string { return this.message; }

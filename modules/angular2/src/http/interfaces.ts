@@ -9,7 +9,7 @@ import {
   ResponseTypes
 } from './enums';
 import {Headers} from './headers';
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {Request} from './static_request';
 import {URLSearchParamsUnionFixer, URLSearchParams} from './url_search_params';

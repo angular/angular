@@ -5,12 +5,11 @@ var insert = require('gulp-insert');
 var fs = require('fs-extra');
 var browserify = require('browserify');
 var path = require('path');
+var Builder = require('systemjs-builder');
 
 module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConfig,
     sfx) {
   var sfx = sfx || false;
-  // loading it earlier interfers with custom traceur.
-  var Builder = require('systemjs-builder');
   var builder = new Builder();
   builder.config(buildConfig);
   if (sfx) {

@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   TestComponentBuilder,
-  By,
   beforeEach,
   ddescribe,
   describe,
@@ -13,12 +12,8 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-
-import {Component, Directive, View} from 'angular2/angular2';
-
+import {Component, Directive, NgNonBindable, View} from 'angular2/core';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-
-import {NgNonBindable} from 'angular2/src/core/directives/ng_non_bindable';
 
 export function main() {
   describe('non-bindable', () => {
@@ -29,7 +24,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('foo{{text}}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('foo{{text}}');
                async.done();
              });
        }));
@@ -44,7 +39,7 @@ export function main() {
 
                // We must use DOM.querySelector instead of rootTC.query here
                // since the elements inside are not compiled.
-               var span = DOM.querySelector(rootTC.nativeElement, '#child');
+               var span = DOM.querySelector(rootTC.debugElement.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
                async.done();
              });
@@ -57,7 +52,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((rootTC) => {
                rootTC.detectChanges();
-               var span = DOM.querySelector(rootTC.nativeElement, '#child');
+               var span = DOM.querySelector(rootTC.debugElement.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
                async.done();
              });

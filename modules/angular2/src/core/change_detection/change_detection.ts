@@ -11,15 +11,9 @@ import {
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig
 } from './interfaces';
-import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/di';
+import {Injector, Inject, Injectable, OpaqueToken, Optional, Binding} from 'angular2/src/core/di';
 import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {
-  CONST,
-  CONST_EXPR,
-  isPresent,
-  BaseException,
-  assertionsEnabled
-} from 'angular2/src/core/facade/lang';
+import {CONST, CONST_EXPR, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
 
 export {
   ASTWithSource,
@@ -48,7 +42,7 @@ export {
   DebugContext,
   ChangeDetectorGenConfig
 } from './interfaces';
-export {ChangeDetectionStrategy} from './constants';
+export {ChangeDetectionStrategy, changeDetectionStrategyFromJson} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
 export {BindingRecord, BindingTarget} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';
@@ -103,7 +97,7 @@ export class PreGeneratedChangeDetection extends ChangeDetection {
 
     this._genConfig =
         isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
-                                                                 assertionsEnabled(), false);
+                                                                 assertionsEnabled(), false, false);
   }
 
   static isSupported(): boolean { return PregenProtoChangeDetector.isSupported(); }
@@ -133,7 +127,7 @@ export class DynamicChangeDetection extends ChangeDetection {
     super();
     this._genConfig =
         isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
-                                                                 assertionsEnabled(), false);
+                                                                 assertionsEnabled(), false, false);
   }
 
   getProtoChangeDetector(id: string, definition: ChangeDetectorDefinition): ProtoChangeDetector {
@@ -157,7 +151,7 @@ export class JitChangeDetection extends ChangeDetection {
     super();
     this._genConfig =
         isPresent(config) ? config : new ChangeDetectorGenConfig(assertionsEnabled(),
-                                                                 assertionsEnabled(), false);
+                                                                 assertionsEnabled(), false, true);
   }
 
   static isSupported(): boolean { return JitProtoChangeDetector.isSupported(); }

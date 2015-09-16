@@ -1,5 +1,6 @@
 import {ResponseTypes} from './enums';
-import {BaseException, CONST_EXPR, isString, isPresent, Json} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, isString, isPresent, Json} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Headers} from './headers';
 import {ResponseOptions} from './base_response_options';
 import {isJsObject} from './http_utils';
@@ -14,7 +15,7 @@ import {isJsObject} from './http_utils';
  * #Example
  *
  * ```
- * http.request('my-friends.txt').subscribe(response => this.friends = response.text());
+ * http.request('my-friends.txt').toRx().subscribe(response => this.friends = response.text());
  * ```
  *
  * The Response's interface is inspired by the Response constructor defined in the [Fetch

@@ -1,6 +1,6 @@
 // tree benchmark in React
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import React from './react.min';
+import * as React from './react.min';
 
 var TreeComponent = React.createClass({
   displayName: 'TreeComponent',

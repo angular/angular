@@ -25,7 +25,8 @@ import {
   DirectiveBinding
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import * as renderApi from 'angular2/src/core/render/api';
 import {RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
@@ -182,7 +183,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       if (b.isElementProperty()) {
         this.renderer.setElementProperty(elementRef, b.name, currentValue);
       } else if (b.isElementAttribute()) {
-        this.renderer.setElementAttribute(elementRef, b.name, `${currentValue}`);
+        this.renderer.setElementAttribute(elementRef, b.name,
+                                          isPresent(currentValue) ? `${currentValue}` : null);
       } else if (b.isElementClass()) {
         this.renderer.setElementClass(elementRef, b.name, currentValue);
       } else if (b.isElementStyle()) {
@@ -211,7 +213,11 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   notifyAfterViewChecked(): void {
-    // required for query
+    var eiCount = this.proto.elementBinders.length;
+    var ei = this.elementInjectors;
+    for (var i = eiCount - 1; i >= 0; i--) {
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].afterViewChecked();
+    }
   }
 
   getDirectiveFor(directive: DirectiveIndex): any {
@@ -289,6 +295,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       throw new EventEvaluationError(eventName, e, e.stack, context);
     }
   }
+
+  get ownBindersCount(): number { return this.proto.elementBinders.length; }
 }
 
 function _localsToStringMap(locals: Locals): StringMap<string, any> {
@@ -312,7 +320,7 @@ class _Context {
 /**
  * Wraps an exception thrown by an event handler.
  */
-class EventEvaluationError extends BaseException {
+class EventEvaluationError extends WrappedException {
   constructor(eventName: string, originalException: any, originalStack: any, context: any) {
     super(`Error during evaluation of "${eventName}"`, originalException, originalStack, context);
   }

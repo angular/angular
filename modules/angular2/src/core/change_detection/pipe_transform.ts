@@ -1,16 +1,35 @@
-import {ABSTRACT, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
-
 /**
- * An interface which all pipes must implement.
+ * To create a Pipe, you must implement this interface.
  *
- * #Example
+ * Angular invokes the `transform` method with the subject as the `value` argument and any
+ * parameters in the `args` Array.
+ *
+ * ## Syntax
+ *
+ * `subject | pipeName[:arg0[:arg1...]]`
+ *
+ * ## Example
+ *
+ * The `RepeatPipe` below repeats the subject as many times as indicated by the first argument:
  *
  * ```
- * class DoublePipe implements PipeTransform {
- *  transform(value, args = []) {
- *    return `${value}${value}`;
+ * @Pipe({name: 'repeat'})
+ * class RepeatPipe implements PipeTransform {
+ *
+ *  transform(value: any, args: any[] = []) {
+ *    if (isBlank(args) || args.length == 0) {
+ *      throw new BaseException('limitTo pipe requires one argument');
+ *    }
+ *
+ *    let times: number = args[0];
+ *
+ *    return value.repeat(times);
  *  }
  * }
+ * ```
+ *
+ * Invoking `{{ 'ok' | repeat:3 }}` in a template produces `okokok`.
+ *
  * ```
  */
 export interface PipeTransform { transform(value: any, args: any[]): any; }

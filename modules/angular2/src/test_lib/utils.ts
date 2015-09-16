@@ -51,6 +51,12 @@ export class BrowserDetection {
     return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
   }
 
+  get isIOS7(): boolean {
+    return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
+  }
+
+  get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
+
   // The Intl API is only properly supported in recent Chrome and Opera.
   // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
   // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
@@ -58,9 +64,9 @@ export class BrowserDetection {
     return this._ua.indexOf('Chrome/4') > -1 && this._ua.indexOf('Edge') == -1;
   }
 }
-export var browserDetection = new BrowserDetection(null);
+export var browserDetection: BrowserDetection = new BrowserDetection(null);
 
-export function dispatchEvent(element, eventType) {
+export function dispatchEvent(element, eventType): void {
   DOM.dispatchEvent(element, DOM.createEvent(eventType));
 }
 

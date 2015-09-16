@@ -182,20 +182,6 @@ export function main() {
       expect(eventBinding.fullName).toEqual('click');
     });
 
-    it('should detect onbubble- syntax', () => {
-      var results = process(el('<div onbubble-click="b()"></div>'));
-      var eventBinding = results[0].eventBindings[0];
-      expect(eventBinding.source.source).toEqual('b()');
-      expect(eventBinding.fullName).toEqual('^click');
-    });
-
-    it('should detect onbubble- syntax with data- prefix', () => {
-      var results = process(el('<div data-onbubble-click="b()"></div>'));
-      var eventBinding = results[0].eventBindings[0];
-      expect(eventBinding.source.source).toEqual('b()');
-      expect(eventBinding.fullName).toEqual('^click');
-    });
-
     it('should parse event handlers using on- syntax as actions', () => {
       var results = process(el('<div on-click="foo=bar"></div>'));
       var eventBinding = results[0].eventBindings[0];

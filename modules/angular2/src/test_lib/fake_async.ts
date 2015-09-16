@@ -1,6 +1,7 @@
 /// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 
-import {BaseException, global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
@@ -8,7 +9,6 @@ var _scheduler;
 var _microtasks: Function[] = [];
 var _pendingPeriodicTimers: number[] = [];
 var _pendingTimers: number[] = [];
-var _error = null;
 
 interface FakeAsyncZone extends NgZoneZone {
   _inFakeAsyncZone: boolean;
@@ -66,7 +66,7 @@ export function fakeAsync(fn: Function): Function {
 }
 
 // TODO we should fix tick to dequeue the failed timer instead of relying on clearPendingTimers
-export function clearPendingTimers() {
+export function clearPendingTimers(): void {
   ListWrapper.clear(_microtasks);
   ListWrapper.clear(_pendingPeriodicTimers);
   ListWrapper.clear(_pendingTimers);

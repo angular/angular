@@ -4,7 +4,6 @@
  * Maps application URLs into application states, to support deep-linking and navigation.
  */
 
-
 export {Router, RootRouter} from './src/router/router';
 export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
@@ -14,7 +13,6 @@ export {LocationStrategy} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';
 export {PathLocationStrategy} from './src/router/path_location_strategy';
 export {Location, APP_BASE_HREF} from './src/router/location';
-export {Pipeline} from './src/router/pipeline';
 export * from './src/router/route_config_decorator';
 export * from './src/router/route_definition';
 export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/router/interfaces';
@@ -30,27 +28,53 @@ import {Router, RootRouter} from './src/router/router';
 import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
-import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
-import {APP_COMPONENT} from './src/core/application_tokens';
-import {Binding} from './di';
-import {CONST_EXPR} from './src/core/facade/lang';
+import {bind, OpaqueToken, Binding} from './core';
+import {CONST_EXPR, Type} from './src/core/facade/lang';
+
+export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
+    CONST_EXPR(new OpaqueToken('RouterPrimaryComponent'));
 
 export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
 
+/**
+ * A list of {@link Binding}. To use the router, you must add this to your application.
+ *
+ * ## Example
+ *
+ * ```typescript
+ * @Component({...})
+ * @View({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  new Route(...),
+ * ])
+ * class AppCmp {
+ *  constructor(router: Router, location: Location) {
+ *    // ...
+ *  }
+ *
+ * }
+ *
+ *
+ * bootstrap(AppCmp, [routerBindings(AppCmp)]);
+ * ```
+ */
 export const ROUTER_BINDINGS: any[] = CONST_EXPR([
   RouteRegistry,
-  Pipeline,
   CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),
   Location,
   CONST_EXPR(
       new Binding(Router,
                   {
                     toFactory: routerFactory,
-                    deps: CONST_EXPR([RouteRegistry, Pipeline, Location, APP_COMPONENT])
+                    deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT])
                   }))
 ]);
 
-function routerFactory(registry, pipeline, location, appRoot) {
-  return new RootRouter(registry, pipeline, location, appRoot);
+function routerFactory(registry, location, primaryComponent) {
+  return new RootRouter(registry, location, primaryComponent);
+}
+
+export function routerBindings(primaryComponent: Type): Array<any> {
+  return [ROUTER_BINDINGS, bind(ROUTER_PRIMARY_COMPONENT).toValue(primaryComponent)];
 }

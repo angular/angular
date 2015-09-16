@@ -125,8 +125,7 @@ export function main() {
          () => { expect(() => spyObj.someFunc()).not.toThrow(); });
 
       it('should create a default spy that does not fail for numbers', () => {
-        // Need to return null instead of undefined so that rtts assert does
-        // not fail...
+        // Previously needed for rtts_assert. Revisit this behavior.
         expect(spyObj.someFunc()).toBe(null);
       });
     });

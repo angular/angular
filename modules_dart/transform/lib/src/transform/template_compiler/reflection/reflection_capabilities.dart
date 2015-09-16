@@ -10,9 +10,7 @@ class NullReflectionCapabilities implements ReflectionCapabilities {
 
   _notImplemented(String name) => throw 'Not implemented: $name';
 
-  bool isReflectionEnabled() {
-    return false;
-  }
+  bool isReflectionEnabled() => false;
 
   Function factory(Type type) => _notImplemented("factory");
 
@@ -22,11 +20,15 @@ class NullReflectionCapabilities implements ReflectionCapabilities {
 
   List annotations(typeOrFunc) => _notImplemented('annotations');
 
+  Map propMetadata(typeOrFunc) => _notImplemented('propMetadata');
+
   GetterFn getter(String name) => _nullGetter;
 
   SetterFn setter(String name) => _nullSetter;
 
   MethodFn method(String name) => _nullMethod;
+
+  String importUri(Type type) => './';
 }
 
 _nullGetter(Object p) => null;

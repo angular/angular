@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   TestComponentBuilder,
-  asNativeElements,
   beforeEach,
   ddescribe,
   describe,
@@ -11,10 +10,20 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {Directive, Component, Query, View} from 'angular2/metadata';
-import {QueryList, NgFor} from 'angular2/angular2';
-import {forwardRef, resolveForwardRef, bind, Inject} from 'angular2/di';
+import {
+  bind,
+  forwardRef,
+  resolveForwardRef,
+  Component,
+  Directive,
+  Inject,
+  NgFor,
+  Query,
+  QueryList,
+  View
+} from 'angular2/core';
 import {Type} from 'angular2/src/core/facade/lang';
+import {asNativeElements} from 'angular2/src/core/debug';
 
 export function main() {
   describe("forwardRef integration", function() {
@@ -22,7 +31,8 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.createAsync(App).then((tc) => {
            tc.detectChanges();
-           expect(asNativeElements(tc.componentViewChildren)).toHaveText('frame(lock)');
+           expect(asNativeElements(tc.debugElement.componentViewChildren))
+               .toHaveText('frame(lock)');
            async.done();
          });
        }));

@@ -1,7 +1,8 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {ChangeDetector} from 'angular2/src/core/change_detection/change_detection';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
 /**
@@ -34,13 +35,15 @@ import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 export class LifeCycle {
   static _tickScope: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
 
-  _changeDetector: ChangeDetector;
+  _changeDetectors: ChangeDetector[];
   _enforceNoNewChanges: boolean;
   _runningTick: boolean = false;
 
   constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {
-    this._changeDetector =
-        changeDetector;  // may be null when instantiated from application bootstrap
+    this._changeDetectors = [];
+    if (isPresent(changeDetector)) {
+      this._changeDetectors.push(changeDetector);
+    }
     this._enforceNoNewChanges = enforceNoNewChanges;
   }
 
@@ -49,7 +52,7 @@ export class LifeCycle {
    */
   registerWith(zone: NgZone, changeDetector: ChangeDetector = null) {
     if (isPresent(changeDetector)) {
-      this._changeDetector = changeDetector;
+      this._changeDetectors.push(changeDetector);
     }
     zone.overrideOnTurnDone(() => this.tick());
   }
@@ -77,9 +80,9 @@ export class LifeCycle {
     var s = LifeCycle._tickScope();
     try {
       this._runningTick = true;
-      this._changeDetector.detectChanges();
+      this._changeDetectors.forEach((detector) => detector.detectChanges());
       if (this._enforceNoNewChanges) {
-        this._changeDetector.checkNoChanges();
+        this._changeDetectors.forEach((detector) => detector.checkNoChanges());
       }
     } finally {
       this._runningTick = false;

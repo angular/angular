@@ -1,16 +1,19 @@
 import {
+  bind,
+  forwardRef,
   Component,
-  Directive,
-  View,
-  ViewEncapsulation,
-  Host,
-  SkipSelf,
-  ElementRef,
-  DynamicComponentLoader,
   ComponentRef,
-  DomRenderer
-} from 'angular2/angular2';
-import {bind, Injectable, forwardRef, ResolvedBinding, Injector} from 'angular2/di';
+  Directive,
+  DynamicComponentLoader,
+  ElementRef,
+  Host,
+  Injectable,
+  ResolvedBinding,
+  SkipSelf,
+  Injector,
+  View,
+  ViewEncapsulation
+} from 'angular2/core';
 
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {isPresent, Type} from 'angular2/src/core/facade/lang';
@@ -33,11 +36,9 @@ import {KeyCodes} from 'angular2_material/src/core/key_codes';
 @Injectable()
 export class MdDialog {
   componentLoader: DynamicComponentLoader;
-  domRenderer: DomRenderer;
 
-  constructor(loader: DynamicComponentLoader, domRenderer: DomRenderer) {
+  constructor(loader: DynamicComponentLoader) {
     this.componentLoader = loader;
-    this.domRenderer = domRenderer;
   }
 
   /**
@@ -206,7 +207,7 @@ export class MdDialogConfig {
   host: {
     'class': 'md-dialog',
     'tabindex': '0',
-    '(body:^keydown)': 'documentKeypress($event)',
+    '(body:keydown)': 'documentKeypress($event)',
   },
 })
 @View({

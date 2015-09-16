@@ -1,4 +1,5 @@
-import {isBlank, BaseException, stringify} from 'angular2/src/core/facade/lang';
+import {isBlank, stringify} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {SpyDependencyProvider} from '../spies';
 import {
@@ -17,8 +18,9 @@ import {
   Optional,
   Inject,
   BindingWithVisibility,
-  Visibility
-} from 'angular2/di';
+  Visibility,
+  Binding
+} from 'angular2/core';
 
 import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/core/di/injector';
 
@@ -104,7 +106,6 @@ export function main() {
      bindings: dynamicBindings,
      strategyClass: InjectorDynamicStrategy
    }].forEach((context) => {
-
     function createInjector(bindings: any[], dependencyProvider = null) {
       return Injector.resolveAndCreate(bindings.concat(context['bindings']), dependencyProvider);
     }
@@ -184,6 +185,28 @@ export function main() {
         var sportsCar = injector.get(SportsCar);
         expect(car).toBeAnInstanceOf(SportsCar);
         expect(car).toBe(sportsCar);
+      });
+
+      it('should support multibindings', () => {
+        var injector = createInjector([
+          Engine,
+          new Binding(Car, {toClass: SportsCar, multi: true}),
+          new Binding(Car, {toClass: CarWithOptionalEngine, multi: true})
+        ]);
+
+        var cars = injector.get(Car);
+        expect(cars.length).toEqual(2);
+        expect(cars[0]).toBeAnInstanceOf(SportsCar);
+        expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
+      });
+
+      it('should support multibindings that are created using toAlias', () => {
+        var injector = createInjector(
+            [Engine, SportsCar, new Binding(Car, {toAlias: SportsCar, multi: true})]);
+
+        var cars = injector.get(Car);
+        expect(cars.length).toEqual(1);
+        expect(cars[0]).toBe(injector.get(SportsCar));
       });
 
       it('should throw when the aliased binding does not exist', () => {
@@ -345,7 +368,8 @@ export function main() {
 
         expect(injector.get(Car).engine).toEqual(e);
         expect(depProvider.spy("getDependency"))
-            .toHaveBeenCalledWith(injector, bindings[0], bindings[0].dependencies[0]);
+            .toHaveBeenCalledWith(injector, bindings[0],
+                                  bindings[0].resolvedFactories[0].dependencies[0]);
       });
     });
 
@@ -544,7 +568,6 @@ export function main() {
       });
     });
 
-
     describe('resolve', () => {
       it('should resolve and flatten', () => {
         var bindings = Injector.resolve([Engine, [BrokenEngine]]);
@@ -552,6 +575,36 @@ export function main() {
           if (isBlank(b)) return;  // the result is a sparse array
           expect(b instanceof ResolvedBinding).toBe(true);
         });
+      });
+
+      it("should support multi bindings", () => {
+        var binding = Injector.resolve([
+          new Binding(Engine, {toClass: BrokenEngine, multi: true}),
+          new Binding(Engine, {toClass: TurboEngine, multi: true})
+        ])[0];
+
+        expect(binding.key.token).toBe(Engine);
+        expect(binding.multiBinding).toEqual(true);
+        expect(binding.resolvedFactories.length).toEqual(2);
+      });
+
+      it("should support multi bindings with only one binding", () => {
+        var binding =
+            Injector.resolve([new Binding(Engine, {toClass: BrokenEngine, multi: true})])[0];
+
+        expect(binding.key.token).toBe(Engine);
+        expect(binding.multiBinding).toEqual(true);
+        expect(binding.resolvedFactories.length).toEqual(1);
+      });
+
+      it("should throw when mixing multi bindings with regular bindings", () => {
+        expect(() => {
+          Injector.resolve([new Binding(Engine, {toClass: BrokenEngine, multi: true}), Engine]);
+        }).toThrowErrorWith("Cannot mix multi bindings and regular bindings");
+
+        expect(() => {
+          Injector.resolve([Engine, new Binding(Engine, {toClass: BrokenEngine, multi: true})]);
+        }).toThrowErrorWith("Cannot mix multi bindings and regular bindings");
       });
 
       it('should resolve forward references', () => {
@@ -565,9 +618,9 @@ export function main() {
         var brokenEngineBinding = bindings[1];
         var stringBinding = bindings[2];
 
-        expect(engineBinding.factory() instanceof Engine).toBe(true);
-        expect(brokenEngineBinding.factory() instanceof Engine).toBe(true);
-        expect(stringBinding.dependencies[0].key).toEqual(Key.get(Engine));
+        expect(engineBinding.resolvedFactories[0].factory() instanceof Engine).toBe(true);
+        expect(brokenEngineBinding.resolvedFactories[0].factory() instanceof Engine).toBe(true);
+        expect(stringBinding.resolvedFactories[0].dependencies[0].key).toEqual(Key.get(Engine));
       });
 
       it('should support overriding factory dependencies with dependency annotations', () => {
@@ -576,10 +629,12 @@ export function main() {
               .toFactory((e) => "result",
                          [[new InjectMetadata("dep"), new CustomDependencyMetadata()]])
         ]);
+
         var binding = bindings[0];
 
-        expect(binding.dependencies[0].key.token).toEqual("dep");
-        expect(binding.dependencies[0].properties).toEqual([new CustomDependencyMetadata()]);
+        expect(binding.resolvedFactories[0].dependencies[0].key.token).toEqual("dep");
+        expect(binding.resolvedFactories[0].dependencies[0].properties)
+            .toEqual([new CustomDependencyMetadata()]);
       });
     });
 

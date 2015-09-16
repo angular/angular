@@ -1,7 +1,7 @@
 import {
+  RootTestComponent,
   AsyncTestCompleter,
   TestComponentBuilder,
-  asNativeElements,
   beforeEach,
   ddescribe,
   xdescribe,
@@ -15,8 +15,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {Injector, Inject, bind} from 'angular2/di';
-import {Component, View} from 'angular2/metadata';
+import {bind, Component, Injector, Inject, View} from 'angular2/core';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {
   Promise,
@@ -27,7 +26,6 @@ import {
 } from 'angular2/src/core/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
-import {Pipeline} from 'angular2/src/router/pipeline';
 import {Router, RouterOutlet, RouterLink, RouteParams, ROUTE_DATA} from 'angular2/router';
 import {
   RouteConfig,
@@ -60,17 +58,16 @@ export function main() {
   describe('Router lifecycle hooks', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC, rtr;
+    var rootTC: RootTestComponent;
+    var rtr;
 
     beforeEachBindings(() => [
-      Pipeline,
       RouteRegistry,
       DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router)
-          .toFactory((registry, pipeline,
-                      location) => { return new RootRouter(registry, pipeline, location, MyComp); },
-                     [RouteRegistry, Pipeline, Location])
+          .toFactory((registry, location) => { return new RootRouter(registry, location, MyComp); },
+                     [RouteRegistry, Location])
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
@@ -93,14 +90,14 @@ export function main() {
     it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/on-activate'))
+             .then((_) => rtr.navigateByUrl('/on-activate'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('activate cmp');
+               expect(rootTC.debugElement.nativeElement).toHaveText('activate cmp');
                expect(log).toEqual(['activate: null -> /on-activate']);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should wait for a parent component\'s onActivate hook to resolve before calling its child\'s',
        inject([AsyncTestCompleter], (async) => {
@@ -112,10 +109,10 @@ export function main() {
                    completer.resolve(true);
                  }
                });
-               rtr.navigate('/parent-activate/child-activate')
+               rtr.navigateByUrl('/parent-activate/child-activate')
                    .then((_) => {
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('parent {activate cmp}');
+                     expect(rootTC.debugElement.nativeElement).toHaveText('parent {activate cmp}');
                      expect(log).toEqual([
                        'parent activate: null -> /parent-activate',
                        'activate: null -> /child-activate'
@@ -123,37 +120,37 @@ export function main() {
                      async.done();
                    });
              });
-       }), 2000);
+       }));
 
     it('should call the onDeactivate hook', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/on-deactivate'))
-             .then((_) => rtr.navigate('/a'))
+             .then((_) => rtr.navigateByUrl('/on-deactivate'))
+             .then((_) => rtr.navigateByUrl('/a'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('A');
+               expect(rootTC.debugElement.nativeElement).toHaveText('A');
                expect(log).toEqual(['deactivate: /on-deactivate -> /a']);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should wait for a child component\'s onDeactivate hook to resolve before calling its parent\'s',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/parent-deactivate/child-deactivate'))
+             .then((_) => rtr.navigateByUrl('/parent-deactivate/child-deactivate'))
              .then((_) => {
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('deactivate')) {
                    completer.resolve(true);
                    rootTC.detectChanges();
-                   expect(rootTC.nativeElement).toHaveText('parent {deactivate cmp}');
+                   expect(rootTC.debugElement.nativeElement).toHaveText('parent {deactivate cmp}');
                  }
                });
-               rtr.navigate('/a').then((_) => {
+               rtr.navigateByUrl('/a').then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('A');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('A');
                  expect(log).toEqual([
                    'deactivate: /child-deactivate -> null',
                    'parent deactivate: /parent-deactivate -> /a'
@@ -161,50 +158,50 @@ export function main() {
                  async.done();
                });
              });
-       }), 2000);
+       }));
 
     it('should reuse a component when the canReuse hook returns true',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/on-reuse/1/a'))
+             .then((_) => rtr.navigateByUrl('/on-reuse/1/a'))
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.nativeElement).toHaveText('reuse {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {A}');
                expect(cmpInstanceCount).toBe(1);
              })
-             .then((_) => rtr.navigate('/on-reuse/2/b'))
+             .then((_) => rtr.navigateByUrl('/on-reuse/2/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual(['reuse: /on-reuse/1 -> /on-reuse/2']);
-               expect(rootTC.nativeElement).toHaveText('reuse {B}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {B}');
                expect(cmpInstanceCount).toBe(1);
                async.done();
              });
-       }), 2000);
+       }));
 
 
     it('should not reuse a component when the canReuse hook returns false',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/never-reuse/1/a'))
+             .then((_) => rtr.navigateByUrl('/never-reuse/1/a'))
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.nativeElement).toHaveText('reuse {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {A}');
                expect(cmpInstanceCount).toBe(1);
              })
-             .then((_) => rtr.navigate('/never-reuse/2/b'))
+             .then((_) => rtr.navigateByUrl('/never-reuse/2/b'))
              .then((_) => {
                rootTC.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.nativeElement).toHaveText('reuse {B}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {B}');
                expect(cmpInstanceCount).toBe(2);
                async.done();
              });
-       }), 2000);
+       }));
 
 
     it('should navigate when canActivate returns true', inject([AsyncTestCompleter], (async) => {
@@ -216,15 +213,15 @@ export function main() {
                    completer.resolve(true);
                  }
                });
-               rtr.navigate('/can-activate/a')
+               rtr.navigateByUrl('/can-activate/a')
                    .then((_) => {
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('canActivate {A}');
+                     expect(rootTC.debugElement.nativeElement).toHaveText('canActivate {A}');
                      expect(log).toEqual(['canActivate: null -> /can-activate']);
                      async.done();
                    });
              });
-       }), 2000);
+       }));
 
     it('should not navigate when canActivate returns false',
        inject([AsyncTestCompleter], (async) => {
@@ -236,24 +233,24 @@ export function main() {
                    completer.resolve(false);
                  }
                });
-               rtr.navigate('/can-activate/a')
+               rtr.navigateByUrl('/can-activate/a')
                    .then((_) => {
                      rootTC.detectChanges();
-                     expect(rootTC.nativeElement).toHaveText('');
+                     expect(rootTC.debugElement.nativeElement).toHaveText('');
                      expect(log).toEqual(['canActivate: null -> /can-activate']);
                      async.done();
                    });
              });
-       }), 2000);
+       }));
 
     it('should navigate away when canDeactivate returns true',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/can-deactivate/a'))
+             .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -262,23 +259,23 @@ export function main() {
                  }
                });
 
-               rtr.navigate('/a').then((_) => {
+               rtr.navigateByUrl('/a').then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('A');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('A');
                  expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
                  async.done();
                });
              });
-       }), 2000);
+       }));
 
     it('should not navigate away when canDeactivate returns false',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/can-deactivate/a'))
+             .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+               expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -287,21 +284,21 @@ export function main() {
                  }
                });
 
-               rtr.navigate('/a').then((_) => {
+               rtr.navigateByUrl('/a').then((_) => {
                  rootTC.detectChanges();
-                 expect(rootTC.nativeElement).toHaveText('canDeactivate {A}');
+                 expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                  expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
                  async.done();
                });
              });
-       }), 2000);
+       }));
 
 
     it('should run activation and deactivation hooks in the correct order',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/activation-hooks/child'))
+             .then((_) => rtr.navigateByUrl('/activation-hooks/child'))
              .then((_) => {
                expect(log).toEqual([
                  'canActivate child: null -> /child',
@@ -311,7 +308,7 @@ export function main() {
                ]);
 
                log = [];
-               return rtr.navigate('/a');
+               return rtr.navigateByUrl('/a');
              })
              .then((_) => {
                expect(log).toEqual([
@@ -322,12 +319,12 @@ export function main() {
                ]);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should only run reuse hooks when reusing', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/reuse-hooks/1'))
+             .then((_) => rtr.navigateByUrl('/reuse-hooks/1'))
              .then((_) => {
                expect(log).toEqual(
                    ['canActivate: null -> /reuse-hooks/1', 'onActivate: null -> /reuse-hooks/1']);
@@ -340,7 +337,7 @@ export function main() {
 
 
                log = [];
-               return rtr.navigate('/reuse-hooks/2');
+               return rtr.navigateByUrl('/reuse-hooks/2');
              })
              .then((_) => {
                expect(log).toEqual([
@@ -349,12 +346,12 @@ export function main() {
                ]);
                async.done();
              });
-       }), 2000);
+       }));
 
     it('should not run reuse hooks when not reusing', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
-             .then((_) => rtr.navigate('/reuse-hooks/1'))
+             .then((_) => rtr.navigateByUrl('/reuse-hooks/1'))
              .then((_) => {
                expect(log).toEqual(
                    ['canActivate: null -> /reuse-hooks/1', 'onActivate: null -> /reuse-hooks/1']);
@@ -366,7 +363,7 @@ export function main() {
                });
 
                log = [];
-               return rtr.navigate('/reuse-hooks/2');
+               return rtr.navigateByUrl('/reuse-hooks/2');
              })
              .then((_) => {
                expect(log).toEqual([
@@ -378,7 +375,7 @@ export function main() {
                ]);
                async.done();
              });
-       }), 2000);
+       }));
   });
 }
 

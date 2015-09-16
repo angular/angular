@@ -27,6 +27,10 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
+  Map propMetadata(Type type) {
+    throw "Cannot find reflection information on ${stringify(type)}";
+  }
+
   GetterFn getter(String name) {
     throw "Cannot find getter ${name}";
   }
@@ -38,6 +42,8 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
   MethodFn method(String name) {
     throw "Cannot find method ${name}";
   }
+
+  String importUri(Type type) => './';
 }
 
 final Reflector reflector = new Reflector(new NoReflectionCapabilities());

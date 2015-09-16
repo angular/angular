@@ -17,7 +17,7 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/jasmine-patch.js',
 
-      'node_modules/traceur/bin/traceur-runtime.js',
+      'node_modules/es6-shim/es6-shim.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'modules/angular2/src/test_lib/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
@@ -25,13 +25,10 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}      
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
     ],
 
-    exclude: [
-      'dist/js/dev/es5/**/e2e_test/**',
-      'dist/angular1_router.js'
-    ],
+    exclude: ['dist/js/dev/es5/**/e2e_test/**', 'dist/angular1_router.js'],
 
     customLaunchers: sauceConf.customLaunchers,
 
@@ -40,15 +37,15 @@ module.exports = function(config) {
       startConnect: false,
       recordVideo: false,
       recordScreenshots: false,
-      options:  {
-          'selenium-version': '2.45.0',
-          'command-timeout': 600,
-          'idle-timeout': 600,
-          'max-duration': 5400
+      options: {
+        'selenium-version': '2.45.0',
+        'command-timeout': 600,
+        'idle-timeout': 600,
+        'max-duration': 5400
       }
     },
 
-    browsers: ['ChromeCanary'],
+    browsers: ['Chrome'],
 
     port: 9876
   });
@@ -62,5 +59,3 @@ module.exports = function(config) {
     config.transports = ['xhr-polling'];
   }
 };
-
-

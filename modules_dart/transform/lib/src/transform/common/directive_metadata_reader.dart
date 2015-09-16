@@ -6,14 +6,20 @@ import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 
 /// Reads [RenderDirectiveMetadata] from the `node`. `node` is expected to be an
-/// instance of [Annotation], [NodeList<Annotation>], ListLiteral, or
-/// [InstanceCreationExpression].
-RenderDirectiveMetadata readDirectiveMetadata(dynamic node) {
-  assert(node is Annotation ||
-      node is NodeList ||
-      node is InstanceCreationExpression ||
-      node is ListLiteral);
-  var visitor = new _DirectiveMetadataVisitor();
+/// instance of [ClassDeclaration] (a class which may have a [Directive] or
+/// [Component] annotation) or an [InstanceCreationExpression] (an instantiation
+/// of [ReflectionInfo]).
+RenderDirectiveMetadata readDirectiveMetadata(AstNode node) {
+  var visitor;
+  if (node is ClassDeclaration) {
+    visitor = new _DeclarationVisitor();
+  } else if (node is InstanceCreationExpression) {
+    visitor = new _ReflectionInfoVisitor();
+  } else {
+    throw new ArgumentError('Incorrect value passed to readDirectiveMetadata. '
+        'Expected types are ClassDeclaration and InstanceCreationExpression '
+        'Provided type was ${node.runtimeType}');
+  }
   node.accept(visitor);
   return visitor.meta;
 }
@@ -45,8 +51,79 @@ num _getDirectiveType(String annotationName, Element element) {
   return byNameMatch;
 }
 
-/// Visitor responsible for processing the `annotations` property of a
-/// [RegisterType] object and pulling out [RenderDirectiveMetadata].
+class _ReflectionInfoVisitor extends _DirectiveMetadataVisitor {
+  // TODO(kegluneq): Create a more robust check that this is a real
+  // `ReflectionInfo` instantiation.
+  static bool _isReflectionInfo(InstanceCreationExpression node) {
+    var name = node.constructorName.type.name;
+    name = name is PrefixedIdentifier ? name.identifier : name;
+    return '$name' == 'ReflectionInfo';
+  }
+
+  @override
+  Object visitInstanceCreationExpression(InstanceCreationExpression node) {
+    if (_isReflectionInfo(node)) {
+      // NOTE(kegluneq): This is very tightly coupled with the `Reflector`
+      // implementation. Clean this up with a better intermediate representation
+      // for .ng_deps.dart files.
+      var reflectionInfoArgs = node.argumentList.arguments;
+      if (reflectionInfoArgs.length > 0) {
+        // Process annotations to determine information specified via
+        // `Component` and `Directive` parameters.
+        reflectionInfoArgs[0].accept(this);
+        if (_hasMeta && reflectionInfoArgs.length > 3) {
+          // Process interfaces to determine which lifecycle events we need to
+          // react to for this `Directive`.
+          _processInterfaces(reflectionInfoArgs[3]);
+        }
+      }
+      return null;
+    }
+    var directiveType = _getDirectiveType(
+        '${node.constructorName.type.name}', node.staticElement);
+    if (directiveType >= 0) {
+      if (_hasMeta) {
+        throw new FormatException(
+            'Only one Directive is allowed per class. '
+            'Found "$node" but already processed "$meta".',
+            '$node' /* source */);
+      }
+      _initializeMetadata(directiveType);
+      super.visitInstanceCreationExpression(node);
+    }
+    // Annotation we do not recognize - no need to visit.
+    return null;
+  }
+
+  void _processInterfaces(Expression lifecycleValue) {
+    _checkMeta();
+    if (lifecycleValue is! ListLiteral) {
+      throw new FormatException(
+          'Angular 2 expects a List but could not understand the value for interfaces. '
+          '$lifecycleValue');
+    }
+    ListLiteral l = lifecycleValue;
+    _populateLifecycle(l.elements.map((s) => s.toSource().split('.').last));
+  }
+}
+
+class _DeclarationVisitor extends _DirectiveMetadataVisitor {
+  @override
+  Object visitClassDeclaration(ClassDeclaration node) {
+    node.metadata.accept(this);
+    if (this._hasMeta) {
+      if (node.implementsClause != null &&
+          node.implementsClause.interfaces != null) {
+        _populateLifecycle(node.implementsClause.interfaces
+            .map((s) => s.toSource().split('.').last));
+      }
+    }
+    return null;
+  }
+}
+
+/// Visitor responsible for processing [Directive] code into a
+/// [RenderDirectiveMetadata] object.
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
   bool get _hasMeta => _type != null;
@@ -61,7 +138,7 @@ class _DirectiveMetadataVisitor extends Object
   String _exportAs;
   bool _callOnDestroy;
   bool _callOnChange;
-  bool _callOnCheck;
+  bool _callDoCheck;
   bool _callOnInit;
   bool _callAfterContentInit;
   bool _callAfterContentChecked;
@@ -84,7 +161,7 @@ class _DirectiveMetadataVisitor extends Object
     _exportAs = null;
     _callOnDestroy = false;
     _callOnChange = false;
-    _callOnCheck = false;
+    _callDoCheck = false;
     _callOnInit = false;
     _callAfterContentInit = false;
     _callAfterContentChecked = false;
@@ -104,7 +181,7 @@ class _DirectiveMetadataVisitor extends Object
       exportAs: _exportAs,
       callOnDestroy: _callOnDestroy,
       callOnChanges: _callOnChange,
-      callDoCheck: _callOnCheck,
+      callDoCheck: _callDoCheck,
       callOnInit: _callOnInit,
       callAfterContentInit: _callAfterContentInit,
       callAfterContentChecked: _callAfterContentChecked,
@@ -131,24 +208,6 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   @override
-  Object visitInstanceCreationExpression(InstanceCreationExpression node) {
-    var directiveType = _getDirectiveType(
-        '${node.constructorName.type.name}', node.staticElement);
-    if (directiveType >= 0) {
-      if (_hasMeta) {
-        throw new FormatException(
-            'Only one Directive is allowed per class. '
-            'Found "$node" but already processed "$meta".',
-            '$node' /* source */);
-      }
-      _initializeMetadata(directiveType);
-      super.visitInstanceCreationExpression(node);
-    }
-    // Annotation we do not recognize - no need to visit.
-    return null;
-  }
-
-  @override
   Object visitNamedExpression(NamedExpression node) {
     // TODO(kegluneq): Remove this limitation.
     if (node.name is! Label || node.name.label is! SimpleIdentifier) {
@@ -169,9 +228,6 @@ class _DirectiveMetadataVisitor extends Object
         break;
       case 'host':
         _populateHost(node.expression);
-        break;
-      case 'lifecycle':
-        _populateLifecycle(node.expression);
         break;
       case 'exportAs':
         _populateExportAs(node.expression);
@@ -206,8 +262,7 @@ class _DirectiveMetadataVisitor extends Object
     if (!_hasMeta) {
       throw new ArgumentError(
           'Incorrect value passed to readDirectiveMetadata. '
-          'Expected types are Annotation, InstanceCreationExpression, '
-          'NodeList or ListLiteral');
+          'Expected types are ClassDeclaration and InstanceCreationExpression');
     }
   }
 
@@ -270,23 +325,19 @@ class _DirectiveMetadataVisitor extends Object
     _exportAs = _expressionToString(exportAsValue, 'Directive#exportAs');
   }
 
-  void _populateLifecycle(Expression lifecycleValue) {
+  void _populateLifecycle(Iterable<String> lifecycleInterfaceNames) {
     _checkMeta();
-    if (lifecycleValue is! ListLiteral) {
-      throw new FormatException(
-          'Angular 2 expects a List but could not understand the value for lifecycle. '
-          '$lifecycleValue');
-    }
-    ListLiteral l = lifecycleValue;
-    var lifecycleEvents = l.elements.map((s) => s.toSource().split('.').last);
-    _callOnDestroy = lifecycleEvents.contains("OnDestroy");
-    _callOnChange = lifecycleEvents.contains("OnChanges");
-    _callOnCheck = lifecycleEvents.contains("DoCheck");
-    _callOnInit = lifecycleEvents.contains("OnInit");
-    _callAfterContentInit = lifecycleEvents.contains("AfterContentInit");
-    _callAfterContentChecked = lifecycleEvents.contains("AfterContentChecked");
-    _callAfterViewInit = lifecycleEvents.contains("AfterViewInit");
-    _callAfterViewChecked = lifecycleEvents.contains("AfterViewChecked");
+    _callOnDestroy = lifecycleInterfaceNames.contains("OnDestroy");
+    _callOnChange = lifecycleInterfaceNames.contains("OnChanges");
+    _callDoCheck = lifecycleInterfaceNames.contains("DoCheck");
+    _callOnInit = lifecycleInterfaceNames.contains("OnInit");
+    _callAfterContentInit =
+        lifecycleInterfaceNames.contains("AfterContentInit");
+    _callAfterContentChecked =
+        lifecycleInterfaceNames.contains("AfterContentChecked");
+    _callAfterViewInit = lifecycleInterfaceNames.contains("AfterViewInit");
+    _callAfterViewChecked =
+        lifecycleInterfaceNames.contains("AfterViewChecked");
   }
 
   void _populateEvents(Expression eventsValue) {
@@ -300,5 +351,6 @@ class _DirectiveMetadataVisitor extends Object
   }
 }
 
-final Map<String, ChangeDetectionStrategy> changeDetectionStrategies
-  = new Map.fromIterable(ChangeDetectionStrategy.values, key: (v) => v.toString());
+final Map<String, ChangeDetectionStrategy> changeDetectionStrategies =
+    new Map.fromIterable(ChangeDetectionStrategy.values,
+        key: (v) => v.toString());

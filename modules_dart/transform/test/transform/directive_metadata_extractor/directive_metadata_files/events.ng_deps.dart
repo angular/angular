@@ -2,7 +2,7 @@ library examples.hello_world.index_common_dart.ng_deps.dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement, LifecycleEvent;
+    show Component, Directive, View, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -12,7 +12,7 @@ void initReflector(reflector) {
     ..registerType(
         HelloCmp,
         new ReflectionInfo(const [
-          const Component(events: ['onFoo', 'onBar'])
+          const Component(events: const ['onFoo', 'onBar'])
         ], const [
           const []
         ], () => new HelloCmp()));

@@ -108,28 +108,36 @@ export function main() {
 
 
     it('should generate URLs with params', () => {
-      recognizer.config(new Route({path: '/app/user/:name', component: DummyCmpA, as: 'user'}));
-      var instruction = recognizer.generate('user', {'name': 'misko'});
+      recognizer.config(new Route({path: '/app/user/:name', component: DummyCmpA, as: 'User'}));
+      var instruction = recognizer.generate('User', {'name': 'misko'});
       expect(instruction.urlPath).toEqual('app/user/misko');
     });
 
 
     it('should generate URLs with numeric params', () => {
-      recognizer.config(new Route({path: '/app/page/:number', component: DummyCmpA, as: 'page'}));
-      expect(recognizer.generate('page', {'number': 42}).urlPath).toEqual('app/page/42');
+      recognizer.config(new Route({path: '/app/page/:number', component: DummyCmpA, as: 'Page'}));
+      expect(recognizer.generate('Page', {'number': 42}).urlPath).toEqual('app/page/42');
     });
 
 
     it('should throw in the absence of required params URLs', () => {
-      recognizer.config(new Route({path: 'app/user/:name', component: DummyCmpA, as: 'user'}));
-      expect(() => recognizer.generate('user', {}))
+      recognizer.config(new Route({path: 'app/user/:name', component: DummyCmpA, as: 'User'}));
+      expect(() => recognizer.generate('User', {}))
           .toThrowError('Route generator for \'name\' was not included in parameters passed.');
+    });
+
+
+    it('should throw if the route alias is not CamelCase', () => {
+      expect(() => recognizer.config(
+                 new Route({path: 'app/user/:name', component: DummyCmpA, as: 'user'})))
+          .toThrowError(
+              `Route 'app/user/:name' with alias 'user' does not begin with an uppercase letter. Route aliases should be CamelCase like 'User'.`);
     });
 
 
     describe('params', () => {
       it('should recognize parameters within the URL path', () => {
-        recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'user'}));
+        recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'User'}));
         var solution = recognize(recognizer, '/profile/matsko?comments=all');
         expect(solution.params).toEqual({'name': 'matsko', 'comments': 'all'});
       });
@@ -138,18 +146,18 @@ export function main() {
       it('should generate and populate the given static-based route with querystring params',
          () => {
            recognizer.config(
-               new Route({path: 'forum/featured', component: DummyCmpA, as: 'forum-page'}));
+               new Route({path: 'forum/featured', component: DummyCmpA, as: 'ForumPage'}));
 
            var params = {'start': 10, 'end': 100};
 
-           var result = recognizer.generate('forum-page', params);
+           var result = recognizer.generate('ForumPage', params);
            expect(result.urlPath).toEqual('forum/featured');
            expect(result.urlParams).toEqual(['start=10', 'end=100']);
          });
 
 
       it('should prefer positional params over query params', () => {
-        recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'user'}));
+        recognizer.config(new Route({path: 'profile/:name', component: DummyCmpA, as: 'User'}));
 
         var solution = recognize(recognizer, '/profile/yegor?name=igor');
         expect(solution.params).toEqual({'name': 'yegor'});
@@ -157,7 +165,7 @@ export function main() {
 
 
       it('should ignore matrix params for the top-level component', () => {
-        recognizer.config(new Route({path: '/home/:subject', component: DummyCmpA, as: 'user'}));
+        recognizer.config(new Route({path: '/home/:subject', component: DummyCmpA, as: 'User'}));
         var solution = recognize(recognizer, '/home;sort=asc/zero;one=1?two=2');
         expect(solution.params).toEqual({'subject': 'zero', 'two': '2'});
       });

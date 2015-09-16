@@ -1,4 +1,5 @@
-import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {Type, isBlank, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
@@ -42,19 +43,19 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
   _eventBindingRecords: EventBinding[];
   _directiveIndices: DirectiveIndex[];
 
-  constructor(private definition: ChangeDetectorDefinition) {
-    this._propertyBindingRecords = createPropertyRecords(definition);
-    this._eventBindingRecords = createEventRecords(definition);
-    this._propertyBindingTargets = this.definition.bindingRecords.map(b => b.target);
-    this._directiveIndices = this.definition.directiveRecords.map(d => d.directiveIndex);
+  constructor(private _definition: ChangeDetectorDefinition) {
+    this._propertyBindingRecords = createPropertyRecords(_definition);
+    this._eventBindingRecords = createEventRecords(_definition);
+    this._propertyBindingTargets = this._definition.bindingRecords.map(b => b.target);
+    this._directiveIndices = this._definition.directiveRecords.map(d => d.directiveIndex);
   }
 
   instantiate(dispatcher: any): ChangeDetector {
     return new DynamicChangeDetector(
-        this.definition.id, dispatcher, this._propertyBindingRecords.length,
-        this._propertyBindingTargets, this._directiveIndices, this.definition.strategy,
-        this._propertyBindingRecords, this._eventBindingRecords, this.definition.directiveRecords,
-        this.definition.genConfig);
+        this._definition.id, dispatcher, this._propertyBindingRecords.length,
+        this._propertyBindingTargets, this._directiveIndices, this._definition.strategy,
+        this._propertyBindingRecords, this._eventBindingRecords, this._definition.directiveRecords,
+        this._definition.genConfig);
   }
 }
 
@@ -101,6 +102,11 @@ export class ProtoRecordBuilder {
       if (rec.isPureFunction()) {
         rec.args.forEach(recordIndex => this.records[recordIndex - 1].argumentToPureFunction =
                              true);
+      }
+      if (rec.mode === RecordType.Pipe) {
+        rec.args.forEach(recordIndex => this.records[recordIndex - 1].argumentToPureFunction =
+                             true);
+        this.records[rec.contextIndex - 1].argumentToPureFunction = true;
       }
     }
   }

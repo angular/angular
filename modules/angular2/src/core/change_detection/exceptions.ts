@@ -1,4 +1,4 @@
-import {BaseException} from "angular2/src/core/facade/lang";
+import {BaseException, WrappedException} from "angular2/src/core/facade/exceptions";
 
 /**
  * An error thrown if application changes model breaking the top-down data flow.
@@ -21,7 +21,7 @@ export class ExpressionChangedAfterItHasBeenCheckedException extends BaseExcepti
  *
  * This error wraps the original exception, this is done to attach expression location information.
  */
-export class ChangeDetectionError extends BaseException {
+export class ChangeDetectionError extends WrappedException {
   /**
    * Location of the expression.
    */

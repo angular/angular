@@ -1,6 +1,6 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isBlank, BaseException, stringify} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, stringify} from 'angular2/src/core/facade/lang';
 
 import {DomProtoView} from './proto_view';
 

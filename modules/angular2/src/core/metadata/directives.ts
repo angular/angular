@@ -1,6 +1,6 @@
-import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {isPresent, CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
-import {ChangeDetectionStrategy} from 'angular2/change_detection';
+import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -318,6 +318,10 @@ import {ChangeDetectionStrategy} from 'angular2/change_detection';
  * the directive
  * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
  *
+ * ## Lifecycle hooks
+ *
+ * When the directive class implements some {@link angular2/lifecycle_hooks} the callbacks are
+ * called by the change detection at defined points in time during the life of the directive.
  *
  * ## Example
  *
@@ -529,7 +533,7 @@ export class DirectiveMetadata extends InjectableMetadata {
   events: string[];
 
   /**
-   * Specifiy the events, actions, properties and attributes related to the host element.
+   * Specify the events, actions, properties and attributes related to the host element.
    *
    * ## Events
    *
@@ -538,7 +542,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    * - `event1`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
-   * If the evalutation of the statement returns `false`, then `preventDefault`is applied on the DOM
+   * If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
    * event.
    *
    * To listen to global events, a target must be added to the event name.
@@ -603,7 +607,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    *
-   * In this example the prop property of the host element is updated with the expression value
+   * In this example the `prop` property of the host element is updated with the expression value
    * every time it changes.
    *
    * ## Attributes
@@ -631,20 +635,13 @@ export class DirectiveMetadata extends InjectableMetadata {
   host: StringMap<string, string>;
 
   /**
-   * Specifies which lifecycle should be notified to the directive.
-   *
-   * See {@link LifecycleEvent} for details.
-   */
-  lifecycle: LifecycleEvent[];
-
-  /**
    * If set to false the compiler does not compile the children of this directive.
    */
   // TODO(vsavkin): This would better fall under the Macro directive concept.
   compileChildren: boolean;
 
   /**
-   * Defines the set of injectable objects that are visible to a Directive and its light dom
+   * Defines the set of injectable objects that are visible to a Directive and its light DOM
    * children.
    *
    * ## Simple Example
@@ -703,14 +700,12 @@ export class DirectiveMetadata extends InjectableMetadata {
   exportAs: string;
 
   constructor({
-                  selector, properties, events, host, lifecycle, bindings, exportAs,
-                  compileChildren = true,
+                  selector, properties, events, host, bindings, exportAs, compileChildren = true,
               }: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: LifecycleEvent[],
     bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
@@ -721,7 +716,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.events = events;
     this.host = host;
     this.exportAs = exportAs;
-    this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
     this.bindings = bindings;
   }
@@ -743,6 +737,11 @@ export class DirectiveMetadata extends InjectableMetadata {
  * All template expressions and statements are then evaluated against the component instance.
  *
  * For details on the `@View` annotation, see {@link ViewMetadata}.
+ *
+ * ## Lifecycle hooks
+ *
+ * When the component class implements some {@link angular2/lifecycle_hooks} the callbacks are
+ * called by the change detection at defined points in time during the life of the component.
  *
  * ## Example
  *
@@ -777,7 +776,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   changeDetection: ChangeDetectionStrategy;
 
   /**
-   * Defines the set of injectable objects that are visible to its view dom children.
+   * Defines the set of injectable objects that are visible to its view DOM children.
    *
    * ## Simple Example
    *
@@ -818,13 +817,12 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, exportAs, lifecycle, bindings, viewBindings,
+  constructor({selector, properties, events, host, exportAs, bindings, viewBindings,
                changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
-    lifecycle?: LifecycleEvent[],
     bindings?: any[],
     exportAs?: string,
     compileChildren?: boolean,
@@ -838,213 +836,12 @@ export class ComponentMetadata extends DirectiveMetadata {
       host: host,
       exportAs: exportAs,
       bindings: bindings,
-      lifecycle: lifecycle,
       compileChildren: compileChildren
     });
 
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
   }
-}
-
-/**
- * Lifecycle events are guaranteed to be called in the following order:
- * - `OnChanges` (if any bindings have changed),
- * - `OnInit` (after the first check only),
- * - `DoCheck`,
- * - `AfterContentChecked`
- * - `AfterContentChecked`
- * - `OnDestroy` (at the very end before destruction)
- */
-export enum LifecycleEvent {
-  /**
-   * Notify a directive when it has been checked the first time.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked only once.
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.OnInit]
-   * })
-   * class ClassSet {
-   *   onInit() {
-   *   }
-   * }
-   *  ```
-   */
-  OnInit,
-
-  /**
-   * Notify a directive whenever a {@link ViewMetadata} that contains it is destroyed.
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   ...,
-   *   lifecycle: [LifecycleEvent.OnDestroy]
-   * })
-   * class ClassSet {
-   *   onDestroy() {
-   *     // invoked to notify directive of the containing view destruction.
-   *   }
-   * }
-   * ```
-   */
-  OnDestroy,
-
-
-  /**
-   * Notify a directive when any of its bindings have changed.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked only if at least one of the directive's bindings has changed.
-   *
-   * ## Example:
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   properties: [
-   *     'propA',
-   *     'propB'
-   *   ],
-   *   lifecycle: [LifecycleEvent.OnChanges]
-   * })
-   * class ClassSet {
-   *   propA;
-   *   propB;
-   *   onChanges(changes:{[idx: string, PropertyUpdate]}) {
-   *     // This will get called after any of the properties have been updated.
-   *     if (changes['propA']) {
-   *       // if propA was updated
-   *     }
-   *     if (changes['propA']) {
-   *       // if propB was updated
-   *     }
-   *   }
-   * }
-   *  ```
-   */
-  OnChanges,
-
-  /**
-   * Notify a directive when it has been checked.
-   *
-   * This method is called right after the directive's bindings have been checked,
-   * and before any of its children's bindings have been checked.
-   *
-   * It is invoked every time even when none of the directive's bindings has changed.
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.DoCheck]
-   * })
-   * class ClassSet {
-   *   doCheck() {
-   *   }
-   * }
-   *  ```
-   */
-  DoCheck,
-
-  /**
-   * Notify a directive when the bindings of all its content children have been checked the first
-   * time (whether they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterContentInit]
-   * })
-   * class ClassSet {
-   *
-   *   afterContentInit() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterContentInit,
-
-  /**
-   * Notify a directive when the bindings of all its content children have been checked (whether
-   * they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterContentChecked]
-   * })
-   * class ClassSet {
-   *
-   *   afterContentChecked() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterContentChecked,
-
-  /**
-   * Notify a directive when the bindings of all its view children have been checked the first time
-   * (whether they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterViewInit]
-   * })
-   * class ClassSet {
-   *
-   *   afterViewInit() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterViewInit,
-
-  /**
-   * Notify a directive when the bindings of all its view children have been checked (whether they
-   * have changed or not).
-   *
-   * ## Example
-   *
-   * ```
-   * @Directive({
-   *   selector: '[class-set]',
-   *   lifecycle: [LifecycleEvent.AfterViewChecked]
-   * })
-   * class ClassSet {
-   *
-   *   afterViewChecked() {
-   *   }
-   *
-   * }
-   *  ```
-   */
-  AfterViewChecked
 }
 
 /**
@@ -1064,9 +861,117 @@ export enum LifecycleEvent {
 @CONST()
 export class PipeMetadata extends InjectableMetadata {
   name: string;
+  _pure: boolean;
 
-  constructor({name}: {name: string}) {
+  constructor({name, pure}: {name: string, pure: boolean}) {
     super();
     this.name = name;
+    this._pure = pure;
   }
+
+  get pure(): boolean { return isPresent(this._pure) ? this._pure : true; }
+}
+
+/**
+ * Declare a bound field.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Property() property; // Same as @Property('property') property;
+ *   @Property("el-property") dirProperty;
+ * }
+ * ```
+ */
+@CONST()
+export class PropertyMetadata {
+  constructor(public bindingPropertyName?: string) {}
+}
+
+/**
+ * Declare a bound event.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @Event() event = new EventEmitter(); // Same as @Event('event') event = new EventEmitter();
+ *   @Event("el-event") dirEvent = new EventEmitter();
+ * }
+ * ```
+ */
+@CONST()
+export class EventMetadata {
+  constructor(public bindingPropertyName?: string) {}
+}
+
+/**
+ * Declare a host property binding.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostBinding() prop1; // Same as @HostBinding('prop1') prop1;
+ *   @HostBinding("el-prop") prop2;
+ * }
+ * ```
+ *
+ * This is equivalent to
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir',
+ *   host: {'[prop1]': 'prop1', '[el-prop]': 'prop2'}
+ * })
+ * class SampleDir {
+ *   prop1;
+ *   prop2;
+ * }
+ * ```
+ */
+@CONST()
+export class HostBindingMetadata {
+  constructor(public hostPropertyName?: string) {}
+}
+
+/**
+ * Declare a host listener.
+ *
+ * ## Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir'
+ * })
+ * class SampleDir {
+ *   @HostListener("change", ['$event.target.value']) onChange(value){}
+ * }
+ * ```
+ *
+ * This is equivalent to
+ *
+ * ```
+ * @Directive({
+ *   selector: 'sample-dir',
+ *   host: {'(change)': 'onChange($event.target.value)'}
+ * })
+ * class SampleDir {
+ *   onChange(value){}
+ * }
+ * ```
+ */
+@CONST()
+export class HostListenerMetadata {
+  constructor(public eventName: string, public args?: string[]) {}
 }

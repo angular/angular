@@ -1,21 +1,7 @@
 /**
- * @module
- * @description
- * This module provides advanced support for extending dom strategy.
+ * This file is only used for dart applications and for internal examples
+ * that compile with both JavaScript and Dart.
+ *
+ * JavaScript users should import from angular2/core.
  */
-
-export {
-  RenderDirectiveMetadata,
-  DomRenderer,
-  RenderEventDispatcher,
-  Renderer,
-  RenderElementRef,
-  RenderViewRef,
-  RenderProtoViewRef,
-  RenderFragmentRef,
-  RenderViewWithFragments,
-  ViewDefinition,
-  DOCUMENT,
-  APP_ID,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE
-} from './src/core/render/render';
+export * from './src/core/render';

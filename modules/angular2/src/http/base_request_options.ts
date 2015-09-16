@@ -2,7 +2,7 @@ import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/core/facade/l
 import {Headers} from './headers';
 import {RequestModesOpts, RequestMethods, RequestCacheOpts, RequestCredentialsOpts} from './enums';
 import {RequestOptionsArgs} from './interfaces';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {URLSearchParams} from './url_search_params';
 
 /**
@@ -83,7 +83,7 @@ export class RequestOptions {
  *   constructor(baseRequestOptions:BaseRequestOptions, http:Http) {
  *     var options = baseRequestOptions.merge({body: 'foobar', url: 'https://foo'});
  *     var request = new Request(options);
- *     http.request(request).subscribe(res => this.bars = res.json());
+ *     http.request(request).toRx().subscribe(res => this.bars = res.json());
  *   }
  * }
  *

@@ -11,12 +11,10 @@ import {
   StringWrapper,
   isPresent,
   Type,
-  isArray,
-  BaseException
+  isArray
 } from 'angular2/src/core/facade/lang';
-
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
-import {Pipeline} from './pipeline';
 import {ComponentInstruction, Instruction, stringifyInstruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
@@ -27,19 +25,19 @@ let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
 
 /**
- * # Router
- * The router is responsible for mapping URLs to components.
+ * The `Router` is responsible for mapping URLs to components.
  *
  * You can see the state of the router by inspecting the read-only field `router.navigating`.
  * This may be useful for showing a spinner, for instance.
  *
  * ## Concepts
+ *
  * Routers and component instances have a 1:1 correspondence.
  *
- * The router holds reference to a number of "outlets." An outlet is a placeholder that the
- * router dynamically fills in depending on the current URL.
+ * The router holds reference to a number of {@link RouterOutlet}.
+ * An outlet is a placeholder that the router dynamically fills in depending on the current URL.
  *
- * When the router navigates from a URL, it must first recognizes it and serialize it into an
+ * When the router navigates from a URL, it must first recognize it and serialize it into an
  * `Instruction`.
  * The router uses the `RouteRegistry` to get an `Instruction`.
  */
@@ -58,8 +56,7 @@ export class Router {
   private _subject: EventEmitter = new EventEmitter();
 
 
-  constructor(public registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
-              public hostComponent: any) {}
+  constructor(public registry: RouteRegistry, public parent: Router, public hostComponent: any) {}
 
 
   /**
@@ -153,14 +150,32 @@ export class Router {
     return this.renavigate();
   }
 
+  /**
+   * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
+   * over `navigateByUrl`.
+   *
+   * # Usage
+   *
+   * This method takes an array representing the Route Link DSL:
+   * ```
+   * ['./MyCmp', {param: 3}]
+   * ```
+   * See the {@link RouterLink} directive for more.
+   */
+  navigate(linkParams: any[]): Promise<any> {
+    var instruction = this.generate(linkParams);
+    return this.navigateByInstruction(instruction, false);
+  }
+
 
   /**
    * Navigate to a URL. Returns a promise that resolves when navigation is complete.
+   * It's preferred to navigate with `navigate` instead of this method, since URLs are more brittle.
    *
    * If the given URL begins with a `/`, router will navigate absolutely.
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
    */
-  navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
+  navigateByUrl(url: string, _skipLocationChange: boolean = false): Promise<any> {
     return this._currentNavigation = this._currentNavigation.then((_) => {
       this.lastNavigationAttempt = url;
       this._startNavigating();
@@ -178,8 +193,8 @@ export class Router {
    * Navigate via the provided instruction. Returns a promise that resolves when navigation is
    * complete.
    */
-  navigateInstruction(instruction: Instruction,
-                      _skipLocationChange: boolean = false): Promise<any> {
+  navigateByInstruction(instruction: Instruction,
+                        _skipLocationChange: boolean = false): Promise<any> {
     if (isBlank(instruction)) {
       return _resolveToFalse;
     }
@@ -218,7 +233,8 @@ export class Router {
   _settleInstruction(instruction: Instruction): Promise<any> {
     var unsettledInstructions: Array<Promise<any>> = [];
     if (isBlank(instruction.component.componentType)) {
-      unsettledInstructions.push(instruction.component.resolveComponentType());
+      unsettledInstructions.push(instruction.component.resolveComponentType().then(
+          (type: Type) => { this.registry.configFromComponent(type); }));
     }
     if (isPresent(instruction.child)) {
       unsettledInstructions.push(this._settleInstruction(instruction.child));
@@ -248,7 +264,7 @@ export class Router {
     return this._outlet.canReuse(instruction.component)
         .then((result) => {
           instruction.component.reuse = result;
-          if (isPresent(this._childRouter) && isPresent(instruction.child)) {
+          if (result && isPresent(this._childRouter) && isPresent(instruction.child)) {
             return this._childRouter._canReuse(instruction.child);
           }
         });
@@ -373,7 +389,7 @@ export class Router {
     if (isBlank(this.lastNavigationAttempt)) {
       return this._currentNavigation;
     }
-    return this.navigate(this.lastNavigationAttempt);
+    return this.navigateByUrl(this.lastNavigationAttempt);
   }
 
 
@@ -441,14 +457,13 @@ export class Router {
 export class RootRouter extends Router {
   _location: Location;
 
-  constructor(registry: RouteRegistry, pipeline: Pipeline, location: Location,
-              hostComponent: Type) {
-    super(registry, pipeline, null, hostComponent);
+  constructor(registry: RouteRegistry, location: Location, primaryComponent: Type) {
+    super(registry, null, primaryComponent);
     this._location = location;
-    this._location.subscribe((change) => this.navigate(change['url'], isPresent(change['pop'])));
-
-    this.registry.configFromComponent(hostComponent);
-    this.navigate(location.path());
+    this._location.subscribe((change) =>
+                                 this.navigateByUrl(change['url'], isPresent(change['pop'])));
+    this.registry.configFromComponent(primaryComponent);
+    this.navigateByUrl(location.path());
   }
 
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
@@ -466,20 +481,20 @@ export class RootRouter extends Router {
 
 class ChildRouter extends Router {
   constructor(parent: Router, hostComponent) {
-    super(parent.registry, parent._pipeline, parent, hostComponent);
+    super(parent.registry, parent, hostComponent);
     this.parent = parent;
   }
 
 
-  navigate(url: string, _skipLocationChange: boolean = false): Promise<any> {
+  navigateByUrl(url: string, _skipLocationChange: boolean = false): Promise<any> {
     // Delegate navigation to the root router
-    return this.parent.navigate(url, _skipLocationChange);
+    return this.parent.navigateByUrl(url, _skipLocationChange);
   }
 
-  navigateInstruction(instruction: Instruction,
-                      _skipLocationChange: boolean = false): Promise<any> {
+  navigateByInstruction(instruction: Instruction,
+                        _skipLocationChange: boolean = false): Promise<any> {
     // Delegate navigation to the root router
-    return this.parent.navigateInstruction(instruction, _skipLocationChange);
+    return this.parent.navigateByInstruction(instruction, _skipLocationChange);
   }
 }
 

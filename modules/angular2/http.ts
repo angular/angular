@@ -4,7 +4,7 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/core';
 import {Http, Jsonp} from './src/http/http';
 import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
 import {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
@@ -43,7 +43,6 @@ export {
   RequestModesOpts
 } from './src/http/enums';
 export {URLSearchParams} from './src/http/url_search_params';
-export {EventEmitter, Observable} from './src/core/facade/async';
 
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.

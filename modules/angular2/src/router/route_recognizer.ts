@@ -6,9 +6,9 @@ import {
   isPresent,
   isType,
   isStringMap,
-  BaseException,
   Type
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   Map,
   MapWrapper,
@@ -43,6 +43,12 @@ export class RouteRecognizer {
 
   config(config: RouteDefinition): boolean {
     var handler;
+
+    if (isPresent(config.as) && config.as[0].toUpperCase() != config.as[0]) {
+      var suggestedAlias = config.as[0].toUpperCase() + config.as.substring(1);
+      throw new BaseException(
+          `Route '${config.path}' with alias '${config.as}' does not begin with an uppercase letter. Route aliases should be CamelCase like '${suggestedAlias}'.`);
+    }
 
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);

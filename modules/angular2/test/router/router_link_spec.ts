@@ -11,20 +11,19 @@ import {
   beforeEachBindings,
   it,
   xit,
-  TestComponentBuilder,
-  By
+  TestComponentBuilder
 } from 'angular2/test_lib';
 
 import {SpyRouter, SpyLocation} from './spies';
 
-import {bind, Component, View} from 'angular2/angular2';
+import {bind, Component, View} from 'angular2/core';
+import {By} from 'angular2/src/core/debug';
 
 import {
   Location,
   Router,
   RootRouter,
   RouteRegistry,
-  Pipeline,
   RouterLink,
   RouterOutlet,
   Route,
@@ -51,7 +50,7 @@ export function main() {
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
                testComponent.detectChanges();
-               let anchorElement = testComponent.query(By.css('a')).nativeElement;
+               let anchorElement = testComponent.debugElement.query(By.css('a')).nativeElement;
                expect(DOM.getAttribute(anchorElement, 'href')).toEqual('/detail');
                async.done();
              });
@@ -65,8 +64,8 @@ export function main() {
              .then((testComponent) => {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
-               testComponent.query(By.css('a')).triggerEventHandler('^click', null);
-               expect(router.spy('navigateInstruction')).toHaveBeenCalledWith(dummyInstruction);
+               testComponent.debugElement.query(By.css('a')).triggerEventHandler('click', null);
+               expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
                async.done();
              });
        }));
@@ -89,7 +88,7 @@ class UserCmp {
 @View({
   template: `
     <div>
-      <a [router-link]="['/detail']">detail view</a>
+      <a [router-link]="['/Detail']">detail view</a>
     </div>`,
   directives: [RouterLink]
 })

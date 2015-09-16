@@ -14,16 +14,17 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {bootstrap} from 'angular2/src/core/application';
-import {Component, Directive, View} from 'angular2/metadata';
+import {bootstrap} from 'angular2/bootstrap';
+import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {bind} from 'angular2/di';
+import {bind} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {BaseException} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
   ROUTER_BINDINGS,
+  ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
   APP_BASE_HREF,
@@ -33,7 +34,6 @@ import {
 
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {APP_COMPONENT} from 'angular2/src/core/application_tokens';
 
 export function main() {
   describe('router injectables', () => {
@@ -51,6 +51,7 @@ export function main() {
            bootstrap(AppCmp,
                      [
                        ROUTER_BINDINGS,
+                       bind(ROUTER_PRIMARY_COMPONENT).toValue(AppCmp),
                        bind(LocationStrategy).toClass(MockLocationStrategy),
                        bind(DOCUMENT).toValue(fakeDoc)
                      ])
@@ -62,34 +63,35 @@ export function main() {
                    async.done();
                  });
                });
-         }), 1000);
+         }));
     });
 
     describe('broken app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(BrokenAppCmp)]; });
+      beforeEachBindings(() => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(BrokenAppCmp)]; });
 
       it('should rethrow exceptions from component constructors',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
            tcb.createAsync(AppCmp).then((rootTC) => {
-             var router = rootTC.componentInstance.router;
-             PromiseWrapper.catchError(router.navigate('/cause-error'), (error) => {
-               expect(rootTC.nativeElement).toHaveText('outer { oh no }');
+             var router = rootTC.debugElement.componentInstance.router;
+             PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
+               expect(rootTC.debugElement.nativeElement).toHaveText('outer { oh no }');
                expect(error).toContainError('oops!');
                async.done();
              });
            });
-         }), 1000);
+         }));
     });
 
     describe('back button app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(HierarchyAppCmp)]; });
+      beforeEachBindings(
+          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
 
       it('should change the url without pushing a new history state for back navigations',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
                .then((rootTC) => {
-                 var router = rootTC.componentInstance.router;
+                 var router = rootTC.debugElement.componentInstance.router;
                  var position = 0;
                  var flipped = false;
                  var history =
@@ -100,8 +102,8 @@ export function main() {
                      ]
 
                      router.subscribe((_) => {
-                       var location = rootTC.componentInstance.location;
-                       var element = rootTC.nativeElement;
+                       var location = rootTC.debugElement.componentInstance.location;
+                       var element = rootTC.debugElement.nativeElement;
                        var path = location.path();
 
                        var entry = history[position];
@@ -123,32 +125,35 @@ export function main() {
                        if (flipped) {
                          location.back();
                        } else {
-                         router.navigate(nextUrl);
+                         router.navigateByUrl(nextUrl);
                        }
                      });
 
-                 router.navigate(history[0][0]);
+                 router.navigateByUrl(history[0][0]);
                });
          }), 1000);
     });
 
     describe('hierarchical app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(HierarchyAppCmp)]; });
+      beforeEachBindings(
+          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
 
       it('should bootstrap an app with a hierarchy',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
                .then((rootTC) => {
-                 var router = rootTC.componentInstance.router;
+                 var router = rootTC.debugElement.componentInstance.router;
                  router.subscribe((_) => {
-                   expect(rootTC.nativeElement).toHaveText('root { parent { hello } }');
-                   expect(rootTC.componentInstance.location.path()).toEqual('/parent/child');
+                   expect(rootTC.debugElement.nativeElement)
+                       .toHaveText('root { parent { hello } }');
+                   expect(rootTC.debugElement.componentInstance.location.path())
+                       .toEqual('/parent/child');
                    async.done();
                  });
-                 router.navigate('/parent/child');
+                 router.navigateByUrl('/parent/child');
                });
-         }), 1000);
+         }));
 
       describe('custom app base ref', () => {
         beforeEachBindings(() => { return [bind(APP_BASE_HREF).toValue('/my/app')]; });
@@ -158,42 +163,44 @@ export function main() {
 
                     tcb.createAsync(HierarchyAppCmp)
                         .then((rootTC) => {
-                          var router = rootTC.componentInstance.router;
+                          var router = rootTC.debugElement.componentInstance.router;
                           router.subscribe((_) => {
-                            expect(rootTC.nativeElement).toHaveText('root { parent { hello } }');
-                            expect(rootTC.componentInstance.location.path())
+                            expect(rootTC.debugElement.nativeElement)
+                                .toHaveText('root { parent { hello } }');
+                            expect(rootTC.debugElement.componentInstance.location.path())
                                 .toEqual('/my/app/parent/child');
                             async.done();
                           });
-                          router.navigate('/parent/child');
+                          router.navigateByUrl('/parent/child');
                         });
-                  }),
-           1000);
+                  }));
       });
     });
     // TODO: add a test in which the child component has bindings
 
     describe('querystring params app', () => {
-      beforeEachBindings(() => { return [bind(APP_COMPONENT).toValue(QueryStringAppCmp)]; });
+      beforeEachBindings(
+          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(QueryStringAppCmp)]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
            tcb.createAsync(QueryStringAppCmp)
                .then((rootTC) => {
-                 var router = rootTC.componentInstance.router;
+                 var router = rootTC.debugElement.componentInstance.router;
                  router.subscribe((_) => {
                    rootTC.detectChanges();
 
-                   expect(rootTC.nativeElement).toHaveText('qParam = search-for-something');
+                   expect(rootTC.debugElement.nativeElement)
+                       .toHaveText('qParam = search-for-something');
                    /*
                    expect(applicationRef.hostComponent.location.path())
                        .toEqual('/qs?q=search-for-something');*/
                    async.done();
                  });
-                 router.navigate('/qs?q=search-for-something');
+                 router.navigateByUrl('/qs?q=search-for-something');
                  rootTC.detectChanges();
                });
-         }), 1000);
+         }));
     });
   });
 }

@@ -1,4 +1,4 @@
-import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/core/facade/collection';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -16,12 +16,11 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 export class DebugElement {
   _elementInjector: ElementInjector;
 
+  /**
+   * @private
+   */
   constructor(private _parentView: AppView, private _boundElementIndex: number) {
     this._elementInjector = this._parentView.elementInjectors[this._boundElementIndex];
-  }
-
-  static create(elementRef: ElementRef): DebugElement {
-    return new DebugElement(internalView(elementRef.parentView), elementRef.boundElementIndex);
   }
 
   get componentInstance(): any {
@@ -137,8 +136,14 @@ export class DebugElement {
   }
 }
 
+/**
+ * Returns a DebugElement for a ElementRef.
+ *
+ * @param {ElementRef}: elementRef
+ * @return {DebugElement}
+ */
 export function inspectElement(elementRef: ElementRef): DebugElement {
-  return DebugElement.create(elementRef);
+  return new DebugElement(internalView(elementRef.parentView), elementRef.boundElementIndex);
 }
 
 export function asNativeElements(arr: DebugElement[]): any[] {

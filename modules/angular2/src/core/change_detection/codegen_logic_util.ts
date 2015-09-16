@@ -1,20 +1,15 @@
 import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {
-  BaseException,
-  Json,
-  StringWrapper,
-  isPresent,
-  isBlank
-} from 'angular2/src/core/facade/lang';
+import {Json, StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
 import {ProtoRecord, RecordType} from './proto_record';
 import {BindingTarget} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 import {ChangeDetectionStrategy} from './constants';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 
 /**
- * Class responsible for providing change detection logic for chagne detector classes.
+ * Class responsible for providing change detection logic for change detector classes.
  */
 export class CodegenLogicUtil {
   constructor(private _names: CodegenNameUtil, private _utilName: string,
@@ -25,8 +20,8 @@ export class CodegenLogicUtil {
    * value of the record. Used by property bindings.
    */
   genPropertyBindingEvalValue(protoRec: ProtoRecord): string {
-    return this.genEvalValue(protoRec, idx => this._names.getLocalName(idx),
-                             this._names.getLocalsAccessorName());
+    return this._genEvalValue(protoRec, idx => this._names.getLocalName(idx),
+                              this._names.getLocalsAccessorName());
   }
 
   /**
@@ -34,12 +29,12 @@ export class CodegenLogicUtil {
    * value of the record. Used by event bindings.
    */
   genEventBindingEvalValue(eventRecord: any, protoRec: ProtoRecord): string {
-    return this.genEvalValue(protoRec, idx => this._names.getEventLocalName(eventRecord, idx),
-                             "locals");
+    return this._genEvalValue(protoRec, idx => this._names.getEventLocalName(eventRecord, idx),
+                              "locals");
   }
 
-  private genEvalValue(protoRec: ProtoRecord, getLocalName: Function,
-                       localsAccessor: string): string {
+  private _genEvalValue(protoRec: ProtoRecord, getLocalName: Function,
+                        localsAccessor: string): string {
     var context = (protoRec.contextIndex == -1) ?
                       this._names.getDirectiveName(protoRec.directiveIndex) :
                       getLocalName(protoRec.contextIndex);

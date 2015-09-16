@@ -1,7 +1,7 @@
-import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/di';
+import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/src/core/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import * as eli from './element_injector';
-import {isPresent, isBlank, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
 import {internalView} from './view_ref';
 import * as avmModule from './view_manager';
@@ -122,39 +122,29 @@ export class AppViewManagerUtils {
     ListWrapper.insert(viewContainer.views, atIndex, view);
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
 
-    var sibling;
-    if (atIndex == 0) {
-      sibling = elementInjector;
-    } else {
-      sibling = ListWrapper.last(viewContainer.views[atIndex - 1].rootElementInjectors);
-    }
     for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
       if (isPresent(elementInjector.parent)) {
-        view.rootElementInjectors[i].linkAfter(elementInjector.parent, sibling);
-      } else {
-        contextView.rootElementInjectors.push(view.rootElementInjectors[i]);
+        view.rootElementInjectors[i].link(elementInjector.parent);
       }
     }
+    elementInjector.traverseAndSetQueriesAsDirty();
   }
 
   detachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                         atIndex: number) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
+
+    parentView.elementInjectors[boundElementIndex].traverseAndSetQueriesAsDirty();
+
     view.changeDetector.remove();
     ListWrapper.removeAt(viewContainer.views, atIndex);
     for (var i = 0; i < view.rootElementInjectors.length; ++i) {
       var inj = view.rootElementInjectors[i];
-      if (isPresent(inj.parent)) {
-        inj.unlink();
-      } else {
-        var removeIdx = ListWrapper.indexOf(parentView.rootElementInjectors, inj);
-        if (removeIdx >= 0) {
-          ListWrapper.removeAt(parentView.rootElementInjectors, removeIdx);
-        }
-      }
+      inj.unlink();
     }
   }
+
 
   hydrateViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                          contextView: viewModule.AppView, contextBoundElementIndex: number,

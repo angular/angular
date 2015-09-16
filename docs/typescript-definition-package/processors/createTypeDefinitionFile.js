@@ -2,7 +2,7 @@ var _ = require('lodash');
 var path = require('canonical-path');
 var codeGen = require('./code_gen.js');
 
-module.exports = function createTypeDefinitionFile(log) {
+module.exports = function createTypeDefinitionFile(log, convertPrivateClassesToInterfaces) {
 
   return {
     $runAfter: ['processing-docs'],
@@ -42,7 +42,7 @@ module.exports = function createTypeDefinitionFile(log) {
                                       references: def.references
                                     };
                                   }),
-          signature: codeGen.signature(def.remapTypes)
+          dts: new codeGen.DtsSerializer(def.remapTypes)
         };
       });
 
@@ -63,29 +63,7 @@ module.exports = function createTypeDefinitionFile(log) {
             doc = null;
             return;
           }
-          _.forEach(modDoc.doc.exports, function(exportDoc) {
-
-            // Search for classes with a constructor marked as `@private`
-            if (exportDoc.docType === 'class' && exportDoc.constructorDoc && exportDoc.constructorDoc.private) {
-
-              // Convert this class to an interface with no constructor
-              exportDoc.docType = 'interface';
-              exportDoc.constructorDoc = null;
-
-              if (exportDoc.heritage) {
-                // convert the heritage since interfaces use `extends` not `implements`
-                exportDoc.heritage = exportDoc.heritage.replace('implements', 'extends');
-              }
-
-              // Add the `declare var SomeClass extends InjectableReference` construct
-              modDoc.doc.exports.push({
-                docType: 'var',
-                name: exportDoc.name,
-                id: exportDoc.id,
-                heritage: ': InjectableReference'
-              });
-            }
-          });
+          convertPrivateClassesToInterfaces(modDoc.doc.exports, true);
         });
         return !!doc;
       });

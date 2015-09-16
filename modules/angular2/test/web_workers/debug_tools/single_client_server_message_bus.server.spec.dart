@@ -28,6 +28,8 @@ main() {
         inject([AsyncTestCompleter], (async) {
           var socket = new SpyWebSocket();
           var sink = new SingleClientServerMessageBusSink();
+          sink.initChannel(CHANNEL, false);
+
           sink.setConnection(socket);
           expectSinkSendsEncodedJson(socket, sink, "add", async);
         }));
@@ -36,6 +38,7 @@ main() {
         "should buffer messages before connect",
         inject([AsyncTestCompleter], (async) {
           var sink = new SingleClientServerMessageBusSink();
+          sink.initChannel(CHANNEL, false);
           sink.to(CHANNEL).add(MESSAGE);
 
           var socket = new SpyWebSocket();
@@ -51,6 +54,8 @@ main() {
         inject([AsyncTestCompleter], (async) {
           var SECOND_MESSAGE = const {'test': 12, 'second': 'hi'};
           var sink = new SingleClientServerMessageBusSink();
+          sink.initChannel(CHANNEL, false);
+
           sink.to(CHANNEL).add(MESSAGE);
 
           var socket = new SpyWebSocket();
@@ -78,20 +83,19 @@ main() {
     it(
         "should decode JSON messages and emit them",
         inject([AsyncTestCompleter], (async) {
-          var socket = new SpyWebSocket();
           StreamController<String> controller =
               new StreamController.broadcast();
-          socket.spy("asBroadcastStream").andCallFake(() => controller.stream);
 
           var source = new SingleClientServerMessageBusSource();
-          source.setConnectionFromWebSocket(socket);
+          source.initChannel(CHANNEL, false);
+          source.attachTo(controller.stream);
           source.from(CHANNEL).listen((message) {
             expect(message).toEqual(MESSAGE);
             async.done();
           });
 
           controller
-              .add(JSON.encode({'channel': CHANNEL, 'message': MESSAGE}));
+              .add(JSON.encode([{'channel': CHANNEL, 'message': MESSAGE}]));
         }));
   });
 }

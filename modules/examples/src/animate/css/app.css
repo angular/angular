@@ -1,0 +1,25 @@
+body {
+  padding: 20px;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  transition: all 0.35s ease-in-out;
+}
+.box.blue {
+  background-color: blue;
+}
+.box.ng-enter {
+  opacity: 0;
+  height: 0;
+}
+.box.ng-enter-active {
+  opacity: 1;
+  height: 100px;
+}
+.box.ng-leave-active {
+  opacity: 0;
+  height: 0;
+}

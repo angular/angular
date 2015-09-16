@@ -1,19 +1,19 @@
+import {bootstrap} from 'angular2/bootstrap';
 import {
-  bootstrap,
+  bind,
   ElementRef,
   ComponentRef,
   Component,
+  UrlResolver,
   View,
   ViewEncapsulation
-} from 'angular2/bootstrap';
+} from 'angular2/core';
 import {
   MdDialog,
   MdDialogRef,
   MdDialogConfig
 } from 'angular2_material/src/components/dialog/dialog';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
-import {bind} from 'angular2/di';
 import {isPresent} from 'angular2/src/core/facade/lang';
 
 

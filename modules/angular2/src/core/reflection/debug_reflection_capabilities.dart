@@ -41,6 +41,11 @@ class ReflectionCapabilities extends standard.ReflectionCapabilities {
     return super.annotations(typeOrFunc);
   }
 
+  Map propMetadata(typeOrFunc) {
+    _notify('propMetadata', typeOrFunc);
+    return super.propMetadata(typeOrFunc);
+  }
+
   GetterFn getter(String name) {
     _notify('getter', name);
     return super.getter(name);

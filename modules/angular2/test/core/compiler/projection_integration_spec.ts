@@ -17,23 +17,25 @@ import {
   TestComponentBuilder,
   RootTestComponent,
   fakeAsync,
-  tick,
-  By
+  tick
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {
+  bind,
   forwardRef,
-  ViewContainerRef,
+  Component,
+  Directive,
   ElementRef,
   TemplateRef,
-  bind,
-  ViewEncapsulation
-} from 'angular2/angular2';
-import {Component, Directive, View, ViewMetadata} from 'angular2/metadata';
-
-import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/core/render/render';
+  View,
+  ViewContainerRef,
+  ViewEncapsulation,
+  ViewMetadata
+} from 'angular2/core';
+import {By} from 'angular2/src/core/debug';
+import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/core/render';
 
 export function main() {
   describe('projection', () => {
@@ -47,7 +49,7 @@ export function main() {
                           }))
              .createAsync(MainComp)
              .then((main) => {
-               expect(main.nativeElement).toHaveText('SIMPLE(A)');
+               expect(main.debugElement.nativeElement).toHaveText('SIMPLE(A)');
                async.done();
              });
        }));
@@ -63,9 +65,9 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               main.componentInstance.text = 'A';
+               main.debugElement.componentInstance.text = 'A';
                main.detectChanges();
-               expect(main.nativeElement).toHaveText('START(SIMPLE(A))END');
+               expect(main.debugElement.nativeElement).toHaveText('START(SIMPLE(A))END');
                async.done();
              });
        }));
@@ -82,9 +84,9 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               main.componentInstance.text = 'A';
+               main.debugElement.componentInstance.text = 'A';
                main.detectChanges();
-               expect(main.nativeElement).toHaveText('SIMPLE(A)');
+               expect(main.debugElement.nativeElement).toHaveText('SIMPLE(A)');
                async.done();
              });
        }));
@@ -104,9 +106,9 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               main.componentInstance.text = 'A';
+               main.debugElement.componentInstance.text = 'A';
                main.detectChanges();
-               expect(main.nativeElement).toHaveText('SIMPLE(AEL)');
+               expect(main.debugElement.nativeElement).toHaveText('SIMPLE(AEL)');
                async.done();
              });
        }));
@@ -118,7 +120,7 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               expect(main.nativeElement).toHaveText('');
+               expect(main.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -136,7 +138,7 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               expect(main.nativeElement).toHaveText('(A, BC)');
+               expect(main.debugElement.nativeElement).toHaveText('(A, BC)');
                async.done();
              });
        }));
@@ -153,7 +155,7 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               expect(main.nativeElement).toHaveText('(, BAC)');
+               expect(main.debugElement.nativeElement).toHaveText('(, BAC)');
                async.done();
              });
        }));
@@ -170,16 +172,17 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               var viewportDirectives = main.queryAll(By.directive(ManualViewportDirective))
-                                            .map(de => de.inject(ManualViewportDirective));
+               var viewportDirectives =
+                   main.debugElement.queryAll(By.directive(ManualViewportDirective))
+                       .map(de => de.inject(ManualViewportDirective));
 
-               expect(main.nativeElement).toHaveText('(, B)');
+               expect(main.debugElement.nativeElement).toHaveText('(, B)');
                viewportDirectives.forEach(d => d.show());
-               expect(main.nativeElement).toHaveText('(A1, B)');
+               expect(main.debugElement.nativeElement).toHaveText('(A1, B)');
 
                viewportDirectives.forEach(d => d.hide());
 
-               expect(main.nativeElement).toHaveText('(, B)');
+               expect(main.debugElement.nativeElement).toHaveText('(, B)');
                async.done();
              });
        }));
@@ -196,7 +199,7 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               expect(main.nativeElement).toHaveText('OUTER(SIMPLE(AB))');
+               expect(main.debugElement.nativeElement).toHaveText('OUTER(SIMPLE(AB))');
                async.done();
              });
        }));
@@ -214,13 +217,14 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               var viewportDirective = main.query(By.directive(ManualViewportDirective))
-                                           .inject(ManualViewportDirective);
+               var viewportDirective =
+                   main.debugElement.query(By.directive(ManualViewportDirective))
+                       .inject(ManualViewportDirective);
 
-               expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
+               expect(main.debugElement.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
                viewportDirective.show();
 
-               expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
+               expect(main.debugElement.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
                async.done();
              });
        }));
@@ -238,17 +242,18 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
 
-               var viewportDirective = main.query(By.directive(ManualViewportDirective))
-                                           .inject(ManualViewportDirective);
+               var viewportDirective =
+                   main.debugElement.query(By.directive(ManualViewportDirective))
+                       .inject(ManualViewportDirective);
 
-               expect(main.nativeElement).toHaveText('(, BC)');
+               expect(main.debugElement.nativeElement).toHaveText('(, BC)');
 
                viewportDirective.show();
-               expect(main.nativeElement).toHaveText('(A, BC)');
+               expect(main.debugElement.nativeElement).toHaveText('(A, BC)');
 
                viewportDirective.hide();
 
-               expect(main.nativeElement).toHaveText('(, BC)');
+               expect(main.debugElement.nativeElement).toHaveText('(, BC)');
                async.done();
              });
        }));
@@ -265,11 +270,11 @@ export function main() {
                     {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main) => {
+             .then((main: RootTestComponent) => {
 
                main.detectChanges();
 
-               expect(main.nativeElement).toHaveText('P,text');
+               expect(main.debugElement.nativeElement).toHaveText('P,text');
                async.done();
              });
 
@@ -286,10 +291,10 @@ export function main() {
                     {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main) => {
+             .then((main: RootTestComponent) => {
 
                main.detectChanges();
-               expect(main.nativeElement).toHaveText('P,text');
+               expect(main.debugElement.nativeElement).toHaveText('P,text');
                async.done();
              });
        }));
@@ -307,14 +312,14 @@ export function main() {
              .then((main) => {
 
                var sourceDirective: ManualViewportDirective =
-                   main.query(By.directive(ManualViewportDirective))
+                   main.debugElement.query(By.directive(ManualViewportDirective))
                        .inject(ManualViewportDirective);
                var projectDirective: ProjectDirective =
-                   main.query(By.directive(ProjectDirective)).inject(ProjectDirective);
-               expect(main.nativeElement).toHaveText('START()END');
+                   main.debugElement.query(By.directive(ProjectDirective)).inject(ProjectDirective);
+               expect(main.debugElement.nativeElement).toHaveText('START()END');
 
                projectDirective.show(sourceDirective.templateRef);
-               expect(main.nativeElement).toHaveText('START(A)END');
+               expect(main.debugElement.nativeElement).toHaveText('START(A)END');
                async.done();
              });
        }));
@@ -330,14 +335,14 @@ export function main() {
              .then((main) => {
 
                var sourceDirective: ManualViewportDirective =
-                   main.query(By.directive(ManualViewportDirective))
+                   main.debugElement.query(By.directive(ManualViewportDirective))
                        .inject(ManualViewportDirective);
                var projectDirective: ProjectDirective =
-                   main.query(By.directive(ProjectDirective)).inject(ProjectDirective);
-               expect(main.nativeElement).toHaveText('SIMPLE()START()END');
+                   main.debugElement.query(By.directive(ProjectDirective)).inject(ProjectDirective);
+               expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START()END');
 
                projectDirective.show(sourceDirective.templateRef);
-               expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
+               expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START(A)END');
                async.done();
              });
        }));
@@ -358,19 +363,19 @@ export function main() {
              .then((main) => {
 
                var sourceDirective: ManualViewportDirective =
-                   main.query(By.directive(ManualViewportDirective))
+                   main.debugElement.query(By.directive(ManualViewportDirective))
                        .inject(ManualViewportDirective);
                var projectDirective: ProjectDirective =
-                   main.query(By.directive(ProjectDirective)).inject(ProjectDirective);
-               expect(main.nativeElement).toHaveText('(, B)START()END');
+                   main.debugElement.query(By.directive(ProjectDirective)).inject(ProjectDirective);
+               expect(main.debugElement.nativeElement).toHaveText('(, B)START()END');
 
                projectDirective.show(sourceDirective.templateRef);
-               expect(main.nativeElement).toHaveText('(, B)START(A)END');
+               expect(main.debugElement.nativeElement).toHaveText('(, B)START(A)END');
 
                // Stamping ng-content multiple times should not produce the content multiple
                // times...
                projectDirective.show(sourceDirective.templateRef);
-               expect(main.nativeElement).toHaveText('(, B)START(A)END');
+               expect(main.debugElement.nativeElement).toHaveText('(, B)START(A)END');
                async.done();
              });
        }));
@@ -388,12 +393,12 @@ export function main() {
 
                main.detectChanges();
                var manualDirective: ManualViewportDirective =
-                   main.query(By.directive(ManualViewportDirective))
+                   main.debugElement.query(By.directive(ManualViewportDirective))
                        .inject(ManualViewportDirective);
-               expect(main.nativeElement).toHaveText('TREE(0:)');
+               expect(main.debugElement.nativeElement).toHaveText('TREE(0:)');
                manualDirective.show();
                main.detectChanges();
-               expect(main.nativeElement).toHaveText('TREE(0:TREE(1:))');
+               expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE(1:))');
                async.done();
              });
        }));
@@ -410,7 +415,7 @@ export function main() {
                .createAsync(MainComp)
                .then((main) => {
 
-                 expect(main.nativeElement).toHaveText('SIMPLE(A)');
+                 expect(main.debugElement.nativeElement).toHaveText('SIMPLE(A)');
                  async.done();
                });
          }));
@@ -427,15 +432,17 @@ export function main() {
                                   }))
                      .createAsync(MainComp)
                      .then((main) => {
-                       expect(main.nativeElement).toHaveText('MAIN()');
+                       expect(main.debugElement.nativeElement).toHaveText('MAIN()');
 
-                       var viewportElement = main.componentViewChildren[0].componentViewChildren[0];
+                       var viewportElement =
+                           main.debugElement.componentViewChildren[0].componentViewChildren[0];
                        viewportElement.inject(ManualViewportDirective).show();
-                       expect(main.nativeElement).toHaveText('MAIN(FIRST())');
+                       expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST())');
 
-                       viewportElement = main.componentViewChildren[0].componentViewChildren[1];
+                       viewportElement =
+                           main.debugElement.componentViewChildren[0].componentViewChildren[1];
                        viewportElement.inject(ManualViewportDirective).show();
-                       expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
+                       expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
 
                        async.done();
                      });

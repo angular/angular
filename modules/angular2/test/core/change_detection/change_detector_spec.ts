@@ -16,9 +16,10 @@ import {
   isPresent,
   isBlank,
   isJsObject,
-  BaseException,
-  FunctionWrapper
+  FunctionWrapper,
+  normalizeBool
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
@@ -41,7 +42,7 @@ import {
   ProtoChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {Pipes} from 'angular2/src/core/change_detection/pipes';
+import {SelectedPipe, Pipes} from 'angular2/src/core/change_detection/pipes';
 import {JitProtoChangeDetector} from 'angular2/src/core/change_detection/jit_proto_change_detector';
 
 import {getDefinition} from './change_detector_config';
@@ -349,6 +350,36 @@ export function main() {
             var val = _createChangeDetector("name | pipe:'one':address.city", person, registry);
             val.changeDetector.detectChanges();
             expect(val.dispatcher.loggedValues).toEqual(['value one two default']);
+          });
+
+          it('should not reevaluate pure pipes unless its context or arg changes', () => {
+            var pipe = new CountingPipe();
+            var registry = new FakePipes('pipe', () => pipe, {pure: true});
+            var person = new Person('bob');
+            var val = _createChangeDetector('name | pipe', person, registry);
+
+            val.changeDetector.detectChanges();
+            expect(pipe.state).toEqual(1);
+
+            val.changeDetector.detectChanges();
+            expect(pipe.state).toEqual(1);
+
+            person.name = 'jim';
+            val.changeDetector.detectChanges();
+            expect(pipe.state).toEqual(2);
+          });
+
+          it('should reevaluate impure pipes neither context nor arg changes', () => {
+            var pipe = new CountingPipe();
+            var registry = new FakePipes('pipe', () => pipe, {pure: false});
+            var person = new Person('bob');
+            var val = _createChangeDetector('name | pipe', person, registry);
+
+            val.changeDetector.detectChanges();
+            expect(pipe.state).toEqual(1);
+
+            val.changeDetector.detectChanges();
+            expect(pipe.state).toEqual(2);
           });
 
           it('should support pipes as arguments to pure functions', () => {
@@ -1109,28 +1140,9 @@ export function main() {
           expect(val.dispatcher.log).toEqual(['propName=Bob']);
 
           val.changeDetector.dehydrate();
-          var dehydratedException = new DehydratedException();
           expect(() => {val.changeDetector.detectChanges()})
-              .toThrowError(dehydratedException.toString());
+              .toThrowErrorWith("Attempt to detect changes on a dehydrated detector");
           expect(val.dispatcher.log).toEqual(['propName=Bob']);
-        });
-      });
-
-      describe('pipes', () => {
-        it('should support pipes', () => {
-          var registry = new FakePipes('pipe', () => new CountingPipe());
-          var ctx = new Person('Megatron');
-
-          var val = _createChangeDetector('name | pipe', ctx, registry);
-
-          val.changeDetector.detectChanges();
-
-          expect(val.dispatcher.log).toEqual(['propName=Megatron state:0']);
-
-          val.dispatcher.clear();
-          val.changeDetector.detectChanges();
-
-          expect(val.dispatcher.log).toEqual(['propName=Megatron state:1']);
         });
       });
 
@@ -1256,13 +1268,16 @@ class MultiArgPipe implements PipeTransform {
 
 class FakePipes implements Pipes {
   numberOfLookups = 0;
+  pure: boolean;
 
-  constructor(public pipeType: string, public factory: Function) {}
+  constructor(public pipeType: string, public factory: Function, {pure}: {pure?: boolean} = {}) {
+    this.pure = normalizeBool(pure);
+  }
 
   get(type: string) {
     if (type != this.pipeType) return null;
     this.numberOfLookups++;
-    return this.factory();
+    return new SelectedPipe(this.factory(), this.pure);
   }
 }
 

@@ -217,16 +217,16 @@ export function main() {
 }
 
 export class MockStep implements CompileStep {
-  constructor(private processElementClosure: Function,
-              private processStyleClosure: Function = null) {}
+  constructor(private _processElementClosure: Function,
+              private _processStyleClosure: Function = null) {}
   processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
-    if (isPresent(this.processElementClosure)) {
-      this.processElementClosure(parent, current, control);
+    if (isPresent(this._processElementClosure)) {
+      this._processElementClosure(parent, current, control);
     }
   }
   processStyle(style: string): string {
-    if (isPresent(this.processStyleClosure)) {
-      return this.processStyleClosure(style);
+    if (isPresent(this._processStyleClosure)) {
+      return this._processStyleClosure(style);
     } else {
       return style;
     }

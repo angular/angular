@@ -21,9 +21,9 @@ var files = [
 var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
 var FACADES = fs.readFileSync(__dirname + '/lib/facades.es5', 'utf8');
-var TRACEUR_RUNTIME = fs.readFileSync(__dirname + '/../../node_modules/traceur/bin/traceur-runtime.js', 'utf8');
 var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.js', 'utf8');
 function main() {
+  var ES6_SHIM = fs.readFileSync(__dirname + '/../../node_modules/es6-shim/es6-shim.js', 'utf8');
   var dir = __dirname + '/../angular2/src/router/';
 
   var out = '';
@@ -75,23 +75,23 @@ function main() {
       "}",
     "});",
 
-    "var router = new RootRouter(registry, undefined, location, new Object());",
+    "var router = new RootRouter(registry, location, new Object());",
     "$rootScope.$watch(function () { return $location.path(); }, function (path) {",
       "if (router.lastNavigationAttempt !== path) {",
-        "router.navigate(path);",
+        "router.navigateByUrl(path);",
       "}",
     "});",
 
     "return router;"
   ].join('\n'));
 
-  return PRELUDE + TRACEUR_RUNTIME + DIRECTIVES + out + POSTLUDE;
+  return PRELUDE + ES6_SHIM + DIRECTIVES + out + POSTLUDE;
 }
 
 
 /*
  * Given a directory name and a file's TypeScript content, return an object with the ES5 code,
- * sourcemap, anf exported variable identifier name for the content.
+ * sourcemap, and exported variable identifier name for the content.
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
 function transform(dir, contents) {

@@ -4,12 +4,12 @@ import {
   isBlank,
   StringWrapper,
   RegExpWrapper,
-  BaseException,
   NumberWrapper
 } from 'angular2/src/core/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {EventManagerPlugin} from './event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {Injectable} from 'angular2/src/core/di';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 var modifierKeyGetters: StringMap<string, Function> = {
@@ -19,6 +19,7 @@ var modifierKeyGetters: StringMap<string, Function> = {
   'shift': (event) => event.shiftKey
 };
 
+@Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
   constructor() { super(); }
 
@@ -26,13 +27,11 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return isPresent(KeyEventsPlugin.parseEventName(eventName));
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: (Event: any) => any,
-                   shouldSupportBubble: boolean) {
+  addEventListener(element: HTMLElement, eventName: string, handler: (Event: any) => any) {
     var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
 
-    var outsideHandler = KeyEventsPlugin.eventCallback(element, shouldSupportBubble,
-                                                       StringMapWrapper.get(parsedEvent, 'fullKey'),
-                                                       handler, this.manager.getZone());
+    var outsideHandler = KeyEventsPlugin.eventCallback(
+        element, StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
 
     this.manager.getZone().runOutsideAngular(() => {
       DOM.on(element, StringMapWrapper.get(parsedEvent, 'domEventName'), outsideHandler);
@@ -91,11 +90,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element: HTMLElement, shouldSupportBubble: boolean, fullKey: any,
-                       handler: (Event) => any, zone: NgZone): (event: Event) => void {
+  static eventCallback(element: HTMLElement, fullKey: any, handler: (Event) => any, zone: NgZone):
+      (event: Event) => void {
     return (event) => {
-      var correctElement = shouldSupportBubble || event.target === element;
-      if (correctElement && StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
+      if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.run(() => handler(event));
       }
     };

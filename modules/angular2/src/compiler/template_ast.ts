@@ -4,72 +4,109 @@ import {DirectiveMetadata} from './api';
 
 export interface TemplateAst {
   sourceInfo: string;
-  visit(visitor: TemplateAstVisitor): any;
+  visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export class TextAst implements TemplateAst {
-  constructor(public value: string, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitText(this); }
+  constructor(public value: string, public ngContentIndex: number, public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitText(this, context); }
 }
 
 export class BoundTextAst implements TemplateAst {
-  constructor(public value: AST, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitBoundText(this); }
+  constructor(public value: AST, public ngContentIndex: number, public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitBoundText(this, context);
+  }
 }
 
 export class AttrAst implements TemplateAst {
   constructor(public name: string, public value: string, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitAttr(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
 }
 
 export class BoundElementPropertyAst implements TemplateAst {
   constructor(public name: string, public type: PropertyBindingType, public value: AST,
               public unit: string, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitElementProperty(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitElementProperty(this, context);
+  }
 }
 
 export class BoundEventAst implements TemplateAst {
   constructor(public name: string, public target: string, public handler: AST,
               public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitEvent(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitEvent(this, context);
+  }
+  getFullName(): string {
+    if (isPresent(this.target)) {
+      return `${this.target}:${this.name}`;
+    } else {
+      return this.name;
+    }
+  }
 }
 
 export class VariableAst implements TemplateAst {
   constructor(public name: string, public value: string, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitVariable(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitVariable(this, context);
+  }
 }
 
 export class ElementAst implements TemplateAst {
-  constructor(public attrs: AttrAst[], public properties: BoundElementPropertyAst[],
-              public events: BoundEventAst[], public vars: VariableAst[],
-              public directives: DirectiveAst[], public children: TemplateAst[],
+  constructor(public name: string, public attrs: AttrAst[],
+              public properties: BoundElementPropertyAst[], public events: BoundEventAst[],
+              public vars: VariableAst[], public directives: DirectiveAst[],
+              public children: TemplateAst[], public ngContentIndex: number,
               public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitElement(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitElement(this, context);
+  }
+
+  isBound(): boolean {
+    return (this.properties.length > 0 || this.events.length > 0 || this.vars.length > 0 ||
+            this.directives.length > 0);
+  }
+
+  getComponent(): DirectiveMetadata {
+    return this.directives.length > 0 && this.directives[0].directive.isComponent ?
+               this.directives[0].directive :
+               null;
+  }
 }
 
 export class EmbeddedTemplateAst implements TemplateAst {
   constructor(public attrs: AttrAst[], public vars: VariableAst[],
               public directives: DirectiveAst[], public children: TemplateAst[],
-              public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitEmbeddedTemplate(this); }
+              public ngContentIndex: number, public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitEmbeddedTemplate(this, context);
+  }
 }
 
 export class BoundDirectivePropertyAst implements TemplateAst {
   constructor(public directiveName: string, public templateName: string, public value: AST,
               public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitDirectiveProperty(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitDirectiveProperty(this, context);
+  }
 }
 
 export class DirectiveAst implements TemplateAst {
   constructor(public directive: DirectiveMetadata, public properties: BoundDirectivePropertyAst[],
               public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
               public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitDirective(this); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitDirective(this, context);
+  }
 }
 
 export class NgContentAst implements TemplateAst {
-  constructor(public select: string, public sourceInfo: string) {}
-  visit(visitor: TemplateAstVisitor): any { return visitor.visitNgContent(this); }
+  constructor(public ngContentIndex: number, public sourceInfo: string) {}
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitNgContent(this, context);
+  }
 }
 
 export enum PropertyBindingType {
@@ -80,24 +117,25 @@ export enum PropertyBindingType {
 }
 
 export interface TemplateAstVisitor {
-  visitNgContent(ast: NgContentAst): any;
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst): any;
-  visitElement(ast: ElementAst): any;
-  visitVariable(ast: VariableAst): any;
-  visitEvent(ast: BoundEventAst): any;
-  visitElementProperty(ast: BoundElementPropertyAst): any;
-  visitAttr(ast: AttrAst): any;
-  visitBoundText(ast: BoundTextAst): any;
-  visitText(ast: TextAst): any;
-  visitDirective(ast: DirectiveAst): any;
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst): any;
+  visitNgContent(ast: NgContentAst, context: any): any;
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any;
+  visitElement(ast: ElementAst, context: any): any;
+  visitVariable(ast: VariableAst, context: any): any;
+  visitEvent(ast: BoundEventAst, context: any): any;
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any;
+  visitAttr(ast: AttrAst, context: any): any;
+  visitBoundText(ast: BoundTextAst, context: any): any;
+  visitText(ast: TextAst, context: any): any;
+  visitDirective(ast: DirectiveAst, context: any): any;
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any;
 }
 
 
-export function templateVisitAll(visitor: TemplateAstVisitor, asts: TemplateAst[]): any[] {
+export function templateVisitAll(visitor: TemplateAstVisitor, asts: TemplateAst[],
+                                 context: any = null): any[] {
   var result = [];
   asts.forEach(ast => {
-    var astResult = ast.visit(visitor);
+    var astResult = ast.visit(visitor, context);
     if (isPresent(astResult)) {
       result.push(astResult);
     }

@@ -10,12 +10,13 @@ var url = require('url');
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
 import {
-  BaseException,
   isPresent,
   isBlank,
   global,
-  setValueOnPath
+  setValueOnPath,
+  DateWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
 
 var _attrToPropMap = {
@@ -544,9 +545,13 @@ export class Parse5DomAdapter extends DomAdapter {
   getLocation(): Location { throw 'not implemented'; }
   getUserAgent(): string { return "Fake user agent"; }
   getData(el, name: string): string { return this.getAttribute(el, 'data-' + name); }
+  getComputedStyle(el): any { throw 'not implemented'; }
   setData(el, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
+  requestAnimationFrame(callback): number { return setTimeout(callback, 0); }
+  cancelAnimationFrame(id: number) { clearTimeout(id); }
+  performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

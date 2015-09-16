@@ -1,17 +1,12 @@
-import {
-  CONST_EXPR,
-  isPresent,
-  isBlank,
-  BaseException,
-  Type,
-  StringWrapper
-} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, isPresent, isBlank, Type, StringWrapper} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {ChangeDetectionStrategy, isDefaultChangeDetectionStrategy} from './constants';
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';
 import {BindingTarget} from './binding_record';
 import {DirectiveIndex} from './directive_record';
+import {SelectedPipe} from './pipes';
 
 
 /**
@@ -193,9 +188,9 @@ export class ChangeDetectionUtil {
                protos[selfIndex - 1];  // self index is shifted by one because of context
   }
 
-  static callPipeOnDestroy(pipe: any): void {
-    if (implementsOnDestroy(pipe)) {
-      pipe.onDestroy();
+  static callPipeOnDestroy(selectedPipe: SelectedPipe): void {
+    if (implementsOnDestroy(selectedPipe.pipe)) {
+      (<any>selectedPipe.pipe).onDestroy();
     }
   }
 

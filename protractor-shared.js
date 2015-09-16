@@ -38,7 +38,7 @@ var browsers = argv['browsers'].split(',');
 var CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc'],
   'perfLoggingPrefs': {
-    'traceCategories': 'v8,blink.console,disabled-by-default-devtools.timeline'
+    'traceCategories': 'v8,blink.console,disabled-by-default-devtools.timeline,devtools.timeline'
   }
 };
 

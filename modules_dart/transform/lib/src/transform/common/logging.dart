@@ -19,7 +19,7 @@ Future<dynamic> initZoned(Transform t, _SimpleCallback fn) =>
 Future<dynamic> setZoned(BuildLogger logger, _SimpleCallback fn) async {
   return runZoned(() async {
     try {
-      await fn();
+      return await fn();
     } on AnalyzerError catch (e) {
       // Do not worry about printing the stack trace, barback will handle that
       // on its own when it catches the rethrown exception.

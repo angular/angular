@@ -4,7 +4,7 @@ import {Promise} from 'angular2/src/core/facade/async';
 function waitForElement(selector) {
   var EC = (<any>protractor).ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 10000);
+  browser.wait(EC.presenceOf($(selector)), 20000);
 }
 
 describe('routing inbox-app', function() {

@@ -1,4 +1,5 @@
-import {isString, isPresent, isBlank, makeTypeError} from 'angular2/src/core/facade/lang';
+import {isString, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {makeTypeError} from 'angular2/src/core/facade/exceptions';
 import {Injectable} from 'angular2/src/core/di/decorators';
 import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';

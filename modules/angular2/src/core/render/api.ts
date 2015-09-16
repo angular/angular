@@ -1,4 +1,4 @@
-import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, RegExpWrapper, deserializeEnum} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 import {Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
@@ -276,7 +276,7 @@ export class RenderDirectiveMetadata {
   }
 }
 
-// An opaque reference to a render proto ivew
+// An opaque reference to a render proto view
 export class RenderProtoViewRef {}
 
 // An opaque reference to a part of a view
@@ -302,6 +302,12 @@ export enum ViewEncapsulation {
    * Don't scope the template nor the styles.
    */
   None
+}
+
+var encapsulationMap: Map<number, ViewEncapsulation> = MapWrapper.createFromPairs(
+    [[0, ViewEncapsulation.Emulated], [1, ViewEncapsulation.Native], [2, ViewEncapsulation.None]]);
+export function viewEncapsulationFromJson(value: number): ViewEncapsulation {
+  return deserializeEnum(value, encapsulationMap);
 }
 
 export class ViewDefinition {
@@ -340,7 +346,7 @@ export class RenderProtoViewMergeMapping {
               public fragmentCount: number,
               // Mapping from app element index to render element index.
               // Mappings of nested ProtoViews are in depth first order, with all
-              // indices for one ProtoView in a consecuitve block.
+              // indices for one ProtoView in a consecutive block.
               public mappedElementIndices: number[],
               // Number of bound render element.
               // Note: This could be more than the original ones
@@ -348,7 +354,7 @@ export class RenderProtoViewMergeMapping {
               public mappedElementCount: number,
               // Mapping from app text index to render text index.
               // Mappings of nested ProtoViews are in depth first order, with all
-              // indices for one ProtoView in a consecuitve block.
+              // indices for one ProtoView in a consecutive block.
               public mappedTextIndices: number[],
               // Mapping from view index to app element index
               public hostElementIndicesByViewIndex: number[],
@@ -358,7 +364,7 @@ export class RenderProtoViewMergeMapping {
 
 export class RenderCompiler {
   /**
-   * Creats a ProtoViewDto that contains a single nested component with the given componentId.
+   * Creates a ProtoViewDto that contains a single nested component with the given componentId.
    */
   compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> { return null; }
 
@@ -383,6 +389,45 @@ export class RenderCompiler {
     return null;
   }
 }
+
+export interface RenderTemplateCmd { visit(visitor: RenderCommandVisitor, context: any): any; }
+
+export interface RenderBeginCmd extends RenderTemplateCmd {
+  ngContentIndex: number;
+  isBound: boolean;
+}
+
+export interface RenderTextCmd extends RenderBeginCmd { value: string; }
+
+export interface RenderNgContentCmd extends RenderBeginCmd { ngContentIndex: number; }
+
+export interface RenderBeginElementCmd extends RenderBeginCmd {
+  name: string;
+  attrNameAndValues: string[];
+  eventNames: string[];
+}
+
+export interface RenderBeginComponentCmd extends RenderBeginElementCmd {
+  nativeShadow: boolean;
+  templateId: string;
+}
+
+export interface RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
+  isMerged: boolean;
+  children: RenderTemplateCmd[];
+}
+
+// TODO(tbosch): change ts2dart to allow to use `CMD` as type in these methods!
+export interface RenderCommandVisitor {
+  visitText /*<CMD extends RenderTextCmd>*/ (cmd: any, context: any): any;
+  visitNgContent /*<CMD extends RenderNgContentCmd>*/ (cmd: any, context: any): any;
+  visitBeginElement /*<CMD extends RenderBeginElementCmd>*/ (cmd: any, context: any): any;
+  visitEndElement(context: any): any;
+  visitBeginComponent /*<CMD extends RenderBeginComponentCmd>*/ (cmd: any, context: any): any;
+  visitEndComponent(context: any): any;
+  visitEmbeddedTemplate /*<CMD extends RenderEmbeddedTemplateCmd>*/ (cmd: any, context: any): any;
+}
+
 
 export class RenderViewWithFragments {
   constructor(public viewRef: RenderViewRef, public fragmentRefs: RenderFragmentRef[]) {}

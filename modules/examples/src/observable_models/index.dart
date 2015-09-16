@@ -4,7 +4,7 @@ import "package:angular2/bootstrap.dart" show bootstrap;
 import "app.dart" show App;
 import "package:angular2/src/core/compiler/view_pool.dart"
     show APP_VIEW_POOL_CAPACITY;
-import "package:angular2/di.dart" show bind;
+import "package:angular2/core.dart" show bind;
 
 main() {
   bootstrap(App, createBindings());

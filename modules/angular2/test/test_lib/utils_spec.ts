@@ -13,6 +13,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: true
       },
       {
@@ -23,6 +25,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: true
       },
       {
@@ -33,6 +37,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: false,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: false
       },
       {
@@ -43,6 +49,8 @@ export function main() {
         isEdge: false,
         isIE: true,
         isWebkit: false,
+        isIOS7: false,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -53,6 +61,8 @@ export function main() {
         isEdge: false,
         isIE: true,
         isWebkit: false,
+        isIOS7: false,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -63,6 +73,8 @@ export function main() {
         isEdge: false,
         isIE: true,
         isWebkit: false,
+        isIOS7: false,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -73,6 +85,8 @@ export function main() {
         isEdge: true,
         isIE: false,
         isWebkit: false,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: false
       },
       {
@@ -83,6 +97,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -93,6 +109,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -103,6 +121,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -113,6 +133,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: false
       },
       {
@@ -123,6 +145,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: false
       },
       {
@@ -133,6 +157,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: false
       },
       {
@@ -143,6 +169,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: true,
+        isSlow: true,
         supportsIntlApi: false
       },
       {
@@ -153,6 +181,8 @@ export function main() {
         isEdge: false,
         isIE: false,
         isWebkit: true,
+        isIOS7: false,
+        isSlow: false,
         supportsIntlApi: false
       }
     ];
@@ -165,6 +195,8 @@ export function main() {
         expect(bd.isEdge).toBe(StringMapWrapper.get(browser, 'isEdge'));
         expect(bd.isIE).toBe(StringMapWrapper.get(browser, 'isIE'));
         expect(bd.isWebkit).toBe(StringMapWrapper.get(browser, 'isWebkit'));
+        expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
+        expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
         expect(bd.supportsIntlApi).toBe(StringMapWrapper.get(browser, 'supportsIntlApi'));
       });
     });

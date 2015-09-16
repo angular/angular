@@ -1,11 +1,12 @@
 /// <reference path="../../../../../typings/hammerjs/hammerjs.d.ts"/>
 
 import {HammerGesturesPluginCommon} from './hammer_common';
-import {isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Injectable} from 'angular2/src/core/di';
 
+@Injectable()
 export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
-  constructor() { super(); }
-
   supports(eventName: string): boolean {
     if (!super.supports(eventName)) return false;
 
@@ -16,10 +17,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
     return true;
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function,
-                   shouldSupportBubble: boolean) {
-    if (shouldSupportBubble)
-      throw new BaseException('Hammer.js plugin does not support bubbling gestures.');
+  addEventListener(element: HTMLElement, eventName: string, handler: Function) {
     var zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
 

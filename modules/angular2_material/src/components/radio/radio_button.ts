@@ -6,7 +6,9 @@ import {
   Host,
   SkipSelf,
   Attribute,
-  Optional
+  Optional,
+  OnChanges,
+  OnInit
 } from 'angular2/angular2';
 
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/core/facade/lang';
@@ -33,7 +35,6 @@ var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
-  lifecycle: [LifecycleEvent.OnChanges],
   events: ['change'],
   properties: ['disabled', 'value'],
   host: {
@@ -41,7 +42,7 @@ var _uniqueIdCounter: number = 0;
     '[attr.aria-disabled]': 'disabled',
     '[attr.aria-activedescendant]': 'activedescendant',
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
-    '(^keydown)': 'onKeydown($event)',
+    '(keydown)': 'onKeydown($event)',
     '[tabindex]': 'tabindex',
   }
 })
@@ -49,7 +50,7 @@ var _uniqueIdCounter: number = 0;
   templateUrl: 'package:angular2_material/src/components/radio/radio_group.html',
   encapsulation: ViewEncapsulation.None
 })
-export class MdRadioGroup {
+export class MdRadioGroup implements OnChanges {
   /** The selected value for the radio group. The value comes from the options. */
   value: any;
 
@@ -191,7 +192,6 @@ export class MdRadioGroup {
 
 @Component({
   selector: 'md-radio-button',
-  lifecycle: [LifecycleEvent.OnInit],
   properties: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
     'role': 'radio',
@@ -207,7 +207,7 @@ export class MdRadioGroup {
   directives: [],
   encapsulation: ViewEncapsulation.None
 })
-export class MdRadioButton {
+export class MdRadioButton implements OnInit {
   /** Whether this radio is checked. */
   checked: boolean;
 

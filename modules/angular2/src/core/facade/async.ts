@@ -1,5 +1,4 @@
-/// <reference path="../../../typings/rx/rx.d.ts" />
-
+///<reference path="../../../typings/tsd.d.ts" />
 import {global, isPresent} from 'angular2/src/core/facade/lang';
 import * as Rx from 'rx';
 
@@ -91,20 +90,46 @@ export class Observable {
 }
 
 /**
+ * Use by directives and components to emit custom {@link Event}s.
+ *
+ * ## Examples
+ *
+ * In the following example, `Zippy` alternatively emits `open` and `close` events when its
+ * title gets clicked:
+ *
+ * ```
+ * @Component({selector: 'zippy'})
+ * @View({template: `
+ *   <div class="zippy">
+ *     <div (click)="toggle()">Toggle</div>
+ *     <div [hidden]="!visible">
+ *       <ng-content></ng-content>
+ *     </div>
+ *  </div>`})
+ * export class Zippy {
+ *   visible: boolean = true;
+ *   @Event() open: EventEmitter = new EventEmitter();
+ *   @Event() close: EventEmitter = new EventEmitter();
+ *
+ *   toggle() {
+ *     this.visible = !this.visible;
+ *     if (this.visible) {
+ *       this.open.next(null);
+ *     } else {
+ *       this.close.next(null);
+ *     }
+ *   }
+ * }
+ * ```
+ *
  * Use Rx.Observable but provides an adapter to make it work as specified here:
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
  */
 export class EventEmitter extends Observable {
-  _subject: Rx.Subject<any>;
-  _immediateScheduler;
-
-  constructor() {
-    super();
-    this._subject = new Rx.Subject<any>();
-    this._immediateScheduler = (<any>Rx.Scheduler).immediate;
-  }
+  _subject: Rx.Subject<any> = new Rx.Subject<any>();
+  _immediateScheduler = (<any>Rx.Scheduler).immediate;
 
   observer(generator: any): Rx.IDisposable {
     return this._subject.observeOn(this._immediateScheduler)
@@ -115,9 +140,18 @@ export class EventEmitter extends Observable {
 
   toRx(): Rx.Observable<any> { return this._subject; }
 
+  /**
+   * Emits a `value`.
+   */
   next(value: any) { this._subject.onNext(value); }
 
+  /**
+   * Emits an `error`.
+   */
   throw(error: any) { this._subject.onError(error); }
 
+  /**
+   * Closes the stream.
+   */
   return (value?: any) { this._subject.onCompleted(); }
 }

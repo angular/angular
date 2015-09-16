@@ -3,10 +3,11 @@ import {ReadyStates, RequestMethods} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {BrowserJsonp} from './browser_jsonp';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {StringWrapper, isPresent, makeTypeError} from 'angular2/src/core/facade/lang';
+import {makeTypeError} from 'angular2/src/core/facade/exceptions';
+import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
 
 export class JSONPConnection implements Connection {
   readyState: ReadyStates;
@@ -17,6 +18,9 @@ export class JSONPConnection implements Connection {
   private _responseData: any;
   private _finished: boolean = false;
 
+  /**
+   * @private
+   */
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
     if (req.method !== RequestMethods.Get) {
@@ -90,6 +94,9 @@ export class JSONPConnection implements Connection {
 
 @Injectable()
 export class JSONPBackend implements ConnectionBackend {
+  /**
+   * @private
+   */
   constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {}
   createConnection(request: Request): JSONPConnection {
     return new JSONPConnection(request, this._browserJSONP, this._baseResponseOptions);

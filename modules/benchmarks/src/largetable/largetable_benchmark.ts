@@ -1,7 +1,3 @@
-import {bootstrap, Component, Directive, View} from 'angular2/bootstrap';
-
-import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/core/facade/browser';
 import {
@@ -11,14 +7,23 @@ import {
   windowProfile,
   windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
-
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
+import {bootstrap} from 'angular2/bootstrap';
+import {
+  Component,
+  Directive,
+  View,
+  bind,
+  NgFor,
+  NgSwitch,
+  NgSwitchWhen,
+  NgSwitchDefault,
+  LifeCycle
+} from 'angular2/core';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {bind} from 'angular2/di';
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

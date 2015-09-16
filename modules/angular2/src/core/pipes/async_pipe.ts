@@ -1,13 +1,15 @@
-import {isBlank, isPresent, isPromise, CONST, BaseException} from 'angular2/src/core/facade/lang';
-import {Observable, Promise, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {Injectable} from 'angular2/di';
+import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/core/facade/lang';
+import {Promise, ObservableWrapper, Observable} from 'angular2/src/core/facade/async';
+import {Pipe} from 'angular2/src/core/metadata';
+import {Injectable} from 'angular2/src/core/di';
+import {
+  ChangeDetectorRef,
+  PipeOnDestroy,
+  PipeTransform,
+  WrappedValue
+} from 'angular2/src/core/change_detection';
 
-import {PipeTransform, PipeOnDestroy, WrappedValue} from 'angular2/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-import {ChangeDetectorRef} from 'angular2/change_detection';
-
-import {Pipe} from '../metadata';
-
 
 class ObservableStrategy {
   createSubscription(async: any, updateLatestValue: any): any {
@@ -34,30 +36,31 @@ var _observableStrategy = new ObservableStrategy();
 
 
 /**
- * Implements async bindings to Observable and Promise.
+ * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has
+ * emitted.
+ * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
  *
  * # Example
- *
- * In this example we bind the description observable to the DOM. The async pipe will convert an
- *observable to the
- * latest value it emitted. It will also request a change detection check when a new value is
- *emitted.
- *
- *  ```
- * @Component({
- *   selector: "task-cmp",
- *   changeDetection: ChangeDetectionStrategy.OnPush
- * })
- * @View({
- *   template: "Task Description {{ description | async }}"
- * })
- * class Task {
- *  description:Observable<string>;
- * }
+ * The example below binds the `time` Observable to the view. Every 500ms, the `time` Observable
+ * updates the view with the current time.
  *
  * ```
+ * import {Observable} from 'angular2/core';
+ * @Component({
+ *   selector: "task-cmp"
+ * })
+ * @View({
+ *   template: "Time: {{ time | async }}"
+ * })
+ * class Task {
+ *   time = new Observable<number>(observer => {
+ *     setInterval(_ =>
+ *       observer.next(new Date().getTime()), 500);
+ *   });
+ * }
+ * ```
  */
-@Pipe({name: 'async'})
+@Pipe({name: 'async', pure: false})
 @Injectable()
 export class AsyncPipe implements PipeTransform, PipeOnDestroy {
   _latestValue: Object = null;

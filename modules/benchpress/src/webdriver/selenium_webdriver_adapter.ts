@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {bind, Binding} from 'angular2/di';
+import {bind, Binding} from 'angular2/src/core/di';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 import * as webdriver from 'selenium-webdriver';
@@ -17,7 +17,7 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     thenable.then(
         // selenium-webdriver uses an own Node.js context,
         // so we need to convert data into objects of this context.
-        // (e.g. otherwise instanceof checks of rtts_assert would fail)
+        // Previously needed for rtts_asserts.
         (data) => completer.resolve(convertToLocalProcess(data)), completer.reject);
     return completer.promise;
   }

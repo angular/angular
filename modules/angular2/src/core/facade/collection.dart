@@ -182,7 +182,13 @@ class ListWrapper {
   }
 
   static List slice(List l, [int from = 0, int to]) {
-    return l.sublist(_startOffset(l, from), _endOffset(l, to));
+    from = _startOffset(l, from);
+    to = _endOffset(l, to);
+    //in JS if from > to an empty array is returned
+    if(to != null && from > to) {
+      return [];
+    }
+    return l.sublist(from, to);
   }
 
   static List splice(List l, int from, int length) {
@@ -209,7 +215,7 @@ class ListWrapper {
   // the end of the list
   static int _startOffset(List l, int start) {
     int len = l.length;
-    return start = start < 0 ? max(len + start, 0) : min(start, len);
+    return start < 0 ? max(len + start, 0) : min(start, len);
   }
 
   // JS splice, slice, fill functions can take end < 0 which indicates a position relative to

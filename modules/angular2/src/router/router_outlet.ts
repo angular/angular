@@ -1,10 +1,11 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent, BaseException} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {Directive, Attribute} from '../core/metadata';
-import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
-import {Injector, bind, Dependency, UNDEFINED} from 'angular2/di';
+import {Directive, Attribute} from 'angular2/src/core/metadata';
+import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/src/core/compiler';
+import {Injector, bind, Dependency} from 'angular2/src/core/di';
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams} from './instruction';
@@ -30,6 +31,9 @@ export class RouterOutlet {
   private _componentRef: ComponentRef = null;
   private _currentInstruction: ComponentInstruction = null;
 
+  /**
+   * @private
+   */
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
     if (isPresent(nameAttr)) {

@@ -1,8 +1,10 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
-import {Injector, bind, Binding} from "angular2/di";
+import {Injector, bind, Binding} from "angular2/src/core/di";
+import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
+import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Parser,
   Lexer,
@@ -11,8 +13,11 @@ import {
   JitChangeDetection,
   PreGeneratedChangeDetection
 } from 'angular2/src/core/change_detection/change_detection';
-import {DEFAULT_PIPES} from 'angular2/pipes';
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/render/dom/events/event_manager';
+import {
+  EventManager,
+  DomEventsPlugin,
+  EVENT_MANAGER_PLUGINS
+} from 'angular2/src/core/render/dom/events/event_manager';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
@@ -45,7 +50,7 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {ExceptionHandler} from 'angular2/src/core/exception_handler';
+import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
@@ -61,20 +66,21 @@ import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
-import {WebWorkerMain} from 'angular2/src/web_workers/ui/impl';
+import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
 import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
+import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [bind(Reflector).toValue(reflector)];
 
-// TODO: This code is nearly identitcal to core/application. There should be a way to only write it
+// TODO: This code is nearly identical to core/application. There should be a way to only write it
 // once
 function _injectorBindings(): any[] {
   var bestChangeDetection = new DynamicChangeDetection();
@@ -87,14 +93,10 @@ function _injectorBindings(): any[] {
   return [
     bind(DOCUMENT)
         .toValue(DOM.defaultDoc()),
-    bind(EventManager)
-        .toFactory(
-            (ngZone) => {
-              var plugins =
-                  [new HammerGesturesPlugin(), new KeyEventsPlugin(), new DomEventsPlugin()];
-              return new EventManager(plugins, ngZone);
-            },
-            [NgZone]),
+    EventManager,
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
+    new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
@@ -134,12 +136,15 @@ function _injectorBindings(): any[] {
     Testability,
     AnchorBasedAppRootUrl,
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
-    WebWorkerMain,
+    WebWorkerApplication,
     WebWorkerSetup,
     MessageBasedRenderCompiler,
     MessageBasedXHRImpl,
     MessageBasedRenderer,
-    ServiceMessageBrokerFactory
+    ServiceMessageBrokerFactory,
+    ClientMessageBrokerFactory,
+    BrowserDetails,
+    AnimationBuilder,
   ];
 }
 

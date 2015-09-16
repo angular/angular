@@ -43,46 +43,45 @@ export function main() {
 
     it('should generate URLs starting at the given component', () => {
       registry.config(RootHostCmp,
-                      new Route({path: '/first/...', component: DummyParentCmp, as: 'firstCmp'}));
+                      new Route({path: '/first/...', component: DummyParentCmp, as: 'FirstCmp'}));
 
-      expect(stringifyInstruction(registry.generate(['firstCmp', 'secondCmp'], RootHostCmp)))
+      expect(stringifyInstruction(registry.generate(['FirstCmp', 'SecondCmp'], RootHostCmp)))
           .toEqual('first/second');
-      expect(stringifyInstruction(registry.generate(['secondCmp'], DummyParentCmp)))
+      expect(stringifyInstruction(registry.generate(['SecondCmp'], DummyParentCmp)))
           .toEqual('second');
     });
 
     it('should generate URLs that account for redirects', () => {
       registry.config(
           RootHostCmp,
-          new Route({path: '/first/...', component: DummyParentRedirectCmp, as: 'firstCmp'}));
+          new Route({path: '/first/...', component: DummyParentRedirectCmp, as: 'FirstCmp'}));
 
-      expect(stringifyInstruction(registry.generate(['firstCmp'], RootHostCmp)))
+      expect(stringifyInstruction(registry.generate(['FirstCmp'], RootHostCmp)))
           .toEqual('first/second');
     });
 
     it('should generate URLs in a hierarchy of redirects', () => {
       registry.config(
           RootHostCmp,
-          new Route({path: '/first/...', component: DummyMultipleRedirectCmp, as: 'firstCmp'}));
+          new Route({path: '/first/...', component: DummyMultipleRedirectCmp, as: 'FirstCmp'}));
 
-      expect(stringifyInstruction(registry.generate(['firstCmp'], RootHostCmp)))
+      expect(stringifyInstruction(registry.generate(['FirstCmp'], RootHostCmp)))
           .toEqual('first/second/third');
     });
 
     it('should generate URLs with params', () => {
       registry.config(
           RootHostCmp,
-          new Route({path: '/first/:param/...', component: DummyParentParamCmp, as: 'firstCmp'}));
+          new Route({path: '/first/:param/...', component: DummyParentParamCmp, as: 'FirstCmp'}));
 
       var url = stringifyInstruction(registry.generate(
-          ['firstCmp', {param: 'one'}, 'secondCmp', {param: 'two'}], RootHostCmp));
+          ['FirstCmp', {param: 'one'}, 'SecondCmp', {param: 'two'}], RootHostCmp));
       expect(url).toEqual('first/one/second/two');
     });
 
-    it('should geneate params as an empty StringMap when no params are given', () => {
-      registry.config(RootHostCmp,
-                      new Route({path: '/test/...', component: DummyParentParamCmp, as: 'test'}));
-      var instruction = registry.generate(['test'], RootHostCmp);
+    it('should generate params as an empty StringMap when no params are given', () => {
+      registry.config(RootHostCmp, new Route({path: '/test', component: DummyCmpA, as: 'Test'}));
+      var instruction = registry.generate(['Test'], RootHostCmp);
       expect(instruction.component.params).toEqual({});
     });
 
@@ -90,15 +89,15 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          registry.config(
              RootHostCmp,
-             new AsyncRoute({path: '/first/...', loader: AsyncParentLoader, as: 'firstCmp'}));
+             new AsyncRoute({path: '/first/...', loader: AsyncParentLoader, as: 'FirstCmp'}));
 
-         expect(() => registry.generate(['firstCmp', 'secondCmp'], RootHostCmp))
-             .toThrowError('Could not find route named "secondCmp".');
+         expect(() => registry.generate(['FirstCmp', 'SecondCmp'], RootHostCmp))
+             .toThrowError('Could not find route named "SecondCmp".');
 
          registry.recognize('/first/second', RootHostCmp)
              .then((_) => {
                expect(
-                   stringifyInstruction(registry.generate(['firstCmp', 'secondCmp'], RootHostCmp)))
+                   stringifyInstruction(registry.generate(['FirstCmp', 'SecondCmp'], RootHostCmp)))
                    .toEqual('first/second');
                async.done();
              });
@@ -106,7 +105,7 @@ export function main() {
 
 
     it('should throw when generating a url and a parent has no config', () => {
-      expect(() => registry.generate(['firstCmp', 'secondCmp'], RootHostCmp))
+      expect(() => registry.generate(['FirstCmp', 'SecondCmp'], RootHostCmp))
           .toThrowError('Component "RootHostCmp" has no route config.');
     });
 
@@ -232,6 +231,13 @@ export function main() {
       }
     });
 
+    it('should throw when linkParams are not terminal', () => {
+      registry.config(RootHostCmp,
+                      new Route({path: '/first/...', component: DummyParentCmp, as: 'First'}));
+      expect(() => { registry.generate(['First'], RootHostCmp); })
+          .toThrowError('Link "["First"]" does not resolve to a terminal or async instruction.');
+    });
+
     it('should match matrix params on child components and query params on the root component',
        inject([AsyncTestCompleter], (async) => {
          registry.config(RootHostCmp, new Route({path: '/first/...', component: DummyParentCmp}));
@@ -250,13 +256,13 @@ export function main() {
     it('should generate URLs with matrix and query params', () => {
       registry.config(
           RootHostCmp,
-          new Route({path: '/first/:param/...', component: DummyParentParamCmp, as: 'firstCmp'}));
+          new Route({path: '/first/:param/...', component: DummyParentParamCmp, as: 'FirstCmp'}));
 
       var url = stringifyInstruction(registry.generate(
           [
-            'firstCmp',
+            'FirstCmp',
             {param: 'one', query: 'cats'},
-            'secondCmp',
+            'SecondCmp',
             {
               param: 'two',
               sort: 'asc',
@@ -288,7 +294,7 @@ class DummyCmpB {}
 
 @RouteConfig([
   new Redirect({path: '/', redirectTo: '/third'}),
-  new Route({path: '/third', component: DummyCmpB, as: 'thirdCmp'})
+  new Route({path: '/third', component: DummyCmpB, as: 'ThirdCmp'})
 ])
 class DummyRedirectCmp {
 }
@@ -296,23 +302,23 @@ class DummyRedirectCmp {
 
 @RouteConfig([
   new Redirect({path: '/', redirectTo: '/second'}),
-  new Route({path: '/second/...', component: DummyRedirectCmp, as: 'secondCmp'})
+  new Route({path: '/second/...', component: DummyRedirectCmp, as: 'SecondCmp'})
 ])
 class DummyMultipleRedirectCmp {
 }
 
 @RouteConfig([
   new Redirect({path: '/', redirectTo: '/second'}),
-  new Route({path: '/second', component: DummyCmpB, as: 'secondCmp'})
+  new Route({path: '/second', component: DummyCmpB, as: 'SecondCmp'})
 ])
 class DummyParentRedirectCmp {
 }
 
-@RouteConfig([new Route({path: '/second', component: DummyCmpB, as: 'secondCmp'})])
+@RouteConfig([new Route({path: '/second', component: DummyCmpB, as: 'SecondCmp'})])
 class DummyParentCmp {
 }
 
 
-@RouteConfig([new Route({path: '/second/:param', component: DummyCmpB, as: 'secondCmp'})])
+@RouteConfig([new Route({path: '/second/:param', component: DummyCmpB, as: 'SecondCmp'})])
 class DummyParentParamCmp {
 }

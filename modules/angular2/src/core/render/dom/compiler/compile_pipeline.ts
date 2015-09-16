@@ -40,7 +40,7 @@ export class CompilePipeline {
     if (current.compileChildren) {
       var node = DOM.firstChild(DOM.templateAwareRoot(current.element));
       while (isPresent(node)) {
-        // compiliation can potentially move the node, so we need to store the
+        // compilation can potentially move the node, so we need to store the
         // next sibling before recursing.
         var nextNode = DOM.nextSibling(node);
         if (DOM.isElementNode(node)) {

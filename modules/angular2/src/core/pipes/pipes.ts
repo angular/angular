@@ -1,5 +1,14 @@
-import {isBlank, isPresent, BaseException, CONST, Type} from 'angular2/src/core/facade/lang';
-import {Injectable, OptionalMetadata, SkipSelfMetadata, Binding, Injector, bind} from 'angular2/di';
+import {isBlank, isPresent, CONST, Type} from 'angular2/src/core/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {
+  Injectable,
+  OptionalMetadata,
+  SkipSelfMetadata,
+  Binding,
+  Injector,
+  bind
+} from 'angular2/src/core/di';
 import {PipeBinding} from './pipe_binding';
 import * as cd from 'angular2/src/core/change_detection/pipes';
 
@@ -18,11 +27,25 @@ export class ProtoPipes {
   }
 }
 
+
+
 export class Pipes implements cd.Pipes {
+  _config: StringMap<string, cd.SelectedPipe> = {};
+
   constructor(public proto: ProtoPipes, public injector: Injector) {}
 
-  get(name: string): any {
-    var b = this.proto.get(name);
-    return this.injector.instantiateResolved(b);
+  get(name: string): cd.SelectedPipe {
+    var cached = StringMapWrapper.get(this._config, name);
+    if (isPresent(cached)) return cached;
+
+    var p = this.proto.get(name);
+    var transform = this.injector.instantiateResolved(p);
+    var res = new cd.SelectedPipe(transform, p.pure);
+
+    if (p.pure) {
+      StringMapWrapper.set(this._config, name, res);
+    }
+
+    return res;
   }
 }

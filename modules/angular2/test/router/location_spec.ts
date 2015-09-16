@@ -12,7 +12,7 @@ import {
   SpyObject
 } from 'angular2/test_lib';
 
-import {Injector, bind} from 'angular2/di';
+import {Injector, bind} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Location, APP_BASE_HREF} from 'angular2/src/router/location';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
@@ -63,7 +63,7 @@ export function main() {
            expect(ev['url']).toEqual('/user/btford');
            async.done();
          })
-       }), 2000);
+       }));
 
     it('should normalize location path', () => {
       locationStrategy.internalPath = '/my/app/user/btford';

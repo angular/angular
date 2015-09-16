@@ -14,16 +14,18 @@ var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..')
 
 module.exports = function makeNodeTree(destinationPath) {
   // list of npm packages that this build will create
-  var outputPackages = ['angular2', 'benchpress', 'rtts_assert'];
+  var outputPackages = ['angular2', 'benchpress'];
 
   var modulesTree = new Funnel('modules', {
-    include: ['angular2/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
+    include: ['angular2/**', 'benchpress/**', '**/e2e_test/**'],
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
+      'angular2/test/animate/**',
       'angular2/test/core/zone/**',
       'angular2/test/test_lib/fake_async_spec.ts',
       'angular2/test/core/render/xhr_impl_spec.ts',
-      'angular2/test/forms/**',
+      'angular2/test/core/forms/**',
+      'angular2/test/tools/tools_spec.ts',
       'angular1_router/**'
     ]
   });
@@ -34,10 +36,11 @@ module.exports = function makeNodeTree(destinationPath) {
     experimentalDecorators: true,
     declaration: false,
     mapRoot: '', /* force sourcemaps to use relative path */
-    module: 'commonjs',
+    module: 'CommonJS',
     noEmitOnError: true,
     rootDir: '.',
-    rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
+    rootFilePaths:
+        ['angular2/manual_typings/traceur-runtime.d.ts', 'angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
     target: 'ES5'

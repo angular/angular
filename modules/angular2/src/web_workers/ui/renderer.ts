@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/core/di';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
 import {
@@ -9,7 +9,7 @@ import {
 } from 'angular2/src/core/render/api';
 import {WebWorkerElementRef} from 'angular2/src/web_workers/shared/api';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {BaseException, Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 import {bind} from './bind';
 import {EventDispatcher} from 'angular2/src/web_workers/ui/event_dispatcher';
 import {
@@ -19,11 +19,14 @@ import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/servi
 
 @Injectable()
 export class MessageBasedRenderer {
-  constructor(brokerFactory: ServiceMessageBrokerFactory, private _bus: MessageBus,
+  constructor(private _brokerFactory: ServiceMessageBrokerFactory, private _bus: MessageBus,
               private _serializer: Serializer,
               private _renderViewWithFragmentsStore: RenderViewWithFragmentsStore,
-              private _renderer: Renderer) {
-    var broker = brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+              private _renderer: Renderer) {}
+
+  start(): void {
+    var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+    this._bus.initChannel(EVENT_CHANNEL);
     broker.registerMethod("createRootHostView",
                           [RenderProtoViewRef, PRIMITIVE, PRIMITIVE, PRIMITIVE],
                           bind(this._createRootHostView, this));

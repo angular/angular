@@ -2,18 +2,17 @@ import {
   isPresent,
   isBlank,
   Type,
-  BaseException,
   stringify,
   CONST_EXPR,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   Injector,
   ProtoInjector,
   Visibility,
-  UNDEFINED,
   Key,
   Dependency,
   bind,
@@ -24,12 +23,14 @@ import {
   CyclicDependencyError,
   resolveForwardRef,
   DependencyProvider
-} from 'angular2/di';
+} from 'angular2/src/core/di';
+import {UNDEFINED} from 'angular2/src/core/di/injector';
 import {
   InjectorInlineStrategy,
   InjectorDynamicStrategy,
   BindingWithVisibility
 } from 'angular2/src/core/di/injector';
+import {resolveBinding, ResolvedFactory} from 'angular2/src/core/di/binding';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
@@ -38,7 +39,7 @@ import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
-import {DirectiveMetadata, ComponentMetadata, LifecycleEvent} from '../metadata/directives';
+import {DirectiveMetadata, ComponentMetadata} from '../metadata/directives';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {
   ChangeDetector,
@@ -49,6 +50,8 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 import {EventConfig} from 'angular2/src/core/render/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
+
+import {LifecycleHooks} from './interfaces';
 
 var _staticKeys;
 
@@ -75,90 +78,19 @@ export class StaticKeys {
 
 export class TreeNode<T extends TreeNode<any>> {
   _parent: T;
-  _head: T = null;
-  _tail: T = null;
-  _next: T = null;
   constructor(parent: T) {
-    if (isPresent(parent)) parent.addChild(this);
-  }
-
-  /**
-   * Adds a child to the parent node. The child MUST NOT be a part of a tree.
-   */
-  addChild(child: T): void {
-    if (isPresent(this._tail)) {
-      this._tail._next = child;
-      this._tail = child;
+    if (isPresent(parent)) {
+      parent.addChild(this);
     } else {
-      this._tail = this._head = child;
+      this._parent = null;
     }
-    child._next = null;
-    child._parent = this;
   }
 
-  /**
-   * Adds a child to the parent node after a given sibling.
-   * The child MUST NOT be a part of a tree and the sibling must be present.
-   */
-  addChildAfter(child: T, prevSibling: T): void {
-    if (isBlank(prevSibling)) {
-      var prevHead = this._head;
-      this._head = child;
-      child._next = prevHead;
-      if (isBlank(this._tail)) this._tail = child;
-    } else if (isBlank(prevSibling._next)) {
-      this.addChild(child);
-      return;
-    } else {
-      child._next = prevSibling._next;
-      prevSibling._next = child;
-    }
-    child._parent = this;
-  }
+  addChild(child: T): void { child._parent = this; }
 
-  /**
-   * Detaches a node from the parent's tree.
-   */
-  remove(): void {
-    if (isBlank(this.parent)) return;
-    var nextSibling = this._next;
-    var prevSibling = this._findPrev();
-    if (isBlank(prevSibling)) {
-      this.parent._head = this._next;
-    } else {
-      prevSibling._next = this._next;
-    }
-    if (isBlank(nextSibling)) {
-      this._parent._tail = prevSibling;
-    }
-    this._parent = null;
-    this._next = null;
-  }
-
-  /**
-   * Finds a previous sibling or returns null if first child.
-   * Assumes the node has a parent.
-   * TODO(rado): replace with DoublyLinkedList to avoid O(n) here.
-   */
-  _findPrev() {
-    var node = this.parent._head;
-    if (node == this) return null;
-    while (node._next !== this) node = node._next;
-    return node;
-  }
+  remove(): void { this._parent = null; }
 
   get parent() { return this._parent; }
-
-  // TODO(rado): replace with a function call, does too much work for a getter.
-  get children(): T[] {
-    var res = [];
-    var child = this._head;
-    while (child != null) {
-      res.push(child);
-      child = child._next;
-    }
-    return res;
-  }
 }
 
 export class DirectiveDependency extends Dependency {
@@ -195,40 +127,32 @@ export class DirectiveDependency extends Dependency {
 }
 
 export class DirectiveBinding extends ResolvedBinding {
-  constructor(key: Key, factory: Function, dependencies: Dependency[],
-              public resolvedBindings: ResolvedBinding[],
-              public resolvedViewBindings: ResolvedBinding[],
-              public metadata: RenderDirectiveMetadata) {
-    super(key, factory, dependencies);
+  constructor(key: Key, factory: Function, deps: Dependency[],
+              public metadata: RenderDirectiveMetadata,
+              public bindings: Array<Type | Binding | any[]>,
+              public viewBindings: Array<Type | Binding | any[]>) {
+    super(key, [new ResolvedFactory(factory, deps)], false);
   }
 
-  get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
-
-  get callOnChanges(): boolean { return this.metadata.callOnChanges; }
-
-  get callAfterContentChecked(): boolean { return this.metadata.callAfterContentChecked; }
-
   get displayName(): string { return this.key.displayName; }
+
+  get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
 
   get eventEmitters(): string[] {
     return isPresent(this.metadata) && isPresent(this.metadata.events) ? this.metadata.events : [];
   }
-
-  get changeDetection() { return this.metadata.changeDetection; }
 
   static createFromBinding(binding: Binding, meta: DirectiveMetadata): DirectiveBinding {
     if (isBlank(meta)) {
       meta = new DirectiveMetadata();
     }
 
-    var rb = binding.resolve();
-    var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    var resolvedBindings = isPresent(meta.bindings) ? Injector.resolve(meta.bindings) : [];
-    var resolvedViewBindings = meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ?
-                                   Injector.resolve(meta.viewBindings) :
-                                   [];
+    var rb = resolveBinding(binding);
+    var rf = rb.resolvedFactories[0];
+    var deps = rf.dependencies.map(DirectiveDependency.createFrom);
+    var token = binding.token;
     var metadata = RenderDirectiveMetadata.create({
-      id: stringify(rb.key.token),
+      id: stringify(binding.token),
       type: meta instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
                                                 RenderDirectiveMetadata.DIRECTIVE_TYPE,
       selector: meta.selector,
@@ -236,29 +160,30 @@ export class DirectiveBinding extends ResolvedBinding {
       events: meta.events,
       host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
       properties: meta.properties,
-      readAttributes: DirectiveBinding._readAttributes(deps),
+      readAttributes: DirectiveBinding._readAttributes(<any>deps),
 
-      callOnDestroy: hasLifecycleHook(LifecycleEvent.OnDestroy, rb.key.token, meta),
-      callOnChanges: hasLifecycleHook(LifecycleEvent.OnChanges, rb.key.token, meta),
-      callDoCheck: hasLifecycleHook(LifecycleEvent.DoCheck, rb.key.token, meta),
-      callOnInit: hasLifecycleHook(LifecycleEvent.OnInit, rb.key.token, meta),
-      callAfterContentInit: hasLifecycleHook(LifecycleEvent.AfterContentInit, rb.key.token, meta),
-      callAfterContentChecked:
-          hasLifecycleHook(LifecycleEvent.AfterContentChecked, rb.key.token, meta),
-      callAfterViewInit: hasLifecycleHook(LifecycleEvent.AfterViewInit, rb.key.token, meta),
-      callAfterViewChecked: hasLifecycleHook(LifecycleEvent.AfterViewChecked, rb.key.token, meta),
+      callOnDestroy: hasLifecycleHook(LifecycleHooks.OnDestroy, token),
+      callOnChanges: hasLifecycleHook(LifecycleHooks.OnChanges, token),
+      callDoCheck: hasLifecycleHook(LifecycleHooks.DoCheck, token),
+      callOnInit: hasLifecycleHook(LifecycleHooks.OnInit, token),
+      callAfterContentInit: hasLifecycleHook(LifecycleHooks.AfterContentInit, token),
+      callAfterContentChecked: hasLifecycleHook(LifecycleHooks.AfterContentChecked, token),
+      callAfterViewInit: hasLifecycleHook(LifecycleHooks.AfterViewInit, token),
+      callAfterViewChecked: hasLifecycleHook(LifecycleHooks.AfterViewChecked, token),
 
       changeDetection: meta instanceof ComponentMetadata ? meta.changeDetection : null,
 
       exportAs: meta.exportAs
     });
-    return new DirectiveBinding(rb.key, rb.factory, deps, resolvedBindings, resolvedViewBindings,
-                                metadata);
+    var bindings = isPresent(meta.bindings) ? meta.bindings : [];
+    var viewBindigs =
+        meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ? meta.viewBindings : [];
+    return new DirectiveBinding(rb.key, rf.factory, deps, metadata, bindings, viewBindigs);
   }
 
-  static _readAttributes(deps) {
+  static _readAttributes(deps: DirectiveDependency[]): string[] {
     var readAttributes = [];
-    ListWrapper.forEach(deps, (dep) => {
+    deps.forEach(dep => {
       if (isPresent(dep.attributeName)) {
         readAttributes.push(dep.attributeName);
       }
@@ -316,7 +241,7 @@ export class ProtoElementInjector {
   eventEmitterAccessors: EventEmitterAccessor[][];
   protoInjector: ProtoInjector;
 
-  static create(parent: ProtoElementInjector, index: number, bindings: ResolvedBinding[],
+  static create(parent: ProtoElementInjector, index: number, bindings: DirectiveBinding[],
                 firstBindingIsComponent: boolean, distanceToParent: number,
                 directiveVariableBindings: Map<string, number>): ProtoElementInjector {
     var bd = [];
@@ -326,43 +251,46 @@ export class ProtoElementInjector {
     if (firstBindingIsComponent) {
       ProtoElementInjector._createViewBindingsWithVisibility(bindings, bd);
     }
-    ProtoElementInjector._createBindingsWithVisibility(bindings, bd, firstBindingIsComponent);
+
+    ProtoElementInjector._createBindingsWithVisibility(bindings, bd);
     return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent,
                                     directiveVariableBindings);
   }
 
-  private static _createDirectiveBindingWithVisibility(dirBindings: ResolvedBinding[],
+  private static _createDirectiveBindingWithVisibility(dirBindings: DirectiveBinding[],
                                                        bd: BindingWithVisibility[],
                                                        firstBindingIsComponent: boolean) {
-    ListWrapper.forEach(dirBindings, dirBinding => {
+    dirBindings.forEach(dirBinding => {
       bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent, dirBinding,
                                                                 dirBindings, dirBinding));
     });
   }
 
-  private static _createBindingsWithVisibility(dirBindings: ResolvedBinding[],
-                                               bd: BindingWithVisibility[],
-                                               firstBindingIsComponent: boolean) {
-    ListWrapper.forEach(dirBindings, dirBinding => {
-      ListWrapper.forEach(dirBinding.resolvedBindings, b => {
-        bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent,
-                                                                  dirBinding, dirBindings, b));
-      });
+  private static _createBindingsWithVisibility(dirBindings: DirectiveBinding[],
+                                               bd: BindingWithVisibility[]) {
+    var bindingsFromAllDirectives = [];
+    dirBindings.forEach(dirBinding => {
+      bindingsFromAllDirectives =
+          ListWrapper.concat(bindingsFromAllDirectives, dirBinding.bindings);
     });
+
+    var resolved = Injector.resolve(bindingsFromAllDirectives);
+    resolved.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Public)));
   }
 
-  private static _createBindingWithVisibility(firstBindingIsComponent, dirBinding, dirBindings,
-                                              binding) {
+  private static _createBindingWithVisibility(firstBindingIsComponent: boolean,
+                                              dirBinding: DirectiveBinding,
+                                              dirBindings: DirectiveBinding[],
+                                              binding: ResolvedBinding) {
     var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
     return new BindingWithVisibility(binding,
                                      isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
   }
 
-  private static _createViewBindingsWithVisibility(bindings: ResolvedBinding[],
+  private static _createViewBindingsWithVisibility(dirBindings: DirectiveBinding[],
                                                    bd: BindingWithVisibility[]) {
-    var db = <DirectiveBinding>bindings[0];
-    ListWrapper.forEach(db.resolvedViewBindings,
-                        b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
+    var resolvedViewBindings = Injector.resolve(dirBindings[0].viewBindings);
+    resolvedViewBindings.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
   }
 
 
@@ -398,8 +326,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   private _host: ElementInjector;
   private _preBuiltObjects: PreBuiltObjects = null;
 
-  // Queries are added during construction or linking with a new parent.
-  // They are removed only through unlinking.
+  // QueryRefs are added during construction. They are never removed.
   private _query0: QueryRef;
   private _query1: QueryRef;
   private _query2: QueryRef;
@@ -424,7 +351,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this.hydrated = false;
 
     this._buildQueries();
-    this._addParentQueries();
   }
 
   dehydrate(): void {
@@ -433,18 +359,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._preBuiltObjects = null;
     this._strategy.callOnDestroy();
     this._strategy.dehydrate();
-  }
-
-  afterContentChecked(): void {
-    if (isPresent(this._query0) && this._query0.originator === this) {
-      this._query0.list.fireCallbacks();
-    }
-    if (isPresent(this._query1) && this._query1.originator === this) {
-      this._query1.list.fireCallbacks();
-    }
-    if (isPresent(this._query2) && this._query2.originator === this) {
-      this._query2.list.fireCallbacks();
-    }
+    this._clearQueryLists();
   }
 
   hydrate(imperativelyCreatedInjector: Injector, host: ElementInjector,
@@ -452,32 +367,39 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._host = host;
     this._preBuiltObjects = preBuiltObjects;
 
-    if (isPresent(host)) {
-      this._addViewQueries(host);
-    }
-
     this._reattachInjectors(imperativelyCreatedInjector);
     this._strategy.hydrate();
 
-    this._addDirectivesToQueries();
-    this._addVarBindingsToQueries();
-
     this.hydrated = true;
-
-    // TODO(rado): optimize this call, if view queries are not moved around,
-    // simply appending to the query list is faster than updating.
-    this._updateViewQueries();
   }
 
-  private _updateViewQueries() {
+  updateLocalQueries() {
+    if (isPresent(this._query0) && !this._query0.isViewQuery) {
+      this._query0.update();
+      this._query0.list.fireCallbacks();
+    }
+    if (isPresent(this._query1) && !this._query1.isViewQuery) {
+      this._query1.update();
+      this._query1.list.fireCallbacks();
+    }
+    if (isPresent(this._query2) && !this._query2.isViewQuery) {
+      this._query2.update();
+      this._query2.list.fireCallbacks();
+    }
+  }
+
+  updateLocalViewQueries() {
     if (isPresent(this._query0) && this._query0.isViewQuery) {
       this._query0.update();
+      this._query0.list.fireCallbacks();
     }
     if (isPresent(this._query1) && this._query1.isViewQuery) {
       this._query1.update();
+      this._query1.list.fireCallbacks();
     }
     if (isPresent(this._query2) && this._query2.isViewQuery) {
       this._query2.update();
+      this._query2.list.fireCallbacks();
     }
   }
 
@@ -555,6 +477,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
   }
+
+  getView(): viewModule.AppView { return this._preBuiltObjects.view; }
 
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
@@ -635,54 +559,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     }
   }
 
-  private _addViewQueries(host: ElementInjector): void {
-    this._addViewQuery(host._query0, host);
-    this._addViewQuery(host._query1, host);
-    this._addViewQuery(host._query2, host);
-  }
-
-  private _addViewQuery(queryRef: QueryRef, host: ElementInjector): void {
-    if (isBlank(queryRef) || !queryRef.isViewQuery || this._hasQuery(queryRef)) return;
-    if (queryRef.originator == host) {
-      // TODO(rado): Replace this.parent check with distanceToParent = 1 when
-      // https://github.com/angular/angular/issues/2707 is fixed.
-      if (!queryRef.query.descendants && isPresent(this.parent)) return;
-      this._assignQueryRef(queryRef);
-    }
-  }
-
-  private _addVarBindingsToQueries(): void {
-    this._addVarBindingsToQuery(this._query0);
-    this._addVarBindingsToQuery(this._query1);
-    this._addVarBindingsToQuery(this._query2);
-  }
-
-  private _addDirectivesToQueries(): void {
-    this._addDirectivesToQuery(this._query0);
-    this._addDirectivesToQuery(this._query1);
-    this._addDirectivesToQuery(this._query2);
-  }
-
-  private _addVarBindingsToQuery(queryRef: QueryRef): void {
-    if (isBlank(queryRef) || !queryRef.query.isVarBindingQuery) return;
-
-    var vb = queryRef.query.varBindings;
-    for (var i = 0; i < vb.length; ++i) {
-      if (this.hasVariableBinding(vb[i])) {
-        queryRef.list.add(this.getVariableBinding(vb[i]));
-      }
-    }
-  }
-
-  private _addDirectivesToQuery(queryRef: QueryRef): void {
-    if (isBlank(queryRef) || queryRef.query.isVarBindingQuery) return;
-    if (queryRef.isViewQuery && queryRef.originator == this) return;
-
-    var matched = [];
-    this.addDirectivesMatchingQuery(queryRef.query, matched);
-    matched.forEach(s => queryRef.list.add(s));
-  }
-
   private _createQueryRef(query: QueryMetadata): void {
     var queryList = new QueryList<any>();
     if (isBlank(this._query0)) {
@@ -697,7 +573,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   }
 
   addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
-    var templateRef = this._preBuiltObjects.templateRef;
+    var templateRef = isBlank(this._preBuiltObjects) ? null : this._preBuiltObjects.templateRef;
     if (query.selector === TemplateRef && isPresent(templateRef)) {
       list.push(templateRef);
     }
@@ -723,105 +599,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     throw new BaseException(`Cannot find query for directive ${query}.`);
   }
 
-  _hasQuery(query: QueryRef): boolean {
-    return this._query0 == query || this._query1 == query || this._query2 == query;
-  }
+  link(parent: ElementInjector): void { parent.addChild(this); }
 
-  link(parent: ElementInjector): void {
-    parent.addChild(this);
-    this._addParentQueries();
-  }
-
-  linkAfter(parent: ElementInjector, prevSibling: ElementInjector): void {
-    parent.addChildAfter(this, prevSibling);
-    this._addParentQueries();
-  }
-
-  unlink(): void {
-    var parent = this.parent;
-    this.remove();
-    this._removeParentQueries(parent);
-  }
-
-  private _addParentQueries(): void {
-    if (isBlank(this.parent)) return;
-    this._addParentQuery(this.parent._query0);
-    this._addParentQuery(this.parent._query1);
-    this._addParentQuery(this.parent._query2);
-  }
-
-  private _addParentQuery(query): void {
-    if (isPresent(query) && !this._hasQuery(query)) {
-      this._addQueryToTree(query);
-      if (this.hydrated) query.update();
-    }
-  }
-
-  private _removeParentQueries(parent: ElementInjector): void {
-    this._removeParentQuery(parent._query0);
-    this._removeParentQuery(parent._query1);
-    this._removeParentQuery(parent._query2);
-  }
-
-  private _removeParentQuery(query: QueryRef) {
-    if (isPresent(query)) {
-      this._pruneQueryFromTree(query);
-      query.update();
-    }
-  }
-
-  private _pruneQueryFromTree(query: QueryRef): void {
-    this._removeQueryRef(query);
-
-    var child = this._head;
-    while (isPresent(child)) {
-      child._pruneQueryFromTree(query);
-      child = child._next;
-    }
-  }
-
-  private _addQueryToTree(queryRef: QueryRef): void {
-    if (queryRef.query.descendants == false) {
-      if (this == queryRef.originator) {
-        this._addQueryToTreeSelfAndRecurse(queryRef);
-        // TODO(rado): add check for distance to parent = 1 when issue #2707 is fixed.
-      } else if (this.parent == queryRef.originator) {
-        this._assignQueryRef(queryRef);
-      }
-    } else {
-      this._addQueryToTreeSelfAndRecurse(queryRef);
-    }
-  }
-
-  private _addQueryToTreeSelfAndRecurse(queryRef: QueryRef): void {
-    this._assignQueryRef(queryRef);
-
-    var child = this._head;
-    while (isPresent(child)) {
-      child._addQueryToTree(queryRef);
-      child = child._next;
-    }
-  }
-
-  private _assignQueryRef(query: QueryRef): void {
-    if (isBlank(this._query0)) {
-      this._query0 = query;
-      return;
-    } else if (isBlank(this._query1)) {
-      this._query1 = query;
-      return;
-    } else if (isBlank(this._query2)) {
-      this._query2 = query;
-      return;
-    }
-    throw new QueryError();
-  }
-
-  private _removeQueryRef(query: QueryRef): void {
-    if (this._query0 == query) this._query0 = null;
-    if (this._query1 == query) this._query1 = null;
-    if (this._query2 == query) this._query2 = null;
-  }
+  unlink(): void { this.remove(); }
 
   getDirectiveAtIndex(index: number): any { return this._injector.getAt(index); }
 
@@ -837,6 +617,37 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
+
+  private _clearQueryLists(): void {
+    if (isPresent(this._query0)) this._query0.reset();
+    if (isPresent(this._query1)) this._query1.reset();
+    if (isPresent(this._query2)) this._query2.reset();
+  }
+
+  afterViewChecked(): void { this.updateLocalViewQueries(); }
+
+  afterContentChecked(): void { this.updateLocalQueries(); }
+
+  traverseAndSetQueriesAsDirty(): void {
+    var inj = this;
+    while (isPresent(inj)) {
+      inj._setQueriesAsDirty();
+      inj = inj.parent;
+    }
+  }
+
+  private _setQueriesAsDirty(): void {
+    if (isPresent(this._query0) && !this._query0.isViewQuery) this._query0.dirty = true;
+    if (isPresent(this._query1) && !this._query1.isViewQuery) this._query1.dirty = true;
+    if (isPresent(this._query2) && !this._query2.isViewQuery) this._query2.dirty = true;
+    if (isPresent(this._host)) this._host._setViewQueriesAsDirty();
+  }
+
+  private _setViewQueriesAsDirty(): void {
+    if (isPresent(this._query0) && this._query0.isViewQuery) this._query0.dirty = true;
+    if (isPresent(this._query1) && this._query1.isViewQuery) this._query1.dirty = true;
+    if (isPresent(this._query2) && this._query2.isViewQuery) this._query2.dirty = true;
+  }
 }
 
 interface _ElementInjectorStrategy {
@@ -845,14 +656,13 @@ interface _ElementInjectorStrategy {
   isComponentKey(key: Key): boolean;
   buildQueries(): void;
   addDirectivesMatchingQuery(q: QueryMetadata, res: any[]): void;
-  getComponentBinding(): DirectiveBinding;
   hydrate(): void;
   dehydrate(): void;
 }
 
 /**
  * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
- * In such a case, inlining fields is benefitial for performances.
+ * In such a case, inlining fields is beneficial for performances.
  */
 class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
   constructor(public injectorStrategy: InjectorInlineStrategy, public _ei: ElementInjector) {}
@@ -946,34 +756,44 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var p = this.injectorStrategy.protoStrategy;
 
     if (p.binding0 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding0.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding0.resolvedFactories[0].dependencies);
     }
     if (p.binding1 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding1.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding1.resolvedFactories[0].dependencies);
     }
     if (p.binding2 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding2.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding2.resolvedFactories[0].dependencies);
     }
     if (p.binding3 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding3.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding3.resolvedFactories[0].dependencies);
     }
     if (p.binding4 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding4.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding4.resolvedFactories[0].dependencies);
     }
     if (p.binding5 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding5.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding5.resolvedFactories[0].dependencies);
     }
     if (p.binding6 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding6.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding6.resolvedFactories[0].dependencies);
     }
     if (p.binding7 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding7.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding7.resolvedFactories[0].dependencies);
     }
     if (p.binding8 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding8.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding8.resolvedFactories[0].dependencies);
     }
     if (p.binding9 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.binding9.dependencies);
+      this._ei._buildQueriesForDeps(
+          <DirectiveDependency[]>p.binding9.resolvedFactories[0].dependencies);
     }
   }
 
@@ -1021,11 +841,6 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
       if (i.obj9 === UNDEFINED) i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
       list.push(i.obj9);
     }
-  }
-
-  getComponentBinding(): DirectiveBinding {
-    var p = this.injectorStrategy.protoStrategy;
-    return <DirectiveBinding>p.binding0;
   }
 }
 
@@ -1079,7 +894,8 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
     for (var i = 0; i < p.bindings.length; i++) {
       if (p.bindings[i] instanceof DirectiveBinding) {
-        this._ei._buildQueriesForDeps(<DirectiveDependency[]>p.bindings[i].dependencies);
+        this._ei._buildQueriesForDeps(
+            <DirectiveDependency[]>p.bindings[i].resolvedFactory.dependencies);
       }
     }
   }
@@ -1097,11 +913,6 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
       }
     }
   }
-
-  getComponentBinding(): DirectiveBinding {
-    var p = this.injectorStrategy.protoStrategy;
-    return <DirectiveBinding>p.bindings[0];
-  }
 }
 
 export class QueryError extends BaseException {
@@ -1109,7 +920,7 @@ export class QueryError extends BaseException {
   // TODO(rado): pass the names of the active directives.
   constructor() {
     super();
-    this.message = 'Only 3 queries can be concurrently active in a template.';
+    this.message = 'Only 3 queries can be concurrently active on an element.';
   }
 
   toString(): string { return this.message; }
@@ -1117,37 +928,80 @@ export class QueryError extends BaseException {
 
 export class QueryRef {
   constructor(public query: QueryMetadata, public list: QueryList<any>,
-              public originator: ElementInjector) {}
+              public originator: ElementInjector, public dirty: boolean = true) {}
 
   get isViewQuery(): boolean { return this.query.isViewQuery; }
 
   update(): void {
-    var aggregator = [];
-    if (this.query.isViewQuery) {
-      // intentionally skipping originator for view queries.
-      var rootViewInjectors = this.originator.getRootViewInjectors();
-      for (var i = 0; i < rootViewInjectors.length; i++) {
-        this.visit(rootViewInjectors[i], aggregator);
-      }
-    } else {
-      this.visit(this.originator, aggregator);
-    }
-    this.list.reset(aggregator);
+    if (!this.dirty) return;
+    this._update();
+    this.dirty = false;
   }
 
-  visit(inj: ElementInjector, aggregator: any[]): void {
-    if (isBlank(inj) || !inj._hasQuery(this) || !inj.hydrated) return;
+  private _update(): void {
+    var aggregator = [];
+    if (this.query.isViewQuery) {
+      var view = this.originator.getView();
+      // intentionally skipping originator for view queries.
+      var nestedView =
+          view.getNestedView(view.elementOffset + this.originator.getBoundElementIndex());
+      if (isPresent(nestedView)) this._visitView(nestedView, aggregator);
+    } else {
+      this._visit(this.originator, aggregator);
+    }
+    this.list.reset(aggregator);
+  };
 
+  private _visit(inj: ElementInjector, aggregator: any[]): void {
+    var view = inj.getView();
+    var startIdx = view.elementOffset + inj._proto.index;
+    for (var i = startIdx; i < view.elementOffset + view.ownBindersCount; i++) {
+      var curInj = view.elementInjectors[i];
+      if (isBlank(curInj)) continue;
+      // The first injector after inj, that is outside the subtree rooted at
+      // inj has to have a null parent or a parent that is an ancestor of inj.
+      if (i > startIdx && (isBlank(curInj) || isBlank(curInj.parent) ||
+                           view.elementOffset + curInj.parent._proto.index < startIdx)) {
+        break;
+      }
+
+      if (!this.query.descendants &&
+          !(curInj.parent == this.originator || curInj == this.originator))
+        continue;
+
+      // We visit the view container(VC) views right after the injector that contains
+      // the VC. Theoretically, that might not be the right order if there are
+      // child injectors of said injector. Not clear whether if such case can
+      // even be constructed with the current apis.
+      this._visitInjector(curInj, aggregator);
+      var vc = view.viewContainers[i];
+      if (isPresent(vc)) this._visitViewContainer(vc, aggregator);
+    }
+  }
+
+  private _visitInjector(inj: ElementInjector, aggregator: any[]) {
     if (this.query.isVarBindingQuery) {
       this._aggregateVariableBindings(inj, aggregator);
     } else {
       this._aggregateDirective(inj, aggregator);
     }
+  }
 
-    var child = inj._head;
-    while (isPresent(child)) {
-      this.visit(child, aggregator);
-      child = child._next;
+  private _visitViewContainer(vc: viewModule.AppViewContainer, aggregator: any[]) {
+    for (var j = 0; j < vc.views.length; j++) {
+      this._visitView(vc.views[j], aggregator);
+    }
+  }
+
+  private _visitView(view: viewModule.AppView, aggregator: any[]) {
+    for (var i = view.elementOffset; i < view.elementOffset + view.ownBindersCount; i++) {
+      var inj = view.elementInjectors[i];
+      if (isBlank(inj)) continue;
+
+      this._visitInjector(inj, aggregator);
+
+      var vc = view.viewContainers[i];
+      if (isPresent(vc)) this._visitViewContainer(vc, aggregator);
     }
   }
 
@@ -1162,5 +1016,11 @@ export class QueryRef {
 
   private _aggregateDirective(inj: ElementInjector, aggregator: any[]): void {
     inj.addDirectivesMatchingQuery(this.query, aggregator);
+  }
+
+  reset(): void {
+    this.list.reset([]);
+    this.list.removeAllCallbacks();
+    this.dirty = true;
   }
 }

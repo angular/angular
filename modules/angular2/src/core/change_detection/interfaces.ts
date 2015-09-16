@@ -77,7 +77,7 @@ export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher)
 
 export class ChangeDetectorGenConfig {
   constructor(public genCheckNoChanges: boolean, public genDebugInfo: boolean,
-              public logBindingUpdate: boolean) {}
+              public logBindingUpdate: boolean, public useJit: boolean) {}
 }
 
 export class ChangeDetectorDefinition {

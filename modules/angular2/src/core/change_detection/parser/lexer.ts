@@ -1,12 +1,7 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
 import {ListWrapper, SetWrapper} from "angular2/src/core/facade/collection";
-import {
-  NumberWrapper,
-  StringJoiner,
-  StringWrapper,
-  BaseException,
-  isPresent
-} from "angular2/src/core/facade/lang";
+import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from "angular2/src/core/facade/lang";
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 
 export enum TokenType {
   Character,
@@ -75,9 +70,10 @@ export class Token {
   toString(): string {
     switch (this.type) {
       case TokenType.Character:
-      case TokenType.String:
       case TokenType.Identifier:
       case TokenType.Keyword:
+      case TokenType.Operator:
+      case TokenType.String:
         return this.strValue;
       case TokenType.Number:
         return this.numValue.toString();

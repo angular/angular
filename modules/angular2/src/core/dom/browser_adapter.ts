@@ -1,5 +1,11 @@
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent, global, setValueOnPath} from 'angular2/src/core/facade/lang';
+import {
+  isBlank,
+  isPresent,
+  global,
+  setValueOnPath,
+  DateWrapper
+} from 'angular2/src/core/facade/lang';
 import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -317,8 +323,20 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     this.setAttribute(element, 'data-' + name, value);
   }
   getData(element, name: string): string { return this.getAttribute(element, 'data-' + name); }
+  getComputedStyle(element): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
+  requestAnimationFrame(callback): number { return window.requestAnimationFrame(callback); }
+  cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
+  performanceNow(): number {
+    // performance.now() is not available in all browsers, see
+    // http://caniuse.com/#search=performance.now
+    if (isPresent(window.performance) && isPresent(window.performance.now)) {
+      return window.performance.now();
+    } else {
+      return DateWrapper.toMillis(DateWrapper.now());
+    }
+  }
 }
 
 

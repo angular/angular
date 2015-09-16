@@ -1,11 +1,12 @@
-import {Injector, bind, Injectable} from 'angular2/di';
+import {Injector, bind, Injectable} from 'angular2/src/core/di';
 
-import {Type, isPresent, BaseException, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {ViewMetadata} from '../core/metadata';
 
+import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {internalView, ViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -21,12 +22,16 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
-export class RootTestComponent extends DebugElement {
+export class RootTestComponent {
   _componentRef: ComponentRef;
   _componentParentView: AppView;
+  debugElement: DebugElement;
 
+  /**
+   * @private
+   */
   constructor(componentRef: ComponentRef) {
-    super(internalView(<ViewRef>componentRef.hostView), 0);
+    this.debugElement = new DebugElement(internalView(<ViewRef>componentRef.hostView), 0);
 
     this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;
@@ -47,16 +52,19 @@ var _nextRootElementId = 0;
  */
 @Injectable()
 export class TestComponentBuilder {
-  _injector: Injector;
-  _viewOverrides: Map<Type, ViewMetadata>;
+  _bindingsOverrides: Map<Type, any[]>;
   _directiveOverrides: Map<Type, Map<Type, Type>>;
   _templateOverrides: Map<Type, string>;
+  _viewBindingsOverrides: Map<Type, any[]>;
+  _viewOverrides: Map<Type, ViewMetadata>;
 
-  constructor(injector: Injector) {
-    this._injector = injector;
-    this._viewOverrides = new Map();
+
+  constructor(private _injector: Injector) {
+    this._bindingsOverrides = new Map();
     this._directiveOverrides = new Map();
     this._templateOverrides = new Map();
+    this._viewBindingsOverrides = new Map();
+    this._viewOverrides = new Map();
   }
 
   _clone(): TestComponentBuilder {
@@ -117,11 +125,52 @@ export class TestComponentBuilder {
   }
 
   /**
+   * Overrides one or more injectables configured via `bindings` metadata property of a directive or
+   * component.
+   * Very useful when certain bindings need to be mocked out.
+   *
+   * The bindings specified via this method are appended to the existing `bindings` causing the
+   * duplicated bindings to
+   * be overridden.
+   *
+   * @param {Type} component
+   * @param {any[]} bindings
+   *
+   * @return {TestComponentBuilder}
+   */
+  overrideBindings(type: Type, bindings: any[]): TestComponentBuilder {
+    var clone = this._clone();
+    clone._bindingsOverrides.set(type, bindings);
+    return clone;
+  }
+
+  /**
+   * Overrides one or more injectables configured via `bindings` metadata property of a directive or
+   * component.
+   * Very useful when certain bindings need to be mocked out.
+   *
+   * The bindings specified via this method are appended to the existing `bindings` causing the
+   * duplicated bindings to
+   * be overridden.
+   *
+   * @param {Type} component
+   * @param {any[]} bindings
+   *
+   * @return {TestComponentBuilder}
+   */
+  overrideViewBindings(type: Type, bindings: any[]): TestComponentBuilder {
+    var clone = this._clone();
+    clone._viewBindingsOverrides.set(type, bindings);
+    return clone;
+  }
+
+  /**
    * Builds and returns a RootTestComponent.
    *
    * @return {Promise<RootTestComponent>}
    */
   createAsync(rootComponentType: Type): Promise<RootTestComponent> {
+    var mockDirectiveResolver = this._injector.get(DirectiveResolver);
     var mockViewResolver = this._injector.get(ViewResolver);
     MapWrapper.forEach(this._viewOverrides,
                        (view, type) => { mockViewResolver.setView(type, view); });
@@ -132,6 +181,11 @@ export class TestComponentBuilder {
         mockViewResolver.overrideViewDirective(component, from, to);
       });
     });
+
+    this._bindingsOverrides.forEach((bindings, type) =>
+                                        mockDirectiveResolver.setBindingsOverride(type, bindings));
+    this._viewBindingsOverrides.forEach(
+        (bindings, type) => mockDirectiveResolver.setViewBindingsOverride(type, bindings));
 
     var rootElId = `root${_nextRootElementId++}`;
     var rootEl = el(`<div id="${rootElId}"></div>`);

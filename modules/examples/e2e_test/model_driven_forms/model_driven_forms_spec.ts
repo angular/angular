@@ -1,6 +1,6 @@
 import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 
-describe('Template-Driven Forms', function() {
+describe('Model-Driven Forms', function() {
 
   afterEach(verifyNoBrowserErrors);
 

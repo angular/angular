@@ -9,7 +9,7 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  * A wrapper around zones that lets you schedule tasks after it has executed a task.
  *
  * The wrapper maintains an "inner" and an "mount" `Zone`. The application code will executes
- * in the "inner" zone unless `runOutsideAngular` is explicitely called.
+ * in the "inner" zone unless `runOutsideAngular` is explicitly called.
  *
  * A typical application will create a singleton `NgZone`. The outer `Zone` is a fork of the root
  * `Zone`. The default `onTurnDone` runs the Angular change detection.
@@ -100,7 +100,7 @@ export class NgZone {
    *
    * This hook is useful for validating application state (e.g. in a test).
    */
-  overrideOnEventDone(onEventDoneFn: Function, opt_waitForAsync: boolean): void {
+  overrideOnEventDone(onEventDoneFn: Function, opt_waitForAsync: boolean = false): void {
     var normalizedOnEventDone = normalizeBlank(onEventDoneFn);
     if (opt_waitForAsync) {
       this._onEventDone = () => {
@@ -212,13 +212,14 @@ export class NgZone {
                     try {
                       this._inVmTurnDone = true;
                       parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
-                      if (ngZone._pendingMicrotasks === 0 && isPresent(ngZone._onEventDone)) {
-                        ngZone.runOutsideAngular(ngZone._onEventDone);
-                      }
                     } finally {
                       this._inVmTurnDone = false;
                       ngZone._hasExecutedCodeInInnerZone = false;
                     }
+                  }
+
+                  if (ngZone._pendingMicrotasks === 0 && isPresent(ngZone._onEventDone)) {
+                    ngZone.runOutsideAngular(ngZone._onEventDone);
                   }
                 }
               }
