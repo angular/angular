@@ -32,4 +32,33 @@ describe('addJadeDataDocsProcessor', function() {
         { name : 'MyClass-class', title : 'MyClass', varType : undefined }
       ] });
   });
+
+  it('should sort the exports into alphabetical order', function() {
+    var docs = [
+      {
+        docType: 'module',
+        id: 'someModule',
+        exports: [
+          { name: 'Beta', docType: 'class'},
+          { name: 'Alpha', docType: 'class'},
+          { name: 'Gamma', docType: 'class'},
+          { name: 'Nu', docType: 'class'},
+          { name: 'Mu', docType: 'class'}
+        ],
+        fileInfo: { baseName: 'x_y' },
+        description: 'some description\nsecond line'
+      }
+    ];
+    docs = processor.$process(docs);
+
+    expect(docs[1].data).toEqual([
+      { name : 'index', title : 'X Y', intro : 'some description second line' },
+      { name: 'Alpha-class', title: 'Alpha', varType : undefined },
+      { name: 'Beta-class', title: 'Beta', varType : undefined },
+      { name: 'Gamma-class', title: 'Gamma', varType : undefined },
+      { name: 'Mu-class', title: 'Mu', varType : undefined },
+      { name: 'Nu-class', title: 'Nu', varType : undefined }
+    ]);
+
+  });
 });
