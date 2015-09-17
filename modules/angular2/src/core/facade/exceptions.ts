@@ -6,7 +6,7 @@ export {ExceptionHandler} from './exception_handler';
 
 export class BaseException extends Error {
   public stack: any;
-  constructor(public message?: string) {
+  constructor(public message: string = "--") {
     super(message);
     this.stack = (<any>new Error(message)).stack;
   }
