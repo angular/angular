@@ -18,17 +18,43 @@ import {
  * Spec](https://fetch.spec.whatwg.org/#request-class),
  * but is considered a static value whose body can be accessed many times. There are other
  * differences in the implementation, but this is the most significant.
+ *
+ * `Request` instances are typically created by higher-level classes, like {@link Http} and
+ * {@link Jsonp}, but it may occasionally be useful to explicitly create `Request` instances.
+ * One such example is when creating services that wrap higher-level services, like {@link Http},
+ * where it may be useful to generate a `Request` with arbitrary headers and search params.
+ *
+ * ```
+ * import {Injectable, Injector} from 'angular2/angular2';
+ * import {HTTP_BINDINGS, Http, Request} from 'angular2/http';
+ *
+ * @Injectable()
+ * class AutoAuthenticator {
+ *   constructor(public http:Http) {}
+ *   request(url:string) {
+ *     return this.http.request(new Request({
+ *       method: 0, //GET.
+ *       url: url,
+ *       search: 'password=123'
+ *     }));
+ *   }
+ * }
+ *
+ * var injector = Injector.resolveAndCreate([HTTP_BINDINGS, AutoAuthenticator]);
+ * var authenticator = injector.get(AutoAuthenticator);
+ * authenticator.request('people.json').toRx().subscribe(res => {
+ *   //URL should have included '?password=123'
+ *   console.log('people', res.json());
+ * });
+ * ```
  */
 export class Request {
   /**
    * Http method with which to perform the request.
-   *
-   * Defaults to GET.
    */
   method: RequestMethods;
   /**
-   * Headers object based on the `Headers` class in the [Fetch
-   * Spec](https://fetch.spec.whatwg.org/#headers-class). {@link Headers} class reference.
+   * {@link Headers} instance
    */
   headers: Headers;
   /** Url of the remote resource */
