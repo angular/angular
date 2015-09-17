@@ -13,7 +13,7 @@ import 'rewriter.dart';
 /// Transformer responsible for rewriting deferred library loads to enable
 /// initializing the reflector in a deferred way to keep the code with the
 /// deferred library.
-class DeferredRewriter extends Transformer {
+class DeferredRewriter extends Transformer implements DeclaringTransformer {
   final TransformerOptions options;
 
   DeferredRewriter(this.options);
@@ -21,6 +21,11 @@ class DeferredRewriter extends Transformer {
   @override
   bool isPrimary(AssetId id) =>
       id.extension.endsWith('dart') && !id.path.endsWith(DEPS_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   Future apply(Transform transform) async {

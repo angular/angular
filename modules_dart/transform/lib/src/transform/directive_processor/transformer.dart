@@ -22,13 +22,24 @@ import 'rewriter.dart';
 ///
 /// This transformer is the first phase in a two-phase transform. It should
 /// be followed by {@link DirectiveLinker}.
-class DirectiveProcessor extends Transformer {
+class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   final TransformerOptions options;
 
   DirectiveProcessor(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.extension.endsWith('dart');
+
+  /// We don't always output these, but providing a superset of our outputs
+  /// should be safe. Barback will just have to wait until `apply` finishes to
+  /// determine that one or the other will not be emitted.
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(
+        transform.primaryId.changeExtension(ALIAS_EXTENSION));
+    transform.declareOutput(
+        transform.primaryId.changeExtension(DEPS_EXTENSION));
+  }
 
   @override
   Future apply(Transform transform) async {
