@@ -41,38 +41,37 @@ export class Dependency {
 const _EMPTY_LIST = CONST_EXPR([]);
 
 /**
- * Describes how_ the {@link Injector} should instantiate a given token.
+ * Describes how the {@link Injector} should instantiate a given token.
  *
  * See {@link bind}.
  *
- * ## Example
+ * ### Example ([live demo](http://plnkr.co/edit/GNAyj6K6PfYg2NBzgwZ5?p%3Dpreview&p=preview))
  *
  * ```javascript
  * var injector = Injector.resolveAndCreate([
- *   new Binding(String, { toValue: 'Hello' })
+ *   new Binding("message", { toValue: 'Hello' })
  * ]);
  *
- * expect(injector.get(String)).toEqual('Hello');
+ * expect(injector.get("message")).toEqual('Hello');
  * ```
  */
 @CONST()
 export class Binding {
   /**
-   * Token used when retrieving this binding. Usually the `Type`.
+   * Token used when retrieving this binding. Usually, it is a type {@link `Type`}.
    */
   token;
 
   /**
-   * Binds an interface to an implementation / subclass.
+   * Binds a DI token to an implementation class.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/RSTG86qgmoxCyj9SWPwY?p=preview))
    *
    * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
    * easy
    * comparison.
    *
-   * ```javascript
-   *
+   * ```typescript
    * class Vehicle {}
    *
    * class Car extends Vehicle {}
@@ -96,33 +95,32 @@ export class Binding {
   toClass: Type;
 
   /**
-   * Binds a key to a value.
+   * Binds a DI token to a value.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/UFVsMVQIDe7l4waWziES?p=preview))
    *
    * ```javascript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding(String, { toValue: 'Hello' })
+   *   new Binding("message", { toValue: 'Hello' })
    * ]);
    *
-   * expect(injector.get(String)).toEqual('Hello');
+   * expect(injector.get("message")).toEqual('Hello');
    * ```
    */
   toValue;
 
   /**
-   * Binds a key to the alias for an existing key.
+   * Binds a DI token as an alias for an existing token.
    *
    * An alias means that {@link Injector} returns the same instance as if the alias token was used.
    * This is in contrast to `toClass` where a separate instance of `toClass` is returned.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/QsatsOJJ6P8T2fMe9gr8?p=preview))
    *
    * Because `toAlias` and `toClass` are often confused the example contains both use cases for easy
    * comparison.
    *
-   * ```javascript
-   *
+   * ```typescript
    * class Vehicle {}
    *
    * class Car extends Vehicle {}
@@ -146,39 +144,43 @@ export class Binding {
   toAlias;
 
   /**
-   * Binds a key to a function which computes the value.
+   * Binds a DI token to a function which computes the value.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/Scoxy0pJNqKGAPZY1VVC?p=preview))
    *
-   * ```javascript
+   * ```typescript
    * var injector = Injector.resolveAndCreate([
    *   new Binding(Number, { toFactory: () => { return 1+2; }}),
    *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
-   *                         dependencies: [Number] })
+   *                       deps: [Number] })
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
+   *
+   * Used in conjuction with dependencies.
    */
   toFactory: Function;
 
   /**
-   * Used in conjunction with `toFactory` and specifies a set of dependencies
+   * Specifies a set of dependencies
    * (as `token`s) which should be injected into the factory function.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/Scoxy0pJNqKGAPZY1VVC?p=preview))
    *
-   * ```javascript
+   * ```typescript
    * var injector = Injector.resolveAndCreate([
    *   new Binding(Number, { toFactory: () => { return 1+2; }}),
    *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
-   *                         dependencies: [Number] })
+   *                       deps: [Number] })
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
+   *
+   * Used in conjunction with `toFactory`.
    */
   dependencies: Object[];
 
@@ -201,12 +203,13 @@ export class Binding {
     this._multi = multi;
   }
 
+  // TODO: Provide a full working example after alpha38 is released.
   /**
-   * Used to create multiple bindings matching the same token.
+   * Creates multiple bindings matching the same token (a multi-binding).
    *
-   * ## Example
+   * ### Example
    *
-   * ```javascript
+   * ```typescript
    * var injector = Injector.resolveAndCreate([
    *   new Binding("Strings", { toValue: "String1", multi: true}),
    *   new Binding("Strings", { toValue: "String2", multi: true})
@@ -215,12 +218,12 @@ export class Binding {
    * expect(injector.get("Strings")).toEqual(["String1", "String2"]);
    * ```
    *
-   * Multi bindings and regular bindings cannot be mixed. The following
+   * Multi-bindings and regular bindings cannot be mixed. The following
    * will throw an exception:
    *
-   * ```javascript
+   * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding("Strings", { toValue: "String1", multi: true}),
+   *   new Binding("Strings", { toValue: "String1", multi: true }),
    *   new Binding("Strings", { toValue: "String2"})
    * ]);
    * ```
@@ -228,12 +231,22 @@ export class Binding {
   get multi(): boolean { return normalizeBool(this._multi); }
 }
 
+
 /**
  * An internal resolved representation of a {@link Binding} used by the {@link Injector}.
  *
- * A {@link Binding} is resolved when it has a factory function. Binding to a class, alias, or
- * value, are just convenience methods, as {@link Injector} only operates on calling factory
- * functions.
+ * It is usually created automatically by `Injector.resolveAndCreate`.
+ *
+ * It can be created manually, as follows:
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview))
+ *
+ * ```typescript
+ * var resolvedBindings = Injector.resolve([new Binding('message', {toValue: 'Hello'})]);
+ * var injector = Injector.fromResolvedBindings(resolvedBindings);
+ *
+ * expect(injector.get('message')).toEqual('Hello');
+ * ```
  */
 export class ResolvedBinding {
   constructor(
@@ -247,10 +260,18 @@ export class ResolvedBinding {
        */
       public resolvedFactories: ResolvedFactory[],
 
+      /**
+       * Indicates if the binding is a multi-binding or a regular binding.
+       */
       public multiBinding: boolean) {}
+
+  /** @private */
   get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
 }
 
+/**
+ * An internal resolved representation of a factory function created by resolving {@link Binding}.
+ */
 export class ResolvedFactory {
   constructor(
       /**
@@ -265,40 +286,13 @@ export class ResolvedFactory {
 }
 
 /**
- * Provides an API for imperatively constructing {@link Binding}s.
+ * Creates a {@link Binding}.
  *
- * To construct a {@link Binding}, bind a `token` to either a class, a value or a factory function.
+ * To construct a {@link Binding}, bind a `token` to either a class, a value, a factory function, or
+ * to an alias to another `token`.
  * See {@link BindingBuilder} for more details.
  *
- * The `token` is most commonly an {@link angular2/di/OpaqueToken} or a class.
- *
- * `bind` is only relevant for JavaScript. For Dart use the {@link Binding} constructor.
- *
- * ## Example
- *
- * ```typescript
- * // inj.get(MyClass) would instantiate MyClass
- * bind(MyClass).toClass(MyClass);
- *
- * // inj.get(MyClass) === 'my class'
- * bind(MyClass).toValue('my class');
- *
- * // inj.get(MyClass) would instantiate the depenency and call the factory function with the
- * // instance
- * bind(MyClass).toFactory(dep => new MyClass(dep), [DepClass]);
- *
- * // inj.get(MyOtherClass) === inj.get(MyClass)
- * bind(MyOtherClass).toAlias(MyClass);
- * ```
- *
- * ```dart
- * var binding = new Binding(MyClass, toClass: MyClass);
- * var binding = new Binding(MyClass, toValue: 'my class');
- * var binding = new Binding(MyClass, toFactory: (dep) => new MyClass(dep),
- *                           dependencies: [DepClass]);
- *  var binding = new Binding(MyOtherClass, toAlias: MyClass);
- * ```
- *
+ * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
  */
 export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
@@ -311,15 +305,14 @@ export class BindingBuilder {
   constructor(public token) {}
 
   /**
-   * Binds an interface to an implementation / subclass.
+   * Binds a DI token to a class.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/ZpBCSYqv6e2ud5KXLdxQ?p=preview))
    *
    * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
    * easy comparison.
    *
-   * ```javascript
-   *
+   * ```typescript
    * class Vehicle {}
    *
    * class Car extends Vehicle {}
@@ -343,34 +336,33 @@ export class BindingBuilder {
   toClass(type: Type): Binding { return new Binding(this.token, {toClass: type}); }
 
   /**
-   * Binds a key to a value.
+   * Binds a DI token to a value.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/G024PFHmDL0cJFgfZK8O?p=preview))
    *
-   * ```javascript
+   * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   bind(String).toValue('Hello')
+   *   bind('message').toValue('Hello')
    * ]);
    *
-   * expect(injector.get(String)).toEqual('Hello');
+   * expect(injector.get('message')).toEqual('Hello');
    * ```
    */
   toValue(value: any): Binding { return new Binding(this.token, {toValue: value}); }
 
   /**
-   * Binds a key to the alias for an existing key.
+   * Binds a DI token as an alias for an existing token.
    *
    * An alias means that we will return the same instance as if the alias token was used. (This is
    * in contrast to `toClass` where a separate instance of `toClass` will be returned.)
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/uBaoF2pN5cfc5AfZapNw?p=preview))
    *
    * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
    * easy
    * comparison.
    *
-   * ```javascript
-   *
+   * ```typescript
    * class Vehicle {}
    *
    * class Car extends Vehicle {}
@@ -399,11 +391,11 @@ export class BindingBuilder {
   }
 
   /**
-   * Binds a key to a function which computes the value.
+   * Binds a DI token to a function which computes the value.
    *
-   * ## Example
+   * ### Example ([live demo](http://plnkr.co/edit/OejNIfTT3zb1iBxaIYOb?p=preview))
    *
-   * ```javascript
+   * ```typescript
    * var injector = Injector.resolveAndCreate([
    *   bind(Number).toFactory(() => { return 1+2; }),
    *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number])
