@@ -32,9 +32,22 @@ function constructResolvingPath(keys: any[]): string {
  * Base class for all errors arising from misconfigured bindings.
  */
 export class AbstractBindingError extends BaseException {
+<<<<<<< HEAD
+=======
+  /** @private */
+  name: string;
+
+  /** @private */
+>>>>>>> 1dd104d... more
   message: string;
+
+  /** @private */
   keys: Key[];
+
+  /** @private */
   injectors: Injector[];
+
+  /** @private */
   constructResolvingMessage: Function;
 
   constructor(injector: Injector, key: Key, constructResolvingMessage: Function) {
@@ -57,6 +70,16 @@ export class AbstractBindingError extends BaseException {
 /**
  * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the
  * {@link Injector} does not have a {@link Binding} for {@link Key}.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/vq8D3FRB9aGbnWJqtEPE?p=preview))
+ *
+ * ```typescript
+ * class A {
+ *   constructor(b:B) {}
+ * }
+ *
+ * expect(() => Injector.resolveAndCreate([A])).toThrowError();
+ * ```
  */
 export class NoBindingError extends AbstractBindingError {
   constructor(injector: Injector, key: Key) {
@@ -70,15 +93,15 @@ export class NoBindingError extends AbstractBindingError {
 /**
  * Thrown when dependencies form a cycle.
  *
- * ## Example:
+ * ### Example ([live demo](http://plnkr.co/edit/wYQdNos0Tzql3ei1EV9j?p=info))
  *
- * ```javascript
- * class A {
- *   constructor(b:B) {}
- * }
- * class B {
- *   constructor(a:A) {}
- * }
+ * ```typescript
+ * var injector = Injector.resolveAndCreate([
+ *   bind("one").toFactory((two) => "two", [[new Inject("two")]]),
+ *   bind("two").toFactory((one) => "one", [[new Inject("one")]])
+ * ]);
+ *
+ * expect(() => injector.get("one")).toThrowError();
  * ```
  *
  * Retrieving `A` or `B` throws a `CyclicDependencyError` as the graph above cannot be constructed.
@@ -96,11 +119,35 @@ export class CyclicDependencyError extends AbstractBindingError {
  *
  * The `InstantiationError` class contains the original error plus the dependency graph which caused
  * this object to be instantiated.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/7aWYdcqTQsP0eNqEdUAf?p=preview))
+ *
+ * ```typescript
+ * class A {
+ *   constructor() {
+ *     throw new Error('message');
+ *   }
+ * }
+ *
+ * var injector = Injector.resolveAndCreate([A]);
+
+ * try {
+ *   injector.get(A);
+ * } catch (e) {
+ *   expect(e instanceof InstantiationError).toBe(true);
+ *   expect(e.originalException.message).toEqual("message");
+ *   expect(e.originalStack).toBeDefined();
+ * }
+ * ```
  */
 export class InstantiationError extends WrappedException {
+  /** @private */
   keys: Key[];
+
+  /** @private */
   injectors: Injector[];
 
+  /** @private */
   constructor(injector: Injector, originalException, originalStack, key: Key) {
     super("DI Exception", originalException, originalStack, null);
     this.keys = [key];
@@ -125,6 +172,12 @@ export class InstantiationError extends WrappedException {
 /**
  * Thrown when an object other then {@link Binding} (or `Type`) is passed to {@link Injector}
  * creation.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/YatCFbPAMCL0JSSQ4mvH?p=preview))
+ *
+ * ```typescript
+ * expect(() => Injector.resolveAndCreate(["not a type"])).toThrowError();
+ * ```
  */
 export class InvalidBindingError extends BaseException {
   constructor(binding) {
@@ -138,6 +191,16 @@ export class InvalidBindingError extends BaseException {
  *
  * Lack of annotation information prevents the {@link Injector} from determining which dependencies
  * need to be injected into the constructor.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/rHnZtlNS7vJOPQ6pcVkm?p=preview))
+ *
+ * ```typescript
+ * class A {
+ *   constructor(b) {}
+ * }
+ *
+ * expect(() => Injector.resolveAndCreate([A])).toThrowError();
+ * ```
  */
 export class NoAnnotationError extends BaseException {
   constructor(typeOrFunc, params: any[][]) {
@@ -161,13 +224,33 @@ export class NoAnnotationError extends BaseException {
 
 /**
  * Thrown when getting an object by index.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
+ *
+ * ```typescript
+ * class A {}
+ *
+ * var injector = Injector.resolveAndCreate([A]);
+ *
+ * expect(() => injector.getAt(100)).toThrowError();
+ * ```
  */
 export class OutOfBoundsError extends BaseException {
   constructor(index) { super(`Index ${index} is out-of-bounds.`); }
 }
 
+//TODO: add a working example after alpha38 is released
 /**
  * Thrown when a multi binding and a regular binding are bound to the same token.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * expect(() => Injector.resolveAndCreate([
+ *   new Binding("Strings", {toValue: "string1", multi: true}),
+ *   new Binding("Strings", {toValue: "string2", multi: false})
+ * ])).toThrowError();
+ * ```
  */
 export class MixingMultiBindingsWithRegularBindings extends BaseException {
   constructor(binding1, binding2) {
