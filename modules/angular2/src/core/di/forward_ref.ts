@@ -5,25 +5,27 @@ export interface ForwardRefFn { (): any; }
 /**
  * Allows to refer to references which are not yet defined.
  *
- * This situation arises when the key which we need to refer to for the purposes of DI is declared,
+ * For instance, `forwardRef` is used when the key which we need to refer to for the purposes of DI is declared,
  * but not yet defined.
  *
- * ## Example:
+ * ### Example ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
  *
- * ```
+ * ```typescript
  * class Door {
- *   // Incorrect way to refer to a reference which is defined later.
- *   // This fails because `Lock` is undefined at this point.
- *   constructor(lock:Lock) { }
- *
- *   // Correct way to refer to a reference which is defined later.
- *   // The reference needs to be captured in a closure.
- *   constructor(@Inject(forwardRef(() => Lock)) lock:Lock) { }
+ *   lock: Lock;
+ *   constructor(@Inject(forwardRef(() => Lock)) lock:Lock) {
+ *     this.lock = lock;
+ *   }
  * }
  *
- * // Only at this point the lock is defined.
+ * // Only at this point Lock is defined.
  * class Lock {
  * }
+ *
+ * var injector = Injector.resolveAndCreate([Door, Lock]);
+ * var door = injector.get(Door);
+ * expect(door instanceof Door).toBe(true);
+ * expect(door.lock instanceof Lock).toBe(true);
  * ```
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type {
@@ -33,7 +35,17 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type {
 }
 
 /**
- * Lazily retrieve the reference value.
+ * Lazily retrieves the reference value from a forwardRef.
+ *
+ * Acts as the identity function when given a non-forward-ref value.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/GU72mJrk1fiodChcmiDR?p=preview))
+ *
+ * ```typescript
+ * var ref = forwardRef(() => "refValue");
+ * expect(resolveForwardRef(ref)).toEqual("refValue");
+ * expect(resolveForwardRef("regularValue")).toEqual("regularValue");
+ * ```
  *
  * See: {@link forwardRef}
  */
