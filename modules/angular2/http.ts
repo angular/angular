@@ -47,19 +47,115 @@ export {URLSearchParams} from './src/http/url_search_params';
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.
  *
- * #Example
+ * The `HTTP_BINDINGS` should be included either in a component's injector,
+ * or in the root injector when bootstrapping an application.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
  *
  * ```
- * import {HTTP_BINDINGS, Http} from 'http/http';
- * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
- * @View({template: '{{data}}'})
- * class MyApp {
+ * import {bootstrap, Component, NgFor, View} from 'angular2/angular2';
+ * import {HTTP_BINDINGS, Http} from 'angular2/http';
+ *
+ * @Component({
+ *   selector: 'app',
+ *   bindings: [HTTP_BINDINGS]
+ * })
+ * @View({
+ *   template: `
+ *     <div>
+ *       <h1>People</h1>
+ *       <ul>
+ *         <li *ng-for="#person of people">
+ *           {{person.name}}
+ *         </li>
+ *       </ul>
+ *     </div>
+ *   `,
+ *   directives: [NgFor]
+ * })
+ * export class App {
+ *   people: Object[];
  *   constructor(http:Http) {
- *     http.request('data.txt').subscribe(res => this.data = res.text());
+ *     http.get('people.json').toRx().subscribe(res => {
+ *       this.people = res.json();
+ *     });
+ *   }
+ *   active:boolean = false;
+ *   toggleActiveState() {
+ *     this.active = !this.active;
  *   }
  * }
+ *
+ * bootstrap(App)
+ *   .catch(err => console.error(err));
  * ```
  *
+ * The primary public API included in `HTTP_BINDINGS` is the {@link Http} class.
+ * However, other bindings required by `Http` are included,
+ * which may be beneficial to override in certain cases.
+ *
+ * The bindings included in `HTTP_BINDINGS` include:
+ *  * {@link Http}
+ *  * {@link XHRBackend}
+ *  * `BrowserXHR` - Private factory to create `XMLHttpRequest` instances
+ *  * {@link RequestOptions} - Bound to {@link BaseRequestOptions} class
+ *  * {@link ResponseOptions} - Bound to {@link BaseResponseOptions} class
+ *
+ * There may be cases where it makes sense to extend the base request options,
+ * such as to add a search string to be appended to all URLs.
+ * To accomplish this, a new binding for {@link RequestOptions} should
+ * be added in the same injector as `HTTP_BINDINGS`.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
+ *
+ * ```
+ * import {bind, bootstrap} from 'angular2/angular2';
+ * import {HTTP_BINDINGS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ *
+ * class MyOptions extends BaseRequestOptions {
+ *   search: string = 'coreTeam=true';
+ * }
+ *
+ * bootstrap(App, [HTTP_BINDINGS, bind(RequestOptions).toClass(MyOptions)])
+ *   .catch(err => console.error(err));
+ * ```
+ *
+ * Likewise, to use a mock backend for unit tests, the {@link XHRBackend}
+ * binding should be bound to {@link MockBackend}.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
+ *
+ * ```
+ * import {bind, Injector} from 'angular2/angular2';
+ * import {HTTP_BINDINGS, Http, Response, XHRBackend, MockBackend} from 'angular2/http';
+ *
+ * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
+ *
+ * var injector = Injector.resolveAndCreate([
+ *   HTTP_BINDINGS,
+ *   MockBackend,
+ *   bind(XHRBackend).toAlias(MockBackend)
+ * ]);
+ * var http = injector.get(Http);
+ * var backend = injector.get(MockBackend);
+ *
+ * // Listen for any new requests
+ * backend.connections.observer({
+ *   next: connection => {
+ *     var response = new Response({body: people});
+ *     setTimeout(() => {
+ *       // Send a response to the request
+ *       connection.mockRespond(response);
+ *     });
+ *   });
+ *
+ * http.get('people.json').observer({
+ *   next: res => {
+ *     // Response came from mock backend
+ *     console.log('first person', res.json()[0].name);
+ *   }
+ * });
+ * ```
  */
 export const HTTP_BINDINGS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
