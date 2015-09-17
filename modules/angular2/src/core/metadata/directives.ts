@@ -808,13 +808,6 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   dynamicLoadable: boolean;
 
-
-  /**
-   * Used by build tools to store the compiled template.
-   * Not intended to be used by a user.
-   */
-  compiledHostTemplate: /* CompiledTemplate */ any;
-
   /**
    * Defines the used change detection strategy.
    *
@@ -868,15 +861,14 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, dynamicLoadable, compiledHostTemplate, exportAs,
-               moduleId, bindings, viewBindings, changeDetection = ChangeDetectionStrategy.Default,
+  constructor({selector, properties, events, host, dynamicLoadable, exportAs, moduleId, bindings,
+               viewBindings, changeDetection = ChangeDetectionStrategy.Default,
                compileChildren = true}: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
     dynamicLoadable?: boolean,
-    compiledHostTemplate?: any,
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
@@ -898,7 +890,6 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
     this.dynamicLoadable = dynamicLoadable;
-    this.compiledHostTemplate = compiledHostTemplate;
   }
 }
 

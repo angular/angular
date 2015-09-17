@@ -36,7 +36,7 @@ export class TemplateCompiler {
               private _commandCompiler: CommandCompiler,
               private _cdCompiler: ChangeDetectionCompiler) {}
 
-  normalizeDirective(directive: DirectiveMetadata): Promise<INormalizedDirectiveMetadata> {
+  normalizeDirectiveMetadata(directive: DirectiveMetadata): Promise<INormalizedDirectiveMetadata> {
     var normalizedTemplatePromise;
     if (directive.isComponent) {
       normalizedTemplatePromise =
@@ -54,11 +54,11 @@ export class TemplateCompiler {
         }));
   }
 
-  serializeTemplateMetadata(metadata: INormalizedDirectiveMetadata): string {
+  serializeDirectiveMetadata(metadata: INormalizedDirectiveMetadata): string {
     return Json.stringify((<NormalizedDirectiveMetadata>metadata).toJson());
   }
 
-  deserializeTemplateMetadata(data: string): INormalizedDirectiveMetadata {
+  deserializeDirectiveMetadata(data: string): INormalizedDirectiveMetadata {
     return NormalizedDirectiveMetadata.fromJson(Json.parse(data));
   }
 
@@ -87,26 +87,26 @@ export class TemplateCompiler {
           new CompiledTemplate(compMeta.type.id, () => [changeDetectorFactories, commands, styles]);
       this._compiledTemplateCache.set(compMeta.type.id, compiledTemplate);
       compilingComponentIds.add(compMeta.type.id);
-      done =
-          PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta)].concat(
-                                 viewDirectives.map(dirMeta => this.normalizeDirective(dirMeta))))
-              .then((stylesAndNormalizedViewDirMetas: any[]) => {
-                var childPromises = [];
-                var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
-                var parsedTemplate = this._templateParser.parse(
-                    compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
+      done = PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta)].concat(
+                                    viewDirectives.map(
+                                        dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
+                 .then((stylesAndNormalizedViewDirMetas: any[]) => {
+                   var childPromises = [];
+                   var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
+                   var parsedTemplate = this._templateParser.parse(
+                       compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
 
-                changeDetectorFactories = this._cdCompiler.compileComponentRuntime(
-                    compMeta.type, compMeta.changeDetection.changeDetection, parsedTemplate);
-                styles = stylesAndNormalizedViewDirMetas[0];
-                commands = this._compileCommandsRuntime(compMeta, parsedTemplate,
-                                                        compilingComponentIds, childPromises);
-                return PromiseWrapper.all(childPromises);
-              })
-              .then((_) => {
-                SetWrapper.delete(compilingComponentIds, compMeta.type.id);
-                return compiledTemplate;
-              });
+                   changeDetectorFactories = this._cdCompiler.compileComponentRuntime(
+                       compMeta.type, compMeta.changeDetection.changeDetection, parsedTemplate);
+                   styles = stylesAndNormalizedViewDirMetas[0];
+                   commands = this._compileCommandsRuntime(compMeta, parsedTemplate,
+                                                           compilingComponentIds, childPromises);
+                   return PromiseWrapper.all(childPromises);
+                 })
+                 .then((_) => {
+                   SetWrapper.delete(compilingComponentIds, compMeta.type.id);
+                   return compiledTemplate;
+                 });
       this._compiledTemplateDone.set(compMeta.type.id, done);
     }
     return compiledTemplate;

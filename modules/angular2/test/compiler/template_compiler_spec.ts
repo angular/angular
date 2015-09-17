@@ -143,8 +143,8 @@ export function main() {
             Promise<NormalizedComponentWithViewDirectives> {
           var compAndViewDirMetas = [runtimeMetadataResolver.getMetadata(component)].concat(
               runtimeMetadataResolver.getViewDirectivesMetadata(component));
-          return PromiseWrapper.all(compAndViewDirMetas.map(meta =>
-                                                                compiler.normalizeDirective(meta)))
+          return PromiseWrapper.all(compAndViewDirMetas.map(
+                                        meta => compiler.normalizeDirectiveMetadata(meta)))
               .then((normalizedCompAndViewDirMetas: NormalizedDirectiveMetadata[]) =>
                         new NormalizedComponentWithViewDirectives(
                             normalizedCompAndViewDirMetas[0],
@@ -169,16 +169,16 @@ export function main() {
 
     });
 
-    describe('serializeTemplateMetadata and deserializeTemplateMetadata', () => {
+    describe('serializeDirectiveMetadata and deserializeDirectiveMetadata', () => {
       it('should serialize and deserialize', inject([AsyncTestCompleter], (async) => {
-           compiler.normalizeDirective(
+           compiler.normalizeDirectiveMetadata(
                        runtimeMetadataResolver.getMetadata(CompWithBindingsAndStyles))
                .then((meta: NormalizedDirectiveMetadata) => {
-                 var json = compiler.serializeTemplateMetadata(meta);
+                 var json = compiler.serializeDirectiveMetadata(meta);
                  expect(isString(json)).toBe(true);
                  // Note: serializing will clear our the runtime type!
                  var clonedMeta =
-                     <NormalizedDirectiveMetadata>compiler.deserializeTemplateMetadata(json);
+                     <NormalizedDirectiveMetadata>compiler.deserializeDirectiveMetadata(json);
                  expect(meta.changeDetection).toEqual(clonedMeta.changeDetection);
                  expect(meta.template).toEqual(clonedMeta.template);
                  expect(meta.selector).toEqual(clonedMeta.selector);
@@ -188,11 +188,12 @@ export function main() {
          }));
     });
 
-    describe('normalizeDirective', () => {
+    describe('normalizeDirectiveMetadata', () => {
       it('should normalize the template',
          inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
            xhr.expect('angular2/test/compiler/compUrl.html', 'loadedTemplate');
-           compiler.normalizeDirective(runtimeMetadataResolver.getMetadata(CompWithTemplateUrl))
+           compiler.normalizeDirectiveMetadata(
+                       runtimeMetadataResolver.getMetadata(CompWithTemplateUrl))
                .then((meta: NormalizedDirectiveMetadata) => {
                  expect(meta.template.template).toEqual('loadedTemplate');
                  async.done();
@@ -202,14 +203,15 @@ export function main() {
 
       it('should copy all the other fields', inject([AsyncTestCompleter], (async) => {
            var meta = runtimeMetadataResolver.getMetadata(CompWithBindingsAndStyles);
-           compiler.normalizeDirective(meta).then((normMeta: NormalizedDirectiveMetadata) => {
-             expect(normMeta.selector).toEqual(meta.selector);
-             expect(normMeta.dynamicLoadable).toEqual(meta.dynamicLoadable);
-             expect(normMeta.isComponent).toEqual(meta.isComponent);
-             expect(normMeta.type).toEqual(meta.type);
-             expect(normMeta.changeDetection).toEqual(meta.changeDetection);
-             async.done();
-           });
+           compiler.normalizeDirectiveMetadata(meta)
+               .then((normMeta: NormalizedDirectiveMetadata) => {
+                 expect(normMeta.selector).toEqual(meta.selector);
+                 expect(normMeta.dynamicLoadable).toEqual(meta.dynamicLoadable);
+                 expect(normMeta.isComponent).toEqual(meta.isComponent);
+                 expect(normMeta.type).toEqual(meta.type);
+                 expect(normMeta.changeDetection).toEqual(meta.changeDetection);
+                 async.done();
+               });
          }));
     });
 
@@ -262,13 +264,13 @@ function testableTemplateModule(sourceModule: SourceModule, comp: INormalizedDir
     SourceModule {
   var normComp = <NormalizedDirectiveMetadata>comp;
   var resultExpression = `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template)`;
-  var testableSource = `${sourceModule.source}
+  var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
   return new SourceModule(sourceModule.moduleId, testableSource);
 }
 
 function testableStylesModule(sourceModule: SourceModule): SourceModule {
-  var testableSource = `${sourceModule.source}
+  var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], 'STYLES')};`;
   return new SourceModule(sourceModule.moduleId, testableSource);
 }
