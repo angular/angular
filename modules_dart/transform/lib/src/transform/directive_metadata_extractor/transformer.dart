@@ -14,13 +14,19 @@ import 'extractor.dart';
 /// {@link DirectiveProcessor} and creating associated `.ng_meta.dart` files.
 /// These files contain commented Json-formatted representations of all
 /// `Directive`s in the associated file.
-class DirectiveMetadataExtractor extends Transformer {
+class DirectiveMetadataExtractor extends Transformer
+    implements DeclaringTransformer {
   final _encoder = const JsonEncoder.withIndent('  ');
 
   DirectiveMetadataExtractor();
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(_outputAssetId(transform.primaryId));
+  }
 
   @override
   Future apply(Transform transform) async {

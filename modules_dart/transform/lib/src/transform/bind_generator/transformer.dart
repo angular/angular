@@ -16,13 +16,18 @@ import 'generator.dart';
 ///
 /// These setters are registered in the same `setupReflection` function with
 /// the `registerType` calls.
-class BindGenerator extends Transformer {
+class BindGenerator extends Transformer implements DeclaringTransformer {
   final TransformerOptions options;
 
   BindGenerator(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   Future apply(Transform transform) async {

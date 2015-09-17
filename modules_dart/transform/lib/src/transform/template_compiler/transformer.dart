@@ -18,13 +18,18 @@ import 'generator.dart';
 /// extracting information about what reflection is necessary to render and
 /// use that template. It then generates code in place of those reflective
 /// accesses.
-class TemplateCompiler extends Transformer {
+class TemplateCompiler extends Transformer implements DeclaringTransformer {
   final TransformerOptions options;
 
   TemplateCompiler(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   Future apply(Transform transform) async {
@@ -34,7 +39,8 @@ class TemplateCompiler extends Transformer {
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = formatter.format(await processTemplates(reader, id,
           generateChangeDetectors: options.generateChangeDetectors,
-          reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes));
+          reflectPropertiesAsAttributes:
+              options.reflectPropertiesAsAttributes));
       transform.addOutput(new Asset.fromString(id, transformedCode));
     });
   }

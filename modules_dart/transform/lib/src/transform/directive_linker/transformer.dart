@@ -14,11 +14,16 @@ import 'linker.dart';
 /// {@link DirectiveProcessor} and ensuring that the generated calls to
 /// `setupReflection` call the necessary `setupReflection` method in all
 /// dependencies.
-class DirectiveLinker extends Transformer {
+class DirectiveLinker extends Transformer implements DeclaringTransformer {
   DirectiveLinker();
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   Future apply(Transform transform) async {
@@ -37,11 +42,17 @@ class DirectiveLinker extends Transformer {
 
 /// Transformer responsible for removing unnecessary `.ng_deps.dart` files
 /// created by {@link DirectiveProcessor}.
-class EmptyNgDepsRemover extends Transformer {
+class EmptyNgDepsRemover extends Transformer implements DeclaringTransformer {
   EmptyNgDepsRemover();
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+
+  /// We occasionally consume the primary input, but that depends on the
+  /// contents of the file, so we conservatively do not declare any outputs nor
+  /// consumption to ensure that we declare a superset of our actual outputs.
+  @override
+  declareOutputs(DeclaringTransform transform) => null;
 
   @override
   Future apply(Transform transform) async {
