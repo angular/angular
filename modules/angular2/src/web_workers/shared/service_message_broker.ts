@@ -29,7 +29,7 @@ export class ServiceMessageBrokerFactory {
 /**
  * Helper class for UIComponents that allows components to register methods.
  * If a registered method message is received from the broker on the worker,
- * the UIMessageBroker desererializes its arguments and calls the registered method.
+ * the UIMessageBroker deserializes its arguments and calls the registered method.
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  */
 export class ServiceMessageBroker {
