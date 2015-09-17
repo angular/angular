@@ -7,25 +7,26 @@ export function moduleRef(moduleId): string {
 }
 
 export class SourceModule {
-  constructor(public moduleId: string, public source: string) {}
+  constructor(public moduleId: string, public sourceWithModuleRefs: string) {}
 
   getSourceWithImports(): SourceWithImports {
     var moduleAliases = {};
     var imports: string[][] = [];
-    var newSource = StringWrapper.replaceAllMapped(this.source, MODULE_REGEXP, (match) => {
-      var moduleId = match[1];
-      var alias = moduleAliases[moduleId];
-      if (isBlank(alias)) {
-        if (moduleId == this.moduleId) {
-          alias = '';
-        } else {
-          alias = `import${imports.length}`;
-          imports.push([moduleId, alias]);
-        }
-        moduleAliases[moduleId] = alias;
-      }
-      return alias.length > 0 ? `${alias}.` : '';
-    });
+    var newSource =
+        StringWrapper.replaceAllMapped(this.sourceWithModuleRefs, MODULE_REGEXP, (match) => {
+          var moduleId = match[1];
+          var alias = moduleAliases[moduleId];
+          if (isBlank(alias)) {
+            if (moduleId == this.moduleId) {
+              alias = '';
+            } else {
+              alias = `import${imports.length}`;
+              imports.push([moduleId, alias]);
+            }
+            moduleAliases[moduleId] = alias;
+          }
+          return alias.length > 0 ? `${alias}.` : '';
+        });
     return new SourceWithImports(newSource, imports);
   }
 }

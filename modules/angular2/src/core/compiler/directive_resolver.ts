@@ -94,7 +94,6 @@ export class DirectiveResolver {
         events: mergedEvents,
         host: mergedHost,
         dynamicLoadable: dm.dynamicLoadable,
-        compiledHostTemplate: dm.compiledHostTemplate,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,

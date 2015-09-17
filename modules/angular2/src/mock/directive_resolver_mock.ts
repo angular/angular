@@ -30,7 +30,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
         events: dm.events,
         host: dm.host,
         dynamicLoadable: dm.dynamicLoadable,
-        compiledHostTemplate: dm.compiledHostTemplate,
         bindings: bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,
