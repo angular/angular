@@ -99,7 +99,7 @@ export function applicationDomBindings(): Array<Type | Binding | any[]> {
  *
  * If no bindings are provided, calling {@link platform}() is idempotent,
  * and will use the default platform bindings (which can be obtained from
- * {@link rootBindings}).
+ * {@link ApplicationRef/rootBindings}).
  */
 export function platform(bindings?: Array<Type | Binding | any[]>): PlatformRef {
   return platformCommon(bindings, () => {

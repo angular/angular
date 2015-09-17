@@ -308,7 +308,7 @@ export class ApplicationRef {
   get injector(): Injector { return this._injector; }
 
   /**
-   * Retrieve the application {@link Zone}.
+   * Retrieve the application {@link NgZone}.
    */
   get zone(): NgZone { return this._zone; }
 

@@ -148,7 +148,7 @@ export interface DirectiveFactory {
 }
 
 /**
- * {@link ComponentAnnotation} factory for creating annotations, decorators or DSL.
+ * {@link ComponentMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
@@ -220,7 +220,7 @@ export interface ComponentFactory {
 }
 
 /**
- * {@link ViewAnnotation} factory for creating annotations, decorators or DSL.
+ * {@link ViewMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
