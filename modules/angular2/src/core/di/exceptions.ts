@@ -32,7 +32,6 @@ function constructResolvingPath(keys: any[]): string {
  * Base class for all errors arising from misconfigured bindings.
  */
 export class AbstractBindingError extends BaseException {
-  name: string;
   message: string;
   keys: Key[];
   injectors: Injector[];
@@ -99,7 +98,6 @@ export class CyclicDependencyError extends AbstractBindingError {
  * this object to be instantiated.
  */
 export class InstantiationError extends WrappedException {
-  name: string;
   keys: Key[];
   injectors: Injector[];
 
@@ -129,14 +127,10 @@ export class InstantiationError extends WrappedException {
  * creation.
  */
 export class InvalidBindingError extends BaseException {
-  message: string;
   constructor(binding) {
-    super();
-    this.message = "Invalid binding - only instances of Binding and Type are allowed, got: " +
-                   binding.toString();
+    super("Invalid binding - only instances of Binding and Type are allowed, got: " +
+          binding.toString());
   }
-
-  toString(): string { return this.message; }
 }
 
 /**
@@ -146,10 +140,11 @@ export class InvalidBindingError extends BaseException {
  * need to be injected into the constructor.
  */
 export class NoAnnotationError extends BaseException {
-  name: string;
-  message: string;
   constructor(typeOrFunc, params: any[][]) {
-    super();
+    super(NoAnnotationError._genMessage(typeOrFunc, params));
+  }
+
+  private static _genMessage(typeOrFunc, params: any[][]) {
     var signature = [];
     for (var i = 0, ii = params.length; i < ii; i++) {
       var parameter = params[i];
@@ -159,37 +154,24 @@ export class NoAnnotationError extends BaseException {
         signature.push(ListWrapper.map(parameter, stringify).join(' '));
       }
     }
-    this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +
-                   signature.join(', ') + "). " +
-                   'Make sure they all have valid type or annotations.';
+    return "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +
+           signature.join(', ') + "). " + 'Make sure they all have valid type or annotations.';
   }
-
-  toString(): string { return this.message; }
 }
 
 /**
  * Thrown when getting an object by index.
  */
 export class OutOfBoundsError extends BaseException {
-  message: string;
-  constructor(index) {
-    super();
-    this.message = `Index ${index} is out-of-bounds.`;
-  }
-
-  toString(): string { return this.message; }
+  constructor(index) { super(`Index ${index} is out-of-bounds.`); }
 }
 
 /**
  * Thrown when a multi binding and a regular binding are bound to the same token.
  */
 export class MixingMultiBindingsWithRegularBindings extends BaseException {
-  message: string;
   constructor(binding1, binding2) {
-    super();
-    this.message = "Cannot mix multi bindings and regular bindings, got: " + binding1.toString() +
-                   " " + binding2.toString();
+    super("Cannot mix multi bindings and regular bindings, got: " + binding1.toString() + " " +
+          binding2.toString());
   }
-
-  toString(): string { return this.message; }
 }
