@@ -2,7 +2,8 @@ import {
   DateWrapper,
   StringWrapper,
   RegExpWrapper,
-  NumberWrapper
+  NumberWrapper,
+  isPresent
 } from 'angular2/src/core/facade/lang';
 import {Math} from 'angular2/src/core/facade/math';
 import {camelCaseToDashCase} from 'angular2/src/core/render/dom/util';
@@ -31,6 +32,8 @@ export class Animation {
   /** flag used to track whether or not the animation has finished */
   completed: boolean = false;
 
+  private _stringPrefix: string = '';
+
   /** total amount of time that the animation should take including delay */
   get totalTime(): number {
     let delay = this.computedDelay != null ? this.computedDelay : 0;
@@ -47,6 +50,7 @@ export class Animation {
   constructor(public element: HTMLElement, public data: CssAnimationOptions,
               public browserDetails: BrowserDetails) {
     this.startTime = DateWrapper.toMillis(DateWrapper.now());
+    this._stringPrefix = DOM.getAnimationPrefix();
     this.setup();
     this.wait(timestamp => this.start());
   }
@@ -77,11 +81,14 @@ export class Animation {
     if (this.data.toStyles != null) this.applyStyles(this.data.toStyles);
     var computedStyles = DOM.getComputedStyle(this.element);
     this.computedDelay =
-        Math.max(this.parseDurationString(computedStyles.getPropertyValue('transition-delay')),
-                 this.parseDurationString(this.element.style.getPropertyValue('transition-delay')));
-    this.computedDuration = Math.max(
-        this.parseDurationString(computedStyles.getPropertyValue('transition-duration')),
-        this.parseDurationString(this.element.style.getPropertyValue('transition-duration')));
+        Math.max(this.parseDurationString(
+                     computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')),
+                 this.parseDurationString(
+                     this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')));
+    this.computedDuration = Math.max(this.parseDurationString(computedStyles.getPropertyValue(
+                                         this._stringPrefix + 'transition-duration')),
+                                     this.parseDurationString(this.element.style.getPropertyValue(
+                                         this._stringPrefix + 'transition-duration')));
     this.addEvents();
   }
 
@@ -91,7 +98,12 @@ export class Animation {
    */
   applyStyles(styles: StringMap<string, any>): void {
     StringMapWrapper.forEach(styles, (value, key) => {
-      DOM.setStyle(this.element, camelCaseToDashCase(key), value.toString());
+      var dashCaseKey = camelCaseToDashCase(key);
+      if (isPresent(DOM.getStyle(this.element, dashCaseKey))) {
+        DOM.setStyle(this.element, dashCaseKey, value.toString());
+      } else {
+        DOM.setStyle(this.element, this._stringPrefix + dashCaseKey, value.toString());
+      }
     });
   }
 
@@ -117,7 +129,7 @@ export class Animation {
   addEvents(): void {
     if (this.totalTime > 0) {
       this.eventClearFunctions.push(DOM.onAndCancel(
-          this.element, 'transitionend', (event: any) => this.handleAnimationEvent(event)));
+          this.element, DOM.getTransitionEnd(), (event: any) => this.handleAnimationEvent(event)));
     } else {
       this.handleAnimationCompleted();
     }

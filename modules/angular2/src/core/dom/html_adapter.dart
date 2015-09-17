@@ -435,4 +435,16 @@ class Html5LibDomAdapter implements DomAdapter {
   performanceNow() {
     throw 'not implemented';
   }
+
+  getAnimationPrefix() {
+    throw 'not implemented';
+  }
+
+  getTransitionEnd() {
+    throw 'not implemented';
+  }
+
+  supportsAnimation() {
+    throw 'not implemented';
+  }
 }

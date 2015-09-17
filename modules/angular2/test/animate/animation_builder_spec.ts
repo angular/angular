@@ -1,5 +1,6 @@
-import {el, describe, it, expect, inject, SpyObject} from 'angular2/test_lib';
+import {el, describe, it, iit, expect, inject, SpyObject} from 'angular2/test_lib';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
   describe("AnimationBuilder", () => {
@@ -54,8 +55,13 @@ export function main() {
          var runner = animateCss.start(element);
          runner.flush();
 
-         expect(runner.computedDelay).toBe(100);
-         expect(runner.computedDuration).toBe(200);
+         if (DOM.supportsAnimation()) {
+           expect(runner.computedDelay).toBe(100);
+           expect(runner.computedDuration).toBe(200);
+         } else {
+           expect(runner.computedDelay).toBe(0);
+           expect(runner.computedDuration).toBe(0);
+         }
        }));
 
     it('should support from styles', inject([AnimationBuilder], animate => {
@@ -71,12 +77,18 @@ export function main() {
 
     it('should support duration and delay defined in CSS', inject([AnimationBuilder], (animate) => {
          var animateCss = animate.css();
-         var element = el('<div style="transition: 0.5s ease 250ms;"></div>');
+         var element =
+             el(`<div style="${DOM.getAnimationPrefix()}transition: 0.5s ease 250ms;"></div>`);
          var runner = animateCss.start(element);
          runner.flush();
 
-         expect(runner.computedDuration).toEqual(500);
-         expect(runner.computedDelay).toEqual(250);
+         if (DOM.supportsAnimation()) {
+           expect(runner.computedDelay).toBe(250);
+           expect(runner.computedDuration).toBe(500);
+         } else {
+           expect(runner.computedDelay).toEqual(0);
+           expect(runner.computedDuration).toEqual(0);
+         }
        }));
 
     it('should add classes', inject([AnimationBuilder], (animate) => {
@@ -108,11 +120,15 @@ export function main() {
 
          runner.flush();
 
-         expect(callback).not.toHaveBeenCalled();
+         if (DOM.supportsAnimation()) {
+           expect(callback).not.toHaveBeenCalled();
 
-         runner.handleAnimationCompleted();
+           runner.handleAnimationCompleted();
 
-         expect(callback).toHaveBeenCalled();
+           expect(callback).toHaveBeenCalled();
+         } else {
+           expect(callback).toHaveBeenCalled();
+         }
        }));
 
   });

@@ -139,4 +139,7 @@ export class DomAdapter {
   requestAnimationFrame(callback): number { throw _abstract(); }
   cancelAnimationFrame(id) { throw _abstract(); }
   performanceNow(): number { throw _abstract(); }
+  getAnimationPrefix(): string { throw _abstract(); }
+  getTransitionEnd(): string { throw _abstract(); }
+  supportsAnimation(): boolean { throw _abstract(); }
 }
