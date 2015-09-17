@@ -8,7 +8,7 @@ import {isBlank} from 'angular2/src/core/facade/lang';
  * If the expression assigned to `ng-if` evaluates to a false value then the element
  * is removed from the DOM, otherwise a clone of the element is reinserted into the DOM.
  *
- * # Example:
+ * ### Example ([live demo](http://plnkr.co/edit/fe0kgemFBtmQOY31b4tw?p=preview)):
  *
  * ```
  * <div *ng-if="errorCount > 0" class="error">
