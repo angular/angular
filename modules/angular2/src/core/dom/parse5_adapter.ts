@@ -552,6 +552,9 @@ export class Parse5DomAdapter extends DomAdapter {
   requestAnimationFrame(callback): number { return setTimeout(callback, 0); }
   cancelAnimationFrame(id: number) { clearTimeout(id); }
   performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
+  getAnimationPrefix(): string { return ''; }
+  getTransitionEnd(): string { return 'transitionend'; }
+  supportsAnimation(): boolean { return true; }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement
