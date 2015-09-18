@@ -14,6 +14,7 @@ module.exports = function (config) {
       '../../node_modules/angular-mocks/angular-mocks.js',
 
       '../../dist/angular_1_router.js',
+      'src/ng_route_shim.js',
 
       'test/*.es5.js',
       'test/**/*_spec.js'
