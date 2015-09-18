@@ -212,6 +212,15 @@ export function main() {
     });
 
     describe('normalizeDirectiveMetadata', () => {
+      it('should return the given DirectiveMetadata for non components',
+         inject([AsyncTestCompleter], (async) => {
+           var meta = runtimeMetadataResolver.getMetadata(NonComponent);
+           compiler.normalizeDirectiveMetadata(meta).then(normMeta => {
+             expect(normMeta).toBe(meta);
+             async.done();
+           });
+         }));
+
       it('should normalize the template',
          inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
            xhr.expect('angular2/test/compiler/compUrl.html', 'loadedTemplate');
@@ -323,10 +332,14 @@ export function humanizeTemplate(template: CompiledTemplate,
   }
   var commands = [];
   var templateData = template.dataGetter();
-  result =
-      {'styles': templateData[2], 'commands': commands, 'cd': testChangeDetector(templateData[0])};
+  result = {
+    'styles': CompiledTemplate.getSylesFromData(templateData),
+    'commands': commands,
+    'cd': testChangeDetector(CompiledTemplate.getChangeDetectorFromData(templateData))
+  };
   humanizedTemplates.set(template.id, result);
-  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), templateData[1]);
+  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates),
+                   CompiledTemplate.getCommandsFromData(templateData));
   return result;
 }
 
