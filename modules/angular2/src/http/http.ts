@@ -120,6 +120,8 @@ export class Http {
           new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url)));
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
+    } else {
+      throw makeTypeError('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }
@@ -201,6 +203,8 @@ export class Jsonp extends Http {
         makeTypeError('JSONP requests must use GET request method.');
       }
       responseObservable = httpRequest(this._backend, url);
+    } else {
+      throw makeTypeError('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }
