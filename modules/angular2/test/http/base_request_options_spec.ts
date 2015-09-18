@@ -10,7 +10,7 @@ import {
   xit
 } from 'angular2/test_lib';
 import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
-import {RequestMethods, RequestModesOpts} from 'angular2/src/http/enums';
+import {RequestMethods} from 'angular2/src/http/enums';
 
 export function main() {
   describe('BaseRequestOptions', () => {
@@ -24,9 +24,7 @@ export function main() {
     it('should retain previously merged values when merging again', () => {
       var options1 = new BaseRequestOptions();
       var options2 = options1.merge(new RequestOptions({method: RequestMethods.Delete}));
-      var options3 = options2.merge(new RequestOptions({mode: RequestModesOpts.NoCors}));
-      expect(options3.mode).toBe(RequestModesOpts.NoCors);
-      expect(options3.method).toBe(RequestMethods.Delete);
+      expect(options2.method).toBe(RequestMethods.Delete);
     });
   });
 }
