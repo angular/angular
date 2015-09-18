@@ -183,14 +183,14 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#destroyViewInContainer}.
    */
-  createEmbeddedViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+  createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number,
                                 templateRef: TemplateRef): ViewRef {
     var s = this._createEmbeddedViewInContainerScope();
     var protoView = internalProtoView(templateRef.protoViewRef);
     if (protoView.type !== ViewType.EMBEDDED) {
       throw new BaseException('This method can only be called with embedded ProtoViews!');
     }
-    return wtfLeave(s, this._createViewInContainer(viewContainerLocation, atIndex, protoView,
+    return wtfLeave(s, this._createViewInContainer(viewContainerLocation, index, protoView,
                                                    templateRef.elementRef, null));
   }
 
@@ -201,7 +201,7 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#destroyViewInContainer}.
    */
-  createHostViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+  createHostViewInContainer(viewContainerLocation: ElementRef, index: number,
                             protoViewRef: ProtoViewRef,
                             imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef {
     var s = this._createHostViewInContainerScope();
@@ -210,7 +210,7 @@ export class AppViewManager {
       throw new BaseException('This method can only be called with host ProtoViews!');
     }
     return wtfLeave(
-        s, this._createViewInContainer(viewContainerLocation, atIndex, protoView,
+        s, this._createViewInContainer(viewContainerLocation, index, protoView,
                                        viewContainerLocation, imperativelyCreatedInjector));
   }
 
@@ -218,7 +218,7 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#destroyViewInContainer}.
    */
-  _createViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+  _createViewInContainer(viewContainerLocation: ElementRef, index: number,
                          protoView: viewModule.AppProtoView, context: ElementRef,
                          imperativelyCreatedInjector: ResolvedBinding[]): ViewRef {
     var parentView = internalView(viewContainerLocation.parentView);
@@ -231,30 +231,30 @@ export class AppViewManager {
         !embeddedFragmentView.hydrated()) {
       // Case 1: instantiate the first view of a template that has been merged into a parent
       view = embeddedFragmentView;
-      this._attachRenderView(parentView, boundElementIndex, atIndex, view);
+      this._attachRenderView(parentView, boundElementIndex, index, view);
     } else {
       // Case 2: instantiate another copy of the template or a host ProtoView.
       // This is a separate case
       // as we only inline one copy of the template into the parent view.
       view = this._createPooledView(protoView);
-      this._attachRenderView(parentView, boundElementIndex, atIndex, view);
+      this._attachRenderView(parentView, boundElementIndex, index, view);
       this._renderer.hydrateView(view.render);
     }
     this._utils.attachViewInContainer(parentView, boundElementIndex, contextView,
-                                      contextBoundElementIndex, atIndex, view);
+                                      contextBoundElementIndex, index, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView,
-                                       contextBoundElementIndex, atIndex,
+                                       contextBoundElementIndex, index,
                                        imperativelyCreatedInjector);
     return view.ref;
   }
 
-  _attachRenderView(parentView: viewModule.AppView, boundElementIndex: number, atIndex: number,
+  _attachRenderView(parentView: viewModule.AppView, boundElementIndex: number, index: number,
                     view: viewModule.AppView) {
     var elementRef = parentView.elementRefs[boundElementIndex];
-    if (atIndex === 0) {
+    if (index === 0) {
       this._renderer.attachFragmentAfterElement(elementRef, view.renderFragment);
     } else {
-      var prevView = parentView.viewContainers[boundElementIndex].views[atIndex - 1];
+      var prevView = parentView.viewContainers[boundElementIndex].views[index - 1];
       this._renderer.attachFragmentAfterFragment(prevView.renderFragment, view.renderFragment);
     }
   }
@@ -265,11 +265,11 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#createViewInContainer}.
    */
-  destroyViewInContainer(viewContainerLocation: ElementRef, atIndex: number) {
+  destroyViewInContainer(viewContainerLocation: ElementRef, index: number) {
     var s = this._destroyViewInContainerScope();
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
-    this._destroyViewInContainer(parentView, boundElementIndex, atIndex);
+    this._destroyViewInContainer(parentView, boundElementIndex, index);
     wtfLeave(s);
   }
 
@@ -279,7 +279,7 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#detachViewInContainer}.
    */
-  attachViewInContainer(viewContainerLocation: ElementRef, atIndex: number,
+  attachViewInContainer(viewContainerLocation: ElementRef, index: number,
                         viewRef: ViewRef): ViewRef {
     var s = this._attachViewInContainerScope();
     var view = internalView(viewRef);
@@ -291,8 +291,8 @@ export class AppViewManager {
     // previous parent injector (see https://github.com/angular/angular/issues/1377).
     // Right now we are destroying any special
     // context view that might have been used.
-    this._utils.attachViewInContainer(parentView, boundElementIndex, null, null, atIndex, view);
-    this._attachRenderView(parentView, boundElementIndex, atIndex, view);
+    this._utils.attachViewInContainer(parentView, boundElementIndex, null, null, index, view);
+    this._attachRenderView(parentView, boundElementIndex, index, view);
     return wtfLeave(s, viewRef);
   }
 
@@ -302,13 +302,13 @@ export class AppViewManager {
    *
    * See {@link AppViewManager#attachViewInContainer}.
    */
-  detachViewInContainer(viewContainerLocation: ElementRef, atIndex: number): ViewRef {
+  detachViewInContainer(viewContainerLocation: ElementRef, index: number): ViewRef {
     var s = this._detachViewInContainerScope();
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
     var viewContainer = parentView.viewContainers[boundElementIndex];
-    var view = viewContainer.views[atIndex];
-    this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
+    var view = viewContainer.views[index];
+    this._utils.detachViewInContainer(parentView, boundElementIndex, index);
     this._renderer.detachFragment(view.renderFragment);
     return wtfLeave(s, view.ref);
   }
@@ -341,12 +341,12 @@ export class AppViewManager {
   }
 
   _destroyViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
-                          atIndex: number) {
+                          index: number) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
-    var view = viewContainer.views[atIndex];
+    var view = viewContainer.views[index];
 
     this._viewDehydrateRecurse(view);
-    this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
+    this._utils.detachViewInContainer(parentView, boundElementIndex, index);
     if (view.viewOffset > 0) {
       // Case 1: a view that is part of another view.
       // Just detach the fragment
