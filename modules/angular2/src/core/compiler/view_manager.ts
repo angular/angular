@@ -19,9 +19,10 @@ import {AppViewListener} from './view_listener';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 /**
- * Entry point for creating, moving views in the view hierarchy and destroying views.
- * This manager contains all recursion and delegates to helper methods
- * in AppViewManagerUtils and the Renderer, so unit tests get simpler.
+ * Service exposing low level API for creating, moving and destroying Views.
+ *
+ * Most applications should use higher-level abstractions like {@link DynamicComponentLoader} and
+ * {@link ViewContainerRef} instead.
  */
 @Injectable()
 export class AppViewManager {
@@ -178,6 +179,7 @@ export class AppViewManager {
   _createEmbeddedViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createEmbeddedViewInContainer()');
   /**
+   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
    *
    * See {@link AppViewManager#destroyViewInContainer}.
    */
@@ -195,6 +197,7 @@ export class AppViewManager {
   _createHostViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createHostViewInContainer()');
   /**
+   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
    *
    * See {@link AppViewManager#destroyViewInContainer}.
    */
@@ -258,6 +261,7 @@ export class AppViewManager {
 
   _destroyViewInContainerScope = wtfCreateScope('AppViewMananger#destroyViewInContainer()');
   /**
+   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
    *
    * See {@link AppViewManager#createViewInContainer}.
    */
@@ -271,6 +275,7 @@ export class AppViewManager {
 
   _attachViewInContainerScope = wtfCreateScope('AppViewMananger#attachViewInContainer()');
   /**
+   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
    *
    * See {@link AppViewManager#detachViewInContainer}.
    */
@@ -293,6 +298,7 @@ export class AppViewManager {
 
   _detachViewInContainerScope = wtfCreateScope('AppViewMananger#detachViewInContainer()');
   /**
+   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
    *
    * See {@link AppViewManager#attachViewInContainer}.
    */

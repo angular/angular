@@ -13,21 +13,31 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
   return isPresent(protoViewRef) ? protoViewRef._protoView : null;
 }
 
-export interface HostViewRef { changeDetectorRef: ChangeDetectorRef; }
+/**
+ * Represents the View of a {@link Component} that was compiled via {@link Compiler#compileInHost
+ */
+export interface HostViewRef {
+  /**
+   * @private
+   */
+  changeDetectorRef: ChangeDetectorRef;
+}
 
 /**
- * A reference to an Angular View.
+ * Represents an Angular View.
  *
- * A View is a fundamental building block of Application UI. A View is the smallest set of
- * elements which are created and destroyed together. A View can change properties on the elements
- * within the view, but it can not change the structure of those elements.
+ * <!-- TODO: move the next two paragraphs to the dev guide -->
+ * A View is a fundamental building block of the application UI. It is the smallest grouping of
+ * Elements which are created and destroyed together.
  *
- * To change structure of the elements, the Views can contain zero or more {@link ViewContainerRef}s
- * which allow the views to be nested.
+ * Properties of elements in a View can change, but the structure (number and order) of elements in
+ * a View cannot. Changing the structure of elements can only be done by inserting, moving or
+ * removing nested Views via a View Container. Each View can contain many View Containers.
+ * <!-- /TODO -->
  *
  * ## Example
  *
- * Given this template
+ * Given this template...
  *
  * ```
  * Count: {{items.length}}
@@ -36,9 +46,9 @@ export interface HostViewRef { changeDetectorRef: ChangeDetectorRef; }
  * </ul>
  * ```
  *
- * The above example we have two {@link ProtoViewRef}s:
+ * ... we have two {@link ProtoViewRef}s:
  *
- * Outter {@link ProtoViewRef}:
+ * Outer {@link ProtoViewRef}:
  * ```
  * Count: {{items.length}}
  * <ul>
@@ -53,7 +63,7 @@ export interface HostViewRef { changeDetectorRef: ChangeDetectorRef; }
  *
  * Notice that the original template is broken down into two separate {@link ProtoViewRef}s.
  *
- * The outter/inner {@link ProtoViewRef}s are then assembled into views like so:
+ * The outer/inner {@link ProtoViewRef}s are then assembled into views like so:
  *
  * ```
  * <!-- ViewRef: outer-0 -->
@@ -85,6 +95,8 @@ export class ViewRef implements HostViewRef {
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
   /**
+   * @private
+   *
    * Return `ChangeDetectorRef`
    */
   get changeDetectorRef(): ChangeDetectorRef {
@@ -107,13 +119,14 @@ export class ViewRef implements HostViewRef {
 }
 
 /**
- * A reference to an Angular ProtoView.
+ * Represents Angular's ProtoView.
  *
- * A ProtoView is a reference to a template for easy creation of views.
- * (See {@link AppViewManager#createViewInContainer `AppViewManager#createViewInContainer`} and
+ * A ProtoView is a prototypical View that is the result of Template compilation and enables
+ * Angular to efficiently create an instance of a View based on the compiled Template.
+ *
+ * A ProtoView is created {@link AppViewManager#createViewInContainer} and
  * {@link AppViewManager#createRootHostView `AppViewManager#createRootHostView`}).
  *
- * A `ProtoView` is a factory for creating `View`s.
  *
  * ## Example
  *
@@ -128,7 +141,7 @@ export class ViewRef implements HostViewRef {
  *
  * The above example we have two {@link ProtoViewRef}s:
  *
- * Outter {@link ProtoViewRef}:
+ * Outer {@link ProtoViewRef}:
  * ```
  * Count: {{items.length}}
  * <ul>
