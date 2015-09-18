@@ -47,6 +47,7 @@ import {
 } from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
+import {SetterFn} from 'angular2/src/core/reflection/types';
 import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 import {EventConfig} from 'angular2/src/core/render/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
@@ -138,6 +139,17 @@ export class DirectiveBinding extends ResolvedBinding {
 
   get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
 
+  get queries(): QueryMetadataWithSetter[] {
+    if (isBlank(this.metadata.queries)) return [];
+
+    var res = [];
+    StringMapWrapper.forEach(this.metadata.queries, (meta, fieldName) => {
+      var setter = reflector.setter(fieldName);
+      res.push(new QueryMetadataWithSetter(setter, meta));
+    });
+    return res;
+  }
+
   get eventEmitters(): string[] {
     return isPresent(this.metadata) && isPresent(this.metadata.events) ? this.metadata.events : [];
   }
@@ -151,6 +163,7 @@ export class DirectiveBinding extends ResolvedBinding {
     var rf = rb.resolvedFactories[0];
     var deps = rf.dependencies.map(DirectiveDependency.createFrom);
     var token = binding.token;
+
     var metadata = RenderDirectiveMetadata.create({
       id: stringify(binding.token),
       type: meta instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
@@ -161,6 +174,7 @@ export class DirectiveBinding extends ResolvedBinding {
       host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
       properties: meta.properties,
       readAttributes: DirectiveBinding._readAttributes(<any>deps),
+      queries: meta.queries,
 
       callOnDestroy: hasLifecycleHook(LifecycleHooks.OnDestroy, token),
       callOnChanges: hasLifecycleHook(LifecycleHooks.OnChanges, token),
@@ -203,6 +217,10 @@ export class PreBuiltObjects {
               public elementRef: ElementRef, public templateRef: TemplateRef) {}
 }
 
+export class QueryMetadataWithSetter {
+  constructor(public setter: SetterFn, public metadata: QueryMetadata) {}
+}
+
 export class EventEmitterAccessor {
   constructor(public eventName: string, public getter: Function) {}
 
@@ -211,17 +229,6 @@ export class EventEmitterAccessor {
     return ObservableWrapper.subscribe<Event>(
         eventEmitter,
         eventObj => view.triggerEventHandlers(this.eventName, eventObj, boundElementIndex));
-  }
-}
-
-export class HostActionAccessor {
-  constructor(public methodName: string, public getter: Function) {}
-
-  subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
-    var eventEmitter = this.getter(directive);
-    return ObservableWrapper.subscribe<any[]>(
-        eventEmitter,
-        actionArgs => view.invokeElementMethod(boundElementIndex, this.methodName, actionArgs));
   }
 }
 
@@ -554,19 +561,25 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     for (var i = 0; i < deps.length; i++) {
       var dep = deps[i];
       if (isPresent(dep.queryDecorator)) {
-        this._createQueryRef(dep.queryDecorator);
+        this._createQueryRef(null, null, dep.queryDecorator);
       }
     }
   }
+  _buildQueriesForDirective(dirIndex: number, meta: QueryMetadataWithSetter[]): void {
+    for (var i = 0; i < meta.length; i++) {
+      var m = meta[i];
+      this._createQueryRef(dirIndex, m.setter, m.metadata);
+    }
+  }
 
-  private _createQueryRef(query: QueryMetadata): void {
+  private _createQueryRef(dirIndex: number, setter: SetterFn, query: QueryMetadata): void {
     var queryList = new QueryList<any>();
     if (isBlank(this._query0)) {
-      this._query0 = new QueryRef(query, queryList, this);
+      this._query0 = new QueryRef(dirIndex, setter, query, queryList, this);
     } else if (isBlank(this._query1)) {
-      this._query1 = new QueryRef(query, queryList, this);
+      this._query1 = new QueryRef(dirIndex, setter, query, queryList, this);
     } else if (isBlank(this._query2)) {
-      this._query2 = new QueryRef(query, queryList, this);
+      this._query2 = new QueryRef(dirIndex, setter, query, queryList, this);
     } else {
       throw new QueryError();
     }
@@ -758,42 +771,54 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     if (p.binding0 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding0.resolvedFactories[0].dependencies);
+
+      this._ei._buildQueriesForDirective(0, (<DirectiveBinding>p.binding0).queries);
     }
     if (p.binding1 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding1.resolvedFactories[0].dependencies);
+
+      this._ei._buildQueriesForDirective(1, (<DirectiveBinding>p.binding1).queries);
     }
     if (p.binding2 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding2.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(2, (<DirectiveBinding>p.binding2).queries);
     }
     if (p.binding3 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding3.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(3, (<DirectiveBinding>p.binding3).queries);
     }
     if (p.binding4 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding4.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(4, (<DirectiveBinding>p.binding4).queries);
     }
     if (p.binding5 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding5.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(5, (<DirectiveBinding>p.binding5).queries);
     }
     if (p.binding6 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding6.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(6, (<DirectiveBinding>p.binding6).queries);
     }
     if (p.binding7 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding7.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(7, (<DirectiveBinding>p.binding7).queries);
     }
     if (p.binding8 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding8.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(8, (<DirectiveBinding>p.binding8).queries);
     }
     if (p.binding9 instanceof DirectiveBinding) {
       this._ei._buildQueriesForDeps(
           <DirectiveDependency[]>p.binding9.resolvedFactories[0].dependencies);
+      this._ei._buildQueriesForDirective(9, (<DirectiveBinding>p.binding9).queries);
     }
   }
 
@@ -896,6 +921,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
       if (p.bindings[i] instanceof DirectiveBinding) {
         this._ei._buildQueriesForDeps(
             <DirectiveDependency[]>p.bindings[i].resolvedFactory.dependencies);
+        this._ei._buildQueriesForDirective(i, (<DirectiveBinding>p.bindings[i]).queries);
       }
     }
   }
@@ -927,8 +953,9 @@ export class QueryError extends BaseException {
 }
 
 export class QueryRef {
-  constructor(public query: QueryMetadata, public list: QueryList<any>,
-              public originator: ElementInjector, public dirty: boolean = true) {}
+  constructor(public dirIndex: number, public setter: SetterFn, public query: QueryMetadata,
+              public list: QueryList<any>, public originator: ElementInjector,
+              public dirty: boolean = true) {}
 
   get isViewQuery(): boolean { return this.query.isViewQuery; }
 
@@ -936,6 +963,12 @@ export class QueryRef {
     if (!this.dirty) return;
     this._update();
     this.dirty = false;
+
+    // TODO delete the check once only field queries are supported
+    if (isPresent(this.dirIndex)) {
+      var dir = this.originator.getDirectiveAtIndex(this.dirIndex);
+      this.setter(dir, this.list);
+    }
   }
 
   private _update(): void {

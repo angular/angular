@@ -719,8 +719,45 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   moduleId: string;
 
+  // TODO: add an example after ContentChildren and ViewChildren are in master
+  /**
+   * Configures the queries that will be injected into the directive.
+   *
+   * Content queries are set before the `afterContentInit` callback is called.
+   * View queries are set before the `afterViewInit` callback is called.
+   *
+   * ### Example
+   *
+   * ```
+   * @Component({
+   *   selector: 'someDir',
+   *   queries: {
+   *     contentChildren: new ContentChildren(ChildDirective),
+   *     viewChildren: new ViewChildren(ChildDirective)
+   *   }
+   * })
+   * @View({
+   *   template: '<child-directive></child-directive>',
+   *   directives: [ChildDirective]
+   * })
+   * class SomeDir {
+   *   contentChildren: QueryList<ChildDirective>,
+   *   viewChildren: QueryList<ChildDirective>
+   *
+   *   afterContentInit() {
+   *     // contentChildren is set
+   *   }
+   *
+   *   afterViewInit() {
+   *     // viewChildren is set
+   *   }
+   * }
+   * ```
+   */
+  queries: StringMap<string, any>;
+
   constructor({
-                  selector, properties, events, host, bindings, exportAs, moduleId,
+                  selector, properties, events, host, bindings, exportAs, moduleId, queries,
                   compileChildren = true,
               }: {
     selector?: string,
@@ -730,6 +767,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
+    queries?: StringMap<string, any>,
     compileChildren?: boolean,
   } = {}) {
     super();
@@ -739,6 +777,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.host = host;
     this.exportAs = exportAs;
     this.moduleId = moduleId;
+    this.queries = queries;
     this.compileChildren = compileChildren;
     this.bindings = bindings;
   }
@@ -862,7 +901,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   viewBindings: any[];
 
   constructor({selector, properties, events, host, dynamicLoadable, exportAs, moduleId, bindings,
-               viewBindings, changeDetection = ChangeDetectionStrategy.Default,
+               queries, viewBindings, changeDetection = ChangeDetectionStrategy.Default,
                compileChildren = true}: {
     selector?: string,
     properties?: string[],
@@ -874,6 +913,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     moduleId?: string,
     compileChildren?: boolean,
     viewBindings?: any[],
+    queries?: StringMap<string, any>,
     changeDetection?: ChangeDetectionStrategy,
   } = {}) {
     super({
@@ -884,6 +924,7 @@ export class ComponentMetadata extends DirectiveMetadata {
       exportAs: exportAs,
       moduleId: moduleId,
       bindings: bindings,
+      queries: queries,
       compileChildren: compileChildren
     });
 

@@ -24,7 +24,11 @@ import {
   Query,
   QueryList,
   View,
-  ViewQuery
+  ViewQuery,
+  ContentChildren,
+  ViewChildren,
+  AfterContentInit,
+  AfterViewInit
 } from 'angular2/core';
 
 import {asNativeElements} from 'angular2/src/core/debug';
@@ -36,7 +40,7 @@ export function main() {
   describe('Query API', () => {
 
     describe("querying by directive type", () => {
-      it('should contain all direct child directives in the light dom',
+      it('should contain all direct child directives in the light dom (constructor)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div text="1"></div>' +
                           '<needs-query text="2"><div text="3">' +
@@ -51,6 +55,27 @@ export function main() {
 
                  expect(asNativeElements(view.debugElement.componentViewChildren))
                      .toHaveText('2|3|');
+
+                 async.done();
+               });
+         }));
+
+      it('should contain all direct child directives in the content dom',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-content-children #q><div text="foo"></div></needs-content-children>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+
+                 view.detectChanges();
+
+                 expect(q.textDirChildren.length).toEqual(1);
+                 expect(q.numberOfChildrenAfterContentInit).toEqual(1);
 
                  async.done();
                });
@@ -385,6 +410,27 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should contain all child directives in the view dom',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-children #q></needs-view-children>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+
+                 view.detectChanges();
+
+                 expect(q.textDirChildren.length).toEqual(1);
+                 expect(q.numberOfChildrenAfterViewInit).toEqual(1);
+
+                 async.done();
+               });
+         }));
+
     });
 
     describe("querying in the view", () => {
@@ -550,6 +596,32 @@ export function main() {
 class TextDirective {
   text: string;
   constructor() {}
+}
+
+@Component({
+  selector: 'needs-content-children',
+  queries: {'textDirChildren': new ContentChildren(TextDirective)}
+})
+@View({template: ''})
+class NeedsContentChildren implements AfterContentInit {
+  textDirChildren: QueryList<TextDirective>;
+  numberOfChildrenAfterContentInit: number;
+
+  afterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+}
+
+@Component({
+  selector: 'needs-view-children',
+  queries: {
+    'textDirChildren': new ViewChildren(TextDirective),
+  }
+})
+@View({template: '<div text></div>', directives: [TextDirective]})
+class NeedsViewChildren implements AfterViewInit {
+  textDirChildren: QueryList<TextDirective>;
+  numberOfChildrenAfterViewInit: number;
+
+  afterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
 }
 
 @Directive({selector: '[dir]'})
@@ -718,6 +790,8 @@ class NeedsTpl {
     NeedsViewQueryOrder,
     NeedsViewQueryByLabel,
     NeedsViewQueryOrderWithParent,
+    NeedsContentChildren,
+    NeedsViewChildren,
     NeedsTpl,
     TextDirective,
     InertDirective,

@@ -201,6 +201,34 @@ export class QueryMetadata extends DependencyMetadata {
   toString(): string { return `@Query(${stringify(this.selector)})`; }
 }
 
+// TODO: add an example after ContentChildren and ViewChildren are in master
+/**
+ * Configures a content query.
+ *
+ * Content queries are set before the `afterContentInit` callback is called.
+ *
+ * ### Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'someDir'
+ * })
+ * class SomeDir {
+ *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
+ *
+ *   afterContentInit() {
+ *     // contentChildren is set
+ *   }
+ * }
+ * ```
+ */
+@CONST()
+export class ContentChildrenMetadata extends QueryMetadata {
+  constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
+    super(_selector, {descendants: descendants});
+  }
+}
+
 /**
  * Similar to {@link QueryMetadata}, but querying the component view, instead of
  * the content children.
@@ -247,4 +275,30 @@ export class ViewQueryMetadata extends QueryMetadata {
    */
   get isViewQuery() { return true; }
   toString(): string { return `@ViewQuery(${stringify(this.selector)})`; }
+}
+
+/**
+ * Configures a view query.
+ *
+ * View queries are set before the `afterViewInit` callback is called.
+ *
+ * ### Example
+ *
+ * ```
+ * @Component({
+ *   selector: 'someDir'
+ * })
+ * @View({templateUrl: 'someTemplate', directives: [ItemDirective]})
+ * class SomeDir {
+ *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
+ *
+ *   afterViewInit() {
+ *     // viewChildren is set
+ *   }
+ * }
+ * ```
+ */
+@CONST()
+export class ViewChildrenMetadata extends ViewQueryMetadata {
+  constructor(_selector: Type | string) { super(_selector, {descendants: true}); }
 }
