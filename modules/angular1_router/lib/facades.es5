@@ -32,6 +32,10 @@ function isArray(obj) {
   return Array.isArray(obj);
 }
 
+function getTypeNameForDebugging (fn) {
+  return fn.name || 'Root';
+}
+
 var PromiseWrapper = {
   resolve: function (reason) {
     return $q.when(reason);
@@ -251,8 +255,8 @@ var StringWrapper = {
     return s.replace(from, replace);
   },
 
-   startsWith: function(s, start) {
-    return s.startsWith(start);
+  startsWith: function(s, start) {
+    return s.substr(0, start.length) === start;
   },
 
   replaceAllMapped: function(s, from, cb) {
@@ -272,14 +276,18 @@ var StringWrapper = {
 
 //TODO: implement?
 // I think it's too heavy to ask 1.x users to bring in Rx for the router...
-function EventEmitter() {
-
-}
+function EventEmitter() {}
 
 var BaseException = Error;
 
 var ObservableWrapper = {
-  callNext: function(){}
+  callNext: function(ob, val) {
+    ob.fn(val);
+  },
+
+  subscribe: function(ob, fn) {
+    ob.fn = fn;
+  }
 };
 
 // TODO: https://github.com/angular/angular.js/blob/master/src/ng/browser.js#L227-L265

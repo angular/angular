@@ -16,11 +16,6 @@ function dashCase(str) {
   });
 }
 
-function boringController (model, value) {
-  return function () {
-    this[model] = value;
-  };
-}
 
 function provideHelpers(fn, preInject) {
   return function () {

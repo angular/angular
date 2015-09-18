@@ -2,35 +2,31 @@
 
 describe('ngOutlet animations', function () {
   var elt,
-      $animate,
-      $compile,
-      $rootScope,
-      $router,
-      $templateCache,
-      $controllerProvider;
-
-  function UserController($routeParams) {
-    this.name = $routeParams.name;
-  }
+    $animate,
+    $compile,
+    $rootScope,
+    $router,
+    $compileProvider;
 
   beforeEach(function () {
+    module('ng');
     module('ngAnimate');
     module('ngAnimateMock');
     module('ngComponentRouter');
-    module(function (_$controllerProvider_) {
-      $controllerProvider = _$controllerProvider_;
+    module(function (_$compileProvider_) {
+      $compileProvider = _$compileProvider_;
     });
 
-    inject(function (_$animate_, _$compile_, _$rootScope_, _$router_, _$templateCache_) {
+    inject(function (_$animate_, _$compile_, _$rootScope_, _$router_) {
       $animate = _$animate_;
       $compile = _$compile_;
       $rootScope = _$rootScope_;
       $router = _$router_;
-      $templateCache = _$templateCache_;
     });
 
-    put('user', '<div>hello {{user.name}}</div>');
-    $controllerProvider.register('UserController', UserController);
+    registerComponent('userCmp', {
+      template: '<div>hello {{userCmp.$routeParams.name}}</div>'
+    });
   });
 
   afterEach(function () {
@@ -43,7 +39,7 @@ describe('ngOutlet animations', function () {
     compile('<div ng-outlet></div>');
 
     $router.config([
-      { path: '/user/:name', component: UserController }
+      { path: '/user/:name', component: 'userCmp' }
     ]);
 
     $router.navigateByUrl('/user/brian');
@@ -70,8 +66,32 @@ describe('ngOutlet animations', function () {
     expect(item.element.text()).toBe('hello brian');
   });
 
-  function put(name, template) {
-    $templateCache.put(componentTemplatePath(name), [200, template, {}]);
+
+  function registerComponent(name, options) {
+    var controller = options.controller || function () {};
+
+    ['$onActivate', '$onDeactivate', '$onReuse', '$canReuse', '$canDeactivate'].forEach(function (hookName) {
+      if (options[hookName]) {
+        controller.prototype[hookName] = options[hookName];
+      }
+    });
+
+    function factory() {
+      return {
+        template: options.template || '',
+        controllerAs: name,
+        controller: controller
+      };
+    }
+
+    if (options.$canActivate) {
+      factory.$canActivate = options.$canActivate;
+    }
+    if (options.$routeConfig) {
+      factory.$routeConfig = options.$routeConfig;
+    }
+
+    $compileProvider.directive(name, factory);
   }
 
   function compile(template) {

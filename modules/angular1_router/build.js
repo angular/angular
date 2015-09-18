@@ -22,11 +22,11 @@ var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
 var FACADES = fs.readFileSync(__dirname + '/lib/facades.es5', 'utf8');
 var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.js', 'utf8');
+var moduleTemplate = fs.readFileSync(__dirname + '/src/module_template.js', 'utf8');
+
 function main() {
   var ES6_SHIM = fs.readFileSync(__dirname + '/../../node_modules/es6-shim/es6-shim.js', 'utf8');
   var dir = __dirname + '/../angular2/src/router/';
-
-  var out = '';
 
   var sharedCode = '';
   files.forEach(function (file) {
@@ -35,57 +35,9 @@ function main() {
     sharedCode += transform(moduleName, fs.readFileSync(dir + file, 'utf8'));
   });
 
-  out += "angular.module('ngComponentRouter')";
-  out += angularFactory('$router', ['$q', '$location', '$$controllerIntrospector',
-                                    '$browser', '$rootScope', '$injector'], [
-    FACADES,
-    "var exports = {Injectable: function () {}};",
-    "var require = function () {return exports;};",
-    sharedCode,
-    "var RouteConfig = exports.RouteConfig;",
-    "angular.annotations = {RouteConfig: RouteConfig, CanActivate: exports.CanActivate};",
-    "angular.stringifyInstruction = exports.stringifyInstruction;",
-    "var RouteRegistry = exports.RouteRegistry;",
-    "var RootRouter = exports.RootRouter;",
-    //TODO: move this code into a templated JS file
-    "var registry = new RouteRegistry();",
-    "var location = new Location();",
+  var out = moduleTemplate.replace('//{{FACADES}}', FACADES).replace('//{{SHARED_CODE}}', sharedCode);
 
-    "$$controllerIntrospector(function (name, constructor) {",
-      "if (constructor.$canActivate) {",
-        "constructor.annotations = constructor.annotations || [];",
-        "constructor.annotations.push(new angular.annotations.CanActivate(function (instruction) {",
-          "return $injector.invoke(constructor.$canActivate, constructor, {",
-            "$routeParams: instruction.component ? instruction.component.params : instruction.params",
-          "});",
-        "}));",
-      "}",
-      "if (constructor.$routeConfig) {",
-        "constructor.annotations = constructor.annotations || [];",
-        "constructor.annotations.push(new angular.annotations.RouteConfig(constructor.$routeConfig));",
-      "}",
-      "if (constructor.annotations) {",
-        "constructor.annotations.forEach(function(annotation) {",
-          "if (annotation instanceof RouteConfig) {",
-            "annotation.configs.forEach(function (config) {",
-              "registry.config(constructor, config);",
-            "});",
-          "}",
-        "});",
-      "}",
-    "});",
-
-    "var router = new RootRouter(registry, location, new Object());",
-    "$rootScope.$watch(function () { return $location.path(); }, function (path) {",
-      "if (router.lastNavigationAttempt !== path) {",
-        "router.navigateByUrl(path);",
-      "}",
-    "});",
-
-    "return router;"
-  ].join('\n'));
-
-  return PRELUDE + ES6_SHIM + DIRECTIVES + out + POSTLUDE;
+  return PRELUDE + DIRECTIVES + out + POSTLUDE;
 }
 
 

@@ -4,69 +4,63 @@
  * A module for adding new a routing system Angular 1.
  */
 angular.module('ngComponentRouter', [])
-  .factory('$componentMapper', $componentMapperFactory)
   .directive('ngOutlet', ngOutletDirective)
   .directive('ngOutlet', ngOutletFillContentDirective)
-  .directive('ngLink', ngLinkDirective)
-  .directive('a', anchorLinkDirective); // TODO: make the anchor link feature configurable
+  .directive('ngLink', ngLinkDirective);
 
 /*
  * A module for inspecting controller constructors
  */
 angular.module('ng')
-  .provider('$$controllerIntrospector', $$controllerIntrospectorProvider)
-  .config(controllerProviderDecorator);
+  .provider('$$directiveIntrospector', $$directiveIntrospectorProvider)
+  .config(compilerProviderDecorator);
 
 /*
- * decorates with routing info
+ * decorates $compileProvider so that we have access to routing metadata
  */
-function controllerProviderDecorator($controllerProvider, $$controllerIntrospectorProvider) {
-  var register = $controllerProvider.register;
-  $controllerProvider.register = function (name, ctrl) {
-    $$controllerIntrospectorProvider.register(name, ctrl);
-    return register.apply(this, arguments);
+function compilerProviderDecorator($compileProvider, $$directiveIntrospectorProvider) {
+  var directive = $compileProvider.directive;
+  $compileProvider.directive = function (name, factory) {
+    $$directiveIntrospectorProvider.register(name, factory);
+    return directive.apply(this, arguments);
   };
 }
 
-// TODO: decorate $controller ?
+
 /*
  * private service that holds route mappings for each controller
  */
-function $$controllerIntrospectorProvider() {
-  var controllers = [];
-  var controllersByName = {};
-  var onControllerRegistered = null;
+function $$directiveIntrospectorProvider() {
+  var directiveBuffer = [];
+  var directiveFactoriesByName = {};
+  var onDirectiveRegistered = null;
   return {
-    register: function (name, constructor) {
-      if (angular.isArray(constructor)) {
-        constructor = constructor[constructor.length - 1];
+    register: function (name, factory) {
+      if (angular.isArray(factory)) {
+        factory = factory[factory.length - 1];
       }
-      controllersByName[name] = constructor;
-      constructor.$$controllerName = name;
-      if (onControllerRegistered) {
-        onControllerRegistered(name, constructor);
+      directiveFactoriesByName[name] = factory;
+      if (onDirectiveRegistered) {
+        onDirectiveRegistered(name, factory);
       } else {
-        controllers.push({name: name, constructor: constructor});
+        directiveBuffer.push({name: name, factory: factory});
       }
     },
-    $get: ['$componentMapper', function ($componentMapper) {
+    $get: function () {
       var fn = function (newOnControllerRegistered) {
-        onControllerRegistered = function (name, constructor) {
-          name = $componentMapper.component(name);
-          return newOnControllerRegistered(name, constructor);
-        };
-        while (controllers.length > 0) {
-          var rule = controllers.pop();
-          onControllerRegistered(rule.name, rule.constructor);
+        onDirectiveRegistered = newOnControllerRegistered;
+        while (directiveBuffer.length > 0) {
+          var directive = directiveBuffer.pop();
+          onDirectiveRegistered(directive.name, directive.factory);
         }
       };
 
       fn.getTypeByName = function (name) {
-        return controllersByName[name];
+        return directiveFactoriesByName[name];
       };
 
       return fn;
-    }]
+    }
   };
 }
 
@@ -85,7 +79,7 @@ function $$controllerIntrospectorProvider() {
  *
  * The value for the `ngOutlet` attribute is optional.
  */
-function ngOutletDirective($animate, $q, $router, $componentMapper, $controller, $templateRequest) {
+function ngOutletDirective($animate, $q, $router) {
   var rootRouter = $router;
 
   return {
@@ -105,10 +99,12 @@ function ngOutletDirective($animate, $q, $router, $componentMapper, $controller,
       myCtrl = ctrls[1],
       router = (parentCtrl && parentCtrl.$$router) || rootRouter;
 
+    myCtrl.$$currentComponent = null;
+
     var childRouter,
+      currentController,
       currentInstruction,
       currentScope,
-      currentController,
       currentElement,
       previousLeaveAnimation;
 
@@ -136,8 +132,8 @@ function ngOutletDirective($animate, $q, $router, $componentMapper, $controller,
         var next = $q.when(true);
         var previousInstruction = currentInstruction;
         currentInstruction = instruction;
-        if (currentController.onReuse) {
-          next = $q.when(currentController.onReuse(currentInstruction, previousInstruction));
+        if (currentController && currentController.$onReuse) {
+          next = $q.when(currentController.$onReuse(currentInstruction, previousInstruction));
         }
 
         return next;
@@ -147,8 +143,8 @@ function ngOutletDirective($animate, $q, $router, $componentMapper, $controller,
         if (!currentInstruction ||
             currentInstruction.componentType !== nextInstruction.componentType) {
           result = false;
-        } else if (currentController.canReuse) {
-          result = currentController.canReuse(nextInstruction, currentInstruction);
+        } else if (currentController && currentController.$canReuse) {
+          result = currentController.$canReuse(nextInstruction, currentInstruction);
         } else {
           result = nextInstruction === currentInstruction ||
                    angular.equals(nextInstruction.params, currentInstruction.params);
@@ -156,60 +152,59 @@ function ngOutletDirective($animate, $q, $router, $componentMapper, $controller,
         return $q.when(result);
       },
       canDeactivate: function (instruction) {
-        if (currentInstruction && currentController && currentController.canDeactivate) {
-          return $q.when(currentController.canDeactivate(instruction, currentInstruction));
+        if (currentController && currentController.$canDeactivate) {
+          return $q.when(currentController.$canDeactivate(instruction, currentInstruction));
         }
         return $q.when(true);
       },
       deactivate: function (instruction) {
-        if (currentController && currentController.onDeactivate) {
-          return $q.when(currentController.onDeactivate(instruction, currentInstruction));
+        if (currentController && currentController.$onDeactivate) {
+          return $q.when(currentController.$onDeactivate(instruction, currentInstruction));
         }
         return $q.when();
       },
       activate: function (instruction) {
         var previousInstruction = currentInstruction;
         currentInstruction = instruction;
-        childRouter = router.childRouter(instruction.componentType);
 
-        var controllerConstructor, componentName;
-        controllerConstructor = instruction.componentType;
-        componentName = $componentMapper.component(controllerConstructor.$$controllerName);
+        var componentName = myCtrl.$$componentName = instruction.componentType;
 
-        var componentTemplateUrl = $componentMapper.template(componentName);
-        return $templateRequest(componentTemplateUrl).then(function (templateHtml) {
-          myCtrl.$$router = childRouter;
-          myCtrl.$$template = templateHtml;
-        }).then(function () {
-          var newScope = scope.$new();
-          var locals = {
-            $scope: newScope,
-            $router: childRouter,
-            $routeParams: (instruction.params || {})
-          };
+        if (typeof componentName != 'string') {
+          throw new Error('Component is not a string for ' + instruction.urlPath);
+        }
 
-          // todo(shahata): controllerConstructor is not minify friendly
-          currentController = $controller(controllerConstructor, locals);
+        myCtrl.$$routeParams = instruction.params;
 
-          var clone = $transclude(newScope, function (clone) {
-            $animate.enter(clone, null, currentElement || $element);
-            cleanupLastView();
-          });
+        myCtrl.$$template = '<div ' + dashCase(componentName) + '></div>';
 
-          var controllerAs = $componentMapper.controllerAs(componentName) || componentName;
-          newScope[controllerAs] = currentController;
-          currentElement = clone;
-          currentScope = newScope;
+        myCtrl.$$router = router.childRouter(instruction.componentType);
 
-          if (currentController.onActivate) {
-            return currentController.onActivate(instruction, previousInstruction);
-          }
+        var newScope = scope.$new();
+
+        var clone = $transclude(newScope, function (clone) {
+          $animate.enter(clone, null, currentElement || $element);
+          cleanupLastView();
         });
+
+
+        currentElement = clone;
+        currentScope = newScope;
+
+        // TODO: prefer the other directive retrieving the controller
+        // by debug mode
+        currentController = currentElement.children().eq(0).controller(componentName);
+
+        if (currentController && currentController.$onActivate) {
+          return currentController.$onActivate(instruction, previousInstruction);
+        }
+        return $q.when();
       }
     });
   }
 }
-
+/**
+ * This directive is responsible for compiling the contents of ng-outlet
+ */
 function ngOutletFillContentDirective($compile) {
   return {
     restrict: 'EA',
@@ -220,6 +215,15 @@ function ngOutletFillContentDirective($compile) {
       $element.html(template);
       var link = $compile($element.contents());
       link(scope);
+
+      // TODO: move to primary directive
+      var componentInstance = scope[ctrl.$$componentName];
+      if (componentInstance) {
+        ctrl.$$currentComponent = componentInstance;
+
+        componentInstance.$router = ctrl.$$router;
+        componentInstance.$routeParams = ctrl.$$routeParams;
+      }
     }
   };
 }
@@ -249,7 +253,7 @@ function ngOutletFillContentDirective($compile) {
  * </div>
  * ```
  */
-function ngLinkDirective($router, $location, $parse) {
+function ngLinkDirective($router, $parse) {
   var rootRouter = $router;
 
   return {
@@ -264,10 +268,12 @@ function ngLinkDirective($router, $location, $parse) {
       return;
     }
 
+    var instruction = null;
     var link = attrs.ngLink || '';
 
     function getLink(params) {
-      return './' + angular.stringifyInstruction(router.generate(params));
+      instruction = router.generate(params);
+      return './' + angular.stringifyInstruction(instruction);
     }
 
     var routeParamsGetter = $parse(link);
@@ -282,128 +288,16 @@ function ngLinkDirective($router, $location, $parse) {
         elt.attr('href', getLink(params));
       }, true);
     }
-  }
-}
 
-
-function anchorLinkDirective($router) {
-  return {
-    restrict: 'E',
-    link: function (scope, element) {
-      // If the linked element is not an anchor tag anymore, do nothing
-      if (element[0].nodeName.toLowerCase() !== 'a') {
+    elt.on('click', function (event) {
+      if (event.which !== 1 || !instruction) {
         return;
       }
 
-      // SVGAElement does not use the href attribute, but rather the 'xlinkHref' attribute.
-      var hrefAttrName = Object.prototype.toString.call(element.prop('href')) === '[object SVGAnimatedString]' ?
-        'xlink:href' : 'href';
-
-      element.on('click', function (event) {
-        if (event.which !== 1) {
-          return;
-        }
-
-        var href = element.attr(hrefAttrName);
-        if (href && $router.recognize(href)) {
-          $router.navigateByUrl(href);
-          event.preventDefault();
-        }
-      });
-    }
-  };
-}
-
-/**
- * @name $componentMapperFactory
- * @description
- *
- * This lets you configure conventions for what controllers are named and where to load templates from.
- *
- * The default behavior is to dasherize and serve from `./components`. A component called `myWidget`
- * uses a controller named `MyWidgetController` and a template loaded from `./components/my-widget/my-widget.html`.
- *
- * A component is:
- * - a controller
- * - a template
- * - an optional router
- *
- * This service makes it easy to group all of them into a single concept.
- */
-function $componentMapperFactory() {
-
-  var DEFAULT_SUFFIX = 'Controller';
-
-  var componentToCtrl = function componentToCtrlDefault(name) {
-    return name[0].toUpperCase() + name.substr(1) + DEFAULT_SUFFIX;
-  };
-
-  var componentToTemplate = function componentToTemplateDefault(name) {
-    var dashName = dashCase(name);
-    return './components/' + dashName + '/' + dashName + '.html';
-  };
-
-  var ctrlToComponent = function ctrlToComponentDefault(name) {
-    return name[0].toLowerCase() + name.substr(1, name.length - DEFAULT_SUFFIX.length - 1);
-  };
-
-  var componentToControllerAs = function componentToControllerAsDefault(name) {
-    return name;
-  };
-
-  return {
-    controllerName: function (name) {
-      return componentToCtrl(name);
-    },
-
-    controllerAs: function (name) {
-      return componentToControllerAs(name);
-    },
-
-    template: function (name) {
-      return componentToTemplate(name);
-    },
-
-    component: function (name) {
-      return ctrlToComponent(name);
-    },
-
-    /**
-     * @name $componentMapper#setCtrlNameMapping
-     * @description takes a function for mapping component names to component controller names
-     */
-    setCtrlNameMapping: function (newFn) {
-      componentToCtrl = newFn;
-      return this;
-    },
-
-    /**
-     * @name $componentMapper#setCtrlAsMapping
-     * @description takes a function for mapping component names to controllerAs name in the template
-     */
-    setCtrlAsMapping: function (newFn) {
-      componentToControllerAs = newFn;
-      return this;
-    },
-
-    /**
-     * @name $componentMapper#setComponentFromCtrlMapping
-     * @description takes a function for mapping component controller names to component names
-     */
-    setComponentFromCtrlMapping: function (newFn) {
-      ctrlToComponent = newFn;
-      return this;
-    },
-
-    /**
-     * @name $componentMapper#setTemplateMapping
-     * @description takes a function for mapping component names to component template URLs
-     */
-    setTemplateMapping: function (newFn) {
-      componentToTemplate = newFn;
-      return this;
-    }
-  };
+      $router.navigateByInstruction(instruction);
+      event.preventDefault();
+    });
+  }
 }
 
 
